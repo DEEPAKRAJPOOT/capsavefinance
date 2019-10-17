@@ -1,0 +1,62 @@
+/*================= Custom theme files ================*/
+
+
+/*=============================================
+2.0 Base layout
+==============================================*/
+//Uncommemt below file to enable material design 
+//@import 'reset-materials';
+
+@import 'layout';
+
+/*=============================================
+3.0 Theme style
+==============================================*/
+
+@import 'common-file';
+@import 'customer-support';
+@import 'chat-history';
+@import 'user-agent';
+@import '404';
+@import 'buttons';
+@import 'coming-soon';
+@import 'data-table';
+@import 'datetime-picker';
+@import 'ecommerce';
+@import 'login';
+@import 'model';
+@import 'notification';
+@import 'pagination-tooltip';
+@import 'pricing';
+@import 'progress-bar';
+@import 'selectbox';
+@import 'tabs-accoridons';
+@import 'typography';
+@import 'user-activity';
+@import 'user-feeds';
+@import 'users-list';
+@import 'chat';
+@import 'email';
+@import 'form-element';
+@import 'ui-slider';
+@import 'panel';
+@import 'profile-sidebar';
+@import 'social-icon';
+@import 'table';
+@import 'timeline';
+@import 'user-profile';
+@import 'wheather';
+@import 'panel';
+@import 'charts';
+@import 'blog';
+@import 'notes';
+@import 'compose';
+@import 'jquery-slimscroll';
+@import 'cldr';
+@import 'bootstrap-input.scss';
+@import 'bootstrap-switch.scss';
+@import 'bootstrap-taginput.scss';
+@import 'icons.scss';
+@import 'file-upload.scss';
+@import 'drag-drop.scss';
+@import 'full-calendar.scss';

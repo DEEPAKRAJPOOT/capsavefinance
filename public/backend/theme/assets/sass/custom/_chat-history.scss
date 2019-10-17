@@ -1,0 +1,112 @@
+/*============== Chat history css ================*/
+.post-meta {
+    span {
+        font-weight: 300;
+        font-size: 0.9em;
+    }
+}
+
+.prtm-msg-block {
+    box-shadow: $msg-block-shadow;
+    border: $msg-block-border;
+    border-radius: $msg-block-border-radius;
+    color: $msg-block-font-color;
+    background-color: $msg-block-bg;
+}
+
+.prtm-chat-wrap {
+    .col-lg-custom-3 {
+        float: left;
+        width: 50px;
+    }
+    .col-lg-custom-9 {
+        width: calc(100% - 50px);
+        width: -webkit-calc(100% - 50px);
+        width: -moz-calc(100% - 50px);
+        width: -ms-calc(100% - 50px);
+        float: left;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .prtm-chat-content {
+        padding: 15px 10px 6px 18px;
+        p {
+            font-size: 12px;
+        }
+    }
+    .post-meta {
+        margin: 10px 0;
+    }
+    .right-side {
+        > div {
+            &:first-child {
+                float: right;
+            }
+            &:last-child {
+                float: left;
+            }
+        }
+        h6 {
+            text-align: right;
+        }
+        .prtm-post-meta {
+            float: right;
+        }
+    }
+    .send-msg-wrapper {
+        padding-top: 40px;
+        width: 100%;
+    }
+    .msg-box {
+        width: calc(100% - 85px);
+        width: -webkit-calc(100% - 85px);
+        width: -moz-calc(100% - 85px);
+        width: -ms-calc(100% - 85px);
+        @extend .pull-left;
+        height: 46px;
+        resize: none;
+        padding: 12px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+    }
+    input.send-msg-btn[type="submit"] {
+        width: 85px;
+        height: 46px;
+        @extend .pull-left;
+        text-transform: capitalize;
+        padding: 12px 0;
+        border-bottom-right-radius: $border-radius-base;
+        border-top-right-radius: $border-radius-base;
+         border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+        font-weight: 300;
+    }
+    .prtm-chat-section {
+        height: 420px;
+    }
+    .pre-scrollable {
+        background: $main-content-bg;
+        padding: 20px 30px;
+        h6 {
+            color: $brand-primary;
+        }
+    }
+    .chat-wrap-list {
+        > .clearfix {
+            @include border(1px solid, $section-border-color, bottom);
+            padding: 15px 0 4px;
+        }
+    }
+}
+
+@media (max-width: 1366px) {
+    .prtm-post-meta span {
+        font-size: 12px;
+    }
+    .prtm-chat-wrap .prtm-chat-content {
+        padding: 10px 7px 2px 11px;
+    }
+}

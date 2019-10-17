@@ -1,0 +1,36 @@
+.document-list {
+   display:flex;
+   display:-webkit-flex;
+   flex-wrap: wrap;
+   -webkit-flex-wrap: wrap;
+   li{
+		@include margin(5px 5px 5px 5px);
+		@include border-radius(18px);
+		@include padding-model(6px 10px 6px 10px);
+		color:#227B82;
+		background:#DEF8FB;
+		font-size: 10px;
+		line-height: 15px;
+		font-weight:500;
+		a{
+		  color:#227B82;
+		}
+   }
+ }
+ 
+ .bullet {
+       font-weight:500;
+       position: relative;
+ 
+    &:before{
+       content: "";
+	   position:absolute;
+	   top:6px;
+	   left:-8px;
+	   background:$text-color;
+	   width:3px;
+	   height:3px;
+	   @include border-radius(50%);
+    }
+ 
+ }

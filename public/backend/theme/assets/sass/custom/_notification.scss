@@ -1,0 +1,43 @@
+/*================= Notification css =====================*/
+
+.controls {
+    h4 {
+        color: $base-dark;
+    }
+    .radio,
+    .checkbox {
+        font-weight: 400;
+    }
+    label {
+        display: block;
+        margin: 15px 0 15px 20px;
+    }
+}
+
+button.close {
+    opacity: 1;
+}
+#toast-container > div {
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+}
+//---- Sweet alert ---//
+
+.sweet-alert {
+  background-color: $block-bg;  
+}
+.sweet-alert .sa-icon.sa-success .sa-fix, 
+.sweet-alert .sa-icon.sa-success::after, .sweet-alert .sa-icon.sa-success::before {
+    background-color: transparent;
+}
+.sweet-overlay, .sweet-alert {
+    z-index: 9999;
+}
+//--- Media queries ---//
+@media (max-width: 1440px) and (min-width: 1200px) {
+    .alert-block {
+        width: 50%;
+    }
+    .res-block {
+        width: 100%;
+    }
+}

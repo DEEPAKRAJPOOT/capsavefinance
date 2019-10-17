@@ -1,0 +1,33 @@
+.widget {
+    background-color: #ffffff;
+    border: 1px solid #e5e9ec;
+    padding: 35px;
+    position: relative;
+    display: block;
+    color: $body-color;
+    @include border-radius(3px);
+    .widget-header {
+        margin: -35px 0 35px -35px;
+        border-bottom: 2px solid #dee2ed;
+        padding: 17px 35px;
+        width: calc(100% + 70px);
+    }
+    &.with-medium-spacing {
+        padding: 16px;
+    }
+    &.is-small {
+        font-size: 10px;
+        padding: 10px;
+        .widget-heading {
+            font-size: 12px;
+            a {
+                color: $body-color;
+                
+            }
+        }
+    }
+    .nav-trigger {
+        margin-top: -15px;
+        margin-bottom: 15px;
+    }
+}

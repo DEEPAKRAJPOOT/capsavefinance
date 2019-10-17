@@ -1,0 +1,150 @@
+.btn {
+    font-size: 14px;
+    letter-spacing: 0.9px;
+    padding: 0.6375rem 0.875rem;
+    position: relative;
+    text-transform:uppercase;
+	font-weight:700;
+    
+	&.individual-btn{
+	  @include padding(20px, left, $all: true);
+	  background:$theme-color;
+	  color:$text-color;
+	  font-size:15px;
+	  @include border-radius(15px);
+	  &:hover{
+		  background:#e4b849;
+		  color:#fff;
+		}
+	  
+	}
+	
+	&.corporate-btn{
+      @include padding(20px, left, $all: true);
+	  background:$text-color;
+	  color:$theme-color;
+	  font-size:15px;
+	  @include border-radius(15px);
+	  &:hover{
+		  background:#531919;
+		  color:#fff;
+		  border:1px solid #531919;
+		}
+	}
+	&.btn-save{
+        	color:$text-color;
+			background:$theme-color;
+			@include border-radius(4px);
+			@include padding-model(5px 10px 5px 10px);
+			margin: 0px 5px;
+			font-size: 12px;
+			font-weight: 700;
+			text-transform: capitalize;
+		&:hover{
+		  background:$text-color;
+		  color:#fff;
+		}	
+	}
+	
+	&.btn-prev{
+	        border: 1px solid #95C8DA;
+        	color:#646464;
+			background:#fff;
+			@include border-radius(4px);
+			@include padding-model(5px 10px 5px 10px);
+			margin: 0px 5px;
+			font-size: 12px;
+			font-weight: 700;
+			text-transform: capitalize;
+	   &:hover{
+		  background:$theme-color;
+		  color:#fff;
+		  border:1px solid $theme-color;
+		}
+	}
+	
+	&.btn-sign{
+		 background:$text-color;
+		 color:#fff;
+		 @include border-radius(15px);
+		 @include padding(5px, left, $all: true);
+		  width:100%;
+		 font-size: 13px;
+		 text-transform: capitalize;
+		 &.verify-btn{
+		   @include border-radius(4px);   
+	     }
+		 &:hover{
+		     background-color:$theme-color;
+		   }
+	}
+	
+	
+    @include border-radius(0rem);
+    &:focus {
+        @include shadow(0 0 0 .1rem rgba(47,62,81,0.1) !important);
+    }
+    &:active {
+        background-color: $theme-color !important;
+    }
+    &.btn-primary {
+        background-color: $theme-color;
+        color: #fff;
+        &:hover {
+            color: #fff;
+        }
+    }
+    &.btn-secondary {
+        background-color: $theme-color2;
+        border-color: $theme-color2;
+    }
+    &.red-btn {
+        background-color: red;
+        border-color: red;
+    }
+    &.btn-outline-primary {
+        border-color: $theme-color;
+        color: $theme-color;
+        &:hover {
+            color: #fff;
+            background-color: $theme-color;
+        }
+    }
+    &.btn-link {
+        color: $theme-color4;
+        padding: 0;
+        border: none !important;
+        background: none !important;
+        @include shadow(none !important);
+    }
+    &.card-btn {
+        min-width: 150px;
+    }
+    &.big-btn {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 1.125rem 1rem;
+        min-width: 300px;
+        @include border-radius(38px);
+        @include media-breakpoint-down(xs) {
+            min-width: 100%;
+        }
+    }
+    &.has-icon {
+        padding-left: 27px;
+        &:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-repeat: no-repeat;
+            @include square(16px);
+        }
+    }
+	
+	
+}
+
+
+

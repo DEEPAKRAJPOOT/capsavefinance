@@ -1,0 +1,138 @@
+#progressbar { margin-bottom: 0px; overflow: hidden; counter-reset: step; padding: 0; position: relative; }
+#progressbar:after { position: absolute; width: 100%; height: 2px; background: #e9e9e9; content: ''; left: 0; bottom: 59px; z-index: 1; }
+#progressbar:before { position: absolute; width:10%; height: 2px; background:#48a0bc; content: ''; left: 0; bottom: 59px; z-index: 2; }
+#progressbar li { list-style-type: none; color: #31302f; width: 20%; float: left; position: relative; text-align: center; cursor: pointer; }
+#progressbar li:last-child { border-right: 0; }
+#progressbar li.active { color: #1871c9; }
+#progressbar li .count-top { width: 70px; height: 70px; text-align: center; display: block; background: #fff; border-radius: 50px; line-height: 50px; vertical-align: middle; border: 3px solid #e9e9e9; padding: 8px; font-size: 20px;color: rgba(0, 0, 0, 0.2);}
+#progressbar li .count-bottom { width: 70px; height: 70px; text-align: center; display: none; background: #48a0bc; border-radius: 50px; line-height: 50px; vertical-align: middle; border: 3px solid #e1e1e1; padding: 8px; }
+#progressbar li .count-top img { width: 100%; vertical-align: middle; height: 100%; }
+#progressbar li .count-bottom img { width: 100%; vertical-align: middle; height: 100%; }
+#progressbar li.active .count-top { display: none; }
+#progressbar li.active .count-bottom { display: block; }
+#progressbar li .count-heading { font-size: 14px; float: left; width: 100%; padding-bottom: 5px; }
+.top-circle-bg { display: inline-block; position: relative; z-index: 2; }
+.count-bottom i{color: white;}
+#progressbar li .count-top.checked {border-color: #48a0bc;}
+.remove .fa.fa-trash-o {
+    background: #dc6161;
+    padding: 0;
+    color: #fff;
+    border-radius: 100%;
+    margin-bottom: 0;
+    float: right;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 26px;
+    height: 25px;
+    text-align: center;
+    line-height: 24px;
+}
+ .deleteEducationInfo .fa.fa-trash-o { 
+	right: 6px;
+	top: -3px;
+	 
+}
+div#account {
+    margin-bottom: 0px;
+    display: inline-block;
+    width: 100%;
+}
+.add-sec {
+    box-shadow: 0 2px 6px #b1b0b0;
+    margin: 0 0 17px;
+    padding: 10px 20px;
+    display: inline-block;
+    width: 100%;
+    position: relative;
+}
+
+
+.alert-dismissible {
+    position: absolute;
+    z-index: 9;
+    padding: 21px 28px 20px 11px;
+    top: 10px;
+    right: 17px;
+    font-size: 15px;
+    border-radius: 6px;
+    box-shadow: 0 0 16px #bdb8b8;
+    background: #fff;
+    white-space: nowrap;
+    min-width: 270px;
+}
+.alert-dismissable .close, .alert-dismissible .close {
+    position: relative;
+    top: 0;
+    right: -14px;
+    color: inherit;
+    opacity: 0.8;
+}
+.alert.alert-danger.alert-dismissible {
+    border-left: solid 5px;
+}
+.reasearch {
+    max-height: 289px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px;
+}
+.alert.bg-success  {
+    
+   
+     
+
+    border-left: solid 5px #76a75e;
+}
+.flex.align-center {
+    display: flex;
+    align-items: center;
+}
+.flex.align-center input[type="checkbox"], .flex.align-center input[type="radio"] {
+    margin: 0px 7px 0px 0;
+    margin-top: 1px\9;
+    line-height: normal;
+}
+
+.alert.fade.in span i {
+
+    background: #22ab31;
+    color: #fff;
+    height: 30px;
+    width: 30px;
+    border-radius: 60px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    margin-right: 10px;
+    position: relative;
+    top: -3px;
+
+}
+ 
+.experience .add-sec {
+	box-shadow: none;
+	margin: 0 0 1px 0px;
+	padding: 10px 20px;
+	width: 100%;
+	position: relative;
+	border: solid 1px #eee;
+	display: flex;
+	align-content: center;
+}
+.experience .add-sec:last-child{margin-bottom: 30px}
+ .card .Skills label {
+
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #48a0bc;
+
+}
+
+
+.card .Skills label.error {
+    color: #f00;
+    font-weight: 300;
+}

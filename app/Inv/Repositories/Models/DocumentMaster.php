@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Inv\Repositories\Models;
+
+use DB;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+
+class DocumentMaster extends Authenticatable
+{
+
+    use Notifiable;
+ 
+
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'mst_doc';
+
+    /**
+     * Custom primary key is set for the table
+     *
+     * @var integer
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    
+
+    /**
+     * update user details
+     *
+     * @param integer $user_id     user id
+     * @param array   $arrUserData user data
+     *
+     * @return boolean
+     */
+
+   
+  
+
+   
+   
+
+}
+

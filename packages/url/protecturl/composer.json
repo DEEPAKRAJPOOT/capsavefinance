@@ -1,0 +1,12 @@
+{
+    "name": "url/protecturl",
+    "description": "to protect url parameters",
+    "authors": [
+        {
+            "name": "Prolitus",
+            "email": "harish.santwani@prolitus.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}

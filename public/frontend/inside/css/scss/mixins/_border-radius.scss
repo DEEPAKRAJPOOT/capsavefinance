@@ -1,0 +1,25 @@
+@mixin border-radius ($BorderRadius...)
+{
+ -webkit-border-radius: $BorderRadius;
+ -moz-border-radius: $BorderRadius; 
+  border-radius: $BorderRadius;
+}
+
+@mixin padding-model($padding...)
+{
+ padding: $padding;
+}
+
+@mixin margin($margin...)
+{
+ margin: $margin;
+}
+
+@mixin padding($value , $property, $all: true) {
+ @if $all{
+  padding: $value;
+ }@else{
+     padding-#{$property}: $value;
+ }
+}
+

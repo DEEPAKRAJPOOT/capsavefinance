@@ -1,0 +1,101 @@
+/*================== Blogs ==================*/
+
+.section-header {
+    background: url(../img/blog-add-bg.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-bottom: 80px;
+    padding-top: 20px;
+    border-top-left-radius: $border-radius-base;
+    border-top-right-radius: $border-radius-base;
+    p {
+        margin-bottom: 60px;
+    }
+}
+
+.prtm-btn {
+    background: $btn-white-bg none repeat scroll 0 0;
+    color: $btn-white-color;
+    display: inline-block;
+    font-size: 1em;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 0.9em 4em;
+    text-transform: uppercase;
+    border-radius: $border-radius-base;
+}
+
+.prtm-blog-post-meta {
+    >* {
+        margin-right: 20px;
+        &:last-child {
+            margin: 0;
+        }
+    }
+    a{
+        color: $gray;
+    }
+    i {
+        margin-right: 10px;
+    }
+}
+
+.element-list-content {
+    i {
+        margin-right: 10px;
+         color: $gray;
+    }
+}
+
+.section-content {
+    border-top-left-radius:0;
+    border-top-right-radius:0;
+    border-bottom-left-radius: $border-radius-base;
+    border-bottom-right-radius: $border-radius-base;
+    .element-list {
+        @include border(1px solid, $section-border-color, bottom);
+        .edit-post {
+            opacity: 0;
+            transition: all 0.2s ease-in-out 0s;
+        }
+        &:hover {
+            background: $table-bg-hover;
+            .edit-post {
+                opacity: 1;
+            }
+        }
+    }
+    .post-list-head{
+        font-size: 18px;
+    }
+}
+.blog-wrapper{
+    .element-list-content{
+        margin: 0;
+        p{
+            font-size: 18px;
+            margin-bottom: 7px;
+        }
+        span{
+            font-weight: 300;
+        }
+    }
+}
+@media(max-width:1366px){
+    .blog-wrapper .element-list-content p {
+      font-size: 14px;
+    }
+}
+@media(min-width:992px){
+    .blog-wrapper {
+        .thumb-wid{
+            width: 100px;
+        }
+        .thumb-content{
+            width:calc(100% - 130px);
+            width: -webkit-calc(100% - 130px);
+            width: -moz-calc(100% - 130px); 
+            width: -ms-calc(100% - 130px);
+        }
+    } 
+}

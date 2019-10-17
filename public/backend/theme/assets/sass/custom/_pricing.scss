@@ -1,0 +1,95 @@
+/*================ Pricing page  css =====================*/
+
+.pricing-style {
+    .box-border {
+        margin: 0 3px;
+    }
+}
+
+.pricing-title {
+    font-size: 80px;
+    font-weight: 300;
+    sub,
+    sup {
+        font-size: 35px;
+        margin: 0 -20px;
+    }
+    sup {
+        top: -1.5em;
+    }
+}
+
+.pricing-content {
+    ul li {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+}
+
+.standered-table .prtm-block {
+    &.active {
+        background-color: $brand-success;
+        border-color: $brand-success;
+        box-shadow: 0 1px 10px rgb(117, 132, 148);
+        transform: scale(1.035);
+        z-index: 999;
+        h2,
+        ul li {
+            color: $base-reverse;
+        }
+        .btn-primary {
+            @extend .btn-white;
+        }
+    }
+}
+
+.standered-table .nav-pills {
+    display: inline-block;
+    border: 1px solid $text-color;
+    border-radius: $border-radius-base;
+    a {
+        color: $text-color;
+    }
+    > li.active > a {
+        background: #758494;
+    }
+}
+
+.standered-table .prtm-block {
+    &.primary-active {
+        @include border(2px solid, $brand-primary, bottom left right top);
+    }
+}
+
+@media (max-width: 1366px) and (min-width: 1200px) {
+    .standered-table .pricing-title {
+        font-size: 36px;
+        sup {
+            top: -0.5em;
+        }
+    }
+    .standered-table {
+        .font-3x {
+            font-size: 2em;
+        }
+    }
+    .pricing-title sub,
+    .pricing-title sup {
+        margin: 0 -10px;
+        font-size: 25px;
+    }
+    .pricing-style {
+        .prtm-block {
+            padding: 10px;
+        }
+    }
+}
+
+@media(max-width:480px) {
+    .standered-table {
+        .prtm-block {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+    }
+}

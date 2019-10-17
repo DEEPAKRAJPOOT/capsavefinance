@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="32" viewBox="0 0 22 32">
+    <defs>
+        <style>
+            .cls-1{fill:#434856}
+        </style>
+    </defs>
+    <g id="Group_430" data-name="Group 430" transform="translate(-6 -1)">
+        <path id="Path_356" d="M25 14V9A8 8 0 0 0 9 9v5a3 3 0 0 0-3 3v13a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3V17a3 3 0 0 0-3-3zM11 9a6 6 0 0 1 12 0v5H11zm15 21a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V17a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1z" class="cls-1" data-name="Path 356"/>
+        <path id="Path_357" d="M17 20a1 1 0 0 0-1 1v5a1 1 0 0 0 2 0v-5a1 1 0 0 0-1-1z" class="cls-1" data-name="Path 357"/>
+    </g>
+</svg>

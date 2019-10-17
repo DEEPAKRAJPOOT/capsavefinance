@@ -1,0 +1,54 @@
+/*=================== User listing page css ========================*/
+
+.action-links {
+    position: absolute;
+    right: 5%;
+    top: 6%;
+    .dropdown {
+        i {
+            color: $text-color;
+        }
+    }
+}
+
+.prtm-users-listing {
+    p {
+        color: $text-color;
+    }
+}
+
+@media(min-width:480px) {
+    .prtm-users-listing {
+        .thumb-wid {
+            width: 100px;
+        }
+        .thumb-content {
+            width: calc(100% - 120px);
+            width: -webkit-calc(100% - 120px);
+            width: -moz-calc(100% - 120px);
+            width: -ms-calc(100% - 120px);
+        }
+    }
+}
+
+@media(min-width:1200px) and (max-width:1366px) {
+    .prtm-users-listing {
+        >.row {
+            >div {
+                width: 50%;
+            }
+        }
+    }
+}
+
+@media(max-width:480px) {
+    .action-links {
+        right: 4%;
+        top: 1%;
+    }
+    .tab-content .user-time-wrapper {
+        &:before {
+            width: 0;
+        }
+    }
+}

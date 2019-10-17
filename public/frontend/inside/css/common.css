@@ -1,0 +1,672 @@
+  nav.navbar.navbar-expand-md.navbar-dark {
+      background-color: #48a0bc;
+      padding: 0 15px;
+  }
+
+  .white-bg {
+      background: #fff
+  }
+
+  .navbar-dark .navbar-nav .nav-link {
+      color: #fff;
+  }
+
+  .navbar-dark .navbar-nav .nav-link:hover {
+      color: #20465a;
+  }
+
+  body {
+      background-color: #efefef;
+  }
+
+  .user-head h3 {
+      color: #3eb9ce;
+      text-decoration: underline;
+  }
+
+  .user-head {
+      padding: 10px 15px;
+      background: #fff;
+      margin: 10px;
+  }
+
+  .user-head td {
+      color: #666;
+      font-size: 14px;
+  }
+
+
+  .title-section.center h2 {
+      text-transform: uppercase;
+      font-weight: 300;
+      font-size: 30px;
+  }
+
+  .col-center {
+      margin: 0 auto;
+      float: none !important;
+  }
+
+  .title-section span:before {
+      right: 100%;
+      margin-right: 15px;
+  }
+
+  .title-section span:before,
+  .title-section span:after {
+      content: "";
+      position: absolute;
+      border: 1px solid #000;
+      top: 20px;
+      width: 70px;
+  }
+
+  .title-section span {
+      display: inline-block;
+      position: relative;
+  }
+
+  .title-section.center {
+      margin: 0 auto;
+      text-align: center;
+      margin-bottom: 30px;
+  }
+
+  .title-section {
+      max-width: 600px;
+      width: auto;
+  }
+
+
+  .parallax.pt-body {
+      background: url(../../../../frontend/outside/lending-asset/images/bg-new-1.jpg);
+      background-size: cover;
+      margin-top: 3.8rem;
+      background-repeat: no-repeat;
+  }
+
+  .tag-line h3 {
+      text-align: center;
+      font-style: italic;
+      font-weight: 200;
+      font-size: 28px;
+      color: #434856;
+  }
+
+  section.white-bg {
+      background-color: #fff;
+  }
+
+  .trust-head-sec p {
+      line-height: 1.8rem;
+      font-size: 1rem;
+  }
+
+  .flip-card {
+      background-color: transparent;
+      width: 100%;
+      height: 200px;
+      border: 1px solid #f1f1f1;
+      padding: 0 28px;
+  }
+
+  .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+  }
+
+  /* Do an horizontal flip when you move the mouse over the flip box container */
+  .flip-card:hover .flip-card-inner {
+      transform: rotateY(180deg);
+  }
+
+  /* Position the front and back side */
+  .flip-card-front,
+  .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      padding: 15px;
+  }
+
+  /* Style the front side (fallback if image is missing) */
+  .flip-card-front {
+      background-color: #fff;
+      color: #787676;
+  }
+
+  /* Style the back side */
+  .flip-card-back {
+      background-color: #48a0bc;
+      color: white;
+      transform: rotateY(180deg);
+  }
+
+  .slideanim {
+      visibility: hidden;
+      text-align: left;
+      padding-left: 30px;
+  }
+
+  .slide {
+      animation-name: slide;
+      -webkit-animation-name: slide;
+      animation-duration: 1s;
+      -webkit-animation-duration: 1s;
+      visibility: visible;
+  }
+
+  .left-right-sec h3 {
+      color: #25a5de;
+      font-size: 25px;
+  }
+
+  .left-right-sec h4 {
+      font-size: 1.1rem;
+      color: #333;
+  }
+
+  .left-right-sec {
+      color: #787676;
+  }
+
+  .left-right-sec img {
+      width: 180px;
+  }
+
+  .slideanim ul {
+      padding-left: 0;
+  }
+
+  .slideanim ul li,
+  .slideanim1 ul li {
+      line-height: 25px;
+      font-size: 14px;
+      color: #737272;
+  }
+
+  .slideanim1 {
+      visibility: hidden;
+      text-align: right;
+      padding-right: 30px;
+  }
+
+  .slide1 {
+      animation-name: slide1;
+      -webkit-animation-name: slide1;
+      animation-duration: 1s;
+      -webkit-animation-duration: 1s;
+      visibility: visible;
+  }
+
+  .inven-charges {
+      background: #fff;
+      padding-bottom: 40px;
+  }
+
+  .inven-charges ul {
+      padding: 10px 16px 0 17px;
+  }
+
+  .inven-charges li {
+      font-size: 14px;
+      color: #868686;
+      margin-top: 5px;
+  }
+
+  @keyframes slide {
+      0% {
+          opacity: 0;
+          transform: translateX(70%);
+      }
+
+      100% {
+          opacity: 1;
+          transform: translateX(0%);
+      }
+  }
+
+  @-webkit-keyframes slide {
+      0% {
+          opacity: 0;
+          -webkit-transform: translateX(70%);
+      }
+
+      100% {
+          opacity: 1;
+          -webkit-transform: translateX(0%);
+      }
+  }
+
+  @keyframes slide1 {
+      0% {
+          opacity: 0;
+          transform: translateX(-70%);
+      }
+
+      100% {
+          opacity: 1;
+          transform: translateX(0%);
+      }
+  }
+
+  @-webkit-keyframes slide1 {
+      0% {
+          opacity: 0;
+          -webkit-transform: translateX(-70%);
+      }
+
+      100% {
+          opacity: 1;
+          -webkit-transform: translateX(0%);
+      }
+  }
+
+  .step-block {
+      padding: 10px 26px;
+      background: #fff;
+      margin-bottom: 10px;
+      box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.25);
+      color: #787676;
+  }
+
+  .step-block img {
+      width: 45px;
+  }
+
+  .step-block:before {
+      background-image: url(../../../../frontend/outside/lending-asset/images/arrowright.png);
+      content: "";
+      position: absolute;
+      width: 100px;
+      height: 70px;
+      left: -80px;
+      top: 20px;
+      background-size: 72px;
+      background-repeat: no-repeat;
+  }
+
+  .navbar-dark .navbar-toggler-icon {
+      background-image: url(../../../../frontend/outside/lending-asset/images/mob-nav.png);
+  }
+
+  .title-section.center h2 {
+      text-transform: uppercase;
+      font-weight: 300;
+      font-size: 30px;
+  }
+
+  .h1,
+  .h2,
+  .h3,
+  .h4,
+  .h5,
+  .h6,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+      font-family: 'Open Sans', sans-serif;
+  }
+
+  .col-center {
+      margin: 0 auto;
+      float: none !important;
+  }
+
+  .title-section span:before {
+      right: 100%;
+      margin-right: 15px;
+  }
+
+  .title-section span:before,
+  .title-section span:after {
+      content: "";
+      position: absolute;
+      border: 1px solid #000;
+      top: 20px;
+      width: 70px;
+  }
+
+  .title-section span:after {
+      right: -83px
+  }
+
+  .title-section span {
+      display: inline-block;
+      position: relative;
+  }
+
+  .title-section.center {
+      margin: 0 auto;
+      text-align: center;
+      margin-bottom: 30px;
+  }
+
+  .title-section {
+      max-width: 100%;
+      width: auto;
+  }
+
+
+
+  .inven-charges td p {
+      margin: 0;
+      color: #212529;
+  }
+
+  .inven-charges .table-bordered td:first-child .title::before {
+      content: "";
+      /* width: 57px; */
+      height: 20px;
+      border-right: solid transparent 19px;
+      border-top: solid #48a0bc 19px;
+      border-left: solid transparent 19px;
+      position: absolute;
+      right: -33px;
+      transform: rotate(-90deg);
+      top: 50%;
+      margin-top: -12px;
+  }
+
+  .inven-charges .table-bordered td:first-child {
+      background: #48a0bc;
+      padding-left: 10px;
+      color: #fff;
+      vertical-align: middle;
+      border-right: none;
+      border-color: #8adbf5;
+  }
+
+  .inven-charges .table-bordered td:nth-child(2) {
+      border-left: none;
+  }
+
+  .inven-charges .table-bordered td {
+      border: 1px solid #84bacc;
+      padding-left: 30px;
+  }
+
+  .table-bordered td:first-child .title {
+      position: relative;
+      width: 220px;
+      text-align: center;
+  }
+
+  .inven-charges .table-bordered tr {}
+
+  footer {
+      background: #000;
+      padding: 50px 0 0 0;
+      color: #fff;
+  }
+
+  footer a {
+      color: #f2f2f3;
+      text-decoration: none;
+  }
+
+  footer a:hover {
+      color: #48a0bc;
+  }
+
+  @media screen and (max-width: 1120px) {
+      .flip-card {
+          padding: 0;
+      }
+
+      .parallax.pt-body {
+          background-size: 100%;
+          background-repeat: no-repeat;
+          padding-bottom: 7vh;
+      }
+
+  }
+
+
+  .faq-page .accordion-section .panel-default > .panel-heading {
+
+      background: #f9f9f9;
+      border: solid 1px #eee;
+
+  }
+
+  .faq-page .accordion-section .panel-default .panel-title a {
+      display: block;
+      font-size: 16px;
+      color: #48a0bc;
+  }
+
+  .primary-blog h4.mt-2 {
+      color: #48a0bc;
+  }
+
+  .faq-page .accordion-section .panel-default .panel-title a::after {
+      font-family: 'FontAwesome';
+      font-style: normal;
+      font-size: 2rem;
+      content: "\f106";
+      color: #48a0bc;
+      float: right;
+      margin-top: -6px;
+  }
+
+  .faq-page .accordion-section .panel-default .panel-title a.collapsed:after {
+      content: "\f107";
+  }
+
+  .faq-page section.accordion-section {
+      width: 100%;
+  }
+
+  .post-meta {
+      margin: 7px 0 15px 0;
+      overflow: hidden;
+      font-size: 12px;
+      text-transform: uppercase;
+      font-family: "Montserrat", sans-serif;
+  }
+
+  .post-meta span {
+
+      color: #48a0bc;
+      margin-right: 17px;
+
+  }
+
+  .post-meta span i {
+
+      margin-right: 7px;
+
+  }
+
+  .blog-detail .img-fluid {
+      max-width: 100%;
+      height: 201px;
+      width: 100%;
+      object-fit: cover;
+  }
+
+  #feedback .modal-dialog.modal-md {
+      width: 40%;
+  }
+
+  #feedback .modal-content {
+      background-color: #f1f1f1;
+
+
+  }
+
+  .account-detail .list-group-item {
+      padding: 0 0 10px;
+      border: 0px solid rgba(0, 0, 0, .125);
+  }
+
+  .table-design table {
+      color: #8c8b8b;
+      width: 100%;
+
+      font-size: 14px;
+  }
+
+  .account-detail .container.white-bg {
+      padding: 15px 30px 30px;
+  }
+
+  .view_all .btn {
+      color: #337bff;
+      font-size: 14px;
+      border: solid 1px #337bff;
+  }
+
+  .account-detail p {
+      margin: 0;
+  }
+
+  .account-detail table td {
+      padding: 0 0 10px;
+  }
+
+  .account-detail table td:first-child {
+      color: #000;
+  }
+
+  .account-detail strong {
+      font-weight: 600;
+      color: #434856
+  }
+
+  #PurchaseModal thead {
+      background: #eee;
+      color: #000;
+      font-size: 14px;
+
+  }
+
+  .account-detail {
+      margin-bottom: 40px !important;
+  }
+
+  .text-overflow {
+      width: 310px;
+      overflow: auto;
+      word-wrap: normal;
+      height: 37px;
+  }
+
+  .text-overflow2 {
+      width: 640px;
+      overflow: auto;
+      word-wrap: normal;
+      height: 37px;
+  }
+
+  #SellingModal .table-design,
+  #PurchaseModal .table-design {
+      max-height: 400px;
+      overflow: auto;
+  }
+
+
+
+
+  .rep-score {
+      display: flex;
+      align-items: center;
+      margin: 16px 0;
+  }
+
+  .rep-score span {
+      font-weight: bold;
+      font-size: 28px;
+      background: #fff;
+      color: #e2a315;
+      border-radius: 130px;
+      text-align: center;
+      width: 81px;
+      height: 81px;
+      line-height: 84px;
+      display: inline-block;
+      position: relative;
+  }
+
+  .rep-score span:before {
+      content: "";
+      border-top: solid 14px transparent;
+      border-bottom: solid 14px transparent;
+      border-left: solid 14px #ffffff;
+      position: absolute;
+      right: -11px;
+      top: 50%;
+      margin-top: -14px;
+  }
+
+  .rep-score lable {
+
+      color: #fff;
+      margin-left: 20px;
+  }
+
+
+  @media screen and (min-width: 768px) and (max-width: 920px) {
+
+      a.nav-link.btn.btn-rose.btn-block {
+          font-size: 0;
+      }
+
+      a.nav-link.btn.btn-rose.btn-block .fa {
+          font-size: 14px;
+      }
+  }
+
+  @media screen and (max-width: 840px) {
+
+      .parallax.pt-body {
+          padding-bottom: 3vh;
+      }
+
+      .tag-line h3 {
+          font-size: 7vh;
+      }
+  }
+
+  @media screen and (max-width: 768px) {
+      .pt-body {
+          padding-top: 18em;
+      }
+  }
+
+  @media screen and (max-width: 540px) {
+      .tag-line {
+          padding-top: 10px;
+      }
+
+      .parallax.pt-body {
+          padding-bottom: 0;
+      }
+
+      .pt-body {
+          padding-top: 15rem;
+      }
+  }
+
+  @media screen and (max-width: 480px) {
+      .tag-line {
+          padding-bottom: 15px;
+      }
+
+      .pt-body {
+          padding-top: 11rem;
+      }
+
+      .tag-line h3 {
+          font-size: 4vh;
+      }
+  }

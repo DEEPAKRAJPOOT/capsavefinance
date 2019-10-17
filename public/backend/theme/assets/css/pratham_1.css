@@ -1,0 +1,49 @@
+.sidebar-menu li > a:hover {
+    background-color: #489fbb;
+}
+.sidebar-menu li.active > a {
+    background-color: #48a0bc;
+}
+.table-border-top {
+    padding: 5px;
+}
+input#delete_selected_user {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+.navbar {
+    background-color: #48a0bc;
+}
+ .btn-success.search:hover,  .btn-success.search:focus,  .btn-success.search:active ,.btn-success.search:active:hover {
+    color: #fff;
+    background-color: #20465a;
+    border-color: #20465a;
+}
+.btn-success.search {
+    color: #fff;
+    background-color: #48a0bc;
+    border-color: #48a0bc;
+}
+  a {
+    color: #48a0bc;
+}
+@media (min-width: 993px){
+.prtm-sidebar-closed .sidebar-nav .has-children:hover > .sub-menu a:hover {
+background: #20465a;
+}
+.prtm-sidebar-closed .sidebar-nav .has-children:hover > .sub-menu{
+background-color: #48a0bc;}
+
+}
+.prtm-header .nav.navbar-nav .dropdown-menu > li:hover a {
+color: #fff;
+background: #48a0bc;
+}
+.to-top:hover {
+background: #48a0bc;
+}
+.to-top  {color: #48a0bc ; }
+
+
+

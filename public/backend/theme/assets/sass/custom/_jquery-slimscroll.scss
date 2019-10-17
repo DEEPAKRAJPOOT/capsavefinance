@@ -1,0 +1,18 @@
+/***
+jQuery Slimscroll
+***/
+
+.slimscrollbar {
+    padding: $scroll-box-padding;
+    margin: $scroll-box-margin;
+    overflow: hidden;
+}
+
+.slimscrollbar-footer {
+    margin-top: 10px;
+    @include clearfix();
+}
+
+.prtm-block-content .slimScrollBar {
+    margin-right: 0px;
+}

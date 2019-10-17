@@ -1,0 +1,1 @@
+<a href="{{ route('edit_countries',['id' => $countries->id]) }}" class="arw_btnf">Edit</a>

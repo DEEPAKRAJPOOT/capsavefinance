@@ -1,0 +1,424 @@
+//-- Shadow --//
+$shadow-md:                             0 2px 2px rgba(0, 0, 0, 0.05);
+$shadow:                                0 2px 7px rgba(0,0,0,0.2);
+                     
+//--- Background color ---//
+
+$header-top-bar-bg:                      $brand-primary;
+$main-content-bg:                        $body-bg;//--- If You want to use custom bg color then You can set the color value ---//
+$header-logo-bg:                         #404557;
+$golden-bg:                              #f1ae1d;
+
+$section-border-color:                   #eaebed;
+
+//--- Buttons ---//
+
+$brand-inverse:                         #414658;
+$brand-base:                            #758494;
+$brand-secondary:                       #fd7b6c;
+$brand-white:                           #fff;
+
+$btn-inverse-color:                     #fff;
+$btn-inverse-bg:                        $brand-inverse;
+$btn-inverse-border:                    $btn-inverse-bg;
+
+$btn-base-color:                        #fff;
+$btn-base-bg:                           $brand-base;
+$btn-base-border:                       $btn-base-bg;
+
+$btn-secondary-color:                   #fff;
+$btn-secondary-bg:                      $brand-secondary;
+$btn-secondary-border:                  $btn-secondary-bg;
+
+$btn-gray-color:                     	#fff;
+$btn-gray-bg:                        	#758494;
+$btn-gray-border:                    	$btn-gray-bg;
+
+$btn-white-color:                       #414658;
+$btn-white-bg:                          $brand-white;
+$btn-white-border:                      $btn-white-bg;
+
+$btn-rounded-padding-horizontal:        1.25em !default;
+
+$btn-bg-position:                       null !default;
+$btn-bg-size:                           null !default;
+$btn-box-shadow:                        none !default;
+$btn-outline:                           none !default;
+$btn-text-transform:                    none !default;
+$btn-transition:                        all 0.3s !default;
+$btn-active-background-size:            null !default;
+$btn-active-box-shadow:                 none !default;
+$btn-rounded-border-radius:             10em !default;
+
+$bg-white:                              #ffffff;
+$color-white:                           #fff;
+
+//--- Badges ---//
+
+$badge-default-bg:                      $btn-default-bg !default;
+$badge-primary-bg:                      $btn-primary-bg !default;
+$badge-success-bg:                      $btn-success-bg !default;
+$badge-info-bg:                         $btn-info-bg !default;
+$badge-warning-bg:                      $btn-warning-bg !default;
+$badge-danger-bg:                       $btn-danger-bg !default;
+$badge-inverse-bg:                      $btn-inverse-bg !default;
+
+$badge-font-size:                       14px !default;
+
+$badge-padding-horizontal:              5px !default;
+$badge-padding-vertical:                3px !default;
+
+//--- Back to top style ---//
+
+$to-top-bg:                             #fff !default;
+$to-top-border-color:                   $input-bg !default;
+$to-top-border-radius:                  5em !default;
+$to-top-icon-color:                     $brand-primary !default;
+$to-top-icon-hover-color:               #fff !default;
+
+
+//--- Data cards social grid ---//
+
+$socail-data-card:                      #fff;                 
+
+
+//--- Datepicker style ---//
+
+$datepicker-hover-bg:                   $component-active-bg !default;
+$datepicker-hover-color:                $component-active-color !default;
+
+$datepicker-active-bg:                  $component-active-bg !default;
+$datepicker-active-color:               $component-active-color !default;
+
+$datepicker-disabled-bg:                transparent !default;
+$datepicker-disabled-color:             $gray-light !default;
+
+$datepicker-day-border-radius:          0px !default;
+$datepicker-day-size:                   35px !default;
+
+$datepicker-month-border-radius:        0px !default;
+$datepicker-month-height:               40px !default;
+
+$datepicker-other-dates-color:          $datepicker-disabled-color !default;
+
+//--- Dropdown Menu ---//
+
+$dropdown-menu-bg-color:                #fff;
+$dropdown-min-width:                    null !default;
+$dropdown-padding:                      null !default;
+$dropdown-divider-margin:               0px !default;
+$dropdown-link-padding-vertical:        5px !default;
+$dropdown-link-padding-horizontal:      15px !default;
+$dropdown-menu-item-separator:          #eeeeee;
+$dropdown-menu-size:                    12px;
+$dropdown-menu-font-color:              #414658;
+$dropdown-link-hover-color:             #fff;
+$dropdown-link-hover-bg:                $brand-primary;
+
+//--- Dropdown Mega Menu ---//
+
+$mega-menu-width:                       1000px; 
+$mega-menu-bg-color:                    $dropdown-menu-bg-color;
+$mega-menu-text-alignment:              left;
+$mega-menu-font-size:                   $dropdown-menu-size;
+$mega-menu-font-color:                  $dropdown-menu-font-color;
+$mega-menu-link-hover-bg:               $dropdown-link-hover-bg;
+
+//--- Date picker and color picker ---//
+
+$datepicker-hover-bg:                   $component-active-bg !default;
+$datepicker-hover-color:                $component-active-color !default;
+$datepicker-active-bg:                  $component-active-bg !default;
+$datepicker-active-color:               $component-active-color !default;
+
+//--- Dragula drag and drop ---//
+
+$dragula-wrapper-bg:                    $brand-success;
+$dragula-wrapper-font-color:            #fff;
+
+//--- Form style ---//
+
+$from-label-color:                      #414658;
+
+//--- Footer style ---//
+
+$footer-bg:                             #fff;
+$footer-font-color:                     #414658;
+
+//--- Global utilities ---//
+
+$space-gap:                             ("none": 0px, "xs": 10px, "sm": 15px, "md": 20px, "lg": 30px);
+$border-radius:                         ("none": 0px, "xs": 5px, "sm": 10px);
+$border-radius-default:                 0px !default;
+
+$link-dim-color:                      	$text-color !default;
+$link-dim-hover-color:                	$link-color !default;
+$link-dim-hover-decoration:           	none !default;
+
+$link-inverted-color:                   #fff !default;
+$link-inverted-hover-color:             #fff !default;
+$link-inverted-hover-decoration:        none !default;
+
+//--- Hamburger menu bars ---//
+
+$ham-bar-bg:                            #fff !default;
+$ham-bar-distance:                      10px !default;
+$ham-bar-height:                        3px !default;
+
+//--- Label ---//
+
+$label-default-bg:                      $btn-gray-bg;
+$label-font-size:                       85% !default;
+$label-font-weight:                     400 !default;
+$label-padding:                         0.3em 0.6em !default;
+$label-rounded-border-radius:           10em !default;
+$label-rounded-padding-horizontal:      1.25em !default;
+
+//--- Pager style ---//
+
+$full-width-bg:                         #eff4f8;
+
+//--- Prtm block settings ---//
+
+$block-bg:                              #fff; //--- If You want to use the body bg color as block bg then You can use '$body-bg'  ---//
+$block-padding-left:                    30px; 
+$block-padding-right:                   30px;
+$block-padding-top:                     30px;
+$block-padding-bottom:                  30px;
+$block-margin:                          0 0 30px 0;
+$block-shadow:                          null !default;
+$block-border-color:                    #eaebed;
+$block-border-radius:                   $border-radius-base;
+
+$block-full-bg:                          #fff; //--- If You want to use the body bg color as block bg then You can use '$body-bg'  ---//
+$block-full-padding:                     0px !default;
+$block-full-margin:                      0 0 30px 0;
+$block-full-shadow:                      null !default;
+$block-full-border-color:                #eaebed;
+$block-full-border-radius:               $border-radius-base;
+
+//--- Prtm block title ---//
+
+$block-title-bg:                         null !default;
+$block-title-border:                     null !default;
+$block-title-radius:                     $border-radius-base;
+$block-title-padding:                    null !default;
+$block-title-margin:                     null !default;
+$block-title-font-family:                inherit !default;
+$block-title-font-weight:                400 !default;
+$block-title-text-transform:             capitalize !default;
+$block-title-font-color:                 #414658 !default;
+
+//--- Prtm block contextual link style ---//
+
+$contextual-position-top:                0 !default;
+$contextual-position-right:              0 !default;
+$contextual-position-left:               null !default;
+$contextual-display:                     null !default;
+$contextual-icon-size:                   20px !default;
+$contextual-icon-color:                  #414658 !default;
+
+//--- Prtm block contextual dropdown style ---//
+
+$contextual-dropdown-font-color:         $dropdown-link-color !default;
+$contextual-dropdown-hover-color:        $dropdown-link-hover-color !default;
+$contextual-dropdown-border-color:       $dropdown-border !default;
+$contextual-dropdown-border-radius:      $border-radius-base !default;
+$contextual-dropdown-shadow:             null !default;
+$contextaul-dropdown-width:              160px !default;
+
+//--- Prtm block contextual more btn style ---//
+
+$contextual-more-btn-bg:                 #f9fafc !default;
+$contextual-btn-border-color:            #d8e1f2 !default;
+$contextual-btn-border-radius:           20px !default;
+$contextual-btn-font-color:              #758494 !default;
+$contextual-btn-font-size:               12px !default;
+$contextual-btn-padding:                 3px 10px !default;
+
+//--- Prtm content ---//
+
+$block-content-bg:                       null !default;
+$block-content-border:                   null !default;
+$block-content-border-radius:            $border-radius-base !default;
+$block-content-margin:                   0 0 0 0 !default;
+$block-content-padding:                  0 0 0 0 !default;
+
+//--- Primarly used on (.prtm-msg-block) style ---//
+
+$msg-block-bg: 							 #fff !default;
+$msg-block-shadow:                       $shadow !default;
+$msg-block-border:                       null !default;
+$msg-block-border-radius:                5px !default;
+$msg-block-font-color:                   #758494 !default;
+$msg-block-even-bg:                      #fff !default;
+$msg-block-odd-bg:                       #fff !default;
+
+//--- primarly used on (.prtm-card-box) style ---//
+
+$prtm-card-box-border:					  null !default;
+$prtm-card-box-border-radius:             $border-radius-base !default;
+$prtm-card-box-shadow:                    null !default;
+
+//--- primarly used on (.feature-box-thumb) style ---//
+
+$thumb-border:                           0px solid #eee !default;
+$thumb-border-radius:                    $border-radius-base !default;
+$thumb-padding:                          null !default;
+$thumb-shadow:                           null !default; 
+
+//--- Primarly used on (.prtm-scroll-box) style ---//
+
+$scroll-box-padding:                    0 12px 0 5px !default;
+$scroll-box-margin:                     0 !default;
+
+//--- Primarly used on table style ---//
+
+$table-width:                           100% !default;
+$table-border:                          0px solid;
+$table-vertical-align:               	middle;
+
+$table-th-bg:                           null !default;
+$table-th-font-color:                   #758494 !default;
+$table-th-weight:                       600 !default;
+$table-th-font-size:                    15px !default;
+$table-th-text-alignment:               left !default;
+$table-th-padding:                      $table-cell-padding !default;
+
+$table-td-font-color:                   #414658 !default;
+$table-td-weight:                       400 !default;
+$table-td-font-size:                    14px !default;
+$table-td-text-alignment:               left !default;
+$table-td-padding:                      $table-cell-padding !default;
+
+$table-inverse:                         darken($brand-inverse, 7%);
+$table-inverse-th-font-color:           lighten($brand-inverse, 50%);
+$table-inverse-td-font-color:			lighten($brand-inverse, 50%);
+
+//--- Preloader ---//
+
+$preloader-color:                       $brand-primary;
+$preloader-bg:                          rgba(255, 255, 255, 0.95);
+
+//--- Progress bars ---//
+
+$progress-height:                       20px !default;
+$progress-margin-bottom:                15px !default;
+$progress-bar-box-shadow:               none !default;
+$progress-bar-line-height:              15px !default;
+$progress-bar-pointing-bg:              $progress-bar-color !default;
+
+$progress-lg-height:                    12px !default;
+$progress-sm-height:                    8px !default;
+$progress-xs-height:                    4px !default;
+
+$progress-lg-width:                     12px !default;
+$progress-sm-width:                     8px !default;
+$progress-xs-width:                     4px !default;
+
+$progress-bar-secondary:                $brand-secondary;
+$progress-bar-base:                     $brand-base;
+
+$progress-rounded:                      1em;
+
+//--- Panel ---//
+
+$panel-inverse-text:                     #fff;
+$panel-inverse-border:                   $brand-inverse;
+$panel-inverse-heading-bg:               $brand-inverse;
+
+$panel-default-text:                     #414658;
+$panel-default-border:                   $btn-default-bg;
+$panel-default-heading-bg:               $btn-default-bg;
+
+$panel-white-text:                       #414658;
+$panel-white-border:                     $btn-white-bg;
+$panel-white-heading-bg:                 $btn-white-bg;
+
+$panel-heading-border:                   #758494;
+$panel-font-color:                       #414658;
+
+
+//--- Plupload ----//
+$plupload-header-bg:                     $brand-primary;
+$plupload-header-content-color:          #fff;
+$plupload-filelist-header-footer-bg:     #eff4f8;
+$plupload-filelist-content-bg:           #f9fafc;
+$plupload-filelist-btn-color:            #fff;
+//--- Sidebar ---//
+
+$sidenav-color:                          #758494;
+$sidebar-menu-color:                     #758494;
+$sidebar-menu-hover-color:               #fff;
+$sidebar-menu-font-size:                 13px;
+$sidebar-sub-menu-hover-color:           #fff;
+$sidebar-menu-hover-bg:                  #5e6db3;
+$sidebar-menu-font-size:                 13px;
+$sidebar-width:                          280px;
+$sidebar-bg:                             #fff;
+$sidebar-minimize-transition:            all 0.3s ease-in-out 0s;
+$sidebar-with-icon:                      true;
+$sidebar-closed-width:                   63px;
+$sidebar-icon-font-size:                 18px;
+
+$sidebar-closed-sub-menu-color:           #c5cae5;
+$sidebar-closed-sub-menu-hover-bg:        #6e7cbb;
+$sidebar-closed-sub-menu-hover-color:     #fff;
+
+//--- Sparkline ---//
+
+$sidebar-sparkline-color:#fff;
+$sparkline-bg-color:#fff;
+
+//--- Square box ---//
+
+$square-font-size:                      0.5 !default; // 50% relative to the container
+$square-box:                     		(15, 30, 40, 50, 85, 100) !default;
+
+//--- Text color classes ---//
+
+$base-dark:                             #414658;
+$base-reverse:                          #fff;
+$base-secondary:                        $brand-secondary;
+
+//--- Top Bar Color ---//
+
+$navbar-menu-color:				         #fff;
+$navbar-menu-line-height:				 61px;
+$top-bar-menu-font-size:                 14px;
+
+//--- Top Bar User image ---//
+
+$user-image-height-width:                35px;
+
+//--- User pages ---//
+
+$chat-left-tab-bg:                        #eff4f8;
+$chat-left-tab-border:                    #d7dee4;
+$chat-left-tab-hover-bg:                  $body-bg;
+
+$chat-msg-box-odd-bg:                     $body-bg;
+$chat-msg-box-odd-font-color:             #758494;
+$chat-msg-box-odd-border:                 $input-border;
+
+$chat-msg-box-even-bg:                    $brand-primary;
+$chat-msg-box-even-border:                $brand-primary;
+$chat-msg-box-even-font-color:            #fff;
+
+//--- Visitor Vector map content section ---//
+
+$visitor-map-content-bg:                  $brand-success !default;
+$visitor-map-content-font-color:          #fff !default;
+$visitor-map-progressbar-bg:              #fff !default;
+$visitor-map-progress-bg-back:            #00a277 !default;
+
+//--- Weather Icon style ----//
+
+$icon-box-bg: 						      #f1f3f6;
+$icon-box-font-color:				      #414658;
+$icon-box-border-color:				      $input-border;
+$icon-box-hover-bg:					      $brand-danger;
+$icon-box-hover-font:                     #fff;
+$icon-box-border-radius:                  $border-radius-base;
+$themify-font-color:                      #414658;
+$themify-font-hover-color:                $brand-primary;

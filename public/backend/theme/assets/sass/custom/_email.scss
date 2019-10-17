@@ -1,0 +1,137 @@
+/*================ Emails page css ==========================*/
+
+.email-tabs {
+    border: none;
+    li {
+        float: none;
+        margin: 0;
+        border-radius: 0;
+        a {
+            color: $text-color;
+            border-radius: 0;
+            @include border(4px solid, $block-bg, left);
+            &:focus {
+                display: block;
+                margin: 0;
+                @include border(4px solid, transparent, left);
+                background: $block-bg;
+            }
+        }
+    }
+    li.active {
+        a,
+        a:hover,
+        a:focus {
+            background: $body-bg;
+            border: none;
+            @include border(4px solid, $brand-success, left);
+        }
+    }
+}
+
+.hover-drop {
+    .dropdown-menu {
+        padding: 0;
+        li {
+            a {
+                @include border(1px solid, $dropdown-border, bottom);
+                padding: 0.7em;
+            }
+        }
+    }
+}
+
+.mail-toolbar {
+    li {
+        a {
+            color: $base-dark;
+            padding: 0 15px;
+            
+        }
+    }
+}
+
+.compose-modal {
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        background: $block-bg none repeat scroll 0 0;
+    }
+    .modal {
+        margin: 30px auto;
+    }
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+}
+
+.read {
+    background-color: $block-bg;
+    color: $base-dark;
+}
+
+.read a {
+    color: $base-dark;
+}
+
+.unread {
+    background-color: $body-bg;
+}
+
+.mail-inbox-table {
+    padding-top: 0;
+}
+
+.mail-inbox-table table > thead > tr > th {
+    border-width: 1px;
+    font-weight: 300;
+}
+
+.mailTable th a,
+.email-pager a {
+    display: inline-block;
+    margin: 0 8px;
+    color: $text-color;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.mailTable th a:last-child {
+    margin: 0;
+}
+
+.mailTable th a > i,
+.email-pager a i {
+    font-weight: 700;
+}
+
+.email-pager a i {
+    font-size: 20px;
+}
+
+.mailTable th a > i.fa-angle-left,
+.mailTable th a > i.fa-angle-right {
+    font-size: 23px;
+    background: $block-bg;
+    padding: 4px;
+}
+
+//--- Media query ---//
+@media (max-width: 1569px) and (min-width: 1200px) {
+    .mail-style {
+        .mail-inbox {
+            width: 30%;
+        }
+        .mail-content {
+            width: 70%;
+        }
+    }
+}
+
+@media(min-width:768px) {
+    .compose-modal {
+        .modal {
+            width: $modal-md;
+        }
+    }
+}

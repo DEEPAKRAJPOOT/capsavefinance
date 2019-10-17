@@ -1,0 +1,166 @@
+/*================= Buttons style ====================*/
+
+.btn {
+    font-size: $font-size-small;
+}
+
+.btn-secondary {
+    @include button-modifier($btn-secondary-bg, $btn-secondary-bg, $btn-secondary-color);
+}
+
+.btn-inverse {
+    @include button-modifier($btn-inverse-bg, $btn-inverse-bg, $btn-inverse-color);
+}
+
+.btn-base {
+    @include button-modifier($btn-base-bg, $btn-base-bg, $btn-base-color);
+}
+
+.btn-white {
+    @include button-modifier($btn-white-border, $btn-white-bg, $btn-white-color);
+}
+
+.btn-outline-default {
+    @include button-outline-modifier(#b3cbde, #b3cbde);
+    &:hover,
+    &:focus,
+    &.active {
+        color: #414658;
+    }
+}
+
+.btn-outline-primary {
+    @include button-outline-modifier( $btn-primary-border, $btn-primary-color);
+}
+
+.btn-outline-success {
+    @include button-outline-modifier( $btn-success-border, $btn-success-color);
+}
+
+.btn-outline-warning {
+    @include button-outline-modifier( $btn-warning-border, $btn-warning-color);
+}
+
+.btn-outline-danger {
+    @include button-outline-modifier( $btn-danger-border, $btn-danger-color);
+}
+
+.btn-outline-info {
+    @include button-outline-modifier( $btn-info-border, $btn-info-color);
+}
+
+.btn-outline-inverse {
+    @include button-outline-modifier( $btn-inverse-border, $btn-inverse-color);
+}
+
+.btn-outline-base {
+    @include button-outline-modifier( $btn-base-border, $btn-base-color);
+}
+
+.btn-outline-secondary {
+    @include button-outline-modifier( $btn-secondary-border, $btn-secondary-color);
+}
+
+.btn-rounded {
+    border-radius: $btn-rounded-border-radius;
+    padding-left: $btn-rounded-padding-horizontal;
+    padding-right: $btn-rounded-padding-horizontal;
+}
+
+.more-btn {
+    background-color: $contextual-more-btn-bg;
+    @include border(1px solid, $contextual-btn-border-color, bottom top left right);
+    border-radius: $contextual-btn-border-radius;
+    color: $contextual-btn-font-color;
+    display: inline-block;
+    font-size: $contextual-btn-font-size;
+    padding: $contextual-btn-padding;
+    text-transform: capitalize;
+    i {
+        margin-left: 5px;
+    }
+    &:hover,
+    &:focus {
+        text-decoration: none;
+        color: inherit;
+    }
+}
+
+.social-icon button i {
+    margin: 0 10px 0 0;
+}
+.prtm-cropper .btn {
+    margin: 0 0 10px 0;
+}
+//--- Custom button animation css ---//
+.hvr-rectangle-out {
+    border-radius: $border-radius-base;
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: middle;
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    position: relative;
+    -webkit-transition-property: color;
+    transition-property: color;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    &:before {
+        content: "";
+        z-index: -1;
+        position: absolute;
+        @include position-all(0, 0, 0, 0);
+        -webkit-transform: scale(0);
+        transform: scale(0);
+        -webkit-transition-property: transform;
+        transition-property: transform;
+        -webkit-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        -webkit-transition-timing-function: ease-out;
+        transition-timing-function: ease-out;
+    }
+    &:hover,
+    &:focus,
+    &.active {
+        color: #fff;
+    }
+    &:hover:before,
+    &:focus:before,
+    &:active:before {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+}
+
+.btn-primary.hvr-rectangle-out::before,
+.btn-outline-primary.hvr-rectangle-out::before {
+    background-color: $brand-primary;
+}
+
+.btn-success.hvr-rectangle-out::before,
+.btn-outline-success.hvr-rectangle-out::before {
+    background-color: $brand-success;
+}
+
+.btn-info.hvr-rectangle-out::before,
+.btn-outline-info.hvr-rectangle-out::before {
+    background-color: $brand-info;
+}
+
+.btn-secondary.hvr-rectangle-out::before,
+.btn-outline-secondary.hvr-rectangle-out::before {
+    background-color: $brand-secondary;
+}
+
+.btn-outline-primary.hvr-rectangle-out,
+.btn-outline-success.hvr-rectangle-out,
+.btn-outline-info.hvr-rectangle-out,
+.btn-outline-secondary.hvr-rectangle-out {
+    background-color: $block-bg;
+}
+
+@media(max-width:1700px) and (min-width:992px) {
+    .custum-lg-device >div {
+        width: 100%;
+    }
+}
