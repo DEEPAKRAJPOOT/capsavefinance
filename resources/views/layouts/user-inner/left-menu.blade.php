@@ -1,96 +1,137 @@
-<!-- SIDEBAR - START -->
-<?php
+<div class="container-fluid page-body-wrapper">
+	<div class="  row-offcanvas row-offcanvas-right">	
 
-$userKycId= $benifinary['user_kyc_id'];  
-$corpUserId=  $benifinary['corp_user_id'];
-$isBycompany=$benifinary['is_by_company'];
+<nav class="sidebar sidebar-offcanvas" id="sidebar" style="min-height: 713px;">
+		<ul class="nav">
+			<!--main pages start-->
+			<li class="nav-item nav-category">
+        <span class="nav-link">&nbsp;</span>
+        </li>
+			<li class="nav-item active">
+				<a class="nav-link" href="#">
+					<i class="fa fa-home"></i>
+					<span class="menu-title">Home</span>
+				</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="manage-supplies.php" >
+					<i class="fa fa-home"></i>
+					<span class="menu-title">Manage Suppliers</span>
+					<i class="fa fa-angle-right"></i>
+				</a>
+				<div class="collapse" id="layoutsSubmenu1">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Suppliers</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link"  href="manage-buyer.php" >
+					<i class="fa fa-home"></i>
+					<span class="menu-title">Manage Buyers</span>
+					<i class="fa fa-angle-right"></i>
+				</a>
+				<div class="collapse" id="layoutsSubmenu2">
+					<ul class="nav flex-column sub-menu">
 
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Buyers</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="manage-logistics.php" >
+					<i class="fa fa-home"></i>
+					<span class="menu-title">Manage Logistics</span>
+					<i class="fa fa-angle-right"></i>
+				</a>
+				<div class="collapse" id="layoutsSubmenu3">
+					<ul class="nav flex-column sub-menu">
 
-?>
-<div class="list-section">
-                    <div class="kyc">
-                        <h2>{{trans('master.personalProfile.kyc')}}</h2>
-                        <p class="marT15 marB15">{{trans('master.personalProfile.text')}}</p>
-                        @if($corpUserId==0)
-                        <ul class="menu-left">
-                            <li><a class="" href="{{url('/')}}/dashboard">DashBoard</a></li>
-                            <li><a class="" href="{{route('changepassword')}}">Change Password</a></li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Logistics</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link"  href="manage-lender.php" >
+					<i class="fa fa-home"></i>
+					<span class="menu-title">Manage Lenders</span>
+					<i class="fa fa-angle-right"></i>
+				</a>
+				<div class="collapse" id="layoutsSubmenu4">
+					<ul class="nav flex-column sub-menu">
 
-                        </ul>
-                        @endif
-                        <ul class="menu-left">
-                            <li>
-                            @if(Route::currentRouteName()=="family_information")
-                          
-                                <a class="" href="{{route('profile')}}">Personal Information</a>
-                                <a class="active marL15" href="{{route('family_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Family Information</a>
-                                <a class="marL15" href="{{route('residential_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Residential Information</a>
-                            
-                            @elseif(Route::currentRouteName()=="residential_information")
-                            
-                                <a class="" href="{{route('profile')}}">Personal Information</a>
-                                <a class="marL15" href="{{route('family_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Family Information</a>
-                                <a class="active marL15" href="{{route('family_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Residential Information</a>
-                            
-                            @elseif(Route::currentRouteName()=="profile")
-                            
-                                <a class="active" href="{{route('profile',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Personal Information</a>
-                          
-                            @else
-                            
-                                <a class="" href="{{route('profile',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Personal Information</a>
-                            
-                            @endif
-                            </li>
-                            <li>
-                            @if(Route::currentRouteName()=="professional_information")
-                                 <a class="active" href="{{route('professional_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Professional Information</a>
-                            @elseif(Route::currentRouteName()=="commercial_information")
-                               <a class="" href="{{route('professional_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Professional Information</a>
-                               <a class="active marL15" href="{{route('commercial_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">For Sole Proprietorship/ Self Employed</a>
-                            @else
-                            
-                            <a href="{{route('professional_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Professional Information</a>
-                            @endif
-                            </li>
-                            <li>
-                            @if(Route::currentRouteName()=="financial_information")
-                                <a class="active" href="{{route('financial_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Financial Information</a>
-                            @else
-                            
-                            <a class="" href="{{route('financial_information',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Financial Information</a>
-                            @endif
-                            </li>
-                           
-                            <li>
-                            @if(Route::currentRouteName()=="upload_document")
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Lenders</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link"  href="#" >
+					<i class="fa fa-home"></i>
+					<span class="menu-title">Manage Masters</span>
+					<i class="fa fa-angle-right"></i>
+				</a>
+				<div class="collapse" id="layoutsSubmenu5">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Documents</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Entity</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Industry</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Offer Mapping</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage GST</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" data-toggle="collapse" href="#" aria-expanded="false" aria-controls="collapseExample">
+					<i class="fa fa-home"></i>
+					<span class="menu-title pr-2">Access Management</span>
+					<i class="fa fa-angle-right"></i>
+				</a>
+				<div class="collapse" id="layoutsSubmenu6">
+					<ul class="nav flex-column sub-menu">
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Roles</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Permissions</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Users</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" data-toggle="collapse" href="#" aria-expanded="false" aria-controls="collapseExample">
+					<i class="fa fa-home"></i>
+					<span class="menu-title">Manage Offers</span>
+					<i class="fa fa-angle-right"></i>
+				</a>
+				<div class="collapse" id="layoutsSubmenu7">
+					<ul class="nav flex-column sub-menu">
 
-                               <li><a class="active" href="{{route('upload_document',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Documents</a></li>
-                            
-                            
-                            @else
-                            
-                             <li><a href="{{route('upload_document',['user_kyc_id'=>$userKycId,'corp_user_id'=>$corpUserId,'is_by_company'=>$isBycompany])}}">Documents</a></li>
-                            @endif
-                            </li>
-                           
-                        </ul>
-                        @if($corpUserId==0)
-                        <ul class="menu-left">
-                        <li>
-                            <a  href="{{ route('frontend_logout') }}" onclick="event.preventDefault();
-                            document.getElementById('logout-form').submit();">
-                            Sign Out
-                            </a>
-                            <form id="logout-form" action="{{ route('frontend_logout') }}" method="POST" style="display: none;">
-                                {{ csrf_field() }}
-                            </form>
-                        </li>
-
-                        </ul>
-                        @endif
-
-
-                    </div>
-                </div>
-<!--  SIDEBAR - END -->
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Offers</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</nav>
