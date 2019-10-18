@@ -29,7 +29,7 @@
                     <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="true">
                         <i class="fa fa-cog"></i></a>
                     <ul class="dropdown-menu">
-                        -
+                        
                         <li><a href="{{route('profile')}}"><i class="mdi mdi-account-settings-variant"></i> My Profile</a></li>
                         
                         <li>
