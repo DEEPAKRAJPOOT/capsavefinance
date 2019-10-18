@@ -8,7 +8,7 @@
  */
 Route::domain(config('proin.frontend_uri'))->group(function () {
 
-    Route::get('/', 'Auth\LoginController@welcomePage');
+    Route::get('/', 'Auth\LoginController@showLoginForm');
      Route::get('/amit', function() {
          echo "debug";
 

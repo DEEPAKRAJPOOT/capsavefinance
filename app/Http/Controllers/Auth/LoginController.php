@@ -139,7 +139,7 @@ use AuthenticatesUsers;
 
         $request->session()->invalidate();
 
-        return redirect('/');
+        return redirect('/login');
     }
 
     /**
