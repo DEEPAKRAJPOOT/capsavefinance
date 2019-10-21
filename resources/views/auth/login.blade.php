@@ -44,7 +44,7 @@
       
                             <input type="password" id="password" class="form-control required" placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" >
                         
-								<button type="button" class="show-pass"><span class="fa fa-eye"></span></button>
+								<button type="button" class="show-pass" ><span class="fa fa-eye" id="passwordonoff"></span></button>
 							</div>
 
 						</div>
@@ -63,6 +63,38 @@
                     </form>
 		</div>
 	</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+$("#passwordonoff").click(function(){
+
+    var getClass  =  $(this).attr('class');
+    
+     $("#passwordonoff").removeClass(getClass);
+  
+    if(getClass=='fa fa-eye')
+    {
+
+          $("#password").attr('type','text');
+          $("#passwordonoff").addClass('fa fa-eye-slash');
+
+    }
+    else
+    {
+    	$("#password").attr('type','password');
+        $("#passwordonoff").addClass('fa fa-eye');
+
+    }
+    
+   
+
+
+});
+
+});
+
+
+</script>	
 
 <style>
             .login-wrapper input.btn.btn-primary {
