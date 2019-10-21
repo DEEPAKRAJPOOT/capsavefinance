@@ -14,7 +14,7 @@
 				</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="manage-supplies.php" >
+				<a class="nav-link" href="{{Route('supplier.index')}}" >
 					<i class="fa fa-home"></i>
 					<span class="menu-title">Manage Suppliers</span>
 					<i class="fa fa-angle-right"></i>
@@ -22,13 +22,13 @@
 				<div class="collapse" id="layoutsSubmenu1">
 					<ul class="nav flex-column sub-menu">
 						<li class="nav-item">
-							<a class="nav-link" href="#">Manage Suppliers</a>
+							<a class="nav-link" href="{{Route('supplier.index')}}">Manage Suppliers</a>
 						</li>
 					</ul>
 				</div>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link"  href="manage-buyer.php" >
+				<a class="nav-link"  href="{{Route('buyer.index')}}">
 					<i class="fa fa-home"></i>
 					<span class="menu-title">Manage Buyers</span>
 					<i class="fa fa-angle-right"></i>
@@ -37,13 +37,13 @@
 					<ul class="nav flex-column sub-menu">
 
 						<li class="nav-item">
-							<a class="nav-link" href="#">Manage Buyers</a>
+							<a class="nav-link" href="{{Route('buyer.index')}}">Manage Buyers</a>
 						</li>
 					</ul>
 				</div>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="manage-logistics.php" >
+				<a class="nav-link" href="{{Route('logistics.index')}}" >
 					<i class="fa fa-home"></i>
 					<span class="menu-title">Manage Logistics</span>
 					<i class="fa fa-angle-right"></i>
@@ -52,13 +52,13 @@
 					<ul class="nav flex-column sub-menu">
 
 						<li class="nav-item">
-							<a class="nav-link" href="#">Manage Logistics</a>
+							<a class="nav-link" href="{{Route('logistics.index')}}">Manage Logistics</a>
 						</li>
 					</ul>
 				</div>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link"  href="manage-lender.php" >
+				<a class="nav-link"  href="{{Route('lender.index')}}" >
 					<i class="fa fa-home"></i>
 					<span class="menu-title">Manage Lenders</span>
 					<i class="fa fa-angle-right"></i>
@@ -67,7 +67,7 @@
 					<ul class="nav flex-column sub-menu">
 
 						<li class="nav-item">
-							<a class="nav-link" href="#">Manage Lenders</a>
+							<a class="nav-link" href="{{Route('lender.index')}}">Manage Lenders</a>
 						</li>
 					</ul>
 				</div>

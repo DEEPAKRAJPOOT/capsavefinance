@@ -76,7 +76,10 @@ use AuthenticatesUsers;
             $userName    = $request['username'];
            
             $userInfo = $this->userRepo->getUserByUserName($userName);
-            $request->request->add(['email' => $userInfo->email]);
+            if (!empty($userInfo)) {
+                $request->request->add(['email' => $userInfo->email]);
+            }
+            
             if (empty($userInfo)) {
                 //Checking User is frontend user
                 if (!$this->isFrontendUser($userInfo)) {
