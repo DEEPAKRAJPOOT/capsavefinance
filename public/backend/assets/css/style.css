@@ -8384,7 +8384,7 @@ a.bg-dark:hover {
 }
 
 .text-primary {
-	color: #0f9aee !important;
+	color: #2a8b6a !important;
 }
 
 a.text-primary:focus,
@@ -8583,7 +8583,7 @@ a.text-dark:hover {
 }
 
 .sidebar .nav .nav-item.active > .nav-link {
-	background: #0f9aee;
+	background: #2a8b6a;
 }
 
 .sidebar .nav .nav-item.active > .nav-link .menu-title,
@@ -14268,11 +14268,11 @@ body.avgrund-active {
 }
 
 .navbar .navbar-brand-wrapper .navbar-brand img {
-	width: 100%;
-	padding-right: 5px;
-	display: inline-block;
+    width: 100%;
+    padding-right: 5px;
+    display: inline-block;
+    max-width: 67px;
 }
-
 .navbar .navbar-brand-wrapper {
 	padding-left: 0px;
 }
