@@ -16,130 +16,74 @@
 
                         <div class="failed">
                             <div>
-                            @if(Session::has("messages"))
-                            <strong class="erro-sms">
-                             {{ Session::get('messages') }}
-                            </strong>
-                            @endif
-                            
+                                @if(Session::has("messages"))
+                                <strong class="erro-sms">
+                                    {{ Session::get('messages') }}
+                                </strong>
+                                @endif
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="panel-body">
-                    <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ route('login_open') }}" id="frmLogin">
-                        {{ csrf_field() }} 
-                        <div class="form-group mb-2">
+                <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ route('login_open') }}" id="frmLogin">
+                    {{ csrf_field() }} 
+                    <div class="form-group mb-2">
 
-                            <label for="email" class="control-label" >{{trans('master.loginForm.email')}}</label>
-                            <input type="text" class="form-control required"  placeholder="{{trans('master.loginForm.email')}}" name="email" value="{{ old('email') }}" id="email" >
-                            
+                        <label for="email" class="control-label" >{{trans('master.loginForm.email')}}</label>
+                        <input type="text" class="form-control required"  placeholder="{{trans('master.loginForm.email')}}" name="email" value="{{ old('email') }}" id="email" >
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="pwd">{{trans('master.loginForm.password')}}</label>
+                        <div class="hideShowPassword-wrapper">
+
+
+                            <input type="password" id="password" class="form-control required" placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" >
+
+                            <button type="button" class="show-pass" ><span class="fa fa-eye" id="passwordonoff"></span></button>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label" for="pwd">{{trans('master.loginForm.password')}}</label>
-                            <div class="hideShowPassword-wrapper">
 
-
-                                <input type="password" id="password" class="form-control required" placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" >
-
-                                <button type="button" class="show-pass" ><span class="fa fa-eye" id="passwordonoff"></span></button>
-                            </div>
-
-                        </div>
-                        <div class="form-group mt-3 Forgot">
-                            <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
-                            <a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
+                    </div>
+                    <div class="form-group mt-3 Forgot">
+                        <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
+                        <a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
                         <div>
-                                <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
+                            <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
 
 
 
 
-                            </div>
-                    </form>
-                </div>
+                        </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script>
-                                                            $(document).ready(function () {
-                                                                $("#passwordonoff").click(function () {
-
-                                                                    var getClass = $(this).attr('class');
-
-                                                                    $("#passwordonoff").removeClass(getClass);
-
-                                                                    if (getClass == 'fa fa-eye')
-                                                                    {
-
-                                                                        $("#password").attr('type', 'text');
-                                                                        $("#passwordonoff").addClass('fa fa-eye-slash');
-<<<<<<< HEAD
-=======
-
-                                                                    } else
-                                                                    {
-                                                                        $("#password").attr('type', 'password');
-                                                                        $("#passwordonoff").addClass('fa fa-eye');
-
-                                                                    }
-
-
-
-
-                                                                });
-
-                                                            });
-
-
-</script>	
-
-<script>
-$(document).ready(function(){
-$("#passwordonoff").click(function(){
->>>>>>> 77d4f9563596881b2191835b4cd7b73f78f7f4d3
-
-                                                                    } else
-                                                                    {
-                                                                        $("#password").attr('type', 'password');
-                                                                        $("#passwordonoff").addClass('fa fa-eye');
-
-                                                                    }
-
-
-
-
-                                                                });
-
-                                                            });
-
-
-</script>	
+</div>
 
 <style>
-    .login-wrapper input.btn.btn-primary {
-        padding: 8px 30px;
-        font-weight: 600;
-        text-shadow: none;
-        font-size: 20px;
-        display: block;
-        float: left;
-        margin: 20px 0px 0;
-        cursor: pointer;
-    </style>
-    <script>
-        var messages = {
-            req_email: "{{ trans('error_messages.req_user_name') }}",
-            req_password: "{{ trans('error_messages.req_password') }}",
+.login-wrapper input.btn.btn-primary {
+    padding: 8px 30px;
+    font-weight: 600;
+    text-shadow: none;
+    font-size: 20px;
+    display: block;
+    float: left;
+    margin: 20px 0px 0;
+    cursor: pointer;
+</style>
+<script>
+    var messages = {
+        req_email: "{{ trans('error_messages.req_user_name') }}",
+        req_password: "{{ trans('error_messages.req_password') }}",
 
-        };
-    </script>
-    <script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script>
-    @endsection
+    };
+</script>
+<script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script>
+@endsection
 
 
 
