@@ -55,8 +55,7 @@
 
 						</div>
 						<div class="form-group mt-3 Forgot">
-							<a href="#" class="forgot-link"> Forgot Password </a>
-							<a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
+							<a href="/forgot-password" class="forgot-link"> Forgot Password </a>
 							<div><button class="btn btn-primary pull-right" onclick="window.location.href='dashboard.php'" type="button">Login</button></div>
 						</div>
 					</form>

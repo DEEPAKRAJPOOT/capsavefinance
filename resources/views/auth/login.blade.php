@@ -48,7 +48,8 @@
 
                         </div>
                         <div class="form-group mt-3 Forgot">
-                            <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
+                            <a href="#" class="forgot-link"> Forgot Password </a>
+                            <a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
                             <div>
                                 <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
 
