@@ -185,7 +185,7 @@ use RegistersUsers,
      */
     public function showRegistrationForm()
     {
-
+     
 
         $userId  = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];

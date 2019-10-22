@@ -124,11 +124,7 @@ label {
 
 .btn-primary {
 	color: #fff;
-<<<<<<< HEAD
-	background-color: #4f8cca;
-=======
 	background-color: #2a8b6a;
->>>>>>> 7bf3ab53e546433e6527bb98f0a1a396c3e84596
 	border: none;
 	border-radius: 4px;
 }
@@ -147,13 +143,7 @@ a {
 }
 
 .logo-box img {
-<<<<<<< HEAD
-
-	max-width: 150px;
-
-=======
     max-width: 100px;
->>>>>>> 7bf3ab53e546433e6527bb98f0a1a396c3e84596
 }
 
 .logo-box {

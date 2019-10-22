@@ -1,0 +1,27 @@
+  .model-center-custom > div {
+  	max-width: 530px;
+  	position: fixed;
+  	top: 50%;
+  	left: 50%;
+  	transform: translate(-50%, -50%);
+  	z-index: 99;
+  	background: $white;
+  	 
+  }
+
+  .dark-bg {
+  	position: relative;
+  	&:before {
+  		content: "";
+  		background: rgba(0, 0, 0, 0.5);
+  		width: 100%;
+  		height: 100%;
+  		position: fixed;
+  		left: 0;
+  		top: 0;
+
+  	}
+  }
+
+
+
