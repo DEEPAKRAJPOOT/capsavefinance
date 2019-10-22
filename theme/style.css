@@ -8384,11 +8384,7 @@ a.bg-dark:hover {
 }
 
 .text-primary {
-<<<<<<< HEAD
 	color: #0f9aee !important;
-=======
-	color: #2a8b6a !important;
->>>>>>> 7bf3ab53e546433e6527bb98f0a1a396c3e84596
 }
 
 a.text-primary:focus,
@@ -8587,11 +8583,7 @@ a.text-dark:hover {
 }
 
 .sidebar .nav .nav-item.active > .nav-link {
-<<<<<<< HEAD
 	background: #0f9aee;
-=======
-	background: #2a8b6a;
->>>>>>> 7bf3ab53e546433e6527bb98f0a1a396c3e84596
 }
 
 .sidebar .nav .nav-item.active > .nav-link .menu-title,
@@ -14276,19 +14268,11 @@ body.avgrund-active {
 }
 
 .navbar .navbar-brand-wrapper .navbar-brand img {
-<<<<<<< HEAD
 	width: 100%;
 	padding-right: 5px;
 	display: inline-block;
 }
 
-=======
-    width: 100%;
-    padding-right: 5px;
-    display: inline-block;
-    max-width: 67px;
-}
->>>>>>> 7bf3ab53e546433e6527bb98f0a1a396c3e84596
 .navbar .navbar-brand-wrapper {
 	padding-left: 0px;
 }

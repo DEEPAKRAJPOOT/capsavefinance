@@ -18,7 +18,11 @@
 	<div class="container-scroller ps ps--theme_default">
 		<nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
 			<div class="text-left navbar-brand-wrapper">
+<<<<<<< HEAD
 				<a class="navbar-brand brand-logo" href="login.php"><img src="images/logo.png" alt="" width="200"></a>
+=======
+				<a class="navbar-brand brand-logo" href="dashboard.php"><img src="images/logo.png" alt="" width="200"></a>
+>>>>>>> 7bf3ab53e546433e6527bb98f0a1a396c3e84596
 				<a class="navbar-brand brand-logo-mini" href="#"><img src="images/logo.png" alt=""></a>
 			</div>
 			<div class="navbar-menu-wrapper d-flex align-self-stretch align-items-center">
