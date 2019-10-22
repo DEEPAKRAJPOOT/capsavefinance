@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 22, 2019 at 03:15 PM
+-- Generation Time: Oct 22, 2019 at 05:47 PM
 -- Server version: 5.7.27-0ubuntu0.16.04.1
 -- PHP Version: 7.3.10-1+ubuntu16.04.1+deb.sury.org+1
 
@@ -64,231 +64,6 @@ CREATE TABLE `rta_activity_log` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rta_api_log`
---
-
-CREATE TABLE `rta_api_log` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `right_no` varchar(100) DEFAULT NULL,
-  `request` text,
-  `responce` text COMMENT 'responce blockchain api',
-  `source` text COMMENT 'from where api will hit',
-  `paypal_log_id` int(11) UNSIGNED DEFAULT NULL COMMENT 'Forgen key for paypal_log table',
-  `created_at` datetime NOT NULL,
-  `created_by` int(11) UNSIGNED DEFAULT NULL,
-  `updated_at` datetime NOT NULL,
-  `updated_by` int(11) UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `rta_api_log`
---
-
-INSERT INTO `rta_api_log` (`id`, `right_no`, `request`, `responce`, `source`, `paypal_log_id`, `created_at`, `created_by`, `updated_at`, `updated_by`) VALUES
-(1, '', '{"uniqueId":"jastin@sofodev.co","rightAddress":"690ee1dc81c9437f9faa19aeff8ff2671d86cf5094ac47c06fc41e17ffd50a7bab2196","cost":"1","layersPurchased":"2","buyerAddress":"2","reportTime":"2"}', '', 'onTime put Stack on right', 2, '2019-06-05 12:48:47', 2750, '2019-06-05 12:48:47', 2750),
-(2, '', '{"uniqueId":"jastin@sofodev.co","rightAddress":"690ee1dc81c9437f9faa19aeff8ff2671d86cf5094ac47c06fc41e17ffd50a7bab2196","cost":"1","layersPurchased":"2","buyerAddress":"2","reportTime":"2"}', '', 'onTime put Stack on right', 3, '2019-06-05 12:59:35', 2750, '2019-06-05 12:59:35', 2750),
-(3, '', '{"uniqueId":"jastin@sofodev.co","rightAddress":"690ee1dc81c9437f9faa19aeff8ff2671d86cf5094ac47c06fc41e17ffd50a7bab2196","cost":"1","layersPurchased":"2","buyerAddress":"2","reportTime":"2"}', '', 'onTime put Stack on right', 4, '2019-06-06 10:33:29', 2750, '2019-06-06 10:33:29', 2750),
-(4, '', '{"uniqueId":"anand.dwivedi@prolitus.com","rightAddress":"690ee1dc81c9437f9faa19aeff8ff2671d86cf5094ac47c06fc41e17ffd50a7bab2196","cost":"1","layersPurchased":"2","buyerAddress":"2","reportTime":"2"}', '', 'onTime put Stack on right', 5, '2019-06-06 11:21:47', 2650, '2019-06-06 11:21:47', 2650),
-(5, 'PatentMQWIPx1559718422', '{"rightAddress":null,"response":0,"reportTime":1559820859,"uniqueId":"jastin@sofodev.co","score":0.5}', '{"success":true,"fileHashes":[],"transaction_id":"8bbbbe996b62d02f62c9566c03a33612cda662aceca04b4d207313418b320822215e769c3545a916700409bc87e9a69e1294ecfd3d9add459ad71954f75ef5ab"}', 'Claim On Right', NULL, '2019-06-06 11:34:19', 2750, '2019-06-06 11:34:19', 2750),
-(6, '', '{"uniqueId":"fabian@sofodev.co","rightAddress":"690ee1dc81c9437f9faa19aeff8ff2671d86cf5094ac47c06fc41e17ffd50a7bab2196","cost":"1","layersPurchased":"2","buyerAddress":"2","reportTime":"2"}', '', 'onTime put Stack on right', 6, '2019-06-06 11:37:39', 2751, '2019-06-06 11:37:39', 2751),
-(7, 'PatentMQWIPx1559718422', '{"rightAddress":null,"response":0,"reportTime":1559821134,"uniqueId":"fabian@sofodev.co","score":0.575}', '{"success":true,"fileHashes":[],"transaction_id":"f732a602717db8f1d52fa4d9dfa3af8699ed65d21b49a0a67785e1a359cce2986f286dd8d31fb0f3ebdc89ba3711dd1e167f8c58c678a3569a6930b2e7500f73"}', 'Claim On Right', NULL, '2019-06-06 11:38:55', 2751, '2019-06-06 11:38:55', 2751),
-(8, '', '{"uniqueId":"martin@sofodev.co","rightAddress":"690ee1dc81c9437f9faa19aeff8ff2671d86cf5094ac47c06fc41e17ffd50a7bab2196","cost":"1","layersPurchased":"2","buyerAddress":"2","reportTime":"2"}', '', 'onTime put Stack on right', 7, '2019-06-06 11:42:38', 2748, '2019-06-06 11:42:38', 2748),
-(9, '', '{"uniqueId":"anand.dwivedi@prolitus.com","rightAddress":"690ee1dc81c9437f9faa19aeff8ff2671d86cf5094ac47c06fc41e17ffd50a7bab2196","cost":"1","layersPurchased":"2","buyerAddress":"2","reportTime":"2"}', '', 'onTime put Stack on right', 8, '2019-06-06 12:22:35', 2650, '2019-06-06 12:22:35', 2650),
-(10, 'OtherspneOK91557132283', '{"rightAddress":null,"response":0,"reportTime":1559823775,"uniqueId":"anand.dwivedi@prolitus.com","score":0.075}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-06 12:22:55', 2650, '2019-06-06 12:22:55', 2650),
-(11, '', '{"uniqueId":"jastin@sofodev.co","rightAddress":"690ee1dc81c9437f9faa19aeff8ff2671d86cf5094ac47c06fc41e17ffd50a7bab2196","cost":"1","layersPurchased":"2","buyerAddress":"2","reportTime":"2"}', '', 'onTime put Stack on right', 11, '2019-06-07 07:01:11', 2750, '2019-06-07 07:01:11', 2750),
-(12, 'Copyrightpttgum1559907701', '{"type":1,"createdAt":1559907702,"subscriptionType":0,"totalCost":899,"layerCost":5,"tradingType":1,"uniqueId":"amitg@sofodev.co","rightNumber":"Copyrightpttgum1559907701","reportTime":1559907702}', '0', 'onTime add Right', 13, '2019-06-07 11:43:07', 2765, '2019-06-07 11:43:07', 2765),
-(13, 'Copyrightpttgum1559907701', '""', 'No BlocKchain Api', 'onTime put Stack on right', 14, '2019-06-07 11:46:47', 2650, '2019-06-07 11:46:47', 2650),
-(14, 'Copyrightpttgum1559907701', '{"rightAddress":null,"response":0,"reportTime":1559908045,"uniqueId":"anand.dwivedi@prolitus.com","score":0.675}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-07 11:47:26', 2650, '2019-06-07 11:47:26', 2650),
-(15, 'Copyrightpttgum1559907701', '""', 'No BlocKchain Api', 'onTime put Stack on right', 15, '2019-06-07 11:51:57', 2637, '2019-06-07 11:51:57', 2637),
-(16, 'Copyrightpttgum1559907701', '{"rightAddress":null,"response":1,"reportTime":1559908379,"uniqueId":"harish.santwani@prolitus.com","score":0.575}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-07 11:52:59', 2637, '2019-06-07 11:52:59', 2637),
-(17, 'PatentRVKk221559629200', '{"uniqueId":"harish.santwani@prolitus.com","rightAddress":null,"cost":45,"layersPurchased":"2","buyerAddress":null,"reportTime":1559908569}', '{"success":true,"transaction_id":"4a5360c8ae389c144a138dcb982a15145f4c113808db71e668ad22895613c3455304a19c6fcdc2fe6adeeb193e1e0af3f71d55864b1caa7ab4ecafa258667cb2"}', 'onTime Buy Right', 16, '2019-06-07 11:56:37', 2637, '2019-06-07 11:56:37', 2637),
-(18, 'Copyrightpttgum1559907701', '""', 'No BlocKchain Api', 'onTime put Stack on right', 17, '2019-06-07 12:32:47', 2766, '2019-06-07 12:32:47', 2766),
-(19, 'Copyrightpttgum1559907701', '{"rightAddress":null,"response":0,"reportTime":1559911508,"uniqueId":"alex.murphy@sofodev.co","score":0.35}', '{"success":true,"fileHashes":[],"transaction_id":"34435bd34761da39f532ff512fbe5380947717fa33ee828ab7170ab5a34352e35bb1d6ab69ee6284f1f25d07a98969e16693a2fb9e148fa572939dcd1cf7c2ae"}', 'Claim On Right', NULL, '2019-06-07 12:45:08', 2766, '2019-06-07 12:45:08', 2766),
-(20, 'Copyrightpttgum1559907701', '""', 'No BlocKchain Api', 'onTime put Stack on right', 18, '2019-06-07 12:57:21', 2755, '2019-06-07 12:57:21', 2755),
-(21, 'Copyrightpttgum1559907701', '{"rightAddress":null,"response":1,"reportTime":1559912292,"uniqueId":"fokner@sofodev.co","score":1}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-07 12:58:13', 2755, '2019-06-07 12:58:13', 2755),
-(22, 'PatentRVKk221559629200', '{"uniqueId":"fokner@sofodev.co","rightAddress":null,"cost":45,"layersPurchased":"2","buyerAddress":null,"reportTime":1559916157}', '{"success":true,"transaction_id":"4b6d1fffc97e4fdd9cea909f833567e421d1e8974030bf8dfe2cc6b11c9a1d4955414200490e8c62dfea53a7b730441d83fb81ef0bc061bd0269af640f6e42c7"}', 'onTime Buy Right', 19, '2019-06-07 14:05:56', 2755, '2019-06-07 14:05:56', 2755),
-(23, 'Patentrze01H1559917239', '{"type":0,"createdAt":1559917240,"subscriptionType":0,"totalCost":1000,"layerCost":5,"tradingType":0,"uniqueId":"fokner@sofodev.co","rightNumber":"Patentrze01H1559917239","reportTime":1559917240}', '0', 'onTime add Right', 20, '2019-06-07 14:21:25', 2755, '2019-06-07 14:21:25', 2755),
-(24, 'Patentrze01H1559917239', '""', 'No BlocKchain Api', 'onTime put Stack on right', 21, '2019-06-10 08:58:23', 2757, '2019-06-10 08:58:23', 2757),
-(25, 'Patentrze01H1559917239', '{"rightAddress":null,"response":0,"reportTime":1560157303,"uniqueId":"roach@sofodev.co","score":0.75}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-10 09:01:43', 2757, '2019-06-10 09:01:43', 2757),
-(26, 'Patentrze01H1559917239', '""', 'No BlocKchain Api', 'onTime put Stack on right', 22, '2019-06-10 09:05:27', 2758, '2019-06-10 09:05:27', 2758),
-(27, 'Patentrze01H1559917239', '{"rightAddress":null,"response":0,"reportTime":1560157580,"uniqueId":"badri@sofodev.co","score":0.575}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-10 09:06:20', 2758, '2019-06-10 09:06:20', 2758),
-(28, 'Patentrze01H1559917239', '""', 'No BlocKchain Api', 'onTime put Stack on right', 23, '2019-06-10 09:13:45', 2760, '2019-06-10 09:13:45', 2760),
-(29, 'Patentrze01H1559917239', '{"rightAddress":null,"response":0,"reportTime":1560158102,"uniqueId":"morgan@sofodev.co","score":0.85}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-10 09:15:02', 2760, '2019-06-10 09:15:02', 2760),
-(30, 'Patentrze01H1559917239', '""', 'No BlocKchain Api', 'onTime put Stack on right', 24, '2019-06-10 09:20:32', 2762, '2019-06-10 09:20:32', 2762),
-(31, 'Patentrze01H1559917239', '{"rightAddress":null,"response":0,"reportTime":1560158498,"uniqueId":"ben@sofodev.co","score":0.425}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-10 09:21:38', 2762, '2019-06-10 09:21:38', 2762),
-(32, 'Patentrze01H1559917239', '""', 'No BlocKchain Api', 'onTime put Stack on right', 25, '2019-06-10 09:24:25', 2763, '2019-06-10 09:24:25', 2763),
-(33, 'Patentrze01H1559917239', '{"rightAddress":null,"response":0,"reportTime":1560158701,"uniqueId":"garbil@sofodev.co","score":0.575}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-10 09:25:01', 2763, '2019-06-10 09:25:01', 2763),
-(34, 'Patentrze01H1559917239', '""', 'No BlocKchain Api', 'onTime put Stack on right', 26, '2019-06-10 09:27:25', 2764, '2019-06-10 09:27:25', 2764),
-(35, 'Patentrze01H1559917239', '{"rightAddress":null,"response":1,"reportTime":1560158898,"uniqueId":"kavin@sofodev.co","score":1}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-10 09:28:18', 2764, '2019-06-10 09:28:18', 2764),
-(36, 'Patentrze01H1559917239', '""', 'No BlocKchain Api', 'onTime put Stack on right', 27, '2019-06-10 09:34:08', 2767, '2019-06-10 09:34:08', 2767),
-(37, 'Patentrze01H1559917239', '""', 'No BlocKchain Api', 'onTime put Stack on right', 28, '2019-06-10 09:36:52', 2753, '2019-06-10 09:36:52', 2753),
-(38, 'Patentrze01H1559917239', '{"rightAddress":null,"response":1,"reportTime":1560159465,"uniqueId":"sheldon@sofodev.co","score":0.85}', '{"success":true,"fileHashes":[],"transaction_id":"0d0963d607c81cd758991971b76b126ce38bc23fdc667ef7ac025cf24eb989173c09b77f3572fc08b497b62dc40af7e8bef6d4329cd528b83487a63fdcf13df9"}', 'Claim On Right', NULL, '2019-06-10 09:37:45', 2753, '2019-06-10 09:37:45', 2753),
-(39, 'Patentrze01H1559917239', '{"rightAddress":null,"response":1,"reportTime":1560159556,"uniqueId":"carey@sofodev.co","score":0.425}', '{"success":true,"fileHashes":[],"transaction_id":"5bd2b2c44723fc4675f816f33a106f5de582b0ac505f683658ae5c2fb522735833a6bdf77407990f6547e4d7c8d4f2d0bd05e348039004392b253fd650b26433"}', 'Claim On Right', NULL, '2019-06-10 09:39:16', 2767, '2019-06-10 09:39:16', 2767),
-(40, 'Patentrze01H1559917239', '""', 'No BlocKchain Api', 'onTime put Stack on right', 29, '2019-06-10 09:41:59', 2754, '2019-06-10 09:41:59', 2754),
-(41, 'Patentrze01H1559917239', '{"rightAddress":null,"response":1,"reportTime":1560159771,"uniqueId":"holder1@sofodev.co","score":0.65}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-10 09:42:51', 2754, '2019-06-10 09:42:51', 2754),
-(42, 'Patentrze01H1559917239', '{"uniqueId":"martin@sofodev.co","rightAddress":null,"cost":1000,"layersPurchased":"2","buyerAddress":"690ee17443b4028a6ca44e26080d97542b9857247a165a64a42e2c29e9295b9f64cbdd","reportTime":1560160791}', '{"success":true,"transaction_id":"4e91fd55c7e86758ce6beb060a653dc9d070ab633413fd908f6e7f944e39d4c1467aa5cf568ff0e48ddada7a53b8df1fb2ca31b73ac7289e45f98caed6bf036f"}', 'onTime Buy Right', 30, '2019-06-10 10:02:26', 2748, '2019-06-10 10:02:26', 2748),
-(43, 'Patentrze01H1559917239', '{"rightAddress":null,"score":0.65,"reportTime":1560166259}', '0', 'onTime Report a Right', 31, '2019-06-10 11:32:48', 2750, '2019-06-10 11:32:48', 2750),
-(44, 'Copyright6982yR1559720905', '{"rightAddress":null,"response":0,"reportTime":1560167150,"uniqueId":"jastin@sofodev.co","score":0.4}', '{"success":true,"fileHashes":[],"transaction_id":"f66c2aabdfae4d0afa2d96d960afdabd43d1683e5179928c1b47eb85eccdc0625c9dd53631c0f939ede2fbb9cbb34dc42548d5b7fd726ccfeb85b0c5f8933021"}', 'Claim On Right', NULL, '2019-06-10 11:45:50', 2750, '2019-06-10 11:45:50', 2750),
-(45, 'Patentp74yNs1558507917', '{"uniqueId":"harish.santwani@prolitus.com","rightAddress":null,"cost":488,"layersPurchased":"2","buyerAddress":null,"reportTime":1560174543}', '{"success":true,"transaction_id":"20ce12c5724e558dc66247253a7303f9aece4fc3a6c6066229068d8bf2db753626d9c55b3ce259340a769cdf2657f8648d28a149d25635b8fdb4205871fc72d7"}', 'onTime Buy Right', 32, '2019-06-10 13:49:55', 2637, '2019-06-10 13:49:55', 2637),
-(46, 'Patentp74yNs1558507917', '{"uniqueId":"harish.santwani@prolitus.com","rightAddress":null,"cost":488,"layersPurchased":"2","buyerAddress":null,"reportTime":1560174775}', '{"success":true,"transaction_id":"92240e7db5d01067d9a4c6fa536be16fb55639c0f60e3b3f2deac7fd1e66df2411c068f1004af0e4e5f0fc4a0ac7dd065daac47cefde3fb2b358dee22167ff7f"}', 'onTime Buy Right', 33, '2019-06-10 13:53:29', 2637, '2019-06-10 13:53:29', 2637),
-(47, 'PatentIEixZm1559717959', '""', 'No BlocKchain Api', 'onTime put Stack on right', 35, '2019-06-11 05:48:30', 2637, '2019-06-11 05:48:30', 2637),
-(48, 'PatentIEixZm1559717959', '{"rightAddress":null,"response":1,"reportTime":1560232189,"uniqueId":"harish.santwani@prolitus.com","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-11 05:49:49', 2637, '2019-06-11 05:49:49', 2637),
-(49, 'CopyrightuWKvSQ1559308402', '""', 'No BlocKchain Api', 'onTime put Stack on right', 36, '2019-06-11 05:53:48', 2753, '2019-06-11 05:53:48', 2753),
-(50, 'CopyrightuWKvSQ1559308402', '{"rightAddress":null,"response":0,"reportTime":1560232604,"uniqueId":"sheldon@sofodev.co","score":0.575}', '{"success":true,"fileHashes":[],"transaction_id":"81d98daa32480ceb131ca90c8cac7ff07690682ef3768c066fe0ee31b50b42786b7b95860eef0da5b4f437211273934837283550e1e2cfbd7215f38742231857"}', 'Claim On Right', NULL, '2019-06-11 05:56:44', 2753, '2019-06-11 05:56:44', 2753),
-(51, 'PatentNmmyZJ1560233717', '{"type":0,"createdAt":1560233719,"subscriptionType":0,"totalCost":2,"layerCost":5,"tradingType":0,"uniqueId":"beckehum@sofodev.co","rightNumber":"PatentNmmyZJ1560233717","reportTime":1560233719}', '0', 'onTime add Right', 37, '2019-06-11 06:17:03', 2771, '2019-06-11 06:17:03', 2771),
-(52, 'PatentNmmyZJ1560233717', '""', 'No BlocKchain Api', 'onTime put Stack on right', 41, '2019-06-11 09:48:52', 2711, '2019-06-11 09:48:52', 2711),
-(53, 'CopyrightuWKvSQ1559308402', '""', 'No BlocKchain Api', 'onTime put Stack on right', 42, '2019-06-11 10:31:56', 2711, '2019-06-11 10:31:56', 2711),
-(54, 'PatentIEixZm1559717959', '""', 'No BlocKchain Api', 'onTime put Stack on right', 44, '2019-06-11 12:55:19', 2762, '2019-06-11 12:55:19', 2762),
-(55, 'Patent4PFyAE1559216813', '""', 'No BlocKchain Api', 'onTime put Stack on right', 45, '2019-06-11 12:56:01', 2637, '2019-06-11 12:56:01', 2637),
-(56, 'Patent1qmck11560508825', '{"type":0,"createdAt":1560508827,"subscriptionType":0,"totalCost":456,"layerCost":5,"tradingType":0,"uniqueId":"shakshipandey100@gmail.com","rightNumber":"Patent1qmck11560508825","reportTime":1560508827}', '0', 'onTime add Right', 46, '2019-06-14 10:42:10', 2777, '2019-06-14 10:42:10', 2777),
-(57, 'Patent1qmck11560508825', '""', 'No BlocKchain Api', 'onTime put Stack on right', 47, '2019-06-14 11:03:50', 2740, '2019-06-14 11:03:50', 2740),
-(58, 'Patent1qmck11560508825', '{"rightAddress":null,"response":0,"reportTime":1560510262,"uniqueId":"sakshi.pandey@prolitus.com","score":0.175}', '{"success":true,"fileHashes":[],"transaction_id":"aa96e503fcd8791ac44ae2da2fe96023735fb1fb3d65ca0a683e44ac08f68f2b4725c43474866f3e0ea616644db35ee860dc9d8cfb9a0d374a8b61de2619c235"}', 'Claim On Right', NULL, '2019-06-14 11:04:23', 2740, '2019-06-14 11:04:23', 2740),
-(59, 'Patent1qmck11560508825', '""', 'No BlocKchain Api', 'onTime put Stack on right', 48, '2019-06-14 11:14:33', 2757, '2019-06-14 11:14:33', 2757),
-(60, 'Patent1qmck11560508825', '{"rightAddress":null,"response":0,"reportTime":1560510884,"uniqueId":"roach@sofodev.co","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-14 11:14:44', 2757, '2019-06-14 11:14:44', 2757),
-(61, 'Patent1qmck11560508825', '""', 'No BlocKchain Api', 'onTime put Stack on right', 49, '2019-06-14 11:18:59', 2760, '2019-06-14 11:18:59', 2760),
-(62, 'Patent1qmck11560508825', '{"rightAddress":null,"response":0,"reportTime":1560511162,"uniqueId":"morgan@sofodev.co","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-14 11:19:23', 2760, '2019-06-14 11:19:23', 2760),
-(63, 'Patent1qmck11560508825', '""', 'No BlocKchain Api', 'onTime put Stack on right', 50, '2019-06-14 11:20:35', 2762, '2019-06-14 11:20:35', 2762),
-(64, 'Patent1qmck11560508825', '{"rightAddress":null,"response":0,"reportTime":1560511244,"uniqueId":"ben@sofodev.co","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-14 11:20:45', 2762, '2019-06-14 11:20:45', 2762),
-(65, 'Patent1qmck11560508825', '""', 'No BlocKchain Api', 'onTime put Stack on right', 51, '2019-06-14 11:22:14', 2763, '2019-06-14 11:22:14', 2763),
-(66, 'Patent1qmck11560508825', '{"rightAddress":null,"response":0,"reportTime":1560511355,"uniqueId":"garbil@sofodev.co","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-14 11:22:36', 2763, '2019-06-14 11:22:36', 2763),
-(67, 'Patent1qmck11560508825', '""', 'No BlocKchain Api', 'onTime put Stack on right', 52, '2019-06-14 11:23:54', 2764, '2019-06-14 11:23:54', 2764),
-(68, 'Patent1qmck11560508825', '{"rightAddress":null,"response":0,"reportTime":1560511455,"uniqueId":"kavin@sofodev.co","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-14 11:24:16', 2764, '2019-06-14 11:24:16', 2764),
-(69, 'Patent1qmck11560508825', '""', 'No BlocKchain Api', 'onTime put Stack on right', 53, '2019-06-14 11:25:19', 2767, '2019-06-14 11:25:19', 2767),
-(70, 'Patent1qmck11560508825', '{"rightAddress":null,"response":0,"reportTime":1560511529,"uniqueId":"carey@sofodev.co","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-14 11:25:30', 2767, '2019-06-14 11:25:30', 2767),
-(71, 'Patent1qmck11560508825', '""', 'No BlocKchain Api', 'onTime put Stack on right', 54, '2019-06-14 11:27:00', 2753, '2019-06-14 11:27:00', 2753),
-(72, 'Patent1qmck11560508825', '{"rightAddress":null,"response":0,"reportTime":1560511656,"uniqueId":"sheldon@sofodev.co","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-14 11:27:36', 2753, '2019-06-14 11:27:36', 2753),
-(73, 'Patent1qmck11560508825', '""', 'No BlocKchain Api', 'onTime put Stack on right', 55, '2019-06-14 11:29:00', 2754, '2019-06-14 11:29:00', 2754),
-(74, 'Patent1qmck11560508825', '{"rightAddress":null,"response":0,"reportTime":1560511761,"uniqueId":"holder1@sofodev.co","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-14 11:29:22', 2754, '2019-06-14 11:29:22', 2754),
-(75, 'Patent1qmck11560508825', '{"uniqueId":"braken@sofodev.co","rightAddress":null,"cost":"1824","layersPurchased":"2","buyerAddress":null,"reportTime":1560511955}', '{"success":true,"transaction_id":"46e8325b922dcb2c93ce6c49d9dc2c554c91c33e63a1ddfafedcf03a3dc7d8c803866efb7774d78c32c1b3d8f045d885fcf38cfc725311d46c66d308e083616b"}', 'onTime Buy Right', 56, '2019-06-14 11:33:19', 2769, '2019-06-14 11:33:19', 2769),
-(76, 'Patent11go4F1560515207', '{"type":0,"createdAt":1560515208,"subscriptionType":0,"totalCost":2,"layerCost":5,"tradingType":0,"uniqueId":"nikolas@sofodev.co","rightNumber":"Patent11go4F1560515207","reportTime":1560515208}', '0', 'onTime add Right', 57, '2019-06-14 12:27:35', 2689, '2019-06-14 12:27:35', 2689),
-(77, 'Patent11go4F1560515207', '""', 'No BlocKchain Api', 'onTime put Stack on right', 58, '2019-06-14 12:29:30', 2688, '2019-06-14 12:29:30', 2688),
-(78, 'Patent11go4F1560515207', '""', 'No BlocKchain Api', 'onTime put Stack on right', 59, '2019-06-14 12:41:51', 2682, '2019-06-14 12:41:51', 2682),
-(79, 'OthersJXExne1560769218', '{"type":4,"createdAt":1560769221,"subscriptionType":0,"totalCost":23,"layerCost":5,"tradingType":0,"uniqueId":"nikolas@sofodev.co","rightNumber":"OthersJXExne1560769218","reportTime":1560769221}', '0', 'onTime add Right', 60, '2019-06-17 11:14:20', 2689, '2019-06-17 11:14:20', 2689),
-(80, 'OthersJXExne1560769218', '""', 'No BlocKchain Api', 'onTime put Stack on right', 61, '2019-06-17 11:15:54', 2688, '2019-06-17 11:15:54', 2688),
-(81, 'Patentgik5zX1559123802', '{"uniqueId":"alan@sofodev.co","rightAddress":null,"cost":"25","layersPurchased":"2","buyerAddress":null,"reportTime":1560772815}', '{"success":true,"transaction_id":"0b8e48e958f1322ffae95b32d759d26e5069e4f8ac08b1b9d6da50c6916a07e247fe4976ad9c2747eb257d4c4ffdeeea24e46f3256b1cb109efacd18577dae6e"}', 'onTime Buy Right', 62, '2019-06-17 12:01:02', 2688, '2019-06-17 12:01:02', 2688),
-(82, 'CopyrightYx5HIJ1557904769', '{"uniqueId":"alan@sofodev.co","rightAddress":null,"cost":"200","layersPurchased":"2","buyerAddress":null,"reportTime":1560773091}', '{"success":true,"transaction_id":"0e128200e3547912c88d5b7d0cc008636d209441adde8790136133c68e7f3f8c418c2c4bc2c1d483f64275309b3242efe5c45de98aea9bdfafad001fd690a880"}', 'onTime Buy Right', 63, '2019-06-17 12:05:26', 2688, '2019-06-17 12:05:26', 2688),
-(83, 'Copyrightpttgum1559907701', '{"uniqueId":"flaming@sofodev.co","rightAddress":null,"cost":"1798","layersPurchased":"2","buyerAddress":null,"reportTime":1560773623}', '{"success":true,"transaction_id":"e172dffbd2cb0fdaea03485b44371685fc9ac75e8ea242209a2d28da10ab7c8c3ea8b3337a2d9e52023dd0eb53fceb4f99bf652bd2519d2f60a94f9afa2a4e02"}', 'onTime Buy Right', 64, '2019-06-17 12:14:18', 2682, '2019-06-17 12:14:18', 2682),
-(84, 'PatentMQWIPx1559718422', '{"uniqueId":"nikolas@sofodev.co","rightAddress":null,"cost":"375","layersPurchased":"2","buyerAddress":null,"reportTime":1560773899}', '{"success":true,"transaction_id":"5b51ba811d7e6ea4f515fc59daf81d623c9f723af1da82c37448d8261e6f067771cc99c8f05656a6a50bbe74c6063ff2596cff12f4e33b4ecdfeea67adefc044"}', 'onTime Buy Right', 65, '2019-06-17 12:19:20', 2689, '2019-06-17 12:19:20', 2689),
-(85, 'Trademarkq7h5ty1560843500', '{"type":2,"createdAt":1560843501,"subscriptionType":0,"totalCost":333,"layerCost":5,"tradingType":0,"uniqueId":"braken@sofodev.co","rightNumber":"Trademarkq7h5ty1560843500","reportTime":1560843501}', '0', 'onTime add Right', 66, '2019-06-18 07:39:20', 2769, '2019-06-18 07:39:20', 2769),
-(86, 'UnregisteredIPaogjRL1560848016', '{"type":3,"createdAt":1560848017,"subscriptionType":0,"totalCost":3,"layerCost":5,"tradingType":0,"uniqueId":"braken@sofodev.co","rightNumber":"UnregisteredIPaogjRL1560848016","reportTime":1560848017}', '0', 'onTime add Right', 67, '2019-06-18 08:54:10', 2769, '2019-06-18 08:54:10', 2769),
-(87, 'UnregisteredIPxldktW1560848128', '{"type":3,"createdAt":1560848128,"subscriptionType":0,"totalCost":3,"layerCost":5,"tradingType":0,"uniqueId":"braken@sofodev.co","rightNumber":"UnregisteredIPxldktW1560848128","reportTime":1560848128}', '0', 'onTime add Right', 68, '2019-06-18 08:55:51', 2769, '2019-06-18 08:55:51', 2769),
-(88, 'Copyright6LpMQq1560849221', '{"type":1,"createdAt":1560849222,"subscriptionType":0,"totalCost":54,"layerCost":5,"tradingType":0,"uniqueId":"braken@sofodev.co","rightNumber":"Copyright6LpMQq1560849221","reportTime":1560849222}', '0', 'onTime add Right', 69, '2019-06-18 09:14:25', 2769, '2019-06-18 09:14:25', 2769),
-(89, 'UnregisteredIPjnjFcr1560850259', '{"type":3,"createdAt":1560850259,"subscriptionType":0,"totalCost":50,"layerCost":5,"tradingType":0,"uniqueId":"nikolas@sofodev.co","rightNumber":"UnregisteredIPjnjFcr1560850259","reportTime":1560850259}', '0', 'onTime add Right', 70, '2019-06-18 09:31:37', 2689, '2019-06-18 09:31:37', 2689),
-(90, 'PatentjDHghU1560850850', '{"type":0,"createdAt":1560850850,"subscriptionType":0,"totalCost":50,"layerCost":5,"tradingType":1,"uniqueId":"nikolas@sofodev.co","rightNumber":"PatentjDHghU1560850850","reportTime":1560850850}', '0', 'onTime add Right', 71, '2019-06-18 09:41:21', 2689, '2019-06-18 09:41:21', 2689),
-(91, 'PatentjDHghU1560850850', '""', 'No BlocKchain Api', 'onTime put Stack on right', 74, '2019-06-20 09:59:25', 2688, '2019-06-20 09:59:25', 2688),
-(92, 'PatentjDHghU1560850850', '{"rightAddress":null,"response":0,"reportTime":1561024814,"uniqueId":"alan@sofodev.co","score":0.5}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-20 10:00:15', 2688, '2019-06-20 10:00:15', 2688),
-(93, 'PatentjDHghU1560850850', '""', 'No BlocKchain Api', 'onTime put Stack on right', 75, '2019-06-20 10:02:41', 2682, '2019-06-20 10:02:41', 2682),
-(94, 'PatentjDHghU1560850850', '""', 'No BlocKchain Api', 'onTime put Stack on right', 76, '2019-06-20 10:04:38', 2667, '2019-06-20 10:04:38', 2667),
-(95, 'PatentjDHghU1560850850', '""', 'No BlocKchain Api', 'onTime put Stack on right', 77, '2019-06-20 10:07:16', 2666, '2019-06-20 10:07:16', 2666),
-(96, 'UnregisteredIPjnjFcr1560850259', '""', 'No BlocKchain Api', 'onTime put Stack on right', 78, '2019-06-20 10:09:03', 2666, '2019-06-20 10:09:03', 2666),
-(97, 'UnregisteredIPjnjFcr1560850259', '{"rightAddress":null,"response":0,"reportTime":1561025386,"uniqueId":"Rai27@sofodev.co","score":0.575}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-20 10:09:47', 2666, '2019-06-20 10:09:47', 2666),
-(98, 'UnregisteredIPjnjFcr1560850259', '""', 'No BlocKchain Api', 'onTime put Stack on right', 79, '2019-06-20 10:12:20', 2667, '2019-06-20 10:12:20', 2667),
-(99, 'UnregisteredIPjnjFcr1560850259', '{"rightAddress":null,"response":1,"reportTime":1561025605,"uniqueId":"rajesh@sofodev.co","score":1}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-20 10:13:25', 2667, '2019-06-20 10:13:25', 2667),
-(100, 'PatentjDHghU1560850850', '{"uniqueId":"flaming@sofodev.co","rightAddress":null,"cost":"100","layersPurchased":"2","buyerAddress":null,"reportTime":1561025691}', '{"success":true,"transaction_id":"8fc0d0b9a45a20768e8d18296ad1a54e8647a1a2c2bfa7caab4b55766debcad57ed48d55b9c39c8f3a9df655a3e48f9a51c366829752784949eb7cd1cdc9994a"}', 'onTime Buy Right', 81, '2019-06-20 10:16:28', 2682, '2019-06-20 10:16:28', 2682),
-(101, 'CopyrightuWKvSQ1559308402', '{"uniqueId":"alan@sofodev.co","rightAddress":null,"cost":"12","layersPurchased":"2","buyerAddress":null,"reportTime":1561026032}', '{"success":true,"transaction_id":"dbd499fbf69a2bec5af3e02507e12aef55158caf1558979788ce237c7906ddc75c16edc9b7c5e16edff44d9eeda42b1e15db50c6222c96f5b4a3f0d69789cb66"}', 'onTime Buy Right', 82, '2019-06-20 10:21:51', 2688, '2019-06-20 10:21:51', 2688),
-(102, 'PatentRVKk221559629200', '{"uniqueId":"harisrechard@sofodev.co","rightAddress":null,"cost":"540","layersPurchased":"2","buyerAddress":null,"reportTime":1561030129}', '{"success":true,"transaction_id":"46566a5dda5c248cd037ec90545aaeca13163f20b81d34fa1660704826dbbb716bac34c5a194989013bea7acf7b5c2e44498471895bf67708409e95b8c61bdd1"}', 'onTime Buy Right', 83, '2019-06-20 11:29:48', 2705, '2019-06-20 11:29:48', 2705),
-(103, 'PatentllUhAM1558683835', '{"uniqueId":"harisrechard@sofodev.co","rightAddress":null,"cost":"76","layersPurchased":"2","buyerAddress":null,"reportTime":1561030280}', '{"success":true,"transaction_id":"096f0dbf26273367cdf7a0c018a7546b7bc1c6211813ce945636a76cf32b5a58419b38e367f4c7cacd579f0b04bf140c4133d11ed1113876410a88640e861eda"}', 'onTime Buy Right', 84, '2019-06-20 11:31:47', 2705, '2019-06-20 11:31:47', 2705),
-(104, 'PatentWZS9ou1559307922', '{"uniqueId":"harisrechard@sofodev.co","rightAddress":null,"cost":"1290","layersPurchased":"2","buyerAddress":null,"reportTime":1561030472}', '{"success":true,"transaction_id":"f5e051cb947912e67e9fc8ad8119c0f32573ef0c012b0df13b8a29a579e320cd2751aae63e28ca6be7091833fe4073b3b833864a6e02c5d76dea797a3cce4178"}', 'onTime Buy Right', 85, '2019-06-20 11:34:59', 2705, '2019-06-20 11:34:59', 2705),
-(105, 'CopyrightcUp3bi1561050977', '{"type":1,"createdAt":1561050978,"subscriptionType":0,"totalCost":200,"layerCost":5,"tradingType":0,"uniqueId":"bolt@sofodev.co","rightNumber":"CopyrightcUp3bi1561050977","reportTime":1561050978}', '0', 'onTime add Right', 88, '2019-06-20 17:17:28', 2790, '2019-06-20 17:17:28', 2790),
-(106, 'PatentQPbGaV1561100511', '{"type":0,"createdAt":1561100512,"subscriptionType":0,"totalCost":0,"layerCost":5,"tradingType":-1,"uniqueId":"flaming@sofodev.co","rightNumber":"PatentQPbGaV1561100511","reportTime":1561100512}', '0', 'onTime add Right', 89, '2019-06-21 07:03:59', 2682, '2019-06-21 07:03:59', 2682),
-(107, 'CopyrightdZdQiH1561363410', '{"type":1,"createdAt":1561363411,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"sakshi.pandey@prolitus.com","rightNumber":"CopyrightdZdQiH1561363410","reportTime":1561363411}', '0', 'onTime add Right', 90, '2019-06-24 08:04:23', 2740, '2019-06-24 08:04:23', 2740),
-(108, 'Copyright6LpMQq1560849221', '""', 'No BlocKchain Api', 'onTime put Stack on right', 91, '2019-06-24 09:07:23', 2682, '2019-06-24 09:07:23', 2682),
-(109, 'Copyright6LpMQq1560849221', '""', 'No BlocKchain Api', 'onTime put Stack on right', 92, '2019-06-24 09:10:17', 2689, '2019-06-24 09:10:17', 2689),
-(110, 'Copyright6LpMQq1560849221', '{"rightAddress":null,"response":0,"reportTime":1561368473,"uniqueId":"nikolas@sofodev.co","score":0.5}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-24 09:27:54', 2689, '2019-06-24 09:27:54', 2689),
-(111, 'Copyrightt50jGp1561369217', '{"type":1,"createdAt":1561369219,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"sakshi.pandey@prolitus.com","rightNumber":"Copyrightt50jGp1561369217","reportTime":1561369219}', '0', 'onTime add Right', 93, '2019-06-24 09:40:54', 2740, '2019-06-24 09:40:54', 2740),
-(112, 'UnregisteredIPxldktW1560848128', '""', 'No BlocKchain Api', 'onTime put Stack on right', 94, '2019-06-24 09:44:43', 2740, '2019-06-24 09:44:43', 2740),
-(113, 'UnregisteredIPxldktW1560848128', '{"rightAddress":null,"response":0,"reportTime":1561369500,"uniqueId":"sakshi.pandey@prolitus.com","score":0.175}', '{"success":true,"fileHashes":[],"transaction_id":"ee8a0498b080f0b67bfe80b4dabfebda433c08fe91ec8bdc1f195ccb35308fa619ddd26d722c474177b0e2c2244e37dfde7bba4e79104e95a3b5aefa6be88c9b"}', 'Claim On Right', NULL, '2019-06-24 09:45:00', 2740, '2019-06-24 09:45:00', 2740),
-(114, 'OthersJXExne1560769218', '""', 'No BlocKchain Api', 'onTime put Stack on right', 95, '2019-06-24 09:52:43', 2740, '2019-06-24 09:52:43', 2740),
-(115, 'OthersJXExne1560769218', '{"rightAddress":null,"response":0,"reportTime":1561369973,"uniqueId":"sakshi.pandey@prolitus.com","score":0.175}', '{"success":true,"fileHashes":[],"transaction_id":"7f8c64b42d94e6702b34ea54164fa9ee9f2d637a76c49b009334cc0bbcfc42ad53191263462b9f19ffbf7b7ea964f2b1b01aff4712c92e4bfa54619db4f2389e"}', 'Claim On Right', NULL, '2019-06-24 09:52:54', 2740, '2019-06-24 09:52:54', 2740),
-(116, 'Copyright6LpMQq1560849221', '""', 'No BlocKchain Api', 'onTime put Stack on right', 96, '2019-06-24 09:53:21', 2667, '2019-06-24 09:53:21', 2667),
-(117, 'Copyright6LpMQq1560849221', '{"rightAddress":null,"response":0,"reportTime":1561370028,"uniqueId":"rajesh@sofodev.co","score":0.5}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-24 09:53:48', 2667, '2019-06-24 09:53:48', 2667),
-(118, 'UnregisteredIPVpI4Vf1561375577', '{"type":3,"createdAt":1561375580,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"sakshi.pandey@prolitus.com","rightNumber":"UnregisteredIPVpI4Vf1561375577","reportTime":1561375580}', '0', 'onTime add Right', 97, '2019-06-24 11:27:30', 2740, '2019-06-24 11:27:30', 2740),
-(119, 'UnregisteredIPaogjRL1560848016', '""', 'No BlocKchain Api', 'onTime put Stack on right', 98, '2019-06-24 11:28:21', 2740, '2019-06-24 11:28:21', 2740),
-(120, 'UnregisteredIPaogjRL1560848016', '{"rightAddress":null,"response":0,"reportTime":1561375784,"uniqueId":"sakshi.pandey@prolitus.com","score":0.175}', '{"success":true,"fileHashes":[],"transaction_id":"7c62901b4e1d07e9a8dc13edf483d1a0f0620b4050a0e1a95fd9d002828f8c1d7f681f72fb87644c3803b8643c28ec4c159ad2ef0ca0a147062276f87067722b"}', 'Claim On Right', NULL, '2019-06-24 11:29:44', 2740, '2019-06-24 11:29:44', 2740),
-(121, 'PatentDQYu3O1561381498', '{"type":0,"createdAt":1561381500,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"PatentDQYu3O1561381498","reportTime":1561381500}', '0', 'onTime add Right', 99, '2019-06-24 13:06:01', 2682, '2019-06-24 13:06:01', 2682),
-(122, 'Copyrightpttgum1559907701', '{"rightAddress":null,"score":1,"reportTime":1561454683}', '{"success":false,"error":"\'/scoutRight\' request body | uniqueId required."}', 'onTime Report a Right', 100, '2019-06-25 09:25:32', 2682, '2019-06-25 09:25:32', 2682),
-(123, 'PatentRVKk221559629200', '{"rightAddress":null,"score":1,"reportTime":1561460318}', '{"success":false,"error":"\'/scoutRight\' request body | uniqueId required."}', 'onTime Report a Right', 102, '2019-06-25 10:59:40', 2667, '2019-06-25 10:59:40', 2667),
-(124, 'Patent70YVax1561463276', '{"type":0,"createdAt":1561463279,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"Patent70YVax1561463276","reportTime":1561463279}', '0', 'onTime add Right', 103, '2019-06-25 11:48:47', 2682, '2019-06-25 11:48:47', 2682),
-(125, 'PatentqkG8IU1561463449', '{"type":0,"createdAt":1561463453,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"PatentqkG8IU1561463449","reportTime":1561463453}', '0', 'onTime add Right', 104, '2019-06-25 11:51:24', 2682, '2019-06-25 11:51:24', 2682),
-(126, 'Trademarkq7h5ty1560843500', '""', 'No BlocKchain Api', 'onTime put Stack on right', 105, '2019-06-25 11:52:43', 2682, '2019-06-25 11:52:43', 2682),
-(127, 'Patent3yE6sh1561463635', '{"type":0,"createdAt":1561463637,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"Patent3yE6sh1561463635","reportTime":1561463637}', '0', 'onTime add Right', 106, '2019-06-25 11:54:28', 2682, '2019-06-25 11:54:28', 2682),
-(128, 'Trademarkq7h5ty1560843500', '{"rightAddress":null,"response":0,"reportTime":1561463993,"uniqueId":"flaming@sofodev.co","score":0.5}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-25 11:59:54', 2682, '2019-06-25 11:59:54', 2682),
-(129, 'PatentsMRqwn1561464074', '{"type":0,"createdAt":1561464080,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"PatentsMRqwn1561464074","reportTime":1561464080}', '0', 'onTime add Right', 107, '2019-06-25 12:01:55', 2682, '2019-06-25 12:01:55', 2682),
-(130, 'PatentksHl1z1561464278', '{"type":0,"createdAt":1561464281,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"PatentksHl1z1561464278","reportTime":1561464281}', '0', 'onTime add Right', 108, '2019-06-25 12:05:53', 2682, '2019-06-25 12:05:53', 2682),
-(131, 'PatentDUFJVQ1561464450', '{"type":0,"createdAt":1561464454,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"PatentDUFJVQ1561464450","reportTime":1561464454}', '0', 'onTime add Right', 109, '2019-06-25 12:08:03', 2682, '2019-06-25 12:08:03', 2682),
-(132, 'Patent1voUn51561466514', '{"type":0,"createdAt":1561466517,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"Patent1voUn51561466514","reportTime":1561466517}', '0', 'onTime add Right', 110, '2019-06-25 12:43:22', 2682, '2019-06-25 12:43:22', 2682),
-(133, 'PatentPkLAYF1561466669', '{"type":0,"createdAt":1561466674,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"PatentPkLAYF1561466669","reportTime":1561466674}', '0', 'onTime add Right', 111, '2019-06-25 12:45:21', 2682, '2019-06-25 12:45:21', 2682),
-(134, 'PatentPkLAYF1561466669', '""', 'No BlocKchain Api', 'onTime put Stack on right', 112, '2019-06-25 12:51:22', 2753, '2019-06-25 12:51:22', 2753),
-(135, 'PatentPkLAYF1561466669', '{"rightAddress":null,"response":0,"reportTime":1561467101,"uniqueId":"sheldon@sofodev.co","score":0.175}', '{"success":false,"error":"Private key for the user doesn\'t exist!"}', 'Claim On Right', NULL, '2019-06-25 12:51:41', 2753, '2019-06-25 12:51:41', 2753),
-(136, 'PatentozxQFu1561468357', '{"type":0,"createdAt":1561468360,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"PatentozxQFu1561468357","reportTime":1561468360}', '0', 'onTime add Right', 113, '2019-06-25 13:13:29', 2682, '2019-06-25 13:13:29', 2682),
-(137, 'PatentjDHghU1560850850', '{"uniqueId":"buyer@sofodev.co","rightAddress":null,"cost":"100","layersPurchased":"2","buyerAddress":null,"reportTime":1561528019}', '{"success":true,"transaction_id":"070347d6bc99365cd3084d2e91ef81e17ba030243988033c5c1a0d15da9917091f0a9e9a2a0dad09836f7994fa3c369a4f2b1cf1f93937d724ea554bb8d64f04"}', 'onTime Buy Right', 114, '2019-06-26 05:47:42', 2808, '2019-06-26 05:47:42', 2808),
-(138, 'Patentt5PFfO1561528168', '{"type":0,"createdAt":1561528172,"subscriptionType":0,"totalCost":12,"exclusiveTermsCost":12,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":12,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":0,"uniqueId":"flaming@sofodev.co","rightNumber":"Patentt5PFfO1561528168","reportTime":1561528172}', '0', 'onTime add Right', 115, '2019-06-26 05:50:20', 2682, '2019-06-26 05:50:20', 2682),
-(139, 'Patent7TjsoR1561532199', '{"type":0,"createdAt":1561532209,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":567,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":null,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"sheldon@sofodev.co","rightNumber":"Patent7TjsoR1561532199","reportTime":1561532209}', '{"success":false,"error":{"error":"connect ECONNREFUSED 0.0.0.0:5002"}}', 'onTime add Right', 116, '2019-06-26 06:57:32', 2753, '2019-06-26 06:57:32', 2753),
-(140, 'PatentqDcRUQ1561532898', '{"type":0,"createdAt":1561532902,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":250,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"80","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"holdernew@sofodev.co","rightNumber":"PatentqDcRUQ1561532898","reportTime":1561532902}', '{"success":false,"error":{"error":"connect ECONNREFUSED 0.0.0.0:5002"}}', 'onTime add Right', 117, '2019-06-26 07:09:32', 2809, '2019-06-26 07:09:32', 2809),
-(141, 'Trademark0Ebbul1561535306', '{"type":2,"createdAt":1561535310,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":0,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"444","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"sheldon@sofodev.co","rightNumber":"Trademark0Ebbul1561535306","reportTime":1561535310}', '0', 'onTime add Right', 118, '2019-06-26 07:50:09', 2753, '2019-06-26 07:50:09', 2753),
-(142, 'PatentnCgm8Z1561535681', '{"type":0,"createdAt":1561535682,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":300,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"50","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"flaming@sofodev.co","rightNumber":"PatentnCgm8Z1561535681","reportTime":1561535682}', '0', 'onTime add Right', 119, '2019-06-26 07:56:34', 2682, '2019-06-26 07:56:34', 2682),
-(143, 'Patentw9GyVW1561536269', '""', 'No BlocKchain Api', 'onTime put Stack on right', 120, '2019-06-26 08:08:46', 2689, '2019-06-26 08:08:46', 2689),
-(144, 'PatentTyQodX1561541918', '{"type":0,"createdAt":1561541919,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":500,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"50","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"holder3@sofodev.co","rightNumber":"PatentTyQodX1561541918","reportTime":1561541919}', '{"success":true,"fileHashes":[{"layerFileHash":"QmVEA8qmXDiqhjBMQLjHNghttPP8YMnsujYxDZKUuBBA5U","adminKeyHash":"Qmej5QC3X9RkukWXLkULykrpyiZgJAXHcfGBjjP6DkhrT9"}],"publicLayerHash":"","transaction_id":"7039e66a4dd77fd49548dbc5866e9da3f3afd26549ee4d7a389c296caeae353402f6f65302ad230cf97b8960d9c00708b8087da00cb4d9659340efc7f697f19a"}', 'onTime add Right', 121, '2019-06-26 09:39:31', 2810, '2019-06-26 09:39:31', 2810),
-(145, NULL, '["holder4@sofodev.co",1]', '200', 'onTime Enrolment User', NULL, '2019-06-26 10:31:48', 0, '2019-06-26 10:31:48', 0),
-(146, 'PatentTyQodX1561541918', '""', 'No BlocKchain Api', 'onTime put Stack on right', 122, '2019-06-26 10:42:01', 2753, '2019-06-26 10:42:01', 2753),
-(147, 'PatentE3imPI1561528484', '""', 'No BlocKchain Api', 'onTime put Stack on right', 123, '2019-06-26 10:45:40', 2753, '2019-06-26 10:45:40', 2753),
-(148, NULL, '["Holder5@sofodev.co",1]', '{"success":true,"transaction_id":"06fa87f95729590438619eb8bb659c66dd191da4e2fb2a29813475ae6cfbd0ee6d9658e05fb60df20629fb04f5c4266da53fc484ee3e212bb90ef44382687bc0"}', 'onTime Enrolment User', NULL, '2019-06-26 11:03:44', 0, '2019-06-26 11:03:44', 0),
-(149, 'TrademarkAkyU2S1561547050', '{"type":2,"createdAt":1561547051,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":777,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":null,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"shakshipandey100@gmail.com","rightNumber":"TrademarkAkyU2S1561547050","reportTime":1561547051}', '{"success":true,"fileHashes":[{"layerFileHash":"QmeFBpSLyK3UfS6sDpiKxJPrcs6mWGvD4PGf1Em1UQzFCG","adminKeyHash":"QmS4io4k6TxvK4maXuzpkcPE9B9S5wn23DnmefCmJMLoLE"}],"publicLayerHash":"","transaction_id":"b50f74792023c82cfab844c0189d98f9578db6911bdc90d1ec313cee184ed15439da6a1390fe39b8556ec87cc76cc715bae45cef94101dfe81a1a7d77c866272"}', 'onTime add Right', 124, '2019-06-26 11:05:13', 2777, '2019-06-26 11:05:13', 2777),
-(150, 'TrademarkeYxOFa1561547648', '""', 'No BlocKchain Api', 'onTime put Stack on right', 125, '2019-06-26 11:17:36', 2753, '2019-06-26 11:17:36', 2753),
-(151, NULL, '["tayer@sofodev.co",1]', '{"success":true,"transaction_id":"1223a12300e10c0df3e0bce49a934ca3d3186cc6721b7e17f9a881664df598bc5e0cd9a6493cc2a1143cf8a3a2004a51186a6dbc48307f41044a6e894c779172"}', 'onTime Enrolment User', NULL, '2019-06-26 11:20:05', 0, '2019-06-26 11:20:05', 0),
-(152, 'Copyrightz1isrO1561557956', '{"type":1,"createdAt":1561557957,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":333,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":null,"nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"sheldon@sofodev.co","rightNumber":"Copyrightz1isrO1561557956","reportTime":1561557957}', '{"success":false,"error":{"error":"connect ECONNREFUSED 0.0.0.0:5002"}}', 'onTime add Right', 126, '2019-06-26 14:06:34', 2753, '2019-06-26 14:06:34', 2753),
-(153, 'PatentjDHghU1560850850', '{"uniqueId":"harish.santwani@prolitus.com","rightAddress":null,"cost":"100","layersPurchased":"2","buyerAddress":null,"reportTime":1561559273}', '{"success":true,"transaction_id":"ae7de86f1bbbd20e5461d2b43a6e99515328be0c59a5c06f67daa3c4af6f65da638120cabf52fb02d4fd69def6014866c6c73911040ccd1c1d3e292b38ec38b7"}', 'onTime Buy Right', 127, '2019-06-26 14:28:26', 2637, '2019-06-26 14:28:26', 2637),
-(154, 'UnregisteredIPjnjFcr1560850259', '{"uniqueId":"shakshipandey100@gmail.com","rightAddress":null,"cost":"150","layersPurchased":"2","buyerAddress":null,"reportTime":1561615294}', '0', 'onTime Buy Right', 128, '2019-06-27 06:02:18', 2777, '2019-06-27 06:02:18', 2777),
-(155, 'PatentB1g77E1561615363', '{"type":0,"createdAt":1561615366,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":0,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"190","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"nikolas@sofodev.co","rightNumber":"PatentB1g77E1561615363","reportTime":1561615366}', '0', 'onTime add Right', 129, '2019-06-27 06:03:29', 2689, '2019-06-27 06:03:29', 2689),
-(156, 'Copyrightpttgum1559907701', '{"uniqueId":"shakshipandey100@gmail.com","rightAddress":null,"cost":"3596","layersPurchased":"2","buyerAddress":null,"reportTime":1561615502}', '0', 'onTime Buy Right', 130, '2019-06-27 06:05:37', 2777, '2019-06-27 06:05:37', 2777),
-(157, 'PatentIsDQAN1561615861', '""', 'No BlocKchain Api', 'onTime put Stack on right', 131, '2019-06-27 06:15:27', 2688, '2019-06-27 06:15:27', 2688),
-(158, 'TrademarkbEcIFM1561616200', '{"type":2,"createdAt":1561616202,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":600,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"599","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"shakshipandey100@gmail.com","rightNumber":"TrademarkbEcIFM1561616200","reportTime":1561616202}', '0', 'onTime add Right', 132, '2019-06-27 06:18:00', 2777, '2019-06-27 06:18:00', 2777),
-(159, 'TrademarkbEcIFM1561616200', '""', 'No BlocKchain Api', 'onTime put Stack on right', 133, '2019-06-27 06:19:37', 2637, '2019-06-27 06:19:37', 2637),
-(160, 'TrademarkbEcIFM1561616200', '{"rightAddress":null,"response":0,"reportTime":1561616417,"uniqueId":"harish.santwani@prolitus.com","score":0.175}', '0', 'Claim On Right', NULL, '2019-06-27 06:20:17', 2637, '2019-06-27 06:20:17', 2637),
-(161, 'Patent5uPGiw1561616375', '{"type":0,"createdAt":1561616377,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":80,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"40","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"nikolas@sofodev.co","rightNumber":"Patent5uPGiw1561616375","reportTime":1561616377}', '0', 'onTime add Right', 134, '2019-06-27 06:20:47', 2689, '2019-06-27 06:20:47', 2689),
-(162, 'TrademarkbEcIFM1561616200', '""', 'No BlocKchain Api', 'onTime put Stack on right', 135, '2019-06-27 06:22:02', 2762, '2019-06-27 06:22:02', 2762),
-(163, 'TrademarkbEcIFM1561616200', '{"rightAddress":null,"response":0,"reportTime":1561616549,"uniqueId":"ben@sofodev.co","score":0.175}', '0', 'Claim On Right', NULL, '2019-06-27 06:22:29', 2762, '2019-06-27 06:22:29', 2762),
-(164, 'TrademarkbEcIFM1561616200', '""', 'No BlocKchain Api', 'onTime put Stack on right', 136, '2019-06-27 06:24:08', 2767, '2019-06-27 06:24:08', 2767),
-(165, 'TrademarkbEcIFM1561616200', '{"rightAddress":null,"response":0,"reportTime":1561616676,"uniqueId":"carey@sofodev.co","score":0.175}', '0', 'Claim On Right', NULL, '2019-06-27 06:24:36', 2767, '2019-06-27 06:24:36', 2767),
-(166, 'PatentUquQKL1561617126', '""', 'No BlocKchain Api', 'onTime put Stack on right', 138, '2019-06-27 06:34:38', 2689, '2019-06-27 06:34:38', 2689),
-(167, 'TrademarkbEcIFM1561616200', '""', 'No BlocKchain Api', 'onTime put Stack on right', 139, '2019-06-27 06:44:03', 2682, '2019-06-27 06:44:03', 2682),
-(168, 'PatentXJuBGh1559309192', '{"uniqueId":"nikolas@sofodev.co","rightAddress":null,"cost":"1431","layersPurchased":"2","buyerAddress":null,"reportTime":1561618626}', '0', 'onTime Buy Right', 140, '2019-06-27 06:57:54', 2689, '2019-06-27 06:57:54', 2689),
-(169, NULL, '["testingbinay@sofodev.co",1]', '0', 'onTime Enrolment User', NULL, '2019-06-27 07:45:23', 0, '2019-06-27 07:45:23', 0),
-(170, 'Patent69UAxr1559537925', '{"uniqueId":"flaming@sofodev.co","rightAddress":null,"cost":"1000","layersPurchased":"2","buyerAddress":null,"reportTime":1561623957}', '0', 'onTime Buy Right', 141, '2019-06-27 08:26:45', 2682, '2019-06-27 08:26:45', 2682),
-(171, 'TrademarkbEcIFM1561616200', '{"rightAddress":null,"response":0,"reportTime":1561626517,"uniqueId":"flaming@sofodev.co","score":0.175}', '0', 'Claim On Right', NULL, '2019-06-27 09:08:37', 2682, '2019-06-27 09:08:37', 2682),
-(172, 'TrademarkbEcIFM1561616200', '""', 'No BlocKchain Api', 'onTime put Stack on right', 142, '2019-06-27 09:10:28', 2763, '2019-06-27 09:10:28', 2763),
-(173, 'TrademarkbEcIFM1561616200', '{"rightAddress":null,"response":0,"reportTime":1561626641,"uniqueId":"garbil@sofodev.co","score":0.175}', '0', 'Claim On Right', NULL, '2019-06-27 09:10:41', 2763, '2019-06-27 09:10:41', 2763);
-INSERT INTO `rta_api_log` (`id`, `right_no`, `request`, `responce`, `source`, `paypal_log_id`, `created_at`, `created_by`, `updated_at`, `updated_by`) VALUES
-(174, 'TrademarkbEcIFM1561616200', '""', 'No BlocKchain Api', 'onTime put Stack on right', 143, '2019-06-27 09:13:42', 2754, '2019-06-27 09:13:42', 2754),
-(175, 'TrademarkbEcIFM1561616200', '{"rightAddress":null,"response":0,"reportTime":1561626850,"uniqueId":"holder1@sofodev.co","score":0.175}', '0', 'Claim On Right', NULL, '2019-06-27 09:14:10', 2754, '2019-06-27 09:14:10', 2754),
-(176, 'TrademarkbEcIFM1561616200', '""', 'No BlocKchain Api', 'onTime put Stack on right', 144, '2019-06-27 09:15:54', 2764, '2019-06-27 09:15:54', 2764),
-(177, 'TrademarkbEcIFM1561616200', '{"rightAddress":null,"response":0,"reportTime":1561626978,"uniqueId":"kavin@sofodev.co","score":0.175}', '0', 'Claim On Right', NULL, '2019-06-27 09:16:18', 2764, '2019-06-27 09:16:18', 2764),
-(178, 'TrademarkbEcIFM1561616200', '""', 'No BlocKchain Api', 'onTime put Stack on right', 145, '2019-06-27 09:17:21', 2760, '2019-06-27 09:17:21', 2760),
-(179, 'TrademarkbEcIFM1561616200', '{"rightAddress":null,"response":0,"reportTime":1561627052,"uniqueId":"morgan@sofodev.co","score":0.175}', '0', 'Claim On Right', NULL, '2019-06-27 09:17:32', 2760, '2019-06-27 09:17:32', 2760),
-(180, 'TrademarkbEcIFM1561616200', '""', 'No BlocKchain Api', 'onTime put Stack on right', 146, '2019-06-27 09:18:33', 2757, '2019-06-27 09:18:33', 2757),
-(181, 'UnregisteredIPxldktW1560848128', '{"uniqueId":"alan@sofodev.co","rightAddress":null,"cost":"9","layersPurchased":"2","buyerAddress":null,"reportTime":1561627051}', '0', 'onTime Buy Right', 147, '2019-06-27 09:18:47', 2688, '2019-06-27 09:18:47', 2688),
-(182, 'TrademarkbEcIFM1561616200', '{"rightAddress":null,"response":0,"reportTime":1561627127,"uniqueId":"roach@sofodev.co","score":0.175}', '0', 'Claim On Right', NULL, '2019-06-27 09:18:47', 2757, '2019-06-27 09:18:47', 2757),
-(183, 'TrademarkbEcIFM1561616200', '{"uniqueId":"flaming@sofodev.co","rightAddress":null,"cost":"1200","layersPurchased":"2","buyerAddress":null,"reportTime":1561627396}', '0', 'onTime Buy Right', 148, '2019-06-27 09:23:48', 2682, '2019-06-27 09:23:48', 2682),
-(184, 'PatentRVKk221559629200', '{"uniqueId":"flaming@sofodev.co","rightAddress":null,"cost":"450","layersPurchased":"2","buyerAddress":null,"reportTime":1561627578}', '0', 'onTime Buy Right', 149, '2019-06-27 09:26:45', 2682, '2019-06-27 09:26:45', 2682),
-(185, 'Patentq5GNGS1561633270', '{"type":0,"createdAt":1561633273,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":500,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"200","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"flaming@sofodev.co","rightNumber":"Patentq5GNGS1561633270","reportTime":1561633273}', '0', 'onTime add Right', 150, '2019-06-27 11:01:54', 2682, '2019-06-27 11:01:54', 2682),
-(186, NULL, '["sakshi.pandey@sakshay.in",1]', '0', 'onTime Enrolment User', NULL, '2019-06-27 12:37:20', 0, '2019-06-27 12:37:20', 0),
-(187, NULL, '["inventest@sofodev.co",1]', '0', 'onTime Enrolment User', NULL, '2019-06-27 13:05:14', 0, '2019-06-27 13:05:14', 0),
-(188, NULL, '["hdfhdhd@sofodev.co",1]', '0', 'onTime Enrolment User', NULL, '2019-06-27 13:17:12', 0, '2019-06-27 13:17:12', 0),
-(189, NULL, '["gsdgdsg@sofodev.co",1]', '0', 'onTime Enrolment User', NULL, '2019-06-27 13:22:03', 0, '2019-06-27 13:22:03', 0),
-(190, NULL, '["vxvx@sofodev.co",1]', '0', 'onTime Enrolment User', NULL, '2019-06-27 13:44:52', 0, '2019-06-27 13:44:52', 0),
-(191, NULL, '["ffsdfsd@sofodev.co",1]', '0', 'onTime Enrolment User', NULL, '2019-06-27 13:46:38', 0, '2019-06-27 13:46:38', 0),
-(192, NULL, '["fsafaffsa@sofodev.co",1]', '0', 'onTime Enrolment User', NULL, '2019-06-27 13:54:02', 0, '2019-06-27 13:54:02', 0),
-(193, NULL, '["amitdev@sofodev.co",1]', '0', 'onTime Enrolment User', NULL, '2019-07-01 09:20:22', 0, '2019-07-01 09:20:22', 0),
-(194, 'UnregisteredIPCfJ9Eg1562073771', '{"type":3,"createdAt":1562073771,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":33,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"44","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"amitdev@sofodev.co","rightNumber":"UnregisteredIPCfJ9Eg1562073771","reportTime":1562073771}', '0', 'onTime add Right', 152, '2019-07-02 13:23:30', 2827, '2019-07-02 13:23:30', 2827),
-(195, 'CopyrightZepuG91562132646', '{"type":1,"createdAt":1562132646,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":25,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"55","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"amitdev@sofodev.co","rightNumber":"CopyrightZepuG91562132646","reportTime":1562132646}', '0', 'onTime add Right', 153, '2019-07-03 05:45:30', 2827, '2019-07-03 05:45:30', 2827),
-(196, NULL, '{"uniqueId":"amitfgd@sofodev.co","type":1,"status":1}', '0', 'onTime Enrolment User', NULL, '2019-07-03 14:41:20', 0, '2019-07-03 14:41:20', 0),
-(197, 'Patentt8YkW41562567127', '{"type":0,"createdAt":1562567127,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":5000,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"50","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"amits@sofodev.co","rightNumber":"Patentt8YkW41562567127","reportTime":1562567127}', '{"success":true,"fileHashes":[{"layerFileHash":"QmVpgaLeXKyNmMdn9zYm4ZBtKUXHEHfw4nGMXV4tfA4KZT","adminKeyHash":"QmPPx3Q8qTvYPsSh7V7AowGZTcASCKGgnendBYXygyM9Cj"}],"publicLayerHash":"","transaction_id":"7a7be6ee7055ac9e46efd607a8e0dd43a5970da0a4cebc2bf35ee6546e6f60e90d9ea76ef5321d434acc3ec2a088775fa698e5860f3b79bd4cb98e47f0a50a17"}', 'onTime add Right', 154, '2019-07-08 06:26:18', 2776, '2019-07-08 06:26:18', 2776),
-(198, 'CopyrightmO48dy1562591616', '{"type":1,"createdAt":1562591616,"subscriptionType":0,"totalCost":12.1,"exclusiveTermsCost":450,"exclusiveTermsDuration":12,"nonExclusiveTermsCost":"25","nonExclusiveTermsDuration":12,"layerCost":5,"tradingType":1,"uniqueId":"amits@sofodev.co","rightNumber":"CopyrightmO48dy1562591616","reportTime":1562591616}', '{"success":true,"fileHashes":[{"layerFileHash":"QmefbTTgc1ZTM4QVWtgYpHXBtZu5D95A3itxMSHmdFiJYm","adminKeyHash":"QmbN6RCRkMAsPHYb9c8g8EBpweSjrhgm8io1m9CYFpef8T"}],"publicLayerHash":"","transaction_id":"05c647e81076608df0d11a0cd60b33d907087a4ad03507ea9b1f91ffe35b1929110bc15120ab06b248f83bd2b0ab40a23f21f62c881fe1ec72fc9425a331c798"}', 'onTime add Right', 155, '2019-07-08 13:14:58', 2776, '2019-07-08 13:14:58', 2776),
-(199, NULL, '{"uniqueId":"sudoas1@sofodev.co","type":1,"status":1}', '{"success":true,"transaction_id":"15cd97cca520225a92a68aafd2a38d61dc65669ec5437c7406949a968b3c86ff0fb211df1ca555e0d426a60e15959d1975ea61a243942cb89651371a0f4c1884"}', 'onTime Enrolment User', NULL, '2019-07-11 05:39:28', 0, '2019-07-11 05:39:28', 0);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `rta_app`
 --
 
@@ -299,6 +74,143 @@ CREATE TABLE `rta_app` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `updated_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_biz`
+--
+
+CREATE TABLE `rta_biz` (
+  `biz_id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `biz_entity_name` varchar(100) NOT NULL,
+  `date_of_in_corp` date NOT NULL,
+  `entity_type_id` tinyint(3) UNSIGNED NOT NULL,
+  `turnover_amt` int(10) UNSIGNED NOT NULL,
+  `nature_of_biz` varchar(100) NOT NULL,
+  `org_id` smallint(5) UNSIGNED NOT NULL,
+  `biz_pan_id` int(10) UNSIGNED NOT NULL,
+  `is_pan_verified` tinyint(1) UNSIGNED NOT NULL COMMENT '1=> Verified, 0=> Not Verified',
+  `biz_gst_id` int(10) UNSIGNED NOT NULL,
+  `is_gst_verified` tinyint(1) UNSIGNED NOT NULL COMMENT '1=> Verified, 0=> Not Verified',
+  `created_by` int(10) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_biz_addr`
+--
+
+CREATE TABLE `rta_biz_addr` (
+  `biz_addr_id` int(10) UNSIGNED NOT NULL,
+  `biz_id` int(10) UNSIGNED DEFAULT NULL,
+  `biz_owner_id` int(10) UNSIGNED DEFAULT NULL,
+  `addr_1` varchar(100) DEFAULT NULL,
+  `addr_2` varchar(100) DEFAULT NULL,
+  `city_name` varchar(50) DEFAULT NULL,
+  `state_name` varchar(50) DEFAULT NULL,
+  `pin_code` varchar(10) DEFAULT NULL,
+  `created_by` int(10) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_biz_gst`
+--
+
+CREATE TABLE `rta_biz_gst` (
+  `biz_gst_id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `biz_id` int(10) UNSIGNED NOT NULL,
+  `gst_hash` varchar(100) NOT NULL,
+  `biz_gst_api_id` int(10) UNSIGNED NOT NULL COMMENT 'Last pull api id',
+  `status` varchar(20) NOT NULL,
+  `created_by` int(10) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_biz_gst_api`
+--
+
+CREATE TABLE `rta_biz_gst_api` (
+  `biz_gst_api_id` int(10) UNSIGNED NOT NULL,
+  `file_name` varchar(20) DEFAULT NULL COMMENT 'Request response file name',
+  `status` varchar(50) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_biz_owner`
+--
+
+CREATE TABLE `rta_biz_owner` (
+  `biz_owner_id` int(10) UNSIGNED NOT NULL,
+  `biz_id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `date_of_birth` date NOT NULL,
+  `gender` tinyint(3) UNSIGNED NOT NULL COMMENT '1',
+  `biz_addr_id` varchar(100) NOT NULL,
+  `biz_pan_id` int(10) UNSIGNED NOT NULL,
+  `is_pan_verified` tinyint(1) UNSIGNED NOT NULL COMMENT '1=> Verified, 0=> Not Verified',
+  `share_per` tinyint(3) UNSIGNED NOT NULL,
+  `edu_qualification` varchar(100) NOT NULL,
+  `created_by` int(10) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_biz_pan`
+--
+
+CREATE TABLE `rta_biz_pan` (
+  `biz_pan_id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `biz_id` int(10) UNSIGNED NOT NULL,
+  `pan_hash` varchar(100) NOT NULL,
+  `biz_pan_api_id` int(10) UNSIGNED NOT NULL COMMENT 'Last pull api id',
+  `status` varchar(20) NOT NULL,
+  `created_by` int(10) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_biz_pan_api`
+--
+
+CREATE TABLE `rta_biz_pan_api` (
+  `biz_pan_api_id` int(10) UNSIGNED NOT NULL,
+  `file_name` varchar(20) DEFAULT NULL COMMENT 'Request response file name',
+  `status` varchar(50) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -591,6 +503,22 @@ INSERT INTO `rta_mst_activity` (`id`, `activity_code`, `activity_name`, `is_acti
 (6, 'supplier_form_sbumit', 'supplier_form_sbumit', 1, NULL, NULL),
 (7, 'change_pwd', 'change_pwd', 1, NULL, NULL),
 (8, 'forget_pwd', 'forget_pwd', 1, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_mst_biz_entity`
+--
+
+CREATE TABLE `rta_mst_biz_entity` (
+  `id` tinyint(3) UNSIGNED NOT NULL,
+  `entity_name` varchar(200) NOT NULL,
+  `is_active` tinyint(1) UNSIGNED NOT NULL,
+  `created_by` int(10) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1671,7 +1599,7 @@ CREATE TABLE `rta_users` (
 --
 
 INSERT INTO `rta_users` (`user_id`, `user_kyc_id`, `f_name`, `m_name`, `l_name`, `email`, `password`, `mobile_no`, `user_type`, `is_email_verified`, `email_verified_updatetime`, `remember_token`, `is_otp_verified`, `otp_verified_updatetime`, `is_pwd_changed`, `pwd_updatetime`, `is_active`, `block_status_id`, `block_status_updatetime`, `parent_id`, `created_by`, `created_at`, `updated_at`, `updated_by`) VALUES
-(1, 0, 'mait', 'kumar', 'suman', 'akash.kumar@prolitus.com', '$2y$10$9EP7kR2Tey.9jeQFLV6AWeB8C6FIszBzCUA6ntcmVe56HUnMzjFnC', '1225487845', 1, 1, NULL, 't9qlrTaUli49w5LAZkSNvzSZJCdq5IaLrzUYlv7ucNZwtIsqENzykzf5NBGQ', 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 11:08:50', '2019-09-17 05:44:51', NULL),
+(1, 0, 'mait', 'kumar', 'suman', 'akash.kumar@prolitus.com', '$2y$10$9EP7kR2Tey.9jeQFLV6AWeB8C6FIszBzCUA6ntcmVe56HUnMzjFnC', '1225487845', 1, 1, NULL, 'u4TrDtNiabsGCwHXuAp1DZ1UpRhLsCSdX6pIzu6x35usCfzikoqgSL3xjmJN', 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 11:08:50', '2019-09-17 05:44:51', NULL),
 (2, 0, 'dsfs', 'fafa', 'faafa', 'dsafsf@sofodev.co', '$2y$10$RZ5Zhv7rPnWg8.TZyLCQeeHQ5PDvdFBzTuF6N42fIy6WFRGBBciK6', '2423532523', 1, 1, NULL, NULL, 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 12:57:20', '2019-09-16 13:16:38', NULL),
 (3, 0, 'sakshi', 'test', 'pandey', 'sakshi.pandey@sofodev.co', '$2y$10$PpHo3oI3/cLQlX78fsgIvuITDwI4RJa4ibUF6COO7oj8wLbwXkIG2', '9767676767', 1, 1, NULL, 'pJfAeXW61B38jEvDB6wDDC7bNZG9VgHjYygylrmLqIRRRQmCFREhK1iTzpMZ', 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 13:19:10', '2019-09-18 11:24:50', NULL),
 (4, 0, 'company1', 'mid', 'lname', 'company1@sofodev.co', '$2y$10$jaDBg1BMWTzNgyCkGRdJFOuebTToclvDJDmydYenZn/A6Wm7i99Ce', '4547854785', 2, 1, '2019-09-17 10:05:18', NULL, 1, '2019-09-17 10:06:21', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-17 10:04:09', '2019-09-17 10:06:52', NULL),
@@ -2499,19 +2427,63 @@ ALTER TABLE `rta_activity_log`
   ADD PRIMARY KEY (`activity_log_id`);
 
 --
--- Indexes for table `rta_api_log`
---
-ALTER TABLE `rta_api_log`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `paypal_log_id` (`paypal_log_id`);
-
---
 -- Indexes for table `rta_app`
 --
 ALTER TABLE `rta_app`
   ADD PRIMARY KEY (`app_id`),
   ADD KEY `created_by` (`created_by`),
   ADD KEY `updated_by` (`updated_by`);
+
+--
+-- Indexes for table `rta_biz`
+--
+ALTER TABLE `rta_biz`
+  ADD PRIMARY KEY (`biz_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `rta_biz_addr`
+--
+ALTER TABLE `rta_biz_addr`
+  ADD PRIMARY KEY (`biz_addr_id`),
+  ADD KEY `user_id` (`biz_id`);
+
+--
+-- Indexes for table `rta_biz_gst`
+--
+ALTER TABLE `rta_biz_gst`
+  ADD PRIMARY KEY (`biz_gst_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `user_biz_id` (`biz_id`);
+
+--
+-- Indexes for table `rta_biz_gst_api`
+--
+ALTER TABLE `rta_biz_gst_api`
+  ADD PRIMARY KEY (`biz_gst_api_id`),
+  ADD KEY `paypal_log_id` (`file_name`);
+
+--
+-- Indexes for table `rta_biz_owner`
+--
+ALTER TABLE `rta_biz_owner`
+  ADD PRIMARY KEY (`biz_owner_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `rta_biz_pan`
+--
+ALTER TABLE `rta_biz_pan`
+  ADD PRIMARY KEY (`biz_pan_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `user_biz_id` (`biz_id`);
+
+--
+-- Indexes for table `rta_biz_pan_api`
+--
+ALTER TABLE `rta_biz_pan_api`
+  ADD PRIMARY KEY (`biz_pan_api_id`),
+  ADD KEY `paypal_log_id` (`file_name`);
 
 --
 -- Indexes for table `rta_corp_addresses`
@@ -2565,6 +2537,12 @@ ALTER TABLE `rta_migrations`
 -- Indexes for table `rta_mst_activity`
 --
 ALTER TABLE `rta_mst_activity`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `rta_mst_biz_entity`
+--
+ALTER TABLE `rta_mst_biz_entity`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -2808,15 +2786,45 @@ ALTER TABLE `rta_user_upload_doc`
 ALTER TABLE `rta_activity_log`
   MODIFY `activity_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `rta_api_log`
---
-ALTER TABLE `rta_api_log`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=200;
---
 -- AUTO_INCREMENT for table `rta_app`
 --
 ALTER TABLE `rta_app`
   MODIFY `app_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_biz`
+--
+ALTER TABLE `rta_biz`
+  MODIFY `biz_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_biz_addr`
+--
+ALTER TABLE `rta_biz_addr`
+  MODIFY `biz_addr_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_biz_gst`
+--
+ALTER TABLE `rta_biz_gst`
+  MODIFY `biz_gst_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_biz_gst_api`
+--
+ALTER TABLE `rta_biz_gst_api`
+  MODIFY `biz_gst_api_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_biz_owner`
+--
+ALTER TABLE `rta_biz_owner`
+  MODIFY `biz_owner_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_biz_pan`
+--
+ALTER TABLE `rta_biz_pan`
+  MODIFY `biz_pan_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_biz_pan_api`
+--
+ALTER TABLE `rta_biz_pan_api`
+  MODIFY `biz_pan_api_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `rta_corp_addresses`
 --
@@ -2862,6 +2870,11 @@ ALTER TABLE `rta_migrations`
 --
 ALTER TABLE `rta_mst_activity`
   MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+--
+-- AUTO_INCREMENT for table `rta_mst_biz_entity`
+--
+ALTER TABLE `rta_mst_biz_entity`
+  MODIFY `id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `rta_mst_cluster`
 --
