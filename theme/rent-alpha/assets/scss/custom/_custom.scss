@@ -1,0 +1,76 @@
+body {
+	font-family: 'Lato', sans-serif;
+}
+
+.scroll-hiddin {
+	overflow: hidden
+}
+
+form {
+	.form-control {
+		font-size: $font-size-base - 0.20;
+		color: $black;
+		@include border-all(1px, solid, $input-border-color);
+		height: 45px;
+
+	}
+
+	.section-header {
+		background: $darkgreen;
+		color: $white;
+		position: relative;
+		
+		button {
+			
+			@include close-model;
+		}
+
+		@include margin-all(0, 0, 0, 0) h4 {
+			font-size: $form-top-heading;
+			color: $white;
+			@include padding (11px, 20px, 11px, 20px);
+		}
+	}
+}
+
+.relative {
+	#phone-ext {
+		width: 54px;
+		@include border-radius(4px, 0, 0, 4px)
+	}
+
+	.numbercls {
+		@include border-radius(0px, 4px, 4px, 0px);
+	}
+}
+
+.form-design {
+	@include border-all(1px, solid, $eee-color);
+	padding: 0;
+	@include shadow;
+
+	@include margin-all(0, 0, 50px, 0) .form-fields {
+
+		@include padding (10px, 30px, 25px, 30px);
+	}
+}
+ 
+
+
+header {
+
+	@include shadow;
+	padding: 10px;
+
+}
+
+p.small {
+	color: #2a8b6a;
+}
+
+
+.otp-section {
+	display: none;
+}
+
+

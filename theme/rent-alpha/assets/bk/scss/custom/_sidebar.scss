@@ -1,0 +1,22 @@
+.sidebar{background:$dark-green;height:$full;color: #fff;position: fixed; z-index: 2;}
+.notification-bg h2{font-size:16px; color: #fff;}
+.notification-bg h2 span{height:25px;width:25px;border-radius:$radius; padding: 5px; display: inline-block; font-size:12px; text-align:center; background: $danger;}
+.notification-bg ul{display: flex;flex-wrap: wrap;padding: 0;margin: 0;list-style: none;}
+.notification-bg ul li{padding-left:15px; position: relative; font-size: 12px; line-height: 16px; margin-bottom:10px; line-height: 18px;}
+.notification-bg ul li span{position: absolute;left: 0;top: 0;font-size:10px;flex: 100%;}
+.buyer-border{border:1px solid #1EA3AE;border-radius:6px; margin-bottom: 20px;}
+.buyer-border button{ background: transparent; font-size: 14px; color: #fff;flex: 1 1 auto; outline: 0;}
+.buyer-border button.active{background: #1ea3ae;}
+.buyer-border a{ background: transparent; font-size: 14px; color: #fff;flex: 1 1 auto; outline: 0;}
+.buyer-border a:hover{color: #fff;}
+.buyer-border a.active{background: #1ea3ae;}
+.buyer-border a.active:nth-child(1){border-radius:3px 0px 0px 3px;}
+.buyer-border a.active:nth-child(2){border-radius:0px 3px 3px 0px}
+.sidebar-sticky{border-bottom: 1px solid #1EA3AE; padding-bottom:40px; margin-bottom: 30px;}
+.nav-link{color: #fff;padding: 0;}
+.nav-item{padding: .5rem 0.5rem;}
+.nav-item:hover{background: #30878e;}
+.logo{margin: 20px 0;}
+.all-notification{border: 1px solid #9C9C9C; color: #fff; margin: 15px 0; display: inline-block;font-size: 14px;}
+li.nav-item.active {background: #1ea3ae;}
+.buyer-border a:nth-child(1) {border-right: 1px solid #1ea3ae; border-radius: 0;}

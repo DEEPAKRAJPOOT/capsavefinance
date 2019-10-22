@@ -48,9 +48,9 @@
 
                         </div>
                         <div class="form-group mt-3 Forgot">
-                            <a href="#" class="forgot-link"> Forgot Password </a>
+                            <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
                             <a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
-                            <div>
+                        <div>
                                 <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
 
 
@@ -78,6 +78,30 @@
 
                                                                         $("#password").attr('type', 'text');
                                                                         $("#passwordonoff").addClass('fa fa-eye-slash');
+<<<<<<< HEAD
+=======
+
+                                                                    } else
+                                                                    {
+                                                                        $("#password").attr('type', 'password');
+                                                                        $("#passwordonoff").addClass('fa fa-eye');
+
+                                                                    }
+
+
+
+
+                                                                });
+
+                                                            });
+
+
+</script>	
+
+<script>
+$(document).ready(function(){
+$("#passwordonoff").click(function(){
+>>>>>>> 77d4f9563596881b2191835b4cd7b73f78f7f4d3
 
                                                                     } else
                                                                     {

@@ -1,0 +1,164 @@
+@media screen and (max-width: 768px) {
+    
+    .on-bording {position: relative;}
+    ul.next-button li:nth-child(1) {padding-left: 42px;}
+    ul.next-button li:nth-child(2) {padding-right: 42px;}
+    .our-webcoderskull ul li {width:33%;flex: 1 1;}
+    .calc{height: auto;}
+    .our-webcoderskull ul{padding: 0;}
+    .breadcrumb-left{display: none !important;}
+    .open-menu{background: transparent;border:0;}
+    .open-menu div {width:25px;height: 3px;background-color:#17a2b8;margin: 6px 0;margin-left:10px;}
+    .filter-bg {width: 100%;display: flex;flex-wrap: wrap;}
+    .filter-bg ul li{margin-bottom:10px;}
+    ul.range-slider li:nth-child(1){width: 50%;}
+    ul.range-slider li:nth-child(2){ width: 50%;}
+    ul.range-slider li:nth-child(3){width: 100%;}
+    .close-menu {position: absolute;background: #1ea3ae;border: 0;right: -36px;top: 0;color: #fff;width: 36px;height: 32px;font-size: 19px;}  
+    .open-menu{display: block;}
+    .close-menu{display: block;}
+    ul.nav-top {margin: 10px 0;}
+    
+}
+
+@media screen and (max-width: 767px) {
+    /* OnBoarding */
+    body{padding-bottom: 60px;}
+    ul.on-bording-dashboard {margin: auto; width:280px;}
+    ul.on-bording-dashboard li{position: relative;margin-bottom:40px; width: 100%;}
+    ul.on-bording-dashboard li:nth-child(1){left:inherit; top:inherit;}
+    ul.on-bording-dashboard li:nth-child(2){top:inherit; left:inherit}
+    ul.on-bording-dashboard li:nth-child(3){right:inherit; top:inherit;}
+    ul.on-bording-dashboard li:nth-child(4){bottom:inherit;left:inherit;}
+    ul.on-bording-dashboard li .img-icon{width:100%;}
+    .bording-h2 {font-size: 18px;}
+    .calc-inner {height: auto;}
+    .col-md-9.calc-inner.mt-5 form.pr-4{padding-right: 0rem !important;}
+    ul.next-button{position: fixed;bottom: 0;z-index: 2; height:50px;background: #B1E4E8;box-shadow: 1px 1px 6px #759da0;}
+    ul.next-button li button {border: 1px solid #B1E4E8;width: 42px;background: transparent;font-size: 40px;padding: 0;line-height: 30px;color: #297079;}
+    .our-webcoderskull ul {padding: 0;}
+    .our-webcoderskull ul li {width: 50%;flex: 1 1;}
+    ul.other-documents {display: flex;flex-wrap: wrap;position: relative;}
+    ul.other-documents li:nth-child(1){order: 0; display: none;}
+    ul.other-documents li:nth-child(2){order: 1;}
+    ul.other-documents li:nth-child(3){order: 1;float: left;width: 72%;display: flex;align-items: center;margin-left: 0;margin-top: 15px;}
+    ul.other-documents li:nth-child(4){order: 1;display: flex;margin-top: 14px;}
+    ul.other-documents li:nth-child(5){order: 5;position: absolute;bottom:0px;right:0;width: 152px;}
+    ul.other-documents li {width: 100%;padding: 0;}
+    ul.other-documents li:nth-child(2) input{ padding-right: 125px;}
+    .year {width:70px;margin-right: 15px;}
+    .form-group.pr-10{padding-left: 0;}
+    .bottom-btn {position: relative;}
+    .d-flex.mt-2.pr-10{padding-left:0}
+    .col-md-7.mx-auto.bg-white.rounded.pl-5.pr-5.pb-5.mt-3.mb-5.calc.pt-3{padding-left: 25px !important;padding-right: 40px!important;}
+    .calc-inner-bank {height: auto;}
+    form.pr-4{padding-right: 0 !important;}
+    ul.thank-you-bg {position:fixed;height: 100vh;}
+    .thaks-bg{width: 90%;padding: 20px;}
+    span.custum-input input {width: 140px;}
+   
+   /* Mobile menu */
+    .sidebar {margin: 0;height: 100%;width:75%;max-width: 320px;z-index:2;top: 0;left: -100%;transition: left .5s ease-out;}
+    .responsive-active .sidebar {left: 0;}
+    .responsive-active:after {content: "";display: block;position: fixed;top: 0;right: 0;bottom: 0;left: 0;background: rgba(0, 0, 0, 0.7); height: 100vh;width: 100%;}
+    .breadcrumb-bg {padding-left: 0;}
+    
+    /* Filter */
+    #ProfileCard {bottom: -108px;}
+    .filter-bg ul{width: 100%;}
+    .filter-bg ul li{margin-right: 0;}
+    .filter-bg ul li button{float: right;}
+    ul.range-slider{margin-left:-8px;margin-right: -8px;}
+    ul.range-slider li {padding: 0 8px;float: left; margin-bottom: 15px;}
+    .range-slider input{width: 100%;}
+    ul.range-slider li:nth-child(3) input{padding-right:40px;}
+    .range-slider button {top: -2px;right: 10px;}
+    /*Modal*/
+    .modal {padding-left: 0;}
+    .modal-dialog {max-width: 94%;}
+    /* Track Shipment */
+    .timeline{list-style-type:none;display:block;    border-left: 2px solid #bebebe;}
+    .timeline li{transition:all 200ms ease-in;display:flex;width:inherit;flex-wrap: wrap;min-height:auto;}
+    .timestamp{width:100px; display: none;}
+    .status:before {left: -13px;top:-1px;transition: all 200ms ease-in;}
+    .status {padding:0 0 30px 20px;border-top: 0px;}
+    .timeline li.complete .status {border-top: 0px solid #8FBB13;border-left: 2px solid #8FBB13;margin-left: -2px;}
+    .timeline li:last-child .status:after {bottom: 0;left: -13px; top:auto;}    
+    .timeline li:last-child:after{display: none;}
+    
+    /* Table */
+    ul.seller-vertical-buyer li .table-sm th, .table-sm td{white-space: nowrap;}
+    ul.seller-vertical li .table-sm th, .table-sm td{white-space: nowrap;}
+    
+    ul.seller-vertical {display: flex;flex-wrap: wrap;position: relative;}
+    ul.seller-vertical li {display: grid;list-style: none;border: 1px solid #227b82;}
+    ul.seller-vertical li:nth-child(1){ position: absolute;left: 0;top: 0;right: 0;bottom: 0;}
+    ul.seller-vertical li:nth-child(1) span{align-items: center;display: grid;text-align: center;} 
+    ul.seller-vertical li:nth-child(2){border-left: 50px solid #227b82;}
+    
+    ul.seller-vertical-buyer {display: flex;flex-wrap: wrap;position: relative;}
+    ul.seller-vertical-buyer li {display: grid;list-style: none;border: 1px solid #1ea3ae;}
+    ul.seller-vertical-buyer li:nth-child(1){ position: absolute;left: 0;top: 0;right: 0;bottom: 0;}
+    ul.seller-vertical-buyer li:nth-child(1) span{align-items: center;display: grid;text-align: center;} 
+    ul.seller-vertical-buyer li:nth-child(2){border-left: 50px solid #1ea3ae;}
+    
+    /* Table Dropdown*/
+    .table thead th {white-space: nowrap;}
+    .table tbody td {white-space: nowrap;}
+    .action-btn-i .show-invoice {white-space: initial;}
+    
+    
+    /*Invoice*/
+    .invoice-table{position: fixed;left: 0;right: 0;top: 25px;width: 100%;height: 50px;background: #e4f5f6; padding-right:15px;}   .invoice-inner{padding-left: 0 !important;padding-right: 0 !important;} 
+    
+    
+    /* Notification*/
+    .notification_listing .Ul-list > li {flex-wrap: wrap;}
+    .notification_listing .ntf_time {border-right: 0;width: 100%;border-bottom: solid #b7ebf1 1px;}
+    .notification_listing .ntf_content {border-right: 0;border-bottom: solid #b7ebf1 1px;}
+    
+    /* Contract Details */
+        
+    ul.contract-top{padding: 0;justify-content: space-between!important;margin-right: -25px;margin-left: -10px;}
+    ul.contract-top li:nth-child(1){text-align: left;}
+    ul.contract-top li:nth-child(2){text-align: right;}
+    
+    /* Accordion */
+    .accordionItemHeading {padding-right: 40px;}
+    .accordionItemContent .form-control {margin-bottom: 0;}
+    
+    /* Profile*/
+    .tab-nav{-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;align-items:stretch;display:flex;font-size:1rem;justify-content:space-between;overflow:hidden;overflow-x:auto;white-space:nowrap;flex-grow:1;flex-shrink:0;justify-content:flex-start;}
+    ul.add-profile {min-height: 367px;}
+    
+}
+
+
+
+@media screen and (max-width: 375px) {
+    
+    .file-browse button {white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width: 70px;}
+    .filter-bg ul li{width: 100%;} 
+    .filter-bg ul li button {line-height: 28px;}
+   
+    /* Create Modal*/
+    .calc-modal {height: calc(100vh - 235px);}
+    .calc-inner-modal {height: calc(100vh - 325px);}
+    .modal-header{padding: 0.7rem 1rem;}
+    .modal-footer{padding: 0.5rem 1rem;}
+    .modal-title {font-size: 18px;}
+    
+    ul.price-ul li {width: 48%;}
+    .form-control {margin-bottom: 15px;}    
+    .tab-link {padding-right: 1rem;} 
+    ul.category-ul li {width: 100%;}
+    .nav-link label{width: 100%;}
+    ul.category-ul li .cate-img{float: right;}
+
+    .accordionItemHeading{font-size: 14px;}
+    .card-panel {width: 100%;border: 1px solid #dee2e6;border-bottom: 0;background: #f1f1f1;}
+    .contract-details .card-panel{padding-left: 10px;}
+    .card-panel ul {min-height:50px;}
+    
+      
+}
