@@ -1,17 +1,14 @@
-@extends('layouts.app')
+<?php include 'header.php';?>
 
-@section('content')
+<div class="container-fluid page-body-wrapper">
+	<div class="  row-offcanvas row-offcanvas-right">
+		<!-- =============================================== -->
+		<!-- Left side column. contains the sidebar -->
 
-               @if($benifinary["user_type"] =='1') 
-                @include('layouts.user-inner.left-menu')
-               @else
-               @include('layouts.user-inner.left-corp-menu')
-               @endif
-          
-  
+		<?php include 'sidebar.php';?>
 
 
-<!-- partial dasboard content -->
+		<!-- partial dasboard content -->
 			<div class="content-wrapper">
 				<h3 class="page-title">Zuron - Admin Dashboard</h3>
 				<div class="row  grid-margin">
@@ -138,8 +135,6 @@
 						</div>
 					</div>
 				</div>
-
-		
 			</div>
 			<!-- footer contains the footer section -->
 
@@ -147,6 +142,4 @@
 	</div>
 </div>
 
-
-
-@endsection
+<?php include 'footer.php';?>

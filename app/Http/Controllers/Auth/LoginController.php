@@ -76,6 +76,9 @@ use AuthenticatesUsers;
             $userName    = $request['username'];
            
             $userInfo = $this->userRepo->getUserByUserName($userName);
+            if (!empty($userInfo)) {
+                $request->request->add(['email' => $userInfo->email]);
+            }
             
             if (empty($userInfo)) {
                 //Checking User is frontend user
@@ -139,7 +142,7 @@ use AuthenticatesUsers;
 
         $request->session()->invalidate();
 
-        return redirect('/');
+        return redirect('/login');
     }
 
     /**

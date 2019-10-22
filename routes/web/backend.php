@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This route have all backend guest and auth routes
  *
@@ -7,57 +8,6 @@
  * @author Prolitus Dev Team
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
-
-    Route::get('/',
-        [
-        'as' => 'backend_login_open',
-        'uses' => 'Backend\Auth\LoginController@showLoginForm'
-    ]);
-    Route::post(
-        '/',
-        [
-        'as' => 'backend_login_open',
-        'uses' => 'Backend\Auth\LoginController@login'
-        ]
-    );
-    Route::post(
-        'logout',
-        [
-        'as' => 'backend_logout',
-        'uses' => 'Backend\Auth\LoginController@logout'
-        ]
-    );
-
-    Route::group(['prefix' => 'password'],
-        function () {
-        // Reset request email
-        $this->get('reset-password',
-            [
-            'as' => 'password.do.reset',
-            'uses' => 'Backend\Auth\ForgotPasswordController@showLinkRequestForm'
-            ]
-        );
-        $this->post('email',
-            [
-            'as' => 'password.email',
-            'uses' => 'Backend\Auth\ForgotPasswordController@sendResetLinkEmail'
-            ]
-        );
-        $this->get('reset',
-            [
-            'as' => 'password.reset',
-            'uses' => 'Backend\Auth\ResetPasswordController@showResetForm'
-            ]
-        );
-        $this->post('reset',
-            [
-            'as' => 'password.reset',
-            'uses' => 'Backend\Auth\ResetPasswordController@reset'
-            ]
-        );
-    });
-
-
 
     Route::group(
         ['prefix' => 'dashboard'],
@@ -68,143 +18,62 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get(
                 '/',
                 [
-                'as' => 'backend_dashboard',
-                'uses' => 'Backend\DashboardController@index'
+                'as' => 'front_dashboard',
+                'uses' => 'Application\DashboardController@index'
                 ]
             );
-            Route::get(
-                'manage-users',
-                [
-                'as' => 'manage_users',
-                'uses' => 'Backend\UserController@viewUserList'
-                ]
-            );
-            Route::get(
-                'user-detail',
-                [
-                'as' => 'user_detail',
-                'uses' => 'Backend\UserController@viewUserDetail'
-                ]
-            );
-            Route::get(
-                'edit-user',
-                [
-                'as' => 'edit_backend_user',
-                'uses' => 'Backend\UserController@editUser'
-                ]
-            );
-
-            Route::get(
-                'view-user',
-                [
-                'as' => 'view_user_detail',
-                'uses' => 'Backend\UserController@viewUserDetail'
-                ]
-            );
-
-
-            Route::post(
-                'delete-user',
-                [
-                'as' => 'delete_users',
-                'uses' => 'Backend\UserController@deleteUser'
-                ]
-            );
-            Route::post(
-                'save-user',
-                [
-                'as' => 'save_backend_user',
-                'uses' => 'Backend\UserController@saveUser'
-                ]
-            );
-            
-            Route::get(
-                'scout',
-                [
-                'as' => 'show_scout',
-                'uses' => 'Backend\UserController@viewAllScout'
-                ]
-            );
-            Route::get(
-                'user',
-                [
-                'as' => 'show_user',
-                'uses' => 'Backend\UserController@viewAllUser'
-                ]
-            );
-            
-            Route::get(
-                'user_paginate',
-                [
-                'as' => 'user_paginate',
-                'uses' => 'Backend\UserController@viewUserAjaxPaginate'
-                ]
-            );
-            Route::post(
-                'user-detail',
-                [
-                'as' => 'admin_approved',
-                'uses' => 'Backend\UserController@updateUserDetail'
-                ]
-            );
-            
         });
     });
-
-    Route::group(
-        ['prefix' => 'account'],
+    
+    
+    Route::group(['prefix' => 'profile'],
         function () {
-        Route::group(
-            ['middleware' => 'auth'],
+        Route::group(['middleware' => 'auth'],
             function () {
-            Route::get(
-                'view-profile',
-                [
-                'as' => 'view_profile',
-                'uses' => 'Backend\UserController@viewProfile'
-                ]
-            );
 
-            Route::get(
-                'update-profile',
+            Route::get('/',
                 [
-                'as' => 'update_profile',
-                'uses' => 'Backend\UserController@updateProfile'
-                ]
-            );
-
-            Route::post(
-                'update-profile',
+                'as' => 'profile',
+                'uses' => 'Application\AccountController@index'
+            ]);
+           /* 
+            Route::get('edit',
                 [
-                'as' => 'update_profile',
-                'uses' => 'Backend\UserController@updateUserProfile'
-                ]
-            );
-
-            Route::post(
-                'upload-image',
+                'as' => 'edit_profile',
+                'uses' => 'Application\AccountController@editPersonalProfile'
+            ]);*/
+            
+            Route::post('edit',
                 [
-                'as' => 'upload_image',
-                'uses' => 'Backend\UserController@ajaxImageUpload'
-                ]
-            );
+                'as' => 'update_personal_profile',
+                'uses' => 'Application\AccountController@savePersonalProfile'
+            ]);
+            
 
-
-            Route::get(
-                'change-password',
-                [
-                'as' => 'change_password',
-                'uses' => 'Backend\UserController@changePassword'
-                ]
-            );
-
-            Route::post(
-                'change-password',
-                [
-                'as' => 'change_password',
-                'uses' => 'Backend\UserController@updateChangePassword'
-                ]
-            );
         });
     });
+    
+//   Resource controller @Supplier,@buyer,@lender,@logistics    //
+
+    Route::resource('supplier', 'Backend\SupplierController');
+    Route::resource('buyer', 'Backend\BuyerController');
+    Route::resource('lender', 'Backend\LenderController');
+    Route::resource('logistics', 'Backend\LogisticsController');
+
+    Route::get('/', [
+        'as' => 'backend_login_open',
+        'uses' => 'Backend\Auth\LoginController@showLoginForm'
+    ]);
+    Route::post(
+            '/', [
+        'as' => 'backend_login_open',
+        'uses' => 'Backend\Auth\LoginController@login'
+            ]
+    );
+    Route::post(
+            'logout', [
+        'as' => 'backend_logout',
+        'uses' => 'Backend\Auth\LoginController@logout'
+            ]
+    );
 });
