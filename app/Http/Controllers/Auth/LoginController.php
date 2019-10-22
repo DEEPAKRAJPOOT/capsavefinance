@@ -73,12 +73,9 @@ use AuthenticatesUsers;
 
                 return $this->sendLockoutResponse($request);
             }
-            $userName    = $request['username'];
+            $userEmail    = $request['email'];
            
-            $userInfo = $this->userRepo->getUserByUserName($userName);
-            if (!empty($userInfo)) {
-                $request->request->add(['email' => $userInfo->email]);
-            }
+            $userInfo = $this->userRepo->getUserByEmail($userEmail);
             
             if (empty($userInfo)) {
                 //Checking User is frontend user
