@@ -10,6 +10,7 @@ use App\Inv\Repositories\Contracts\Traits\StorageAccessTraits;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 
+
 class DashboardController extends Controller
 {
     
