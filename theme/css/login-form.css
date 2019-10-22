@@ -124,7 +124,7 @@ label {
 
 .btn-primary {
 	color: #fff;
-	background-color: #4f8cca;
+	background-color: #2a8b6a;
 	border: none;
 	border-radius: 4px;
 }
@@ -143,9 +143,7 @@ a {
 }
 
 .logo-box img {
-
-	max-width: 150px;
-
+    max-width: 100px;
 }
 
 .logo-box {
