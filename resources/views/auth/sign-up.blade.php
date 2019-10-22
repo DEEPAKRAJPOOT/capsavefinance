@@ -6,7 +6,10 @@
 		<div class="col-md-6 form-design">
 
 			<div id="reg-box">
-				<form>
+				 <form class="registerForm form form-cls" autocomplete="on" enctype="multipart/form-data" method="POST" action="{{ route('user_register_open') }}" id="registerForm">
+
+                {{ csrf_field() }}
+
 					<div class="section-header">
 						<h4 class="section-title"> Registration</h4>
 					</div>
@@ -15,10 +18,28 @@
 							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
-										<label for="txtCreditPeriod">Full Name
+										<label for="txtCreditPeriod">First Name
 											<span class="mandatory">*</span>
 										</label>
-										<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Full Name" required="">
+										<input type="text" name="fname" id="employee" value="" class="form-control" tabindex="1" placeholder="First Name" required="">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="txtSupplierName">Middle Name
+											<span class="mandatory">*</span>
+										</label>
+										<input type="text" name="mname" id="name" value="" class="form-control" tabindex="3" placeholder="Middle Name" required="">
+									</div>
+								</div>
+							</div>
+                                                    <div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="txtCreditPeriod">Last Name
+											<span class="mandatory">*</span>
+										</label>
+										<input type="text" name="lname" id="employee" value="" class="form-control" tabindex="1" placeholder="Last Name" required="">
 									</div>
 								</div>
 								<div class="col-md-6">
@@ -26,7 +47,7 @@
 										<label for="txtSupplierName">Business Name
 											<span class="mandatory">*</span>
 										</label>
-										<input type="text" name="name" id="name" value="" class="form-control" tabindex="3" placeholder="Business Name" required="">
+										<input type="text" name="bname" id="name" value="" class="form-control" tabindex="3" placeholder="Business Name" required="">
 									</div>
 								</div>
 							</div>
@@ -64,7 +85,8 @@
 							</div>
 						</div>
 						<div class="d-flex btn-section sign-UP">
-							<div class="col-md-4"><input type="button" value="Submit" class="btn btn-primary"> </div>
+							<div class="col-md-4">
+                                                            <input type="submit" value="Submit" class="btn btn-primary"> </div>
 						</div>
 					</div>
 				</form>

@@ -224,7 +224,7 @@ use RegistersUsers,
      */
     public function register(RegistrationFormRequest $request, StorageManagerInterface $storage)
     {
-
+       dd($request);
        
         try {
             $data        = [];

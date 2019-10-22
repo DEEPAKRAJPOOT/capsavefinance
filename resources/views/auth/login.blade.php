@@ -48,7 +48,12 @@
 
                         </div>
                         <div class="form-group mt-3 Forgot">
+<<<<<<< HEAD
                             <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
+=======
+                            <a href="#" class="forgot-link"> Forgot Password </a>
+                            <a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
+>>>>>>> a1923c0cf73329e70eca0af23a981510a30e2367
                             <div>
                                 <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
 
@@ -77,6 +82,7 @@
 
                                                                         $("#password").attr('type', 'text');
                                                                         $("#passwordonoff").addClass('fa fa-eye-slash');
+<<<<<<< HEAD
 
                                                                     } else
                                                                     {
@@ -98,31 +104,22 @@
 <script>
 $(document).ready(function(){
 $("#passwordonoff").click(function(){
+=======
+>>>>>>> a1923c0cf73329e70eca0af23a981510a30e2367
 
-    var getClass  =  $(this).attr('class');
-    
-     $("#passwordonoff").removeClass(getClass);
-  
-    if(getClass=='fa fa-eye')
-    {
+                                                                    } else
+                                                                    {
+                                                                        $("#password").attr('type', 'password');
+                                                                        $("#passwordonoff").addClass('fa fa-eye');
 
-          $("#password").attr('type','text');
-          $("#passwordonoff").addClass('fa fa-eye-slash');
-
-    }
-    else
-    {
-    	$("#password").attr('type','password');
-        $("#passwordonoff").addClass('fa fa-eye');
-
-    }
-    
-   
+                                                                    }
 
 
-});
 
-});
+
+                                                                });
+
+                                                            });
 
 
 </script>	
