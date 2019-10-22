@@ -7,7 +7,6 @@
             <div class="panel-heading">
                 <div class="view-header">
                     <div class="logo-box p-2"><img src="{{url('backend/assets/images/logo.png')}}"></div>
-
                     <div class="header-title">
                         <h3>Login</h3>
                         <small>
@@ -39,23 +38,14 @@
                     <div class="form-group">
                         <label class="control-label" for="pwd">{{trans('master.loginForm.password')}}</label>
                         <div class="hideShowPassword-wrapper">
-
-
                             <input type="password" id="password" class="form-control required" placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" >
-
-                            <button type="button" class="show-pass" ><span class="fa fa-eye" id="passwordonoff"></span></button>
                         </div>
-
                     </div>
                     <div class="form-group mt-3 Forgot">
                         <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
                         <a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
                         <div>
                             <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
-
-
-
-
                         </div>
                 </form>
             </div>
@@ -63,27 +53,26 @@
     </div>
 </div>
 </div>
-
 <style>
-.login-wrapper input.btn.btn-primary {
-    padding: 8px 30px;
-    font-weight: 600;
-    text-shadow: none;
-    font-size: 20px;
-    display: block;
-    float: left;
-    margin: 20px 0px 0;
-    cursor: pointer;
-</style>
-<script>
-    var messages = {
-        req_email: "{{ trans('error_messages.req_user_name') }}",
-        req_password: "{{ trans('error_messages.req_password') }}",
+    .login-wrapper input.btn.btn-primary {
+        padding: 8px 30px;
+        font-weight: 600;
+        text-shadow: none;
+        font-size: 20px;
+        display: block;
+        float: left;
+        margin: 20px 0px 0;
+        cursor: pointer;
+    </style>
+    <script>
+        var messages = {
+            req_email: "{{ trans('error_messages.req_user_name') }}",
+            req_password: "{{ trans('error_messages.req_password') }}",
 
-    };
-</script>
-<script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script>
-@endsection
+        };
+    </script>
+    <script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script>
+    @endsection
 
 
 
