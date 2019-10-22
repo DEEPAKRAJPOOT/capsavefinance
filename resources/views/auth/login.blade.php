@@ -1,41 +1,40 @@
 @extends('layouts.withought_login')
 @section('content')
 
-
-
-
 <div class="login-wrapper col-sm-6 col-sm-offset-3">
-    <div class="logo-box"><img src="{{url('backend/assets/images/logo.png')}}"></div>
     <div class="container-center">
-        <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ route('login_open') }}" id="frmLogin">
-            {{ csrf_field() }}            
-            <div class="panel mb-0">
-                <div class="panel-heading">
-                    <div class="view-header">
-                        <div class="header-title">
-                            <h3>Login</h3>
-                            <small>
-                                <strong>Please enter your credentials to login.</strong>
-                            </small>
+        <div class="panel mb-0">
+            <div class="panel-heading">
+                <div class="view-header">
+                    <div class="logo-box p-2"><img src="{{url('backend/assets/images/logo.png')}}"></div>
 
-                            <div class="failed">
-                                <div style="color:#FF0000">
-                                    <strong class="erro-sms">
-                                    </strong>
-                                </div>
+                    <div class="header-title">
+                        <h3>Login</h3>
+                        <small>
+                            <strong>Please enter your credentials to login.</strong>
+                        </small>
+
+                        <div class="failed">
+                            <div>
+                            @if(Session::has("messages"))
+                            <strong class="erro-sms">
+                             {{ Session::get('messages') }}
+                            </strong>
+                            @endif
+                            
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="panel-body">
-                    <form id="loginForm">
+            </div>
+            <div class="panel-body">
+                    <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ route('login_open') }}" id="frmLogin">
+                        {{ csrf_field() }} 
                         <div class="form-group mb-2">
 
                             <label for="email" class="control-label" >{{trans('master.loginForm.email')}}</label>
                             <input type="text" class="form-control required"  placeholder="{{trans('master.loginForm.email')}}" name="email" value="{{ old('email') }}" id="email" >
-                            @if(Session::has("messages"))
-                            <p>{{ Session::get('messages') }}</p>
-                            @endif
+                            
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="pwd">{{trans('master.loginForm.password')}}</label>
@@ -60,37 +59,38 @@
                     </form>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
-$(document).ready(function () {
-    $("#passwordonoff").click(function () {
+                                                            $(document).ready(function () {
+                                                                $("#passwordonoff").click(function () {
 
-        var getClass = $(this).attr('class');
+                                                                    var getClass = $(this).attr('class');
 
-        $("#passwordonoff").removeClass(getClass);
+                                                                    $("#passwordonoff").removeClass(getClass);
 
-        if (getClass == 'fa fa-eye')
-        {
+                                                                    if (getClass == 'fa fa-eye')
+                                                                    {
 
-            $("#password").attr('type', 'text');
-            $("#passwordonoff").addClass('fa fa-eye-slash');
+                                                                        $("#password").attr('type', 'text');
+                                                                        $("#passwordonoff").addClass('fa fa-eye-slash');
 
-        } else
-        {
-            $("#password").attr('type', 'password');
-            $("#passwordonoff").addClass('fa fa-eye');
+                                                                    } else
+                                                                    {
+                                                                        $("#password").attr('type', 'password');
+                                                                        $("#passwordonoff").addClass('fa fa-eye');
 
-        }
-
-
+                                                                    }
 
 
-    });
 
-});
+
+                                                                });
+
+                                                            });
 
 
 </script>	
