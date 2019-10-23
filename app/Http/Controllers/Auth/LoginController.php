@@ -12,8 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 
-class LoginController extends Controller
-{
+class LoginController extends Controller {
     /*
       |--------------------------------------------------------------------------
       | Login Controller
@@ -26,27 +25,33 @@ class LoginController extends Controller
      */
 
 use AuthenticatesUsers;
+
     /**
      * User repository
      *
      * @var object
      */
     protected $userRepo;
-
+    
     /**
      * Where to redirect users after login.
      *
      * @var string
      */
     protected $redirectTo = '/dashboard';
-
+    /**
+     * Multiple times user login blocking.  
+     *
+     * @var value
+     */
+    protected $maxAttempts = 1; // Default is 5
+    protected $decayMinutes = 2; // Default is 1
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user)
-    {
+    public function __construct(InvUserRepoInterface $user) {
         $this->middleware('guest')->except('logout');
         $this->userRepo = $user;
     }
@@ -57,10 +62,7 @@ use AuthenticatesUsers;
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
-    {
-          // echo bcrypt('pass@123');die;
-      
+    public function login(Request $request) {
         try {
             //Validation for request
             // $this->validateLogin($request);
@@ -70,20 +72,18 @@ use AuthenticatesUsers;
             // the IP address of the client making these requests into this application.
             if ($this->hasTooManyLoginAttempts($request)) {
                 $this->fireLockoutEvent($request);
-
                 return $this->sendLockoutResponse($request);
             }
-            $userEmail    = $request['email'];
-           
+            $userEmail = $request['email'];
+
             $userInfo = $this->userRepo->getUserByEmail($userEmail);
-            
+
             if (empty($userInfo)) {
                 //Checking User is frontend user
                 if (!$this->isFrontendUser($userInfo)) {
 
-                Session::flash('messages', trans('error_messages.creadential_not_valid'));
+                    Session::flash('messages', trans('error_messages.creadential_not_valid'));
                     return redirect()->route('login_open');
-                    
                 }
                 //Checking User Active Status
                 if ($this->isAccountBlocked($userInfo)) {
@@ -93,7 +93,7 @@ use AuthenticatesUsers;
             if ($this->attemptLogin($request)) {
 
                 return $this->sendLoginResponse($request);
-               }
+            }
             // If the login attempt was unsuccessful we will increment the number of attempts
             // to login and redirect the user back to the login form. Of course, when this
             // user surpasses their maximum number of attempts they will get locked out.
@@ -101,7 +101,6 @@ use AuthenticatesUsers;
             return $this->sendFailedLoginResponse($request);
 
             //return Redirect::route('dashboard');
-            
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -113,17 +112,14 @@ use AuthenticatesUsers;
      * @param  \Illuminate\Http\Request  $request
      * @return void
      */
-    protected function validateLogin(Request $request)
-    {
-        $this->validate($request,
-            [
+    protected function validateLogin(Request $request) {
+        $this->validate($request, [
             $this->username() => 'required|string',
             'password' => 'required|string',
-            ],
-            [
-            $this->username().".required" => trans('error_messages.req_user_name'),
+                ], [
+            $this->username() . ".required" => trans('error_messages.req_user_name'),
             'password.required' => trans('error_messages.req_password')
-            ]
+                ]
         );
     }
 
@@ -133,8 +129,7 @@ use AuthenticatesUsers;
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function logout(Request $request)
-    {
+    public function logout(Request $request) {
         $this->guard()->logout();
 
         $request->session()->invalidate();
@@ -150,8 +145,7 @@ use AuthenticatesUsers;
      * @return boolean
      * @auther Harish
      */
-    protected function isAccountBlocked($user)
-    {
+    protected function isAccountBlocked($user) {
         if (!empty($user) && $user->status == config('inv_common.USER_STATUS.Block')) {
             return true;
         }
@@ -165,8 +159,7 @@ use AuthenticatesUsers;
      * @return boolean
      * @auther Harish
      */
-    protected function isFrontendUser($user)
-    {
+    protected function isFrontendUser($user) {
         if (!empty($user) && ($user->user_type == config('inv_common.USER_TYPE.FRONTEND') || $user->user_type == 2)) {
             return true;
         }
@@ -178,22 +171,15 @@ use AuthenticatesUsers;
      *
      * @return Response
      */
-    public function redirectToProvider($provider)
-    {
+    public function redirectToProvider($provider) {
         return Socialite::driver($provider)->redirect();
     }
 
-    
-
-    public function welcomePage(){
+    public function welcomePage() {
         Session::forget('uId');
         Session::forget('rId');
         Session::forget('go_on_right');
         return view('welcome');
     }
 
-
-
-
-    
 }
