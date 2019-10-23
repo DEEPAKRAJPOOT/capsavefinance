@@ -11512,7 +11512,7 @@ form .form-control {
   border-width: 1px;
   border-style: solid;
   border-color: #cacdd1;
-  height: 45px;
+  height: 40px;
 }
 
 /* line 18, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
@@ -11608,6 +11608,226 @@ p.small {
 /* line 72, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
 .otp-section {
   display: none;
+}
+
+/* line 79, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar {
+  margin-bottom: 0px;
+  overflow: hidden;
+  counter-reset: step;
+  padding: 0;
+  position: relative;
+  width: 100%;
+}
+
+/* line 88, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar:after {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: #e1e1e1;
+  content: '';
+  left: 0;
+  bottom: 24px;
+  z-index: 1;
+}
+
+/* line 99, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li {
+  list-style-type: none;
+  color: #31302f;
+  width: 20%;
+  float: left;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* line 109, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li:last-child {
+  border-right: 0;
+}
+
+/* line 113, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li.active {
+  color: #2a8b6a;
+}
+
+/* line 117, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li .count-top {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  display: block;
+  background: #f1f1f1;
+  border-radius: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  border: 3px solid #e1e1e1;
+  padding: 8px;
+}
+
+/* line 130, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li .count-bottom {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  display: none;
+  background: #2a8b6a;
+  border-radius: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  border: 3px solid #e1e1e1;
+  padding: 8px;
+}
+
+/* line 143, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li .count-top img {
+  width: 100%;
+  vertical-align: top;
+  height: 100%;
+}
+
+/* line 149, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li .count-bottom img {
+  width: 100%;
+  vertical-align: top;
+  height: 100%;
+}
+
+/* line 155, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li.active .count-top {
+  display: none;
+}
+
+/* line 159, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li.active .count-bottom {
+  display: block;
+}
+
+/* line 163, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li .count-heading {
+  font-size: 14px;
+  float: left;
+  width: 100%;
+  padding-bottom: 5px;
+}
+
+/* line 170, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+#progressbar li.count-active .count-top {
+  background: #cff0e4;
+  border-color: #d3e6df;
+}
+
+/* line 177, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.top-circle-bg {
+  display: inline-block;
+  position: relative;
+  z-index: 2;
+}
+
+/* line 182, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.form-heading small {
+  font-size: 11px;
+  color: #888;
+  letter-spacing: 1px;
+}
+
+/* line 187, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.form-fields h3 {
+  background: #e1f0eb;
+  padding: 4px 3px 5px 10px;
+  border-left: solid #adbdb8;
+  margin: 20px 0;
+  font-size: 16px;
+  line-height: 28px;
+}
+
+/* line 197, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.sameas {
+  position: absolute;
+  top: 11px;
+  right: 30px;
+  font-size: 14px;
+  display: flex;
+  align-content: center;
+  line-height: 10px;
+  color: #2a8b6a;
+}
+
+/* line 207, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.sameas span {
+  margin: 0 7px;
+}
+
+/* line 210, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.verify-owner-no {
+  position: absolute;
+  right: 16px;
+  padding: 1px 8px;
+  background: #2a8b6a;
+  border-radius: 0px 2px 1px 0px;
+  line-height: 36px;
+  min-width: 65px;
+  text-align: center;
+  top: 32px;
+  text-decoration: none !important;
+  color: #fff !important;
+  font-size: 13px;
+}
+
+/* line 230, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.fil-uploaddiv {
+  display: block;
+  margin: 0 10px;
+  background: #fff;
+}
+
+/* line 234, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.file-icon {
+  border-radius: 50px;
+  background: #DEF8FB;
+  height: 38px;
+  width: 38px;
+  line-height: 38px;
+  text-align: center;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* line 244, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.file-browse input {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+
+/* line 251, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.file-name {
+  display: inline-block;
+  background: #CCE7F0;
+  padding: 7px 10px;
+  border-radius: 18px;
+  height: 35px;
+  margin-right: 10px;
+  color: #0085BA;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* line 262, C:/wamp64/www/rent-alpha/assets/scss/custom/_custom.scss */
+.close-file {
+  padding: 0 7px 0 20px;
+  float: right;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-size: 16px;
+  color: #707070;
+  line-height: 20px;
+  font-weight: 600;
 }
 
 /*# sourceMappingURL=../css/style.map */

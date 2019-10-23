@@ -48,6 +48,18 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'uses' => 'Auth\RegisterController@register'
     ]);
 
+    Route::get('business-information',
+        [
+        'as' => 'business_information_open',
+        'uses' => 'Auth\RegisterController@showBusinessInformationForm'
+    ]);
+
+    Route::get('authorized-signatory',
+        [
+        'as' => 'authorized_signatory_open',
+        'uses' => 'Auth\RegisterController@showAuthorizedSignatoryForm'
+    ]);
+
 
 
 

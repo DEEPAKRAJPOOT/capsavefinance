@@ -677,5 +677,34 @@ use RegistersUsers,
         $userName = $fistNameNew.$lastNameNew.$phoneNew;
         return $userName;
     }
-   
+
+    /**
+     * Show the business information form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showBusinessInformationForm()
+    {
+        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userArr = [];
+        if ($userId > 0) {
+            $userArr = $this->userRepo->find($userId);
+        }
+        return view('auth.business-information', compact('userArr'));
+    }
+
+    /**
+     * Show the authorized signatory form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showAuthorizedSignatoryForm()
+    {
+        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userArr = [];
+        if ($userId > 0) {
+            $userArr = $this->userRepo->find($userId);
+        }
+        return view('auth.authorized-signatory', compact('userArr'));
+    } 
 }
