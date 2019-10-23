@@ -39,7 +39,6 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'user_kyc_id',
         'f_name',
         'm_name',
         'l_name',
