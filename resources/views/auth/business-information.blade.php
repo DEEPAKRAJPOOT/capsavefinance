@@ -73,7 +73,8 @@
 			</div>
 			<div class="col-md-12 form-design ">
 				<div id="reg-box">
-					<form>
+					<form id="business_information_form" method="POST" action="business-information-save">
+						@csrf
 						<div class=" form-fields">
 							<div class="form-sections">
 								<div class="col-md-12">
@@ -90,7 +91,7 @@
 													<span class="mandatory">*</span>
 												</label>
 												<a href="javascript:void(0);" class="verify-owner-no" >Verify</a>
-												<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter GST Number" required="">
+												<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter GST Number">
 											</div>
 										</div>
 										<div class="col-md-6">
@@ -99,7 +100,7 @@
 													<span class="mandatory">*</span>
 												</label>
 												<a href="javascript:void(0);" class="verify-owner-no" >Verify</a>
-												<input type="text" name="name" id="name" value="" class="form-control" tabindex="3" placeholder="Enter Business PAN" required="">
+												<input type="text" name="name" id="name" value="" class="form-control" tabindex="3" placeholder="Enter Business PAN">
 											</div>
 										</div>
 									</div>
@@ -109,7 +110,7 @@
 												<label for="txtEmail">Business Name
 													<span class="mandatory">*</span>
 												</label>
-												<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Business Name" required="">
+												<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Business Name">
 											</div>
 										</div>
 										<div class="col-md-6">
@@ -135,7 +136,7 @@
 												<label for="txtEmail">Business Email
 													<span class="mandatory">*</span>
 												</label>
-												<input type="Email" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Business Email" required="">
+												<input type="Email" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Business Email">
 											</div>
 										</div>
 										<div class="col-md-6">
@@ -143,7 +144,7 @@
 												<label for="txtPassword">Mobile
 													<span class="mandatory">*</span>
 												</label>
-												<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Mobile No." required="">
+												<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Mobile No.">
 											</div>
 										</div>
 									</div>
@@ -179,7 +180,7 @@
 												<label for="txtPassword">CIN
 													<span class="mandatory">*</span>
 												</label>
-												<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter CIN" required="">
+												<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter CIN">
 											</div>
 										</div>
 									</div>
@@ -207,7 +208,7 @@
 														<label for="txtCreditPeriod">Address
 															<span class="mandatory">*</span>
 														</label>
-														<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Your Address" required="">
+														<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Your Address">
 													</div>
 												</div>
 
@@ -218,7 +219,7 @@
 														<label for="txtEmail">City
 															<span class="mandatory">*</span>
 														</label>
-														<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter City Name" required="">
+														<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
 													</div>
 												</div>
 
@@ -250,7 +251,7 @@
 														<label for="txtPassword">Pin Code
 															<span class="mandatory">*</span>
 														</label>
-														<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+														<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 													</div>
 												</div>
 											</div>
@@ -276,7 +277,7 @@
 														<label for="txtCreditPeriod">Address
 															<span class="mandatory">*</span>
 														</label>
-														<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Your Address" required="">
+														<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Your Address">
 													</div>
 												</div>
 
@@ -287,7 +288,7 @@
 														<label for="txtEmail">City
 															<span class="mandatory">*</span>
 														</label>
-														<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter City Name" required="">
+														<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
 													</div>
 												</div>
 
@@ -319,7 +320,7 @@
 														<label for="txtPassword">Pin Code
 															<span class="mandatory">*</span>
 														</label>
-														<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+														<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 													</div>
 												</div>
 											</div>
@@ -333,7 +334,9 @@
 
 								</div>
 								<div class="d-flex btn-section ">
-									<div class="col-md-4 ml-auto text-right"><input type="button" value="Save and Continue" class="btn btn-primary" onclick="window.location.href='authorized-signatory-kyc.php'"> </div>
+									<div class="col-md-4 ml-auto text-right">
+										<input type="submit" value="Save and Continue" class="btn btn-primary">
+									</div>
 								</div>
 
 							</div>
@@ -343,5 +346,5 @@
 			</div>
 		</div>
 	</div>
-
+</div>
 @endsection

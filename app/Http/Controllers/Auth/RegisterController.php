@@ -693,6 +693,26 @@ use RegistersUsers,
         return view('auth.business-information', compact('userArr'));
     }
 
+    public function saveBusinessInformation(RegistrationFormRequest $request, StorageManagerInterface $storage)
+    {
+       dd('working on it');
+        /*try {
+            $data        = [];
+            $arrFileData = [];
+            $arrFileData = $request->all();
+            //$user = $this->create($arrFileData);
+           
+            if ($user) {
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return redirect()->route('authorized_signatory_open');
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }*/
+    }
+
     /**
      * Show the authorized signatory form.
      *
