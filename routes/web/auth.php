@@ -28,6 +28,46 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'as' => 'frontend_logout',
         'uses' => 'Auth\LoginController@logout'
     ]);
+    
+     //Registration step 1
+    Route::get('sign-up',
+        [
+        'as' => 'user_register_open',
+        'uses' => 'Auth\RegisterController@showRegistrationForm'
+    ]);
+
+    Route::get('company-sign-up',
+        [
+        'as' => 'company_register_open',
+        'uses' => 'Auth\RegisterController@showCompRegistrationForm'
+    ]);
+
+    Route::post('register',
+        [
+        'as' => 'user_register_open',
+        'uses' => 'Auth\RegisterController@register'
+    ]);
+
+    Route::get('business-information',
+        [
+        'as' => 'business_information_open',
+        'uses' => 'Auth\RegisterController@showBusinessInformationForm'
+    ]);
+
+    Route::post('business-information-save',
+        [
+        'as' => 'business_information_save',
+        'uses' => 'Auth\RegisterController@saveBusinessInformation'
+    ]);
+
+    Route::get('authorized-signatory',
+        [
+        'as' => 'authorized_signatory_open',
+        'uses' => 'Auth\RegisterController@showAuthorizedSignatoryForm'
+    ]);
+
+
+
 
     // for password
     Route::group(['prefix' => 'password'],

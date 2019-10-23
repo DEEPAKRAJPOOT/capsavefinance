@@ -77,13 +77,13 @@ use RegistersUsers,
         $arrDetailData = [];
         $arrKyc = [];
         $arrKycData = [];
-        $userName =  $this->changeuserName($data['first_name'], $data['last_name'],  $data['phone']);
+       /// $userName =  $this->changeuserName($data['first_name'], $data['last_name'],  $data['phone']);
         $arrData['f_name']          = $data['first_name'];
         $arrData['m_name']          = $data['middle_name'];
         $arrData['l_name']          = $data['last_name'];
         $arrData['email']           = $data['email'];
-        $arrData['username']        = $userName;
-        $arrData['phone_no']        = $data['phone'];
+        ///$arrData['username']        = $userName;
+        $arrData['mobile_no']        = $data['mobile_no'];
         //$arrData['dob']               = $data['dob'];
         $arrData['user_type']       = 1;
         $arrData['is_email_verified']  = 0;
@@ -96,10 +96,10 @@ use RegistersUsers,
         $userDataArray =  $this->userRepo->save($arrData, $userId);
         if($userDataArray->user_id > 0) {
             $arrDetailData['user_id']          = $userDataArray->user_id;
-            $arrDetailData['country_id']       = $data['country_id'];
+          ///  $arrDetailData['country_id']       = $data['country_id'];
            // $arrDetailData['date_of_birth']    = $data['dob'];
-            $date                           = str_replace('/', '-', $data['dob']);
-            $arrDetailData['date_of_birth']                 = date('Y-m-d', strtotime($date));
+           /// $date                           = str_replace('/', '-', $data['dob']);
+           /// $arrDetailData['date_of_birth']                 = date('Y-m-d', strtotime($date));
             //$arrDetailData['date_of_birth']    = '2018-05-05';
             $userDetail = $this->userRepo->saveUserDetails($arrDetailData);
             $arrKyc['user_id']      = $userDetail->user_id;
@@ -109,11 +109,11 @@ use RegistersUsers,
             $arrKyc['is_api_pulled']      = 0;
 
 
-            $kycDetail = $this->userRepo->saveKycDetails($arrKyc);
+           /// $kycDetail = $this->userRepo->saveKycDetails($arrKyc);
             
 
-            $arrKycData['user_kyc_id'] = $kycDetail->kyc_id;
-            $this->userRepo->save($arrKycData, $userDetail->user_id);
+           //// $arrKycData['user_kyc_id'] = $kycDetail->kyc_id;
+           //// $this->userRepo->save($arrKycData, $userDetail->user_id);
         }
         return $userDataArray;
     }
@@ -269,7 +269,7 @@ use RegistersUsers,
     public function compregister(RegistrationFormRequest $request, StorageManagerInterface $storage)
     {
 
-
+ 
         try {
             $data        = [];
             $arrFileData = [];
@@ -677,5 +677,54 @@ use RegistersUsers,
         $userName = $fistNameNew.$lastNameNew.$phoneNew;
         return $userName;
     }
-   
+
+    /**
+     * Show the business information form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showBusinessInformationForm()
+    {
+        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userArr = [];
+        if ($userId > 0) {
+            $userArr = $this->userRepo->find($userId);
+        }
+        return view('auth.business-information', compact('userArr'));
+    }
+
+    public function saveBusinessInformation(RegistrationFormRequest $request, StorageManagerInterface $storage)
+    {
+       dd('working on it');
+        /*try {
+            $data        = [];
+            $arrFileData = [];
+            $arrFileData = $request->all();
+            //$user = $this->create($arrFileData);
+           
+            if ($user) {
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return redirect()->route('authorized_signatory_open');
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }*/
+    }
+
+    /**
+     * Show the authorized signatory form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showAuthorizedSignatoryForm()
+    {
+        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userArr = [];
+        if ($userId > 0) {
+            $userArr = $this->userRepo->find($userId);
+        }
+        return view('auth.authorized-signatory', compact('userArr'));
+    } 
 }
