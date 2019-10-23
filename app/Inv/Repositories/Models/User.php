@@ -42,6 +42,7 @@ class User extends Authenticatable
         'f_name',
         'm_name',
         'l_name',
+        'biz_name',
         'email',
         'password',
         'mobile_no',

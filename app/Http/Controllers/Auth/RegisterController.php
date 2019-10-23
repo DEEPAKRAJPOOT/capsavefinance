@@ -21,9 +21,9 @@ use App\Inv\Repositories\Contracts\Traits\ApiAccessTrait;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
 use App\Inv\Repositories\Models\Userkyc;
+use App\Inv\Repositories\Models\BusinessModel;    
 
-class RegisterController extends Controller
-{
+class RegisterController extends Controller {
     /*
       |--------------------------------------------------------------------------
       | Register Controller
@@ -36,7 +36,9 @@ class RegisterController extends Controller
      */
 
 use RegistersUsers,
-    StorageAccessTraits,ApiAccessTrait;
+    StorageAccessTraits,
+    ApiAccessTrait;
+
     /**
      * User repository
      *
@@ -56,8 +58,7 @@ use RegistersUsers,
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user,InvAppRepoInterface $application)
-    {
+    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $application) {
         $this->middleware('guest');
         $this->userRepo = $user;
         $this->application = $application;
@@ -69,55 +70,31 @@ use RegistersUsers,
      * @param  array  $data
      * @return \App\User
      */
-    protected function create(array $data)
-    {
- 
+    protected function create(array $data) {
+
         //$userId  = Session::has('userId') ? Session::get('userId') : null;
         $arrData = [];
         $arrDetailData = [];
-        $arrKyc = [];
-        $arrKycData = [];
-       /// $userName =  $this->changeuserName($data['first_name'], $data['last_name'],  $data['phone']);
-        $arrData['f_name']          = $data['first_name'];
-        $arrData['m_name']          = $data['middle_name'];
-        $arrData['l_name']          = $data['last_name'];
-        $arrData['email']           = $data['email'];
-        ///$arrData['username']        = $userName;
-        $arrData['mobile_no']        = $data['mobile_no'];
-        //$arrData['dob']               = $data['dob'];
-        $arrData['user_type']       = 1;
-        $arrData['is_email_verified']  = 0;
-        $arrData['is_pwd_changed']     = 0;
-        $arrData['is_email_verified']  = 0;
-        $arrData['is_otp_verified']    = 0;
-        $arrData['is_active']          = 0;
-        $arrData['is_active']          = 0;
+        /// $userName =  $this->changeuserName($data['first_name'], $data['last_name'],  $data['phone']);
+        $arrData['f_name'] = $data['f_name'];
+        $arrData['m_name'] = $data['m_name'];
+        $arrData['l_name'] = $data['l_name'];
+        $arrData['biz_name'] = $data['business_name'];
+        $arrData['email'] = $data['email'];
+        $arrData['password'] = bcrypt($data['password']);
+        $arrData['mobile_no'] = $data['mobile_no'];
+        $arrData['user_type'] = 1;
+        $arrData['is_email_verified'] = 0;
+        $arrData['is_pwd_changed'] = 0;
+        $arrData['is_email_verified'] = 0;
+        $arrData['is_otp_verified'] = 0;
+        $arrData['parent_id'] =  0;
+        $arrData['is_active'] = 0;
+        $arrData['is_active'] = 0;
         $userId = null;
-        $userDataArray =  $this->userRepo->save($arrData, $userId);
-        if($userDataArray->user_id > 0) {
-            $arrDetailData['user_id']          = $userDataArray->user_id;
-          ///  $arrDetailData['country_id']       = $data['country_id'];
-           // $arrDetailData['date_of_birth']    = $data['dob'];
-           /// $date                           = str_replace('/', '-', $data['dob']);
-           /// $arrDetailData['date_of_birth']                 = date('Y-m-d', strtotime($date));
-            //$arrDetailData['date_of_birth']    = '2018-05-05';
-            $userDetail = $this->userRepo->saveUserDetails($arrDetailData);
-            $arrKyc['user_id']      = $userDetail->user_id;
-            $arrKyc['is_by_company']      = 0;
-            $arrKyc['is_approve']         = 0;
-            $arrKyc['is_kyc_completed']   = 0;
-            $arrKyc['is_api_pulled']      = 0;
-
-
-           /// $kycDetail = $this->userRepo->saveKycDetails($arrKyc);
-            
-
-           //// $arrKycData['user_kyc_id'] = $kycDetail->kyc_id;
-           //// $this->userRepo->save($arrKycData, $userDetail->user_id);
-        }
+        $userDataArray = $this->userRepo->save($arrData, $userId);
         return $userDataArray;
     }
-
 
     /**
      * Create a new company user instance after a valid registration.
@@ -125,87 +102,77 @@ use RegistersUsers,
      * @param  array  $data
      * @return \App\User
      */
-    protected function compcreate(array $data)
-    {
+    protected function compcreate(array $data) {
         $arrData = [];
         $arrKyc = [];
         $arrKycData = [];
-        $userName =  $this->changeuserName($data['first_name'], $data['last_name'],  $data['phone']);
-        $arrData['f_name']      = $data['first_name'];
-        $arrData['m_name']      = $data['middle_name'];
-        $arrData['l_name']      = $data['last_name'];
-        $arrData['email']       = $data['email'];
-        $arrData['username']    = $userName;
-        $arrData['phone_no']    = $data['phone'];
-        $dateofBirth       = str_replace('/', '-', $data['dob']);
-        $arrData['date_of_birth']         = date('Y-m-d', strtotime($dateofBirth));
-        $arrData['user_type']          = 2;
-        $arrData['is_email_verified']  = 0;
-        $arrData['is_pwd_changed']     = 0;
-        $arrData['is_email_verified']  = 0;
-        $arrData['is_otp_verified']    = 0;
-        $arrData['is_active']          = 0;
-        $arrData['is_active']          = 0;
+        $userName = $this->changeuserName($data['first_name'], $data['last_name'], $data['phone']);
+        $arrData['f_name'] = $data['first_name'];
+        $arrData['m_name'] = $data['middle_name'];
+        $arrData['l_name'] = $data['last_name'];
+        $arrData['email'] = $data['email'];
+        $arrData['username'] = $userName;
+        $arrData['phone_no'] = $data['phone'];
+        $dateofBirth = str_replace('/', '-', $data['dob']);
+        $arrData['date_of_birth'] = date('Y-m-d', strtotime($dateofBirth));
+        $arrData['user_type'] = 2;
+        $arrData['is_email_verified'] = 0;
+        $arrData['is_pwd_changed'] = 0;
+        $arrData['is_email_verified'] = 0;
+        $arrData['is_otp_verified'] = 0;
+        $arrData['is_active'] = 0;
+        $arrData['is_active'] = 0;
         $userId = null;
-        $userDataArray =  $this->userRepo->save($arrData, $userId);
-        if($userDataArray->user_id > 0) {
-            $arrDetailData['user_id']          = $userDataArray->user_id;
-            $arrDetailData['country_id']       = $data['country_id'];
-            $arrDetailData['corp_name']              = $data['company_name'];
-            $arrDetailData['corp_license_number']    = $data['comp_trade_in'];
-            $dateofCorpration                  = str_replace('/', '-', $data['comp_dof']);
-            $arrDetailData['corp_date_of_formation']    = date('Y-m-d', strtotime($dateofCorpration));
+        $userDataArray = $this->userRepo->save($arrData, $userId);
+        if ($userDataArray->user_id > 0) {
+            $arrDetailData['user_id'] = $userDataArray->user_id;
+            $arrDetailData['country_id'] = $data['country_id'];
+            $arrDetailData['corp_name'] = $data['company_name'];
+            $arrDetailData['corp_license_number'] = $data['comp_trade_in'];
+            $dateofCorpration = str_replace('/', '-', $data['comp_dof']);
+            $arrDetailData['corp_date_of_formation'] = date('Y-m-d', strtotime($dateofCorpration));
             $CorpDetail = $this->userRepo->saveCorpDetails($arrDetailData);
 
 
 
-            $arrKyc['user_id']            = $CorpDetail->user_id;
-            $arrKyc['corp_detail_id']     = $CorpDetail->corp_detail_id;
-            $arrKyc['is_by_company']      = 0;
-            $arrKyc['is_approve']         = 0;
-            $arrKyc['is_kyc_completed']   = 0;
-            $arrKyc['is_api_pulled']      = 0;
+            $arrKyc['user_id'] = $CorpDetail->user_id;
+            $arrKyc['corp_detail_id'] = $CorpDetail->corp_detail_id;
+            $arrKyc['is_by_company'] = 0;
+            $arrKyc['is_approve'] = 0;
+            $arrKyc['is_kyc_completed'] = 0;
+            $arrKyc['is_api_pulled'] = 0;
             $kycDetail = $this->userRepo->saveKycDetails($arrKyc);
             $arrKycData['user_kyc_id'] = $kycDetail->kyc_id;
             $this->userRepo->save($arrKycData, $CorpDetail->user_id);
         }
 
         return $userDataArray;
-
-
     }
-
-
-
 
     /**
      * Show the application registration form.
      *
      * @return \Illuminate\Http\Response
      */
-    public function showRegistrationForm()
-    {
-     
+    public function showRegistrationForm() {
 
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+
+        $userId = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
         return view('auth.sign-up', compact('userArr'));
     }
-    
-    
-    
-     /**
+
+    /**
      * Show the application registration form.
      *
      * @return \Illuminate\Http\Response
      */
-    public function showCompRegistrationForm()
-    {
-        
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+    public function showCompRegistrationForm() {
+
+        $userId = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
@@ -213,37 +180,31 @@ use RegistersUsers,
         return view('auth.company-sign-up', compact('userArr'));
     }
 
-
-    
-
     /**
      * Handle a registration request for the application.
      *
      * @param  \Illuminate\Http\RegistrationFormRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function register(RegistrationFormRequest $request, StorageManagerInterface $storage)
-    {
-       dd($request);
-       
+    public function register(RegistrationFormRequest $request, StorageManagerInterface $storage) {
+        /// dd($request);
+
         try {
-            $data        = [];
+            $data = [];
             $arrFileData = [];
             $arrFileData = $request->all();
             //dd($arrFileData);
             //echo "ddddssssd"; exit;
             //Saving data into database
             $user = $this->create($arrFileData);
-           
-           
-            if ($user) {
+ /// dd($user);
+           if ($user) {
                 if (!Session::has('userId')) {
                     Session::put('userId', (int) $user->user_id);
-                   }
+                }
                 $this->sendVerificationLink($user->user_id);
-                
-                Session::flash('message',
-                    trans('success_messages.basic_saved_successfully'));
+
+                Session::flash('message', trans('success_messages.basic_saved_successfully'));
                 //return redirect(route('education_details'));
                 return redirect()->route('thanks');
             } else {
@@ -254,24 +215,17 @@ use RegistersUsers,
         }
     }
 
-
-
-
-
-
-
     /**
      * Handle a registration request for the application.
      *
      * @param  \Illuminate\Http\RegistrationFormRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function compregister(RegistrationFormRequest $request, StorageManagerInterface $storage)
-    {
+    public function compregister(RegistrationFormRequest $request, StorageManagerInterface $storage) {
 
- 
+
         try {
-            $data        = [];
+            $data = [];
             $arrFileData = [];
             $arrFileData = $request->all();
             //dd($arrFileData);
@@ -280,17 +234,16 @@ use RegistersUsers,
             //unset($user);
             $user = $this->compcreate($arrFileData);
 
-           
+
 
             if ($user) {
                 if (!Session::has('userId')) {
                     Session::put('userId', (int) $user->user_id);
-                   }
-                  // echo $user->id; exit;
+                }
+                // echo $user->id; exit;
 
                 $this->sendVerificationLink($user->user_id);
-                Session::flash('message',
-                    trans('success_messages.basic_saved_successfully'));
+                Session::flash('message', trans('success_messages.basic_saved_successfully'));
                 //return redirect(route('education_details'));
                 return redirect()->route('thanks');
             } else {
@@ -301,85 +254,75 @@ use RegistersUsers,
         }
     }
 
-
-
-
-    
     /**
      * Show the application Thanks page.
      *
      * @return \Illuminate\Http\Response
      */
-    public function showThanksForm()
-    {
+    public function showThanksForm() {
 
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userId = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
         return view('auth.thanks', compact('userArr'));
     }
-  
+
     /**
      * Show the application OTP page.
      *
      * @return \Illuminate\Http\Response
      */
-    public function otpForm($token)
-    {
+    public function otpForm($token) {
         $tokenarr = [];
         $userArr = [];
         $date = new DateTime;
         $currentDate = $date->format('Y/m/d H:i:s');
-         if (isset($token) && !empty($token)) {
-            $email        = Crypt::decrypt($token);
-           $tokenarr['token'] = $token;
+        if (isset($token) && !empty($token)) {
+            $email = Crypt::decrypt($token);
+            $tokenarr['token'] = $token;
             $userArr = $this->userRepo->getUserByEmailforOtp($email);
-         } 
+        }
 
-        
-        if(isset($userArr)) {
-                /*if ($userId > 0) {
-                    $userArr = $this->userRepo->find($userId);
-                }*/
-           
-                return view('auth.otp', compact('userArr'), compact('tokenarr'));
+
+        if (isset($userArr)) {
+            /* if ($userId > 0) {
+              $userArr = $this->userRepo->find($userId);
+              } */
+
+            return view('auth.otp', compact('userArr'), compact('tokenarr'));
         } else {
             return redirect()->route('/otp');
-
         }
     }
+
     /**
      * Send Verification link to user to verify email
      * @param Integer $userId
      */
-    protected function sendVerificationLinkold($userId)
-    {
+    protected function sendVerificationLinkold($userId) {
 
-        $Otpstring  = Helpers::randomOTP();
-        $userArr['otp']   = $Otpstring;
+        $Otpstring = Helpers::randomOTP();
+        $userArr['otp'] = $Otpstring;
         $this->userRepo->save($userArr, $userId);
-        
-        $userArr                = [];
-        $userArr                = $this->userRepo->find($userId,['email', 'first_name', 'last_name']);
-        $verifyUserArr          = [];
-        $verifyUserArr['name']  = $userArr->first_name.' '.$userArr->last_name;
+
+        $userArr = [];
+        $userArr = $this->userRepo->find($userId, ['email', 'first_name', 'last_name']);
+        $verifyUserArr = [];
+        $verifyUserArr['name'] = $userArr->first_name . ' ' . $userArr->last_name;
         $verifyUserArr['email'] = $userArr->email;
-        $verifyUserArr['otp']   = $Otpstring;
-        
+        $verifyUserArr['otp'] = $Otpstring;
+
         Event::fire("user.email.verify", serialize($verifyUserArr));
     }
 
-    protected function sendVerificationLink($userId)
-    {
-        $userArr                = [];
-        $userArr                = $this->userRepo->find($userId,
-            ['email', 'first_name', 'last_name']);
-        $verifyLink             = route('verify_email',
-            ['token' => Crypt::encrypt($userArr['email'])]);
-        $verifyUserArr          = [];
-        $verifyUserArr['name']  = $userArr->f_name.' '.$userArr->l_name;
+    protected function sendVerificationLink($userId) {
+        $userArr = [];
+        $userArr = $this->userRepo->find($userId, ['email', 'f_name', 'l_name']);
+        $verifyLink = route('verify_email', ['token' => Crypt::encrypt($userArr['email'])]);
+        $verifyUserArr = [];
+        $verifyUserArr['name'] = $userArr->f_name . ' ' . $userArr->l_name;
         $verifyUserArr['email'] = $userArr->email;
         $verifyUserArr['vlink'] = $verifyLink;
         Event::dispatch("user.email.verify", serialize($verifyUserArr));
@@ -393,62 +336,60 @@ use RegistersUsers,
      * @param string $token
      * @return Response
      */
-     public function verifyUser($token)
-    {
+    public function verifyUser($token) {
         try {
             if (isset($token) && !empty($token)) {
-                $email        = Crypt::decrypt($token);
+                $email = Crypt::decrypt($token);
                 $userCheckArr = $this->userRepo->getuserByEmail($email);
                 // echo "==>".count($userCheckArr); exit;
-                if ($userCheckArr!=false) {
-                   /*if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
-                        return redirect(route('login_open'))->withErrors(trans('error_messages.email_already_verified'));
-                    }*/
+                if ($userCheckArr != false) {
+                    /* if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
+                      return redirect(route('login_open'))->withErrors(trans('error_messages.email_already_verified'));
+                      } */
 
                     $date = new DateTime;
                     $currentDate = $date->format('Y-m-d H:i:s');
                     $date->modify('+30 minutes');
                     $formatted_date = $date->format('Y-m-d H:i:s');
 
-                    $userId              = (int) $userCheckArr->user_id;
-                    $userArr             = [];
-                    $userArr['is_email_verified']   = 1;
-                    $userArr['email_verified_updatetime']   = $currentDate;
+                    $userId = (int) $userCheckArr->user_id;
+                    $userArr = [];
+                    $userArr['is_email_verified'] = 1;
+                    $userArr['email_verified_updatetime'] = $currentDate;
                     $this->userRepo->save($userArr, $userId);
 
                     //save opt
-                    
-                   // echo "Current Date :->".$date;
-                   
-                    $userMailArr         = [];
-                    $otpArr             = [];
+                    // echo "Current Date :->".$date;
 
-                    $Otpstring                     = Helpers::randomOTP();
-                    $otpArr['otp_no']              = $Otpstring;
-                    $otpArr['activity_id']         = 1;
-                    $otpArr['user_id']             = $userId;
-                    $otpArr['is_otp_expired']   = 0;
-                    $otpArr['is_otp_resent']   = 0;
-                    $otpArr['otp_exp_time']     = $formatted_date;
-                    $otpArr['is_verified']         = 1;
+                    $userMailArr = [];
+                    $otpArr = [];
+
+                    $Otpstring = Helpers::randomOTP();
+                    $otpArr['otp_no'] = $Otpstring;
+                    $otpArr['activity_id'] = 1;
+                    $otpArr['user_id'] = $userId;
+                    $otpArr['is_otp_expired'] = 0;
+                    $otpArr['is_otp_resent'] = 0;
+                    $otpArr['otp_exp_time'] = $formatted_date;
+                    $otpArr['is_verified'] = 1;
                     $this->userRepo->saveOtp($otpArr);
-                    
-                   
-                    $userMailArr['name'] = $userCheckArr->f_name.' '.$userCheckArr->l_name;
+
+
+                    $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     //$userMailArr['password']   = $string;
-                    $userMailArr['otp']   = $Otpstring;
-                    
+                    $userMailArr['otp'] = $Otpstring;
+
 
                     //$userMailArr['password'] = Session::pull('password');
                     // Send OTP mail to User
-                   
+
                     Event::dispatch("user.sendotp", serialize($userMailArr));
                     Session::flash('message_div', trans('success_messages.email_verified_please_login'));
-                    
+
                     $alluserData = $this->userRepo->getUserDetail((int) $userId);
                     //$verifyLink             = route('verify_email', ['token' => Crypt::encrypt($userArr['email'])]);
-                    return redirect()->route('otp',['token' => Crypt::encrypt($userMailArr['email'])]);
+                    return redirect()->route('otp', ['token' => Crypt::encrypt($userMailArr['email'])]);
                 } else {
                     return redirect(route('login_open'))->withErrors(trans('error_messages.invalid_token'));
                 }
@@ -460,80 +401,65 @@ use RegistersUsers,
         }
     }
 
-
-
     /**
      * Verifying user OTP
      *
      * @param string $token
      * @return Response
      */
-    public function verifyotpUser(Request $request)
-    {
-        $otp =  $request->get('otp');
+    public function verifyotpUser(Request $request) {
+       
+        $otp = $request->get('otp');
         $email = Crypt::decrypt($request->get('token'));
+      
+        
         try {
             if (isset($otp) && !empty($otp)) {
-               
-                $userCheckArr = $this->userRepo->getUserByOPT($otp);
-               // dd($userCheckArr);
-                if ($userCheckArr!=false) {
-                    /*if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
-                        return redirect(route('otp'))->withErrors(trans('error_messages.email_already_verified'));
-                    }*/
+                
+                /////Get user id behalf of email////////////
+                  $userDetails = $this->userRepo->getUserByEmail($email);
+      
+                $userCheckArr = $this->userRepo->getUserByOPT($otp,$userDetails->user_id);
+         
+                if ($userCheckArr != false) {
+                    /* if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
+                      return redirect(route('otp'))->withErrors(trans('error_messages.email_already_verified'));
+                      } */
                     //echo $userCheckArr->user_id; exit;
-                    $userId              = (int) $userCheckArr->user_id;
-                    $userMailArr         = [];
-                    $userArr             = [];
-                    
-                    $string  = Helpers::randomPassword();
+                    $userId = (int) $userCheckArr->user_id; 
+                    $userMailArr = [];
+                    $userArr = [];
+
+                    $string = Helpers::randomPassword();
                     $date = new DateTime;
                     $currentDate = $date->format('Y-m-d H:i:s');
-                    $userArr['is_otp_verified']   = 1;
-                    $userArr['is_otp_resent']   = 0;
-                    $userArr['otp_verified_updatetime']   = $currentDate;
+                    $userArr['is_otp_verified'] = 1;
+                    $userArr['is_otp_resent'] = 0;
+                    $userArr['otp_verified_updatetime'] = $currentDate;
 
-                    $userArr['password']   = bcrypt($string);
+                    $userArr['password'] = bcrypt($string);
+                    
                     $userCheckArr = $this->userRepo->getfullUserDetail($userId);
 
-                  
 
-                   
+
                     $this->userRepo->save($userArr, $userId);
-                    $userMailArr['name'] = $userCheckArr->f_name.' '.$userCheckArr->l_name;
+                    $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
-                    $userMailArr['username'] = $userCheckArr->username;
-                    $userMailArr['password']   = $string;
+                  /// $userMailArr['username'] = $userCheckArr->username;
+                    $userMailArr['password'] = $string;
                     //$userMailArr['password'] = Session::pull('password');
-
                     ///////////////////
-                    //Document Requested
-                       $userKycid=$this->application->getUserKycid($userId);//get user kyc id
-                          $corpdata=UserReqDoc::where('user_kyc_id',$userKycid)->first();
-                            $doc_for = 1;
-                            if(empty($corpdata)){
-                                 $doc=DocumentMaster::where('doc_for',$doc_for)->get();
-                                 UserReqDoc::createCorpDocRequired($doc,$userKycid, $userId);
-                            }
-                    //////////////////
-
-                    
+                   
                     // Send registration mail to user with password
                     Event::dispatch("user.registered", serialize($userMailArr));
                     return redirect()->route('otp_thanks');
                     //return redirect()->route('login_open');
-
-
-
-
-
-
-
                 } else {
-                    return redirect(route('otp',['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.invalid_token'));
+                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.invalid_token'));
                 }
             } else {
-                return redirect(route('otp',['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.data_not_found'));
+                return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.data_not_found'));
             }
         } catch (DecryptException $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -545,82 +471,80 @@ use RegistersUsers,
         $userMailArr = [];
         $i = 0;
         $userCheckArr = $this->userRepo->getuserByEmail($email);
-        $userId              = (int) $userCheckArr->user_id;
+        $userId = (int) $userCheckArr->user_id;
         $date = new DateTime;
         $currentDate = $date->format('Y-m-d H:i:s');
         $date->modify('+30 minutes');
         $formatted_date = $date->format('Y-m-d H:i:s');
-        $otpArr             = [];
-        $Otpstring                     = Helpers::randomOTP();
+        $otpArr = [];
+        $Otpstring = Helpers::randomOTP();
         $countOtp = $this->userRepo->getOtps($userId)->toArray();
         //dd($countOtp);
-        if(isset($countOtp)){
+        if (isset($countOtp)) {
             $firstData = $countOtp[0]['otp_exp_time'];
             $updatedTime = new DateTime($firstData);
             $currentDate = new DateTime();
             $interval = $updatedTime->diff($currentDate);
             $hours = $interval->format('%h');
             $minutes = $interval->format('%i');
-            $expireTime = ($hours * 60 + $minutes); 
-            
-            if($expireTime >= 30){
-                 $this->userRepo->updateOtpByExpiry(['is_otp_expired' => 1 ],$userId);
-                 $this->userRepo->updateOtpByExpiry(['is_otp_resent' => 3 ],$userId);
-                
-                 $otpArr['otp_no']              = $Otpstring;
-                 $otpArr['activity_id']         = 1;
-                 $otpArr['user_id']             = $userId;
-                 $otpArr['is_otp_expired']      = 0;
-                 $otpArr['is_otp_resent']       = 0;
-                 $otpArr['otp_exp_time']        = $currentDate;
-                 $otpArr['is_verified']         = 1;
-                 $this->userRepo->saveOtp($otpArr);
-                $userMailArr['name'] = $userCheckArr->f_name.' '.$userCheckArr->l_name;
+            $expireTime = ($hours * 60 + $minutes);
+
+            if ($expireTime >= 30) {
+                $this->userRepo->updateOtpByExpiry(['is_otp_expired' => 1], $userId);
+                $this->userRepo->updateOtpByExpiry(['is_otp_resent' => 3], $userId);
+
+                $otpArr['otp_no'] = $Otpstring;
+                $otpArr['activity_id'] = 1;
+                $otpArr['user_id'] = $userId;
+                $otpArr['is_otp_expired'] = 0;
+                $otpArr['is_otp_resent'] = 0;
+                $otpArr['otp_exp_time'] = $currentDate;
+                $otpArr['is_verified'] = 1;
+                $this->userRepo->saveOtp($otpArr);
+                $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                 $userMailArr['email'] = $userCheckArr->email;
-                $userMailArr['otp']   = $Otpstring;
+                $userMailArr['otp'] = $Otpstring;
                 Event::dispatch("user.sendotp", serialize($userMailArr));
-                    return redirect(route('otp',['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
+                return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
             } else {
                 $countOtp = $this->userRepo->getOtps($userId)->toArray();
-                if(isset($countOtp) && count($countOtp) >= 3) {
-                 return redirect(route('otp',['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_attempts_finish'));
+                if (isset($countOtp) && count($countOtp) >= 3) {
+                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_attempts_finish'));
                 } else {
                     $prev_otp = $this->userRepo->getOtpsbyActive($userId)->toArray();
-                    if(isset($prev_otp) && count($prev_otp) == 1) {
+                    if (isset($prev_otp) && count($prev_otp) == 1) {
                         $arrUpdateOtp = [];
                         $arrUpdateOtp['is_otp_expired'] = 1;
-                        $arrUpdateOtp['otp_exp_time']        = $currentDate;
+                        $arrUpdateOtp['otp_exp_time'] = $currentDate;
                         //dd($prev_otp[0]['otp_trans_id']);
-                        $this->userRepo->updateOtp($arrUpdateOtp, (int)$prev_otp[0]['otp_trans_id']);
-                         $otpArr['otp_no']              = $Otpstring;
-                         $otpArr['activity_id']         = 1;
-                         $otpArr['user_id']             = $userId;
-                         $otpArr['is_otp_expired']      = 0;
-                         $otpArr['is_otp_resent']       = 0;
-                         $otpArr['otp_exp_time']        = $currentDate;
-                         $otpArr['is_verified']         = 1;
-                         $this->userRepo->saveOtp($otpArr);
+                        $this->userRepo->updateOtp($arrUpdateOtp, (int) $prev_otp[0]['otp_trans_id']);
+                        $otpArr['otp_no'] = $Otpstring;
+                        $otpArr['activity_id'] = 1;
+                        $otpArr['user_id'] = $userId;
+                        $otpArr['is_otp_expired'] = 0;
+                        $otpArr['is_otp_resent'] = 0;
+                        $otpArr['otp_exp_time'] = $currentDate;
+                        $otpArr['is_verified'] = 1;
+                        $this->userRepo->saveOtp($otpArr);
                     }
-                    $userMailArr['name'] = $userCheckArr->f_name.' '.$userCheckArr->l_name;
+                    $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
-                    $userMailArr['otp']   = $Otpstring;
+                    $userMailArr['otp'] = $Otpstring;
                     Event::dispatch("user.sendotp", serialize($userMailArr));
-                    return redirect(route('otp',['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
+                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
                 }
             }
         }
     }
 
-    
     /**
      * Show the application OTP page.
      *
      * @return \Illuminate\Http\Response
      */
-    public function verifiedotpUser()
-    {
+    public function verifiedotpUser() {
 
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userId = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
@@ -628,13 +552,12 @@ use RegistersUsers,
         return view('auth.otp-thanks', compact('userArr'));
     }
 
-
-    public function changePassword(Request $request){
+    public function changePassword(Request $request) {
         //echo "<pre>";
         //print_r($request);
 
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
-        
+        $userId = Session::has('userId') ? Session::get('userId') : 0;
+
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
@@ -646,11 +569,11 @@ use RegistersUsers,
 
         if (!(Hash::check($request->get('current-password'), Auth::user()->password))) {
             // The passwords matches
-            return redirect()->back()->with("error","Your current password does not matches with the password you provided. Please try again.");
+            return redirect()->back()->with("error", "Your current password does not matches with the password you provided. Please try again.");
         }
-        if(strcmp($request->get('current-password'), $request->get('new-password')) == 0){
+        if (strcmp($request->get('current-password'), $request->get('new-password')) == 0) {
             //Current password and new password are same
-            return redirect()->back()->with("error","New Password cannot be same as your current password. Please choose a different password.");
+            return redirect()->back()->with("error", "New Password cannot be same as your current password. Please choose a different password.");
         }
         $validatedData = $request->validate([
             'current-password' => 'required',
@@ -660,22 +583,18 @@ use RegistersUsers,
         $user = Auth::user();
         $user->password = bcrypt($request->get('new-password'));
         $user->save();
-        return redirect()->back()->with("success","Password changed successfully !");
-
+        return redirect()->back()->with("success", "Password changed successfully !");
     }
-
-
-
 
     ////make userName
-    public function changeuserName($fistName, $lastName, $phone){
+    public function changeuserName($fistName, $lastName, $phone) {
         //echo "<pre>";
         //print_r($request);
-        $fistNameNew = substr($fistName,0,3);
-        $lastNameNew =  substr($lastName,0,3);
-        $phoneNew    =   substr($phone,0,4);
-        $userName = $fistNameNew.$lastNameNew.$phoneNew;
+        $fistNameNew = substr($fistName, 0, 3);
+        $lastNameNew = substr($lastName, 0, 3);
+        $phoneNew = substr($phone, 0, 4);
+        $userName = $fistNameNew . $lastNameNew . $phoneNew;
         return $userName;
     }
-   
+
 }

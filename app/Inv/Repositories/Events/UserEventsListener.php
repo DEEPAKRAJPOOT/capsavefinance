@@ -134,8 +134,8 @@ class UserEventsListener extends BaseEvent
         $email_content = EmailTemplate::getEmailTemplate("USER_REGISTERED");
         if ($email_content) {
             $mail_body = str_replace(
-                ['%name', '%username','%password'],
-                [ucwords($user['name']),$user['username'],$user['password']],
+                ['%name', '%email','%password'],
+                [ucwords($user['name']),$user['email'],$user['password']],
                 $email_content->message
             );
 
@@ -143,7 +143,7 @@ class UserEventsListener extends BaseEvent
                 ],
                 function ($message) use ($user, $email_content) {
                 $message->from('admin@dexter.com',
-                    'Dexter');
+                    'Rent Alpha');
                 $message->to($user["email"], $user["name"])->subject($email_content->subject);
             });
         }
@@ -170,7 +170,7 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from('admin@dexter.com','Dexter');
+                $message->from('admin@dexter.com','Rent Alpha');
                 $message->to($user["email"], $user["name"])->subject($email_content->subject);
             });
         }

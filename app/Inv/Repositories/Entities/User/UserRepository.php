@@ -365,13 +365,13 @@ class UserRepository extends BaseRepositories implements UserInterface
      *
      * @since 0.1
      */
-    public function getUserByOPT($otp)
+    public function getUserByOPT($otp,$user_id)
     {
        // $result = Otp::where('otp_no', $otp)->first();
 
         //return $result ?: false;
 
-         return Otp::getUserByOPT($otp);
+         return Otp::getUserByOPT($otp,$user_id);
     }
 
 
@@ -410,6 +410,7 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $result ?: false;
     }
 
+   
      /**
      * Get a user model by id
      *
