@@ -20,7 +20,6 @@
                                     {{ Session::get('messages') }}
                                 </strong>
                                 @endif
-
                             </div>
                              <div>
                                  @if($errors->has('messages'))

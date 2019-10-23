@@ -171,7 +171,7 @@ class Otp extends BaseModel
      * @return mixed Array | Boolean false
      * @throws InvalidDataTypeExceptions
      */
-    public static function getUserByOPT($otp)
+    public static function getUserByOPT($otp,$user_id)
     {
         /**
          * Check user id is not an integer
@@ -184,9 +184,10 @@ class Otp extends BaseModel
             ->get();
 
 */
-         $arrUser = self::select('otp_trans.*', 'users.f_name','users.l_name','users.m_name','users.email','users.username')
+         $arrUser = self::select('otp_trans.*', 'users.f_name','users.l_name','users.m_name','users.email')
             ->leftjoin('users', 'otp_trans.user_id', '=', 'users.user_id')
             ->where('otp_trans.otp_no', (int) $otp)
+            ->where('otp_trans.user_id', (int) $user_id)
             ->where('otp_trans.is_otp_expired', 0)
             ->first();
 

@@ -110,6 +110,49 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
             ]
         );
     });
+    
+    
+    
+   //// for verify opt and email
+    
+    
+    Route::get('thanks',
+        [
+        'as' => 'thanks',
+        'uses' => 'Auth\RegisterController@showThanksForm'
+    ]);
+
+    Route::get('otp/{token}',
+        [
+        'as' => 'otp',
+        'uses' => 'Auth\RegisterController@otpForm'
+    ]);
+    //Registration step 2
+    
+    Route::get('verify-email/{token}',
+        [
+        'as' => 'verify_email',
+        'uses' => 'Auth\RegisterController@verifyUser'
+    ]);
+
+    Route::post('verify-otp',
+        [
+        'as' => 'verify_otp',
+        'uses' => 'Auth\RegisterController@verifyotpUser'
+    ]);
+    Route::get('resend-otp',
+        [
+        'as' => 'resend_otp',
+        'uses' => 'Auth\RegisterController@resendotpUser'
+    ]);
+    
+    
+    Route::get('otp-thanks',
+        [
+        'as' => 'otp_thanks',
+        'uses' => 'Auth\RegisterController@verifiedotpUser'
+    ]);
+
    
     
 });
