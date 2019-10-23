@@ -32,14 +32,20 @@ use AuthenticatesUsers;
      * @var object
      */
     protected $userRepo;
-
+    
     /**
      * Where to redirect users after login.
      *
      * @var string
      */
     protected $redirectTo = '/dashboard';
-
+    /**
+     * Multiple times user login blocking.  
+     *
+     * @var value
+     */
+    protected $maxAttempts = 1; // Default is 5
+    protected $decayMinutes = 2; // Default is 1
     /**
      * Create a new controller instance.
      *
@@ -65,9 +71,7 @@ use AuthenticatesUsers;
             // the login attempts for this application. We'll key this by the username and
             // the IP address of the client making these requests into this application.
             if ($this->hasTooManyLoginAttempts($request)) {
-//                die("we");
                 $this->fireLockoutEvent($request);
-                dd($this->sendLockoutResponse($request));
                 return $this->sendLockoutResponse($request);
             }
             $userEmail = $request['email'];

@@ -22,6 +22,13 @@
                                 @endif
 
                             </div>
+                             <div>
+                                 @if($errors->has('messages'))
+                                 <strong class="erro-sms">
+                                    {{trans('auth.throttle')}}
+                                </strong>
+                                 @endif
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -47,11 +54,12 @@
                         <div>
                             <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
                         </div>
+
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 </div>
 <style>
     .login-wrapper input.btn.btn-primary {
