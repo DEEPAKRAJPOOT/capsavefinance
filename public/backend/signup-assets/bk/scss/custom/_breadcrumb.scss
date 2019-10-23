@@ -1,0 +1,26 @@
+.breadcrumb-bg {background: #FBF5F5;position: fixed;width: 100%;top: 0;right: 0;padding-left: 16.66667%; z-index: 1;}
+.breadcrumb-bg h2{font-size:24px; margin:0;}
+.breadcrumb-bg p{font-size:14px; margin:5px 0 0px; color: #9C9C9C;}
+ul.nav-top{margin:18px 0;padding-right: 35px;}
+ul.nav-top li{margin:0 10px;list-style: none;position: relative; cursor: pointer;line-height: 35px;}
+ul.nav-top li:last-child{margin-right: 0;}
+.profile-icon{width: 30px;}
+.profile-icon img{width: 30px; height: 30px; border-radius: 100%;}
+.task-label {position: absolute;top: 3px;right: -1px;width: 8px;height: 8px;background-color: #d92550;z-index: 2;
+border-radius:50px;}
+ul.breadcrumb-left{display: table;margin: 0; padding: 0; min-height:74px;}
+ul.breadcrumb-left li{display: table-cell; vertical-align: middle;list-style: none; padding-left:30px;}
+ul.breadcrumb-left li:nth-child(1){font-size:36px;min-width: 28px;}
+ul.breadcrumb-left li:nth-child(1) i{cursor: pointer;}
+.back-btn{position: absolute;top: 19px;font-size: 36px;left: 15px;}
+#ProfileCard:before {content: '';width: 0;height: 0;border-left: 44px solid transparent;border-right: 20px solid transparent;    border-bottom: 20px solid #e2e2e2;position: absolute;margin: 0 auto;right: 37px;top: -20px;}
+#ProfileCard:after {content: '';width: 0;height: 0;border-left: 44px solid transparent;border-right: 20px solid transparent;    border-bottom: 20px solid #fff;position: absolute;margin: 0 auto;right: 37px;top: -19px;}
+#ProfileCard{position:absolute;right:-51px;padding:10px;z-index:1;top: 56px;visibility:visible;background:#fafbfc;width:230px;box-shadow:0 0.5rem 1rem 0rem rgba(0, 0, 0, 0.15);border: 1px solid #efebeb;}
+#ProfileCard ul{padding:0;}
+#ProfileCard ul li{padding:10px;margin:0;display:block;cursor:pointer;line-height: normal;text-overflow: ellipsis; overflow: hidden;white-space: nowrap;}
+#ProfileCard ul li:hover{color:#ffffff;text-decoration:none;background:#1ea3ae;}
+#ProfileCard ul li i{font-size:15px;margin-right:10px;color:#777777;}
+#ProfileCard ul li:hover i{color:#fff;}
+.open-menu{display: none;}
+.close-menu{display: none;}
+

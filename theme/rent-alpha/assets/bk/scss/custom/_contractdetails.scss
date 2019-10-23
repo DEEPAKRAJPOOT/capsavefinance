@@ -1,0 +1,43 @@
+.card-panel{padding: 10px; min-width:150px}
+.card-panel ul{display: table;margin: 0; padding: 0; min-height:74px;}
+.card-panel ul li{display: table-cell; vertical-align: middle;list-style: none; padding-right:15px;}
+.card-panel ul li:nth-child(1) img{width: 30px; height: 30px;border-radius: 100%;}
+.card-panel h3{font-size: 14px; margin: 0 0 5px 0;}
+.card-panel p{color: #9c9c9c;font-size: 12px;margin: 0;}
+ul.contract-left{display: table;margin: 0; padding: 0; min-height:74px;}
+ul.contract-left li{display: table-cell; vertical-align: middle;list-style: none; padding-left:0;}
+ul.contract-left h2{font-size:24px; margin:0;}
+ul.contract-left p{font-size:14px; margin:5px 0 0px; color: #9C9C9C;}
+.quality-check ul{margin: 0;padding:0 50px 0 17px;}
+.quality-check ul li{margin: 0;padding: 0;list-style-image: url('../images/right-icon.png');}
+.mapouter{width: 100%;}
+ul.contract-top{margin:18px 0; display: table;}
+ul.contract-top li{margin:0 10px;list-style: none;position: relative; display: table-cell; vertical-align: middle;}
+ul.contract-top li{margin:0 10px;list-style: none;position: relative; display: table-cell; vertical-align: middle;}
+ul.contract-top li:nth-child(1) {text-decoration: underline;}
+.contract-details .card-panel{padding-left: 0;}
+
+
+ul.contract-left-view{display: table;margin: 0; padding: 0; min-height:74px;}
+ul.contract-left-view li{display: table-cell; vertical-align:top;list-style: none; padding-left:0;}
+ul.contract-left-view h4{font-size:18px; margin:0;}
+ul.contract-left-view p{font-size:14px; margin:5px 0 0px; color: #9C9C9C;}
+.modal-view .divider{padding: 0; border: 0;}
+ul.contract-left-view1{display: table;margin: 0; padding: 0; min-height:40px;}
+ul.contract-left-view1 li{display: table-cell; vertical-align:middle;list-style: none; padding-left:0;}
+ul.contract-left-view1 h4{font-size:18px; margin:0;}
+ul.contract-left-view1 p{font-size:14px; margin:5px 0 0px;}
+.date-format{ color:#7b7b7b;font-size: 12px;}
+.modal-view .modal-padding{padding: 0; width: 100%;}
+.accordionWrapper{width: 100%;}
+.modal-view h2{font-size: 22px;}
+.modal-view .accordionItemHeading{font-size: 18px;}
+.modal-view .calc-inner-modal {height: calc(100vh - 200px);overflow: auto; padding: 15px;}
+.modal-view.calc-modal {height: calc(100vh - 200px);padding:0 0 1rem 0;}
+.heading-bg{background: #17a2b8;color: #fff; }
+.heading-bg h2{color: #fff;padding-top:8px;}
+ol.terms-view-ul{padding: 0 0 0 15px;margin: 0}
+ol.terms-view-ul li{padding: 0;margin: 0;}
+ol.terms-view-ul h3{font-size: 17px;}
+
+

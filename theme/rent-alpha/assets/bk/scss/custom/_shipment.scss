@@ -1,0 +1,172 @@
+.timeline {
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  justify-content: center; padding: 0;
+}
+
+.timeline li {
+  transition: all 200ms ease-in; flex: 4; position: relative;align-items: flex-start!important;    min-height: 300px;
+}
+
+.timestamp {
+  margin-bottom: 20px;
+  padding:30px 0px 10px;
+  display: flex;
+  flex-direction: column;
+  font-weight: 100;
+    border-top: 2px dotted #bebebe;
+    position: relative;
+}
+
+.timeline li:nth-child(1) .timestamp:before {
+    content: "";
+    width: 30px;
+    height: 25px;
+    background-color: #fff;
+    border: 1px solid #fff;
+    border-radius: 25px;
+    position: absolute;
+    top: -18px;
+    left: -1px;
+    transition: all 200ms ease-in;
+    background-image: url(../../assets/images/ship-start.svg);
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+
+.timestamp:before {
+    content: "";
+    width: 25px;
+    height: 22px;
+    border-radius: 25px;
+    position: absolute;
+    top: -23px;
+    left: 0;
+    transition: all 200ms ease-in;
+    background-image: url(../../assets/images/location.svg);
+    background-repeat: no-repeat;
+}
+
+.timestamp:after {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background-color:#fff;border: 1px solid #fff;
+  border-radius: 25px;
+  position: absolute;
+  top: -18px;
+  left:42%;
+  transition: all 200ms ease-in;
+  background-image: url(../../assets/images/ship-icon.svg);background-repeat: no-repeat;
+}
+
+.timeline li:last-child:after {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background-color:#fff;border: 1px solid #fff;
+  border-radius: 25px;
+  position: absolute;
+  top: -16px;
+  right:-1px;
+  transition: all 200ms ease-in;
+  background-image: url(../../assets/images/double-tick-indicator.svg);background-repeat: no-repeat;background-position: center;
+}
+
+.timeline li.complete:last-child:after {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background-color:#fff;border: 1px solid #fff;
+  border-radius: 25px;
+  position: absolute;
+  top: -16px;
+  right:-1px;
+  transition: all 200ms ease-in;
+  background-image: url(../../assets/images/double-tick-indicator-done.svg);background-repeat: no-repeat;background-position: center;
+}
+
+.complete .timestamp:after {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background-color:#fff;border: 1px solid #fff;
+  border-radius: 25px;
+  position: absolute;
+  top: -18px;
+  left:42%;
+  transition: all 200ms ease-in;
+  background-image: url(../../assets/images/truck.svg);background-repeat: no-repeat;
+}
+
+.status div{@extend .flex-column;}
+
+.status {
+  padding:30px 30px 0 0;
+  justify-content: center;
+  border-top: 2px solid #D6DCE0;
+  position: relative;
+  transition: all 200ms ease-in;
+}
+.status h4 {
+  font-weight: 600;
+}
+.status:before {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background-color: white;
+  border-radius: 25px;
+  border: 1px solid #ddd;
+  position: absolute;
+  top: -15px;
+  left: 0;
+  transition: all 200ms ease-in;
+}
+
+
+.timeline li:last-child .status:after {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background-color: white;
+  border-radius: 25px;
+  border: 1px solid #ddd;
+  position: absolute;
+  top: -15px;
+  right: 0;
+  transition: all 200ms ease-in;
+}
+
+
+.timeline li.complete .status {
+  border-top: 2px solid #8FBB13;
+}
+.timeline li.complete .status:before {
+  background-color: #8FBB13;
+  border: none;    background-position: center center;
+  transition: all 200ms ease-in;background-image: url(../../assets/images/double-tick-indicator-white.svg);background-repeat: no-repeat;
+}
+.timeline li.complete:last-child .status:after {
+  background-color: #8FBB13;
+  border: none;    background-position: center center;
+  transition: all 200ms ease-in;background-image: url(../../assets/images/double-tick-indicator-white.svg);background-repeat: no-repeat;
+}
+.timeline li.complete .status h4 {
+  color: #66DC71;
+}
+
+.status-first span:nth-child(1){font-size: 18px;}
+.status-first span:nth-child(2){color:#7F7F7F;}
+
+.status-second{}
+.status-third{color:#7F7F7F;}
+.status-fourth{color:#BEBEBE;}
+.timestamp .date{color:#7F7F7F;}
+.timestamp .author{color: #000; font-size: 20px;}
+
+
+
+
