@@ -63,6 +63,15 @@ use AuthenticatesUsers;
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
     public function login(Request $request) {
+       
+
+        $request->validate([
+          'email' => 'required|email|max:50',
+          'password'         => 'required',
+        
+        ],['email.required' => 'Please enter currect email.',
+          'password.required'         => 'Please enter currect password.']);
+        
         try {
             //Validation for request
             // $this->validateLogin($request);
@@ -71,13 +80,13 @@ use AuthenticatesUsers;
             // the login attempts for this application. We'll key this by the username and
             // the IP address of the client making these requests into this application.
             if ($this->hasTooManyLoginAttempts($request)) {
-                $this->fireLockoutEvent($request);
-                return $this->sendLockoutResponse($request);
+              $this->fireLockoutEvent($request);
+              return $this->sendLockoutResponse($request);
             }
             $userEmail = $request['email'];
 
             $userInfo = $this->userRepo->getUserByEmail($userEmail);
-
+     
             if (empty($userInfo)) {
                 //Checking User is frontend user
                 if (!$this->isFrontendUser($userInfo)) {
@@ -85,11 +94,28 @@ use AuthenticatesUsers;
                     Session::flash('messages', trans('error_messages.creadential_not_valid'));
                     return redirect()->route('login_open');
                 }
-                //Checking User Active Status
-                if ($this->isAccountBlocked($userInfo)) {
-                    return Redirect::back()->withErrors(trans('error_messages.account_blocked'));
-                }
+                
             }
+            ///Checking User Active Status
+               /// if ($this->isAccountBlocked($userInfo)) {
+               ///    return Redirect::back()->withErrors(trans('error_messages.account_blocked'));
+              /// /}
+                
+                ////// check verify email///////////////
+             
+                 if (!$this->isEmailVerify($userInfo)) {
+                       
+                  
+                     Session::flash('messages', trans('error_messages.login_verify_email'));
+                     return redirect()->route('login_open');
+                }
+                
+                /////////////Check confirm  otp////////////
+                 if (!$this->isOtpVerify($userInfo)) {
+                      Session::flash('messages', trans('error_messages.login_verify_otp'));
+                    return redirect()->route('login_open');
+                }
+                
             if ($this->attemptLogin($request)) {
 
                 return $this->sendLoginResponse($request);
@@ -97,7 +123,9 @@ use AuthenticatesUsers;
             // If the login attempt was unsuccessful we will increment the number of attempts
             // to login and redirect the user back to the login form. Of course, when this
             // user surpasses their maximum number of attempts they will get locked out.
+           
             $this->incrementLoginAttempts($request);
+         
             return $this->sendFailedLoginResponse($request);
 
             //return Redirect::route('dashboard');
@@ -147,6 +175,36 @@ use AuthenticatesUsers;
      */
     protected function isAccountBlocked($user) {
         if (!empty($user) && $user->status == config('inv_common.USER_STATUS.Block')) {
+            return true;
+        }
+        return false;
+    }
+    
+     /**
+     * Check If Login account is not verify email
+     *
+     * @param object $request
+     * @param object $user
+     * @return boolean
+     * @auther Gajendra chauhan
+     */
+    
+     protected function isEmailVerify($user) {
+        if (!empty($user) && ($user->is_email_verified ==1)) {
+            return true;
+        }
+        return false;
+    }
+     /**
+     * Check If Login account is not verify Otp
+     *
+     * @param object $request
+     * @param object $user
+     * @return boolean
+     * @auther Gajendra chauhan
+     */
+    protected function isOtpVerify($user) {
+        if (!empty($user) && ($user->is_otp_verified ==1)) {
             return true;
         }
         return false;
