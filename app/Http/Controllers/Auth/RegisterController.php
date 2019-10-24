@@ -645,6 +645,7 @@ use RegistersUsers,
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
+        
         return view('auth.authorized-signatory', compact('userArr'));
     } 
 }
