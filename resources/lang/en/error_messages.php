@@ -50,6 +50,8 @@ return [
     'req_right_cluster_numeric' =>'Please choose valid cluster.',
     'req_right_date' =>'Please choose Date of Rights.',
     'req_right_description' =>'Please enter Description.',
+    
+   
     //Admin Error Messages
     'admin' => [
         'req_old_password' => 'Old password is required.',
@@ -71,6 +73,8 @@ return [
     'generic.failure'=>'We have encountered a technical issue due to which operation is not completed. Please try after sometime.',
     'creadential_not_valid'=>'Credential are not valid',
     'account_blocked'=>'Your account is blocked. Please contact support@inventrust.com',
+    'login_verify_email' =>'Please verify your email.',
+    'login_verify_otp' =>'Please verify otp.',
     'BlockChain_blocked'=>'Technical team is working on this issue.',
     
     /*************family information**********/
@@ -85,4 +89,4 @@ return [
     'req_spouse_professional_status'=>'Spouse professional status is required.',
     'req_this_field'=>'This field is required',
     'contain_this_alpha_num'=>'This may only contain letters and numbers.',
-];
+    ];

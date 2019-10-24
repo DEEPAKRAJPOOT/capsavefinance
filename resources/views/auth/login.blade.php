@@ -16,7 +16,7 @@
                         <div class="failed">
                             <div>
                                 @if(Session::has("messages"))
-                                <strong class="erro-sms">
+                                <strong class="erro-sms colorRed">
                                     {{ Session::get('messages') }}
                                 </strong>
                                 @endif
@@ -24,7 +24,7 @@
                             </div>
                              <div>
                                  @if($errors->has('messages'))
-                                 <strong class="erro-sms">
+                                 <strong class="erro-sms colorRed">
                                     {{trans('auth.throttle')}}
                                 </strong>
                                  @endif
@@ -40,13 +40,20 @@
 
                         <label for="email" class="control-label" >{{trans('master.loginForm.email')}}</label>
                         <input type="text" class="form-control required"  placeholder="{{trans('master.loginForm.email')}}" name="email" value="{{ old('email') }}" id="email" >
+                      @error('email')
+                       <span class="colorRed"> {{$message}} </span>
+                     @enderror
 
                     </div>
                     <div class="form-group">
                         <label class="control-label" for="pwd">{{trans('master.loginForm.password')}}</label>
                         <div class="hideShowPassword-wrapper">
                             <input type="password" id="password" class="form-control required" placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" >
-                    </div>
+                      @error('password')
+                            <span class="colorRed">{{$message}}</span>
+                             @enderror
+                        
+                        </div>
                     </div>
                     <div class="form-group mt-3 Forgot">
                         <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
@@ -62,6 +69,11 @@
     </div>
 </div>
 <style>
+    .colorRed
+    {
+        
+        color:red;
+    }
     .login-wrapper input.btn.btn-primary {
         padding: 8px 30px;
         font-weight: 600;
