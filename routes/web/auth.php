@@ -65,6 +65,12 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'as' => 'authorized_signatory_open',
         'uses' => 'Auth\RegisterController@showAuthorizedSignatoryForm'
     ]);
+    
+    Route::post('authorized-signatory-save',
+        [
+        'as' => 'authorized_signatory_save',
+        'uses' => 'Auth\RegisterController@saveAuthorizedSignatoryForm'
+    ]);
 
     // for password
     Route::group(['prefix' => 'password'],
