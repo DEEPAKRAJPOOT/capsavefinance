@@ -93,6 +93,10 @@ use RegistersUsers,
         $arrData['is_active'] = 0;
         $userId = null;
         $userDataArray = $this->userRepo->save($arrData, $userId);
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 5c15199bd5e1fe13c98591b61ceccafbc74a339b
         return $userDataArray;
     }
 
