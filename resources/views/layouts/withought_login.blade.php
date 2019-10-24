@@ -2,7 +2,7 @@
 <html lang="en">
 
     <head>
-        <title>Zuron Login</title>
+        <title>Rent Alpha Login</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600&display=swap" rel="stylesheet">
