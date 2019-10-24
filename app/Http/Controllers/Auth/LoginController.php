@@ -105,7 +105,7 @@ use AuthenticatesUsers;
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-
+    
     /**
      * Validate the user login request.
      *
