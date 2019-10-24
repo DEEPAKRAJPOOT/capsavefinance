@@ -114,33 +114,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="otp-section model-center-custom dark-bg form-design ">
-		<div class="col-md-12 p-0">
-			<form>
-				<div class="section-header">
-					<h4 class="section-title"> Enter One Time (OTP) </h4>
-					<button class="close">x</button>
-				</div>
-				<div class="  form-fields">
-					<div class="row">
-						<div class="col-md-12">
-							<div class="form-group">
-								<label for="txtCreditPeriod">Enter OTP
-									<span class="mandatory">*</span>
-								</label>
-								<input type="text" name="otp" id="otp" value="" class="form-control" placeholder="Enter OTP" required="">
-								<p class="small">OTP send successfully on your mobile and email.</p>
-								<a href="#">Resend OTP</a>
-							</div>
-						</div>
-					</div>
-					<div class="row btn-section ">
-						<div class="col-md-4"><input type="button" value="Submit" class="btn btn-primary" onclick="window.location.href = 'business-information.php'"> </div>
- 					</div>
-				</div>
-			</form>
-		</div>
-	</div>
+	
 </div>
  
     @endsection
