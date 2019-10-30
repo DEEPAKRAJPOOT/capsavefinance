@@ -33,5 +33,10 @@ class InvServiceProvider extends ServiceProvider
             'App\Inv\Repositories\Libraries\Storage\Contract\StorageManagerInterface',
             'App\Inv\Repositories\Libraries\Storage\StorageManager'
         );
+
+        $this->app->bind(
+            'App\Inv\Repositories\Contracts\BusinessInterface',
+            'App\Inv\Repositories\Entities\Business\BusinessRepository'
+        );
     }
 }

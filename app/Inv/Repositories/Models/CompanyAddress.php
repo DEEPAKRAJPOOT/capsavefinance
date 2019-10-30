@@ -19,7 +19,7 @@ class CompanyAddress extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'corp_addresses';
+    protected $table = 'rta_biz_addr';
 
     /**
      * Custom primary key is set for the table
