@@ -1,296 +1,330 @@
 @extends('layouts.guest')
 @section('content')
 
+<style>
+	.opacity-0 {
+		opacity: 0
+	}
+
+</style>
 <div class="step-form pt-5">
 
-    <div class="container">
-        <ul id="progressbar">
-            <li class="active">
-                <div class="count-heading">Business Information </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/business-information.png')}}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
-            <li class="count-active">
-                <div class="count-heading"> Authorized Signatory KYC </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/kyc.png')}}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="count-heading">Business Documents </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/business-document.png')}}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="count-heading"> Associate Buyers </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/buyers.png')}}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="count-heading"> Associate Logistics </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/logistics.png')}}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
-        </ul>
+	<div class="container">
+		<ul id="progressbar">
+			<li class="active">
+				<div class="count-heading">Business Information </div>
+				<div class="top-circle-bg">
+					<div class="count-top">
+						<img src="assets/images/business-document.png" width="36" height="36">
+					</div>
+					<div class="count-bottom">
+						<img src="assets/images/tick-image.png" width="36" height="36">
+					</div>
+				</div>
+			</li>
+			<li class="count-active">
+				<div class="count-heading"> Authorized Signatory KYC </div>
+				<div class="top-circle-bg">
+					<div class="count-top">
+						<img src="assets/images/kyc.png" width="36" height="36">
+					</div>
+					<div class="count-bottom">
+						<img src="assets/images/tick-image.png" width="36" height="36">
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="count-heading">Business Documents </div>
+				<div class="top-circle-bg">
+					<div class="count-top">
+						<img src="assets/images/business-document.png" width="36" height="36">
+					</div>
+					<div class="count-bottom">
+						<img src="assets/images/tick-image.png" width="36" height="36">
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="count-heading"> Associate Buyers </div>
+				<div class="top-circle-bg">
+					<div class="count-top">
+						<img src="assets/images/buyers.png" width="36" height="36">
+					</div>
+					<div class="count-bottom">
+						<img src="assets/images/tick-image.png" width="36" height="36">
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="count-heading"> Associate Logistics </div>
+				<div class="top-circle-bg">
+					<div class="count-top">
+						<img src="assets/images/logistics.png" width="36" height="36">
+					</div>
+					<div class="count-bottom">
+						<img src="assets/images/tick-image.png" width="36" height="36">
+					</div>
+				</div>
+			</li>
+		</ul>
 
-    </div>
-
-
-
-    <div class="container">
-
-        <div class="mt-4">
-            <div class="form-heading pb-3 d-flex pr-0">
-                <h2>Partner's Information <small> ( Please fill the Director's Information )</small>
-                </h2>
-
-                <button type="button" id="btnAddMore" class="btn btn-add ml-auto">
-                    <i class="fa fa-plus"></i>
+	</div>
 
 
-                    Add Partner
 
-                </button>
-            </div>
-            <div class="col-md-12 form-design ">
-                <div id="reg-box">
-                    <form autocomplete="on" enctype="multipart/form-data" method="POST" action="{{ route('authorized_signatory_save') }}">
-                        {{ csrf_field() }}
-                        <div class=" form-fields">
-                            <div class="form-sections">
+	<div class="container">
 
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="col-md-12">
-                                            <h3>Partner</h3>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="txtCreditPeriod">Partner Name
-                                                            <span class="mandatory">*</span>
-                                                        </label>
-                                                        <input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Partner Name" required="">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="txtCreditPeriod">PAN Number
-                                                            <span class="mandatory">*</span>
-                                                        </label>
-                                                        <a href="javascript:void(0);" class="verify-owner-no">Verify</a>
-                                                        <input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter PAN Number" required="">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="txtEmail">Aadhar Number
-                                                            <span class="mandatory">*</span>
-                                                        </label>
-                                                        <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Aadhar Number" required="">
-                                                    </div>
-                                                </div>
-                                            </div>
+		<div class="mt-4">
+			<div class="form-heading pb-3 d-flex pr-0">
+				<h2>Promoter Details
+					<small> ( Please fill the Director's Information )</small>
+				</h2>
 
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="txtCreditPeriod">Contact Email
-                                                            <span class="mandatory">*</span>
-                                                        </label>
-                                                        <input type="email" name="employee" id="employee" value="" class="form-control" placeholder="Enter Email" required="">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-
-                                                    <div class="form-group password-input">
-                                                        <label for="txtPassword">Mobile Number
-                                                            <span class="mandatory">*</span>
-                                                        </label>
-                                                        <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Mobile Number" required="">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="txtEmail">Home Ph.
-                                                        </label>
-                                                        <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Home Ph.">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-
-                                                <div class="col-md-4">
-                                                    <div class="row">
-
-                                                        <div class="col-md-12">
-                                                            <div class="form-group password-input">
-                                                                <label for="txtPassword">DOB
-                                                                    <span class="mandatory">*</span>
-                                                                </label>
-                                                                <input type="date" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <div class="form-group password-input">
-                                                                <label for="txtPassword">Gender
-                                                                    <span class="mandatory">*</span>
-                                                                </label>
-                                                                <select class="form-control ">
-                                                                    <option> Select Gender</option>
-                                                                    <option> Male </option>
-                                                                    <option>Female </option>
+				<button type="button" id="btnAddMore" class="btn btn-add ml-auto">
+					<i class="fa fa-plus"></i>
 
 
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+					Add Promoter
 
-                                                </div>
-                                                <div class="col-md-8">
+				</button>
+			</div>
+			<div class="col-md-12 form-design ">
+				<div id="reg-box">
+					<form>
+						<div class=" form-fields">
+							<div class="form-sections">
 
-                                                    <div class="form-group password-input">
-                                                        <label for="txtPassword">Address
-                                                            <span class="mandatory">*</span>
-                                                        </label>
-                                                        <textarea class="form-control textarea" placeholder="Enter Address"></textarea>
+								<div class="row">
+									<div class="col-md-12">
+										<div class="col-md-12">
+											<h3>Promoter</h3>
+										</div>
+										<div class="col-md-12">
+											<div class="row">
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtCreditPeriod">Promoter Name
 
-                                                    </div>
-                                                </div>
+															<span class="mandatory">*</span>
+														</label>
+														<input type="text" name="first_name[]" id="employee" value="" class="form-control" placeholder="Enter First Name" required="">
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtCreditPeriod " class="opacity-0">lastname
+														</label>
+														<input type="text" name="last_name[]" id="employee" value="" class="form-control" placeholder="Enter Last Name" required="">
+													</div>
+												</div>
+
+											</div>
+
+											<div class="row">
 
 
 
 
-                                            </div>
+												<div class="col-md-4">
+													<div class="form-group password-input">
+														<label for="txtPassword">DOB
+															<span class="mandatory">*</span>
+														</label>
+														<input type="date" name="date_of_birth[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group password-input">
+														<label for="txtPassword">Gender
+															<span class="mandatory">*</span>
+														</label>
+														<select class="form-control" name="gender[]">
+															<option> Select Gender</option>
+															<option> Male </option>
+															<option>Female </option>
 
 
-                                        </div>
+														</select>
+													</div>
+												</div>
 
 
 
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="col-md-12 ">
-                                            <h3 class="full-width">Documents
-
-                                            </h3>
-                                            <p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX
-                                                </small></p>
-                                        </div>
-
-                                        <div class="col-md-12">
-                                            <div id="uploadsection3" class="fil-uploaddiv" style="display: block;">
-                                                <div class="row ">
-                                                    <div class="col-md-12">
-                                                        <div class="justify-content-center d-flex">
-                                                            <label class="mb-0"><span class="file-icon"><img src="{{url('backend/signup-assets/images/contractdocs.svg')}}"> </span> PAN Card *	</label>
-                                                            <div class="ml-auto">
-                                                                <div class="file-browse">
-                                                                    <button class="btn custom-btn btn-sm"> <i class="fa fa-upload"></i> Upload</button>
-                                                                    <input type="file" id="file_1" name="pan_doc[]" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                        <div id="filePath_1" class="filePath"></div>
-                                                        <hr>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="justify-content-center d-flex">
-                                                            <label class="mb-0"><span class="file-icon"><img src="{{url('backend/signup-assets/images/contractdocs.svg')}}"> </span> Address Proof *	 </label>
-                                                            <div class="ml-auto">
-                                                                <div class="file-browse">
-                                                                    <button class="btn custom-btn btn-sm"> <i class="fa fa-upload"></i> Upload</button>
-                                                                    <input type="file" name="aadhar_doc[]" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                        <div id="filePath_1" class="filePath"></div>
-                                                        <hr>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="justify-content-center d-flex">
-                                                            <label class="mb-0"><span class="file-icon"><img src="{{url('backend/signup-assets/images/contractdocs.svg')}}"> </span> Partner's Photo *		 </label>
-                                                            <div class="ml-auto">
-                                                                <div class="file-browse">
-                                                                    <button class="btn custom-btn btn-sm"> <i class="fa fa-upload"></i> Upload</button>
-                                                                    <input type="file" name="photo_doc[]" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                        <div id="filePath_1" class="filePath"></div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="term-apply ">
-                                <div class="d-flex align-items-center">
-                                    <input type="checkbox" value="">
-                                    <p class="mb-0 ml-2">I authorize Zuron to pull my consumer/commercial CIBIL.</p>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <input type="checkbox" value="">
-                                    <p class="mb-0 ml-2">I agree to the <a href="#">Terms of Use </a> & <a href="#"> Privacy Policy of Zuron</a></p>
-                                </div>
-                            </div>
-
-                            <div class="d-flex btn-section ">
-                                <div class="col-md-4 ml-auto text-right">
-                                    <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'business-documents.php'">
-                                    <input type="button" value="Save and Continue" class="btn btn-primary" onclick="window.location.href = 'business-documents.php'">
-                                </div>
-                            </div>
 
 
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtCreditPeriod">PAN Number
+
+															<span class="mandatory">*</span>
+														</label>
+														<input type="text" name="pan_no[]" id="employee" value="" class="form-control" placeholder="Enter Email" required="">
+													</div>
+												</div>
 
 
-    </div>
+											</div>
+
+											<div class="row">
+
+												<div class="col-md-4">
+
+													<div class="form-group password-input">
+														<label for="txtPassword">Shareholding (%)
+
+															<span class="mandatory">*</span>
+														</label>
+														<input type="text" name="share_per[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Mobile Number" required="">
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtEmail">Educational Qualification
+
+														</label>
+														<input type="text" name="edu_qualification[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Home Ph.">
+													</div>
+												</div>
+												
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtEmail">Other Ownerships
+
+
+														</label>
+														<input type="text" name="other_ownership[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Home Ph.">
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtEmail">Networth 
+
+
+														</label><a href="javascript:void(0);" class="verify-owner-no">INR</a>
+														<input type="text" name="networth[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Home Ph.">
+													</div>
+												</div>
+												 
+											</div>
+
+
+
+										</div>
+
+
+										<div class="col-md-8">
+
+											<div class="form-group password-input">
+												<label for="txtPassword">Address
+													<span class="mandatory">*</span>
+												</label>
+												<textarea class="form-control textarea" placeholder="Enter Address" name="address"></textarea>
+
+											</div>
+										</div>
+									</div>
+									<!--
+									<div class="col-md-4">
+										<div class="col-md-12 ">
+											<h3 class="full-width">Documents
+
+											</h3>
+											<p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX
+												</small></p>
+										</div>
+
+										<div class="col-md-12">
+											<div id="uploadsection3" class="fil-uploaddiv" style="display: block;">
+												<div class="row ">
+													<div class="col-md-12">
+														<div class="justify-content-center d-flex">
+															<label class="mb-0"><span class="file-icon"><img src="assets/images/contractdocs.svg"> </span> PAN Card * </label>
+															<div class="ml-auto">
+																<div class="file-browse">
+																	<button class="btn btn-upload btn-sm"> <i class="fa fa-upload"></i> </button>
+																	<input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+																</div>
+															</div>
+
+														</div>
+														<div id="filePath_1" class="filePath"></div>
+														<hr>
+													</div>
+													<div class="col-md-12">
+														<div class="justify-content-center d-flex">
+															<label class="mb-0"><span class="file-icon"><img src="assets/images/contractdocs.svg"> </span> Address Proof * </label>
+															<div class="ml-auto">
+																<div class="file-browse">
+																	<button class="btn btn-upload btn-sm"> <i class="fa fa-upload"></i> </button>
+																	<input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+																</div>
+															</div>
+
+														</div>
+														<div id="filePath_1" class="filePath"></div>
+														<hr>
+													</div>
+													<div class="col-md-12">
+														<div class="justify-content-center d-flex">
+															<label class="mb-0"><span class="file-icon"><img src="assets/images/contractdocs.svg"> </span> Partner's Photo * </label>
+															<div class="ml-auto">
+																<div class="file-browse">
+																	<button class="btn btn-upload btn-sm"> <i class="fa fa-upload"></i></button>
+																	<input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+																</div>
+															</div>
+
+														</div>
+														<div id="filePath_1" class="filePath"></div>
+
+													</div>
+												</div>
+											</div>
+										</div>
+
+									</div>
+-->
+
+								</div>
+
+							</div>
+                                                    
+                                                    <span class="form-fields-appand"></span>
+
+						<div class="term-apply ">
+								<div class="d-flex align-items-center">
+									<input type="checkbox" value="">
+									<p class="mb-0 ml-2">I authorize Zuron to pull my consumer/commercial CIBIL.</p>
+								</div>
+								<div class="d-flex align-items-center">
+									<input type="checkbox" value="">
+									<p class="mb-0 ml-2">I agree to the <a href="#">Terms of Use </a> & <a href="#"> Privacy Policy of Zuron</a></p>
+								</div>
+							</div>
+
+							<div class="d-flex btn-section ">
+								<div class="col-md-4 ml-auto text-right">
+									<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href='business-documents.php'">
+									<input type="button" value="Save and Continue" class="btn btn-primary" onclick="window.location.href='business-documents.php'">
+								</div>
+							</div>
+
+
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+	</div>
+
 
     @endsection
 
@@ -329,7 +363,7 @@
 
         $(document).ready(function () {
             var max_fields = 10; //maximum input boxes allowed
-            var wrapper = $(".form-fields"); //Fields wrapper
+            var wrapper = $(".form-fields-appand"); //Fields wrapper
             var add_button = $("#btnAddMore"); //Add button ID
 
             var x = 1; //initlal text box count
@@ -339,15 +373,21 @@
                 if (x < max_fields) { //max input box allowed
                     
                     x++; //text box increment
-                    $(wrapper).append("<div class='form-sections'> <button class='close ' type='button'>x</button> <div class='row'> <div class='col-md-8'> <div class='col-md-12'> <h3>Partner</h3> </div> <div class='col-md-12'> <div class='row'> <div class='col-md-4'> <div class='form-group'> <label for='txtCreditPeriod'>Partner Name <span class='mandatory'>*</span> </label> <input type='text' name='employee' id='employee' value=' class='form-control' placeholder='Enter Partner Name' required='> </div> </div> <div class='col-md-4'> <div class='form-group'> <label for='txtCreditPeriod'>PAN Number <span class='mandatory'>*</span> </label> <a href=' class='verify-owner-no'>Verify</a> <input type='text' name='employee' id='employee' value=' class='form-control' placeholder='Enter PAN Number' required='> </div> </div> <div class='col-md-4'> <div class='form-group'> <label for='txtEmail'>Aadhar Number <span class='mandatory'>*</span> </label> <input type='text' name='employee' id='employee' value=' class='form-control' tabindex='1' placeholder='Enter Aadhar Number' required='> </div> </div> </div> <div class='row'> <div class='col-md-4'> <div class='form-group'> <label for='txtCreditPeriod'>Contact Email <span class='mandatory'>*</span> </label> <input type='email' name='employee' id='employee' value=' class='form-control' placeholder='Enter Email' required='> </div> </div> <div class='col-md-4'> <div class='form-group password-input'> <label for='txtPassword'>Mobile Number <span class='mandatory'>*</span> </label> <input type='text' name='employee' id='employee' value=' class='form-control' tabindex='1' placeholder='Enter Mobile Number' required='> </div> </div> <div class='col-md-4'> <div class='form-group'> <label for='txtEmail'>Home Ph. </label> <input type='text' name='employee' id='employee' value=' class='form-control' tabindex='1' placeholder='Enter Home Ph.'> </div> </div> </div> <div class='row'> <div class='col-md-4'> <div class='row'> <div class='col-md-12'> <div class='form-group password-input'> <label for='txtPassword'>DOB <span class='mandatory'>*</span> </label> <input type='date' name='employee' id='employee' value=' class='form-control' tabindex='1' placeholder='Enter Pin Code' required='> </div> </div> <div class='col-md-12'> <div class='form-group password-input'> <label for='txtPassword'>Gender <span class='mandatory'>*</span> </label> <select class='form-control '> <option> Select Gender</option> <option> Male </option> <option>Female </option> </select> </div> </div> </div> </div> <div class='col-md-8'> <div class='form-group password-input'> <label for='txtPassword'>Address <span class='mandatory'>*</span> </label> <textarea class='form-control textarea' placeholder='Enter Address'></textarea> </div> </div> </div> </div> </div> <div class='col-md-4'> <div class='col-md-12 '> <h3 class='full-width'>Documents </h3> <p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX </small></p> </div> <div class='col-md-12'> <div id='uploadsection3' class='fil-uploaddiv' style='display: block;'> <div class='row '> <div class='col-md-12'> <div class='justify-content-center d-flex'> <label class='mb-0'><span class='file-icon'><img src=' '> </span> PAN Card *</label> <div class='ml-auto'> <div class='file-browse'> <button class='btn custom-btn btn-sm'> <i class='fa fa-upload'></i> Upload</button> <input type='file' id='file_'+x+'' name='pan_doc[]' dir='1' onchange='FileDetails(this.getAttribute(' + 'dir' + '))' multiple='> </div> </div> </div> <div id='filePath_'+x+'' class='filePath'></div> <hr> </div> <div class='col-md-12'> <div class='justify-content-center d-flex'> <label class='mb-0'><span class='file-icon'><img src=' '> </span> Address Proof * </label> <div class='ml-auto'> <div class='file-browse'> <button class='btn custom-btn btn-sm'> <i class='fa fa-upload'></i> Upload</button> <input type='file' name='aadhar_doc[]' id='file_'x'' dir=''x'' onchange='FileDetails(this.getAttribute('+'dir'+'))' multiple='> </div> </div> </div> <div id='filePath_1' class='filePath'></div> <hr> </div> <div class='col-md-12'> <div class='justify-content-center d-flex'> <label class='mb-0'><span class='file-icon'><img src=' '> </span> Partner Photo * </label> <div class='ml-auto'> <div class='file-browse'> <button class='btn custom-btn btn-sm'> <i class='fa fa-upload'></i> Upload</button> <input type='file' name='photo_doc[]' id='file_' +x+'' dir='1' onchange='FileDetails(this.getAttribute('+'dir'+'))' multiple='> </div> </div> </div> <div id='filePath_'+x+'' class='filePath'></div> </div> </div> </div> </div> </div> </div> </div>"); //add input box
-                }
+               $(wrapper).append("<div class='form-sections'><button class='close clsdiv' type='button'>x</button><div class='row'><div class='col-md-12'><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' id='employee' value='' class='form-control' placeholder='Enter First Name' required=''></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod ' class='opacity-0'>lastname</label><input type='text' name='last_name[]' id='employee' value='' class='form-control' placeholder='Enter Last Name' required=''></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='date' name='date_of_birth[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Pin Code' required=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Gender<span class='mandatory'>*</span></label><select class='form-control' name='gender[]'><option> Select Gender</option><option> Male </option><option>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod'>PAN Number<span class='mandatory'>*</span></label><input type='text' name='pan_no[]' id='employee' value='' class='form-control' placeholder='Enter Email' required=''></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Mobile Number' required=''></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Home Ph.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Home Ph.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'>INR</a><input type='text' name='networth[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Home Ph.'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea' placeholder='Enter Address' name='address[]'></textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
+               }
             });
 
-            $(wrapper).on("click", ".remove-form", function (e) { //user click on remove text
-                e.preventDefault();
-                $(this).parent('div').remove();
-                x--;
-            })
         });
+        
+          $(document).on("click", ".clsdiv", function (e) { 
+         
+        
+               e.preventDefault();
+               $(this).parent('div').remove();
+               x--;
+            })
+        
+        
+        
     </script>
     @endsection
