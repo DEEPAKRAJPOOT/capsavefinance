@@ -76,4 +76,12 @@ class BusinessController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
 }
