@@ -63,49 +63,49 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     Route::get('authorized-signatory',
         [
         'as' => 'authorized_signatory_open',
-        'uses' => 'Auth\RegisterController@showAuthorizedSignatoryForm'
+        'uses' => 'Backend\BusinessController@showAuthorizedSignatoryForm'
     ]);
     
     Route::post('authorized-signatory-save',
         [
         'as' => 'authorized_signatory_save',
-        'uses' => 'Auth\RegisterController@saveAuthorizedSignatoryForm'
+        'uses' => 'Backend\BusinessController@saveAuthorizedSignatoryForm'
     ]);
     
     Route::get('business-documents',
         [
         'as' => 'business-documents',
-        'uses' => 'Auth\RegisterController@showBusinessDocument'
+        'uses' => 'Backend\BusinessController@showBusinessDocument'
     ]);
     
     Route::post('business-documents-save',
         [
         'as' => 'business-documents-save',
-        'uses' => 'Auth\RegisterController@saveBusinessDocument'
+        'uses' => 'Backend\BusinessController@saveBusinessDocument'
     ]);
     
     Route::get('associate-buyer',
         [
         'as' => 'associate-buyer',
-        'uses' => 'Auth\RegisterController@showAssociateBuyer'
+        'uses' => 'Backend\BusinessController@showAssociateBuyer'
     ]);
     
     Route::post('associate-buyer-save',
         [
         'as' => 'associate-buyer-save',
-        'uses' => 'Auth\RegisterController@saveAssociateBuyer'
+        'uses' => 'Backend\BusinessController@saveAssociateBuyer'
     ]);
     
     Route::get('associate-logistics',
         [
         'as' => 'associate-logistics',
-        'uses' => 'Auth\RegisterController@showAssociateLogistics'
+        'uses' => 'Backend\BusinessController@showAssociateLogistics'
     ]);
     
     Route::post('associate-logistics-save',
         [
         'as' => 'associate-logistics-save',
-        'uses' => 'Auth\RegisterController@saveAssociateLogistics'
+        'uses' => 'Backend\BusinessController@saveAssociateLogistics'
     ]);
 
     // for password
