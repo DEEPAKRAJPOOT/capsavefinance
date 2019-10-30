@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Requests\RegistrationFormRequest;
 use App\Http\Requests\PartnerFormRequest;
+use App\Http\Requests\BusinessDocumentRequest;
 use Illuminate\Contracts\Encryption\DecryptException;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
@@ -684,6 +685,50 @@ use RegistersUsers,
     } 
     
     public function saveAuthorizedSignatoryForm(PartnerFormRequest $request)
+    {
+        try {
+            
+            $data        = [];
+            $arrFileData = [];
+            $arrFileData = $request->all();
+            dd($arrFileData);
+            $user = $this->create($arrFileData);
+           
+            if ($user) {
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return redirect()->route('authorized_signatory_open');
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    /**
+     * Show the Business documents form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showBusinessDocumentForm()
+    {
+        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userArr = [];
+        if ($userId > 0) {
+            $userArr = $this->userRepo->find($userId);
+        }
+
+        return view('auth.business-document', compact('userArr'));
+    } 
+    
+    /**
+     * Handle a Business documents for the application.
+     *
+     * @param  \Illuminate\Http\BusinessDocumentRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function saveBusinessDocumentForm(BusinessDocumentRequest $request)
     {
         try {
             

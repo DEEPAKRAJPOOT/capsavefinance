@@ -71,6 +71,18 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'as' => 'authorized_signatory_save',
         'uses' => 'Auth\RegisterController@saveAuthorizedSignatoryForm'
     ]);
+    
+    Route::get('business-documents',
+        [
+        'as' => 'business-documents',
+        'uses' => 'Auth\RegisterController@showBusinessDocumentForm'
+    ]);
+    
+    Route::post('business-documents-save',
+        [
+        'as' => 'business-documents-save',
+        'uses' => 'Auth\RegisterController@saveBusinessDocumentForm'
+    ]);
 
     // for password
     

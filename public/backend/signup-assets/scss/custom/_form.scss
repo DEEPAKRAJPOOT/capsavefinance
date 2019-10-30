@@ -124,14 +124,12 @@ button.close {
 
 p .add-btn {
 
-    background:$white;
-    position: absolute;
+     position: absolute;
     width: 121px;
     right: -15px;
     top: -12px;
     color: #3e8880;
-    border: solid 1px $darkgreen;
-	
+ 	
 	&:hover{color: $darkgreen}
 
 }

@@ -66,7 +66,7 @@ p.small {
 .form-fields h3 {
 
 	background: #e1f0eb;
-	padding: 4px 3px 5px 10px;
+ 	@include padding (4px, 3px, 5px, 10px);
 	border-left: solid #adbdb8;
 	margin: 20px 0;
 	font-size: 16px;
@@ -114,4 +114,11 @@ p.small {
 		background: $btn-add-hover;
 		 border-color: $btn-add-border-hover
 	}
+}
+
+.relative{position: relative;}
+
+.verify-gst {
+    right: 1px;
+    top: 1px;
 }
