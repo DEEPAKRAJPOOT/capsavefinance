@@ -1,37 +1,16 @@
 body {
 	font-family: 'Lato', sans-serif;
+	font-size: 0.8rem;
+}
+
+p small {
+	font-size: 11px;
 }
 
 .scroll-hiddin {
 	overflow: hidden
 }
 
-form {
-	.form-control {
-		font-size: $font-size-base - 0.20;
-		color: $black;
-		@include border-all(1px, solid, $input-border-color);
-		height: 45px;
-
-	}
-
-	.section-header {
-		background: $darkgreen;
-		color: $white;
-		position: relative;
-		
-		button {
-			
-			@include close-model;
-		}
-
-		@include margin-all(0, 0, 0, 0) h4 {
-			font-size: $form-top-heading;
-			color: $white;
-			@include padding (11px, 20px, 11px, 20px);
-		}
-	}
-}
 
 .relative {
 	#phone-ext {
@@ -49,12 +28,14 @@ form {
 	padding: 0;
 	@include shadow;
 
-	@include margin-all(0, 0, 50px, 0) .form-fields {
+	@include margin-all(0, 0, 50px, 0);
+
+	.form-fields {
 
 		@include padding (10px, 30px, 25px, 30px);
 	}
 }
- 
+
 
 
 header {
@@ -65,7 +46,7 @@ header {
 }
 
 p.small {
-	color: #2a8b6a;
+	color: $darkgreen;
 }
 
 
@@ -74,3 +55,63 @@ p.small {
 }
 
 
+
+
+.form-heading small {
+	font-size: 11px;
+	color: #888;
+	letter-spacing: 1px;
+}
+
+.form-fields h3 {
+
+	background: #e1f0eb;
+	padding: 4px 3px 5px 10px;
+	border-left: solid #adbdb8;
+	margin: 20px 0;
+	font-size: 16px;
+	line-height: 28px;
+
+}
+
+.sameas {
+	position: absolute;
+	top: 11px;
+	right: 30px;
+	font-size: 14px;
+	display: flex;
+	align-content: center;
+	line-height: 10px;
+	color: #2a8b6a;
+}
+
+.sameas span {
+	margin: 0 7px;
+}
+
+.verify-owner-no {
+	position: absolute;
+	right: 16px;
+	padding: 1px 8px;
+	background: #2a8b6a;
+	@include border-radius(0px, 2px, 1px, 0px);
+	line-height: 36px;
+	min-width: 65px;
+	text-align: center;
+	top: 30px;
+	text-decoration: none !important;
+	color: $white !important;
+	font-size: $font-size-base;
+}
+
+.btn-add {
+	color: $white;
+	background-color: $btn-add;
+	border-color: $btn-add-border;
+
+	&:hover {
+		color: $white;
+		background: $btn-add-hover;
+		 border-color: $btn-add-border-hover
+	}
+}
