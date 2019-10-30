@@ -124,12 +124,7 @@ class BusinessRepository implements BusinessInterface
         if(is_null($userId)){
             throw new BlankDataExceptions('No Data Found');
         }
-        dd($attributes);
-
-        return Business::creates($attributes,$userId);
-
-        //return is_null($userId) ? $this->create($attributes) : $this->update($attributes,$userId);
-
+        return Business::creates($attributes, $userId);
     }
 
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\BusinessInterface as InvBusinessRepoInterface;
+use Session;
 
 class BusinessController extends Controller
 {
@@ -64,8 +65,8 @@ class BusinessController extends Controller
 
         try {
             $arrFileData = $request->all();
-            $business_Info = $this->businessRepo->saveBusinessInfo($arrFileData,1);//Auth::user()->id
-            if ($business_Info) {
+            $business_info = $this->businessRepo->saveBusinessInfo($arrFileData,1);//Auth::user()->id
+            if ($business_info) {
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return redirect()->route('authorized_signatory_open');
             } else {
