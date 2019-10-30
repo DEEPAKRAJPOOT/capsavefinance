@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Models;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 use Illuminate\Notifications\Notifiable;
+use App\Inv\Repositories\Models\BusinessAddress;
 
 class Business extends Model
 {
@@ -49,27 +50,52 @@ class Business extends Model
         'updated_by'
     ];
 
-    public static function creates(){
-        DB::table('rta_biz_gst')->insertGetId([]);
-        DB::table('rta_biz_pan')->insertGetId([]);
-        //add add both
-
-        return Business::create([
+    public static function creates($attributes,$userId){
+        $business = Business::create([
         'user_id'=>$userId,
-        'biz_entity_name'=>$attributes->biz_entity_name,
-        'date_of_in_corp'=>$attributes->date_of_in_corp,
-        'entity_type_id'=>$attributes->entity_type_id,
-        'turnover_amt'=>$attributes->turnover_amt,
-        'nature_of_biz'=>$attributes->zzz,
-        'org_id'=>$attributes->zzz,
-        'biz_pan_id'=>$attributes->zzz,
-        'is_pan_verified'=>$attributes->zzz,
-        'biz_gst_id'=>$attributes->zzz,
-        'is_gst_verified'=>$attributes->zzz,
-        'created_by'=>$$userId,
-        ])
+        'biz_entity_name'=>$attributes['biz_entity_name'],
+        'date_of_in_corp'=>'2019-10-30',
+        'entity_type_id'=>$attributes['entity_type_id'],
+        'nature_of_biz'=>$attributes['biz_type_id'],
+        'turnover_amt'=>500000,
+        'org_id'=>1,
+        'created_by'=>$userId,
+        //'biz_pan_id'=>$attributes['zzz'],
+        //'is_pan_verified'=>$attributes['zzz'],
+        //'biz_gst_id'=>$attributes['zzz'],
+        //'is_gst_verified'=>$attributes['zzz'],
+        ]);
+
+        $gst_id = DB::table('biz_gst')->insertGetId([
+                'user_id'=>$userId,
+                'biz_id'=>$business->biz_id,
+                'gst_hash'=>$attributes['biz_gst_number'],
+                'status'=>0,
+                'created_by'=>$userId
+            ]);
+        $pan_id = DB::table('biz_pan')->insertGetId([
+                'user_id'=>$userId,
+                'biz_id'=>$business->biz_id,
+                'pan_hash'=>$attributes['biz_pan_number'],
+                'status'=>0,
+                'created_by'=>$userId
+            ]);
+
+        Business::where('biz_id', $business->biz_id)->update([
+            'biz_pan_id'=>$pan_id,
+            'is_pan_verified'=>0,
+            'biz_gst_id'=>$gst_id,
+            'is_gst_verified'=>0,
+            ]);
+
+        //insert address
+        $address_data = array(
+            array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId),
+            array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_corres_address'],'city_name'=>$attributes['biz_corres_city'],'state_name'=>$attributes['biz_corres_state'],'pin_code'=>$attributes['biz_corres_pin'],'address_type'=>1,'created_by'=>$userId),
+        );
+
+        BusinessAddress::insert($address_data);
+
+        return $business;
     }
-
-
-
 }

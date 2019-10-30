@@ -213,7 +213,7 @@
 											<h3>Business Address
 											</h3>
 										</div>
-										<div class="col-md-12">
+										<div class="col-md-12 address-block">
 											<div class="row">
 												<div class="col-md-12">
 													<div class="form-group">
@@ -276,10 +276,10 @@
 									<div class="col-md-6">
 										<div class="col-md-12 ">
 											<h3 class="full-width">Correspondence Address
-												<div class="sameas"><input type="checkbox" name="address_same"> <span> Same as Business Address</span></div>
+												<div class="sameas"><input type="checkbox" name="address_same" onchange="copyAddress()"> <span> Same as Business Address</span></div>
 											</h3>
 										</div>
-										<div class="col-md-12">
+										<div class="col-md-12 copy-address-block">
 											<div class="row">
 												<div class="col-md-12">
 													<div class="form-group">
@@ -292,7 +292,6 @@
 						                                @enderror
 													</div>
 												</div>
-
 											</div>
 											<div class="row">
 												<div class="col-md-12">
@@ -306,7 +305,6 @@
 						                                @enderror
 													</div>
 												</div>
-
 											</div>
 											<div class="row">
 												<div class="col-md-12">
@@ -356,4 +354,22 @@
 		</div>
 	</div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+	function copyAddress(){
+		if($('input[name=address_same]').is(':checked')){
+			$('.copy-address-block input[name=biz_corres_address]').val($('.address-block input[name=biz_address]').val());
+			$('.copy-address-block input[name=biz_corres_city]').val($('.address-block input[name=biz_city]').val());
+			$('.copy-address-block select[name=biz_corres_state]').val($('.address-block select[name=biz_state]').val());
+			$('.copy-address-block input[name=biz_corres_pin]').val($('.address-block input[name=biz_pin]').val());
+		}else{
+			$('.copy-address-block input[name=biz_corres_address]').val('');
+			$('.copy-address-block input[name=biz_corres_city]').val('');
+			$('.copy-address-block select[name=biz_corres_state]').val('');
+			$('.copy-address-block input[name=biz_corres_pin]').val('');
+		}
+	}
+</script>
 @endsection
