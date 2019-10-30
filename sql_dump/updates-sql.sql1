@@ -10,3 +10,4 @@ ALTER TABLE `rta_biz` CHANGE `biz_pan_id` `biz_pan_id` INT(10) UNSIGNED NULL, CH
 ALTER TABLE `rta_biz_gst` CHANGE `biz_gst_api_id` `biz_gst_api_id` INT(10) UNSIGNED NULL COMMENT 'Last pull api id';
 ALTER TABLE `rta_biz_pan` CHANGE `biz_pan_api_id` `biz_pan_api_id` INT(10) UNSIGNED NULL COMMENT 'Last pull api id';
 ALTER TABLE `rta_biz` CHANGE `segment_id` `segment_id` SMALLINT(5) UNSIGNED NULL;
+drop addr_type in rta_biz_aadr table
