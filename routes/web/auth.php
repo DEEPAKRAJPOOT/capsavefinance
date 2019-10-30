@@ -51,13 +51,13 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     Route::get('business-information',
         [
         'as' => 'business_information_open',
-        'uses' => 'Auth\RegisterController@showBusinessInformationForm'
+        'uses' => 'Backend\BusinessController@showBusinessInformationForm'
     ]);
 
     Route::post('business-information-save',
         [
         'as' => 'business_information_save',
-        'uses' => 'Auth\RegisterController@saveBusinessInformation'
+        'uses' => 'Backend\BusinessController@saveBusinessInformation'
     ]);
 
     Route::get('authorized-signatory',
