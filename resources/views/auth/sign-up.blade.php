@@ -89,7 +89,11 @@
 										<label for="txtPassword">Password
 											<span class="mandatory">*</span>
 										</label>
+<<<<<<< HEAD
+                                                                        <input class="form-control" value="{{old('password')}}" name="password" id="passwordRegistration" type="password" tabindex="5" placeholder="Password" value="{{old('password')}}" oninput="removeSpace(this);">
+=======
                                                                         <input class="form-control" value="{{old('password')}}" name="password" id="passwordRegistration" type="password" tabindex="5" placeholder="Password" oninput="removeSpace(this);">
+>>>>>>> 5c15199bd5e1fe13c98591b61ceccafbc74a339b
 								<span class="text-danger error"> {{$errors->first('password')}}	</span>
                                                                     </div>
 									
@@ -99,7 +103,11 @@
 										<label for="txtPassword">Confirm Password
 											<span class="mandatory">*</span>
 										</label>
+<<<<<<< HEAD
+										<input class="form-control"  value="{{old('password_confirm')}}" name="password_confirm" id="passwordRegistration" type="password" tabindex="5" placeholder="Confirm Password" value="{{old('password_confirm')}}"  oninput="removeSpace(this);">
+=======
 										<input class="form-control"  value="{{old('password_confirm')}}" name="password_confirm" id="passwordRegistration" type="password" tabindex="5" placeholder="Confirm Password" oninput="removeSpace(this);">
+>>>>>>> 5c15199bd5e1fe13c98591b61ceccafbc74a339b
 									<span class="text-danger error">{{$errors->first('password_confirm')}}		</span>
                                                                         </div>
 								</div>
