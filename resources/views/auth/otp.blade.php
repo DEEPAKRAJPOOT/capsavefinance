@@ -1,18 +1,13 @@
 @extends('layouts.guest')
 @section('content')
-<center>
-        @if (count($errors) > 0)
-        <div class="alertMsgBox">
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <ul>
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-        @endif
+
+<div class="form-content no-padding sign-up mt-5">
+	<div class="row justify-content-center align-items-center m-0">
+		<div class="col-md-6 form-design">
+
+			<div id="reg-box">
+                            
+
             <div class="content-wrap height-auto">
                 <div class="login-section">
                    
@@ -22,13 +17,9 @@
                         <p class="p-conent">{{trans('master.otpForm.enter_otp_below')}}</p>
                     </div>  
               </div>
-            </div></center>
- <div class="panel-body ">
-     
-        <div class=" model-center-custom ">
-            
-		<div class="col-md-12 p-0">
-			  <form class="registerForm" autocomplete="off" enctype="multipart/form-data" method="POST" action="{{ route('verify_otp') }}" id="registerForm">
+            </div>    
+                            
+				 <form class="registerForm" autocomplete="off" enctype="multipart/form-data" method="POST" action="{{ route('verify_otp') }}" id="registerForm">
                             {{ csrf_field() }}
 				<div class="section-header">
 					<h4 class="section-title"> Enter One Time (OTP) </h4>
@@ -46,7 +37,13 @@
                                                                   
                                         <input type="text" class="form-control"  placeholder="Enter OTP"  name="otp" id="otp" required>
                                     
-								<p class="small">OTP send successfully on your mobile and email.</p>
+								<p class="text-danger">@if (count($errors) > 0)
+
+@foreach ($errors->all() as $error)
+{{ $error }}
+@endforeach
+
+@endif</p>
 								 <input type="hidden" name="token" id="token" value="{{$tokenarr['token'] }}" />
                                                                 <a href="{{ route('resend_otp',['token' => $tokenarr['token']]) }}">Resend OTP</a>
 							</div>
@@ -59,12 +56,12 @@
  					</div>
 				</div>
 			</form>
+			</div>
 		</div>
 	</div>
-                    <!--startotp-->
-</div>       
-
-           
+	
+</div>
+            
 <script>
     var messages = {
         req_otp: "{{ trans('error_messages.req_otp') }}",
@@ -79,5 +76,5 @@
 <script type="text/javascript" src="{{ asset('frontend/outside/js/bootstrap.min.js') }}"></script>
  @endsection
 
-    
+
 
