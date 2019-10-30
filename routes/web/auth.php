@@ -75,13 +75,37 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     Route::get('business-documents',
         [
         'as' => 'business-documents',
-        'uses' => 'Auth\RegisterController@showBusinessDocumentForm'
+        'uses' => 'Auth\RegisterController@showBusinessDocument'
     ]);
     
     Route::post('business-documents-save',
         [
         'as' => 'business-documents-save',
-        'uses' => 'Auth\RegisterController@saveBusinessDocumentForm'
+        'uses' => 'Auth\RegisterController@saveBusinessDocument'
+    ]);
+    
+    Route::get('associate-buyer',
+        [
+        'as' => 'associate-buyer',
+        'uses' => 'Auth\RegisterController@showAssociateBuyer'
+    ]);
+    
+    Route::post('associate-buyer-save',
+        [
+        'as' => 'associate-buyer-save',
+        'uses' => 'Auth\RegisterController@saveAssociateBuyer'
+    ]);
+    
+    Route::get('associate-logistics',
+        [
+        'as' => 'associate-logistics',
+        'uses' => 'Auth\RegisterController@showAssociateLogistics'
+    ]);
+    
+    Route::post('associate-logistics-save',
+        [
+        'as' => 'associate-logistics-save',
+        'uses' => 'Auth\RegisterController@saveAssociateLogistics'
     ]);
 
     // for password

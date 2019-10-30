@@ -710,7 +710,7 @@ use RegistersUsers,
      *
      * @return \Illuminate\Http\Response
      */
-    public function showBusinessDocumentForm()
+    public function showBusinessDocument()
     {
         $userId  = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
@@ -728,7 +728,51 @@ use RegistersUsers,
      * @return \Illuminate\Http\Response
      */
     
-    public function saveBusinessDocumentForm(BusinessDocumentRequest $request)
+    public function saveBusinessDocument(BusinessDocumentRequest $request)
+    {
+        try {
+            
+            $data        = [];
+            $arrFileData = [];
+            $arrFileData = $request->all();
+            dd($arrFileData);
+            $user = $this->create($arrFileData);
+           
+            if ($user) {
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return redirect()->route('authorized_signatory_open');
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    /**
+     * Show the Associate Logistics form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showAssociateLogistics()
+    {
+        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userArr = [];
+        if ($userId > 0) {
+            $userArr = $this->userRepo->find($userId);
+        }
+
+        return view('auth.associate-logistics', compact('userArr'));
+    } 
+    
+    /**
+     * Handle a Associate Logistics for the application.
+     *
+     * @param  \Illuminate\Http\AssociateLogisticsRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function saveAssociateLogistics(AssociateLogisticsRequest $request)
     {
         try {
             
