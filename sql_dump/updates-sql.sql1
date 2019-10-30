@@ -9,3 +9,5 @@ ALTER TABLE `rta_biz_addr` ADD `address_type` TINYINT(1) NOT NULL COMMENT '0=>pe
 ALTER TABLE `rta_biz` CHANGE `biz_pan_id` `biz_pan_id` INT(10) UNSIGNED NULL, CHANGE `is_pan_verified` `is_pan_verified` TINYINT(1) UNSIGNED NULL COMMENT '1=> Verified, 0=> Not Verified', CHANGE `biz_gst_id` `biz_gst_id` INT(10) UNSIGNED NULL, CHANGE `is_gst_verified` `is_gst_verified` TINYINT(1) UNSIGNED NULL COMMENT '1=> Verified, 0=> Not Verified';
 ALTER TABLE `rta_biz_gst` CHANGE `biz_gst_api_id` `biz_gst_api_id` INT(10) UNSIGNED NULL COMMENT 'Last pull api id';
 ALTER TABLE `rta_biz_pan` CHANGE `biz_pan_api_id` `biz_pan_api_id` INT(10) UNSIGNED NULL COMMENT 'Last pull api id';
+ALTER TABLE `rta_biz` CHANGE `segment_id` `segment_id` SMALLINT(5) UNSIGNED NULL;
+drop addr_type in rta_biz_aadr table
