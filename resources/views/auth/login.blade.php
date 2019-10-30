@@ -20,7 +20,10 @@
                                     {{ Session::get('messages') }}
                                 </strong>
                                 @endif
+<<<<<<< HEAD
+=======
                                 
+>>>>>>> 5c15199bd5e1fe13c98591b61ceccafbc74a339b
                             </div>
                              <div>
                                  @if($errors->has('messages'))
@@ -46,7 +49,11 @@
                         <label class="control-label" for="pwd">{{trans('master.loginForm.password')}}</label>
                         <div class="hideShowPassword-wrapper">
                             <input type="password" id="password" class="form-control required" placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" >
+<<<<<<< HEAD
+                        </div>
+=======
                     </div>
+>>>>>>> 5c15199bd5e1fe13c98591b61ceccafbc74a339b
                     </div>
                     <div class="form-group mt-3 Forgot">
                         <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
