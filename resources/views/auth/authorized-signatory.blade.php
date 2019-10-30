@@ -69,21 +69,25 @@
     <div class="container">
 
         <div class="mt-4">
-            <div class="form-heading p-3">
-                <h2>Partner's Information
-
-                    <small> ( Please fill the Director's Information )
-
-                    </small>
+            <div class="form-heading pb-3 d-flex pr-0">
+                <h2>Partner's Information <small> ( Please fill the Director's Information )</small>
                 </h2>
+
+                <button type="button" id="btnAddMore" class="btn btn-add ml-auto">
+                    <i class="fa fa-plus"></i>
+
+
+                    Add Partner
+
+                </button>
             </div>
-            
             <div class="col-md-12 form-design ">
                 <div id="reg-box">
                     <form autocomplete="on" enctype="multipart/form-data" method="POST" action="{{ route('authorized_signatory_save') }}">
-                            {{ csrf_field() }}
+                        {{ csrf_field() }}
                         <div class=" form-fields">
                             <div class="form-sections">
+
                                 <div class="row">
                                     <div class="col-md-8">
                                         <div class="col-md-12">
@@ -93,18 +97,10 @@
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label for="txtCreditPeriod">Partner First Name
+                                                        <label for="txtCreditPeriod">Partner Name
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <input type="text" name="first_name[]" id="employee" value="" class="form-control" placeholder="Enter Partner Name" required="">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="txtCreditPeriod">Partner Last Name
-                                                            <span class="mandatory">*</span>
-                                                        </label>
-                                                        <input type="text" name="last_name[]" id="employee" value="" class="form-control" placeholder="Enter Partner Name" required="">
+                                                        <input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Partner Name" required="">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -113,7 +109,7 @@
                                                             <span class="mandatory">*</span>
                                                         </label>
                                                         <a href="javascript:void(0);" class="verify-owner-no">Verify</a>
-                                                        <input type="text" name="pan_number[]" id="employee" value="" class="form-control" placeholder="Enter PAN Number" required="">
+                                                        <input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter PAN Number" required="">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -121,7 +117,7 @@
                                                         <label for="txtEmail">Aadhar Number
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <input type="text" name="aadhar_number[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Aadhar Number" required="">
+                                                        <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Aadhar Number" required="">
                                                     </div>
                                                 </div>
                                             </div>
@@ -132,7 +128,7 @@
                                                         <label for="txtCreditPeriod">Contact Email
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <input type="email" name="email[]" id="employee" value="" class="form-control" placeholder="Enter Email" required="">
+                                                        <input type="email" name="employee" id="employee" value="" class="form-control" placeholder="Enter Email" required="">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -141,14 +137,14 @@
                                                         <label for="txtPassword">Mobile Number
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <input type="text" name="mobile_no[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Mobile Number" required="">
+                                                        <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Mobile Number" required="">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="txtEmail">Home Ph.
                                                         </label>
-                                                        <input type="text" name="home_no[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Home Ph.">
+                                                        <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Home Ph.">
                                                     </div>
                                                 </div>
                                             </div>
@@ -162,7 +158,7 @@
                                                                 <label for="txtPassword">DOB
                                                                     <span class="mandatory">*</span>
                                                                 </label>
-                                                                <input type="date" name="dob[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+                                                                <input type="date" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
                                                             </div>
                                                         </div>
                                                         <div class="col-md-12">
@@ -170,7 +166,7 @@
                                                                 <label for="txtPassword">Gender
                                                                     <span class="mandatory">*</span>
                                                                 </label>
-                                                                <select class="form-control " name="gender[]">
+                                                                <select class="form-control ">
                                                                     <option> Select Gender</option>
                                                                     <option> Male </option>
                                                                     <option>Female </option>
@@ -188,19 +184,22 @@
                                                         <label for="txtPassword">Address
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <textarea name="addr[]" class="form-control textarea" placeholder="Enter Address"></textarea>
+                                                        <textarea class="form-control textarea" placeholder="Enter Address"></textarea>
 
-                                                    </div>	</div>
+                                                    </div>
+                                                </div>
+
+
+
+
                                             </div>
+
+
                                         </div>
 
 
 
                                     </div>
-
-
-
-
                                     <div class="col-md-4">
                                         <div class="col-md-12 ">
                                             <h3 class="full-width">Documents
@@ -261,22 +260,38 @@
 
                                     </div>
 
-
-                                </div>
-                                <div class="d-flex btn-section ">
-                                    <div class="col-md-4 ml-auto text-right">
-                                        <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'business-information.php'">
-                                        <input type="submit" value="Save and Continue" class="btn btn-primary">
-                                    </div>
                                 </div>
 
                             </div>
+
+                            <div class="term-apply ">
+                                <div class="d-flex align-items-center">
+                                    <input type="checkbox" value="">
+                                    <p class="mb-0 ml-2">I authorize Zuron to pull my consumer/commercial CIBIL.</p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <input type="checkbox" value="">
+                                    <p class="mb-0 ml-2">I agree to the <a href="#">Terms of Use </a> & <a href="#"> Privacy Policy of Zuron</a></p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex btn-section ">
+                                <div class="col-md-4 ml-auto text-right">
+                                    <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'business-documents.php'">
+                                    <input type="button" value="Save and Continue" class="btn btn-primary" onclick="window.location.href = 'business-documents.php'">
+                                </div>
+                            </div>
+
+
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
+
     </div>
+
     @endsection
 
     @section('scripts')
@@ -311,5 +326,28 @@
             document.getElementById("fileId").remove();
 
         }
+
+        $(document).ready(function () {
+            var max_fields = 10; //maximum input boxes allowed
+            var wrapper = $(".form-fields"); //Fields wrapper
+            var add_button = $("#btnAddMore"); //Add button ID
+
+            var x = 1; //initlal text box count
+            $(add_button).click(function (e) { //on add input button click
+                
+                e.preventDefault();
+                if (x < max_fields) { //max input box allowed
+                    
+                    x++; //text box increment
+                    $(wrapper).append("<div class='form-sections'> <button class='close ' type='button'>x</button> <div class='row'> <div class='col-md-8'> <div class='col-md-12'> <h3>Partner</h3> </div> <div class='col-md-12'> <div class='row'> <div class='col-md-4'> <div class='form-group'> <label for='txtCreditPeriod'>Partner Name <span class='mandatory'>*</span> </label> <input type='text' name='employee' id='employee' value=' class='form-control' placeholder='Enter Partner Name' required='> </div> </div> <div class='col-md-4'> <div class='form-group'> <label for='txtCreditPeriod'>PAN Number <span class='mandatory'>*</span> </label> <a href=' class='verify-owner-no'>Verify</a> <input type='text' name='employee' id='employee' value=' class='form-control' placeholder='Enter PAN Number' required='> </div> </div> <div class='col-md-4'> <div class='form-group'> <label for='txtEmail'>Aadhar Number <span class='mandatory'>*</span> </label> <input type='text' name='employee' id='employee' value=' class='form-control' tabindex='1' placeholder='Enter Aadhar Number' required='> </div> </div> </div> <div class='row'> <div class='col-md-4'> <div class='form-group'> <label for='txtCreditPeriod'>Contact Email <span class='mandatory'>*</span> </label> <input type='email' name='employee' id='employee' value=' class='form-control' placeholder='Enter Email' required='> </div> </div> <div class='col-md-4'> <div class='form-group password-input'> <label for='txtPassword'>Mobile Number <span class='mandatory'>*</span> </label> <input type='text' name='employee' id='employee' value=' class='form-control' tabindex='1' placeholder='Enter Mobile Number' required='> </div> </div> <div class='col-md-4'> <div class='form-group'> <label for='txtEmail'>Home Ph. </label> <input type='text' name='employee' id='employee' value=' class='form-control' tabindex='1' placeholder='Enter Home Ph.'> </div> </div> </div> <div class='row'> <div class='col-md-4'> <div class='row'> <div class='col-md-12'> <div class='form-group password-input'> <label for='txtPassword'>DOB <span class='mandatory'>*</span> </label> <input type='date' name='employee' id='employee' value=' class='form-control' tabindex='1' placeholder='Enter Pin Code' required='> </div> </div> <div class='col-md-12'> <div class='form-group password-input'> <label for='txtPassword'>Gender <span class='mandatory'>*</span> </label> <select class='form-control '> <option> Select Gender</option> <option> Male </option> <option>Female </option> </select> </div> </div> </div> </div> <div class='col-md-8'> <div class='form-group password-input'> <label for='txtPassword'>Address <span class='mandatory'>*</span> </label> <textarea class='form-control textarea' placeholder='Enter Address'></textarea> </div> </div> </div> </div> </div> <div class='col-md-4'> <div class='col-md-12 '> <h3 class='full-width'>Documents </h3> <p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX </small></p> </div> <div class='col-md-12'> <div id='uploadsection3' class='fil-uploaddiv' style='display: block;'> <div class='row '> <div class='col-md-12'> <div class='justify-content-center d-flex'> <label class='mb-0'><span class='file-icon'><img src=' '> </span> PAN Card *</label> <div class='ml-auto'> <div class='file-browse'> <button class='btn custom-btn btn-sm'> <i class='fa fa-upload'></i> Upload</button> <input type='file' id='file_'+x+'' name='pan_doc[]' dir='1' onchange='FileDetails(this.getAttribute(' + 'dir' + '))' multiple='> </div> </div> </div> <div id='filePath_'+x+'' class='filePath'></div> <hr> </div> <div class='col-md-12'> <div class='justify-content-center d-flex'> <label class='mb-0'><span class='file-icon'><img src=' '> </span> Address Proof * </label> <div class='ml-auto'> <div class='file-browse'> <button class='btn custom-btn btn-sm'> <i class='fa fa-upload'></i> Upload</button> <input type='file' name='aadhar_doc[]' id='file_'x'' dir=''x'' onchange='FileDetails(this.getAttribute('+'dir'+'))' multiple='> </div> </div> </div> <div id='filePath_1' class='filePath'></div> <hr> </div> <div class='col-md-12'> <div class='justify-content-center d-flex'> <label class='mb-0'><span class='file-icon'><img src=' '> </span> Partner Photo * </label> <div class='ml-auto'> <div class='file-browse'> <button class='btn custom-btn btn-sm'> <i class='fa fa-upload'></i> Upload</button> <input type='file' name='photo_doc[]' id='file_' +x+'' dir='1' onchange='FileDetails(this.getAttribute('+'dir'+'))' multiple='> </div> </div> </div> <div id='filePath_'+x+'' class='filePath'></div> </div> </div> </div> </div> </div> </div> </div>"); //add input box
+                }
+            });
+
+            $(wrapper).on("click", ".remove-form", function (e) { //user click on remove text
+                e.preventDefault();
+                $(this).parent('div').remove();
+                x--;
+            })
+        });
     </script>
     @endsection
