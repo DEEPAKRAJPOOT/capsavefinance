@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 22, 2019 at 05:47 PM
+-- Generation Time: Oct 30, 2019 at 02:34 PM
 -- Server version: 5.7.27-0ubuntu0.16.04.1
 -- PHP Version: 7.3.10-1+ubuntu16.04.1+deb.sury.org+1
 
@@ -64,21 +64,6 @@ CREATE TABLE `rta_activity_log` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rta_app`
---
-
-CREATE TABLE `rta_app` (
-  `app_id` int(10) UNSIGNED NOT NULL,
-  `user_id` int(10) UNSIGNED NOT NULL,
-  `created_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `updated_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `rta_biz`
 --
 
@@ -89,12 +74,13 @@ CREATE TABLE `rta_biz` (
   `date_of_in_corp` date NOT NULL,
   `entity_type_id` tinyint(3) UNSIGNED NOT NULL,
   `turnover_amt` int(10) UNSIGNED NOT NULL,
-  `nature_of_biz` varchar(100) NOT NULL,
+  `nature_of_biz_id` smallint(5) UNSIGNED NOT NULL,
   `org_id` smallint(5) UNSIGNED NOT NULL,
-  `biz_pan_id` int(10) UNSIGNED NOT NULL,
-  `is_pan_verified` tinyint(1) UNSIGNED NOT NULL COMMENT '1=> Verified, 0=> Not Verified',
-  `biz_gst_id` int(10) UNSIGNED NOT NULL,
-  `is_gst_verified` tinyint(1) UNSIGNED NOT NULL COMMENT '1=> Verified, 0=> Not Verified',
+  `segment_id` smallint(5) UNSIGNED NOT NULL,
+  `biz_pan_id` int(10) UNSIGNED DEFAULT NULL,
+  `is_pan_verified` tinyint(1) UNSIGNED DEFAULT NULL COMMENT '1=> Verified, 0=> Not Verified',
+  `biz_gst_id` int(10) UNSIGNED DEFAULT NULL,
+  `is_gst_verified` tinyint(1) UNSIGNED DEFAULT NULL COMMENT '1=> Verified, 0=> Not Verified',
   `created_by` int(10) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -111,12 +97,31 @@ CREATE TABLE `rta_biz_addr` (
   `biz_addr_id` int(10) UNSIGNED NOT NULL,
   `biz_id` int(10) UNSIGNED DEFAULT NULL,
   `biz_owner_id` int(10) UNSIGNED DEFAULT NULL,
+  `addr_type` tinyint(3) UNSIGNED NOT NULL COMMENT '1=>Registered ,2=>Communication,3=>GST,4=>Wareghouse,5=>Factory',
   `addr_1` varchar(100) DEFAULT NULL,
   `addr_2` varchar(100) DEFAULT NULL,
   `city_name` varchar(50) DEFAULT NULL,
   `state_name` varchar(50) DEFAULT NULL,
   `pin_code` varchar(10) DEFAULT NULL,
+  `address_type` tinyint(1) NOT NULL COMMENT '0=>permanent, 1=>correspondence',
   `created_by` int(10) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_biz_app`
+--
+
+CREATE TABLE `rta_biz_app` (
+  `app_id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `biz_id` int(10) UNSIGNED NOT NULL,
+  `loan_amt` int(10) UNSIGNED NOT NULL,
+  `created_by` int(10) UNSIGNED NOT NULL COMMENT 'Foreign key of table Users',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `updated_by` int(10) UNSIGNED DEFAULT NULL COMMENT 'Foreign key of table Users'
@@ -133,7 +138,7 @@ CREATE TABLE `rta_biz_gst` (
   `user_id` int(10) UNSIGNED NOT NULL,
   `biz_id` int(10) UNSIGNED NOT NULL,
   `gst_hash` varchar(100) NOT NULL,
-  `biz_gst_api_id` int(10) UNSIGNED NOT NULL COMMENT 'Last pull api id',
+  `biz_gst_api_id` int(10) UNSIGNED DEFAULT NULL COMMENT 'Last pull api id',
   `status` varchar(20) NOT NULL,
   `created_by` int(10) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -167,6 +172,9 @@ CREATE TABLE `rta_biz_owner` (
   `user_id` int(10) UNSIGNED NOT NULL,
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `mobile_no` varchar(20) NOT NULL,
+  `home_no` varchar(20) NOT NULL,
   `date_of_birth` date NOT NULL,
   `gender` tinyint(3) UNSIGNED NOT NULL COMMENT '1',
   `biz_addr_id` varchar(100) NOT NULL,
@@ -191,7 +199,7 @@ CREATE TABLE `rta_biz_pan` (
   `user_id` int(10) UNSIGNED NOT NULL,
   `biz_id` int(10) UNSIGNED NOT NULL,
   `pan_hash` varchar(100) NOT NULL,
-  `biz_pan_api_id` int(10) UNSIGNED NOT NULL COMMENT 'Last pull api id',
+  `biz_pan_api_id` int(10) UNSIGNED DEFAULT NULL COMMENT 'Last pull api id',
   `status` varchar(20) NOT NULL,
   `created_by` int(10) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -1573,6 +1581,7 @@ CREATE TABLE `rta_users` (
   `f_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
   `m_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
   `l_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+  `biz_name` varchar(50) CHARACTER SET utf8 NOT NULL,
   `email` varchar(200) CHARACTER SET utf8 DEFAULT NULL,
   `password` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
   `mobile_no` varchar(10) CHARACTER SET utf8 DEFAULT NULL,
@@ -1598,70 +1607,70 @@ CREATE TABLE `rta_users` (
 -- Dumping data for table `rta_users`
 --
 
-INSERT INTO `rta_users` (`user_id`, `user_kyc_id`, `f_name`, `m_name`, `l_name`, `email`, `password`, `mobile_no`, `user_type`, `is_email_verified`, `email_verified_updatetime`, `remember_token`, `is_otp_verified`, `otp_verified_updatetime`, `is_pwd_changed`, `pwd_updatetime`, `is_active`, `block_status_id`, `block_status_updatetime`, `parent_id`, `created_by`, `created_at`, `updated_at`, `updated_by`) VALUES
-(1, 0, 'mait', 'kumar', 'suman', 'akash.kumar@prolitus.com', '$2y$10$9EP7kR2Tey.9jeQFLV6AWeB8C6FIszBzCUA6ntcmVe56HUnMzjFnC', '1225487845', 1, 1, NULL, 'u4TrDtNiabsGCwHXuAp1DZ1UpRhLsCSdX6pIzu6x35usCfzikoqgSL3xjmJN', 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 11:08:50', '2019-09-17 05:44:51', NULL),
-(2, 0, 'dsfs', 'fafa', 'faafa', 'dsafsf@sofodev.co', '$2y$10$RZ5Zhv7rPnWg8.TZyLCQeeHQ5PDvdFBzTuF6N42fIy6WFRGBBciK6', '2423532523', 1, 1, NULL, NULL, 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 12:57:20', '2019-09-16 13:16:38', NULL),
-(3, 0, 'sakshi', 'test', 'pandey', 'sakshi.pandey@sofodev.co', '$2y$10$PpHo3oI3/cLQlX78fsgIvuITDwI4RJa4ibUF6COO7oj8wLbwXkIG2', '9767676767', 1, 1, NULL, 'pJfAeXW61B38jEvDB6wDDC7bNZG9VgHjYygylrmLqIRRRQmCFREhK1iTzpMZ', 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 13:19:10', '2019-09-18 11:24:50', NULL),
-(4, 0, 'company1', 'mid', 'lname', 'company1@sofodev.co', '$2y$10$jaDBg1BMWTzNgyCkGRdJFOuebTToclvDJDmydYenZn/A6Wm7i99Ce', '4547854785', 2, 1, '2019-09-17 10:05:18', NULL, 1, '2019-09-17 10:06:21', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-17 10:04:09', '2019-09-17 10:06:52', NULL),
-(5, 0, 'test', 'comp', 'comp', 'testcomp@comp.com', NULL, '1547857545', 2, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-17 11:42:08', '2019-09-17 11:42:08', NULL),
-(6, 0, 'comp', 'mid', 'private', 'comp@sofodev.co', '$2y$10$7ZEJ8wMc0ZKCr3sEfBx29eTd7WLyfZsWoy66j8ry3UeOMnCL6pxye', '5645253575', 2, 1, '2019-09-17 12:06:29', NULL, 1, '2019-09-17 12:06:44', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-17 12:06:20', '2019-09-17 12:07:15', NULL),
-(8, 0, 'amit', 'kumar', 'suman', 'amitsuman@sofodev.co', '$2y$10$7lY.C8kjDOyqJZd.bSsXPuL3IdxIJSdSlNlFs46JAP7Gg188VfM9.', '7458965874', 1, 1, '2019-09-18 06:59:43', NULL, 1, '2019-09-18 07:00:08', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 06:58:49', '2019-09-18 07:00:47', NULL),
-(9, 0, 'amit', 'kumar', 'gupta', 'amitgupta@sofodev.co', '$2y$10$z5OVRVGWuU5PsDq4qN/EPulT0L/GjQjsvV.qMsIniK2/vyCY/USS2', '1425365241', 2, 1, '2019-09-18 07:02:40', 'IaoBAb0NYnxvr3rDxPTxAPhBCTJW7nYxLqSvFuX2iTGU6H4KNSLri5Dtuvu1', 1, '2019-09-18 07:02:59', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 07:02:23', '2019-09-18 11:19:57', NULL),
-(10, 0, 'Vishnu', 'Kumar', 'Pal', 'vishnu.kumar@prolitus.com', '$2y$10$DJAGJgUchm5ZzFhQ0PdGw.GIiJpDBP6Z38ZbMdUVdF3mqpKsh21gu', '1234569870', 1, 1, '2019-09-18 07:36:14', NULL, 1, '2019-09-18 07:38:49', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 07:34:47', '2019-09-18 09:09:01', NULL),
-(11, 0, 'Raj', 'kumar', 'baghel', 'vishnu28496@gmail.com', '$2y$10$HXycLFDcuNc02yxw2hFvfe0xAlZ0j/8UXUeILr.BuID0AUl2ybosy', '1236547890', 2, 1, '2019-09-18 07:54:24', NULL, 1, '2019-09-18 07:55:34', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 07:52:15', '2019-09-18 08:59:13', NULL),
-(12, 0, 'Akash', 'K', 'Singh', 'akash@sofodev.co', '$2y$10$E/g6eQrNql0v3GgvUmcDtu/C9DOlLExLsE4/bEjQ4/eS7unqC86Dm', '9650762267', 1, 1, '2019-09-18 09:16:01', 'iINDgc02FNFEAmBnpnXDHYangjOfDMTfefl9mRMdn89P43a1SLWPZZEgfSQc', 1, '2019-09-18 09:16:36', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 09:15:25', '2019-09-19 05:20:27', NULL),
-(15, 0, 'amit', 'suman', 'lname', 'amitjku@sofodev.co', NULL, '1234585858', 2, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 11:36:34', '2019-09-18 11:36:34', NULL),
-(18, 0, 'Binay', 'Kumar', 'Rai', 'nbinay@sofodev.co', '$2y$10$ILBx9Fyv6fej172u8YcN6eT1763DAOwj9lL9NooXZg2juQxTSapge', '9879879879', 1, 1, '2019-09-19 05:10:59', '8JuxAghlVtSVhV3xMqS8qVXFCNTdSuXSfPlUofoZlNj7QoY8x8zxukmCmOfC', 1, '2019-09-19 05:11:52', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 05:09:46', '2019-09-19 05:17:08', NULL),
-(19, 0, 'amit', 'kumar', 'suman', 'amitkj@sofodev.co', '$2y$10$7Uc1PXGwoq.GbHUShS3cW.KALYgmF4CagbxVJ6j0W7n4ES1.bRqb2', '7458962547', 1, 1, '2019-09-19 05:24:22', NULL, 1, '2019-09-19 05:24:47', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 05:23:29', '2019-09-19 05:27:35', NULL),
-(21, 0, 'Hirdesh', 'kumar', 'Dixit', 'shringaricachandel37@gmail.com', '$2y$10$pAmgqUkzSQMDQYCxGr11SOxUieB2C6ljb2jEuZqvw1LlSGPoj5deC', '9999999999', 1, 1, '2019-09-19 05:52:35', NULL, 1, '2019-09-19 05:53:11', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 05:51:59', '2019-09-19 05:53:58', NULL),
-(22, 0, 'vishnu', 'kumar', 'baghel', 'vk@123.com', NULL, '9315364083', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 07:17:19', '2019-09-19 07:17:19', NULL),
-(24, 1, 'abhi', 'kumar', 'singh', 'anil1@sofodev.co', '$2y$10$eFclbpEkb8IbKwZuChvszeK7rR1sB02DcYfx7dMRT8G5czP.uJqda', '1111111111', 1, 1, '2019-09-19 12:54:44', NULL, 1, '2019-09-19 12:54:58', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 12:52:33', '2019-09-19 12:55:48', NULL),
-(25, 2, 'abhi', 'kumar', 'kumar', 'abhik@sofodev.co', '$2y$10$F0rLf82mAidUU8maIMj4JOXIAyDP97pixtykCR.pAza2.MU8pxUYu', '3333333333', 2, 1, '2019-09-19 12:57:23', NULL, 1, '2019-09-19 12:57:37', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 12:57:04', '2019-09-19 12:58:06', NULL),
-(35, 12, 'suman', 'kumar', 'dutt', 'suman222@sofodev.co', '$2y$10$Nzj7IsoXtdrnkT93TKVn/O/Hqj2yC2qefQ02jwYM5SFPRMNqcaay.', '2222222222', 1, 1, '2019-09-25 13:56:25', 'ksmvLY8zGgooeH0RdmRhwE0sDuocOLarSPtvZNmgzyhZB2iTOeElBGdmudVk', 1, '2019-09-25 13:56:41', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-25 13:56:09', '2019-09-26 10:39:11', NULL),
-(37, 14, 'sofo', 'kumar', 'cles', 'amitert@sofodev.co', '$2y$10$5pAnpA30gyjikjNH1RC3h.o3nD8nO6Z3LbzZubv5Gh4y9kZlxjcIO', '4545874343', 2, 1, '2019-09-26 05:28:14', NULL, 1, '2019-09-26 05:28:27', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 05:27:58', '2019-09-26 05:29:40', NULL),
-(38, 15, 'Inzi', 'Van', 'Huesen', 'shringarica.chandel@prolitus.com', '$2y$10$bgRxrYA2SoPXzetumsRuheQE2g/QKG.aQwdjmICZGVLcBjGTvkwLC', '7406075007', 1, 1, '2019-09-26 05:34:36', NULL, 1, '2019-09-26 05:35:03', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 05:34:02', '2019-09-26 05:36:19', NULL),
-(39, 16, 'x', 'x', 'x', 'yyy@sofodev.co', NULL, '9876543210', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 05:35:52', '2019-09-26 05:35:52', NULL),
-(41, 18, 'Hirdesh', 'Kumar', 'Dixit', 'shringarica.chandel@sofocle.com', NULL, '7406075007', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 06:19:57', '2019-09-26 06:19:57', NULL),
-(42, 19, 'Shringarica', 'C', 'Chandel', 'hirdesh@prolitus.com', '$2y$10$IlqqCeC8cZsMYNNAyhKDWOQQuzYyHpLwu5QrO74utWixhRbuukxy6', '7406075007', 1, 1, '2019-09-26 06:23:41', NULL, 1, '2019-09-26 06:24:11', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 06:22:34', '2019-09-26 06:25:55', NULL),
-(43, 20, 'jyoti', 'h', 'agrawal', 'vvv@sofodev.co', '$2y$10$TSoOn8RjY5YUQSpfw4Mhi.rV82hlkZcEgcYPwBmTrT1Wpv58VroAW', '9876543210', 2, 1, '2019-09-26 06:45:04', 'WKeOtE0SgrSPlJZTSeRBrUrV91XpeCovukpqSxrSiD8EbhHnsQRk7Ozu9Z9w', 1, '2019-09-26 06:45:10', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 06:44:37', '2019-09-26 06:51:13', NULL),
-(44, 21, 'kx', 'x', 'x', 'g@sofodev.co', '$2y$10$e1uvejsTSkj/QmSFkyNciu/cfL09s7ftBms/sTuw9oVZ9S/5BC6/u', '8976543219', 1, 1, '2019-09-26 07:39:39', NULL, 1, '2019-09-26 07:43:00', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 07:38:14', '2019-09-26 07:43:00', NULL),
-(45, 22, 'sandy', 'kumar', 'sharma', 'sandeep.333sharma@prolitus.com', '$2y$10$yPM5HyCjeO/IlRLnx5Cio.fDGxVIV5DgEOcY.8HsQ1o9T1MKjCssm', '9910291606', 1, 1, '2019-09-26 10:28:07', NULL, 1, '2019-09-26 10:28:19', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 10:25:57', '2019-09-26 10:28:19', NULL),
-(46, 23, 'sanu', 'deol', 'deol', 'sandeep.sharma@prolitus.com', '$2y$10$0xYRH9ZKHQwYWZQzOXVgO.nVpV7cXET95rACycnuK9i.mZ/WtPswu', '9910291606', 2, 1, '2019-09-26 10:33:54', NULL, 1, '2019-09-26 10:34:09', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 10:33:17', '2019-09-26 10:34:09', NULL),
-(47, 24, 'hello', 'india', 'india', 'india@sofodev.co', '$2y$10$PUth1lUEhjh9djUiwQHYIO3cn8V8Upe187cJph63EQD3mzPadkj06', '3434343434', 1, 1, '2019-09-26 12:44:45', 'RJDLj0cfvUX1wJaXRgj2Z8fdqHmXmdGY8Ks9LhYV1cSFRnzPQlIG9iKuoVFn', 1, '2019-09-26 12:47:39', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 12:44:28', '2019-09-26 12:53:14', NULL),
-(48, 25, 'india', 'dfd', 'inida', 'indiahh@sofodev', NULL, '2323232323', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 12:56:59', '2019-09-26 12:56:59', NULL),
-(53, 28, 'amit', 'kumar', 'mishra', 'testgg@sofodev.co', '$2y$10$CD8OxjmvrJvDzO7QfeQjMuJnQ/hcFLrquzZCkSYzyMp2lZJymhZMm', '7777777777', 2, 1, '2019-10-03 10:56:26', NULL, 1, '2019-10-03 10:56:38', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-03 10:56:11', '2019-10-03 10:57:09', NULL),
-(54, 30, 'anan', 'eewe', 'errw', 'asha@gamil.com', NULL, '5435443535', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 09:51:49', '2019-10-04 09:51:49', NULL),
-(55, 31, 'Jyoti', NULL, 'Agrawal', 'neha@sofodev.co', '$2y$10$jSyE4dZZv3P7wmeImHa7O.lBVyBbbbIoVb83x88tzgpfz6gdvxZhO', '9876543210', 1, 1, '2019-10-04 10:02:27', NULL, 1, '2019-10-04 10:03:22', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:01:14', '2019-10-04 10:03:22', NULL),
-(56, 32, 'vidya', 'vidya', 'vidyarthi', 'vidya@gmail.com', NULL, '8744086742', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:13:01', '2019-10-04 10:13:01', NULL),
-(58, 34, 'jyoti', NULL, 'agrawal', 'sss@sofodev.co', '$2y$10$RqLvwo7LHlfUnSRXGTlg6eXVuljoRViYSeBb56PsVQWtllh7bDvWa', '9876543210', 1, 1, '2019-10-04 10:25:17', NULL, 1, '2019-10-04 10:25:57', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:24:44', '2019-10-04 10:25:57', NULL),
-(59, 35, 'santosh', 'kr', 'kumar', 'afafaf@sofodev.co', '$2y$10$ID7rZk6ZGAZwS2e70omm1OyL5FKyOAM9GerlHvc7qR.kfSk3kxHKm', '7485896325', 1, 1, '2019-10-04 10:30:13', NULL, 1, '2019-10-04 10:30:27', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:29:29', '2019-10-04 10:34:43', NULL),
-(60, 36, 'ssss', 'adds', 'sdsd', 'abc@prolitus.com', NULL, '4354353789', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:52:30', '2019-10-04 10:52:30', NULL),
-(61, 37, 'pooja', 'kr', 'kumari', 'santosh.kumar1@prolitus.com', '$2y$10$vngxSpeakX3z5FJtdtcg6OhSw3aP03Y2d9/AfaCSqItZa5opSZr/i', '8178568966', 1, 1, '2019-10-06 11:16:21', NULL, 1, '2019-10-06 11:17:58', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-06 11:13:50', '2019-10-06 11:19:45', NULL),
-(62, 38, 'aman', 'kr', 'gupta', 'santosh.kumar@prolitus.com', NULL, '8178568976', 1, 1, '2019-10-14 04:48:49', NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-06 11:26:57', '2019-10-14 04:48:49', NULL),
-(63, 39, 'Shailesh', NULL, 'Singh', 'sailesh@sofodev.co', '$2y$10$vvsP/9y4Ohhz.STbA4kw.OLTFsZwrHOisy/5vJh.p94Ve13YuRO4i', '0000000000', 1, 1, '2019-10-07 05:49:15', NULL, 1, '2019-10-06 12:20:55', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-06 12:16:06', '2019-10-07 05:49:15', NULL),
-(64, 40, 'komal', NULL, 'kumari', 'komal@sofodev.co', '$2y$10$t1BXq3N2FiaEeh9wvG8oleuzZ3QEGIsAJMYtYAjAa8AXpdbhXy4V.', '9874326767', 1, 1, '2019-10-07 07:20:11', 'a8urxS4V4wIKByQE3G0z8sqQupo7JK61s5p6XbzAqGir6e6sgeb50GQb7nj1', 1, '2019-10-07 07:27:19', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-07 06:58:32', '2019-10-07 09:55:36', NULL),
-(65, 41, 'kkkk', NULL, 'ddd', 'kk@sofodev.co', '$2y$10$0DzbV.5klbzZBD.7vCUWCOM032IiKnzL3edWor7fMwzsjcjXu0kOK', '0000000000', 1, 1, '2019-10-07 10:43:02', 'Fs3la2bbPtlgiKjZnyNghevVPnc0o0P4MX9X2dklxG5TUGD3jlqTu9CjSQUm', 1, '2019-10-07 10:03:18', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-07 10:00:05', '2019-10-09 05:40:55', NULL),
-(66, 42, 'g', NULL, 'g', 'ss@sofodev.co', '$2y$10$pkwOvbXVTlDUC5Hg4alMw.4IjNoL9ngtNYLL9k3hZDwxKSWaalhFG', '1234567890', 1, 1, '2019-10-09 05:46:54', 'NvFS4enKSyTiGWb6eMyJLwxt53u5vT2eoYu7MYFsjHM9QZrP1FamaRa7pyti', 1, '2019-10-09 05:47:36', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-09 05:46:35', '2019-10-09 07:36:39', NULL),
-(67, 43, 'test', 'test', 'test', 'sandeep@sofodev.co', '$2y$10$Dab13SYQe1bxrhZx5.uYkOGOSNqCdb7/NeoPxtRcrSPpY8d0Htyi2', '4545454545', 1, 1, '2019-10-09 12:55:21', NULL, 1, '2019-10-09 12:47:09', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-09 12:45:26', '2019-10-09 13:05:40', NULL),
-(68, 44, 'test', 'test', 'test', 'sandeep234@sofodev.co', '$2y$10$2ulO7wKq1P8mB57W3DZyCO9CEkyENn//gJtTekuqcM9rHsQHJRJL6', '4545454545', 1, 1, '2019-10-10 06:05:44', 'gZ8TqKmuoiZsA03pIB0d90iBcgqh0xQom74IjLVfqF0Y4Oc3Lg4nmvhOhv6P', 1, '2019-10-10 05:35:37', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 05:34:54', '2019-10-10 06:05:44', NULL),
-(69, 45, 'test', 'test', 'test', 'san3456@sofodev.co', '$2y$10$/V3JewCsNzlrp9t9DDqRmeXUjaaBsyFdDH2Q1X5RWlYrSrKjevZHm', '4545454545', 1, 1, '2019-10-10 07:41:34', NULL, 1, '2019-10-10 05:49:19', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 05:48:35', '2019-10-10 07:41:34', NULL),
-(70, 46, 'arvind', 'kumar', 'soni', 'arvind.kumar@prolitus.com', '$2y$10$ifnWYi/.KGS55XmI7CJ1Le040zqi2/rVNyoc.Syg1c2ixqTXmbzca', '8860233639', 1, 1, '2019-10-10 06:00:35', NULL, 1, '2019-10-10 05:57:59', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 05:56:52', '2019-10-10 06:00:35', NULL),
-(71, 47, 'arju', 'kr', 'soni', 'arju38@yopmail.com', '$2y$10$D799SltL0jdD6kEL19nuw.NpeWnAkiEfw4KBj4U3WUpt51a7IItZC', '9450852956', 1, 1, '2019-10-10 07:02:54', NULL, 1, '2019-10-10 07:03:10', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 07:02:24', '2019-10-10 07:12:47', NULL),
-(72, 48, 'vfdavfds', 'dvsdcd', 'dfgvds', 'xxx@sofodev.co', '$2y$10$ZmnsBifmJrmpFX4ljC9FV.e30FZn9sPfi.v2fEPHLQ/Qqej6JeUlm', '9876543210', 2, 1, '2019-10-10 07:05:35', 't1qPCjPjYlNr8bZXK0a5YGwYz1amxPMqwYXzqw9Tf7HezOOp1gMdO30VCDyD', 1, '2019-10-10 07:06:04', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 07:03:26', '2019-10-10 08:05:46', NULL),
-(73, 49, 'jyoti', 'k', 'Agrawal', 'jyoti.agrawal@sofodev.co', '$2y$10$fuYvvl4aNfdtlQo6IytO.ex36zgmmYA.RlG1jJpFwJh6HgNNQ2R06', '9876543210', 2, 1, '2019-10-10 09:55:57', 'tSjElGvAMTPgv3LZzTpOwX9AX9lFfR0sU3OhrXQSisF9f6N9xPCX84Oz4SY0', 1, '2019-10-10 09:56:18', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 09:55:12', '2019-10-10 10:16:54', NULL),
-(74, 50, 'iii', 'Kumar', 'Singh', 'oo@gmail.com', NULL, '9897141422', 2, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 12:24:57', '2019-10-10 12:24:57', NULL),
-(75, 51, 'kjdkjdkjk', 'klklklkl', 'klklkl', 'dexter@sofodev.co', '$2y$10$KiOWMc2vxwQtHgXtE9Poh.oj53IIwK.lP1hCUHUgeow2WaNjQ5JMW', '0980980980', 2, 1, '2019-10-10 22:04:53', 'WI909qEZBMMx7DMqrTTXJ3Nq7F9Zcs1KbHMMLFJiU3NVTRa7XH30RxmJRFqu', 1, '2019-10-10 22:03:22', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 21:55:51', '2019-10-10 22:10:10', NULL),
-(76, 52, 'test', 'test', 'ttest', 'testreder@sofodev.co', '$2y$10$DsZM7cLjdM1bw6VcLZlnCOy/H4tEMC3y/Lznndx2adoxTzcYgvN7m', '7777777777', 1, 1, '2019-10-11 07:13:25', NULL, 1, '2019-10-11 07:13:39', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-11 07:12:58', '2019-10-11 07:15:30', NULL),
-(77, 53, 'sam', 'dwoo', 'dwoo', 'sam@sofodev.co', '$2y$10$M..Ge0/OwOjk5ENFjjGgLuRbMJNmr3VHMYnZpF82vqTFgEyGrSR7u', '2109087676', 1, 1, '2019-10-11 10:25:21', NULL, 1, '2019-10-11 10:25:36', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-11 10:24:51', '2019-10-11 10:26:29', NULL),
-(78, 55, 'amit', 'kumar', 'ntest', 'amitjuk@sofodev.co', '$2y$10$2htAYb4cJuJYA2Rm0LqttO988.J6mC0lCjW7ANVpulwTOM8BFjFfy', '5555555555', 2, 1, '2019-10-14 06:23:33', NULL, 1, '2019-10-14 06:23:56', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 06:23:05', '2019-10-14 06:24:32', NULL),
-(79, 56, 'jyoti', 'k', 'Agrawal', 'sakshi@sofodev.co', '$2y$10$6kNlGKQFbYZC4ltAiOisFu1TXjhhT233b8qllixldYijKonTZDbeS', '9876543210', 2, 1, '2019-10-14 06:47:28', NULL, 1, '2019-10-14 06:48:55', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 06:39:48', '2019-10-14 06:48:55', NULL),
-(80, 57, 'test', 'test', 'dwoo', 'san456190@sofodev.co', '$2y$10$B/htK8Fk1zRbOTj2YB9pj.Ct7tbOD9ccrV.HlB/iMPfCq22Z7PCiq', '1239078443', 1, 1, '2019-10-14 07:20:28', NULL, 1, '2019-10-14 07:20:53', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 07:20:07', '2019-10-14 07:22:11', NULL),
-(81, 58, 'amit', 'kumar', 'hirad', 'amitjik@sofodev.co', '$2y$10$PLpXLGLdXMrPsaYUaqpyaejvJRxYzKH1jrFpJGB.bSIyV4Njni.hy', '5555555555', 2, 1, '2019-10-14 07:32:53', NULL, 1, '2019-10-14 07:33:15', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 07:32:39', '2019-10-14 07:33:53', NULL),
-(82, 64, 'amit', 'kumar', 'kumar', 'amitkuj@sofodev.co', '$2y$10$IrgmEo2hZ1C1Sd/fpMZEbODn3XW0fp2AoLa3f4QD8FAgdrwX9MygO', '8888888888', 1, 1, '2019-10-14 10:58:36', NULL, 1, '2019-10-14 10:58:51', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 10:57:41', '2019-10-14 10:59:30', NULL),
-(83, NULL, 'Admin1', 'kumar', 'suman1', 'admin@admin.com', '$2y$12$qmUveKOgQyGInnxhHT7wcuWNFphp3BIe.PTLxLWZApku3b5PE8rb6', '1234567895', 0, 1, NULL, '', 1, NULL, 1, NULL, 1, NULL, NULL, 0, NULL, '2019-09-16 05:19:21', '2019-09-17 01:48:48', NULL),
-(84, 65, 'fdfdf', 'fdfdf', 'erwerwe', 'fghdert@sofodev.co', '$2y$10$7jgbGjWm0vx9UvtwPSdicuKhyFbQi/LoHHvrxCeZf.H5nvw3b/qym', '5555555555', 1, 1, '2019-10-14 13:56:16', NULL, 1, '2019-10-14 13:44:51', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 13:44:11', '2019-10-14 13:56:16', NULL),
-(85, 66, 'sam', 'dwoo', 'dwoo', 'samdwoo@sofodev.co', '$2y$10$/pj1zCZNPrmDD5HCzsx30.Z/tWzMB7qYF3sB0ZZBzv6MXu.KF98I.', '4545454545', 2, 1, '2019-10-15 06:11:57', NULL, 1, '2019-10-15 06:12:07', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-15 06:11:19', '2019-10-15 06:12:07', NULL),
-(86, 67, 'sweta', 'k', 'kapoor', 'sweta@sofodev.co', '$2y$10$pQNKWYpsZL9O/ipVSmLyvu9HsLPq90FZjtMqzh8GmU.rryFHSqg4i', '4367845454', 2, 1, '2019-10-15 06:51:58', NULL, 1, '2019-10-15 07:07:13', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-15 06:51:22', '2019-10-15 07:07:13', NULL);
+INSERT INTO `rta_users` (`user_id`, `user_kyc_id`, `f_name`, `m_name`, `l_name`, `biz_name`, `email`, `password`, `mobile_no`, `user_type`, `is_email_verified`, `email_verified_updatetime`, `remember_token`, `is_otp_verified`, `otp_verified_updatetime`, `is_pwd_changed`, `pwd_updatetime`, `is_active`, `block_status_id`, `block_status_updatetime`, `parent_id`, `created_by`, `created_at`, `updated_at`, `updated_by`) VALUES
+(1, 0, 'mait', 'kumar', 'suman', '', 'akash.kumar@prolitus.com', '$2y$10$9EP7kR2Tey.9jeQFLV6AWeB8C6FIszBzCUA6ntcmVe56HUnMzjFnC', '1225487845', 1, 1, NULL, 'rw6zfeOMKqr5C8ZBt0dLAMedxtGyfcUPog5k3i1waqNZh7QDk2A6dRfOgqWC', 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 11:08:50', '2019-09-17 05:44:51', NULL),
+(2, 0, 'dsfs', 'fafa', 'faafa', '', 'dsafsf@sofodev.co', '$2y$10$RZ5Zhv7rPnWg8.TZyLCQeeHQ5PDvdFBzTuF6N42fIy6WFRGBBciK6', '2423532523', 1, 1, NULL, NULL, 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 12:57:20', '2019-09-16 13:16:38', NULL),
+(3, 0, 'sakshi', 'test', 'pandey', '', 'sakshi.pandey@sofodev.co', '$2y$10$PpHo3oI3/cLQlX78fsgIvuITDwI4RJa4ibUF6COO7oj8wLbwXkIG2', '9767676767', 1, 1, NULL, 'pJfAeXW61B38jEvDB6wDDC7bNZG9VgHjYygylrmLqIRRRQmCFREhK1iTzpMZ', 1, NULL, 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-16 13:19:10', '2019-09-18 11:24:50', NULL),
+(4, 0, 'company1', 'mid', 'lname', '', 'company1@sofodev.co', '$2y$10$jaDBg1BMWTzNgyCkGRdJFOuebTToclvDJDmydYenZn/A6Wm7i99Ce', '4547854785', 2, 1, '2019-09-17 10:05:18', NULL, 1, '2019-09-17 10:06:21', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-17 10:04:09', '2019-09-17 10:06:52', NULL),
+(5, 0, 'test', 'comp', 'comp', '', 'testcomp@comp.com', NULL, '1547857545', 2, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-17 11:42:08', '2019-09-17 11:42:08', NULL),
+(6, 0, 'comp', 'mid', 'private', '', 'comp@sofodev.co', '$2y$10$7ZEJ8wMc0ZKCr3sEfBx29eTd7WLyfZsWoy66j8ry3UeOMnCL6pxye', '5645253575', 2, 1, '2019-09-17 12:06:29', NULL, 1, '2019-09-17 12:06:44', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-17 12:06:20', '2019-09-17 12:07:15', NULL),
+(8, 0, 'amit', 'kumar', 'suman', '', 'amitsuman@sofodev.co', '$2y$10$7lY.C8kjDOyqJZd.bSsXPuL3IdxIJSdSlNlFs46JAP7Gg188VfM9.', '7458965874', 1, 1, '2019-09-18 06:59:43', NULL, 1, '2019-09-18 07:00:08', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 06:58:49', '2019-09-18 07:00:47', NULL),
+(9, 0, 'amit', 'kumar', 'gupta', '', 'amitgupta@sofodev.co', '$2y$10$z5OVRVGWuU5PsDq4qN/EPulT0L/GjQjsvV.qMsIniK2/vyCY/USS2', '1425365241', 2, 1, '2019-09-18 07:02:40', 'IaoBAb0NYnxvr3rDxPTxAPhBCTJW7nYxLqSvFuX2iTGU6H4KNSLri5Dtuvu1', 1, '2019-09-18 07:02:59', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 07:02:23', '2019-09-18 11:19:57', NULL),
+(10, 0, 'Vishnu', 'Kumar', 'Pal', '', 'vishnu.kumar@prolitus.com', '$2y$10$DJAGJgUchm5ZzFhQ0PdGw.GIiJpDBP6Z38ZbMdUVdF3mqpKsh21gu', '1234569870', 1, 1, '2019-09-18 07:36:14', NULL, 1, '2019-09-18 07:38:49', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 07:34:47', '2019-09-18 09:09:01', NULL),
+(11, 0, 'Raj', 'kumar', 'baghel', '', 'vishnu28496@gmail.com', '$2y$10$HXycLFDcuNc02yxw2hFvfe0xAlZ0j/8UXUeILr.BuID0AUl2ybosy', '1236547890', 2, 1, '2019-09-18 07:54:24', NULL, 1, '2019-09-18 07:55:34', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 07:52:15', '2019-09-18 08:59:13', NULL),
+(12, 0, 'Akash', 'K', 'Singh', '', 'akash@sofodev.co', '$2y$10$E/g6eQrNql0v3GgvUmcDtu/C9DOlLExLsE4/bEjQ4/eS7unqC86Dm', '9650762267', 1, 1, '2019-09-18 09:16:01', 'iINDgc02FNFEAmBnpnXDHYangjOfDMTfefl9mRMdn89P43a1SLWPZZEgfSQc', 1, '2019-09-18 09:16:36', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 09:15:25', '2019-09-19 05:20:27', NULL),
+(15, 0, 'amit', 'suman', 'lname', '', 'amitjku@sofodev.co', NULL, '1234585858', 2, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-18 11:36:34', '2019-09-18 11:36:34', NULL),
+(18, 0, 'Binay', 'Kumar', 'Rai', '', 'nbinay@sofodev.co', '$2y$10$ILBx9Fyv6fej172u8YcN6eT1763DAOwj9lL9NooXZg2juQxTSapge', '9879879879', 1, 1, '2019-09-19 05:10:59', '8JuxAghlVtSVhV3xMqS8qVXFCNTdSuXSfPlUofoZlNj7QoY8x8zxukmCmOfC', 1, '2019-09-19 05:11:52', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 05:09:46', '2019-09-19 05:17:08', NULL),
+(19, 0, 'amit', 'kumar', 'suman', '', 'amitkj@sofodev.co', '$2y$10$7Uc1PXGwoq.GbHUShS3cW.KALYgmF4CagbxVJ6j0W7n4ES1.bRqb2', '7458962547', 1, 1, '2019-09-19 05:24:22', NULL, 1, '2019-09-19 05:24:47', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 05:23:29', '2019-09-19 05:27:35', NULL),
+(21, 0, 'Hirdesh', 'kumar', 'Dixit', '', 'shringaricachandel37@gmail.com', '$2y$10$pAmgqUkzSQMDQYCxGr11SOxUieB2C6ljb2jEuZqvw1LlSGPoj5deC', '9999999999', 1, 1, '2019-09-19 05:52:35', NULL, 1, '2019-09-19 05:53:11', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 05:51:59', '2019-09-19 05:53:58', NULL),
+(22, 0, 'vishnu', 'kumar', 'baghel', '', 'vk@123.com', NULL, '9315364083', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 07:17:19', '2019-09-19 07:17:19', NULL),
+(24, 1, 'abhi', 'kumar', 'singh', '', 'anil1@sofodev.co', '$2y$10$eFclbpEkb8IbKwZuChvszeK7rR1sB02DcYfx7dMRT8G5czP.uJqda', '1111111111', 1, 1, '2019-09-19 12:54:44', NULL, 1, '2019-09-19 12:54:58', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 12:52:33', '2019-09-19 12:55:48', NULL),
+(25, 2, 'abhi', 'kumar', 'kumar', '', 'abhik@sofodev.co', '$2y$10$F0rLf82mAidUU8maIMj4JOXIAyDP97pixtykCR.pAza2.MU8pxUYu', '3333333333', 2, 1, '2019-09-19 12:57:23', NULL, 1, '2019-09-19 12:57:37', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-19 12:57:04', '2019-09-19 12:58:06', NULL),
+(35, 12, 'suman', 'kumar', 'dutt', '', 'suman222@sofodev.co', '$2y$10$Nzj7IsoXtdrnkT93TKVn/O/Hqj2yC2qefQ02jwYM5SFPRMNqcaay.', '2222222222', 1, 1, '2019-09-25 13:56:25', 'ksmvLY8zGgooeH0RdmRhwE0sDuocOLarSPtvZNmgzyhZB2iTOeElBGdmudVk', 1, '2019-09-25 13:56:41', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-25 13:56:09', '2019-09-26 10:39:11', NULL),
+(37, 14, 'sofo', 'kumar', 'cles', '', 'amitert@sofodev.co', '$2y$10$5pAnpA30gyjikjNH1RC3h.o3nD8nO6Z3LbzZubv5Gh4y9kZlxjcIO', '4545874343', 2, 1, '2019-09-26 05:28:14', NULL, 1, '2019-09-26 05:28:27', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 05:27:58', '2019-09-26 05:29:40', NULL),
+(38, 15, 'Inzi', 'Van', 'Huesen', '', 'shringarica.chandel@prolitus.com', '$2y$10$bgRxrYA2SoPXzetumsRuheQE2g/QKG.aQwdjmICZGVLcBjGTvkwLC', '7406075007', 1, 1, '2019-09-26 05:34:36', NULL, 1, '2019-09-26 05:35:03', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 05:34:02', '2019-09-26 05:36:19', NULL),
+(39, 16, 'x', 'x', 'x', '', 'yyy@sofodev.co', NULL, '9876543210', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 05:35:52', '2019-09-26 05:35:52', NULL),
+(41, 18, 'Hirdesh', 'Kumar', 'Dixit', '', 'shringarica.chandel@sofocle.com', NULL, '7406075007', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 06:19:57', '2019-09-26 06:19:57', NULL),
+(42, 19, 'Shringarica', 'C', 'Chandel', '', 'hirdesh@prolitus.com', '$2y$10$IlqqCeC8cZsMYNNAyhKDWOQQuzYyHpLwu5QrO74utWixhRbuukxy6', '7406075007', 1, 1, '2019-09-26 06:23:41', NULL, 1, '2019-09-26 06:24:11', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 06:22:34', '2019-09-26 06:25:55', NULL),
+(43, 20, 'jyoti', 'h', 'agrawal', '', 'vvv@sofodev.co', '$2y$10$TSoOn8RjY5YUQSpfw4Mhi.rV82hlkZcEgcYPwBmTrT1Wpv58VroAW', '9876543210', 2, 1, '2019-09-26 06:45:04', 'WKeOtE0SgrSPlJZTSeRBrUrV91XpeCovukpqSxrSiD8EbhHnsQRk7Ozu9Z9w', 1, '2019-09-26 06:45:10', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 06:44:37', '2019-09-26 06:51:13', NULL),
+(44, 21, 'kx', 'x', 'x', '', 'g@sofodev.co', '$2y$10$e1uvejsTSkj/QmSFkyNciu/cfL09s7ftBms/sTuw9oVZ9S/5BC6/u', '8976543219', 1, 1, '2019-09-26 07:39:39', NULL, 1, '2019-09-26 07:43:00', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 07:38:14', '2019-09-26 07:43:00', NULL),
+(45, 22, 'sandy', 'kumar', 'sharma', '', 'sandeep.333sharma@prolitus.com', '$2y$10$yPM5HyCjeO/IlRLnx5Cio.fDGxVIV5DgEOcY.8HsQ1o9T1MKjCssm', '9910291606', 1, 1, '2019-09-26 10:28:07', NULL, 1, '2019-09-26 10:28:19', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 10:25:57', '2019-09-26 10:28:19', NULL),
+(46, 23, 'sanu', 'deol', 'deol', '', 'sandeep.sharma@prolitus.com', '$2y$10$0xYRH9ZKHQwYWZQzOXVgO.nVpV7cXET95rACycnuK9i.mZ/WtPswu', '9910291606', 2, 1, '2019-09-26 10:33:54', NULL, 1, '2019-09-26 10:34:09', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 10:33:17', '2019-09-26 10:34:09', NULL),
+(47, 24, 'hello', 'india', 'india', '', 'india@sofodev.co', '$2y$10$PUth1lUEhjh9djUiwQHYIO3cn8V8Upe187cJph63EQD3mzPadkj06', '3434343434', 1, 1, '2019-09-26 12:44:45', 'RJDLj0cfvUX1wJaXRgj2Z8fdqHmXmdGY8Ks9LhYV1cSFRnzPQlIG9iKuoVFn', 1, '2019-09-26 12:47:39', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 12:44:28', '2019-09-26 12:53:14', NULL),
+(48, 25, 'india', 'dfd', 'inida', '', 'indiahh@sofodev', NULL, '2323232323', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-09-26 12:56:59', '2019-09-26 12:56:59', NULL),
+(53, 28, 'amit', 'kumar', 'mishra', '', 'testgg@sofodev.co', '$2y$10$CD8OxjmvrJvDzO7QfeQjMuJnQ/hcFLrquzZCkSYzyMp2lZJymhZMm', '7777777777', 2, 1, '2019-10-03 10:56:26', NULL, 1, '2019-10-03 10:56:38', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-03 10:56:11', '2019-10-03 10:57:09', NULL),
+(54, 30, 'anan', 'eewe', 'errw', '', 'asha@gamil.com', NULL, '5435443535', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 09:51:49', '2019-10-04 09:51:49', NULL),
+(55, 31, 'Jyoti', NULL, 'Agrawal', '', 'neha@sofodev.co', '$2y$10$jSyE4dZZv3P7wmeImHa7O.lBVyBbbbIoVb83x88tzgpfz6gdvxZhO', '9876543210', 1, 1, '2019-10-04 10:02:27', NULL, 1, '2019-10-04 10:03:22', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:01:14', '2019-10-04 10:03:22', NULL),
+(56, 32, 'vidya', 'vidya', 'vidyarthi', '', 'vidya@gmail.com', NULL, '8744086742', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:13:01', '2019-10-04 10:13:01', NULL),
+(58, 34, 'jyoti', NULL, 'agrawal', '', 'sss@sofodev.co', '$2y$10$RqLvwo7LHlfUnSRXGTlg6eXVuljoRViYSeBb56PsVQWtllh7bDvWa', '9876543210', 1, 1, '2019-10-04 10:25:17', NULL, 1, '2019-10-04 10:25:57', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:24:44', '2019-10-04 10:25:57', NULL),
+(59, 35, 'santosh', 'kr', 'kumar', '', 'afafaf@sofodev.co', '$2y$10$ID7rZk6ZGAZwS2e70omm1OyL5FKyOAM9GerlHvc7qR.kfSk3kxHKm', '7485896325', 1, 1, '2019-10-04 10:30:13', NULL, 1, '2019-10-04 10:30:27', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:29:29', '2019-10-04 10:34:43', NULL),
+(60, 36, 'ssss', 'adds', 'sdsd', '', 'abc@prolitus.com', NULL, '4354353789', 1, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-04 10:52:30', '2019-10-04 10:52:30', NULL),
+(61, 37, 'pooja', 'kr', 'kumari', '', 'santosh.kumar1@prolitus.com', '$2y$10$vngxSpeakX3z5FJtdtcg6OhSw3aP03Y2d9/AfaCSqItZa5opSZr/i', '8178568966', 1, 1, '2019-10-06 11:16:21', NULL, 1, '2019-10-06 11:17:58', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-06 11:13:50', '2019-10-06 11:19:45', NULL),
+(62, 38, 'aman', 'kr', 'gupta', '', 'santosh.kumar@prolitus.com', NULL, '8178568976', 1, 1, '2019-10-14 04:48:49', NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-06 11:26:57', '2019-10-14 04:48:49', NULL),
+(63, 39, 'Shailesh', NULL, 'Singh', '', 'sailesh@sofodev.co', '$2y$10$vvsP/9y4Ohhz.STbA4kw.OLTFsZwrHOisy/5vJh.p94Ve13YuRO4i', '0000000000', 1, 1, '2019-10-07 05:49:15', NULL, 1, '2019-10-06 12:20:55', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-06 12:16:06', '2019-10-07 05:49:15', NULL),
+(64, 40, 'komal', NULL, 'kumari', '', 'komal@sofodev.co', '$2y$10$t1BXq3N2FiaEeh9wvG8oleuzZ3QEGIsAJMYtYAjAa8AXpdbhXy4V.', '9874326767', 1, 1, '2019-10-07 07:20:11', 'a8urxS4V4wIKByQE3G0z8sqQupo7JK61s5p6XbzAqGir6e6sgeb50GQb7nj1', 1, '2019-10-07 07:27:19', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-07 06:58:32', '2019-10-07 09:55:36', NULL),
+(65, 41, 'kkkk', NULL, 'ddd', '', 'kk@sofodev.co', '$2y$10$0DzbV.5klbzZBD.7vCUWCOM032IiKnzL3edWor7fMwzsjcjXu0kOK', '0000000000', 1, 1, '2019-10-07 10:43:02', 'Fs3la2bbPtlgiKjZnyNghevVPnc0o0P4MX9X2dklxG5TUGD3jlqTu9CjSQUm', 1, '2019-10-07 10:03:18', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-07 10:00:05', '2019-10-09 05:40:55', NULL),
+(66, 42, 'g', NULL, 'g', '', 'ss@sofodev.co', '$2y$10$pkwOvbXVTlDUC5Hg4alMw.4IjNoL9ngtNYLL9k3hZDwxKSWaalhFG', '1234567890', 1, 1, '2019-10-09 05:46:54', 'NvFS4enKSyTiGWb6eMyJLwxt53u5vT2eoYu7MYFsjHM9QZrP1FamaRa7pyti', 1, '2019-10-09 05:47:36', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-09 05:46:35', '2019-10-09 07:36:39', NULL),
+(67, 43, 'test', 'test', 'test', '', 'sandeep@sofodev.co', '$2y$10$Dab13SYQe1bxrhZx5.uYkOGOSNqCdb7/NeoPxtRcrSPpY8d0Htyi2', '4545454545', 1, 1, '2019-10-09 12:55:21', NULL, 1, '2019-10-09 12:47:09', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-09 12:45:26', '2019-10-09 13:05:40', NULL),
+(68, 44, 'test', 'test', 'test', '', 'sandeep234@sofodev.co', '$2y$10$2ulO7wKq1P8mB57W3DZyCO9CEkyENn//gJtTekuqcM9rHsQHJRJL6', '4545454545', 1, 1, '2019-10-10 06:05:44', 'gZ8TqKmuoiZsA03pIB0d90iBcgqh0xQom74IjLVfqF0Y4Oc3Lg4nmvhOhv6P', 1, '2019-10-10 05:35:37', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 05:34:54', '2019-10-10 06:05:44', NULL),
+(69, 45, 'test', 'test', 'test', '', 'san3456@sofodev.co', '$2y$10$/V3JewCsNzlrp9t9DDqRmeXUjaaBsyFdDH2Q1X5RWlYrSrKjevZHm', '4545454545', 1, 1, '2019-10-10 07:41:34', NULL, 1, '2019-10-10 05:49:19', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 05:48:35', '2019-10-10 07:41:34', NULL),
+(70, 46, 'arvind', 'kumar', 'soni', '', 'arvind.kumar@prolitus.com', '$2y$10$ifnWYi/.KGS55XmI7CJ1Le040zqi2/rVNyoc.Syg1c2ixqTXmbzca', '8860233639', 1, 1, '2019-10-10 06:00:35', NULL, 1, '2019-10-10 05:57:59', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 05:56:52', '2019-10-10 06:00:35', NULL),
+(71, 47, 'arju', 'kr', 'soni', '', 'arju38@yopmail.com', '$2y$10$D799SltL0jdD6kEL19nuw.NpeWnAkiEfw4KBj4U3WUpt51a7IItZC', '9450852956', 1, 1, '2019-10-10 07:02:54', NULL, 1, '2019-10-10 07:03:10', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 07:02:24', '2019-10-10 07:12:47', NULL),
+(72, 48, 'vfdavfds', 'dvsdcd', 'dfgvds', '', 'xxx@sofodev.co', '$2y$10$ZmnsBifmJrmpFX4ljC9FV.e30FZn9sPfi.v2fEPHLQ/Qqej6JeUlm', '9876543210', 2, 1, '2019-10-10 07:05:35', 't1qPCjPjYlNr8bZXK0a5YGwYz1amxPMqwYXzqw9Tf7HezOOp1gMdO30VCDyD', 1, '2019-10-10 07:06:04', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 07:03:26', '2019-10-10 08:05:46', NULL),
+(73, 49, 'jyoti', 'k', 'Agrawal', '', 'jyoti.agrawal@sofodev.co', '$2y$10$fuYvvl4aNfdtlQo6IytO.ex36zgmmYA.RlG1jJpFwJh6HgNNQ2R06', '9876543210', 2, 1, '2019-10-10 09:55:57', 'tSjElGvAMTPgv3LZzTpOwX9AX9lFfR0sU3OhrXQSisF9f6N9xPCX84Oz4SY0', 1, '2019-10-10 09:56:18', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 09:55:12', '2019-10-10 10:16:54', NULL),
+(74, 50, 'iii', 'Kumar', 'Singh', '', 'oo@gmail.com', NULL, '9897141422', 2, 0, NULL, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 12:24:57', '2019-10-10 12:24:57', NULL),
+(75, 51, 'kjdkjdkjk', 'klklklkl', 'klklkl', '', 'dexter@sofodev.co', '$2y$10$KiOWMc2vxwQtHgXtE9Poh.oj53IIwK.lP1hCUHUgeow2WaNjQ5JMW', '0980980980', 2, 1, '2019-10-10 22:04:53', 'WI909qEZBMMx7DMqrTTXJ3Nq7F9Zcs1KbHMMLFJiU3NVTRa7XH30RxmJRFqu', 1, '2019-10-10 22:03:22', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-10 21:55:51', '2019-10-10 22:10:10', NULL),
+(76, 52, 'test', 'test', 'ttest', '', 'testreder@sofodev.co', '$2y$10$DsZM7cLjdM1bw6VcLZlnCOy/H4tEMC3y/Lznndx2adoxTzcYgvN7m', '7777777777', 1, 1, '2019-10-11 07:13:25', NULL, 1, '2019-10-11 07:13:39', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-11 07:12:58', '2019-10-11 07:15:30', NULL),
+(77, 53, 'sam', 'dwoo', 'dwoo', '', 'sam@sofodev.co', '$2y$10$M..Ge0/OwOjk5ENFjjGgLuRbMJNmr3VHMYnZpF82vqTFgEyGrSR7u', '2109087676', 1, 1, '2019-10-11 10:25:21', NULL, 1, '2019-10-11 10:25:36', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-11 10:24:51', '2019-10-11 10:26:29', NULL),
+(78, 55, 'amit', 'kumar', 'ntest', '', 'amitjuk@sofodev.co', '$2y$10$2htAYb4cJuJYA2Rm0LqttO988.J6mC0lCjW7ANVpulwTOM8BFjFfy', '5555555555', 2, 1, '2019-10-14 06:23:33', NULL, 1, '2019-10-14 06:23:56', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 06:23:05', '2019-10-14 06:24:32', NULL),
+(79, 56, 'jyoti', 'k', 'Agrawal', '', 'sakshi@sofodev.co', '$2y$10$6kNlGKQFbYZC4ltAiOisFu1TXjhhT233b8qllixldYijKonTZDbeS', '9876543210', 2, 1, '2019-10-14 06:47:28', NULL, 1, '2019-10-14 06:48:55', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 06:39:48', '2019-10-14 06:48:55', NULL),
+(80, 57, 'test', 'test', 'dwoo', '', 'san456190@sofodev.co', '$2y$10$B/htK8Fk1zRbOTj2YB9pj.Ct7tbOD9ccrV.HlB/iMPfCq22Z7PCiq', '1239078443', 1, 1, '2019-10-14 07:20:28', NULL, 1, '2019-10-14 07:20:53', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 07:20:07', '2019-10-14 07:22:11', NULL),
+(81, 58, 'amit', 'kumar', 'hirad', '', 'amitjik@sofodev.co', '$2y$10$PLpXLGLdXMrPsaYUaqpyaejvJRxYzKH1jrFpJGB.bSIyV4Njni.hy', '5555555555', 2, 1, '2019-10-14 07:32:53', NULL, 1, '2019-10-14 07:33:15', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 07:32:39', '2019-10-14 07:33:53', NULL),
+(82, 64, 'amit', 'kumar', 'kumar', '', 'amitkuj@sofodev.co', '$2y$10$IrgmEo2hZ1C1Sd/fpMZEbODn3XW0fp2AoLa3f4QD8FAgdrwX9MygO', '8888888888', 1, 1, '2019-10-14 10:58:36', NULL, 1, '2019-10-14 10:58:51', 1, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 10:57:41', '2019-10-14 10:59:30', NULL),
+(83, NULL, 'Admin1', 'kumar', 'suman1', '', 'admin@admin.com', '$2y$12$qmUveKOgQyGInnxhHT7wcuWNFphp3BIe.PTLxLWZApku3b5PE8rb6', '1234567895', 0, 1, NULL, '', 1, NULL, 1, NULL, 1, NULL, NULL, 0, NULL, '2019-09-16 05:19:21', '2019-09-17 01:48:48', NULL),
+(84, 65, 'fdfdf', 'fdfdf', 'erwerwe', '', 'fghdert@sofodev.co', '$2y$10$7jgbGjWm0vx9UvtwPSdicuKhyFbQi/LoHHvrxCeZf.H5nvw3b/qym', '5555555555', 1, 1, '2019-10-14 13:56:16', NULL, 1, '2019-10-14 13:44:51', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-14 13:44:11', '2019-10-14 13:56:16', NULL),
+(85, 66, 'sam', 'dwoo', 'dwoo', '', 'samdwoo@sofodev.co', '$2y$10$/pj1zCZNPrmDD5HCzsx30.Z/tWzMB7qYF3sB0ZZBzv6MXu.KF98I.', '4545454545', 2, 1, '2019-10-15 06:11:57', NULL, 1, '2019-10-15 06:12:07', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-15 06:11:19', '2019-10-15 06:12:07', NULL),
+(86, 67, 'sweta', 'k', 'kapoor', '', 'sweta@sofodev.co', '$2y$10$pQNKWYpsZL9O/ipVSmLyvu9HsLPq90FZjtMqzh8GmU.rryFHSqg4i', '4367845454', 2, 1, '2019-10-15 06:51:58', NULL, 1, '2019-10-15 07:07:13', 0, NULL, 0, NULL, NULL, 0, NULL, '2019-10-15 06:51:22', '2019-10-15 07:07:13', NULL);
 
 -- --------------------------------------------------------
 
@@ -2427,14 +2436,6 @@ ALTER TABLE `rta_activity_log`
   ADD PRIMARY KEY (`activity_log_id`);
 
 --
--- Indexes for table `rta_app`
---
-ALTER TABLE `rta_app`
-  ADD PRIMARY KEY (`app_id`),
-  ADD KEY `created_by` (`created_by`),
-  ADD KEY `updated_by` (`updated_by`);
-
---
 -- Indexes for table `rta_biz`
 --
 ALTER TABLE `rta_biz`
@@ -2447,6 +2448,14 @@ ALTER TABLE `rta_biz`
 ALTER TABLE `rta_biz_addr`
   ADD PRIMARY KEY (`biz_addr_id`),
   ADD KEY `user_id` (`biz_id`);
+
+--
+-- Indexes for table `rta_biz_app`
+--
+ALTER TABLE `rta_biz_app`
+  ADD PRIMARY KEY (`app_id`),
+  ADD KEY `created_by` (`created_by`),
+  ADD KEY `updated_by` (`updated_by`);
 
 --
 -- Indexes for table `rta_biz_gst`
@@ -2786,11 +2795,6 @@ ALTER TABLE `rta_user_upload_doc`
 ALTER TABLE `rta_activity_log`
   MODIFY `activity_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `rta_app`
---
-ALTER TABLE `rta_app`
-  MODIFY `app_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
---
 -- AUTO_INCREMENT for table `rta_biz`
 --
 ALTER TABLE `rta_biz`
@@ -2800,6 +2804,11 @@ ALTER TABLE `rta_biz`
 --
 ALTER TABLE `rta_biz_addr`
   MODIFY `biz_addr_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_biz_app`
+--
+ALTER TABLE `rta_biz_app`
+  MODIFY `app_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `rta_biz_gst`
 --
