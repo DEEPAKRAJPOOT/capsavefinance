@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Requests\RegistrationFormRequest;
+use App\Http\Requests\PartnerFormRequest;
 use Illuminate\Contracts\Encryption\DecryptException;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
@@ -72,10 +73,9 @@ use RegistersUsers,
      */
     protected function create(array $data) {
 
-        //$userId  = Session::has('userId') ? Session::get('userId') : null;
+        
         $arrData = [];
         $arrDetailData = [];
-        /// $userName =  $this->changeuserName($data['first_name'], $data['last_name'],  $data['phone']);
         $arrData['f_name'] = $data['f_name'];
         $arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
@@ -650,4 +650,25 @@ use RegistersUsers,
         }
         return view('auth.authorized-signatory', compact('userArr'));
     } 
+    
+    public function saveAuthorizedSignatoryForm(PartnerFormRequest $request)
+    {
+        try {
+            
+            $data        = [];
+            $arrFileData = [];
+            $arrFileData = $request->all();
+            dd($arrFileData);
+            $user = $this->create($arrFileData);
+           
+            if ($user) {
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return redirect()->route('authorized_signatory_open');
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }
