@@ -90,8 +90,9 @@
 			</div>
 			<div class="col-md-12 form-design ">
 				<div id="reg-box">
-					<form>
-						<div class=" form-fields">
+                                    <form method="post" action="{{Route('authorized_signatory_save')}}">
+                                          @csrf
+                                        <div class=" form-fields">
 							<div class="form-sections">
 
 								<div class="row">
@@ -107,14 +108,14 @@
 
 															<span class="mandatory">*</span>
 														</label>
-														<input type="text" name="first_name[]" id="employee" value="" class="form-control" placeholder="Enter First Name" required="">
+														<input type="text" name="first_name[]" id="employee" value="" class="form-control" placeholder="Enter First Name" >
 													</div>
 												</div>
 												<div class="col-md-4">
 													<div class="form-group">
 														<label for="txtCreditPeriod " class="opacity-0">lastname
 														</label>
-														<input type="text" name="last_name[]" id="employee" value="" class="form-control" placeholder="Enter Last Name" required="">
+														<input type="text" name="last_name[]" id="employee" value="" class="form-control" placeholder="Enter Last Name" >
 													</div>
 												</div>
 
@@ -130,7 +131,7 @@
 														<label for="txtPassword">DOB
 															<span class="mandatory">*</span>
 														</label>
-														<input type="date" name="date_of_birth[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+														<input type="date" name="date_of_birth[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" >
 													</div>
 												</div>
 												<div class="col-md-4">
@@ -158,7 +159,7 @@
 
 															<span class="mandatory">*</span>
 														</label>
-														<input type="text" name="pan_no[]" id="employee" value="" class="form-control" placeholder="Enter Email" required="">
+														<input type="text" name="pan_no[]" id="employee" value="" class="form-control" placeholder="Enter Email" >
 													</div>
 												</div>
 
@@ -174,7 +175,7 @@
 
 															<span class="mandatory">*</span>
 														</label>
-														<input type="text" name="share_per[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Mobile Number" required="">
+														<input type="text" name="share_per[]" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Mobile Number" >
 													</div>
 												</div>
 												<div class="col-md-4">
@@ -305,7 +306,7 @@
 							<div class="d-flex btn-section ">
 								<div class="col-md-4 ml-auto text-right">
 									<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href='business-documents.php'">
-									<input type="button" value="Save and Continue" class="btn btn-primary" onclick="window.location.href='business-documents.php'">
+									<input type="submit" value="Save and Continue" class="btn btn-primary">
 								</div>
 							</div>
 
