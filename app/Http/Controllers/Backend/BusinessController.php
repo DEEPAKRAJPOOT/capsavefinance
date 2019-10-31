@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\PartnerFormRequest;
 use App\Inv\Repositories\Contracts\BusinessInterface as InvBusinessRepoInterface;
+use App\Http\Requests\BusinessInformationRequest;
 use Session;
 
 class BusinessController extends Controller
@@ -26,44 +27,8 @@ class BusinessController extends Controller
         return view('auth.business-information');
     }
 
-    public function saveBusinessInformation(Request $request)
+    public function saveBusinessInformation(BusinessInformationRequest $request)
     {
-        $request->validate([
-            'biz_gst_number' => 'required|string|max:50',
-            'biz_pan_number' => 'required|string|max:10',
-            'biz_entity_name' => 'required|string|max:100',
-            'biz_type_id' => 'required|numeric|digits:1',
-            'biz_email' => 'required|email',
-            'biz_mobile' => 'required|numeric|digits:10',
-            'entity_type_id' => 'required|numeric',
-            'biz_cin' => 'required|string|max:50',
-            'biz_address' => 'required|string|max:100',
-            'biz_city' => 'required|string|max:50',
-            'biz_state' => 'required|string|max:50',
-            'biz_pin' => 'required|numeric|digits:6',
-            'biz_corres_address' => 'required|string|max:100',
-            'biz_corres_city' => 'required|string|max:50',
-            'biz_corres_state' => 'required|string|max:50',
-            'biz_corres_pin' => 'required|numeric|digits:6',
-        ],[
-            'biz_gst_number.required' => 'GST number is required',
-            'biz_pan_number.required' => 'PAN number is required',
-            'biz_entity_name.required' => 'Business name is required',
-            'biz_type_id.required' => 'Type of industry is required',
-            'biz_email.required' => 'Business email is required',
-            'biz_mobile.required' => 'Business mobile is required',
-            'entity_type_id.required' => 'Entity type is required',
-            'biz_cin' => 'Business CIN is required',
-            'biz_address.required' => 'Business address is required',
-            'biz_city.required' => 'Business city is required',
-            'biz_state.required' => 'Business state is required',
-            'biz_pin.required' => 'Business PIN is required',
-            'biz_corres_address.required' => 'Correspondence address is required',
-            'biz_corres_city.required' => 'Correspondence city is required',
-            'biz_corres_state.required' => 'Correspondence state is required',
-            'biz_corres_pin.required' => 'Correspondence PIN is required',
-        ]);
-
         try {
             $arrFileData = $request->all();
             $business_info = $this->businessRepo->saveBusinessInfo($arrFileData,1);//Auth::user()->id
