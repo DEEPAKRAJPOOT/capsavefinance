@@ -60,7 +60,7 @@ class BusinessController extends Controller
         return view('auth.authorized-signatory', compact('userArr'));
     } 
     
-    public function saveAuthorizedSignatory(PartnerFormRequest $request)
+    public function saveAuthorizedSignatory(Request $request)
     {
        
         try {
@@ -106,6 +106,7 @@ class BusinessController extends Controller
     
     public function saveBusinessDocument(BusinessDocumentRequest $request)
     {
+        
         try {
             
             $data        = [];

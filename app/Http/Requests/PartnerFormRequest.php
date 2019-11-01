@@ -23,17 +23,18 @@ class PartnerFormRequest extends FormRequest
      */
      public function rules()
     {
-       return dd($this->request);
+       
         return $rules = [
-            'f_name' => 'required|max:50|regex:/^[a-z A-Z]/u|',
-            'm_name' => 'max:50|regex:/^[a-z A-Z]/u|',
-            'l_name' => 'required|max:50|regex:/^[a-z A-Z]/u|',
-            'business_name' => 'required',
-            'email' => 'required|email|max:50|unique:users',
-            'mobile_no' => 'required|digits:10|min:0',
-            'password'         => 'required',
-            'password_confirm' => 'required|same:password',  
-            
+            'f_name' => 'required',
+            'l_name' => 'required',
+            'date_of_birth' => 'required',
+            'gender' => 'required',
+            'pan_no' => 'required',
+            'share_per' => 'required',
+            'edu_qualification' => 'required',
+            'other_ownership' => 'required',
+            'networth' => 'required',
+            'address' => 'required',
             ];
     }
 
