@@ -46,7 +46,7 @@ use AuthenticatesUsers;
      *
      * @var value
      */
-    protected $maxAttempts = 1; // Default is 5
+    protected $maxAttempts = 3; // Default is 5
     protected $decayMinutes = 2; // Default is 1
 
     /**
@@ -70,7 +70,7 @@ use AuthenticatesUsers;
 
         try {
             
-            // Too many attempts blocking user 
+            // Too many attempts blocking user  
             if ($this->hasTooManyLoginAttempts($request)) {
                 $this->fireLockoutEvent($request);
                 return $this->sendLockoutResponse($request);
