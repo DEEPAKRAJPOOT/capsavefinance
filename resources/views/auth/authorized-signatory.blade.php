@@ -109,7 +109,7 @@
 
                                                             <span class="mandatory" >*</span>
                                                         </label>
-                                                        <input type="text" name="first_name[]" id="first_name1" value="" class="form-control first_name" placeholder="Enter First Name" >
+                                                        <input type="text" name="first_name[]" id="first_name1" vname="first_name1" value="" class="form-control first_name" placeholder="Enter First Name" >
 
                                                     </div>
                                                 </div>
@@ -306,7 +306,8 @@
                             <div class="d-flex btn-section ">
                                 <div class="col-md-4 ml-auto text-right">
                                     <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'business-documents.php'">
-                                    <input type="submit" value="Save and Continue" id="submit" class="btn btn-primary">
+                                    <input type="button" value="Save and Continue" id="submit" class="btn btn-primary">
+                                    <input type="submit" value="Save" id="actual_submit" style="display: none;">
                                 </div>
                             </div>
 
@@ -332,26 +333,27 @@
     @section('scripts')
 
     <script type="text/javascript">
-        $.validator.setDefaults({
-            submitHandler: function () {
-                alert("submitted!");
+    $(document).ready(function () {
+        $('#submit').on('click', function(event) {
+            $('input.first_name').each(function() {
+                $(this).rules("add", 
+                    {
+                        required: true
+                    })
+            });            
+
+            // test if form is valid 
+            if($('form#signupForm').validate().form()) {
+                console.log("validates");
+                $( "#actual_submit" ).trigger('click');
+            } else {
+                console.log("does not validate");
             }
+        })
+        $("#btnAddMore").on('click', addInput);
+        $('form#signupForm').validate();
         });
         
-        
-        $(document).on('click','#submit',function() {
-    // validate the form when it is submitted
-   	 $("#signupForm").validate();
-     
-         $(".first_name").each(function(){
-            $(this).rules("add", {
-                    required:true,
-                    messages: {
-                                   required: "Please Enter First Name."
-                    }
-             });
-         }); 
-         });
     </script>
 
     <script>
@@ -383,40 +385,11 @@
 
         function myDelete() {
             document.getElementById("fileId").remove();
-
         }
-
-        $(document).ready(function () {
-            var max_fields = 10; //maximum input boxes allowed
-            var wrapper = $(".form-fields-appand"); //Fields wrapper
-            var add_button = $("#btnAddMore"); //Add button ID
-
-            var x = 1; //initlal text box count
-            $(add_button).click(function (e) { //on add input button click
-
-                e.preventDefault();
-                if (x < max_fields) { //max input box allowed
-
-                    x++; //text box increment
-                    
-                    $(wrapper).append("<div class='form-sections'><button class='close clsdiv' type='button'>x</button><div class='row'><div class='col-md-12'><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' id='first_name"+x+"' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod ' class='opacity-0'>lastname</label><input type='text' name='last_name[]' id='employee' value='' class='form-control' placeholder='Enter Last Name' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='date' name='date_of_birth[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Pin Code' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Gender<span class='mandatory'>*</span></label><select class='form-control' name='gender[]'><option> Select Gender</option><option> Male </option><option>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod'>PAN Number<span class='mandatory'>*</span></label><input type='text' name='pan_no[]' id='employee' value='' class='form-control' placeholder='Enter Email' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Mobile Number' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Home Ph.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Home Ph.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'>INR</a><input type='text' name='networth[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Home Ph.'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea' placeholder='Enter Address' name='address[]'></textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
-                             
-                            
-                               }
-                                /// vali(x);   
-                            });
-
-                        });
-
-                        $(document).on("click", ".clsdiv", function (e) {
-
-
-                            e.preventDefault();
-                            $(this).parent('div').remove();
-                            x--;
-                        })
-
-
-
+        var x=2;
+        function addInput() {
+            $(".form-fields-appand").append("<div class='form-sections'><button class='close clsdiv' type='button'>x</button><div class='row'><div class='col-md-12'><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' vname='first_name"+x+"' id='first_name"+x+"' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod ' class='opacity-0'>lastname</label><input type='text' name='last_name[]' id='employee' value='' class='form-control' placeholder='Enter Last Name' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='date' name='date_of_birth[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Pin Code' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Gender<span class='mandatory'>*</span></label><select class='form-control' name='gender[]'><option> Select Gender</option><option> Male </option><option>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod'>PAN Number<span class='mandatory'>*</span></label><input type='text' name='pan_no[]' id='employee' value='' class='form-control' placeholder='Enter Email' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Mobile Number' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Home Ph.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Home Ph.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'>INR</a><input type='text' name='networth[]' id='employee' value='' class='form-control' tabindex='1' placeholder='Enter Home Ph.'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea' placeholder='Enter Address' name='address[]'></textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
+            x++;
+        }
     </script>
     @endsection
