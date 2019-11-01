@@ -21,12 +21,12 @@
                                 </strong>
                                 @endif
                             </div>
-                             <div>
-                                 @if($errors->has('messages'))
-                                 <strong class="erro-sms colorRed">
+                            <div>
+                                @if($errors->has('messages'))
+                                <strong class="erro-sms colorRed">
                                     {{trans('auth.throttle')}}
                                 </strong>
-                                 @endif
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -39,9 +39,9 @@
 
                         <label for="email" class="control-label" >{{trans('master.loginForm.email')}}</label>
                         <input type="text" class="form-control required"  placeholder="{{trans('master.loginForm.email')}}" name="email" value="{{ old('email') }}" id="email" >
-                      @error('email')
-                       <span class="colorRed"> {{$message}} </span>
-                     @enderror
+                        @error('email')
+                        <span class="colorRed"> {{$message}} </span>
+                        @enderror
 
                     </div>
                     <div class="form-group">
@@ -50,29 +50,29 @@
                             <input type="password" id="password" class="form-control required" placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" >
                         </div>
                     </div>
-                      @error('password')
-                            <span class="colorRed">{{$message}}</span>
-                             @enderror
-                        
-                        </div>
-                    </div>
-                    <div class="form-group mt-3 Forgot">
-                        <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
-                        <a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
-                        <div>
-                            <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
-                        </div>
+                    @error('password')
+                    <span class="colorRed">{{$message}}</span>
+                    @enderror
 
-                    </div>
-                </form>
             </div>
         </div>
+        <div class="form-group mt-3 Forgot">
+            <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
+            <a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
+            <div>
+                <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
+            </div>
+
+        </div>
+        </form>
     </div>
+</div>
+</div>
 </div>
 <style>
     .colorRed
     {
-        
+
         color:red;
     }
     .login-wrapper input.btn.btn-primary {
