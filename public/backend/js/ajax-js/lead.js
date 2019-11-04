@@ -10,16 +10,6 @@ var oTable;
                 "processing": true,
                 "serverSide": true,
                 "ajax": messages.get_lead,
-                "fnDrawCallback": function (oSettings) {
-                    $(".iframe").colorbox({
-                        iframe: true,
-                        width: "80%",
-                        height: "80%",
-                        onClosed: function () {
-                            window.location.reload();
-                        }
-                    });
-                },
                 columns: [
                     {data: 'checkbox'},
                     {data: 'id'},
@@ -27,8 +17,8 @@ var oTable;
                     {data: 'email'},
                     {data: 'mobile_no'},
                     {data: 'biz_name'},
-                    {data: 'created_by'},
-                    {data: 'is_active'},
+                    {data: 'created_at'},
+                    {data: 'status'},
                     {data: 'action'}
                 ]
             });

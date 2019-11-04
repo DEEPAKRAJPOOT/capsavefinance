@@ -44,22 +44,19 @@ class DataRenderer implements DataProviderInterface
      */
     public function getUsersList(Request $request, $user)
     {
-        dd($user);
         return DataTables::of($user)
                 ->rawColumns(['id', 'checkbox', 'action', 'email'])
                 ->addColumn(
                     'id',
                     function ($user) {
                     $link = '000'.$user->user_id;
-                    
                         return "<a id=\"" . $user->user_id . "\" href=\"#\" rel=\"tooltip\"   >$link</a> ";
                     }
                 )
                 ->editColumn(
                         'status',
                         function ($user) {
-                    if ($user->status == config('inv_common.ACTIVE')) {
-
+                    if ($user->is_active == config('inv_common.ACTIVE')) {
                         return "Active";
                     } else {
                         return "In Active";
@@ -73,7 +70,7 @@ class DataRenderer implements DataProviderInterface
                     return $chkBox;
                 })
                 ->editColumn(
-                        'user_name',
+                        'name',
                         function ($user) {
                     $full_name = $user->f_name.' '.$user->l_name;
                     return $full_name;
@@ -85,6 +82,18 @@ class DataRenderer implements DataProviderInterface
                     return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
 
                 })
+                ->editColumn(
+                    'biz_name',
+                    function ($user) {
+                    return ($user->biz_name)? $user->biz_name: '---';
+
+                })
+                ->editColumn(
+                    'created_at',
+                    function ($user) {
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+
+                })
                 ->addColumn(
                     'action',
                     function ($users) {
@@ -92,7 +101,6 @@ class DataRenderer implements DataProviderInterface
                     }
                 )
                 ->filter(function ($query) use ($request) {
-
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
@@ -117,5 +125,4 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-
 }
