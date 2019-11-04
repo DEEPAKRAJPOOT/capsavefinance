@@ -55,6 +55,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     
 //   Resource controller @Supplier,@buyer,@lender,@logistics    //
 
+    Route::resource('lead', 'Backend\LeadController');
     Route::resource('supplier', 'Backend\SupplierController');
     Route::resource('buyer', 'Backend\BuyerController');
     Route::resource('lender', 'Backend\LenderController');

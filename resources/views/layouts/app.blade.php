@@ -38,7 +38,9 @@
 
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
+<script src="{{ asset('backend/assets/plugins/datatables/js/datatable.min.js') }}" type="text/javascript"></script>
+           
+@yield('jscript')
 
 </html>
 

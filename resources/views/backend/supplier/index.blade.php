@@ -17,8 +17,6 @@
                 <li class="active">Manage Suppliers</li>
             </ol>
         </div>
-
-                                        <!--<div class="register-text"> <p><a href="javascript:void(0);" id="register" class="mt-10">Supplier register</a></p></div>-->
     </section>
 
 
