@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\PartnerFormRequest;
 use App\Inv\Repositories\Contracts\BusinessInterface as InvBusinessRepoInterface;
 use App\Http\Requests\BusinessInformationRequest;
 use Session;
@@ -59,14 +60,15 @@ class BusinessController extends Controller
         return view('auth.authorized-signatory', compact('userArr'));
     } 
     
-    public function saveAuthorizedSignatoryForm(PartnerFormRequest $request)
+    public function saveAuthorizedSignatory(Request $request)
     {
-        try {
-            
+        
+         try {
             $data        = [];
             $arrFileData = [];
             $arrFileData = $request->all();
             dd($arrFileData);
+            
             $user = $this->create($arrFileData);
            
             if ($user) {
@@ -105,6 +107,7 @@ class BusinessController extends Controller
     
     public function saveBankDocument(BusinessDocumentRequest $request)
     {
+        
         try {
             
             $data        = [];

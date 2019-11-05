@@ -68,8 +68,8 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     
     Route::post('authorized-signatory-save',
         [
-        'as' => 'authorized_signatory_save',
-        'uses' => 'Backend\BusinessController@saveAuthorizedSignatoryForm'
+            'as' => 'authorized_signatory_save',
+            'uses' => 'Backend\OwnerController@saveAuthorizedSignatory'
     ]);
     
     Route::get('bank-document',
