@@ -72,40 +72,40 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'uses' => 'Backend\BusinessController@saveAuthorizedSignatoryForm'
     ]);
     
-    Route::get('business-documents',
+    Route::get('bank-document',
         [
         'as' => 'business-documents',
-        'uses' => 'Backend\BusinessController@showBusinessDocument'
+        'uses' => 'Backend\BusinessController@showBankDocument'
     ]);
     
-    Route::post('business-documents-save',
+    Route::post('bank-document-save',
         [
-        'as' => 'business-documents-save',
-        'uses' => 'Backend\BusinessController@saveBusinessDocument'
+        'as' => 'bank-document-save',
+        'uses' => 'Backend\BusinessController@saveBankDocument'
     ]);
     
-    Route::get('associate-buyer',
+    Route::get('gst-document',
         [
         'as' => 'associate-buyer',
-        'uses' => 'Backend\BusinessController@showAssociateBuyer'
+        'uses' => 'Backend\BusinessController@showGSTDocument'
     ]);
     
-    Route::post('associate-buyer-save',
+    Route::post('gst-document-save',
         [
-        'as' => 'associate-buyer-save',
-        'uses' => 'Backend\BusinessController@saveAssociateBuyer'
+        'as' => 'gst-document-save',
+        'uses' => 'Backend\BusinessController@saveGSTDocument'
     ]);
     
-    Route::get('associate-logistics',
+    Route::get('financial-document',
         [
         'as' => 'associate-logistics',
-        'uses' => 'Backend\BusinessController@showAssociateLogistics'
+        'uses' => 'Backend\BusinessController@showFinancialDocument'
     ]);
     
-    Route::post('associate-logistics-save',
+    Route::post('financial-document-save',
         [
         'as' => 'associate-logistics-save',
-        'uses' => 'Backend\BusinessController@saveAssociateLogistics'
+        'uses' => 'Backend\BusinessController@saveFinancialDocument'
     ]);
 
     // for password

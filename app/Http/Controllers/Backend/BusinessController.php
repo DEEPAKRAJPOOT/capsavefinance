@@ -85,7 +85,7 @@ class BusinessController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showBusinessDocument()
+    public function showBankDocument()
     {
         $userId  = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
@@ -93,7 +93,7 @@ class BusinessController extends Controller
             $userArr = $this->userRepo->find($userId);
         }
 
-        return view('auth.business-document', compact('userArr'));
+        return view('auth.bank-document', compact('userArr'));
     } 
     
     /**
@@ -103,7 +103,7 @@ class BusinessController extends Controller
      * @return \Illuminate\Http\Response
      */
     
-    public function saveBusinessDocument(BusinessDocumentRequest $request)
+    public function saveBankDocument(BusinessDocumentRequest $request)
     {
         try {
             
@@ -129,7 +129,7 @@ class BusinessController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showAssociateLogistics()
+    public function showGSTDocument()
     {
         $userId  = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
@@ -137,17 +137,17 @@ class BusinessController extends Controller
             $userArr = $this->userRepo->find($userId);
         }
 
-        return view('auth.associate-logistics', compact('userArr'));
+        return view('auth.gst-document', compact('userArr'));
     } 
-    
-    /**
+     
+   /**
      * Handle a Associate Logistics for the application.
      *
      * @param  \Illuminate\Http\AssociateLogisticsRequest  $request
      * @return \Illuminate\Http\Response
      */
     
-    public function saveAssociateLogistics(AssociateLogisticsRequest $request)
+    public function saveGSTDocument(AssociateLogisticsRequest $request)
     {
         try {
             
