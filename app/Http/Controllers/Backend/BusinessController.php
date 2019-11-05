@@ -62,12 +62,13 @@ class BusinessController extends Controller
     
     public function saveAuthorizedSignatory(Request $request)
     {
-       
-        try {
+        
+         try {
             $data        = [];
             $arrFileData = [];
             $arrFileData = $request->all();
             dd($arrFileData);
+            
             $user = $this->create($arrFileData);
            
             if ($user) {

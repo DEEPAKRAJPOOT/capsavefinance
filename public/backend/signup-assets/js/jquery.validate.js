@@ -461,7 +461,7 @@ $.extend( $.validator, {
 			this.showErrors();
 			return this.valid();
 		},
-
+       //////////////////////////////////////  for array input code start//////////////////////
 		checkForm: function() {
 			this.prepareForm();
 		    for (var i = 0, elements = (this.currentElements = this.elements()); elements[i]; i++) {

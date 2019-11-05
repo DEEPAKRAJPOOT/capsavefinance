@@ -38,5 +38,10 @@ class InvServiceProvider extends ServiceProvider
             'App\Inv\Repositories\Contracts\BusinessInterface',
             'App\Inv\Repositories\Entities\Business\BusinessRepository'
         );
+
+        $this->app->bind(
+            'App\Inv\Repositories\Contracts\OwnerInterface',
+            'App\Inv\Repositories\Entities\Owner\OwnerRepository'
+        );
     }
 }

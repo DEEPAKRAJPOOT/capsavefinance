@@ -1,8 +1,22 @@
-<?php
+$('#submit').on('click', function(event) {
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+           // adding rules for inputs with class 'comment'
+           $('input.comment').each(function() {
+               $(this).rules("add",
+                   {
+                       required: true
+                   })
+           });            
 
+           // prevent default submit action        
+           //event.preventDefault();
+
+           // test if form is valid
+           if($('form.commentForm').validate().form()) {
+               console.log("validates");
+               $( "#submit1" ).trigger('click');
+               //return true;
+           } else {
+               console.log("does not validate");
+           }
+       })

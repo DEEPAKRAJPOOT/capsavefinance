@@ -23,9 +23,10 @@ class PartnerFormRequest extends FormRequest
      */
      public function rules()
     {
-       
+      
         return $rules = [
-            'f_name' => 'required',
+            'first_name' => 'required',
+            'first_name.*'  => 'required',
             'l_name' => 'required',
             'date_of_birth' => 'required',
             'gender' => 'required',
@@ -48,7 +49,8 @@ class PartnerFormRequest extends FormRequest
         return $messages = [
            // 'country_id.required' => trans('error_messages.req_country'),
            // 'country_id.numeric' => trans('error_messages.invalid_country'),
-                'f_name.required' => trans('error_messages.req_first_name'),
+               'f_name.required' => trans('error_messages.req_first_name'),
+            /// 'f_name.required.*' => trans('error_messages.req_first_name'),
             'f_name.regex' => trans('error_messages.invalid_first_name'),
             'f_name.max' => trans('error_messages.first_name_max_length'),
             'm_name.regex' => trans('error_messages.invalid_middle_name'),
