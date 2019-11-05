@@ -43,9 +43,9 @@ class OwnerController extends Controller {
             $arrFileData = $request->all();
             $owner_info = $this->ownerRepo->saveOwnerInfo($arrFileData); //Auth::user()->id
           if ($owner_info) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully')]);
+                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             } else {
-               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong')]);
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
