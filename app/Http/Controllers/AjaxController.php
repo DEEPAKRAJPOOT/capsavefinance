@@ -53,10 +53,8 @@ class AjaxController extends Controller {
      * @return json user data
      */
     public function getLeads(DataProviderInterface $dataProvider) {
-
         $usersList = $this->userRepo->getAllUsers();
         $users = $dataProvider->getUsersList($this->request, $usersList);
-        dd($users);
         return $users;
     }
 

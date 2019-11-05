@@ -3,7 +3,19 @@
 @section('content')
 
 @include('layouts.user-inner.left-menu')
-
+<style>
+select[name='leadMaster_length']{
+    height: calc(1.8125rem + 2px);
+    margin: 0 10px 0 10px;
+    width: 100px;
+}
+input[type='search']{
+    height: calc(1.8125rem + 2px);
+    display: inline;
+    position: absolute;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+</style>
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
@@ -28,12 +40,6 @@
             <input type="hidden" name="status" value="">
             <input type="hidden" name="head" value="">
 
-            <!---
-            local permission_has =64
-            stage permission_has=64
-            live permission_has=65
-            --->
-
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;">
                     <a href="javascript:void(0);" id="register">
@@ -51,22 +57,8 @@
 
             <div class="row">
                 <div class="col-12 dataTables_wrapper">
-                    <div class="row filtersec">
-                        <div class="col-sm-12 col-md-6">
-                            <div class="dataTables_length" id="supplier-listing_length"><label>Show <select name="supplier-listing_length" aria-controls="supplier-listing" class="form-control form-control-sm">
-                                        <option value="10">10</option>
-                                        <option value="25">25</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select> entries</label></div>
-                        </div>
-                        <div class="col-sm-12 col-md-6">
-                            <div id="supplier-listing_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control form-control-sm" placeholder="" aria-controls="supplier-listing"></label></div>
-                        </div>
-                    </div>
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-
                             <div class="row">
                                 <div class="col-sm-12">
                                     <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
@@ -78,7 +70,7 @@
                                                 <th>Email</th>
                                                 <th>Mobile No</th>
                                                 <th>Business Name</th>
-                                                <th>Created By</th>
+                                                <th>Created At</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
