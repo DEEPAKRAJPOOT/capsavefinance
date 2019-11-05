@@ -202,8 +202,7 @@ window.addEventListener('load', function() {
     }
 
 function myDelete(){
-   document.getElementById("fileId").remove();
-    
+   document.getElementById("fileId").remove();   
 }
 
 
