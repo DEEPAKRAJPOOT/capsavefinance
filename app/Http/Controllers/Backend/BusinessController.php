@@ -17,7 +17,7 @@ class BusinessController extends Controller
     	$this->businessRepo = $buss_repo;
     }
 
-        /**
+    /**
      * Show the business information form.
      *
      * @return \Illuminate\Http\Response
@@ -33,134 +33,6 @@ class BusinessController extends Controller
             $arrFileData = $request->all();
             $business_info = $this->businessRepo->saveBusinessInfo($arrFileData,1);//Auth::user()->id
             if ($business_info) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('authorized_signatory_open');
-            } else {
-                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
-            }
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
-
-
-    /**
-     * Show the authorized signatory form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function showAuthorizedSignatoryForm()
-    {
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
-        $userArr = [];
-        if ($userId > 0) {
-            $userArr = $this->userRepo->find($userId);
-        }
-
-        return view('auth.authorized-signatory', compact('userArr'));
-    } 
-    
-    public function saveAuthorizedSignatory(Request $request)
-    {
-        
-         try {
-            $data        = [];
-            $arrFileData = [];
-            $arrFileData = $request->all();
-            dd($arrFileData);
-            
-            $user = $this->create($arrFileData);
-           
-            if ($user) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('authorized_signatory_open');
-            } else {
-                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
-            }
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
-    
-    /**
-     * Show the Business documents form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function showBankDocument()
-    {
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
-        $userArr = [];
-        if ($userId > 0) {
-            $userArr = $this->userRepo->find($userId);
-        }
-
-        return view('auth.bank-document', compact('userArr'));
-    } 
-    
-    /**
-     * Handle a Business documents for the application.
-     *
-     * @param  \Illuminate\Http\BusinessDocumentRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    
-    public function saveBankDocument(BusinessDocumentRequest $request)
-    {
-        
-        try {
-            
-            $data        = [];
-            $arrFileData = [];
-            $arrFileData = $request->all();
-            dd($arrFileData);
-            $user = $this->create($arrFileData);
-           
-            if ($user) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('authorized_signatory_open');
-            } else {
-                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
-            }
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
-    
-    /**
-     * Show the Associate Logistics form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function showGSTDocument()
-    {
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
-        $userArr = [];
-        if ($userId > 0) {
-            $userArr = $this->userRepo->find($userId);
-        }
-
-        return view('auth.gst-document', compact('userArr'));
-    } 
-     
-   /**
-     * Handle a Associate Logistics for the application.
-     *
-     * @param  \Illuminate\Http\AssociateLogisticsRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    
-    public function saveGSTDocument(AssociateLogisticsRequest $request)
-    {
-        try {
-            
-            $data        = [];
-            $arrFileData = [];
-            $arrFileData = $request->all();
-            dd($arrFileData);
-            $user = $this->create($arrFileData);
-           
-            if ($user) {
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return redirect()->route('authorized_signatory_open');
             } else {

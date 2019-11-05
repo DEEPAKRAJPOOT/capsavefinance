@@ -63,7 +63,7 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     Route::get('authorized-signatory',
         [
         'as' => 'authorized_signatory_open',
-        'uses' => 'Backend\BusinessController@showAuthorizedSignatoryForm'
+        'uses' => 'Backend\OwnerController@showAuthorizedSignatoryForm'
     ]);
     
     Route::post('authorized-signatory-save',
@@ -75,25 +75,25 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     Route::get('bank-document',
         [
         'as' => 'business-documents',
-        'uses' => 'Backend\BusinessController@showBankDocument'
+        'uses' => 'Backend\KycController@showBankDocument'
     ]);
     
     Route::post('bank-document-save',
         [
         'as' => 'bank-document-save',
-        'uses' => 'Backend\BusinessController@saveBankDocument'
+        'uses' => 'Backend\KycController@saveBankDocument'
     ]);
     
     Route::get('gst-document',
         [
         'as' => 'associate-buyer',
-        'uses' => 'Backend\BusinessController@showGSTDocument'
+        'uses' => 'Backend\KycController@showGSTDocument'
     ]);
     
     Route::post('gst-document-save',
         [
         'as' => 'gst-document-save',
-        'uses' => 'Backend\BusinessController@saveGSTDocument'
+        'uses' => 'Backend\KycController@saveGSTDocument'
     ]);
     
     Route::get('financial-document',

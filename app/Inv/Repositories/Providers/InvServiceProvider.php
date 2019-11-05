@@ -43,5 +43,10 @@ class InvServiceProvider extends ServiceProvider
             'App\Inv\Repositories\Contracts\OwnerInterface',
             'App\Inv\Repositories\Entities\Owner\OwnerRepository'
         );
+
+        $this->app->bind(
+            'App\Inv\Repositories\Contracts\KycInterface',
+            'App\Inv\Repositories\Entities\Kyc\KycRepository'
+        );
     }
 }
