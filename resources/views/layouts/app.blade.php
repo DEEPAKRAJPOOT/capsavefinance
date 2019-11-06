@@ -21,6 +21,8 @@
     	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="{{asset('backend/assets/css/style.css')}}">
+        <link rel="stylesheet" href="{{asset('backend/assets/plugins/datatables/css/datatable.min.css')}}">
+        <link rel="stylesheet" href="{{asset('backend/assets/plugins/datatables/css/dataTables.bootstrap.css')}}">
 
         
 </head>
