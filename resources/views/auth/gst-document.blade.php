@@ -91,7 +91,7 @@
                                                                 <div id="filePath_1" class="filePath mt-0"></div>
                                                                 <div class="file-browse">
                                                                     <button class="btn-upload btn-sm" type="button"> <i class="fa fa-upload"></i></button>
-                                                                    <input type="file" id="file_1" dir="1" onchange="FileDetails(1)">
+                                                                    <input type="file" name="gst_docs[]" id="file_1" dir="1" onchange="FileDetails(1)">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -154,7 +154,7 @@
                                             <div id="filePath_'+count+'" class="filePath mt-0"></div>\
                                             <div class="file-browse">\
                                                 <button class="btn-upload btn btn-sm" type="button"> <i class="fa fa-upload"></i> </button>\
-                                                <input type="file" id="file_'+count+'" dir="'+count+'" onchange="FileDetails('+count+')">\
+                                                <input type="file" name="gst_docs[]" id="file_'+count+'" dir="'+count+'" onchange="FileDetails('+count+')">\
                                                 <button class="btn custom-btn btn-sm delete-btn" type="button"> <i class="fa fa-trash delete-block"></i> </button>\
                                             </div>\
                                         </div>\
