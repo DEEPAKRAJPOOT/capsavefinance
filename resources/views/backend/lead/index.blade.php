@@ -3,7 +3,6 @@
 @section('content')
 
 @include('layouts.user-inner.left-menu')
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css">
 <style>
 select[name='leadMaster_length']{
