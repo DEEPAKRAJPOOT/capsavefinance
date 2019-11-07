@@ -16,7 +16,7 @@
 				</div>
 			</li>
 			<li>
-				<div class="count-heading"> Authorized Signatory KYC </div>
+				<div class="count-heading"> Promoter Details </div>
 				<div class="top-circle-bg">
 					<div class="count-top">
 						<img src="{{url('backend/signup-assets/images/kyc.png')}}" width="36" height="36">
@@ -27,7 +27,7 @@
 				</div>
 			</li>
 			<li>
-				<div class="count-heading">Business Documents </div>
+				<div class="count-heading">Bank Statement </div>
 				<div class="top-circle-bg">
 					<div class="count-top">
 						<img src="{{url('backend/signup-assets/images/business-document.png')}}" width="36" height="36">
@@ -38,7 +38,7 @@
 				</div>
 			</li>
 			<li>
-				<div class="count-heading"> Associate Buyers </div>
+				<div class="count-heading"> GST Statement </div>
 				<div class="top-circle-bg">
 					<div class="count-top">
 						<img src="{{url('backend/signup-assets/images/buyers.png')}}" width="36" height="36">
@@ -49,7 +49,7 @@
 				</div>
 			</li>
 			<li>
-				<div class="count-heading"> Associate Logistics </div>
+				<div class="count-heading"> Financial Statement </div>
 				<div class="top-circle-bg">
 					<div class="count-top">
 						<img src="{{url('backend/signup-assets/images/logistics.png')}}" width="36" height="36">
@@ -85,121 +85,151 @@
 								<div class="col-md-12">
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group">
-												<label for="txtCreditPeriod">GST Number
+											<div class="form-group INR">
+												<label for="txtCreditPeriod">Applied Loan Amount
 													<span class="mandatory">*</span>
 												</label>
-												<a href="javascript:void(0);" class="verify-owner-no" >Verify</a>
-												<input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" placeholder="Enter GST Number">
-												@error('biz_gst_number')
-				                                    <span class="text-danger error">{{ $message }}</span>
-				                                @enderror
+												<a href="javascript:void(0);" class="verify-owner-no">INR</a>
+												<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" placeholder="Enter Applied Loan Amount">
+												@error('loan_amount')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="txtSupplierName">Business PAN
-													<span class="mandatory">*</span>
+												<label for="txtSupplierName">Tranche Tenor (Days)
 												</label>
-												<a href="javascript:void(0);" class="verify-owner-no" >Verify</a>
-												<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="3" placeholder="Enter Business PAN">
-												@error('biz_pan_number')
-				                                    <span class="text-danger error">{{ $message }}</span>
-				                                @enderror
+												<input type="number" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="3" placeholder="Enter Tranche Tenor (1 - 120)">
+												@error('tenor_days')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
 											</div>
 										</div>
 									</div>
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="txtEmail">Business Name
+												<label for="txtEmail">Entity Name
 													<span class="mandatory">*</span>
 												</label>
-												<input type="text" name="biz_entity_name" value="{{old('biz_entity_name')}}" class="form-control" tabindex="1" placeholder="Enter Business Name">
+												<input type="text" name="biz_entity_name" value="{{old('biz_entity_name')}}" class="form-control" tabindex="1" placeholder="Enter Entity Name">
 												@error('biz_entity_name')
-				                                    <span class="text-danger error">{{ $message }}</span>
-				                                @enderror
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group password-input">
-												<label for="txtPassword">Type of Industry
+												<label for="txtPassword">Date of Incorporation
+													<span class="mandatory">*</span>
+												</label>
+												<input type="date" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control" tabindex="1">
+												@error('incorporation_date')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="txtEmail">Business Constitution
+													<span class="mandatory">*</span>
+												</label>
+												<select class="form-control" name="biz_constitution">
+													<option value=""> Select Business Constitution</option>
+													<option value="1" {{(old('biz_constitution') == 1)? 'selected':''}}> Business Constitution 1 </option>
+													<option value="2" {{(old('biz_constitution') == 2)? 'selected':''}}> Business Constitution 2 </option>
+													<option value="3" {{(old('biz_constitution') == 3)? 'selected':''}}> Business Constitution 3 </option>
+												</select>
+												@error('biz_constitution')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group password-input INR">
+												<label for="txtPassword">Business Turnover
+												</label> <a href="javascript:void(0);" class="verify-owner-no">INR</a>
+												<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="1" placeholder="Enter Business Turnover">
+												@error('biz_turnover')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="txtEmail">Company PAN
+													<span class="mandatory">*</span>
+												</label>
+												<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="1" placeholder="Enter Company PAN">
+												@error('biz_pan_number')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group password-input">
+												<label for="txtPassword">GST Number
+													<span class="mandatory">*</span>
+												</label>
+												<input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number">
+												@error('biz_gst_number')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group password-input">
+												<label for="txtPassword">Nature of Business
+													<span class="mandatory">*</span>
+												</label>
+												<select class="form-control" name="entity_type_id">
+													<option value=""> Select Nature of Business</option>
+													<option value="1" {{(old('entity_type_id') == 1)? 'selected':''}}> Nature of Business 1 </option>
+													<option value="2" {{(old('entity_type_id') == 2)? 'selected':''}}> Nature of Business 2 </option>
+													<option value="3" {{(old('entity_type_id') == 3)? 'selected':''}}> Nature of Business 3 </option>
+												</select>
+												@error('entity_type_id')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group password-input">
+												<label for="txtPassword">Industry
 													<span class="mandatory">*</span>
 												</label>
 												<select class="form-control" name="biz_type_id">
 													<option value=""> Select Industry</option>
-													<option value="1"> Test 1 </option>
-													<option value="2"> Test 2 </option>
-													<option value="3"> Test 3 </option>
+													<option value="1" {{(old('biz_type_id') == 1)? 'selected':''}}> Industry 1 </option>
+													<option value="2" {{(old('biz_type_id') == 2)? 'selected':''}}> Industry 2 </option>
+													<option value="3" {{(old('biz_type_id') == 3)? 'selected':''}}> Industry 3 </option>
 												</select>
 												@error('biz_type_id')
-				                                    <span class="text-danger error">{{ $message }}</span>
-				                                @enderror
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="txtEmail">Business Email
-													<span class="mandatory">*</span>
-												</label>
-												<input type="Email" name="biz_email" value="{{old('biz_email')}}" class="form-control" tabindex="1" placeholder="Enter Business Email">
-												@error('biz_email')
-				                                    <span class="text-danger error">{{ $message }}</span>
-				                                @enderror
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group password-input">
-												<label for="txtPassword">Mobile
+												<label for="txtPassword">Segment
 													<span class="mandatory">*</span>
 												</label>
-												<input type="text" name="biz_mobile" value="{{old('biz_mobile')}}" class="form-control" tabindex="1" placeholder="Enter Mobile No.">
-												@error('biz_mobile')
-				                                    <span class="text-danger error">{{ $message }}</span>
-				                                @enderror
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="txtEmail">Landline
-												</label>
-												<input type="text" name="biz_landline" value="{{old('biz_landline')}}" class="form-control" tabindex="1" placeholder="Enter Landline No.">
-												@error('biz_landline')
-				                                    <span class="text-danger error">{{ $message }}</span>
-				                                @enderror
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group password-input">
-												<label for="txtPassword">Type of Business Entity
-													<span class="mandatory">*</span>
-												</label>
-												<select class="form-control" name="entity_type_id">
-													<option value=""> Select Business Entity</option>
-													<option value="1"> Test 1 </option>
-													<option value="2"> Test 2 </option>
-													<option value="3"> Test 3 </option>
+												<select class="form-control" name="segment">
+													<option value=""> Select Segment</option>
+													<option value="1" {{(old('segment') == 1)? 'selected':''}}> Segment 1 </option>
+													<option value="2" {{(old('segment') == 2)? 'selected':''}}> Segment 2 </option>
+													<option value="3" {{(old('segment') == 3)? 'selected':''}}> Segment 3 </option>
 												</select>
-												@error('entity_type_id')
-				                                    <span class="text-danger error">{{ $message }}</span>
-				                                @enderror
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group password-input">
-												<label for="txtPassword">CIN
-													<span class="mandatory">*</span>
-												</label>
-												<input type="text" name="biz_cin" value="{{old('biz_cin')}}" class="form-control" tabindex="1" placeholder="Enter CIN">
-												@error('biz_cin')
-				                                    <span class="text-danger error">{{ $message }}</span>
-				                                @enderror
+												@error('segment')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
 											</div>
 										</div>
 									</div>
@@ -248,9 +278,9 @@
 														</label>
 														<select class="form-control" name="biz_state">
 															<option value=""> Select State</option>
-															<option value="1"> Test 1 </option>
-															<option value="2"> Test 2 </option>
-															<option value="3"> Test 3 </option>
+															<option value="1" {{(old('biz_state') == 1)? 'selected':''}}> State 1 </option>
+															<option value="2" {{(old('biz_state') == 2)? 'selected':''}}> State 2 </option>
+															<option value="3" {{(old('biz_state') == 3)? 'selected':''}}> State 3 </option>
 														</select>
 														@error('biz_state')
 						                                    <span class="text-danger error">{{ $message }}</span>
@@ -314,9 +344,9 @@
 														</label>
 														<select class="form-control" name="biz_corres_state">
 															<option value=""> Select State</option>
-															<option value="1"> Test 1 </option>
-															<option value="2"> Test 2 </option>
-															<option value="3"> Test 3 </option>
+															<option value="1" {{(old('biz_corres_state') == 1)? 'selected':''}}> State 1 </option>
+															<option value="2" {{(old('biz_corres_state') == 2)? 'selected':''}}> State 2 </option>
+															<option value="3" {{(old('biz_corres_state') == 3)? 'selected':''}}> State 3 </option>
 														</select>
 														@error('biz_corres_state')
 						                                    <span class="text-danger error">{{ $message }}</span>
