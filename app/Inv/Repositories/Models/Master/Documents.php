@@ -13,7 +13,7 @@ class Documents extends BaseModel
      *
      * @var string
      */
-    protected $table = 'mst_documents';
+    protected $table = 'mst_doc';
 
     /**
      * Custom primary key is set for the table
@@ -43,7 +43,7 @@ class Documents extends BaseModel
      */
     protected $fillable = [
         'title',
-        'status'
+        'is_active'
     ];
 
     /**

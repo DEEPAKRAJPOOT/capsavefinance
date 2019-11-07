@@ -74,8 +74,8 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     
     Route::get('bank-document',
         [
-        'as' => 'business-documents',
-        'uses' => 'Backend\KycController@showBankDocument'
+        'as' => 'bank-document',
+        'uses' => 'Backend\DocumentController@index'
     ]);
     
     Route::post('bank-document-save',

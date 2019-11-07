@@ -326,7 +326,7 @@ class User extends Authenticatable
         /*$arrUser = self::select('users.*')
             ->where('users.user_id', (int) $user_id)
             ->first();
-*/
+        */
 
          $arrUser = self::select('users.*', 'ud.country_id',
              'ud.date_of_birth'

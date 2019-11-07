@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 07, 2019 at 12:12 PM
+-- Generation Time: Nov 07, 2019 at 05:25 PM
 -- Server version: 5.7.27-0ubuntu0.16.04.1
 -- PHP Version: 7.3.10-1+ubuntu16.04.1+deb.sury.org+1
 
@@ -120,6 +120,60 @@ INSERT INTO `rta_anchor_user` (`anchor_user_id`, `user_id`, `name`, `email`, `ph
 (13, 0, '', '', '', '', '', 0, NULL, NULL, NULL, NULL),
 (14, 0, '', '', '', '', '', 0, NULL, NULL, NULL, NULL),
 (15, 0, '', '', '', '', '', 0, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_app_doc`
+--
+
+CREATE TABLE `rta_app_doc` (
+  `app_doc_id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `app_id` int(10) UNSIGNED NOT NULL,
+  `doc_id` int(10) UNSIGNED NOT NULL,
+  `is_upload` tinyint(1) UNSIGNED NOT NULL,
+  `created_by` int(10) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_app_doc_file`
+--
+
+CREATE TABLE `rta_app_doc_file` (
+  `app_doc_file_id` int(10) UNSIGNED NOT NULL,
+  `app_id` int(10) UNSIGNED NOT NULL,
+  `doc_id` int(10) UNSIGNED NOT NULL,
+  `is_upload` tinyint(1) UNSIGNED NOT NULL,
+  `file_type` varchar(20) NOT NULL,
+  `file_name` varchar(100) NOT NULL,
+  `file_size` int(10) UNSIGNED NOT NULL,
+  `file_encp_key` varchar(100) NOT NULL,
+  `file_path` varchar(100) NOT NULL,
+  `created_by` int(10) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_app_wf`
+--
+
+CREATE TABLE `rta_app_wf` (
+  `app_wf_id` int(10) UNSIGNED NOT NULL,
+  `wf_stage_id` int(10) UNSIGNED NOT NULL,
+  `biz_app_id` int(10) UNSIGNED NOT NULL,
+  `app_wf_status` tinyint(3) UNSIGNED NOT NULL,
+  `is_complete` tinyint(1) UNSIGNED NOT NULL COMMENT '0=> Pending,1=>Completed,2=> N Progress'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -971,43 +1025,72 @@ CREATE TABLE `rta_permission_role` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rta_program`
+-- Table structure for table `rta_prgm`
 --
 
-CREATE TABLE `rta_program` (
-  `program_id` int(10) UNSIGNED NOT NULL,
+CREATE TABLE `rta_prgm` (
+  `prgm_id` int(10) UNSIGNED NOT NULL,
+  `anchor_id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED DEFAULT NULL,
   `age_of_biz` varchar(100) NOT NULL,
   `industry` varchar(100) NOT NULL,
   `revenue` varchar(20) NOT NULL,
   `cibil_score` varchar(100) NOT NULL,
-  `is_registered` tinyint(1) NOT NULL COMMENT '1=> Registered, 0=> Not Registered',
-  `created_by` int(10) UNSIGNED DEFAULT NULL,
+  `status` tinyint(3) UNSIGNED NOT NULL COMMENT '1=>Active,0=>In Active,2=>Ended',
   `created_at` timestamp NULL DEFAULT NULL,
+  `created_by` int(10) UNSIGNED DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `updated_by` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `rta_program`
+-- Dumping data for table `rta_prgm`
 --
 
-INSERT INTO `rta_program` (`program_id`, `user_id`, `age_of_biz`, `industry`, `revenue`, `cibil_score`, `is_registered`, `created_by`, `created_at`, `updated_at`, `updated_by`) VALUES
-(1, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(2, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(3, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(4, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(5, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(6, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(7, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(8, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(9, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(10, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(11, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(12, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(13, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(14, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
-(15, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL);
+INSERT INTO `rta_prgm` (`prgm_id`, `anchor_id`, `user_id`, `age_of_biz`, `industry`, `revenue`, `cibil_score`, `status`, `created_at`, `created_by`, `updated_at`, `updated_by`) VALUES
+(1, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(2, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(3, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(4, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(5, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(6, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(7, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(8, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(9, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(10, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(11, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(12, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(13, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(14, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL),
+(15, 0, 0, '', '', '', '', 0, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rta_prgm_doc`
+--
+
+CREATE TABLE `rta_prgm_doc` (
+  `prgm_doc_id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `prgm_id` int(10) UNSIGNED NOT NULL,
+  `doc_id` int(10) UNSIGNED NOT NULL,
+  `wf_stage_id` int(10) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `created_by` int(10) UNSIGNED DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `rta_prgm_doc`
+--
+
+INSERT INTO `rta_prgm_doc` (`prgm_doc_id`, `user_id`, `prgm_id`, `doc_id`, `wf_stage_id`, `created_at`, `created_by`, `updated_at`, `updated_by`) VALUES
+(1, 1, 1, 1, 1, NULL, NULL, NULL, NULL),
+(2, 1, 1, 2, 2, NULL, NULL, NULL, NULL),
+(3, 1, 1, 3, 3, NULL, NULL, NULL, NULL),
+(4, 1, 1, 4, 4, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1225,29 +1308,29 @@ CREATE TABLE `rta_user_detail` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rta_workflow_stage`
+-- Table structure for table `rta_wf_stage`
 --
 
-CREATE TABLE `rta_workflow_stage` (
+CREATE TABLE `rta_wf_stage` (
   `wf_stage_id` int(10) UNSIGNED NOT NULL,
-  `program_id` int(10) UNSIGNED NOT NULL,
-  `stage_name` varchar(100) CHARACTER SET utf8 NOT NULL,
-  `route_name` varchar(100) NOT NULL,
+  `prgm_id` int(10) UNSIGNED NOT NULL,
+  `stage_name` varchar(100) NOT NULL,
+  `route_name` varchar(100) CHARACTER SET latin1 NOT NULL,
   `user_journey` tinyint(1) NOT NULL COMMENT '1=> Frontend Users,2=> backend Users',
   `status` tinyint(1) UNSIGNED NOT NULL COMMENT '0=> Pending,1=>Completed,2=> N Progress'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `rta_workflow_stage`
+-- Dumping data for table `rta_wf_stage`
 --
 
-INSERT INTO `rta_workflow_stage` (`wf_stage_id`, `program_id`, `stage_name`, `route_name`, `user_journey`, `status`) VALUES
-(1, 0, 'Business Information', '', 1, 0),
-(2, 0, 'Promoters Detail', '', 1, 0),
-(3, 0, 'Cibil Api', '', 1, 0),
-(4, 0, 'GST Detail', '', 1, 0),
-(5, 0, 'Bank Statement Upload', '', 1, 0),
-(6, 0, 'KYC Detail Upload', '', 1, 0);
+INSERT INTO `rta_wf_stage` (`wf_stage_id`, `prgm_id`, `stage_name`, `route_name`, `user_journey`, `status`) VALUES
+(1, 1, 'Business Information', '', 1, 0),
+(2, 1, 'Promoters Detail', '', 1, 0),
+(3, 1, 'Cibil Api', '', 1, 0),
+(4, 1, 'GST Detail', '', 1, 0),
+(5, 1, 'Bank Statement Upload', 'bank-document', 1, 0),
+(6, 1, 'KYC Detail Upload', '', 1, 0);
 
 --
 -- Indexes for dumped tables
@@ -1270,6 +1353,24 @@ ALTER TABLE `rta_anchor`
 --
 ALTER TABLE `rta_anchor_user`
   ADD PRIMARY KEY (`anchor_user_id`);
+
+--
+-- Indexes for table `rta_app_doc`
+--
+ALTER TABLE `rta_app_doc`
+  ADD PRIMARY KEY (`app_doc_id`);
+
+--
+-- Indexes for table `rta_app_doc_file`
+--
+ALTER TABLE `rta_app_doc_file`
+  ADD PRIMARY KEY (`app_doc_file_id`);
+
+--
+-- Indexes for table `rta_app_wf`
+--
+ALTER TABLE `rta_app_wf`
+  ADD PRIMARY KEY (`app_wf_id`);
 
 --
 -- Indexes for table `rta_biz`
@@ -1404,10 +1505,16 @@ ALTER TABLE `rta_permission_role`
   ADD KEY `role_id` (`role_id`);
 
 --
--- Indexes for table `rta_program`
+-- Indexes for table `rta_prgm`
 --
-ALTER TABLE `rta_program`
-  ADD PRIMARY KEY (`program_id`);
+ALTER TABLE `rta_prgm`
+  ADD PRIMARY KEY (`prgm_id`);
+
+--
+-- Indexes for table `rta_prgm_doc`
+--
+ALTER TABLE `rta_prgm_doc`
+  ADD PRIMARY KEY (`prgm_doc_id`);
 
 --
 -- Indexes for table `rta_resetpassword_token`
@@ -1450,9 +1557,9 @@ ALTER TABLE `rta_user_detail`
   ADD KEY `updated_by` (`updated_by`);
 
 --
--- Indexes for table `rta_workflow_stage`
+-- Indexes for table `rta_wf_stage`
 --
-ALTER TABLE `rta_workflow_stage`
+ALTER TABLE `rta_wf_stage`
   ADD PRIMARY KEY (`wf_stage_id`);
 
 --
@@ -1474,6 +1581,21 @@ ALTER TABLE `rta_anchor`
 --
 ALTER TABLE `rta_anchor_user`
   MODIFY `anchor_user_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+--
+-- AUTO_INCREMENT for table `rta_app_doc`
+--
+ALTER TABLE `rta_app_doc`
+  MODIFY `app_doc_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_app_doc_file`
+--
+ALTER TABLE `rta_app_doc_file`
+  MODIFY `app_doc_file_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `rta_app_wf`
+--
+ALTER TABLE `rta_app_wf`
+  MODIFY `app_wf_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `rta_biz`
 --
@@ -1560,10 +1682,15 @@ ALTER TABLE `rta_otp_trans`
 ALTER TABLE `rta_permissions`
   MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `rta_program`
+-- AUTO_INCREMENT for table `rta_prgm`
 --
-ALTER TABLE `rta_program`
-  MODIFY `program_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+ALTER TABLE `rta_prgm`
+  MODIFY `prgm_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+--
+-- AUTO_INCREMENT for table `rta_prgm_doc`
+--
+ALTER TABLE `rta_prgm_doc`
+  MODIFY `prgm_doc_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `rta_resetpassword_token`
 --
@@ -1585,9 +1712,9 @@ ALTER TABLE `rta_users`
 ALTER TABLE `rta_user_detail`
   MODIFY `user_detail_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `rta_workflow_stage`
+-- AUTO_INCREMENT for table `rta_wf_stage`
 --
-ALTER TABLE `rta_workflow_stage`
+ALTER TABLE `rta_wf_stage`
   MODIFY `wf_stage_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
