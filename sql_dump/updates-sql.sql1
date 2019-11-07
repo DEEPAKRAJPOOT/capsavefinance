@@ -11,3 +11,5 @@ ALTER TABLE `rta_biz_gst` CHANGE `biz_gst_api_id` `biz_gst_api_id` INT(10) UNSIG
 ALTER TABLE `rta_biz_pan` CHANGE `biz_pan_api_id` `biz_pan_api_id` INT(10) UNSIGNED NULL COMMENT 'Last pull api id';
 ALTER TABLE `rta_biz` CHANGE `segment_id` `segment_id` SMALLINT(5) UNSIGNED NULL;
 drop addr_type in rta_biz_aadr table
+
+Anuj - ALTER TABLE `rta_biz_gst` ADD `cin` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER `gst_hash`;
