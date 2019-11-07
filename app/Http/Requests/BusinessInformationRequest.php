@@ -24,8 +24,8 @@ class BusinessInformationRequest extends FormRequest
     public function rules()
     {
         return [
-            'biz_gst_number' => 'required|string|max:50',
-            'biz_pan_number' => 'required|string|max:10',
+            'biz_gst_number' => 'required|string|min:15|max:15',
+            'biz_pan_number' => 'required|string|min:10|max:10',
             'biz_entity_name' => 'required|string|max:100',
             'biz_type_id' => 'required|numeric',
             'segment' => 'required|numeric',
