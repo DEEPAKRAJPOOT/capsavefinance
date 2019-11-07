@@ -11,7 +11,7 @@
 						<img src="{{url('backend/signup-assets/images/business-information.png')}}" width="36" height="36">
 					</div>
 					<div class="count-bottom">
-						<img src="assets{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
+						<img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
 					</div>
 				</div>
 			</li>
@@ -165,6 +165,7 @@
 												<label for="txtEmail">Company PAN
 													<span class="mandatory">*</span>
 												</label>
+												<a href="javascript:void(0);" class="verify-owner-no pan-verify">Verify</a>
 												<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="1" placeholder="Enter Company PAN">
 												@error('biz_pan_number')
 									                <span class="text-danger error">{{ $message }}</span>
@@ -176,6 +177,7 @@
 												<label for="txtPassword">GST Number
 													<span class="mandatory">*</span>
 												</label>
+												<a href="javascript:void(0);" class="verify-owner-no gst-verify">Verify</a>
 												<input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number">
 												@error('biz_gst_number')
 									                <span class="text-danger error">{{ $message }}</span>
@@ -401,5 +403,66 @@
 			$('.copy-address-block input[name=biz_corres_pin]').val('');
 		}
 	}
+
+	$(document).ready(function(){
+		$('.pan-verify').on('click',function(){
+			let pan_no = $('input[name=biz_pan_number]').val().trim();
+			if(pan_no.length != 10){
+				$('input[name=biz_pan_number] +span').remove();
+				$('input[name=biz_pan_number]').after('<span class="text-danger error">Enter valid PAN Number</span>');
+				return false;
+			}
+			$.ajax({
+				url: "https://testapi.karza.in/v2/pan",
+				type: "POST",
+				data: JSON.stringify({"consent": "Y","pan": pan_no}),
+				dataType:'json',
+				headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+				error:function (xhr, status, errorThrown) {
+        			alert(errorThrown);
+    			},
+				success: function(res){
+				    if(res['status-code'] == 101){
+				    	$('.pan-verify').text('Verified');
+				    	$('.pan-verify').css('pointer-events','none');
+				    	$('input[name=biz_pan_number]').attr('readonly',true);
+				    	$('input[name=biz_pan_number] +span').remove();
+
+				    }else{
+				    	alert('Something went wrong, Try again later');
+				    }
+				  }
+			});
+		})
+
+		$('.gst-verify').on('click',function(){
+			let gst_no = $('input[name=biz_gst_number]').val().trim();
+				$('input[name=biz_gst_number] +span').remove()
+			if(gst_no.length != 15){
+				$('input[name=biz_gst_number]').after('<span class="text-danger error">Enter valid GST Number</span>');
+				return false;
+			}
+			$.ajax({
+				url: "https://gst.karza.in/uat/v1/gstdetailed",
+				type: "POST",
+				data: JSON.stringify({"consent": "Y","gstin": gst_no}),
+				dataType:'json',
+				headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+				error:function (xhr, status, errorThrown) {
+        			alert(errorThrown);
+    			},
+				success: function(res){
+				    if(res['status-code'] == 101){
+				    	$('.gst-verify').text('Verified');
+				    	$('.gst-verify').css('pointer-events','none');
+				    	$('input[name=biz_gst_number]').attr('readonly',true);
+				    	$('input[name=biz_gst_number] +span').remove();
+				    }else{
+				    	alert('Something went wrong, Try again later');
+				    }
+				}
+			});
+		})
+	})
 </script>
 @endsection
