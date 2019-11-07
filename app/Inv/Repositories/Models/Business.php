@@ -54,10 +54,11 @@ class Business extends Model
         $business = Business::create([
         'user_id'=>$userId,
         'biz_entity_name'=>$attributes['biz_entity_name'],
-        'date_of_in_corp'=>'2019-10-30',
+        'date_of_in_corp'=>$attributes['incorporation_date'],
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz_id'=>$attributes['biz_type_id'],
-        'turnover_amt'=>500000,
+        'turnover_amt'=>$attributes['biz_turnover'],
+        'segment_id'=>$attributes['segment'],
         'org_id'=>1,
         'created_by'=>$userId,
         //'biz_pan_id'=>$attributes['zzz'],
@@ -77,6 +78,13 @@ class Business extends Model
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
                 'pan_hash'=>$attributes['biz_pan_number'],
+                'status'=>0,
+                'created_by'=>$userId
+            ]);
+        $app_id = DB::table('biz_app')->insertGetId([
+                'user_id'=>$userId,
+                'biz_id'=>$business->biz_id,
+                'loan_amt'=>$attributes['loan_amount'],
                 'status'=>0,
                 'created_by'=>$userId
             ]);
