@@ -67,7 +67,7 @@
         <div class="mt-4">
             <div class="form-heading pb-3 d-flex pr-0">
                 <h2>Bank Statement
-                    <small> ( Maximum file upload size : 32 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX )</small>
+                    <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX )</small>
                 </h2>
             </div>
             <div class="col-md-12 form-design ">
@@ -98,7 +98,7 @@
                                                                 <div id="filePath_1" class="filePath mt-0"></div>
                                                                 <div class="file-browse">
                                                                     <button class="btn-upload btn-sm" type="button"> <i class="fa fa-upload"></i></button>
-                                                                    <input type="file" id="file_1" dir="1" onchange="FileDetails(1)">
+                                                                    <input type="file" name="bank_docs[]" id="file_1" dir="1" onchange="FileDetails(1)">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -113,7 +113,7 @@
                             <div class="d-flex btn-section ">
                                 <div class="col-md-4 ml-auto text-right">
                                     <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details.php'">
-                                    <input type="button" value="Save and Continue" class="btn btn-primary" onclick="window.location.href = 'gst-statement.php'">
+                                    <input type="submit" value="Save and Continue" class="btn btn-primary">
                                 </div>
                             </div>
                         </div>
@@ -168,7 +168,7 @@
                                             <div id="filePath_'+count+'" class="filePath mt-0"></div>\
                                             <div class="file-browse">\
                                                 <button class="btn-upload btn btn-sm" type="button"> <i class="fa fa-upload"></i> </button>\
-                                                <input type="file" id="file_'+count+'" dir="'+count+'" onchange="FileDetails('+count+')">\
+                                                <input type="file" name="bank_docs[]" id="file_'+count+'" dir="'+count+'" onchange="FileDetails('+count+')">\
                                                 <button class="btn custom-btn btn-sm delete-btn" type="button"> <i class="fa fa-trash delete-block"></i> </button>\
                                             </div>\
                                         </div>\
