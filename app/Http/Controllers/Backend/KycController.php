@@ -39,11 +39,11 @@ class KycController extends Controller
     /**
      * Handle a Business documents for the application.
      *
-     * @param  \Illuminate\Http\BusinessDocumentRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     
-    public function saveBankDocument(BusinessDocumentRequest $request)
+    public function saveBankDocument(Request $request)
     {
         
         try {
@@ -84,11 +84,11 @@ class KycController extends Controller
    /**
      * Handle a Associate Logistics for the application.
      *
-     * @param  \Illuminate\Http\AssociateLogisticsRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     
-    public function saveGSTDocument(AssociateLogisticsRequest $request)
+    public function saveGSTDocument(Request $request)
     {
         try {
             
