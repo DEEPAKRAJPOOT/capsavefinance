@@ -67,7 +67,7 @@
         <div class="mt-4">
             <div class="form-heading pb-3 d-flex pr-0">
                 <h2>GST  Statement
-                    <small> ( Maximum file upload size : 32 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX )</small>
+                    <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX )</small>
                 </h2>
             </div>
             <div class="col-md-12 form-design ">
@@ -106,7 +106,7 @@
                             <div class="d-flex btn-section ">
                                 <div class="col-md-4 ml-auto text-right">
                                     <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'bank-statement.php'">
-                                    <input type="button" value="Save and Continue" class="btn btn-primary" onclick="window.location.href = 'financial-statement.php'">
+                                    <input type="submit" value="Save and Continue" class="btn btn-primary">
                                 </div>
                             </div>
                         </div>
