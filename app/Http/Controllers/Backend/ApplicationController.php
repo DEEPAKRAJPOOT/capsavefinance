@@ -85,7 +85,7 @@ class ApplicationController extends Controller
      */
     //////////////////Save Promoter Multiple Details///////////////////////// 
     public function savePromoterDetail(Request $request) {
-        try {
+       try {
             $arrFileData = $request->all();
             $owner_info = $this->ownerRepo->saveOwnerInfo($arrFileData); //Auth::user()->id
           if ($owner_info) {
