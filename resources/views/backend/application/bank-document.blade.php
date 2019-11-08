@@ -71,8 +71,12 @@
                 </h2>
             </div>
             <div class="col-md-12 form-design ">
+                @foreach($errors->all() as $error)
+                    <span class="text-danger error">{{ $error }}</span>
+                @endforeach
                 <div id="reg-box">
-                    <form>
+                      <form id="bank-document" method="POST" action="{{ Route('bank-document-save') }}" enctype="multipart/form-data">
+                        @csrf
                         <div class=" form-fields">
                             <div class="form-sections">
                                 <div class="row">
@@ -100,6 +104,9 @@
                                                                     <button class="btn-upload btn-sm" type="button"> <i class="fa fa-upload"></i></button>
                                                                     <input type="file" name="bank_docs[]" id="file_1" dir="1" onchange="FileDetails(1)">
                                                                 </div>
+                                                                @error('bank_docs')
+                                                                <span class="text-danger error"> {{ $message }} </span>
+                                                                @enderror
                                                             </div>
                                                         </div>
                                                         <hr>

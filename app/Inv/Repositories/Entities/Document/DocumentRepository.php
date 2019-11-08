@@ -70,5 +70,24 @@ class DocumentRepository implements DocumentInterface
     {
         //
     }
-
+    
+    /**
+     * save document method
+     *
+     * @param mixed $ids
+     */
+    
+    public function saveDocument($attributes = [], $mstDocId){
+        /**
+         * Check Valid Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+       
+        return AppDocumentFile::creates($attributes, $mstDocId,);
+    }
 }
