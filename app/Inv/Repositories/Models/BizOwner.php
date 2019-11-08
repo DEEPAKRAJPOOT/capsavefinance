@@ -43,6 +43,7 @@ class BizOwner extends Model
         'gender',
         'share_per',
         'edu_qualification',
+        'owner_addr',
         'created_by',
         'created_at',
         'updated_at'
@@ -69,7 +70,7 @@ class BizOwner extends Model
          $inputArr[$i]['last_name'] = $attributes['last_name'][$i];
          $inputArr[$i]['date_of_birth'] = $attributes['date_of_birth'][$i];
          $inputArr[$i]['gender'] = $attributes['gender'][$i];
-         $inputArr[$i]['biz_addr_id'] = 1;
+         $inputArr[$i]['owner_addr'] = $attributes['owner_addr'][$i];
          $inputArr[$i]['biz_pan_id'] = 1;
          $inputArr[$i]['is_pan_verified'] = 1; 
          $inputArr[$i]['share_per'] = $attributes['share_per'][$i];
