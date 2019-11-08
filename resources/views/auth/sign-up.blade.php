@@ -29,7 +29,7 @@
 								<div class="col-md-6">
 									<div class="form-group">
 										<label for="txtSupplierName">Middle Name
-											<span class="mandatory">*</span>
+											<span class="mandatory"></span>
 										</label>
 										<input type="text" name="m_name" id="name" value="{{old('m_name')}}" class="form-control" tabindex="3" placeholder="Middle Name">
                                                                                 <span class="text-danger error">{{$errors->first('m_name')}}</span>

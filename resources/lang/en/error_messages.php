@@ -2,10 +2,10 @@
 return [
     //registration error messages
     'req_first_name' => 'This field is required.',
-    'invalid_first_name' => 'Please enter valid first name.',
+    'invalid_first_name' => 'Special characters  is not allowed',
     'first_name_max_length' => 'You are not allow to enter maximum 50 characters.',
+    'first_name_allow_string' => 'Numaric value is not allowed',
     'req_middle_name' => 'Middle name is required.',
-
     'invalid_middle_name' => 'Please enter valid middle Name.',
     'middle_name_max_length' => 'please enter no more than 50 characters.',
     'req_dob' =>'This field is required.',
@@ -13,10 +13,8 @@ return [
     'req_dob_name' => 'This field is required.',
     'req_otp' => 'OTP is required',
     'invalid_otp' => 'Numbers only',
-
-
     'req_last_name' => 'This field is required.',
-    'invalid_last_name' => 'Please enter valid last name.',
+    'invalid_last_name' => 'Special characters or spaces is not allowed',
     'last_name_max_length' => 'You are not allow to enter maximum 50 characters.',
     'req_email' => 'This field is required.',
     'req_user_name' => 'Username is required',
@@ -24,6 +22,9 @@ return [
     'invalid_email' => 'Please enter a valid email address.',
     'email_max_length' => 'Please enter no more than 50 characters.',
     'email_already_exists' => 'The email is already registered.',
+    'buis_business' => 'Please enter a valid business name',
+    'business_max_length' => 'Please enter no more than 50 characters.',
+    'invalid_business' => 'Special characters or spaces is not allowed',
 
     'req_dob' => 'This field is required.',
     'req_phone' => 'This field is required',

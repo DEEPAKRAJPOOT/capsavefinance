@@ -7,7 +7,7 @@
     }
 
 </style>
-
+<meta name="_token" content="{{csrf_token()}}" />
 <div class="step-form pt-5">
 
     <div class="container">
@@ -16,21 +16,21 @@
                 <div class="count-heading">Business Information </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="assets/images/business-document.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/business-document.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="assets/images/tick-image.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>
-            <li class="count-active">
+            <li>
                 <div class="count-heading"> Authorized Signatory KYC </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="assets/images/kyc.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/kyc.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="assets/images/tick-image.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -38,10 +38,10 @@
                 <div class="count-heading">Business Documents </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="assets/images/business-document.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/business-document.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="assets/images/tick-image.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -49,10 +49,10 @@
                 <div class="count-heading"> Associate Buyers </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="assets/images/buyers.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/buyers.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="assets/images/tick-image.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -60,15 +60,14 @@
                 <div class="count-heading"> Associate Logistics </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="assets/images/logistics.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/logistics.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="assets/images/tick-image.png" width="36" height="36">
+                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>
         </ul>
-
     </div>
 
 
@@ -109,7 +108,7 @@
 
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <input type="text" name="first_name[]" id="first_name" vname="first_name1" value="" class="form-control first_name" placeholder="Enter First Name" >
+                                                        <input type="text" name="first_name[]" id="first_name1" vname="first_name1" value="" class="form-control first_name" placeholder="Enter First Name" >
                                                         {{$errors->first('f_name')}}
                                                     </div>
                                                 </div>
@@ -133,7 +132,7 @@
                                                         <label for="txtPassword">DOB
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <input type="date" name="date_of_birth[]" id="date_of_birth" value="" class="form-control date_of_birth" tabindex="1" placeholder="Enter Date Of Birth" >
+                                                        <input type="date" name="date_of_birth[]" id="date_of_birth1" value="" class="form-control date_of_birth" tabindex="1" placeholder="Enter Date Of Birth" >
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -400,16 +399,65 @@
         function myDelete() {
             document.getElementById("fileId").remove();
         }
-        
-        
+
+
         var x = 2;
         function addInput() {
             $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod ' class='opacity-0'>lastname</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='date' name='date_of_birth[]'  id='date_of_birth" + x + "' value='' class='form-control date_of_birth' tabindex='1' placeholder='Enter Date Of Birth' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span></label><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'>INR</a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='address[]' id='address" + x + "'></textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
                     x++;
                 }
-       $(document).on('click','.clsdiv',function(){
-               $(this).parent().parent().remove();   
-       });         
+                $(document).on('click', '.clsdiv', function () {
+                    $(this).parent().parent().remove();
+                });
+    </script>
+
+
+
+    <script>
+        jQuery(document).ready(function () {
+            var CIN = "U72900DL2017PTC310205";
+            var consent = "Y";
+            var key = "h3JOdjfOvay7J8SF";
+            var dataStore = ({'consent': consent, 'entityId': CIN});
+            var jsonData = JSON.stringify(dataStore);
+            jQuery.ajaxSetup({
+                headers: {
+                    'Content-Type': "application/json",
+                    'x-karza-key': key,
+                }
+            });
+            jQuery.ajax({
+                url: "https://testapi.kscan.in/v1/corp/profile",
+                method: 'post',
+                dataType: 'json',
+                data: jsonData,
+                success: function (result) {
+                    obj = result.result.directors;
+                    var count = 0;
+                    $(obj).each(function (k, v) {
+                        var dob = v.dob;
+                        var dateAr = dob.split('-');
+                        var newDate = dateAr[0] + '/' + dateAr[1] + '/' + dateAr[2];
+                        count++;
+                        $("#first_name" + count).val(v.name);
+                        $("#first_name" + count).prop("readonly", true);
+                        $("#address" + count).val(v.address);
+                        $("#address" + count).prop("readonly", true);
+                        $("#date_of_birth1").prop("type", "text").val(newDate);
+                        if (k > 0)
+                        {
+
+                            $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='" + v.name + "' class='form-control first_name' readonly='readonly' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod ' class='opacity-0'>lastname</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' value='" + newDate + "' class='form-control date_of_birth' tabindex='1' readonly='readonly' placeholder='Enter Date Of Birth'></div></div><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span></label><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'>INR</a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='address[]' readonly='readonly' id='address" + x + "'>" + v.address + "</textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
+                                                    x++;
+                                                }
+
+                                            });
+                                        }
+                                    });
+                                });
+
     </script>
     @endsection
+
+
 

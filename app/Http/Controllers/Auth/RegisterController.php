@@ -434,14 +434,14 @@ use RegistersUsers,
                     $userMailArr = [];
                     $userArr = [];
 
-                    $string = Helpers::randomPassword();
+                   /// $string = Helpers::randomPassword();
                     $date = new DateTime;
                     $currentDate = $date->format('Y-m-d H:i:s');
                     $userArr['is_otp_verified'] = 1;
                     $userArr['is_otp_resent'] = 0;
                     $userArr['otp_verified_updatetime'] = $currentDate;
 
-                    $userArr['password'] = bcrypt($string);
+                  ////  $userArr['password'] = bcrypt($string);
                     
                     $userCheckArr = $this->userRepo->getfullUserDetail($userId);
 
@@ -451,12 +451,12 @@ use RegistersUsers,
                     $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                   /// $userMailArr['username'] = $userCheckArr->username;
-                    $userMailArr['password'] = $string;
+                  ////  $userMailArr['password'] = $string;
                     //$userMailArr['password'] = Session::pull('password');
                     ///////////////////
                    
                     // Send registration mail to user with password
-                    Event::dispatch("user.registered", serialize($userMailArr));
+                 ///   Event::dispatch("user.registered", serialize($userMailArr));
                     return redirect()->route('otp_thanks');
                     //return redirect()->route('login_open');
                 } else {

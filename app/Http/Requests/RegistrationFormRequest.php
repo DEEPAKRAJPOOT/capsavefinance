@@ -27,13 +27,12 @@ class RegistrationFormRequest extends Request
     {
       ///dd($this->request);
         return $rules = [
-            'f_name' => 'required|max:50|regex:/^[a-z A-Z]/u|',
-            'm_name' => 'max:50|regex:/^[a-z A-Z]/u|',
-            'l_name' => 'required|max:50|regex:/^[a-z A-Z]/u|',
-            'business_name' => 'required',
-            'email' => 'required|email|max:50|unique:users',
+            'f_name' => 'required|min:2|max:50|alpha_dash|alpha',
+            'l_name' => 'required|min:2|alpha_dash|alpha',
+            'business_name' => 'required|min:4|max:50|alpha_dash',
+            'email'  => 'required|email|max:50|unique:users',
             'mobile_no' => 'required|digits:10|min:0',
-            'password'         => 'required',
+            'password'   => 'required',
             'password_confirm' => 'required|same:password',  
             
             ];
@@ -49,14 +48,16 @@ class RegistrationFormRequest extends Request
         return $messages = [
            // 'country_id.required' => trans('error_messages.req_country'),
            // 'country_id.numeric' => trans('error_messages.invalid_country'),
-                'f_name.required' => trans('error_messages.req_first_name'),
-            'f_name.regex' => trans('error_messages.invalid_first_name'),
+            'f_name.required' => trans('error_messages.req_first_name'),
+            'f_name.alpha_dash' => trans('error_messages.invalid_first_name'),
             'f_name.max' => trans('error_messages.first_name_max_length'),
-            'm_name.regex' => trans('error_messages.invalid_middle_name'),
-            'm_name.max' => trans('error_messages.middle_name_max_length'),
+            'f_name.string' => trans('error_messages.first_name_allow_string'),
             'l_name.required' => trans('error_messages.req_last_name'),
-            'l_name.regex' => trans('error_messages.invalid_last_name'),
+            'l_name.alpha_dash' => trans('error_messages.invalid_last_name'),
             'l_name.max' => trans('error_messages.last_name_max_length'),
+            'business_name.required' => trans('error_messages.buis_business'),
+            'business_name.alpha_dash' => trans('error_messages.invalid_business'),
+            'business_name.max' => trans('error_messages.business_max_length'),
             ///'dob.required' => trans('error_messages.req_dob_name'),
             'email.required' => trans('error_messages.req_email'),
             'email.max' => trans('error_messages.email_max_length'),
