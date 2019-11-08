@@ -13,3 +13,7 @@ ALTER TABLE `rta_biz` CHANGE `segment_id` `segment_id` SMALLINT(5) UNSIGNED NULL
 drop addr_type in rta_biz_aadr table
 
 Anuj - ALTER TABLE `rta_biz_gst` ADD `cin` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER `gst_hash`;
+
+---- 7-11
+ALTER TABLE `rta_wf_stage` ADD `is_doc` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=> doc not required, 1=> doc required' AFTER `stage_name`;
+ALTER TABLE `rta_biz_pan` ADD `owner_id` INT UNSIGNED NULL AFTER `user_id`;

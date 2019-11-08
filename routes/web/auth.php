@@ -60,10 +60,10 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'uses' => 'Backend\ApplicationController@saveBusinessInformation'
     ]);
 
-    Route::get('authorized-signatory',
+    Route::get('promoter-detail',
         [
-        'as' => 'authorized_signatory_open',
-        'uses' => 'Backend\ApplicationController@showAuthorizedSignatoryForm'
+        'as' => 'promoter-detail',
+        'uses' => 'Backend\ApplicationController@showPromoterDetail'
     ]);
     
     Route::post('authorized-signatory-save',

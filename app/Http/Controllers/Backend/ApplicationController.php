@@ -67,7 +67,7 @@ class ApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showAuthorizedSignatoryForm()
+    public function showPromoterDetail()
     {
         $userId  = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
