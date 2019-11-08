@@ -51,61 +51,61 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     Route::get('business-information',
         [
         'as' => 'business_information_open',
-        'uses' => 'Backend\BusinessController@showBusinessInformationForm'
+        'uses' => 'Backend\ApplicationController@showBusinessInformationForm'
     ]);
 
     Route::post('business-information-save',
         [
         'as' => 'business_information_save',
-        'uses' => 'Backend\BusinessController@saveBusinessInformation'
+        'uses' => 'Backend\ApplicationController@saveBusinessInformation'
     ]);
 
     Route::get('authorized-signatory',
         [
         'as' => 'authorized_signatory_open',
-        'uses' => 'Backend\OwnerController@showAuthorizedSignatoryForm'
+        'uses' => 'Backend\ApplicationController@showAuthorizedSignatoryForm'
     ]);
     
     Route::post('authorized-signatory-save',
         [
             'as' => 'authorized_signatory_save',
-            'uses' => 'Backend\OwnerController@saveAuthorizedSignatory'
+            'uses' => 'Backend\ApplicationController@saveAuthorizedSignatory'
     ]);
     
     Route::get('bank-document',
         [
         'as' => 'bank-document',
-        'uses' => 'Backend\DocumentController@index'
+        'uses' => 'Backend\ApplicationController@showBankDocument'
     ]);
     
     Route::post('bank-document-save',
         [
         'as' => 'bank-document-save',
-        'uses' => 'Backend\KycController@saveBankDocument'
+        'uses' => 'Backend\ApplicationController@saveBankDocument'
     ]);
     
     Route::get('gst-document',
         [
         'as' => 'associate-buyer',
-        'uses' => 'Backend\KycController@showGSTDocument'
+        'uses' => 'Backend\ApplicationController@showGSTDocument'
     ]);
     
     Route::post('gst-document-save',
         [
         'as' => 'gst-document-save',
-        'uses' => 'Backend\KycController@saveGSTDocument'
+        'uses' => 'Backend\ApplicationController@saveGSTDocument'
     ]);
     
     Route::get('financial-document',
         [
         'as' => 'associate-logistics',
-        'uses' => 'Backend\BusinessController@showFinancialDocument'
+        'uses' => 'Backend\ApplicationController@showFinancialDocument'
     ]);
     
     Route::post('financial-document-save',
         [
         'as' => 'associate-logistics-save',
-        'uses' => 'Backend\BusinessController@saveFinancialDocument'
+        'uses' => 'Backend\ApplicationController@saveFinancialDocument'
     ]);
 
     // for password
