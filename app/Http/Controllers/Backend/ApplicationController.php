@@ -75,7 +75,7 @@ class ApplicationController extends Controller
             $userArr = $this->userRepo->find($userId);
         }
 
-        return view('backend.application.authorized-signatory', compact('userArr'));
+        return view('backend.application.promoter-detail', compact('userArr'));
     } 
 
     /**

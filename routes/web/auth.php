@@ -109,13 +109,7 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     ]);
 
     // for password
-    
-    
-
-
-
-
-    Route::group(['prefix' => 'password'],
+   Route::group(['prefix' => 'password'],
         function () {
         
         $this->get('email',
