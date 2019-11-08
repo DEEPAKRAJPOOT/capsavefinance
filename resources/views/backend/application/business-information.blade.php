@@ -75,12 +75,11 @@
 				<div id="reg-box">
 					<form id="business_information_form" method="POST" action="business-information-save">
 						@csrf
+						<input type="hidden" name="biz_cin" value="">
 						<div class=" form-fields">
 							<div class="form-sections">
 								<div class="col-md-12">
-									<h3>Business Details
-
-									</h3>
+									<h3>Business Details</h3>
 								</div>
 								<div class="col-md-12">
 									<div class="row">
@@ -178,7 +177,9 @@
 													<span class="mandatory">*</span>
 												</label>
 												<a href="javascript:void(0);" class="verify-owner-no gst-verify">Verify</a>
-												<input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number">
+												<select class="form-control" name="biz_gst_number" onchange="fillEntity(this.value)">
+												</select>
+												<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
 												@error('biz_gst_number')
 									                <span class="text-danger error">{{ $message }}</span>
 									            @enderror
@@ -413,7 +414,7 @@
 				return false;
 			}
 			$.ajax({
-				url: "https://testapi.karza.in/v2/pan",
+				url: "https://gst.karza.in/uat/v1/search",
 				type: "POST",
 				data: JSON.stringify({"consent": "Y","pan": pan_no}),
 				dataType:'json',
@@ -422,12 +423,12 @@
         			alert(errorThrown);
     			},
 				success: function(res){
-				    if(res['status-code'] == 101){
+				    if(res['statusCode'] == 101){
 				    	$('.pan-verify').text('Verified');
 				    	$('.pan-verify').css('pointer-events','none');
 				    	$('input[name=biz_pan_number]').attr('readonly',true);
 				    	$('input[name=biz_pan_number] +span').remove();
-
+				    	fillGSTinput(res.result);
 				    }else{
 				    	alert('Something went wrong, Try again later');
 				    }
@@ -435,7 +436,7 @@
 			});
 		})
 
-		$('.gst-verify').on('click',function(){
+		/*$('.gst-verify').on('click',function(){
 			let gst_no = $('input[name=biz_gst_number]').val().trim();
 				$('input[name=biz_gst_number] +span').remove()
 			if(gst_no.length != 15){
@@ -462,7 +463,63 @@
 				    }
 				}
 			});
-		})
+		})*/
 	})
+
+	function fillGSTinput(datas){
+		let option_html = '<option val="">Select GST Number</option>';
+		$(datas).each(function(i,data){
+			if(data.authStatus == 'Active'){
+				option_html += '<option val="data.gstinId">'+data.gstinId+'</option>';
+			}
+		})
+		$('select[name=biz_gst_number]').html(option_html);
+	}
+
+	function fillEntity(gstinId){
+		$.ajax({
+				url: "https://gst.karza.in/uat/v1/gst-verification",
+				type: "POST",
+				data: JSON.stringify({"consent": "Y","gstin": gstinId}),
+				dataType:'json',
+				headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+				error:function (xhr, status, errorThrown) {
+        			alert(errorThrown);
+    			},
+				success: function(res){
+				    if(res['statusCode'] == 101){
+				    	$('input[name=biz_entity_name]').val(res.result.lgnm);
+				    	getCIN(res.result.lgnm);
+				    	//for cin number https://testapi.karza.in/v2/compsearch-lite
+				    	// $('.gst-verify').text('Verified');
+				    	// $('.gst-verify').css('pointer-events','none');
+				    	// $('input[name=biz_gst_number]').attr('readonly',true);
+				    	// $('input[name=biz_gst_number] +span').remove();
+				    }else{
+				    	alert('Something went wrong, Try again later');
+				    }
+				}
+			});
+	}
+
+	function getCIN(entityName){
+		$.ajax({
+			url: "https://testapi.karza.in/v2/compsearch-lite",
+			type: "POST",
+			data: JSON.stringify({"consent": "Y","companyName": entityName}),
+			dataType:'json',
+			headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+			error:function (xhr, status, errorThrown) {
+    			alert(errorThrown);
+			},
+			success: function(res){
+			    if(res['status-code'] == 101){
+			    	$('input[name=biz_cin]').val(res.result[0].cin);
+			    }else{
+			    	alert('Something went wrong, Try again later');
+			    }
+			}
+		});
+	}
 </script>
 @endsection

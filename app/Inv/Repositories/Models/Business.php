@@ -71,6 +71,7 @@ class Business extends Model
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
                 'gst_hash'=>$attributes['biz_gst_number'],
+                'cin'=>$attributes['biz_cin'],
                 'status'=>0,
                 'created_by'=>$userId
             ]);
@@ -85,7 +86,6 @@ class Business extends Model
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
                 'loan_amt'=>$attributes['loan_amount'],
-                'status'=>0,
                 'created_by'=>$userId
             ]);
 
