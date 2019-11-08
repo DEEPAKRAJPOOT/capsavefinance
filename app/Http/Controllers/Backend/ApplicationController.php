@@ -1,18 +1,17 @@
 <?php
 
 namespace App\Http\Controllers\Backend;
-
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 
+
+use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
-use App\Inv\Repositories\Contracts\BusinessInterface as InvBusinessRepoInterface;
 use App\Http\Requests\PartnerFormRequest;
+use App\Http\Requests\DocumentRequest;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\OwnerInterface as InvOwnerRepoInterface;
-use App\Inv\Repositories\Contracts\KycInterface as InvKycRepoInterface;
+use App\Inv\Repositories\Contracts\BusinessInterface as InvBusinessRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
-use App\Http\Requests\DocumentInformationRequest;
 use Session;
 
 class ApplicationController extends Controller
@@ -20,14 +19,12 @@ class ApplicationController extends Controller
     protected $businessRepo;
     protected $ownerRepo;
     protected $userRepo;
-    protected $kycRepo;
     protected $docRepo;
 
-    public function __construct(InvBusinessRepoInterface $buss_repo, InvOwnerRepoInterface $owner_repo, InvUserRepoInterface $user_repo, InvKycRepoInterface $kyc_repo, InvDocumentRepoInterface $doc_repo){
+    public function __construct(InvBusinessRepoInterface $buss_repo, InvOwnerRepoInterface $owner_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
     	$this->businessRepo = $buss_repo;
         $this->ownerRepo = $owner_repo;
         $this->userRepo = $user_repo;
-        $this->kycRepo = $kyc_repo;
         $this->docRepo = $doc_repo;
     }
 
@@ -125,7 +122,8 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-            $document_info = $this->documentRepo->saveDocumentInfo($arrFileData,1);//Auth::user()->id
+            $docId = 1; //  fetch document id
+            $document_info = $this->docRepo->saveDocument($arrFileData,$docId);
             if ($document_info) {
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return redirect()->route('authorized_signatory_open');

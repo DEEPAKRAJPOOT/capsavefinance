@@ -45,11 +45,6 @@ class InvServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            'App\Inv\Repositories\Contracts\KycInterface',
-            'App\Inv\Repositories\Entities\Kyc\KycRepository'
-        );
-
-        $this->app->bind(
             'App\Inv\Repositories\Contracts\DocumentInterface',
             'App\Inv\Repositories\Entities\Document\DocumentRepository'
         );

@@ -28,41 +28,5 @@ class DocumentMaster extends Authenticatable
      */
     protected $primaryKey = 'id';
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    
-
-    /**
-     * update user details
-     *
-     * @param integer $user_id     user id
-     * @param array   $arrUserData user data
-     *
-     * @return boolean
-     */
-
-   
-  
-
-   
-   
-
 }
 
