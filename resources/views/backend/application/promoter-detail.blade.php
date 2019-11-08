@@ -329,7 +329,7 @@
                     var form = $("#signupForm");
                     $.ajax({
                         type: "POST",
-                        url: '{{Route('authorized_signatory_save')}}',
+                        url: '{{Route('promoter_detail_save')}}',
                         data: form.serialize(), // serializes the form's elements.
                         cache: false,
                         success: function (res)

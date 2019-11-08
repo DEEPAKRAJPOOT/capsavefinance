@@ -53,7 +53,7 @@ class ApplicationController extends Controller
             $business_info = $this->businessRepo->saveBusinessInfo($arrFileData,1);//Auth::user()->id
             if ($business_info) {
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('authorized_signatory_open');
+                return redirect()->route('promoter-detail');
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -84,7 +84,7 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     //////////////////Save Promoter Multiple Details///////////////////////// 
-    public function saveAuthorizedSignatory(Request $request) {
+    public function savePromoterDetail(Request $request) {
         try {
             $arrFileData = $request->all();
             $owner_info = $this->ownerRepo->saveOwnerInfo($arrFileData); //Auth::user()->id

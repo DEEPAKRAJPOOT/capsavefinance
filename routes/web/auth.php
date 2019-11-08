@@ -66,10 +66,10 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'uses' => 'Backend\ApplicationController@showPromoterDetail'
     ]);
     
-    Route::post('authorized-signatory-save',
+    Route::post('promoter-detail-save',
         [
-            'as' => 'authorized_signatory_save',
-            'uses' => 'Backend\ApplicationController@saveAuthorizedSignatory'
+            'as' => 'promoter_detail_save',
+            'uses' => 'Backend\ApplicationController@savePromoterDetail'
     ]);
     
     Route::get('bank-document',
