@@ -21,17 +21,17 @@
                     </div>
                 </div>
             </li>
-            <li>
-                <div class="count-heading"> Authorized Signatory KYC </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/kyc.png')}}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
+           <li>
+				<div class="count-heading"> Promoter Details </div>
+				<div class="top-circle-bg">
+					<div class="count-top">
+						<img src="{{url('backend/signup-assets/images/kyc.png')}}" width="36" height="36">
+					</div>
+					<div class="count-bottom">
+						<img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
+					</div>
+				</div>
+			</li>
             <li>
                 <div class="count-heading">Business Documents </div>
                 <div class="top-circle-bg">
