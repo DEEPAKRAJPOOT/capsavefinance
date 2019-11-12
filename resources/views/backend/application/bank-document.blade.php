@@ -102,7 +102,7 @@
                                                                 <div id="filePath_1" class="filePath mt-0"></div>
                                                                 <div class="file-browse">
                                                                     <button class="btn-upload btn-sm" type="button"> <i class="fa fa-upload"></i></button>
-                                                                    <input type="file" name="bank_docs[]" id="file_1" dir="1" onchange="FileDetails(1)">
+                                                                    <input type="file" name="bank_docs[]" id="file_1" dir="1" onchange="FileDetails(1)" multiple="">
                                                                 </div>
                                                                 @error('bank_docs')
                                                                 <span class="text-danger error"> {{ $message }} </span>
