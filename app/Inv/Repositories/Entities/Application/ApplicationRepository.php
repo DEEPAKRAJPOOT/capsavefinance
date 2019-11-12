@@ -3,7 +3,7 @@
 namespace App\Inv\Repositories\Entities\Application;
 
 use App\Inv\Repositories\Models\User;
-use App\Inv\Repositories\Models\Document;
+use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
 use DB;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
@@ -28,7 +28,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     
     protected $CompanyAddress;
-    public function __construct(Document $document) {
+    public function __construct(AppDocumentFile $document) {
         $this->document=$document;
 
     }
