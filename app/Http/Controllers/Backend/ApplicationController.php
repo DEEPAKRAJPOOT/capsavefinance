@@ -126,7 +126,7 @@ class ApplicationController extends Controller
             $document_info = $this->docRepo->saveDocument($arrFileData,$docId);
             if ($document_info) {
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('authorized_signatory_open');
+                return redirect()->route('gst-document')->with('message', 'Successfully Uploaded');;
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }

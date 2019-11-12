@@ -62,7 +62,11 @@
             </li>
         </ul>
     </div>
-
+    @if(session()->has('message'))
+        <div class="alert alert-success">
+            {{ session()->get('message') }}
+        </div>
+    @endif
     <div class="container">
         <div class="mt-4">
             <div class="form-heading pb-3 d-flex pr-0">
