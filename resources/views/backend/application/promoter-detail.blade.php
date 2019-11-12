@@ -393,21 +393,19 @@
         $(document).on('click', '.clsdiv', function () {
                     $(this).parent().parent().remove();
                 });
-                /*
+          
         jQuery(document).ready(function () {
             var CIN = "U72900DL2017PTC310205";
             var consent = "Y";
             var key = "h3JOdjfOvay7J8SF";
             var dataStore = ({'consent': consent, 'entityId': CIN});
             var jsonData = JSON.stringify(dataStore);
-            jQuery.ajaxSetup({
-                headers: {
-                    'Content-Type': "application/json",
-                    'x-karza-key': key,
-                }
-            });
-            jQuery.ajax({
+             jQuery.ajax({
                 url: "https://testapi.kscan.in/v1/corp/profile",
+                 headers: {
+                    'Content-Type': "application/json",
+                    'x-karza-key': key
+                },
                 method: 'post',
                 dataType: 'json',
                 data: jsonData,
@@ -437,7 +435,7 @@
                                             });
                                         }
                                     });
-                                });*/
+                                });
       ///////////////Promotor web service start here//////////////////////////
       $(document).on('click','.promoter_pan_verify',function () {
             var count = $(this).attr('data-id');
@@ -446,14 +444,12 @@
             var key = "h3JOdjfOvay7J8SF";
             var dataStore = ({'consent': consent, 'pan': PAN});
             var jsonData = JSON.stringify(dataStore);
-            jQuery.ajaxSetup({
-                headers: {
-                    'Content-Type': "application/json",
-                    'x-karza-key': key,
-                }
-            });
             jQuery.ajax({
                 url: "https://testapi.karza.in/v2/pan",
+                 headers: {
+                    'Content-Type': "application/json",
+                    'x-karza-key': key,
+                },
                 method: 'post',
                 dataType: 'json',
                 data: jsonData,
