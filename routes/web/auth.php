@@ -86,7 +86,7 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     
     Route::get('gst-document',
         [
-        'as' => 'associate-buyer',
+        'as' => 'gst-document',
         'uses' => 'Backend\ApplicationController@showGSTDocument'
     ]);
     

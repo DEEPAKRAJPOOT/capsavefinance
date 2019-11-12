@@ -88,6 +88,6 @@ class DocumentRepository implements DocumentInterface
             throw new BlankDataExceptions('No Data Found');
         }
        
-        return AppDocumentFile::creates($attributes, $mstDocId,);
+        return AppDocumentFile::creates($attributes, $mstDocId);
     }
 }

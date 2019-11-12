@@ -27,7 +27,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @return void
      */
     
-    protected $CompanyAddress;
     public function __construct(AppDocumentFile $document) {
         $this->document=$document;
 
