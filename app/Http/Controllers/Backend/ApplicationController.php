@@ -60,7 +60,7 @@ class ApplicationController extends Controller
     }
 
     /**
-     * Show the authorized signatory form.
+     * Show the Promoter Details form.
      *
      * @return \Illuminate\Http\Response
      */
@@ -68,11 +68,15 @@ class ApplicationController extends Controller
     {
         $userId  = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
+        $cinNo  =[];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-
-        return view('backend.application.promoter-detail', compact('userArr'));
+        $getCin = $this->ownerRepo->getCinByUserId($userId);
+        if($getCin) {
+            $cinNo  =  $getCin;       
+        }
+        return view('backend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' =>$cinNo));
     } 
 
     /**

@@ -127,64 +127,6 @@ class UserRepository extends BaseRepositories implements UserInterface
         }
         return Userdetail::saveUserDetails($attributes);
     }
-
-/**
-     * Validating and parsing data passed though this method
-     *
-     * @param array $attributes
-     *
-     * @return New record ID that was added
-     *
-     * @since 0.1
-     */
-    public function saveCorpDetails($attributes)
-    {
-        /**
-         * Check Data is Array
-         */
-        if (!is_array($attributes)) {
-            throw new InvalidDataTypeExceptions('Please send an array');
-        }
-
-        /**
-         * Check Data is not blank
-         */
-        if (empty($attributes)) {
-            throw new BlankDataExceptions('No Data Found');
-        }
-        return Corpdetail::saveCorpDetails($attributes);
-    }
-
-
-
-    /**
-     * Validating and parsing data passed though this method
-     *
-     * @param array $attributes
-     *
-     * @return New Kyc Detail add
-     *
-     */
-    public function saveKycDetails($attributes)
-    {
-        /**
-         * Check Data is Array
-         */
-        if (!is_array($attributes)) {
-            throw new InvalidDataTypeExceptions('Please send an array');
-        }
-
-        /**
-         * Check Data is not blank
-         */
-        if (empty($attributes)) {
-            throw new BlankDataExceptions('No Data Found');
-        }
-        return Userkyc::saveKycDetails($attributes);
-    }
-
-
-
     /**
      * Get a user model by email
      *
@@ -200,8 +142,6 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return $result ?: false;
     }
-
-
 
     /**
      * Get a user model by user_name

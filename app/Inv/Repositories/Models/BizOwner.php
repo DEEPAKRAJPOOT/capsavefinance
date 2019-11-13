@@ -1,11 +1,8 @@
 <?php
-
 namespace App\Inv\Repositories\Models;
-
 use Illuminate\Database\Eloquent\Model;
 use DB;
 use Illuminate\Notifications\Notifiable;
-
 
 class BizOwner extends Model
 {
@@ -67,7 +64,7 @@ class BizOwner extends Model
          $inputArr[$i]['user_id']  = 1; 
          $inputArr[$i]['first_name'] = $attributes['first_name'][$i];
          $inputArr[$i]['last_name'] = $attributes['last_name'][$i];
-         $inputArr[$i]['date_of_birth'] = date("Y-m-d", strtotime($attributes['date_of_birth'][$i]));
+         $inputArr[$i]['date_of_birth'] = $attributes['date_of_birth'][$i];
          $inputArr[$i]['gender'] = $attributes['gender'][$i];
          $inputArr[$i]['owner_addr'] = $attributes['owner_addr'][$i];
          $inputArr[$i]['biz_pan_id'] = 1;
@@ -78,5 +75,5 @@ class BizOwner extends Model
      }
      return $inputArr;
   }
-             
+   
 }
