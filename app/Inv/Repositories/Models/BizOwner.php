@@ -2,6 +2,8 @@
 namespace App\Inv\Repositories\Models;
 use Illuminate\Database\Eloquent\Model;
 use DB;
+use Session;
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 
 class BizOwner extends Model
@@ -60,18 +62,19 @@ class BizOwner extends Model
      $count = count($attributes['first_name']);
      for ($i=0;$i<$count;$i++) 
      {
+         $date = Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i]);
          $inputArr[$i]['biz_id']  = 1;   
          $inputArr[$i]['user_id']  = 1; 
          $inputArr[$i]['first_name'] = $attributes['first_name'][$i];
          $inputArr[$i]['last_name'] = $attributes['last_name'][$i];
-         $inputArr[$i]['date_of_birth'] = $attributes['date_of_birth'][$i];
+         $inputArr[$i]['date_of_birth'] = $date;
          $inputArr[$i]['gender'] = $attributes['gender'][$i];
          $inputArr[$i]['owner_addr'] = $attributes['owner_addr'][$i];
          $inputArr[$i]['biz_pan_id'] = 1;
          $inputArr[$i]['is_pan_verified'] = 1; 
          $inputArr[$i]['share_per'] = $attributes['share_per'][$i];
          $inputArr[$i]['edu_qualification'] = $attributes['edu_qualification'][$i];
-         $inputArr[$i]['created_by'] = 1;
+         $inputArr[$i]['created_by'] =  1;
      }
      return $inputArr;
   }
