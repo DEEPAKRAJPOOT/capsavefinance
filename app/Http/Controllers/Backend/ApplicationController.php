@@ -125,8 +125,8 @@ class ApplicationController extends Controller
             $docId = 1; //  fetch document id
             $document_info = $this->docRepo->saveDocument($arrFileData,$docId);
             if ($document_info) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('gst-document')->with('message', 'Successfully Uploaded');;
+                Session::flash('message',trans('success_messages.bank_document.uploaded'));
+                return redirect()->route('gst-document');
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
