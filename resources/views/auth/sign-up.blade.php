@@ -104,9 +104,12 @@
 
                                         <input class="form-control"  value="{{old('password_confirm')}}" name="password_confirm" id="passwordRegistration" type="password" tabindex="5" placeholder="Confirm Password" value="{{old('password_confirm')}}"  oninput="removeSpace(this);">
 
-                                        <span class="text-danger error">{{$errors->first('password_confirm')}}		</span>
+                                        <span class="text-danger error">{{$errors->first('password_confirm')}}</span>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
+                            <div class="g-recaptcha" data-sitekey="{{config('common.google_recaptcha_key')}}"></div>
                             </div>
                         </div>
                         <div class="d-flex btn-section sign-UP">
@@ -122,6 +125,8 @@
 </div>
 
 @endsection
-
+@section('scripts')
+<script src='https://www.google.com/recaptcha/api.js'></script>
+@endsection
 
 
