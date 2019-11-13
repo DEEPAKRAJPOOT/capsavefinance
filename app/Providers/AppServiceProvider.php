@@ -5,6 +5,7 @@ namespace App\Providers;
 use Url\ProtectUrl\UrlGenerator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //Specified key was too long error's solution to run migrate
         Schema::defaultStringLength(191);
+        Validator::extend('recaptcha', 'App\\Validators\\ReCaptcha@validate');
     }
 
     /**
