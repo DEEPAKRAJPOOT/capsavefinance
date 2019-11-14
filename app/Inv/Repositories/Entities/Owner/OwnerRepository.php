@@ -137,9 +137,9 @@ class OwnerRepository implements OwnerInterface
      */
     public function getCinByUserId($uid)
     {
-           $table =  DB::table('biz_gst as bg')
-           ->get('bg.cin','bg.biz_id','bg.user_id')
-           ->where('user_id',$uid)
+            $table =  DB::table('biz_pan_gst as bg')
+           ->select('bg.cin','bg.biz_id','bg.user_id')
+           ->where('bg.user_id',$uid)
            ->first();
            return $table;
     }

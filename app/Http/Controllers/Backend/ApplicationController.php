@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
-
-
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
@@ -22,6 +21,7 @@ class ApplicationController extends Controller
     protected $docRepo;
 
     public function __construct(InvBusinessRepoInterface $buss_repo, InvOwnerRepoInterface $owner_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
+        $this->middleware('auth');
         $this->businessRepo = $buss_repo;
         $this->ownerRepo = $owner_repo;
         $this->userRepo = $user_repo;
@@ -66,17 +66,16 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail()
     {
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userId = Auth::user()->user_id;
         $userArr = [];
-        $cinNo  =[];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        $getCin = $this->ownerRepo->getCinByUserId($userId);
-        if($getCin) {
-            $cinNo  =  $getCin;       
-        }
-        return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' =>$cinNo));
+       
+       $getCin = $this->ownerRepo->getCinByUserId($userId);
+       $cinNo  =  $getCin;       
+       
+       return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' =>$cinNo));
     } 
 
     /**
