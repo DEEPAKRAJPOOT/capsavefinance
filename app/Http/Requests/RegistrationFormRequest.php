@@ -33,7 +33,8 @@ class RegistrationFormRequest extends Request
             'email'  => 'required|email|max:50|unique:users',
             'mobile_no' => 'required|digits:10|min:0',
             'password'   => 'required',
-            'password_confirm' => 'required|same:password',  
+            'password_confirm' => 'required|same:password',
+            'g-recaptcha-response' => 'required|recaptcha', 
             
             ];
     }
@@ -68,8 +69,7 @@ class RegistrationFormRequest extends Request
             'mobile_no.min'=>trans('error_messages.phone_minlength'),
             'mobile_no.max'=>trans('error_messages.phone_maxlength'),
             'mobile_no.numeric'=>trans('error_messages.invalid_phone'),
-            
-            
+            'g-recaptcha-response.required'=>'Recaptcha is required',  
         ];
     }
 }

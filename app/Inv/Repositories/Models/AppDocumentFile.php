@@ -90,7 +90,7 @@ class AppDocumentFile extends Authenticatable
             
             $inputArr[$i]['app_id']  = 1;   
             $inputArr[$i]['doc_id']  = $mstDocId; 
-            $inputArr[$i]['is_upload'] = $attributes['bank_docs'][$i];
+            $inputArr[$i]['is_upload'] = 1;
             $inputArr[$i]['file_type'] = $attributes['bank_docs'][$i]->getClientMimeType();
             $inputArr[$i]['file_name'] = $attributes['bank_docs'][$i]->getClientOriginalName();
             $inputArr[$i]['file_size'] = $attributes['bank_docs'][$i]->getClientSize();

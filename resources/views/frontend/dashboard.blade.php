@@ -3,9 +3,9 @@
 @section('content')
 
                @if($benifinary["user_type"] =='1') 
-                @include('layouts.user-inner.left-menu')
+                @include('layouts.partials.left-menu')
                @else
-               @include('layouts.user-inner.left-corp-menu')
+               @include('layouts.partials.left-corp-menu')
                @endif
           
   
