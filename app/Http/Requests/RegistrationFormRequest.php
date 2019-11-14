@@ -29,7 +29,7 @@ class RegistrationFormRequest extends Request
         return $rules = [
             'f_name' => 'required|min:2|max:50|alpha_dash|alpha',
             'l_name' => 'required|min:2|alpha_dash|alpha',
-            'business_name' => 'required|min:4|max:50',
+            'business_name' => 'required',
             'email'  => 'required|email|max:50|unique:users',
             'mobile_no' => 'required|digits:10|min:0',
             'password'   => 'required',
@@ -57,9 +57,6 @@ class RegistrationFormRequest extends Request
             'l_name.alpha_dash' => trans('error_messages.invalid_last_name'),
             'l_name.max' => trans('error_messages.last_name_max_length'),
             'business_name.required' => trans('error_messages.buis_business'),
-            'business_name.alpha_dash' => trans('error_messages.invalid_business'),
-            'business_name.max' => trans('error_messages.business_max_length'),
-            ///'dob.required' => trans('error_messages.req_dob_name'),
             'email.required' => trans('error_messages.req_email'),
             'email.max' => trans('error_messages.email_max_length'),
             'email.email' => trans('error_messages.invalid_email'),

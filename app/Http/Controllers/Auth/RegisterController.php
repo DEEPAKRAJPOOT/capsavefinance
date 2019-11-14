@@ -8,6 +8,7 @@ use Event;
 use Helpers;
 use Session;
 use DateTime;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -214,11 +215,12 @@ use RegistersUsers,
                 if (!Session::has('userId')) {
                     Session::put('userId', (int) $user->user_id);
                 }
-                $this->sendVerificationLink($user->user_id);
-
+               /// $this->sendVerificationLink($user->user_id);
+                $verifyLink =  Crypt::encrypt($user['email']);
+                $this->verifyUser($verifyLink);
                 Session::flash('message', trans('success_messages.basic_saved_successfully'));
                 //return redirect(route('education_details'));
-                return redirect()->route('thanks');
+               return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -253,12 +255,11 @@ use RegistersUsers,
                     Session::put('userId', (int) $user->user_id);
                 }
                 // echo $user->id; exit;
-
+                $verifyLink = route('verify_email', ['token' => Crypt::encrypt($user['email'])]);
                 $this->sendVerificationLink($user->user_id);
                 Session::flash('message', trans('success_messages.basic_saved_successfully'));
                 //return redirect(route('education_details'));
-                $verifyLink = route('verify_email', ['token' => Crypt::encrypt($user['email'])]);
-                return redirect()->route($verifyLink);
+                return redirect()->route('thanks');
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -350,6 +351,7 @@ use RegistersUsers,
      * @return Response
      */
     public function verifyUser($token) {
+       
         try {
             if (isset($token) && !empty($token)) {
                 $email = Crypt::decrypt($token);
@@ -370,14 +372,12 @@ use RegistersUsers,
                     $userArr['is_email_verified'] = 1;
                     $userArr['email_verified_updatetime'] = $currentDate;
                     $this->userRepo->save($userArr, $userId);
-
-                    //save opt
+                   //save opt
                     // echo "Current Date :->".$date;
-
-                    $userMailArr = [];
+                      $userMailArr = [];
                     $otpArr = [];
-
-                    $Otpstring = Helpers::randomOTP();
+                     $Otpstring =       mt_rand(1000, 9999);
+                    ///$Otpstring = Helpers::randomOTP();
                     $otpArr['otp_no'] = $Otpstring;
                     $otpArr['activity_id'] = 1;
                     $otpArr['user_id'] = $userId;
@@ -386,18 +386,13 @@ use RegistersUsers,
                     $otpArr['otp_exp_time'] = $formatted_date;
                     $otpArr['is_verified'] = 1;
                     $this->userRepo->saveOtp($otpArr);
-
-
                     $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     //$userMailArr['password']   = $string;
                     $userMailArr['otp'] = $Otpstring;
-
-
-                    //$userMailArr['password'] = Session::pull('password');
+                     //$userMailArr['password'] = Session::pull('password');
                     // Send OTP mail to User
-
-                    Event::dispatch("user.sendotp", serialize($userMailArr));
+                     Event::dispatch("user.sendotp", serialize($userMailArr));
                     Session::flash('message_div', trans('success_messages.email_verified_please_login'));
 
                     $alluserData = $this->userRepo->getUserDetail((int) $userId);

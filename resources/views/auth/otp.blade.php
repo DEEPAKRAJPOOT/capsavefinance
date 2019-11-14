@@ -13,8 +13,7 @@
                    
 
                <div class="thanks-conent marT50">
-                        <h2 class="head-line2 marT20">{{trans('master.otpForm.thanks_email_verify')}}</h2>
-                        <p class="p-conent">{{trans('master.otpForm.enter_otp_below')}}</p>
+                      <p class="p-conent">{{trans('master.otpForm.enter_otp_below')}}</p>
                     </div>  
               </div>
             </div>    
@@ -23,7 +22,6 @@
                             {{ csrf_field() }}
 				<div class="section-header">
 					<h4 class="section-title"> Enter One Time (OTP) </h4>
-					<button class="close">x</button>
 				</div>
                             
 				<div class="  form-fields">
