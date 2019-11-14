@@ -76,7 +76,7 @@ return [
         'enter_oTP'=>'Enter OTP',
         'verify_oTP'=>'Verify OTP',
         'thanks_email_verify'=>'Thank you you for verifying your email ID!',
-        'enter_otp_below'=>'We have sent you an OTP on your registered mobile number. Please enter OTP Below',
+        'enter_otp_below'=>'We have sent you an OTP on your registered Email Id. Please enter OTP Below',
 
 
 
@@ -173,7 +173,7 @@ return [
             'enter_otp'=>'Enter OTP',
             'verify_otp'=>'Verify OTP',
             'thanks_email_verify'=>'Thank you you for verifying your email ID!',
-            'enter_otp_below'=>'We have sent you an OTP on your registered mobile number. Please enter OTP Below',
+            'enter_otp_below'=>'We have sent you an OTP on your registered Email Id. Please enter OTP Below',
         ],
 
     //Change password form lang file
