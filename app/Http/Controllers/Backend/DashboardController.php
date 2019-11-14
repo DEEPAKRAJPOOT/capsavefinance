@@ -25,7 +25,7 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-
+        dd(111);
         return view('backend.dashboard');
     }
 }

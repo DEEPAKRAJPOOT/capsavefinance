@@ -1,0 +1,281 @@
+/*================== Tabs and accordions css ===================*/
+
+.nav {
+   .open {
+      > a {
+         border-color: transparent !important;
+      }
+   }
+}
+
+.accordion-toggle {
+   &::after {
+      font-family: "FontAwesome";
+      font-size: 20px;
+      font-weight: 800;
+      position: absolute;
+   }
+}
+
+.nav-tabs > li > a,
+.nav-pills > li > a {
+   margin: 0px;
+   .accordion-toggle {
+      text-transform: capitalize;
+      &:hover,
+      &:focus {
+         outline: 0;
+      }
+   }
+   .panel-heading a {
+      &:hover,
+      &:focus,
+      &.active {
+         text-decoration: none;
+      }
+   }
+   .tab-down {
+      li.active a {
+         @include border(1px solid, #eeeeee, bottom);
+         border-top-color: transparent;
+      }
+   }
+   .nav-tabs {
+      border-bottom: 0px;
+      border-top: 1px solid $input-border;
+      > li {
+         margin-bottom: 0;
+         margin-top: -1px;
+         > a {
+            margin: 0px;
+            border-radius: 0;
+         }
+      }
+   }
+}
+
+.basic-accordions {
+   .panel-heading {
+      border-bottom-color: transparent;
+      a {
+         color: $base-dark;
+      }
+      .accordion-toggle.collapsed::after {
+         content: "\f105";
+      }
+      .accordion-toggle {
+         &::after {
+            content: "\f107";
+            top: 15px;
+            left: 20px;
+         }
+         .accordion-title {
+            @extend .pad-l-lg;
+         }
+      }
+   }
+}
+
+.custom-accordions {
+   .panel-collapse .panel-body {
+      border-top-color: transparent;
+      p {
+         color: #fff;
+      }
+   }
+   .panel-heading {
+      @extend .pad-all-md;
+      a {
+         color: #fff;
+      }
+      .accordion-toggle.collapsed::after {
+         content: "\f105";
+      }
+      .accordion-toggle {
+         &::after {
+            content: "\f107";
+            right: 20px;
+            top: 18px;
+         }
+      }
+   }
+}
+
+.line-slide-tab {
+   .nav {
+      li > a:hover,
+      li > a:focus {
+         background: transparent;
+         border-color: $block-bg;
+      }
+      li:first-child {
+         margin: 0 0 0 30px;
+      }
+   }
+   .nav-tabs {
+      > li.active > a,
+      > li.active > a:hover,
+      li.active > a:focus {
+         border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) $nav-tabs-link-hover-border-color;
+         @include border(3px solid, $brand-primary, bottom);
+         color: $brand-primary;
+         background: none;
+      }
+      li a:hover {
+         border-bottom: none;
+      }
+   }
+}
+
+.tab-wrap-2 {
+   .nav-tabs {
+      border-bottom: $border-radius-base;
+      background: $body-bg;
+      padding-top: 10px;
+      li a {
+         border-bottom: $border-radius-base;
+      }
+      > li.active > a,
+      li.active > a:focus {
+         border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0);
+         background: $nav-link-hover-bg;
+      }
+      li a:hover {
+         border-color: $nav-tabs-link-hover-border-color;
+      }
+   }
+}
+
+.left-tab {
+   .nav-tabs,
+   .nav-pills {
+      border-bottom: none;
+      li {
+         float: none;
+         a {
+            border-bottom: $border-radius-base;
+            border: none;
+         }
+      }
+      li > a:hover,
+      > li > a:focus,
+      {
+         border-color: $nav-tabs-active-link-hover-border-color;
+      }
+   }
+   .tabs-left {
+      li.active > a,
+      li.active > a:focus {
+         -moz-border-bottom-colors: none;
+         -moz-border-left-colors: none;
+         -moz-border-right-colors: none;
+         -moz-border-top-colors: none;
+         border-color: -moz-use-text-color $brand-primary -moz-use-text-color -moz-use-text-color;
+         border-color: $brand-primary;
+         border-image: none;
+         border-style: none solid none none;
+         border-width: medium 4px medium medium;
+      }
+   }
+}
+
+.tabs-left,
+.tabs-right {
+   border-bottom: medium none;
+}
+
+.tabs-left,
+.pills-left {
+   @include border(1px solid, $nav-tabs-border-color, right);
+}
+
+.tabs-left > li {
+   margin-right: -5px;
+}
+
+.inner-acccordians {
+   .panel-heading {
+      .accordion-toggle.collapsed::after {
+         content: "\f067";
+         border-radius: 0;
+      }
+      .accordion-toggle {
+         &::after {
+            content: "\f068";
+            right: 20px;
+            top: 20px;
+            font-size: 16px;
+         }
+         span {
+            color: #base-dark;
+         }
+      }
+   }
+}
+
+.portlet-tabs {
+   .nav-pills {
+      li a {
+         color: $brand-info;
+      }
+      li.active > a,
+      li.active > a:hover,
+      li.active > a:focus {
+         background: $brand-info;
+         color: #fff;
+      }
+   }
+}
+
+.tab-pane {
+   p {
+      text-align: justify;
+   }
+}
+
+//--- Media queries for tabs ---//
+@media(min-width:768px) {
+   .tab-wrap-2 {
+      .nav li:first-child {
+         margin-left: 30px;
+      }
+   }
+}
+
+@media(max-width:580px) {
+   .ticket-style {
+      .nav.nav-tabs.mrgn-b-xs,
+      .nav.nav-tabs.mrgn-b-xs *,
+      .nav.nav-tabs.mrgn-b-xs a {
+         font-size: 11px;
+      }
+      .nav > li > a {
+         padding: 5px 4px;
+      }
+   }
+}
+
+@media (max-width: 480px) {
+   .tabs-accordions-style {
+      .prtm-block {
+         padding: 10px;
+      }
+   }
+   .nav > li > a {
+      padding: 8px 5px;
+   }
+   .line-slide-tab {
+      .nav li {
+         &:first-child {
+            margin: 0px;
+         }
+      }
+      .row {
+         >div {
+            &:last-child {
+               margin-top: 1em;
+            }
+         }
+      }
+   }
+}

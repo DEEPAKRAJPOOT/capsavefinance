@@ -1,0 +1,304 @@
+/*============== Data table css ================*/
+
+.data-table {
+   thead,
+   tfoot {
+      border-top: 1px solid #dadde4;
+      th,
+      td {
+         font-weight: $table-td-weight;
+      }
+   }
+   tbody {
+      border-bottom: 1px solid #dadde4;
+      tr:first-child td {
+         border-top: none;
+      }
+   }
+   th,
+   td {
+      border-width: 1px;
+      vertical-align: middle;
+      border-bottom: 1px solid #b9b9b9;
+   }
+}
+
+.dataTables_filter input {
+   border: 1px solid $input-border;
+   padding: 10px;
+}
+
+.dataTables_paginate {
+   border: 1px solid $input-border;
+}
+
+div.dataTables_wrapper {
+   margin: 0 auto;
+}
+
+.dataTables_scrollHeadInner,
+.table.table-hover.display.dataTable {
+   width: 100%;
+}
+
+table.dataTable thead {
+   .sorting::after,
+   .sorting_asc::after,
+   .sorting_desc::after,
+   .sorting_asc_disabled::after,
+   .sorting_desc_disabled::after {
+      opacity: 1;
+   }
+}
+
+.data-table-style .dataTable {
+   tbody {
+      tr {
+         background-color: $table-bg;
+         &:hover,
+         &.active,
+         &:focus {
+            background-color: $table-bg-hover;
+         }
+      }
+   }
+}
+
+.dataTables_filter label,
+.prtm-block .dataTables_wrapper .dataTables_length,
+.prtm-block .dataTables_wrapper .dataTables_info,
+{
+   color: $text-color;
+}
+
+.prtm-block .dataTables_wrapper {
+   table.dataTable.stripe,
+   table.dataTable.display {
+      tbody {
+         tr.odd {
+            background-color: $table-bg-accent;
+         }
+         tr {
+            &:hover,
+            &.active,
+            &:focus {
+               background-color: $table-bg-hover;
+            }
+         }
+      }
+   }
+   table.dataTable.display,
+   table.dataTable.order-column.stripe {
+      tbody {
+         tr.odd > .sorting_1 {
+            background-color: $table-bg;
+         }
+         tr.even > .sorting_1 {
+            background-color: $table-bg;
+         }
+      }
+   }
+   table.dataTable.row-border,
+   table.dataTable.display {
+      tbody {
+         th,
+         td {
+            border-color: $table-border-color;
+         }
+      }
+   }
+   .table-responsive {
+      overflow: -moz-hidden-unscrollable;
+      border: none;
+   }
+   table.dataTable {
+      margin: 0px !important;
+   }
+}
+
+.prtm-block .dataTables_paginate {
+   border-color: transparent;
+}
+
+#ZeroClipboard_TableToolsMovie_1 {
+   display: none;
+}
+
+.prtm-block .dataTables_wrapper .dataTables_paginate .paginate_button {
+   padding: 0;
+}
+
+.test thead th,
+.test tbody td,
+.test tfoot th {
+   width: 150px;
+}
+
+.dt-button.buttons-html5,
+.dt-button.buttons-print > span {
+   color: #fff;
+}
+
+div.dt-autofill-background,
+div.dt-autofill-list {
+   z-index: 9999;
+}
+
+.dataTable {
+   &.table > thead > tr > th {
+      vertical-align: middle;
+   }
+}
+
+
+/*=================== Data table button css =================*/
+
+button.dt-button,
+div.dt-button,
+a.dt-button {
+   -moz-user-select: none;
+   background-color: #5e6db3 !important;
+   background-image: none !important;
+   border: 1px solid #5e6db3 !important;
+   box-sizing: border-box;
+   color: #ffffff;
+   padding: 0.8em 1.6em;
+}
+
+.dataTables_wrapper {
+   .paginate-data .paginate_button.current,
+   .dataTables_paginate .paginate_button:hover,
+   .dataTables_paginate .paginate_button.previous:hover,
+   .dataTables_paginate .paginate_button.next:hover {
+      color: #fff !important;
+      border-radius: 0px;
+      background: $brand-primary;
+      border: 1px solid #5e6db3;
+      box-shadow: none;
+      &:hover {
+         background-color: $brand-primary;
+         background-image: none !important;
+      }
+   }
+}
+
+.dataTables_length,
+.dataTables_filter {
+   margin: 0 0 30px 0;
+}
+
+
+/*============ Responsive table css ============*/
+
+@media only screen and (max-width:767px) {
+   .unseen table {
+      td,
+      th {
+         &:nth-child(4),
+         &:nth-child(7),
+         &:nth-child(8) {
+            display: none;
+         }
+      }
+   }
+   .dataTables_wrapper .dataTables_filter {
+      float: none;
+      width: 100%;
+      text-align: left !important;
+   }
+   .dataTables_wrapper {
+      div.dt-buttons {
+         float: none;
+         margin-bottom: 10px;
+         text-align: left;
+      }
+   }
+   table.dataTable thead .sorting::after,
+   table.dataTable thead .sorting_asc::after,
+   table.dataTable thead .sorting_desc::after,
+   table.dataTable thead .sorting_asc_disabled::after,
+   table.dataTable thead .sorting_desc_disabled::after {
+      bottom: 27%;
+   }
+}
+
+@media only screen and (max-width:991px) {
+   .unseen table {
+      td,
+      th {
+         &:nth-child(2) {
+            display: none;
+         }
+      }
+   }
+   .flip-scroll * html .flip-content {
+      zoom: 1
+   }
+   .flip-scroll {
+      table {
+         display: block;
+      }
+      thead {
+         display: block;
+         float: left
+      }
+      tbody {
+         display: block;
+         width: auto;
+         position: relative;
+         overflow-x: auto;
+         white-space: nowrap;
+         tr {
+            display: inline-block;
+            margin-left: -5px;
+            border-left: 1px solid #ddd;
+         }
+      }
+      td,
+      th {
+         border-bottom: 1px solid #ddd;
+         border-right: 1px solid #ddd;
+         font-size: 13px;
+         padding: 5px;
+         width: auto;
+         display: block;
+         text-align: right &:last-child {
+            border-bottom: 1px solid #ddd;
+         }
+      }
+   }
+   .no-more-tables {
+      table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+         display: block;
+      }
+      thead {
+         tr {
+            position: absolute;
+            top: -9999px;
+         }
+      }
+      tr {
+         border: 1px solid #eee;
+      }
+      td {
+         border: none;
+         border-bottom: 1px solid #eee;
+         position: relative;
+         padding-left: 40% !important;
+         white-space: normal;
+         text-align: left;
+         &::before {
+            font-weight: 600;
+            left: 6px;
+            position: absolute;
+            top: 6px;
+            content: attr(data-title);
+         }
+      }
+   }
+}

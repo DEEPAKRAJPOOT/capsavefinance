@@ -1,0 +1,47 @@
+//--- Badge variants css ---//
+
+@mixin badge-variant($color) {
+    background-color: $color;
+    &[href]:hover,
+    &[href]:focus {
+        background-color: darken($color, 10%);
+    }
+}
+
+//--- Outline variants ---//
+
+@mixin badge-outline-variant($background, $color) {
+    background-color: transparent;
+    border-color: $background;
+    color: $background;
+    &[href]:hover,
+    &[href]:focus {
+        background-color: $background;
+        color: $color;
+    }
+}
+
+//--- Label variants css ---//
+
+@mixin label-variant($color) {
+    background-color: $color;
+    &[href]:hover,
+    &[href]:focus {
+        background-color: darken($color, 10%);
+    }
+}
+
+//--- Outline variants ---//
+
+@mixin label-outline-variant($background, $color) {
+    background-color: transparent;
+    border-color: $background;
+    border-style: solid;
+    border-width: 1px;
+    color: $background;
+    &[href]:hover,
+    &[href]:focus {
+        background-color: $background;
+        color: $color;
+    }
+}

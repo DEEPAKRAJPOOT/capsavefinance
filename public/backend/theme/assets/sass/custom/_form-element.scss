@@ -1,0 +1,72 @@
+/*================== Form controls elements ====================*/
+
+.form-group  label {
+  font-weight: 400;
+  margin: 0 0 10px;
+  color: $from-label-color;
+}
+.form-group .form-control-feedback {
+  line-height: 34px;
+  position: absolute;
+}
+.has-feedback label ~ .form-control-feedback {
+  top: 30px;
+}
+input[type="radio"], input[type="checkbox"] {
+	margin-top: 0px !important;
+}
+.checkbox-btn {
+	span {
+		color: $from-label-color;
+	}
+}
+.checkbox span {
+	vertical-align: top;
+}
+.check-box .checkbox, .radio label{
+	margin: 0 0 20px 0;
+}
+.success-addon {
+	background: $brand-success;
+}
+.primary-addon {
+	background: $brand-primary;
+}
+.thumb-img img {
+  margin: 0 0 20px;
+  width: 100%;
+}
+.note-image-input {
+    height: auto;
+}
+
+
+//--- Media queries ---//
+@media (max-width: 480px) {
+	.form-style {
+		.prtm-block {
+			padding: 10px;
+		}
+		.thumb-img {
+			width: 100%;
+			img {
+				width: 100%;
+			}
+		}
+	}
+}
+
+/*================== Form Validations ====================*/
+#pratham_demo_form1,
+#pratham_demo_form2,
+#pratham_demo_form3 {
+	.alert {
+		display: none;
+	}
+}
+.pratham-radio, 
+.pratham-checkbox {
+	> span {
+		vertical-align: top;
+	}
+}

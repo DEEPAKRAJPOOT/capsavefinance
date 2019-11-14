@@ -75,11 +75,9 @@ use AuthenticatesUsers;
 
             return $this->sendLockoutResponse($request);
         }
-
-        $userName    = $request['username'];
-        $userInfo = $this->userRepo->getUserByUserName($userName);
-
-
+       
+        $userEmail    = $request['email'];
+        $userInfo = $this->userRepo->getUserByEmail($userEmail);
 
        
         if ($this->attemptLogin($request)) {

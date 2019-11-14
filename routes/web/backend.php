@@ -9,6 +9,7 @@
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
 
+    
     Route::group(
         ['prefix' => 'dashboard'],
         function () {
@@ -19,51 +20,39 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 '/',
                 [
                 'as' => 'front_dashboard',
-                'uses' => 'Application\DashboardController@index'
+                'uses' => 'Backend\DashboardController@index'
                 ]
             );
         });
     });
     
     
-    Route::group(['prefix' => 'profile'],
-        function () {
-        Route::group(['middleware' => 'auth'],
-            function () {
-
-            Route::get('/',
-                [
-                'as' => 'profile',
-                'uses' => 'Application\AccountController@index'
-            ]);
-           /* 
-            Route::get('edit',
-                [
-                'as' => 'edit_profile',
-                'uses' => 'Application\AccountController@editPersonalProfile'
-            ]);*/
-            
-            Route::post('edit',
-                [
-                'as' => 'update_personal_profile',
-                'uses' => 'Application\AccountController@savePersonalProfile'
-            ]);
-            
-
-        });
-    });
-    
-//   Resource controller @Supplier,@buyer,@lender,@logistics    //
-
-    Route::resource('lead', 'Backend\LeadController');
-    Route::resource('supplier', 'Backend\SupplierController');
-    Route::resource('buyer', 'Backend\BuyerController');
-    Route::resource('lender', 'Backend\LenderController');
-    Route::resource('logistics', 'Backend\LogisticsController');
-
- 
-    
-    
+//    Route::group(['prefix' => 'profile'],
+//        function () {
+//        Route::group(['middleware' => 'adminauth'],
+//            function () {
+//
+//            Route::get('/',
+//                [
+//                'as' => 'profile',
+//                'uses' => 'Application\AccountController@index'
+//            ]);
+//           /* 
+//            Route::get('edit',
+//                [
+//                'as' => 'edit_profile',
+//                'uses' => 'Application\AccountController@editPersonalProfile'
+//            ]);*/
+//            
+//            Route::post('edit',
+//                [
+//                'as' => 'update_personal_profile',
+//                'uses' => 'Application\AccountController@savePersonalProfile'
+//            ]);
+//            
+//
+//        });
+//    });
     
 });
 

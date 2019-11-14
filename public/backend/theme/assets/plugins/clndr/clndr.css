@@ -1,0 +1,209 @@
+
+
+#full-clndr {
+    background-color: #fd7b6c;
+    box-shadow: 0 4px 0 #fd7b6c;
+    font-weight: 700;
+    width: 100%;
+}
+#full-clndr .clndr-controls {
+    background-color: #fd7b6c;
+    color: white;
+    padding: 14px;
+    text-align: center;
+}
+#full-clndr .clndr-controls .clndr-previous-button {
+    float: left;
+    text-align: left;
+}
+#full-clndr .clndr-controls .clndr-next-button {
+    float: right;
+    text-align: right;
+}
+#full-clndr .clndr-controls .clndr-previous-button, #full-clndr .clndr-controls .clndr-next-button {
+    -moz-user-select: none;
+    cursor: pointer;
+    width: 30px;
+}
+#full-clndr .clndr-controls .clndr-previous-button:hover, #full-clndr .clndr-controls .clndr-next-button:hover {
+    opacity: 0.5;
+}
+#full-clndr .clndr-grid {
+    border-right: 2px solid #fd7b6c;
+    float: left;
+    width: 100%;
+}
+#full-clndr .clndr-grid .days-of-the-week {
+    background-color: #fd7b6c;
+    width: 100%;
+}
+#full-clndr .clndr-grid .days-of-the-week .header-day {
+    color: white;
+    float: left;
+    padding: 14px;
+    text-align: center;
+    width: 14.2857%;
+}
+#full-clndr .clndr-grid .days {
+    width: 100%;
+}
+#full-clndr .clndr-grid .days .day, #full-clndr .clndr-grid .days .empty {
+    background-color: #fd7b6c;
+    background-position: center center;
+    background-size: cover;
+    border-bottom: 2px solid #fd7b6c;
+    color: #ffffff;
+    float: left;
+    height: 50px;
+    padding: 15px;
+    text-align: center;
+    width: 14.2857%;
+    border-radius: 0px;
+}
+#full-clndr .clndr-grid .days .day.event .day-number, #full-clndr .clndr-grid .days .empty.event .day-number {
+    border-bottom: 2px solid #fff;
+    padding-bottom: 4px;
+}
+#full-clndr .clndr-grid .days .day.adjacent-month .day-number, #full-clndr .clndr-grid .days .empty.adjacent-month .day-number {
+    opacity: 0.3;
+}
+#full-clndr .clndr-grid .days .today {
+    background-color: #ec6f60;
+    background-image: none;
+    color: #fff;
+}
+#full-clndr .event-listing {
+    float: left;
+    width: 100%;
+}
+#full-clndr .event-listing .event-listing-title {
+    background-color: #71bbd2;
+    color: white;
+    letter-spacing: 1px;
+    padding: 14px;
+    text-align: center;
+}
+#full-clndr .event-listing .event-item {
+    color: #fff;
+    padding: 12px;
+    background-color: #ec6f60;
+    margin-bottom: 10px;
+}
+#full-clndr .event-listing .event-item:last-child{
+    margin: 0;
+}
+#full-clndr .event-listing .event-item-location {
+    font-weight: 400;
+}
+.noselect {
+    -moz-user-select: none;
+}
+
+#full-clndr span.code {
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+#full-clndr .block {
+    padding: 80px 0;
+    width: 100%;
+}
+#full-clndr .inner {
+    margin: 0 auto;
+    max-width: 960px;
+    padding: 0 20px;
+}
+/* .clearfix::after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;
+    line-height: 0;
+    visibility: hidden;
+}
+.clearfix {
+    display: inline-block;
+} */
+/*
+html[xmlns] .clearfix {
+    display: block;
+}
+* html .clearfix {
+    height: 1%;
+}
+*/
+
+#full-clndr .bg-gray {
+    background-color: #414141;
+}
+#full-clndr .bg-red {
+    background-color: #ff5a45;
+}
+#full-clndr .bg-red a {
+    color: #ff5a45;
+}
+#full-clndr .bg-red a:hover {
+    background-color: #ffb4ab;
+    color: #212121;
+}
+#full-clndr .bg-blue {
+    background-color: #71bbd2;
+}
+#full-clndr .bg-green {
+    background-color: #97ce7f;
+}
+#full-clndr .bg-yellow {
+    background-color: #ddca9a;
+}
+#full-clndr .center {
+    text-align: center;
+}
+#full-clndr .header {
+    padding: 30px 0;
+}
+#full-clndr .clndr-logo {
+    background-image: url("http://kylestetz.github.io/CLNDR/css/./clndr-logo.svg");
+    height: 113px;
+    margin: 0 auto;
+    width: 113px;
+}
+#full-clndr .banner-text {
+    color: #fff;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-align: center;
+    text-shadow: 2px 2px 2px #212121;
+}
+#full-clndr .banner-text.below {
+    margin-top: 30px;
+}
+#full-clndr .banner-text.below a {
+    background-color: transparent;
+    color: #97ce7f;
+}
+#full-clndr .banner-text.below a:hover {
+    color: #d3eac9;
+}
+#full-clndr .more-space {
+    margin-top: 3em;
+}
+@media all and (max-width: 768px) {
+#full-clndr .clndr-grid {
+    border: medium none;
+    width: 100%;
+}
+#full-clndr .event-listing {
+    display: none;
+}
+#full-clndr h1.banner-text {
+    font-size: 28px;
+}
+#full-clndr .banner-text.below {
+    font-size: 16px;
+    word-wrap: break-word;
+}
+#full-clndr code[class*="language-"], pre[class*="language-"] {
+    font-size: 14px;
+}
+
+}

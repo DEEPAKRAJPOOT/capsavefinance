@@ -1,0 +1,23 @@
+//--- Borders ---//
+
+.rounded {
+  border-radius: 10em !important;
+}
+.circle  { 
+  border-radius: 100%;                 
+}
+.no-radius {
+  border-radius: $border-radius-default;
+}
+.border-list-xs li {
+	border-radius: 5px;
+}
+
+/*============ Border radius classes ================*/
+
+@each $radius, $end in (border: radius) {
+  @each $suf, $val in $border-radius {
+    $suf: if($suf, "-#{$suf}", "");
+    .#{$radius}-rad#{$suf} { border-radius:$val }
+  }
+}

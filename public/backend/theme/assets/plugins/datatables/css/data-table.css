@@ -1,0 +1,125 @@
+/*================ Data table css =====================*/
+.data-table th, .data-table td {
+  font-weight: 400;
+  border-width: 1px;
+  vertical-align: middle;
+  border-bottom: 1px solid #b9b9b9;
+}
+
+.data-table tbody tr:first-child td {
+  border-top: none;
+}
+
+.data-table tbody {
+  border-bottom: 1px solid #dadde4;
+}
+
+.data-table thead {
+  border-top: 1px solid #dadde4;
+}
+
+table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after, table.dataTable thead .sorting_asc_disabled::after, table.dataTable thead .sorting_desc_disabled::after {
+  opacity: 1;
+}
+
+.dataTables_filter input {
+  border: 1px solid #cecece;
+  padding: 10px;
+}
+
+.dataTables_paginate {
+  border: 1px solid #cecece;
+  padding: 0 !important;
+}
+
+.dataTables_paginate .paginate_button.current {
+  color: #fff !important;
+  background: #5e6db3 !important;
+  border: 1px solid #5e6db3 !important;
+  font-weight: bold;
+}
+
+.table.dataTable {
+  margin: 30px 0 !important;
+}
+
+#MyTable3_wrapper table {
+  width: 100% !important;
+}
+
+.test thead th, .test tbody td, .test tfoot th {
+  width: 150px !important;
+}
+
+/*============== Responsive table css ==============*/
+@media only screen and (max-width: 767px) {
+  .unseen table td:nth-child(4), .unseen table td:nth-child(7), .unseen table td:nth-child(8), .unseen table th:nth-child(4), .unseen table th:nth-child(7), .unseen table th:nth-child(8) {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 991px) {
+  .unseen table td:nth-child(2), .unseen table th:nth-child(2) {
+    display: none;
+  }
+  .flip-scroll * html .flip-content {
+    zoom: 1;
+  }
+  .flip-scroll table {
+    display: block;
+  }
+  .flip-scroll thead {
+    display: block;
+    float: left;
+  }
+  .flip-scroll tbody {
+    display: block;
+    width: auto;
+    position: relative;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .flip-scroll tbody tr {
+    display: inline-block;
+    margin-left: -5px;
+    border-left: 1px solid #ddd;
+  }
+  .flip-scroll td, .flip-scroll th {
+    border: 0 !important;
+    border-bottom: 1px solid #ddd !important;
+    border-right: 1px solid #ddd !important;
+    font-size: 13px !important;
+    padding: 5px;
+    width: auto !important;
+    display: block;
+    text-align: right .flip-scroll td, .flip-scroll th;
+  }
+  .flip-scroll td :last-child, .flip-scroll th :last-child {
+    border-bottom: 1px solid #ddd;
+  }
+  .no-more-tables table, .no-more-tables thead, .no-more-tables tbody, .no-more-tables th, .no-more-tables td, .no-more-tables tr {
+    display: block;
+  }
+  .no-more-tables thead tr {
+    position: absolute;
+    top: -9999px;
+  }
+  .no-more-tables tr {
+    border: 1px solid #eee;
+  }
+  .no-more-tables td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 40% !important;
+    white-space: normal;
+    text-align: left;
+  }
+  .no-more-tables td::before {
+    font-weight: 600;
+    left: 6px;
+    position: absolute;
+    top: 6px;
+    content: attr(data-title);
+  }
+}

@@ -1,0 +1,290 @@
+/*=============== Pagination and tooltip css ==================*/
+
+.label {
+   border: 0;
+   font-weight: $label-font-weight;
+   padding: 0.3em 0.8em;
+   border-style: solid;
+}
+
+.label-xs {
+   padding: 0.01em 0.4em;
+}
+
+.label-sm {
+   padding: 0.5em 1.4em;
+}
+
+.label-md {
+   padding: 0.6em 1.5em;
+}
+
+.label-lg {
+   padding: 0.7em 1.6em;
+}
+.custom-label{
+   .label{
+      padding: 0.3em 0.5em;
+   }
+}
+.badge {
+   font-weight: $label-font-weight;
+   padding: 4px 7px 3px;
+   font-size: 11px;
+}
+
+.badge-secondary {
+   background-color: $brand-secondary;
+}
+
+.label.info-border-label {
+   background: #eafbff;
+   border: 1px solid $brand-info;
+   border-left: 3px solid $brand-info;
+   color: $label-info-bg;
+}
+
+.label.success-border-label {
+   background: #e3fff8;
+   border: 1px solid $brand-success;
+   border-left: 3px solid $brand-success;
+   color: $label-success-bg;
+}
+
+.label.primary-border-label {
+   background: #eceffb;
+   border: 1px solid $brand-primary;
+   border-left: 3px solid $brand-primary;
+   color: $label-primary-bg;
+}
+
+.label.warning-border-label {
+   background: #fff6f0;
+   border: 1px solid $brand-warning;
+   border-left: 3px solid $brand-warning;
+   color: $label-warning-bg;
+}
+
+.flat-pagination {
+   .pagination {
+      li {
+         &.active a,
+         &:hover a,
+         &:focus a {
+            background: $brand-success;
+         }
+         a {
+            border: none;
+         }
+      }
+   }
+}
+
+.flat-rounded {
+   .pagination {
+      li {
+         &.active a,
+         &:hover a,
+         &:focus a {
+            background: $brand-info;
+         }
+         a {
+            border: none;
+            border-radius: 50px;
+            height: 40px;
+            width: 40px;
+            line-height: 40px;
+            padding: 0;
+            text-align: center;
+         }
+      }
+   }
+}
+
+.separated-pagination {
+   .pagination {
+      li {
+         &.active a,
+         &:hover a,
+         &:focus a {
+            background: $brand-secondary;
+            @include border(1px solid, $brand-secondary, bottom left right top);
+         }
+         a {
+            margin: 2px;
+            @include border(1px solid, $pagination-border, bottom left right top);
+         }
+      }
+   }
+}
+
+.load-more {
+   @include border(2px solid, #eaebed, top);
+   a {
+      font-size: 20px;
+      color: $text-color;
+   }
+   span {
+      margin: 0 10px 0 0;
+   }
+}
+
+.full-width {
+   .pagination {
+      width: 100%;
+      background: $full-width-bg;
+      li {
+         &.active a,
+         &:hover a,
+         &:focus a {
+            color: $brand-success;
+            @include border(3px solid, $brand-success, bottom);
+            background: $full-width-bg;
+         }
+         a {
+            border: none;
+            background: $full-width-bg;
+            padding: 1em 1.5em;
+         }
+      }
+   }
+}
+
+.default-pager {
+   .pager a {
+      &:hover,
+      &:focus,
+      &.active {
+         background-color: $brand-base;
+      }
+   }
+}
+
+.inverse-pager {
+   .pager a {
+      background-color: $brand-inverse;
+      border-color: $brand-inverse;
+      color: $base-reverse;
+      &:hover,
+      &:focus,
+      &.active {
+         background-color: transparent;
+         color: $brand-inverse;
+      }
+   }
+}
+
+.success-pager {
+   .pager a {
+      border-color: $brand-success;
+      &:hover,
+      &:focus,
+      &.active {
+         background-color: $brand-success;
+      }
+   }
+}
+
+.tooltip-block {
+   .btn {
+      margin: 0 0 10px 0;
+   }
+}
+
+
+/*================ Variants for badge ========================*/
+
+.badge-default {
+   @include badge-variant( $badge-default-bg);
+}
+
+.badge-primary {
+   @include badge-variant( $badge-primary-bg);
+}
+
+.badge-success {
+   @include badge-variant( $badge-success-bg);
+}
+
+.badge-info {
+   @include badge-variant( $badge-info-bg);
+}
+
+.badge-warning {
+   @include badge-variant( $badge-warning-bg);
+}
+
+.badge-danger {
+   @include badge-variant( $badge-danger-bg);
+}
+
+.badge-inverse {
+   @include badge-variant( $badge-inverse-bg);
+}
+
+
+/*============== Outline variants for label ====================*/
+
+.label-outline-default {
+   @include label-outline-variant( $label-default-bg, $label-color);
+}
+
+.label-outline-primary {
+   @include label-outline-variant( $label-primary-bg, $label-color);
+}
+
+.label-outline-success {
+   @include label-outline-variant( $label-success-bg, $label-color);
+}
+
+.label-outline-info {
+   @include label-outline-variant( $label-info-bg, $label-color);
+}
+
+.label-outline-warning {
+   @include label-outline-variant( $label-warning-bg, $label-color);
+}
+
+.label-outline-danger {
+   @include label-outline-variant( $label-danger-bg, $label-color);
+}
+
+//--- Media queries ---//
+@media (max-width: 1440px) {
+   .full-width .pagination li a {
+      padding: 1em 1.1em;
+   }
+   .label-list li,
+   .badges-style li {
+      margin: 0 0 20px;
+   }
+   .bordered-label span,
+   .custom-label span,
+   .colored-label span {
+      line-height: 40px;
+   }
+   .pagination-tooltip-style {
+      .prtm-block {
+         padding: 10px;
+      }
+   }
+}
+
+@media(max-width:567px) {
+   .flat-rounded {
+      .pagination-lg > li > a,
+      .pagination-lg > li > span {
+         font-size: 14px;
+         padding: 3px 11px;
+      }
+   }
+}
+
+@media(max-width:374px) {
+   .flat-rounded {
+      .pagination-lg > li > a,
+      .pagination-lg > li > span {
+         padding: 3px 9px;
+      }
+   }
+}

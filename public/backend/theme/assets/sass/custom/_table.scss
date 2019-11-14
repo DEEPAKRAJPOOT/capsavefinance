@@ -1,0 +1,127 @@
+/*==================== Table css ======================*/
+table {
+  width: $table-width;
+  th {
+    padding: $table-th-padding;
+    background: $table-th-bg;
+    color: $table-th-font-color;
+    font-weight: $table-th-weight;
+    font-size: $table-th-font-size;
+    text-align: $table-th-text-alignment;
+  }
+  td {
+    padding: $table-td-padding;
+    color: $table-td-font-color;
+    font-weight: $table-td-weight;
+    font-size: $table-td-font-size;
+    text-align: $table-td-text-alignment;
+  }
+}
+.table-inverse {
+  background: $table-inverse;
+  th {
+    color: $table-inverse-th-font-color;
+  }
+  td {
+    color: $table-inverse-th-font-color;
+  }
+}
+.table-middle {
+  thead, tbody,  tfoot {
+    tr {
+      td, th {
+        vertical-align: middle;
+      }
+    }
+  }
+}
+.table-top {
+  thead, tbody,  tfoot {
+    tr {
+      td, th {
+        vertical-align: top;
+      }
+    }
+  }
+}
+.table 
+  tr.bg-success th, tr.bg-danger th, tr.bg-warning th, tr.bg-info th, tr.bg-primary th, tr.bg-inverse th
+  tr.bg-success td, tr.bg-danger td, tr.bg-warning td, tr.bg-info td, tr.bg-primary td, tr.bg-inverse td {
+    color: #ffffff; 
+}
+.primary-table {
+  .table {
+    thead, tbody,  tfoot {
+      tr > th, tr > td  {
+        border-color: darken($brand-primary, 15%);
+      }
+      > tr.bg-primary:hover, > tr.bg-primary.active, > tr.bg-primary:focus {
+        background-color: darken($brand-primary, 15%);
+      }
+    }
+  }
+}
+.info-table {
+    .table {
+        thead, tbody,  tfoot {
+            tr > th, tr > td  {
+              border-color: darken($brand-info, 15%);
+            }
+            > tr.bg-info:hover, > tr.bg-info.active, > tr.bg-info:focus {
+              background-color: darken($brand-info, 15%); 
+            }
+        }
+    }
+}
+.col-custom-2 {
+    float: left;
+    width: 20%;
+}
+.th-fw-light{
+  th{
+    font-weight: 300;
+  }
+}
+.legend table {
+  width: auto;
+  td, th {
+    padding: 0;
+  }
+}
+
+
+/*==================== Ticket style scss =======================*/
+.ticket-style {
+  .table > tbody > tr > td {
+    padding: 15px 10px;
+    color: $text-color;
+  }
+}
+@media(max-width:480px){
+  div.dt-buttons {
+    margin-bottom: 1em;
+    margin-top: 1em; 
+  } 
+}
+.table.table-striped tr th:first-child, .table.table-striped tr td:first-child {
+  padding-left: 30px;
+}
+.pad-left-tab table tr > td, .pad-left-tab table tr > th {
+  padding-left: 20px;
+}
+.pad-right-tab table tr > td, .pad-right-tab table tr > th {
+  padding-right: 20px;
+}
+.primary-table table tr > td, .primary-table table tr > th,.info-table table tr > td, .info-table tr > th,.info-table table tfoot > th {
+  padding-left: 30px !important;
+}
+.info-table {
+  .panel{
+    margin-bottom: 0;
+  }
+}
+/*==================== Table striped rows ======================*/
+@include table-row-striped('success', $state-success-bg);
+@include table-row-striped('info', $state-info-bg);
+@include table-row-striped('warning', $state-warning-bg);
+@include table-row-striped('danger', $state-danger-bg);
