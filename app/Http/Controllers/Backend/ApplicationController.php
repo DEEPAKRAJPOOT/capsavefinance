@@ -40,7 +40,7 @@ class ApplicationController extends Controller
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        return view('backend.application.business-information', compact('userArr'));
+        return view('frontend.application.business-information', compact('userArr'));
     }
 
     public function saveBusinessInformation(BusinessInformationRequest $request)
@@ -76,7 +76,7 @@ class ApplicationController extends Controller
         if($getCin) {
             $cinNo  =  $getCin;       
         }
-        return view('backend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' =>$cinNo));
+        return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' =>$cinNo));
     } 
 
     /**
@@ -112,7 +112,7 @@ class ApplicationController extends Controller
             $userArr = $this->userRepo->find($userId);
         }
 
-        return view('backend.application.bank-document', compact('userArr'));
+        return view('frontend.application.bank-document', compact('userArr'));
     } 
     
     /**
@@ -152,7 +152,7 @@ class ApplicationController extends Controller
             $userArr = $this->userRepo->find($userId);
         }
 
-        return view('backend.application.gst-document', compact('userArr'));
+        return view('frontend.application.gst-document', compact('userArr'));
     } 
      
    /**

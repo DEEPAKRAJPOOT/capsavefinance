@@ -242,12 +242,30 @@
             </div>
         </div>
     </div>
+    <div class="overlay">
+        
+        <img src="{{asset('backend/assets/images/45.gif')}}">
+    </div>
    @endsection
     <style>
         .error
         {
 
             color:red;
+        }
+        .overlay{
+            
+            position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,.6);
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+align-content: center;
+z-index: 9;
         }
     </style>
     @section('scripts')
