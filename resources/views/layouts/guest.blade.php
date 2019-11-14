@@ -22,7 +22,7 @@
             <div class="container">
                 <div class="d-flex">
 
-                    <a href="#"><img src="{{url('backend/signup-assets/images/logo.png')}}" alt="logo" width="70px"> </a>
+                    <a href="#"><img src="{{url('frontend/assets/images/logo_mini.svg')}}" alt="logo" width="50px"> </a>
 
                 </div>
 
