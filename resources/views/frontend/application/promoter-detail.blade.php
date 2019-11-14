@@ -244,7 +244,7 @@
     </div>
     <div class="overlay">
         
-        <img src="{{asset('backend/assets/images/45.gif')}}">
+        <img src="{{asset('backend/assets/images/loader.gif')}}">
     </div>
    @endsection
     <style>
@@ -444,6 +444,7 @@ z-index: 9;
         			alert(errorThrown);
     			},
                 success: function (result) {
+                    $("#loader_image").removeClass();
                     obj = result.result.directors;
                     var count = 0;
                     $(obj).each(function (k, v) {
