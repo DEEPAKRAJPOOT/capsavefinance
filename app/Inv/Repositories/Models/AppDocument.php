@@ -3,12 +3,13 @@
 namespace App\Inv\Repositories\Models;
 
 use DB;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
-use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use File;
 
-class DocumentMaster extends Authenticatable
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class AppDocument extends Authenticatable
 {
 
     use Notifiable;
@@ -19,14 +20,14 @@ class DocumentMaster extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'mst_doc';
+    protected $table = 'app_doc';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'app_doc_id';
     
     /**
      * The attributes that are mass assignable.
@@ -34,10 +35,19 @@ class DocumentMaster extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'doc_name',
-        'is_active',
+        'user_id',
+        'app_id',
+        'doc_id',
+        'is_upload',
         'created_by',
         'updated_by'
      ];
+    
+    public function document()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\DocumentMaster', 'doc_id');
+    }
+  
 }
+  
 

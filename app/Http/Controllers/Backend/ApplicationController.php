@@ -106,13 +106,16 @@ class ApplicationController extends Controller
      */
     public function showBankDocument()
     {
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userId  = Session::has('userId') ? Session::get('userId') : 1;
+        $appId = 1;
         $userArr = [];
         if ($userId > 0) {
-            $userArr = $this->userRepo->find($userId);
+            $requiredDocs = $this->docRepo->findRequiredDocs($userId,$appId);
         }
-
-        return view('frontend.application.bank-document', compact('userArr'));
+        
+        return view('frontend.application.bank-document')->with([
+            'requiredDocs' => $requiredDocs
+        ]);
     } 
     
     /**
@@ -125,6 +128,7 @@ class ApplicationController extends Controller
     public function saveBankDocument(DocumentRequest $request)
     {
         try {
+//            dd($request);
             $arrFileData = $request->all();
             $docId = 1; //  fetch document id
             $document_info = $this->docRepo->saveDocument($arrFileData,$docId);
