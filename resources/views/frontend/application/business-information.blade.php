@@ -76,6 +76,7 @@
 					<form id="business_information_form" method="POST" action="business-information-save">
 						@csrf
 						<input type="hidden" name="biz_cin" value="">
+						<input type="hidden" name="pan_api_res" value="">
 						<div class=" form-fields">
 							<div class="form-sections">
 								<div class="col-md-12">
@@ -176,7 +177,7 @@
 												<label for="txtPassword">GST Number
 													<span class="mandatory">*</span>
 												</label>
-												<a href="javascript:void(0);" class="verify-owner-no gst-verify">Verify</a>
+												<!-- <a href="javascript:void(0);" class="verify-owner-no gst-verify">Verify</a> -->
 												<select class="form-control" name="biz_gst_number" onchange="fillEntity(this.value)">
 												</select>
 												<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
@@ -375,7 +376,7 @@
 								</div>
 								<div class="d-flex btn-section ">
 									<div class="col-md-4 ml-auto text-right">
-										<input type="submit" value="Save and Continue" class="btn btn-primary">
+										<input type="submit" value="Save and Continue" class="btn btn-primary" disabled="">
 									</div>
 								</div>
 
@@ -413,6 +414,7 @@
 				$('input[name=biz_pan_number]').after('<span class="text-danger error">Enter valid PAN Number</span>');
 				return false;
 			}
+			$('.isloader').show();
 			$.ajax({
 				url: "https://gst.karza.in/uat/v1/search",
 				type: "POST",
@@ -420,6 +422,7 @@
 				dataType:'json',
 				headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
 				error:function (xhr, status, errorThrown) {
+					$('.isloader').hide();
         			alert(errorThrown);
     			},
 				success: function(res){
@@ -432,6 +435,7 @@
 				    }else{
 				    	alert('Something went wrong, Try again later');
 				    }
+				    $('.isloader').hide();
 				  }
 			});
 		})
@@ -467,16 +471,21 @@
 	})
 
 	function fillGSTinput(datas){
+		let res ='';
 		let option_html = '<option val="">Select GST Number</option>';
 		$(datas).each(function(i,data){
 			if(data.authStatus == 'Active'){
-				option_html += '<option val="data.gstinId">'+data.gstinId+'</option>';
+				res += data.gstinId+',';
+				option_html += '<option val="'+data.gstinId+'">'+data.gstinId+'</option>';
 			}
 		})
 		$('select[name=biz_gst_number]').html(option_html);
+		$('input[name=pan_api_res]').val(res);
+		$('#business_information_form input[type=submit]').prop("disabled", false);
 	}
 
 	function fillEntity(gstinId){
+		$('.isloader').show();
 		$.ajax({
 				url: "https://gst.karza.in/uat/v1/gst-verification",
 				type: "POST",
@@ -484,6 +493,7 @@
 				dataType:'json',
 				headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
 				error:function (xhr, status, errorThrown) {
+					$('.isloader').hide();
         			alert(errorThrown);
     			},
 				success: function(res){
@@ -498,6 +508,7 @@
 				    }else{
 				    	alert('Something went wrong, Try again later');
 				    }
+				    $('.isloader').hide();
 				}
 			});
 	}

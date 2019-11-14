@@ -42,7 +42,9 @@ class Business extends Model
         'date_of_in_corp',
         'entity_type_id',
         'turnover_amt',
-        'nature_of_biz_id',
+        'nature_of_biz',
+        'panno_pan_gst_id',
+        'gstno_pan_gst_id',
         'org_id',
         'created_by',
         'created_at',
@@ -56,7 +58,7 @@ class Business extends Model
         'biz_entity_name'=>$attributes['biz_entity_name'],
         'date_of_in_corp'=>$attributes['incorporation_date'],
         'entity_type_id'=>$attributes['entity_type_id'],
-        'nature_of_biz_id'=>$attributes['biz_type_id'],
+        'nature_of_biz'=>$attributes['biz_type_id'],
         'turnover_amt'=>$attributes['biz_turnover'],
         'segment_id'=>$attributes['segment'],
         'org_id'=>1,
@@ -67,22 +69,42 @@ class Business extends Model
         //'is_gst_verified'=>$attributes['zzz'],
         ]);
 
-        $gst_id = DB::table('biz_gst')->insertGetId([
+        $bpga_id = DB::table('biz_pan_gst_api')->insertGetId([
+                'file_name'=>'file name goes here',
+                'status'=>1,
+                'created_by'=>$userId
+            ]);
+        //entry for parent
+        $pan_id = DB::table('biz_pan_gst')->insertGetId([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
-                'gst_hash'=>$attributes['biz_gst_number'],
+                'type'=>1,
+                'pan_gst_hash'=>$attributes['biz_pan_number'],
+                'status'=>1,
+                'pan_gst_parent_id'=>0,
+                'biz_pan_gst_api_id'=>$bpga_id,
                 'cin'=>$attributes['biz_cin'],
-                'status'=>0,
                 'created_by'=>$userId
             ]);
-        $pan_id = DB::table('biz_pan')->insertGetId([
-                'user_id'=>$userId,
-                'biz_id'=>$business->biz_id,
-                'pan_hash'=>$attributes['biz_pan_number'],
-                'status'=>0,
-                'created_by'=>$userId
-            ]);
-        $app_id = DB::table('biz_app')->insertGetId([
+
+        //entry for child
+        $pan_api_res = explode(',', $attributes['pan_api_res']);
+        $data = [];
+        foreach ($pan_api_res as $key=>$value) {
+            $data[$key]['user_id']=$userId;
+            $data[$key]['biz_id']=$business->biz_id;
+            $data[$key]['type']=2;
+            $data[$key]['pan_gst_hash']=$value;
+            $data[$key]['status']=1;
+            $data[$key]['pan_gst_parent_id']=$pan_id;
+            $data[$key]['created_by']=$userId;
+            $data[$key]['biz_pan_gst_api_id']=0;
+            $data[$key]['created_by']=$userId;
+        }
+        DB::table('biz_pan_gst')->insert($data);
+
+
+        $app_id = DB::table('app')->insertGetId([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
                 'loan_amt'=>$attributes['loan_amount'],
@@ -90,16 +112,16 @@ class Business extends Model
             ]);
 
         Business::where('biz_id', $business->biz_id)->update([
-            'biz_pan_id'=>$pan_id,
-            'is_pan_verified'=>0,
-            'biz_gst_id'=>$gst_id,
-            'is_gst_verified'=>0,
+            'panno_pan_gst_id'=>$pan_id,
+            'is_pan_verified'=>1,
+            'gstno_pan_gst_id'=>0,
+            'is_gst_verified'=>1,
             ]);
 
         //insert address
         $address_data = array(
-            array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId),
-            array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_corres_address'],'city_name'=>$attributes['biz_corres_city'],'state_name'=>$attributes['biz_corres_state'],'pin_code'=>$attributes['biz_corres_pin'],'address_type'=>1,'created_by'=>$userId),
+            array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId,'rcu_status'=>0),
+            array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_corres_address'],'city_name'=>$attributes['biz_corres_city'],'state_name'=>$attributes['biz_corres_state'],'pin_code'=>$attributes['biz_corres_pin'],'address_type'=>1,'created_by'=>$userId,'rcu_status'=>0),
         );
 
         BusinessAddress::insert($address_data);
