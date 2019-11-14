@@ -5,7 +5,7 @@ namespace App\Inv\Repositories\Entities\User;
 use Carbon\Carbon;
 
 use App\Inv\Repositories\Models\Relationship;
-use App\Inv\Repositories\Models\Userdetail;
+use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\Otp;
 use App\Inv\Repositories\Contracts\UserInterface;
 use App\Inv\Repositories\Models\User as UserModel;
@@ -111,7 +111,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @since 0.1
      */
     public function saveUserDetails($attributes)
-    {
+    {  
         /**
          * Check Data is Array
          */
@@ -125,7 +125,8 @@ class UserRepository extends BaseRepositories implements UserInterface
         if (empty($attributes)) {
             throw new BlankDataExceptions('No Data Found');
         }
-        return Userdetail::saveUserDetails($attributes);
+        
+        return UserDetail::saveUserDetails($attributes);
     }
     /**
      * Get a user model by email

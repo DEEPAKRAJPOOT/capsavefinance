@@ -242,32 +242,8 @@
             </div>
         </div>
     </div>
-    <div class="overlay">
-        
-        <img src="{{asset('backend/assets/images/loader.gif')}}">
-    </div>
    @endsection
-    <style>
-        .error
-        {
-
-            color:red;
-        }
-        .overlay{
-            
-            position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: rgba(0,0,0,.6);
-display: flex;
-flex-wrap: wrap;
-justify-content: center;
-align-content: center;
-z-index: 9;
-        }
-    </style>
+   
     @section('scripts')
     <script type="text/javascript">
         $(document).ready(function () {
@@ -426,6 +402,7 @@ z-index: 9;
                 });
           
         jQuery(document).ready(function () {
+            $('.isloader').show();
             var CIN = '{{$cin_no->cin}}';
             var consent = "Y";
             var key = "h3JOdjfOvay7J8SF";
@@ -444,7 +421,7 @@ z-index: 9;
         			alert(errorThrown);
     			},
                 success: function (result) {
-                    $("#loader_image").removeClass();
+                    $(".isloader").hide();
                     obj = result.result.directors;
                     var count = 0;
                     $(obj).each(function (k, v) {
