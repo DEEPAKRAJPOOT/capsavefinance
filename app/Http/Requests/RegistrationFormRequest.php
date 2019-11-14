@@ -34,8 +34,7 @@ class RegistrationFormRequest extends Request
             'mobile_no' => 'required|digits:10|min:0',
             'password'   => 'required',
             'password_confirm' => 'required|same:password',
-            'g-recaptcha-response' => 'required|recaptcha', 
-            
+            'g-recaptcha-response' => 'required|recaptcha',
             ];
     }
 
