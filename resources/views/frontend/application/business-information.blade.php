@@ -1,6 +1,8 @@
 @extends('layouts.guest')
 @section('content')
 
+
+
 <div class="step-form pt-5">
 	<div class="container">
 		<ul id="progressbar">
