@@ -37,12 +37,9 @@ class AppDocumentFile extends Authenticatable
     protected $fillable = [
         'app_id',
         'doc_id',
+        'doc_name',
+        'doc_id_no',
         'is_upload',
-        'file_type',
-        'file_name',
-        'file_size',
-        'file_encp_key',
-        'file_path',
         'created_by'
      ];
     
@@ -55,11 +52,11 @@ class AppDocumentFile extends Authenticatable
     * @return Array
     */
     
-    public static function creates($attributes, $docId)
+    public static function creates($attributes, $fileId)
     {
-        $inputArr =  AppDocumentFile::arrayInputData($attributes, $docId);
-        $owner = AppDocumentFile::insert($inputArr);
-        return $owner;
+        $inputArr =  AppDocumentFile::arrayInputData($attributes, $fileId);
+        $appDocFile = AppDocumentFile::insert($inputArr);
+        return $appDocFile;
     }
     
     
@@ -71,32 +68,20 @@ class AppDocumentFile extends Authenticatable
      * @return Array
      */
     
-    public static function arrayInputData($attributes, $mstDocId)
+    public static function arrayInputData($attributes, $fileId)
     {
        
         $inputArr = [];
-        $count = count($attributes['bank_docs']);
-        for ( $i=0; $i < $count; $i++) 
-        {   
-//            dd($attributes['bank_docs'][$i]->getClientOriginalExtension());
-            if($attributes['bank_docs'][$i]) {
-                if(!Storage::exists('/public/uploads/1/bank_document')) {
-                    Storage::makeDirectory('/public/uploads/1/bank_document', 0775, true);
-                }
-                
-                $path = Storage::disk('public')->put('/uploads/1/bank_document', $attributes['bank_docs'][$i], null);
-                $inputArr[$i]['file_path'] = $path;
-            }
+        
             
-            $inputArr[$i]['app_id']  = 1;   
-            $inputArr[$i]['doc_id']  = $mstDocId; 
-            $inputArr[$i]['is_upload'] = 1;
-            $inputArr[$i]['file_type'] = $attributes['bank_docs'][$i]->getClientMimeType();
-            $inputArr[$i]['file_name'] = $attributes['bank_docs'][$i]->getClientOriginalName();
-            $inputArr[$i]['file_size'] = $attributes['bank_docs'][$i]->getClientSize();
-            $inputArr[$i]['file_encp_key'] =  md5('2');
-            $inputArr[$i]['created_by'] = 1;
-        }
+        $inputArr['app_id']  = 1;   
+        $inputArr['doc_id']  = $mstDocId; 
+        $inputArr['doc_name']  = $attributes['doc_name']; 
+        $inputArr['doc_id_no']  = $attributes['doc_id_no']; 
+        $inputArr['file_id']  = $fileId; 
+        $inputArr['is_upload'] = 1;
+        $inputArr['created_by'] = 1;
+
         
         return $inputArr;
   }
