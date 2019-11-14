@@ -35,7 +35,6 @@ class RegistrationFormRequest extends Request
             'password'   => 'required',
             'password_confirm' => 'required|same:password',
             'g-recaptcha-response' => 'required', 
-            
             ];
     }
 
