@@ -1,1 +1,0 @@
-<a href="{{ route('edit_cluster',['id' => $cluster->id]) }}" class="arw_btnf">Edit</a>

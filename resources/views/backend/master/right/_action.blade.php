@@ -1,2 +1,0 @@
-<a href="{{ route('edit_right',['id' => $right->id]) }}" class="arw_btnf"><i class="fa fa-edit"></i></a>&nbsp;
-<a href="{{ route('view_right',['id' => $right->id]) }}" target="_blank"class="arw_btnf"><i class = "fa fa-eye"></i></a>

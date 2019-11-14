@@ -2,7 +2,7 @@
 
 @section('content')
 
-@include('layouts.user-inner.left-menu')
+@include('layouts.partials.left-menu')
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
 

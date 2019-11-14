@@ -1,1 +1,0 @@
-<a href="{{ route('edit_state',['id' => $state->id]) }}" class="arw_btnf">Edit</a>

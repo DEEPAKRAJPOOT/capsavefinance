@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row">
             <div id="header" class="col-md-3">
-                @include('layouts.user-inner.left-menu')
+                @include('layouts.partials.left-menu')
 
             </div>
             
