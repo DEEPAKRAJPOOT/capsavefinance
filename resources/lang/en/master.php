@@ -157,9 +157,8 @@ return [
     //Login form lang file
         'loginForm'=>[
             'heading' => 'Sign in (Individual)',
-            'username' => 'Username',
-            'enter_uname' => 'Enter Username',
             'email' => 'Email',
+            'enter_uname' => 'Enter Username',
             'password' => 'Password',
             'enter_pass' => 'Enter Password',
             'forgot_pass' => 'Forgot Password?',
