@@ -25,6 +25,7 @@ use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
 use App\Inv\Repositories\Models\Userkyc;
 use App\Inv\Repositories\Models\BusinessModel;
+use App\Inv\Repositories\Models\UserDetail;
 
 class RegisterController extends Controller {
     /*
@@ -97,6 +98,13 @@ use RegistersUsers,
         $arrData['is_active'] = 0;
         $userId = null;
         $userDataArray = $this->userRepo->save($arrData, $userId);
+        if($userDataArray)
+        {
+            $detailArr['user_id']  = $userDataArray->user_id;
+            $detailArr['access_token']  = bcrypt($userDataArray->email);
+            $detailArr['created_by']   = $userDataArray->user_id;
+            $this->userRepo->saveUserDetails($detailArr);
+        }
         return $userDataArray;
     }
 
@@ -249,7 +257,8 @@ use RegistersUsers,
                 $this->sendVerificationLink($user->user_id);
                 Session::flash('message', trans('success_messages.basic_saved_successfully'));
                 //return redirect(route('education_details'));
-                return redirect()->route('thanks');
+                $verifyLink = route('verify_email', ['token' => Crypt::encrypt($user['email'])]);
+                return redirect()->route($verifyLink);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
