@@ -53,15 +53,15 @@ class DataRenderer implements DataProviderInterface
                         return "<a id=\"" . $user->user_id . "\" href=\"#\" rel=\"tooltip\"   >$link</a> ";
                     }
                 )
-                ->editColumn(
-                        'status',
-                        function ($user) {
-                    if ($user->is_active == config('inv_common.ACTIVE')) {
-                        return "Active";
-                    } else {
-                        return "In Active";
-                    }
-                })
+//                ->editColumn(
+//                        'status',
+//                        function ($user) {
+//                    if ($user->is_active == config('inv_common.ACTIVE')) {
+//                        return "Active";
+//                    } else {
+//                        return "In Active";
+//                    }
+//                })
 //                ->addColumn(
 //                        'checkbox',
 //                        function ($user) {
@@ -106,7 +106,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    return  "<a  data-toggle=\"modal\" data-target=\"#editLeadpoll\" data-url =\"#\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
+                    return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {

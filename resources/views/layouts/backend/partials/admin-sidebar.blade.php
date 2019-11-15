@@ -22,10 +22,10 @@
                             <div class="collapse" id="layoutsSubmenu">
                                 <ul class="nav flex-column sub-menu">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="manage-leads.php">Manage leads</a>
+                                        <a class="nav-link" href="{{Route('lead.index')}}">Manage leads</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="company-details.php">Manage Application</a>
+                                        <a class="nav-link" href="#">Manage Application</a>
                                     </li>                                   
                                 </ul>
                             </div>
@@ -40,7 +40,7 @@
                             <div class="collapse" id="layoutsSubmenu">
                                 <ul class="nav flex-column sub-menu">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="manage-anchor.php">Manage Anchor</a>
+                                        <a class="nav-link" href="#">Manage Anchor</a>
                                     </li>
 
                                 </ul>
@@ -56,13 +56,13 @@
                             <div class="collapse" id="layoutsSubmenu">
                                 <ul class="nav flex-column sub-menu">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="manage-role.php">Manage Roles</a>
+                                        <a class="nav-link" href="#">Manage Roles</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="role-permission.php">Manage Permissions</a>
+                                        <a class="nav-link" href="#">Manage Permissions</a>
                                     </li> 
                                     <li class="nav-item">
-                                        <a class="nav-link" href="users.php">Manage Users</a>
+                                        <a class="nav-link" href="#">Manage Users</a>
                                     </li>                                   
                                 </ul>
                             </div>

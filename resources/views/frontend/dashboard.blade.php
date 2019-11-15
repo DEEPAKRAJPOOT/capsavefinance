@@ -2,7 +2,7 @@
 
 @section('content')
 
-               @if($benifinary["user_type"] =='1') 
+               @if($benifinary["user_type"] =='2') 
                 @include('layouts.backend.partials.admin-sidebar')
                @else
                	@include('layouts.partials.left-corp-menu')

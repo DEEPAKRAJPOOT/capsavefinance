@@ -75,7 +75,8 @@
             });
         });
     </script>
-   
+       <script src="{{ asset('backend/theme/assets/plugins/datatables/js/datatable.min.js') }}" type="text/javascript"></script>
+
 </body>
            
 @yield('jscript')
