@@ -282,7 +282,8 @@
                 $('input.share_per').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                number: true
                             })
                 });
 

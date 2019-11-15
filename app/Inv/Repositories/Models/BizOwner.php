@@ -3,6 +3,7 @@ namespace App\Inv\Repositories\Models;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 use Session;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 
@@ -60,6 +61,8 @@ class BizOwner extends Model
   {
      $inputArr = [];
      $count = count($attributes['first_name']);
+     $userId  = Auth::user();
+     dd($userId);
      for ($i=0;$i<$count;$i++) 
      {
          $date = Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i]);
