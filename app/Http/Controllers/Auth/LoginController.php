@@ -40,7 +40,7 @@ use AuthenticatesUsers;
      * @var string
      */
     //protected $redirectTo = '/dashboard';
-    protected $redirectTo = '/business-information';
+    protected $redirectTo = '/application/business-information';
 
     /**
      * Multiple times user login blocking.  
