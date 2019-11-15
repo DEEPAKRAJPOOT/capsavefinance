@@ -2,7 +2,7 @@
 
 @section('content')
 
-@include('layouts.partials.left-menu')
+ @include('layouts.backend.partials.admin-sidebar')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css">
 <style>
 select[name='leadMaster_length']{
@@ -66,13 +66,11 @@ input[type='search']{
                                         <thead>
                                             <tr role="row">
                                                 
-                                                <th>Sr.No.</th>
+                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
-                                                <th>Mobile No</th>
-                                                <th>Business Name</th>
+                                                 <th>Assigned</th>
                                                 <th>Created At</th>
-                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -94,6 +92,7 @@ input[type='search']{
 
 
     @endsection
+    {!!Helpers::makeIframePopup('editLead','Edit Lead')!!}
     @section('jscript')
     <script>
 

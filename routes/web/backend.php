@@ -48,6 +48,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     
         }); 
         
+        
+    Route::get('edit-backend-lead',
+                [
+                'as' => 'edit_backend_lead',
+                'uses' => 'Backend\LeadController@editBackendLead'
+            ]);
+    
+    
     
     
 //    Route::group(['prefix' => 'profile'],
