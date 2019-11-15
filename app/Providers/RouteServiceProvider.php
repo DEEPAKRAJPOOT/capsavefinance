@@ -55,7 +55,7 @@ class RouteServiceProvider extends ServiceProvider
         $router->group(['namespace' => $this->namespace,'middleware' => 'web'],
             function ($router) {
 
-            foreach (glob(base_path('routes/web/*.php')) as $eachRoute) {
+            foreach (glob(base_path('routes/*.php')) as $eachRoute) {
                 require $eachRoute;
             }
         });
