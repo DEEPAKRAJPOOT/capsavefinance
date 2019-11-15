@@ -37,6 +37,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     Route::resource('buyer', 'Backend\BuyerController');
     Route::resource('lender', 'Backend\LenderController');
     Route::resource('logistics', 'Backend\LogisticsController');
+    Route::get('cam/overview', 'Backend\CamController@index');
 
     
     Route::get('lead-pool',
