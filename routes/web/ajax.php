@@ -34,11 +34,18 @@ Route::group(
     ); 
 });
 
-   Route::get(
+   Route::post(
         'get-lead',
         [
         'as' => 'get-lead',
         'uses' => 'AjaxController@getLeads'
+        ]
+    ); 
+   Route::post(
+        'get-lead-pool',
+        [
+        'as' => 'get_lead_pool',
+        'uses' => 'AjaxController@getLeadsPools'
         ]
     ); 
 

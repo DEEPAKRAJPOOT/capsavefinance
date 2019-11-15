@@ -1,0 +1,55 @@
+/*=============== Margin padding classes ==============*/
+
+@each $start,
+$end in (mrgn: margin, pad: padding) {
+    @each $suf,
+    $val in $space-gap {
+        $suf: if($suf, "-#{$suf}", "");
+        .#{$start}-all#{$suf} {
+            #{$end}: $val
+        }
+        .#{$start}-b#{$suf} {
+            #{$end}-bottom: $val
+        }
+        .#{$start}-l#{$suf} {
+            #{$end}-left: $val
+        }
+        .#{$start}-r#{$suf} {
+            #{$end}-right: $val
+        }
+        // Top bottom // Left Right Classes
+        .#{$start}-lr#{$suf} {
+            #{$end}-left: $val;
+            #{$end}-right: $val;
+        }
+        .#{$start}-tb#{$suf} {
+            #{$end}-bottom: $val;
+            #{$end}-top: $val;
+        }
+        .td-#{$start}-all#{$suf} {
+            td {
+                #{$end}: $val !important;
+            }
+        }
+        .th-#{$start}-all#{$suf} {
+            th {
+                #{$end}: $val !important;
+            }
+        }
+    }
+}
+
+
+/*=============== Prtm block no gutter ==============*/
+
+div.prtm-block-no-gutter {
+    margin-left: -$block-padding-left;
+    margin-right: -$block-padding-right;
+}
+
+@media(max-width:480px) {
+    div.prtm-block-no-gutter {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+}

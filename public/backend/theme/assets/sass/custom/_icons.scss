@@ -1,0 +1,83 @@
+/*===================== Icons style ==================*/
+.glyph {
+	width: 13.667%;
+	margin: 0 0 10px 0;
+	.mega {
+		font-size: 3em;
+	}
+	&:hover .glyph-item {
+		background-color: $brand-primary;
+	} 
+}
+.glyph-item {
+	border-radius: $border-radius-base;
+}
+.themify-icon {
+	li {
+		color: 	$themify-font-color;
+	    padding: 0.8em 0;
+	    position: relative;
+		&:hover [class^="ti-"] {
+			font-size: 3rem;
+			color: $themify-font-hover-color;
+			margin-top: -5px;
+		}
+		&:hover span {
+			color: $themify-font-hover-color;
+		}
+	}
+	span {
+		font-size: 16px;
+		margin-left: 35px;
+	}
+	[class^="ti-"], [class*=" ti-"] {
+		margin: 0 15px 0 0;
+		transition: all 0.5s ease 0s;
+		position: absolute;
+	}
+}
+.icon-list {
+  ul {
+  	li {
+		background-color: $icon-box-bg;
+	    border: 1px solid $icon-box-border-color;
+	    font-size: 12px;
+	    line-height: 1.4;
+	    margin: 0 0 5px;
+	    min-height: 110px;
+	    padding: 15px 10px;
+	    text-align: center;
+	    width: 11.33%;
+	    color: $icon-box-font-color;
+	    border-radius: $icon-box-border-radius;
+	    vertical-align: top;
+	    &:hover {
+	    	background-color: $icon-box-hover-bg;
+	    	color: $icon-box-hover-font;
+	    }
+	    i {
+		    display: block;
+		    font-size: 28px;
+		    margin: 0 auto 10px;
+	    }
+	    span {
+	    	display: block;
+		    overflow-wrap: break-word;
+	    }
+  	}
+  }
+}
+@media(max-width:1080px) {
+	.icon-list {
+		ul {
+			li {
+				width: auto;
+			}
+		}
+	}
+}
+@media(max-width:480px) {
+	.glyph .mega {
+	  font-size: 2em;
+	}
+}

@@ -1,0 +1,231 @@
+//colors
+$color_salmon_approx: $brand-secondary;
+$white: white;
+$color_terracotta_approx: #ec6f60;
+$color_glacier_approx: #71bbd2;
+$white_40: rgba(255, 255, 255, 0.4);
+$color_cape_cod_approx: #414141;
+$color_sunset_orange_approx: #ff5a45;
+$color_cornflower_lilac_approx: #ffb4ab;
+$color_log_cabin_approx: #212121;
+$color_feijoa_approx: #97ce7f;
+$color_pavlova_approx: #ddca9a;
+$color_surf_crest_approx: #d3eac9;
+
+//urls
+$url_0: url(http://kylestetz.github.io/CLNDR/css/./clndr-logo.svg);
+
+%extend_1 {
+    background-color: $color_salmon_approx;
+    background-position: center center;
+    background-size: cover;
+    color: $white;
+    float: left;
+    height: 50px;
+    padding: 15px;
+    text-align: center;
+    width: 14.2857%;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+#full-clndr {
+    .current-month {
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+    .day {
+        font-weight: 500;
+    }
+    background-color: $color_salmon_approx;
+    font-weight: 700;
+    width: 100%;
+    .clndr-controls {
+        background-color: $color_salmon_approx;
+        color: $white;
+        padding: 14px;
+        text-align: center;
+        .clndr-previous-button {
+            float: left;
+            text-align: left;
+            cursor: pointer;
+            width: 30px;
+            &:hover {
+                opacity: 0.5;
+            }
+        }
+        .clndr-next-button {
+            float: right;
+            text-align: right;
+            cursor: pointer;
+            width: 30px;
+            &:hover {
+                opacity: 0.5;
+            }
+        }
+    }
+    .clndr-grid {
+        border-right: 2px solid $color_salmon_approx;
+        float: left;
+        width: 100%;
+        .days-of-the-week {
+            background-color: $color_salmon_approx;
+            width: 100%;
+            .header-day {
+                color: $white;
+                float: left;
+                padding: 14px;
+                text-align: center;
+                width: 14.2857%;
+            }
+        }
+        .days {
+            width: 100%;
+            .day {
+                @extend %extend_1;
+                &.event .day-number {
+                    border-bottom: 2px solid $white;
+                    padding-bottom: 4px;
+                }
+                &.adjacent-month .day-number {
+                    opacity: 0.3;
+                }
+            }
+            .empty {
+                @extend %extend_1;
+                &.event .day-number {
+                    border-bottom: 2px solid $white;
+                    padding-bottom: 4px;
+                }
+                &.adjacent-month .day-number {
+                    opacity: 0.3;
+                }
+            }
+            .today {
+                background-color: darken($color_salmon_approx, 5%);
+                background-image: none;
+                color: $white;
+            }
+        }
+    }
+    .event-listing {
+        float: left;
+        width: 100%;
+        .event-listing-title {
+            background-color: $color_glacier_approx;
+            color: $white;
+            letter-spacing: 1px;
+            padding: 14px;
+            text-align: center;
+        }
+        .event-item {
+            color: $white;
+            padding: 12px;
+            font-weight: 100;
+            background-color: darken($color_salmon_approx, 5%);
+            margin-bottom: 10px;
+            &:last-child {
+                margin: 0;
+            }
+        }
+        .event-item-location {
+            font-weight: 100;
+        }
+    }
+    .block {
+        padding: 80px 0;
+        width: 100%;
+    }
+    .inner {
+        margin: 0 auto;
+        max-width: 960px;
+        padding: 0 20px;
+    }
+    .bg-gray {
+        background-color: $color_cape_cod_approx;
+    }
+    .bg-red {
+        background-color: $color_sunset_orange_approx;
+        a {
+            color: $color_sunset_orange_approx;
+            &:hover {
+                background-color: $color_cornflower_lilac_approx;
+                color: $color_log_cabin_approx;
+            }
+        }
+    }
+    .bg-blue {
+        background-color: $color_glacier_approx;
+    }
+    .bg-green {
+        background-color: $color_feijoa_approx;
+    }
+    .bg-yellow {
+        background-color: $color_pavlova_approx;
+    }
+    .center {
+        text-align: center;
+    }
+    .header {
+        padding: 30px 0;
+    }
+    .clndr-logo {
+        background-image: $url_0;
+        height: 113px;
+        margin: 0 auto;
+        width: 113px;
+    }
+    .banner-text {
+        color: $white;
+        font-weight: normal;
+        letter-spacing: 1px;
+        text-align: center;
+        &.below {
+            margin-top: 30px;
+            a {
+                background-color: transparent;
+                color: $color_feijoa_approx;
+                &:hover {
+                    color: $color_surf_crest_approx;
+                }
+            }
+        }
+    }
+    .more-space {
+        margin-top: 3em;
+    }
+    span.code {
+        background-color: $white_40;
+        //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+        border-radius: 2px;
+        padding: 0 2px;
+    }
+}
+
+.noselect {}
+
+@media all and(max-width: 768px) {
+    #full-clndr {
+        .clndr-grid {
+            border: medium none;
+            width: 100%;
+        }
+        .event-listing {
+            display: none;
+        }
+        code[class*="language-"] {
+            font-size: 14px;
+        }
+        h1.banner-text {
+            font-size: 28px;
+        }
+        .banner-text.below {
+            font-size: 16px;
+            word-wrap: break-word;
+        }
+    }
+    pre[class*="language-"] {
+        font-size: 14px;
+    }
+}

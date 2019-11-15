@@ -1,0 +1,75 @@
+//--- Theme contextul colors ---//
+$bg-secondary: (
+  "background": $btn-secondary-bg,
+  "border"    : $btn-secondary-border,
+  "color"     : $btn-secondary-color
+);
+
+$bg-inverse: (
+  "background": $btn-inverse-bg,
+  "border"    : $btn-inverse-border,
+  "color"     : $btn-inverse-color
+);
+
+$bg-base: (
+  "background": $btn-base-bg,
+  "border"    : $btn-base-border,
+  "color"     : $btn-base-color
+);
+$bg-reverse:  (
+  "background": $brand-white,
+  "border"    : $btn-default-color,
+  "color"     : $btn-default-color
+);
+$bg-default:  (
+  "background": $body-bg,
+  "border"    : $btn-default-border,
+  "color"     : $btn-default-color
+);
+//--- Inverse theme color ---//
+
+
+$default-inverse-group: (
+  "background": $btn-default-color,
+  "border"    : $btn-default-color,
+  "color"     : $btn-default-bg
+);
+
+$primary-inverse-group: (
+  "background": $btn-primary-color,
+  "border"    : $btn-primary-color,
+  "color"     : $btn-primary-bg
+);
+
+$success-inverse-group: (
+  "background": $btn-success-color,
+  "border"    : $btn-success-color,
+  "color"     : $btn-success-bg
+);
+
+$info-inverse-group: (
+  "background": $btn-info-color,
+  "border"    : $btn-info-color,
+  "color"     : $btn-info-bg
+);
+
+$warning-inverse-group: (
+  "background": $btn-warning-color,
+  "border"    : $btn-warning-color,
+  "color"     : $btn-warning-bg
+);
+
+$danger-inverse-group: (
+  "background": $btn-danger-color,
+  "border"    : $btn-danger-color,
+  "color"     : $btn-danger-bg
+);
+//--- All colors registered below can be accessed using the .bg-{modifier} ---//
+
+$theme-bg-colors: ( 
+  "secondary"       : $bg-secondary,
+  "inverse"         : $bg-inverse,
+  "base"            : $bg-base,
+  "reverse"         : $bg-reverse,
+  "default"         : $bg-default,
+);

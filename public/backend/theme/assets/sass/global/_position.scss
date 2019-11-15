@@ -1,0 +1,55 @@
+/*============== Position common class ==============*/
+.pos-relative {position: relative;}
+.pos-absolute {position: absolute;}
+.pos-fixed {position: fixed;}
+
+.top-0 { 
+	top:    0; 
+}
+.right-0 {
+	right:  0; 
+}
+.bottom-0 { 
+	bottom: 0; 
+}
+.left-0 { 
+	left:   0; 
+}
+
+//--- Position mixin ---//
+@mixin position-all($top, $bottom, $left, $right) {
+    top: $top;
+    bottom: $bottom;
+    left: $left;
+    right: $right;
+}
+
+@mixin position-top($top) {
+    top: $top;
+}
+
+@mixin position-bottom($bottom) {
+    bottom: $bottom;
+}
+
+@mixin position-left($left) {
+    left: $left;
+}
+
+@mixin position-right($right) {
+    right: $right;
+}
+
+
+//--- Overlay position ---//
+
+.overlay-wrap {
+	@extend .pos-relative;
+    img {
+        width: 100%;
+    }
+}
+.hover-overlay {
+	@include position-all(0, 0, 0, 0);
+	position: absolute;
+}

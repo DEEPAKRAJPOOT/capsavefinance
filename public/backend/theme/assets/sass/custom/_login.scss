@@ -1,0 +1,78 @@
+/*================= login scss ======================*/
+.login-banner{
+	background-image:url("../../assets/img/login-banner.jpg");
+	background-position:center center;
+	background-size:cover;
+	padding:120px 0;
+}
+.prtm-form-block {
+  background: $block-bg;
+  box-shadow: 1px 5px 20px rgba(0, 0, 0, 0.5);
+  padding: 100px;
+}
+.login-form-wrapper {
+	.prtm-form-block {
+		margin: -90px 0 0;
+	}
+}
+.password-style {
+	font-size: 18px;
+    vertical-align: -15px;
+}
+.login-bar {
+  position: absolute;
+    left: 15px;
+    right: 15px;
+    top: 0;
+}
+.login-form {
+	.form-group {
+		.form-control {
+			border-radius: $input-border-radius;
+			height: 50px;
+			padding: 5px 15px 5px 50px;
+			font-size: 16px;
+		}
+		span {
+		    position: absolute;
+		    @include position-all(9px, 0, 10px, 0);
+		}
+	}
+	.checkbox {
+		input[type="checkbox"] {
+			margin-top: 5px;
+		} 
+		span {
+		    font-size: 18px;
+		    margin: 0 0 0 12px;
+		}
+	}	
+}
+
+//--- Media query ---//
+@media (max-width: 1440px) and (min-width: 1200px) {
+	.prtm-form-block {
+	  padding: 50px;
+	}
+}
+@media (max-width: 800px) and (min-width: 479px) {
+	.prtm-form-block {
+		padding: 40px;
+	}
+	.login-form-wrapper .prtm-form-block {
+	  margin: -35px 0 0;
+	}
+}
+@media (max-width: 480px) {
+	.prtm-form-block {
+		padding: 20px;
+	}
+	.login-form-wrapper .prtm-form-block {
+	  margin: -35px 0 0;
+	}
+	.login-meta {
+		.col-xs-6 {
+			width: 100%;
+		}
+	}
+}

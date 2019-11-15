@@ -1,0 +1,91 @@
+/*============== File upload style ==================*/
+
+.plupload_header {
+   background-color: $plupload-header-bg;
+}
+
+.plupload_header_content {
+   position: relative;
+   color: $plupload-header-content-color;
+   &:before {
+      content: "\f055";
+      font-family: 'FontAwesome';
+      font-size: 49px;
+      color: $plupload-header-content-color;
+      position: absolute;
+      left: 10px;
+   }
+}
+
+.plupload_filelist_header,
+.plupload_filelist_footer {
+   background-color: $plupload-filelist-header-footer-bg;
+}
+
+.plupload_scroll .plupload_filelist {
+   background: $plupload-filelist-content-bg;
+}
+
+.plupload_add {
+   position: relative;
+   color: $plupload-filelist-btn-color;
+   background: $brand-success;
+   &:before {
+      content: "\f067";
+      font-family: 'FontAwesome';
+      font-size: 12px;
+      color: $plupload-filelist-btn-color;
+      position: absolute;
+      left: 10px;
+   }
+}
+
+.plupload_button {
+   /* Optional rounded corners for browsers that support it */
+   -moz-border-radius: $border-radius-base;
+   -khtml-border-radius: $border-radius-base;
+   -webkit-border-radius: $border-radius-base;
+   border-radius: $border-radius-base;
+   &:hover {
+      color: $plupload-filelist-btn-color;
+      opacity: 0.8;
+   }
+}
+
+.plupload_start {
+   position: relative;
+   background: $brand-info;
+   color: $plupload-filelist-btn-color;
+   &:before {
+      content: "\f062";
+      font-family: 'FontAwesome';
+      font-size: 12px;
+      color: $plupload-filelist-btn-color;
+      position: absolute;
+      left: 10px;
+   }
+}
+.prtm-block .fileinput-preview.thumbnail{
+   width: 100%;
+   min-height: 120px;
+   height: auto;
+}
+.prtm-block .fileinput.fileinput-new{
+   display: block;
+}
+@media(max-width:767px) {
+   .fileupload-buttonbar {
+      .fileupload-progress {
+         height: 0;
+      }
+   }
+   .dragula-wrapper {
+      .dragula-container {
+         width: 100%;
+         display: block;
+      }
+   }
+   .fileinput-filename {
+  font-size: 10px;
+}
+}

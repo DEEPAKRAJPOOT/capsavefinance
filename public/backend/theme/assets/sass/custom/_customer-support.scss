@@ -1,0 +1,19 @@
+/*=========== Customer support css ==============*/
+
+.prtm-support li {
+    padding-top: 30px;
+    margin: 30px 0 0 0;
+    border-top: 1px solid $block-border-color;
+
+    &:first-child{
+        margin: 0;
+        padding: 0;
+        border-top: none;
+    }
+}
+.prtm-customer-support{
+    .prtm-customer-list {
+        @include border(1px solid,$section-border-color,bottom);
+    }
+    
+}

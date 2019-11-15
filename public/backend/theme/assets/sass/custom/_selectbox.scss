@@ -1,0 +1,150 @@
+/*================= select box css ====================*/
+
+.multiselect-dropdown-style {
+   .btn {
+      text-align: left;
+   }
+   .dropdown-menu {
+      width: 100%;
+   }
+}
+
+.inverse-select {
+   .dropdown-menu {
+      > li {
+         &.active a {
+            background-color: $brand-inverse;
+         }
+         > a {
+            &:hover,
+            &.active,
+            &:focus {
+               background-color: $brand-inverse;
+            }
+         }
+      }
+   }
+}
+
+.primary-select {
+   .dropdown-menu {
+      > li {
+         &.active a {
+            background-color: $brand-primary;
+         }
+         > a {
+            &:hover,
+            &.active,
+            &:focus {
+               background-color: $brand-primary;
+            }
+         }
+      }
+   }
+}
+
+.success-select {
+   .dropdown-menu {
+      > li {
+         &.active a {
+            background-color: $brand-success;
+         }
+         > a {
+            &:hover,
+            &.active,
+            &:focus {
+               background-color: $brand-success;
+            }
+         }
+      }
+   }
+}
+
+.warning-select {
+   .dropdown-menu {
+      > li {
+         &.active a {
+            background-color: $brand-warning;
+         }
+         > a {
+            &:hover,
+            &.active,
+            &:focus {
+               background-color: $brand-warning;
+            }
+         }
+      }
+   }
+}
+
+.error-select {
+   .dropdown-menu {
+      > li {
+         &.active a {
+            background-color: $brand-danger;
+         }
+         > a {
+            &:hover,
+            &.active,
+            &:focus {
+               background-color: $brand-danger;
+            }
+         }
+      }
+   }
+}
+
+.info-select {
+   .dropdown-menu {
+      > li {
+         &.active a {
+            background-color: $brand-info;
+         }
+         > a {
+            &:hover,
+            &.active,
+            &:focus {
+               background-color: $brand-info;
+            }
+         }
+      }
+   }
+}
+
+.multiselect-dropdown-style {
+   .btn-outline {
+      &:hover,
+      &.active,
+      &:focus {
+         background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+         @include border(1px solid, $brand-inverse, bottom top left right);
+         box-shadow: none;
+         color: $brand-inverse;
+      }
+   }
+}
+.selectize-dropdown-content .label {
+  background-color: #eeeeee;
+  color: #414658;
+  margin-right: 5px;
+}
+//Selectize plugin
+.selectize-control.multi {
+   .selectize-input {
+      [data-value] {
+         background-color: $brand-primary;
+         background-image: linear-gradient(to bottom, $brand-primary, $brand-primary);
+      }
+      > div {
+         color: #fff;
+      }
+   }
+   .selectize-input.has-items {
+      padding: 9px 8px 6px;
+      border-radius: $border-radius-base;
+   }
+}
+.prtm-block .selectize-control.multi .selectize-input .active[data-value]{
+    background: $brand-primary;
+   color: #fff;
+}

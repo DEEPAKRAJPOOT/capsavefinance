@@ -1,0 +1,152 @@
+/*============= Reset rounded corners for all elements ==============*/
+
+// --- Include shadows for all element ---//
+.md-shadow-xs {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .10), 0 1px 2px rgba(0, 0, 0, .18);
+}
+
+.md-shadow-xs-i {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .10), 0 1px 2px rgba(0, 0, 0, .18);
+}
+
+.md-shadow-xs-hover {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .14), 0 1px 2px rgba(0, 0, 0, .22);
+}
+
+.md-shadow-sm {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 3px 6px rgba(0, 0, 0, .22);
+}
+
+.md-shadow-sm-i {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 3px 6px rgba(0, 0, 0, .22);
+}
+
+.md-shadow-sm-hover {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .20), 0 3px 6px rgba(0, 0, 0, .26);
+}
+
+.md-shadow-md {
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .18), 0 6px 6px rgba(0, 0, 0, .23);
+}
+
+.md-shadow-md-i {
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .18), 0 6px 6px rgba(0, 0, 0, .24);
+}
+
+.md-shadow-md-hover {
+    box-shadow: 0 5px 19px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+}
+
+.md-shadow-lg {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.26);
+}
+
+.md-shadow-lg-i {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, .26), 0 10px 10px rgba(0, 0, 0, .22);
+}
+
+.md-shadow-xlg {
+    box-shadow: 0 19px 38px rgba(0, 0, 0, .28), 0 15px 12px rgba(0, 0, 0, .22);
+}
+
+.md-shadow-xlg-i {
+    box-shadow: 0 19px 38px rgba(0, 0, 0, .28), 0 15px 12px rgba(0, 0, 0, .22);
+}
+
+.md-shadow-block {
+    box-shadow: 0 2px 3px 2px rgba(0, 0, 0, 0.03);
+}
+
+.md-shadow-none {
+    box-shadow: none;
+}
+
+//--- Include element which is metarialized ---//
+.prtm-block,
+.prtm-full-block,
+.navbar,
+.panel,
+.prtm-sparkline-v2-list,
+.bold-border-primary,
+.bold-border-success,
+.bold-border-info,
+.bold-border-secondary,
+.msg-wrap,
+.chat-list-sidebar,
+.label,
+.selectbox,
+.prtm-card-box {
+    @extend .md-shadow-block;
+}
+
+.badge,
+.feature-box-thumb img,
+.navbar-nav img,
+.thumb-img img,
+.img-circle,
+.alert,
+.note,
+.prtm-sparkline-list,
+.icons-as-bg .fa-facebook,
+.icons-as-bg .fa-twitter,
+.icons-as-bg .fa-linkedin,
+.icons-as-bg .fa-google,
+.prtm-1 i,
+.user-agent-v2 a,
+.badge-secondary,
+span.prtm-2 i,
+.timeline-img img,
+.timeline-post-details img,
+.msg-wrap img {
+    @extend .md-shadow-sm;
+}
+
+
+/*--- Button material design ----*/
+
+.btn,
+.more-btn,
+.social-icon a,
+.prtm-btn,
+.dt-button,
+.file-field-label {
+    transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+    @extend .md-shadow-xs;
+    .btn-group > & {
+        @extend .md-shadow-md-hover;
+    }
+    &:hover {
+        @extend .md-shadow-lg;
+    }
+    &:active {
+        @extend .md-shadow-md-hover;
+    }
+    &:focus {
+        outline: none;
+    }
+    > i {
+        margin-left: 3px;
+        margin-right: 3px;
+    }
+}
+
+.btn-group {
+    button.multiselect {
+        @extend .md-shadow-block;
+        &:hover {
+            @extend .md-shadow-md-hover;
+        }
+    }
+}
+
+.prtm-cropper {
+    .btn-group button {
+        @extend .md-shadow-block;
+        &:hover {
+            @extend .md-shadow-md-hover;
+        }
+    }
+}

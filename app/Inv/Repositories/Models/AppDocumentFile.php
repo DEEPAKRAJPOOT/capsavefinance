@@ -70,21 +70,18 @@ class AppDocumentFile extends Authenticatable
     
     public static function arrayInputData($attributes, $fileId)
     {
-       
         $inputArr = [];
         
-            
         $inputArr['app_id']  = 1;   
-        $inputArr['doc_id']  = $mstDocId; 
+        $inputArr['doc_id']  = $attributes['docId']; 
         $inputArr['doc_name']  = $attributes['doc_name']; 
         $inputArr['doc_id_no']  = $attributes['doc_id_no']; 
         $inputArr['file_id']  = $fileId; 
         $inputArr['is_upload'] = 1;
         $inputArr['created_by'] = 1;
-
         
         return $inputArr;
-  }
+    }
   
 }
   

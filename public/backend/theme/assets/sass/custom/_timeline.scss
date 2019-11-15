@@ -1,0 +1,37 @@
+/*=================== Timeline ========================*/
+
+.timeline-badge {
+    background: $brand-secondary;
+    font-size: 30px;
+    height: 100px;
+    width: 100px;
+}
+
+.user-time-wrapper {
+    overflow: hidden;
+    &:before {
+        background: #e3e6ea;
+        bottom: 0;
+        content: "";
+        left: 50px;
+        position: absolute;
+        top: 0;
+        width: 1px;
+    }
+}
+
+.timeline-item {
+    .timeline-img {
+        position: relative;
+        z-index: 2;
+        margin: 0 30px 0 0;
+    }
+    .timeline-post-details {
+        padding-top: 15px;
+        width: 87%;
+    }
+}
+
+.request-action-btn {
+    padding: 5px 15px;
+}
