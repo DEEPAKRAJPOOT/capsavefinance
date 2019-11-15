@@ -109,10 +109,9 @@ class ApplicationController extends Controller
     {
         $appId  = Session::has('appId') ? Session::get('appId') : 1;
         $userId = Auth::user()->user_id;
-//        dd($appId);
+        
         $userArr = [];
         if ($appId > 0) {
-//            die("here q");
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
             
             if(!empty($requiredDocs)){
@@ -120,7 +119,6 @@ class ApplicationController extends Controller
             }
         }
         else {
-//            die("here");
             return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
         
