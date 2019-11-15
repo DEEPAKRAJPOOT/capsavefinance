@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet"> <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="{{url('backend/signup-assets/css/style.css')}}">
+        <link rel="stylesheet" href="{{url('frontend/assets/css/style.css')}}">
         <link rel="stylesheet" href="{{ url('frontend/assets/css/perfect-scrollbar.min.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/jsgrid.min.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/jsgrid-theme.min.css') }}" />
