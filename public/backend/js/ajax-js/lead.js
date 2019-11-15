@@ -8,8 +8,7 @@ var oTable;
                 "sDom": "<'row'<'col-md-2'l><'col-md-7'a><'col-md-2'f>r>t<'row'<'col-md-6'i><'col-md-6'p>>",
                 //"sPaginationType": "bootstrap",
                 "processing": true,
-                "serverSide": true,
-                "searchable":false,
+                "searching": false,
                 ajax: {
                 "url": messages.get_lead, // json datasource
                 "method": 'POST',
