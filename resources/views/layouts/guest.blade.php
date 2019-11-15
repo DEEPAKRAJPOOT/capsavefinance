@@ -11,7 +11,7 @@
         <link rel="stylesheet" href="{{ url('frontend/assets/css/jsgrid-theme.min.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/uploadfile.css') }}">
         <link rel="stylesheet" href="{{ url('frontend/assets/css/data-table.css') }}" />
-        <link rel="stylesheet" href="{{ url('frontend/assets/css/style.css') }}" />
+        <link rel="stylesheet" href="{{ url('frontend/assets/css/style2.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/custom.css') }}" />
         <script src="{{url('frontend/assets/js/jquery-3.4.1.min.js')}}"></script>
         <script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
