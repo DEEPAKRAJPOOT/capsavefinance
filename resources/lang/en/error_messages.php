@@ -66,6 +66,7 @@ return [
     ],
     //Common error messages
     'data_not_found' => 'No data found',
+    'noAppDoucment' => 'No documents found for your application.',
     'no_data_found' => 'No data found',
     'send_array' => 'Please send array',
     'invalid_data_type' => 'Invalid data type',
