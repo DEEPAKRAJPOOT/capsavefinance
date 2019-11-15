@@ -29,7 +29,7 @@
                 </div>
             </li>
             <li class="count-active">
-                <div class="count-heading">Bank Statement </div>
+                <div class="count-heading">KYC</div>
                 <div class="top-circle-bg">
                     <div class="count-top">
                         <img src="{{ url('frontend/assets/images/business-document.png') }}" width="36" height="36">
@@ -40,7 +40,7 @@
                 </div>
             </li>
             <li>
-                <div class="count-heading"> GST  Statement </div>
+                <div class="count-heading"> ---- </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
                         <img src="{{ url('frontend/assets/images/buyers.png') }}" width="36" height="36">
@@ -51,7 +51,7 @@
                 </div>
             </li>
             <li>
-                <div class="count-heading"> Financial  Statement </div>
+                <div class="count-heading"> ------ </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
                         <img src="{{ url('frontend/assets/images/logistics.png') }}" width="36" height="36">
@@ -67,6 +67,13 @@
     <div class="container">
         <div class="mt-4">
             <div class="col-md-12 form-design ">
+                
+                @if(session()->has('message'))
+                    <div class="alert alert-success">
+                        {{ session()->get('message') }}
+                    </div>
+                @endif
+                
                 @foreach($errors->all() as $error)
                 <span class="text-danger error">{{ $error }}</span>
                 @endforeach
@@ -81,7 +88,7 @@
                     <div id="accordion" class="accordion d-table col-sm-12">
                         @foreach($requiredDocs as $data)
                         <div class="card card-color mb-0">
-                            <div class="card-header collapsed" data-toggle="collapse" href="#collapse1">
+                            <div class="card-header collapsed" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
                                 <a class="card-title ">
                                     <b>{{ $data->document->doc_name }}</b>
                                 </a>
@@ -94,8 +101,8 @@
                                 </div>
 
                             </div>
-                            <div id="collapse1" class="card-body collapse p-0" data-parent="#accordion">
-
+                            <div id="collapse{{ $data->app_doc_id }}" class="card-body collapse p-0" data-parent="#accordion">
+                                
                                 <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
                                     <tbody>
                                         <tr>
@@ -105,21 +112,20 @@
                                             <td width="20%">Download</td>
                                             <td align="center" width="20%">Action</td>
                                         </tr>
+                                        @foreach($documentData[$data->document->doc_name] as $value)
                                         <tr>
-                                            <td width="20%">Pan Card</td>
-                                            <td width="20%">ICICI Bank</td>
-                                            <td width="20%">Tue, Nov 12, 2019, 2:56 AM</td>
+                                            <td width="20%">{{ $value->doc_id_no }}</td>
+                                            <td width="20%">{{ $value->doc_name }}</td>
+                                            <td width="20%"> {{ date('d-m-Y', strtotime($value->created_at))}} </td>
                                             <td width="20%"><a href="#"><i class="fa fa-download"></i></a></td>
                                             <td align="center" width="20%"><a class="mr-2" href="#"><i class="fa fa-eye"></i></a>
                                                 <a href=""><i class="fa fa-times-circle-o"></i></a>
                                             </td>
                                         </tr>
-
+                                        @endforeach
                                     </tbody>
                                 </table>
-
-
-
+                                
 
                             </div>
                         </div>
@@ -132,7 +138,7 @@
                                     <div class="modal-header">
                                         <button type="button" class="close close-btns" data-dismiss="modal">&times;</button>
                                     </div>
-                                    <form id="bank-document" method="POST" action="{{ Route('bank-document-save') }}" enctype="multipart/form-data">
+                                    <form id="bank-document" method="POST" action="{{ Route('document-save') }}" enctype="multipart/form-data">
                                         <!-- Modal body -->
                                         @csrf
                                         <input type="hidden" name="dir" value="{{ $data->document->doc_name }}">

@@ -74,7 +74,7 @@ class DocumentRepository implements DocumentInterface
     }
     
     /**
-     * save document method
+     * find application required documents
      *
      * @param mixed $ids
      */
@@ -105,12 +105,23 @@ class DocumentRepository implements DocumentInterface
             throw new BlankDataExceptions('No Data Found');
         }
         
-        $uploadedFile = UserFile::creates($attributes, $docId);
-        if(!empty($uploadedFile)){
-            dd($uploadedFile);
-               $fileId = $uploadedFile->file_id;
+        return UserFile::creates($attributes, $docId);;
+    }
+    
+    /**
+     * application document
+     *
+     * @param mixed $ids
+     */
+    
+    public function appDocuments($requiredDocs, $appId){
+        
+        foreach ($requiredDocs as $key => $value) {
+            $result[$value->document->doc_name] = AppDocumentFile::where('doc_id', $value->doc_id)
+                    ->get();
+            
         }
         
-        return AppDocumentFile::creates($attributes, $uploadedFile, $docId);
+        return $result ?: false;
     }
 }

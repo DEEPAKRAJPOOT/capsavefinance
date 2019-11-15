@@ -72,16 +72,16 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
             'uses' => 'Backend\ApplicationController@savePromoterDetail'
     ]);
     
-    Route::get('bank-document',
+    Route::get('document',
         [
-        'as' => 'bank-document',
-        'uses' => 'Backend\ApplicationController@showBankDocument'
+        'as' => 'document',
+        'uses' => 'Backend\ApplicationController@showDocument'
     ]);
     
-    Route::post('bank-document-save',
+    Route::post('document-save',
         [
-        'as' => 'bank-document-save',
-        'uses' => 'Backend\ApplicationController@saveBankDocument'
+        'as' => 'document-save',
+        'uses' => 'Backend\ApplicationController@saveDocument'
     ]);
     
     Route::get('gst-document',
