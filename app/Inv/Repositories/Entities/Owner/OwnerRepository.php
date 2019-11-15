@@ -1,9 +1,7 @@
 <?php
-
 namespace App\Inv\Repositories\Entities\Owner;
-
 use Carbon\Carbon;
-
+use DB;
 use App\Inv\Repositories\Contracts\OwnerInterface;
 use App\Inv\Repositories\Models\BizOwner;
 // use App\Inv\Repositories\Models\UserBussinessAddress;
@@ -104,7 +102,12 @@ class OwnerRepository implements OwnerInterface
 
         return is_null($userId) ? $this->create($attributes) : $this->update($attributes,$userId);
     }
-
+ /**
+     * Save Promoter Details
+     *
+     * @param mixed $id
+     * @param array $columns
+     */
 
     public function saveOwnerInfo($attributes = []){
         /**
@@ -125,6 +128,24 @@ class OwnerRepository implements OwnerInterface
        
         return BizOwner::creates($attributes);
     }
+    
+     /**
+     * Find CIN Number By user id
+     *
+     * @param mixed $id
+     * @param array $columns
+     */
+    public function getCinByUserId($uid)
+    {
+            $table =  DB::table('biz_pan_gst as bg')
+           ->select('bg.cin','bg.biz_id','bg.user_id')
+           ->where('bg.user_id',$uid)
+           ->first();
+           return $table;
+    }
+
+
+             
 
 
 

@@ -30,7 +30,6 @@ return [
         'alphnum_hyp_uscore_space_fslace'=>'This may only contain alphanumeric,space and \'-,_,/\'.',
         'alphnum_hyp_uscore_space_dot'=>'This may only contain alphanumeric,space and \'.,-,_,/\'.',
         'alphnum_space_spacial_chars'=>'This may only contain alphanumeric,space and \'_@./#&+-\'',
-       
         'least_2_chars'=>'This must be at least 2 characters.',
         'least_3_chars'=>'This must be at least 3 characters.',
         'least_6_chars'=>'This must be at least 6 characters.',
@@ -50,27 +49,6 @@ return [
         'invalid_post_box'=>'Invalid post box.',
         'invalid_fax_no'=>'Invalid fax number.',
         'invalid_postal_code'=>'Invalid postal code.',
-        'invalid_amount'=>'Invalid amount.',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        ''=>'',
-        
-        
-        
+        'invalid_amount'=>'Invalid amount.',     
     ],
 ];

@@ -27,6 +27,17 @@ class DocumentMaster extends Authenticatable
      * @var integer
      */
     protected $primaryKey = 'id';
-
+    
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'doc_name',
+        'is_active',
+        'created_by',
+        'updated_by'
+     ];
 }
 

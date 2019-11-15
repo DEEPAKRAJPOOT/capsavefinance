@@ -2,7 +2,7 @@
 
 @section('content')
 
-@include('layouts.user-inner.left-menu')
+@include('layouts.partials.left-menu')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css">
 <style>
 select[name='leadMaster_length']{

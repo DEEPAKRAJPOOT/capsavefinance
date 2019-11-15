@@ -17,44 +17,28 @@
         <!-- Favicon -->
         <link rel="shortcut icon" type="image/icon" href="#" />
         <!-- Bootstrap CSS -->
-
     	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="{{asset('backend/assets/css/style.css')}}">
         <link rel="stylesheet" href="{{asset('backend/assets/plugins/datatables/css/datatable.min.css')}}">
-        <link rel="stylesheet" href="{{asset('backend/assets/plugins/datatables/css/dataTables.bootstrap.css')}}">
-
-        
+        <link rel="stylesheet" href="{{asset('backend/assets/plugins/datatables/css/dataTables.bootstrap.css')}}">   
 </head>
     <!-- dashboard part -->
     <body class="">
 	@include('layouts.front_header')
         
-        @yield('content')
+    @yield('content')
         
+<<<<<<< HEAD
         @include('layouts.front_footer')
        
 
+=======
+    @include('layouts.admin_footer')
+>>>>>>> 8ebf5dc48666c628e70d4ec5e47b1c8ac36ab6f8
 </body>
 <script src="{{ asset('backend/assets/js/jquery.min.js')}}" type="text/javascript"></script>
-
-
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="{{ asset('backend/assets/plugins/datatables/js/datatable.min.js') }}" type="text/javascript"></script>
-           
+<script src="{{ asset('backend/assets/plugins/datatables/js/datatable.min.js') }}" type="text/javascript"></script>      
 @yield('jscript')
-
 </html>
-
-        
-        
-   
-
-
-
-
-
-
-
-
-

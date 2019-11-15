@@ -32,13 +32,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             function () {
     
     
-     Route::resource('lead', 'Backend\LeadController');
+    Route::resource('lead', 'Backend\LeadController');
     Route::resource('supplier', 'Backend\SupplierController');
     Route::resource('buyer', 'Backend\BuyerController');
     Route::resource('lender', 'Backend\LenderController');
     Route::resource('logistics', 'Backend\LogisticsController');
+
     
-     Route::get('lead-pool',
+    Route::get('lead-pool',
                 [
                 'as' => 'lead_leadspool',
                 'uses' => 'Backend\LeadController@leadspool'
@@ -46,6 +47,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     
     
         }); 
+        
+    Route::get('cam/overview', 'Backend\CamController@index'); 
     
 //    Route::group(['prefix' => 'profile'],
 //        function () {
@@ -76,7 +79,3 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
     
 });
-
-
-  
-    

@@ -6,6 +6,8 @@ use Carbon\Carbon;
 
 use App\Inv\Repositories\Contracts\DocumentInterface;
 use App\Inv\Repositories\Models\AppDocumentFile;
+use App\Inv\Repositories\Models\AppDocument;
+use App\Inv\Repositories\Models\UserFile;
  use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 
 class DocumentRepository implements DocumentInterface
@@ -77,7 +79,22 @@ class DocumentRepository implements DocumentInterface
      * @param mixed $ids
      */
     
-    public function saveDocument($attributes = [], $mstDocId){
+    public function findRequiredDocs($userId, $appId){
+        $result = AppDocument::where('user_id', $userId)
+                ->where('app_id', $appId)
+                ->with('document')
+                ->get();
+
+        return $result ?: false;
+    }
+    
+    /**
+     * save document method
+     *
+     * @param mixed $ids
+     */
+    
+    public function saveDocument($attributes = [], $docId){
         /**
          * Check Valid Array
          */
@@ -87,7 +104,13 @@ class DocumentRepository implements DocumentInterface
         if (empty($attributes)) {
             throw new BlankDataExceptions('No Data Found');
         }
-       
-        return AppDocumentFile::creates($attributes, $mstDocId);
+        
+        $uploadedFile = UserFile::creates($attributes, $docId);
+        if(!empty($uploadedFile)){
+            dd($uploadedFile);
+               $fileId = $uploadedFile->file_id;
+        }
+        
+        return AppDocumentFile::creates($attributes, $uploadedFile, $docId);
     }
 }

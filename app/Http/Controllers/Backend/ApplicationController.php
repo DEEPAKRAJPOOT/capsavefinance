@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
-
-
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
@@ -22,7 +21,8 @@ class ApplicationController extends Controller
     protected $docRepo;
 
     public function __construct(InvBusinessRepoInterface $buss_repo, InvOwnerRepoInterface $owner_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
-    	$this->businessRepo = $buss_repo;
+        $this->middleware('auth');
+        $this->businessRepo = $buss_repo;
         $this->ownerRepo = $owner_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
@@ -40,7 +40,7 @@ class ApplicationController extends Controller
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        return view('backend.application.business-information', compact('userArr'));
+        return view('frontend.application.business-information', compact('userArr'));
     }
 
     public function saveBusinessInformation(BusinessInformationRequest $request)
@@ -60,19 +60,22 @@ class ApplicationController extends Controller
     }
 
     /**
-     * Show the authorized signatory form.
+     * Show the Promoter Details form.
      *
      * @return \Illuminate\Http\Response
      */
     public function showPromoterDetail()
     {
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-
-        return view('backend.application.promoter-detail', compact('userArr'));
+       
+       $getCin = $this->ownerRepo->getCinByUserId($userId);
+       $cinNo  =  $getCin;       
+       
+       return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' =>$cinNo));
     } 
 
     /**
@@ -102,13 +105,16 @@ class ApplicationController extends Controller
      */
     public function showBankDocument()
     {
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
+        $userId  = Session::has('userId') ? Session::get('userId') : 1;
+        $appId = 1;
         $userArr = [];
         if ($userId > 0) {
-            $userArr = $this->userRepo->find($userId);
+            $requiredDocs = $this->docRepo->findRequiredDocs($userId,$appId);
         }
-
-        return view('backend.application.bank-document', compact('userArr'));
+        
+        return view('frontend.application.bank-document')->with([
+            'requiredDocs' => $requiredDocs
+        ]);
     } 
     
     /**
@@ -121,12 +127,13 @@ class ApplicationController extends Controller
     public function saveBankDocument(DocumentRequest $request)
     {
         try {
+//            dd($request);
             $arrFileData = $request->all();
             $docId = 1; //  fetch document id
             $document_info = $this->docRepo->saveDocument($arrFileData,$docId);
             if ($document_info) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('gst-document')->with('message', 'Successfully Uploaded');;
+                Session::flash('message',trans('success_messages.bank_document.uploaded'));
+                return redirect()->route('gst-document');
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -148,7 +155,7 @@ class ApplicationController extends Controller
             $userArr = $this->userRepo->find($userId);
         }
 
-        return view('backend.application.gst-document', compact('userArr'));
+        return view('frontend.application.gst-document', compact('userArr'));
     } 
      
    /**

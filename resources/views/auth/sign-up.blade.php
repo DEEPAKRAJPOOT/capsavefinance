@@ -21,7 +21,7 @@
                                         <label for="txtCreditPeriod">First Name
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input type="text" name="f_name" id="employee" value="{{old('f_name')}}" class="form-control" tabindex="1" placeholder="First Name">
+                                        <input type="text" name="f_name" value="{{old('f_name')}}" class="form-control" tabindex="1" placeholder="First Name">
                                         <span class="text-danger error">{{$errors->first('f_name')}}</span>
                                     </div>
 
@@ -42,7 +42,7 @@
                                         <label for="txtCreditPeriod">Last Name
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input type="text" name="l_name" id="employee" value="{{old('l_name')}}" class="form-control" tabindex="1" placeholder="Last Name">
+                                        <input type="text" name="l_name" value="{{old('l_name')}}" class="form-control" tabindex="1" placeholder="Last Name">
                                         <span class="text-danger error">{{$errors->first('l_name')}} </span>
                                     </div>
                                 </div>
@@ -90,7 +90,7 @@
                                             <span class="mandatory">*</span>
                                         </label>
 
-                                        <input class="form-control" value="{{old('password')}}" name="password" id="passwordRegistration" type="password" tabindex="5" placeholder="Password" value="{{old('password')}}" oninput="removeSpace(this);">
+                                        <input class="form-control" value="{{old('password')}}" name="password" type="password" tabindex="5" placeholder="Password" value="{{old('password')}}" oninput="removeSpace(this);">
 
                                         <span class="text-danger error"> {{$errors->first('password')}}	</span>
                                     </div>
@@ -102,11 +102,17 @@
                                             <span class="mandatory">*</span>
                                         </label>
 
-                                        <input class="form-control"  value="{{old('password_confirm')}}" name="password_confirm" id="passwordRegistration" type="password" tabindex="5" placeholder="Confirm Password" value="{{old('password_confirm')}}"  oninput="removeSpace(this);">
+                                        <input class="form-control"  value="{{old('password_confirm')}}" name="password_confirm" type="password" tabindex="5" placeholder="Confirm Password" value="{{old('password_confirm')}}"  oninput="removeSpace(this);">
 
-                                        <span class="text-danger error">{{$errors->first('password_confirm')}}		</span>
+                                        <span class="text-danger error">{{$errors->first('password_confirm')}}</span>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
+                            <div class="col-md-6">
+                            <div class="g-recaptcha" data-sitekey="{{config('common.google_recaptcha_key')}}"></div>
+                            <span class="text-danger error"> {{$errors->first('g-recaptcha-response')}} </span>
+                            </div>
                             </div>
                         </div>
                         <div class="d-flex btn-section sign-UP">
@@ -122,6 +128,8 @@
 </div>
 
 @endsection
-
+@section('scripts')
+<script src='https://www.google.com/recaptcha/api.js'></script>
+@endsection
 
 

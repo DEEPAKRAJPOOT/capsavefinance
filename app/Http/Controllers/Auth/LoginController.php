@@ -69,7 +69,6 @@ use AuthenticatesUsers;
     public function login(LoginRequest $request) {
 
         try {
-            
             // Too many attempts blocking user  
             if ($this->hasTooManyLoginAttempts($request)) {
                 $this->fireLockoutEvent($request);
