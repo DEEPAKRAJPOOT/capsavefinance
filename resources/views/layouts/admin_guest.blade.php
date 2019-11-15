@@ -19,11 +19,9 @@
     </head>
     <body>
         @if (Session::has('message'))
-        @var $varErrorMsg = explode("|", Session::get('message'))
-        <div class="alert-box {{ $varErrorMsg[0] }}">
-            @if (count($varErrorMsg) > 1)
-            {{ $varErrorMsg[1] }}
-            @endif
+      
+        <div class="alert-box alert-success alert-dismissible" role="alert"">
+            <ul><li>{{ Session::get('message') }}</li></ul>
         </div>
         @endif
         @if (count($errors) > 0)

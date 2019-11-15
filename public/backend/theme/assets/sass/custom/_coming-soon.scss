@@ -1,0 +1,31 @@
+/*=============== Comming soom css ================*/
+.content {
+	line-height: 1.7;
+	font-weight: 500;
+	color: $base-dark;
+}
+.prtm-comming-style {
+  background-image: url("../img/comingsoon-banner.png");
+  background-size: auto auto;
+  background-position: center bottom;
+  padding: 4em 0 33em;
+  background-repeat: no-repeat;
+    background-color: $body-bg;
+}
+
+//--- Media query ---//
+
+@media (max-width: 992px) and (min-width: 320px) {
+	.comming-soon-style {
+		.font-3x {
+			font-size: 22px;
+		}
+	}
+}
+@media (max-width: 640px) {
+	.comming-soon-style {
+		.font-5x {
+			font-size: 35px;
+		}
+	}	
+}

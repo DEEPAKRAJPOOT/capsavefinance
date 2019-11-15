@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 
@@ -65,7 +65,7 @@ input[type='search']{
                                     <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                                <th></th>
+                                                
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
                                                 <th>Email</th>

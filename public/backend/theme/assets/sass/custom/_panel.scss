@@ -1,0 +1,55 @@
+/*=============== Panels css ==================*/
+
+.panel-inverse {
+    @include panel-variant($panel-inverse-border, $panel-inverse-text, $panel-inverse-heading-bg, $panel-inverse-border);
+}
+
+.panel-white {
+    @include panel-variant($panel-white-border, $panel-white-text, $panel-white-heading-bg, $panel-white-border);
+}
+
+.panel-style {
+    .panel,
+    .panel-footer {
+        border-radius: $border-radius-base;
+    }
+    p {
+        color: $panel-font-color;
+    }
+    .panel-heading{
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}
+
+.customize-panels {
+    h3 {
+        font-size: 23px;
+        font-weight: 300;
+    }
+}
+
+.panel {
+    overflow: hidden;
+}
+
+.panel-footer.panel-warning {
+    background: $brand-warning;
+    color: $panel-font-color;
+}
+
+.panel .panel-heading-border {
+    border-bottom: 1px solid $panel-heading-border;
+}
+
+.panel.panel-white .panel-success-border {
+    border-top: 5px solid $brand-success;
+    border-bottom: 2px solid $brand-success;
+}
+
+//--- Media queries ---//
+@media (max-width: 480px) {
+    .customize-panels h3 {
+        font-size: 18px;
+    }
+}

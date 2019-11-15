@@ -1,0 +1,27 @@
+/*================== 404 page css ==================*/
+.page-error {
+	h2 {
+		font-size: 134px;
+		font-weight: 800;
+	}
+}
+.page-error {
+	padding: 150px 15px;
+	&::before {
+		color: $chat-left-tab-bg;
+		content: "";
+		font-family: fontawesome;
+		font-size: 344px;
+		position: absolute;
+		right: 21%;
+		top: -9%;
+	}
+}
+
+//--- Media Query ---//
+
+@media (max-width: 480px) {
+	.page-error h2 {
+	  font-size: 80px;
+	}
+}

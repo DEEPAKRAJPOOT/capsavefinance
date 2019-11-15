@@ -1,0 +1,17 @@
+
+//--- Contextual background variants ---//
+@mixin background-variant($root, $background, $border, $color) {
+  .#{$root} {
+    background-color: $background;
+    border-color: $border;
+    color: $color;
+  }
+
+  a.#{$root}:hover,
+  a.#{$root}:focus {
+    background-color: darken($background, 10%);
+    border-color: darken($border, 10%);
+    color: $color;
+    text-decoration: none;
+  }
+}

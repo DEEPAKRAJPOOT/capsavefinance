@@ -2,9 +2,8 @@
 
 @section('content')
 
-               @if($benifinary["user_type"] =='1')
-               	@include('layouts.backend.partials.admin-sidebar')
-                {{-- @include('layouts.partials.left-menu') --}}
+               @if($benifinary["user_type"] =='2') 
+                @include('layouts.backend.partials.admin-sidebar')
                @else
                @include('layouts.partials.left-corp-menu')
                @endif

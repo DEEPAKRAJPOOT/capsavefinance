@@ -75,11 +75,9 @@ use AuthenticatesUsers;
 
             return $this->sendLockoutResponse($request);
         }
-
-        $userName    = $request['username'];
-        $userInfo = $this->userRepo->getUserByUserName($userName);
-
-
+       
+        $userEmail    = $request['email'];
+        $userInfo = $this->userRepo->getUserByEmail($userEmail);
 
        
         if ($this->attemptLogin($request)) {
@@ -113,5 +111,13 @@ use AuthenticatesUsers;
             'password.required' => trans('error_messages.req_password')
             ]
         );
+    }
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        return $this->loggedOut($request) ?: redirect('/');
     }
 }

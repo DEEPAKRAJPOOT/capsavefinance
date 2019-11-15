@@ -1,0 +1,95 @@
+/*================ Layouts ================*/
+
+.display-b {
+    display: block;
+}
+
+.display-i {
+    display: inline;
+}
+
+.display-ib {
+    display: inline-block;
+}
+
+.display-tb {
+    display: table;
+}
+
+.display-tbc {
+    display: table-cell;
+}
+
+.over-auto {
+    overflow: auto;
+}
+
+.over-hidden {
+    overflow: hidden;
+}
+
+.over-scroll {
+    overflow: scroll;
+}
+
+.clear {
+    display: block;
+    overflow: hidden;
+}
+
+//--- Inspired from bootstrap 4 beta version ---//
+//--- Large devices ---//
+
+@media (min-width: $screen-lg-min) {
+    .pull-lg-left {
+        float: left;
+    }
+    .pull-lg-right {
+        float: right;
+    }
+    .pull-lg-none {
+        float: none;
+    }
+}
+
+//--- Medium devices ---//
+
+@media (min-width: $screen-md-min) {
+    .pull-md-left {
+        float: left;
+    }
+    .pull-md-right {
+        float: right;
+    }
+    .pull-md-none {
+        float: none;
+    }
+}
+
+//--- Small devices ---//
+
+@media (min-width: $screen-sm-min) {
+    .pull-sm-left {
+        float: left;
+    }
+    .pull-sm-right {
+        float: right;
+    }
+    .pull-sm-none {
+        float: none;
+    }
+}
+
+//--- Extra devices ---//
+
+.pull-xs-left {
+    float: left;
+}
+
+.pull-xs-right {
+    float: right;
+}
+
+.pull-xs-none {
+    float: none;
+}

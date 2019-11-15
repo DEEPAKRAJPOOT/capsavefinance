@@ -1,0 +1,73 @@
+/*================== Typography common class ==================*/
+.nowrap     { 
+	white-space: nowrap 
+}
+.break-word { 
+	word-wrap: break-word 
+}
+
+//--- Font size ---//
+
+.font-xs{
+    font-size:$font-size-small - 2 !important;
+}
+.font-lg { 
+	font-size: $font-size-large; 
+}
+.font-sm { 
+	font-size: $font-size-small !important; 
+}
+.font-md{
+    font-size: $font-size-large + 2; 
+}
+.font-2x {
+	font-size: 2em; 
+}
+.font-3x {
+	font-size: 3em; 
+}
+.font-4x { 
+	font-size: 4em !important;
+}
+.font-5x { 
+	font-size: 5em;
+}
+.text-secondary{
+    color: $brand-secondary;
+}
+//--- Font weight ---//
+
+.fw-light  { 
+	font-weight: 300 !important;
+}
+.fw-normal  { 
+	font-weight: 400; 
+}
+.fw-medium { 
+	font-weight: 500; 
+}
+.fw-semibold  {
+	font-weight: 600; 
+}
+.fw-bold {
+	font-weight: 700;
+}
+
+.link-muted {
+  color: $link-dim-color;
+
+  &:hover,
+  &:focus {
+    color: $link-dim-hover-color;
+    text-decoration: $link-dim-hover-decoration;
+  }
+}
+.link-inverted {
+  color: $link-inverted-color;
+
+  &:hover,
+  &:focus {
+    color: $link-inverted-hover-color;
+    text-decoration: $link-inverted-hover-decoration;
+  }
+}

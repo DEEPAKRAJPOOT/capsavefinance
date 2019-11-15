@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Dynamitable</title>
+        <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            <!--
+            .glyphicon {
+                cursor: pointer;
+            }
+            
+            input, select{
+                width: 100%;
+            }
+            
+            .second, .glyphicon-chevron-down, .glyphicon-chevron-up{
+                color: red;
+            }
+
+            -->
+        </style>
+    </head>
+    <body>
+        <div class="col-xs-12  col-sm-12 col-md-10 col-md-offset-1 col-lg-10  col-lg-offset-1">
+        
+            <h1><span class="first">Dynami</span><span class="second">table</span></h1>
+            
+            <div class="table-responsive">
+            
+                <!-- Initialization 
+                * js-dynamitable => dynamitable trigger (table)
+                -->
+                <table class="js-dynamitable     table table-bordered">
+                    
+                    <!-- table heading -->
+                    <thead>
+                    
+                        <!-- Sortering
+                        * js-sorter-asc => ascending sorter trigger
+                        * js-sorter-desc => desending sorter trigger
+                        -->
+                        <tr>
+                            <th>Name
+                                <span class="js-sorter-desc     glyphicon glyphicon-chevron-down pull-right"></span>
+                                <span class="js-sorter-asc     glyphicon glyphicon-chevron-up pull-right"></span>
+                             </th>
+                            <th>Email
+                                <span class="js-sorter-desc     glyphicon glyphicon-chevron-down pull-right"></span>
+                                <span class="js-sorter-asc     glyphicon glyphicon-chevron-up pull-right"></span>
+                             </th>
+                            <th>Age
+                                <span class="js-sorter-desc     glyphicon glyphicon-chevron-down pull-right"></span>
+                                <span class="js-sorter-asc     glyphicon glyphicon-chevron-up pull-right"></span>
+                             </th>
+                            <th>Account
+                                <span class="js-sorter-desc     glyphicon glyphicon-chevron-down pull-right"></span>
+                                <span class="js-sorter-asc     glyphicon glyphicon-chevron-up pull-right"></span>
+                            </th>
+                            <th>Scoring
+                                <span class="js-sorter-desc     glyphicon glyphicon-chevron-down pull-right"></span>
+                                <span class="js-sorter-asc     glyphicon glyphicon-chevron-up pull-right"></span>
+                            </th>
+                        </tr>
+                        
+                        <!-- Filtering
+                        * js-filter => filter trigger (input, select)
+                        -->
+                        <tr>
+                            <th>
+                                <!-- input filter -->
+                                <input  class="js-filter  form-control" type="text" value="">
+                            </th>
+                            <th>
+                                <!-- select filter -->
+                                <select class="js-filter  form-control">
+                                    <option value=""></option>
+                                    <option value="@dynamitable.com">dynamitable.com</option>
+                                    <option value="@sample.com">Sample</option>
+                                </select>
+                            </th>
+                            <th><input class="js-filter  form-control" type="text" value=""></th>
+                            <th><input class="js-filter  form-control" type="text" value=""></th>
+                            <th><input class="js-filter  form-control" type="text" value=""></th>
+                        </tr>
+                    </thead>
+                    
+                    <!-- table body -->
+                    <tbody>
+                        <tr>
+                            <td>Freddy Krueger</td>
+                            <td>freddy.krueger@sample.com</td>
+                            <td class="text-right">122</td>
+                            <td class="text-right">2300$</td>
+                            <td class="text-right">+15</td>
+                        </tr>
+                        <tr>
+                            <td>Clint Eastwood</td>
+                            <td>clint.eastwood@sample.com</td>
+                            <td class="text-right">62</td>
+                            <td class="text-right">48 500$</td>
+                            <td class="text-right">+12</td>
+                        </tr>
+                        <tr>
+                            <td>Peter Parker</td>
+                            <td>peter.parker@dynamitable.com</td>
+                            <td class="text-right">22</td>
+                            <td class="text-right">210$</td>
+                            <td class="text-right">-5</td>
+                        </tr>  
+                        <tr>
+                            <td>Bruce Wayne</td> 
+                            <td>bruce.wayne@dynamitable.com</td>                  
+                            <td class="text-right">42</td>  
+                            <td class="text-right">-8500$</td>         
+                            <td class="text-right">+2</td>                        
+                        </tr>
+                        <tr>
+                            <td>Jackie Chan</td>
+                            <td>jackie.chan@sample.com</td>
+                            <td class="text-right">32</td>
+                            <td class="text-right">-250.55$</td>
+                            <td class="text-right">0</td>  
+                        </tr>
+                        
+                        <tr>
+                            <td>Bruce Lee</td>
+                            <td>bruce.lee@sample.com</td>
+                            <td class="text-right">32</td>
+                            <td class="text-right">510$</td>
+                            <td class="text-right">-7</td> 
+                        </tr>
+                         
+                    </tbody>
+                    
+                </table>
+            </div>
+        </div>
+        
+        <!-- jquery -->
+        <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        
+        <!-- dynamitable -->
+        <script src="dynamitable.jquery.min.js"></script>
+    </body>
+</html>

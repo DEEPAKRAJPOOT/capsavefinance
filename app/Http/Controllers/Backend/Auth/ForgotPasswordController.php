@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Auth;
 
+use Session;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\PasswordBroker;
@@ -61,7 +62,7 @@ use SendsPasswordResetEmails;
 
             switch ($response) {
                 case PasswordBroker::RESET_LINK_SENT:
-                    Session::flash('message',trans('success_messages.fogot_password_successfully'));
+                    \Session::flash('message',trans('success_messages.fogot_password_successfully'));
                     return redirect()->back()->with('status', trans($response));
 
                 case PasswordBroker::INVALID_USER:

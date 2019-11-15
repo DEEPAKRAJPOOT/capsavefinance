@@ -48,9 +48,8 @@ use ResetsPasswords;
      */
     public function showResetForm(Request $request)
     {
-        $token = key($request->query());
         return view('backend.auth.passwords.reset')->with(
-                ['token' => $token, 'email' => $request->email]
+                ['token' => $request->token, 'email' => $request->email]
         );
     }
 }

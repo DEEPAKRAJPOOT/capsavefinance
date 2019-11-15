@@ -21,7 +21,7 @@
                             <label for="email" class="col-md-4 control-label">E-Mail Address</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="hidden" class="form-control" name="email" value="{{ $email or old('email') }}" required autofocus>
+                                <input id="email" readonly="readonly" type="text" class="form-control" name="email" value="{{ $email }}" required autofocus>
 
                                 @if ($errors->has('email'))
                                     <span class="help-block">

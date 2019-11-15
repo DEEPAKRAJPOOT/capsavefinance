@@ -1,0 +1,107 @@
+/*=============== Vactor map css =======================*/
+.overflow-auto .prtm-block {
+  overflow: auto;
+} 
+canvas {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+.chart {
+  overflow: hidden;
+}
+.vector {
+  width: 100%;
+  height:300px;
+}
+.demo-container {
+  box-sizing: border-box;
+  height: 400px;
+  padding: 20px 15px 15px 15px;
+  border: 1px solid $block-border-color;
+  background: $block-bg;
+  border-radius: $block-border-radius;
+  box-shadow: $block-shadow;
+}
+.demo-placeholder {
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+  line-height: 1.2em;
+}
+
+//--- Chart list css ---//
+
+.ct-series-a .ct-point,
+.ct-series-a .ct-line,
+.ct-series-a .ct-bar,
+.ct-series-a .ct-slice-donut {
+  stroke: #ffffff;
+}
+.ct-label {
+  color: $text-color;
+}
+
+//--- Dashboard amchart ---//
+
+#dashboard3-amchart {
+  height: 500px;
+}
+#dashboard3-email {
+  height: 400px;
+}
+
+//--- Google map css ---//
+
+.gmaps {
+  height:400px;
+  width:100%;
+}
+.overlay {
+  background: #4477aa none repeat scroll 0 0;
+  border: 3px solid #336699;
+  border-radius: 4px;
+  box-shadow: 2px 2px 10px #333;
+  color: #fff;
+  display: block;
+  font-size: 60px;
+  line-height: 80px;
+  opacity: 0.8;
+  padding: 0 4px;
+  text-align: center;
+  text-shadow: 1px 1px 1px #666;
+}
+.overlay_arrow.above {
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-top: 16px solid #336699;
+  bottom: -15px;
+}
+.overlay_arrow {
+  height: 0;
+  left: 50%;
+  margin-left: -16px;
+  position: absolute;
+  width: 0;
+}
+.morris-hover {
+  z-index: 99;
+}
+.export-main {
+  top: -60px;
+}
+//-- Chart peity --//
+
+.chart-peity .prtm-full-block{
+    text-align: center;
+} 
+
+//--- snazzy Maps ---//
+#snazzymap-demo {
+  height:600px; 
+}
+//--- Data Maps ---//
+.data-map {
+  width: null;
+  height: 400px;
+}
