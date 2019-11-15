@@ -84,30 +84,6 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'uses' => 'Backend\ApplicationController@saveDocument'
     ]);
     
-    Route::get('gst-document',
-        [
-        'as' => 'gst-document',
-        'uses' => 'Backend\ApplicationController@showGSTDocument'
-    ]);
-    
-    Route::post('gst-document-save',
-        [
-        'as' => 'gst-document-save',
-        'uses' => 'Backend\ApplicationController@saveGSTDocument'
-    ]);
-    
-    Route::get('financial-document',
-        [
-        'as' => 'associate-logistics',
-        'uses' => 'Backend\ApplicationController@showFinancialDocument'
-    ]);
-    
-    Route::post('financial-document-save',
-        [
-        'as' => 'associate-logistics-save',
-        'uses' => 'Backend\ApplicationController@saveFinancialDocument'
-    ]);
-
     // for password
    Route::group(['prefix' => 'password'],
         function () {

@@ -105,7 +105,7 @@ class DocumentRepository implements DocumentInterface
             throw new BlankDataExceptions('No Data Found');
         }
         
-        return UserFile::creates($attributes, $docId);;
+        return UserFile::creates($attributes, $docId);
     }
     
     /**
@@ -122,6 +122,6 @@ class DocumentRepository implements DocumentInterface
             
         }
         
-        return $result ?: false;
+        return (!empty($result)) ? $result : false;
     }
 }
