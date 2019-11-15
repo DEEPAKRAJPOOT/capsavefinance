@@ -5,10 +5,13 @@ namespace App\Inv\Repositories\Models;
 use DB;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
-class User extends Authenticatable
+
+class User extends Authenticatable implements AuthenticatableContract, AuthorizableContract
 {
 
     use Notifiable;
@@ -383,6 +386,81 @@ class User extends Authenticatable
 
         return ($arrUser ?: false);
     }
-   
+    
+   /**
+     * A user may have multiple roles.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * Assign the given role to the user.
+     *
+     * @param string $role
+     *
+     * @return mixed
+     */
+    public function assignRole($role_id)
+    {
+        return $this->roles()->sync(array($role_id));
+    }
+
+    /**
+     * Determine if the user has the given role.
+     *
+     * @param  mixed $role
+     * @return boolean
+     */
+    public function hasRole($role)
+    {
+        if (is_string($role)) {
+            return $this->roles->contains('name', $role);
+        }
+        return !!$role->intersect($this->roles)->count();
+    }
+
+    /**
+     * Determine if the user may perform the given permission.
+     *
+     * @param Permission $permission
+     *
+     * @return boolean
+     */
+    public function hasPermission(Permission $permission)
+    {
+        return $this->hasRole($permission->roles);
+    }
+
+    /**
+     * Get Roles by user id
+     *
+     * @param $user_id user id
+     *
+     * @return object roles
+     */
+    public static function getUserRoles($user_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($user_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($user_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $arrRoles = self::find($user_id)->roles;
+
+        return ($arrRoles ? : false);
+    }
 
 }
