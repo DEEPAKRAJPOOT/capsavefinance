@@ -88,7 +88,7 @@ class Business extends Model
             ]);
 
         //entry for child
-        $pan_api_res = explode(',', $attributes['pan_api_res']);
+        $pan_api_res = explode(',', rtrim($attributes['pan_api_res'],','));
         $data = [];
         foreach ($pan_api_res as $key=>$value) {
             $data[$key]['user_id']=$userId;
@@ -126,6 +126,6 @@ class Business extends Model
 
         BusinessAddress::insert($address_data);
 
-        return $business;
+        return ['biz_id'=>$business->biz_id,'app_id'=>$app_id];
     }
 }
