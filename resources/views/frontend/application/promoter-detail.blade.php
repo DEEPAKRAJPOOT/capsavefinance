@@ -14,10 +14,10 @@
                 <div class="count-heading">Business Information </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/business-document.png')}}" width="36" height="36">
+                        <img src="{{url('frontend/assets/images/business-document.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
+                        <img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -25,10 +25,10 @@
 				<div class="count-heading"> Promoter Details </div>
 				<div class="top-circle-bg">
 					<div class="count-top">
-						<img src="{{url('backend/signup-assets/images/kyc.png')}}" width="36" height="36">
+						<img src="{{url('frontend/assets/images/kyc.png')}}" width="36" height="36">
 					</div>
 					<div class="count-bottom">
-						<img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
+						<img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
 					</div>
 				</div>
 			</li>
@@ -36,10 +36,10 @@
                 <div class="count-heading">Business Documents </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/business-document.png')}}" width="36" height="36">
+                        <img src="{{url('frontend/assets/images/business-document.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
+                        <img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -47,10 +47,10 @@
                 <div class="count-heading"> Associate Buyers </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/buyers.png')}}" width="36" height="36">
+                        <img src="{{url('frontend/assets/images/buyers.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
+                        <img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -58,10 +58,10 @@
                 <div class="count-heading"> Associate Logistics </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{url('backend/signup-assets/images/logistics.png')}}" width="36" height="36">
+                        <img src="{{url('frontend/assets/images/logistics.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{url('backend/signup-assets/images/tick-image.png')}}" width="36" height="36">
+                        <img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>

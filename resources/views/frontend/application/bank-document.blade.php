@@ -10,10 +10,10 @@
                 <div class="count-heading">Business Information </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{ url('backend/signup-assets/images/business-document.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/business-document.png') }}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{ url('backend/signup-assets/images/tick-image.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/tick-image.png') }}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -21,10 +21,10 @@
                 <div class="count-heading"> Promoter Details </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{ url('backend/signup-assets/images/kyc.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/kyc.png') }}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{ url('backend/signup-assets/images/tick-image.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/tick-image.png') }}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -32,10 +32,10 @@
                 <div class="count-heading">Bank Statement </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{ url('backend/signup-assets/images/business-document.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/business-document.png') }}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{ url('backend/signup-assets/images/tick-image.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/tick-image.png') }}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -43,10 +43,10 @@
                 <div class="count-heading"> GST  Statement </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{ url('backend/signup-assets/images/buyers.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/buyers.png') }}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{ url('backend/signup-assets/images/tick-image.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/tick-image.png') }}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -54,10 +54,10 @@
                 <div class="count-heading"> Financial  Statement </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{ url('backend/signup-assets/images/logistics.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/logistics.png') }}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{ url('backend/signup-assets/images/tick-image.png') }}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/tick-image.png') }}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -250,7 +250,7 @@
                         $('#add-bank-block').on('click', function () {
                             let html_block = '<div class="col-md-12 doc-block">\
                                                     <div class="justify-content-center align-items-baseline d-flex">\
-                                                        <label class="mb-0"><span class="file-icon"><img src="{{ url("backend/signup-assets/images/contractdocs.svg") }}"> </span> Document Name </label>\
+                                                        <label class="mb-0"><span class="file-icon"><img src="{{ url("frontend/assets/images/contractdocs.svg") }}"> </span> Document Name </label>\
                                                         <div class="select-bank ml-auto col-md-3">\
                                                             <select class="form-control">\
                                                                 <option>Select bank</option>\

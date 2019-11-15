@@ -13,8 +13,8 @@
         <link rel="stylesheet" href="{{ url('frontend/assets/css/data-table.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/style.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/custom.css') }}" />
-        <script src="{{url('backend/signup-assets/js/jquery-3.4.1.min.js')}}"></script>
-        <script src="{{url('backend/signup-assets/js/jquery.validate.js')}}"></script>
+        <script src="{{url('frontend/assets/js/jquery-3.4.1.min.js')}}"></script>
+        <script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
     </head>
     <body>
 
