@@ -22,6 +22,11 @@
                     
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{Route('lead_leadspool')}}" >
+                        <i class="fa fa-home"></i>
+                        <span class="menu-title">Manage Leads Pools </span>
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                     <a class="nav-link" href="{{Route('lead.index')}}" >
                         <i class="fa fa-home"></i>
                         <span class="menu-title">Manage Leads</span>

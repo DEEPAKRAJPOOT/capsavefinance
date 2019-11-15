@@ -106,7 +106,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                        return "<a  data-original-title=\"Edit User\" href=\"\" data-placement=\"top\" class=\"CreateUser\" ><i class=\"fa fa-edit\"></i></a> ";
+                    return  "<a  data-toggle=\"modal\" data-target=\"#editLeadpoll\" data-url =\"#\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {

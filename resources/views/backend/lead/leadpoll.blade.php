@@ -90,14 +90,13 @@ input[type='search']{
         </div>
     </div>
     
-    <a  data-toggle="modal" data-target="#viewMyAccoutPopup" data-url ="#" data-height="500px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm  report-btn btn-x-sm">Report It</a>
-
+    
 
     @endsection
     @section('pageTitle')
 Admin- Login
 @endsection
-{!!Helpers::makeIframePopup('viewMyAccoutPopup','MyfdfdTitle')!!}
+{!!Helpers::makeIframePopup('editLeadpoll','Edit Lead')!!}
     @section('jscript')
     <script>
 
