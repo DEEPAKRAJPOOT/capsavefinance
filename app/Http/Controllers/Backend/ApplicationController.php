@@ -47,7 +47,9 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-            $business_info = $this->businessRepo->saveBusinessInfo($arrFileData,1);//Auth::user()->id
+            $business_info = $this->businessRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
+            $appId  = Session::put('appId', $business_info['app_id']);
+
             if ($business_info) {
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return redirect()->route('promoter-detail');
