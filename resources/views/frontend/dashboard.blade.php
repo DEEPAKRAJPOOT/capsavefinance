@@ -1,16 +1,13 @@
-@extends('layouts.app')
+@extends('layouts.backend.admin-layout')
 
 @section('content')
 
-               @if($benifinary["user_type"] =='1') 
-                @include('layouts.partials.left-menu')
+               @if($benifinary["user_type"] =='1')
+               	@include('layouts.backend.partials.admin-sidebar')
+                {{-- @include('layouts.partials.left-menu') --}}
                @else
                @include('layouts.partials.left-corp-menu')
                @endif
-          
-  
-
-
 <!-- partial dasboard content -->
 			<div class="content-wrapper">
 				<h3 class="page-title">Zuron - Admin Dashboard</h3>
