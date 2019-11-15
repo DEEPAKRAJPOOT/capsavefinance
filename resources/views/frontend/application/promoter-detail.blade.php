@@ -473,7 +473,8 @@
     			},
                 success: function (data) {
                                             if(data['status-code'] == 101)
-                                            {
+                                            {    
+                                                  $('#response'+count).val(data);
                                                   $('#pan_no'+count).attr('readonly',true);
                                                   $('#pan_verify'+count).text('Verified')
                                                   $('#pan_verify'+count).css('pointer-events','none');
