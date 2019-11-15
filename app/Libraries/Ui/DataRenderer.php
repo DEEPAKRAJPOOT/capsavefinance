@@ -53,15 +53,15 @@ class DataRenderer implements DataProviderInterface
                         return "<a id=\"" . $user->user_id . "\" href=\"#\" rel=\"tooltip\"   >$link</a> ";
                     }
                 )
-                ->editColumn(
-                        'status',
-                        function ($user) {
-                    if ($user->is_active == config('inv_common.ACTIVE')) {
-                        return "Active";
-                    } else {
-                        return "In Active";
-                    }
-                })
+//                ->editColumn(
+//                        'status',
+//                        function ($user) {
+//                    if ($user->is_active == config('inv_common.ACTIVE')) {
+//                        return "Active";
+//                    } else {
+//                        return "In Active";
+//                    }
+//                })
 //                ->addColumn(
 //                        'checkbox',
 //                        function ($user) {
@@ -106,27 +106,27 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    return  "<a  data-toggle=\"modal\" data-target=\"#editLeadpoll\" data-url =\"#\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
+                    return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('email') != '') {
-                        if ($request->has('email')) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('email'));
-                                $query->where('users.first_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.last_name', 'like', "%$by_nameOrEmail%")
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
                                 //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
                                 ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
-                    if ($request->get('status') != '') {
-                        if ($request->has('status')) {
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
                             $query->where(function ($query) use ($request) {
-                                $by_status = (int) trim($request->get('status'));
+                                $by_status = (int) trim($request->get('is_assign'));
                                 
-                                $query->where('users.status', 'like',
+                                $query->where('users.is_assign', 'like',
                                         "%$by_status%");
                             });
                         }

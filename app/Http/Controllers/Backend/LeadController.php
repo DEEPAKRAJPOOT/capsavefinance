@@ -92,4 +92,19 @@ class LeadController extends Controller
          
          return view('backend.lead.leadpoll');
      }
+     
+     
+    /**
+     * Edit backend Lead
+     * 
+     * @param Request $request
+     * @return type
+     */
+     
+     public function editBackendLead(Request $request){
+       dd($request->all());  
+         //return view('backend.lead.leadpoll');
+     }
+     
+     
 }

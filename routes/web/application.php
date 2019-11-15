@@ -53,16 +53,5 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         });
     });
     
-//   Resource controller @Supplier,@buyer,@lender,@logistics    //
-    Route::get('cam/overview', 'Backend\CamController@index'); 
-
-
- 
-    
-    
-    
-});
-
-
-  
-    
+//   Resource controller @Supplier,@buyer,@lender,@logistics    //    
+});    
