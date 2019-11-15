@@ -89,10 +89,10 @@ input[type='search']{
             </div>
         </div>
     </div>
-
+{!!Helpers::makeIframePopup('editLead','Edit Lead')!!}
 
     @endsection
-    {!!Helpers::makeIframePopup('editLead','Edit Lead')!!}
+    
     @section('jscript')
     <script>
 
