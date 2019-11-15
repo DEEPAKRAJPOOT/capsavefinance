@@ -67,13 +67,13 @@
     <div class="container">
         <div class="mt-4">
             <div class="col-md-12 form-design ">
-                
+
                 @if(session()->has('message'))
-                    <div class="alert alert-success">
-                        {{ session()->get('message') }}
-                    </div>
+                <div class="alert alert-success">
+                    {{ session()->get('message') }}
+                </div>
                 @endif
-                
+
                 @foreach($errors->all() as $error)
                 <span class="text-danger error">{{ $error }}</span>
                 @endforeach
@@ -85,6 +85,7 @@
 
 
                 <div class="row ">
+                    @if($requiredDocs->count() > 0)
                     <div id="accordion" class="accordion d-table col-sm-12">
                         @foreach($requiredDocs as $data)
                         <div class="card card-color mb-0">
@@ -102,7 +103,7 @@
 
                             </div>
                             <div id="collapse{{ $data->app_doc_id }}" class="card-body collapse p-0" data-parent="#accordion">
-                                
+
                                 <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
                                     <tbody>
                                         <tr>
@@ -125,11 +126,11 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-                                
+
 
                             </div>
                         </div>
-                        
+
                         <!--modal-->
                         <div class="modal" id="myModal{{ $data->app_doc_id }}">
                             <div class="modal-dialog">
@@ -185,21 +186,23 @@
                         </div>
 
                     </div>
+                    @endif
                 </div>
+            </div>
+        </div>
+    </div>    
+        @endsection
 
+        @section('scripts')
+        <script src="{{ url('frontend/assets/js/jquery.min.js') }}"></script>
+        <script src="{{ url('frontend/assets/js/popper.min.js') }}"></script>
+        <script src="{{ url('frontend/assets/js/bootstrap.min.js') }}"></script>
+        <script src="{{ url('frontend/assets/js/perfect-scrollbar.jquery.min.js') }}"></script>
+        <script src="{{ url('frontend/assets/js/jsgrid.min.js') }}"></script>
+        <script src="{{ url('frontend/assets/js/hoverable-collapse.js') }}"></script>
+        <script src="{{ url('frontend/assets/js/misc.js') }}"></script>
 
-                @endsection
-
-                @section('scripts')
-                <script src="{{ url('frontend/assets/js/jquery.min.js') }}"></script>
-                <script src="{{ url('frontend/assets/js/popper.min.js') }}"></script>
-                <script src="{{ url('frontend/assets/js/bootstrap.min.js') }}"></script>
-                <script src="{{ url('frontend/assets/js/perfect-scrollbar.jquery.min.js') }}"></script>
-                <script src="{{ url('frontend/assets/js/jsgrid.min.js') }}"></script>
-                <script src="{{ url('frontend/assets/js/hoverable-collapse.js') }}"></script>
-                <script src="{{ url('frontend/assets/js/misc.js') }}"></script>
-
-                <script>
+        <script>
                                     $(document).ready(function () {
                                         $('[data-toggle="tooltip"]').tooltip();
 
@@ -223,69 +226,69 @@
 
                                         });
                                     });
-                </script>
-                <script>
-                    var count = 2;
-                    function FileDetails(clicked_id) {
-                        // GET THE FILE INPUT.
-                        var fi = document.getElementById('file_' + clicked_id);
-                        // VALIDATE OR CHECK IF ANY FILE IS SELECTED.
-                        if (fi.files.length > 0) {
+        </script>
+        <script>
+            var count = 2;
+            function FileDetails(clicked_id) {
+                // GET THE FILE INPUT.
+                var fi = document.getElementById('file_' + clicked_id);
+                // VALIDATE OR CHECK IF ANY FILE IS SELECTED.
+                if (fi.files.length > 0) {
 
-                            // THE TOTAL FILE COUNT.
-                            var x = 'filePath_' + clicked_id;
-                            //var x = document.getElementById(id);alert(id);
-                            document.getElementById(x).innerHTML = '';
+                    // THE TOTAL FILE COUNT.
+                    var x = 'filePath_' + clicked_id;
+                    //var x = document.getElementById(id);alert(id);
+                    document.getElementById(x).innerHTML = '';
 
-                            // RUN A LOOP TO CHECK EACH SELECTED FILE.
-                            for (var i = 0; i <= fi.files.length - 1; i++) {
+                    // RUN A LOOP TO CHECK EACH SELECTED FILE.
+                    for (var i = 0; i <= fi.files.length - 1; i++) {
 
-                                var fname = fi.files.item(i).name; // THE NAME OF THE FILE.
-                                var fsize = fi.files.item(i).size; // THE SIZE OF THE FILE.
-                                // SHOW THE EXTRACTED DETAILS OF THE FILE.
-                                document.getElementById(x).innerHTML =
-                                        '<div class="file-name"> ' +
-                                        fname + '' + '<button type="button"  class="close-file"> x' + '</button>' + '</div>';
-                            }
-                        } else {
-                            alert('Please select a file.');
-                        }
+                        var fname = fi.files.item(i).name; // THE NAME OF THE FILE.
+                        var fsize = fi.files.item(i).size; // THE SIZE OF THE FILE.
+                        // SHOW THE EXTRACTED DETAILS OF THE FILE.
+                        document.getElementById(x).innerHTML =
+                                '<div class="file-name"> ' +
+                                fname + '' + '<button type="button"  class="close-file"> x' + '</button>' + '</div>';
                     }
+                } else {
+                    alert('Please select a file.');
+                }
+            }
 
-                    $(document).ready(function () {
-                        $('#add-bank-block').on('click', function () {
-                            let html_block = '<div class="col-md-12 doc-block">\
-                                                    <div class="justify-content-center align-items-baseline d-flex">\
-                                                        <label class="mb-0"><span class="file-icon"><img src="{{ url("frontend/assets/images/contractdocs.svg") }}"> </span> Document Name </label>\
-                                                        <div class="select-bank ml-auto col-md-3">\
-                                                            <select class="form-control">\
-                                                                <option>Select bank</option>\
-                                                                <option>HDFC</option>\
-                                                                <option>ICICI</option>\
-                                                            </select>\
-                                                        </div>\
-                                                        <div class="ml-auto col-md-4 text-right d-flex justify-content-end align-items-center">\
-                                                            <div id="filePath_' + count + '" class="filePath mt-0"></div>\
-                                                            <div class="file-browse">\
-                                                                <button class="btn-upload btn btn-sm" type="button"> <i class="fa fa-upload"></i> </button>\
-                                                                <input type="file" name="bank_docs[]" id="file_' + count + '" dir="' + count + '" onchange="FileDetails(' + count + ')">\
-                                                                <button class="btn custom-btn btn-sm delete-btn" type="button"> <i class="fa fa-trash delete-block"></i> </button>\
-                                                            </div>\
-                                                        </div>\
+            $(document).ready(function () {
+                $('#add-bank-block').on('click', function () {
+                    let html_block = '<div class="col-md-12 doc-block">\
+                                            <div class="justify-content-center align-items-baseline d-flex">\
+                                                <label class="mb-0"><span class="file-icon"><img src="{{ url("frontend/assets/images/contractdocs.svg") }}"> </span> Document Name </label>\
+                                                <div class="select-bank ml-auto col-md-3">\
+                                                    <select class="form-control">\
+                                                        <option>Select bank</option>\
+                                                        <option>HDFC</option>\
+                                                        <option>ICICI</option>\
+                                                    </select>\
+                                                </div>\
+                                                <div class="ml-auto col-md-4 text-right d-flex justify-content-end align-items-center">\
+                                                    <div id="filePath_' + count + '" class="filePath mt-0"></div>\
+                                                    <div class="file-browse">\
+                                                        <button class="btn-upload btn btn-sm" type="button"> <i class="fa fa-upload"></i> </button>\
+                                                        <input type="file" name="bank_docs[]" id="file_' + count + '" dir="' + count + '" onchange="FileDetails(' + count + ')">\
+                                                        <button class="btn custom-btn btn-sm delete-btn" type="button"> <i class="fa fa-trash delete-block"></i> </button>\
                                                     </div>\
-                                                    <hr>\
-                                                </div>';
-                            $('.bank-document-div').append(html_block);
-                            count++;
-                        });
+                                                </div>\
+                                            </div>\
+                                            <hr>\
+                                        </div>';
+                    $('.bank-document-div').append(html_block);
+                    count++;
+                });
 
-                        $(document).on('click', '.delete-block', function () {
-                            $(this).closest('div.doc-block').remove();
-                        });
+                $(document).on('click', '.delete-block', function () {
+                    $(this).closest('div.doc-block').remove();
+                });
 
-                        $(document).on('click', '.close-file', function () {
-                            $(this).parent('div').remove();
-                        });
-                    })
-                </script>
-                @endsection
+                $(document).on('click', '.close-file', function () {
+                    $(this).parent('div').remove();
+                });
+            })
+        </script>
+        @endsection
