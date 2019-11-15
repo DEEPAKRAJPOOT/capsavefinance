@@ -104,17 +104,22 @@ class ApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showBankDocument()
+    public function showDocument()
     {
         $userId  = Session::has('userId') ? Session::get('userId') : 1;
         $appId = 1;
         $userArr = [];
         if ($userId > 0) {
-            $requiredDocs = $this->docRepo->findRequiredDocs($userId,$appId);
+            $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
+            
+            if(!empty($requiredDocs)){
+                $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
+            }
         }
         
-        return view('frontend.application.bank-document')->with([
-            'requiredDocs' => $requiredDocs
+        return view('frontend.application.document')->with([
+            'requiredDocs' => $requiredDocs,
+            'documentData' => $docData
         ]);
     } 
     
@@ -125,16 +130,16 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     
-    public function saveBankDocument(DocumentRequest $request)
+    public function saveDocument(DocumentRequest $request)
     {
         try {
 //            dd($request);
             $arrFileData = $request->all();
             $docId = 1; //  fetch document id
-            $document_info = $this->docRepo->saveDocument($arrFileData,$docId);
+            $document_info = $this->docRepo->saveDocument($arrFileData, $docId);
             if ($document_info) {
-                Session::flash('message',trans('success_messages.bank_document.uploaded'));
-                return redirect()->route('gst-document');
+                Session::flash('message',trans('success_messages.uploaded'));
+                return redirect()->back();
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
