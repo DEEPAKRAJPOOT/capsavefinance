@@ -219,7 +219,7 @@ class User extends Authenticatable
     public static function getAllUsers()
     {
         $result = self::select('users.*')
-            ->where('user_type', 1)->get();
+            ->where('user_type', 1);
         return ($result ? $result : '');
     }
     
