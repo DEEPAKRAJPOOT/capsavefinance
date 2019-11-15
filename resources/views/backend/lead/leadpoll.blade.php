@@ -62,17 +62,15 @@ input[type='search']{
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="leadpollMaster" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
                                                 
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
-                                                <th>Mobile No</th>
-                                                <th>Business Name</th>
+                                                 <th>Assigned</th>
                                                 <th>Created At</th>
-                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -91,19 +89,25 @@ input[type='search']{
             </div>
         </div>
     </div>
+    
+    <a  data-toggle="modal" data-target="#viewMyAccoutPopup" data-url ="#" data-height="500px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm  report-btn btn-x-sm">Report It</a>
 
 
     @endsection
+    @section('pageTitle')
+Admin- Login
+@endsection
+{!!Helpers::makeIframePopup('viewMyAccoutPopup','MyfdfdTitle')!!}
     @section('jscript')
     <script>
 
         var messages = {
-            get_lead: "{{ URL::route('get-lead') }}",
+            get_lead_pool: "{{ URL::route('get_lead_pool') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
 
         };
     </script>
     <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-    <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('backend/js/ajax-js/leadpolls.js') }}" type="text/javascript"></script>
     @endsection

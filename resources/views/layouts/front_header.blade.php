@@ -34,11 +34,11 @@
                         
                         <li>
                             
- <a  href="#" onclick="event.preventDefault();
+ <a  href="{{ route('frontend_logout') }}" onclick="event.preventDefault();
                            document.getElementById('logout-form').submit();">
                            <i class="mdi mdi-logout-variant"></i> Logout</a>
                            </a>
-                           <form id="logout-form" action="{{ route('backend_logout') }}" method="POST" style="display: none;">
+                           <form id="logout-form" action="{{ route('frontend_logout') }}" method="POST" style="display: none;">
                                {{ csrf_field() }}
                            </form>
                        

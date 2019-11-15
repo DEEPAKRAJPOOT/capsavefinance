@@ -28,11 +28,11 @@
 </head>
     <!-- dashboard part -->
     <body class="">
-	@include('layouts.admin_header')
+	@include('layouts.front_header')
         
         @yield('content')
         
-        @include('layouts.admin_footer')
+        @include('layouts.front_footer')
        
 
 </body>

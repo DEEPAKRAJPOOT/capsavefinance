@@ -45,7 +45,7 @@ class DataRenderer implements DataProviderInterface
     public function getUsersList(Request $request, $user)
     {
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email'])
+                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -62,13 +62,13 @@ class DataRenderer implements DataProviderInterface
                         return "In Active";
                     }
                 })
-                ->addColumn(
-                        'checkbox',
-                        function ($user) {
-                        $ids = $user->user_id;
-                    $chkBox = '<input type="checkbox" name="del_selected[]" value="'.$ids.'" class="checkAllBox del_selected" />';
-                    return $chkBox;
-                })
+//                ->addColumn(
+//                        'checkbox',
+//                        function ($user) {
+//                        $ids = $user->user_id;
+//                    $chkBox = '<input type="checkbox" name="del_selected[]" value="'.$ids.'" class="checkAllBox del_selected" />';
+//                    return $chkBox;
+//                })
                 ->editColumn(
                         'name',
                         function ($user) {
@@ -81,6 +81,15 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
 
+                })
+                ->editColumn(
+                        'assigned',
+                        function ($user) {
+                    if ($user->is_assign == 0) {
+                        return "<span style=\"color:red\">Not Assigned</span>";
+                    } else {
+                        return "<span style='color:green'>Assigned</span>";
+                    }
                 })
                 ->editColumn(
                     'biz_name',
@@ -101,10 +110,10 @@ class DataRenderer implements DataProviderInterface
                     }
                 )
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('by_email') != '') {
-                        if ($request->has('by_email')) {
+                    if ($request->get('email') != '') {
+                        if ($request->has('email')) {
                             $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $by_nameOrEmail = trim($request->get('email'));
                                 $query->where('users.first_name', 'like',"%$by_nameOrEmail%")
                                 ->orWhere('users.last_name', 'like', "%$by_nameOrEmail%")
                                 //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")

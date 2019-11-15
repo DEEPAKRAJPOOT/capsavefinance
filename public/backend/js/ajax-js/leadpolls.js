@@ -3,7 +3,7 @@
 try {
 var oTable;
         $(document).ready(function () {
-            oTable1 = $('#leadMaster').DataTable({
+            oTable1 = $('#leadpollMaster').DataTable({
                 "order" : [[0, "asc"]],
                 "sDom": "<'row'<'col-md-2'l><'col-md-7'a><'col-md-2'f>r>t<'row'<'col-md-6'i><'col-md-6'p>>",
                 //"sPaginationType": "bootstrap",
@@ -11,7 +11,7 @@ var oTable;
                 "serverSide": true,
                 "searchable":false,
                 ajax: {
-                "url": messages.get_lead, // json datasource
+                "url": messages.get_lead_pool, // json datasource
                 "method": 'POST',
                 data: function (d) {
                   //  d.email = $('#customSearchBox').val();
@@ -29,10 +29,12 @@ var oTable;
                     {data: 'id'},
                     {data: 'name'},
                     {data: 'email'},
-                    {data: 'mobile_no'},
-                    {data: 'biz_name'},
+                    {data: 'assigned'},
+                    
+                    //{data: 'mobile_no'},
+                    //{data: 'biz_name'},
                     {data: 'created_at'},
-                    {data: 'status'},
+                    //{data: 'status'},
                     {data: 'action'}
                 ]
             });

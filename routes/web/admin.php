@@ -12,7 +12,7 @@ Route::get('/',
         'as' => 'get_backend_login_open',
         'uses' => 'Backend\Auth\LoginController@showLoginForm'
     ]);
-Route::get(
+Route::any(
         'logout',
         [
         'as' => 'backend_logout',
@@ -20,7 +20,9 @@ Route::get(
         ]
     );
 
-    Route::group(['middleware' => 'adminauth'],
+
+
+    Route::group(['middleware' => []],
             function () {
     
     Route::post(

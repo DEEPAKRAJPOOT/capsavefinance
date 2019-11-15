@@ -54,14 +54,17 @@ class AdminAuthenticate {
 //        }
         //dd(Auth::user());
         //if(Auth::user())
-        $result = UserModel::where('email', $request->get('email'))->first();
-        if ($result) {
-            if ($result->user_type == '2') {
+      //  $result = UserModel::where('email', $request->get('email'))->first();
+       // dd(Auth::user()->user_type);
+        if (Auth::user()) {
+            if (Auth::user()->user_type == '2') {
                 return $next($request);
             } else {
+                Auth::logout();
                 return redirect()->route('get_backend_login_open');
             }
         } else {
+            Auth::logout();
             return redirect()->route('get_backend_login_open');
         }
 

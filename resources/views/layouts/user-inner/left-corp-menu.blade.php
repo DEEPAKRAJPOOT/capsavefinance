@@ -5,14 +5,12 @@ fsagjh
 		   <p class="marT15 marB15">Individual Natural Person (director, shareholder, Ultimate Beneficial Owner)</p>
 		    <ul class="menu-left">
                     
+		    <li>Company Details</li>
                     
-                    
-		    <li><a class="<?=(Route::currentRouteName()=="company_profile-show")?'active':'' ?>" href="{{route('company_profile-show')}}">Company Details</a></li>
-                    
-                    <li><a class="<?=(Route::currentRouteName()=="company-address-show")?'active':'' ?>" href="{{route('company-address-show')}}">Address Details</a></li>
-                    <li><a class="<?=(Route::currentRouteName()=="shareholding_structure")?'active':'' ?>" href="{{route('shareholding_structure')}}">Shareholding Structure</a></li>
-                    <li><a class="<?=(Route::currentRouteName()=="financial-show")?'active':'' ?>" href="{{route('financial-show')}}">Financial Information</a></li>
-                    <li><a class="<?=(Route::currentRouteName()=="documents-show")?'active':'' ?>" href="{{route('documents-show')}}">Documents & Declaration</a></li>
+                    <li>Address Details</li>
+                    <li>Shareholding Structure</li>
+                    <li>Financial Information</li>
+                    <li>Documents & Declaration</li>
 		    </ul>
                    <ul class="menu-left">
                         <li>
