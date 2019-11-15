@@ -448,7 +448,7 @@ use RegistersUsers,
                     $this->userRepo->save($userArr, $userId);
                     $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
-                    if (Auth::loginUsingId($userDetails->user_id)) {
+                    if(Auth::loginUsingId($userDetails->user_id)) {
 
                         return redirect()->route('business_information_open');
                     }

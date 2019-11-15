@@ -61,20 +61,20 @@ class BizOwner extends Model
   {
      $inputArr = [];
      $count = count($attributes['first_name']);
-     $userId  = Auth::user();
-     dd($userId);
+     $userId  = Auth::user()->user_id;
      for ($i=0;$i<$count;$i++) 
      {
          $date = Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i]);
          $inputArr[$i]['biz_id']  = 1;   
-         $inputArr[$i]['user_id']  = 1; 
+         $inputArr[$i]['user_id']  = $userId; 
          $inputArr[$i]['first_name'] = $attributes['first_name'][$i];
          $inputArr[$i]['last_name'] = $attributes['last_name'][$i];
          $inputArr[$i]['date_of_birth'] = $date;
          $inputArr[$i]['gender'] = $attributes['gender'][$i];
          $inputArr[$i]['owner_addr'] = $attributes['owner_addr'][$i];
-         $inputArr[$i]['biz_pan_id'] = 1;
+         $inputArr[$i]['biz_id'] = 1;
          $inputArr[$i]['is_pan_verified'] = 1; 
+         $inputArr[$i]['biz_pan_gst_id'] = 1;	
          $inputArr[$i]['share_per'] = $attributes['share_per'][$i];
          $inputArr[$i]['edu_qualification'] = $attributes['edu_qualification'][$i];
          $inputArr[$i]['created_by'] =  1;
