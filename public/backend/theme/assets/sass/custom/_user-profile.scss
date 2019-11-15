@@ -1,0 +1,95 @@
+/*=================== User profile page css ========================*/
+
+.profile-tabs .nav-tabs li {
+    display: inline-block;
+    float: none;
+}
+
+.timeline-layout {
+    padding: 0 0 30px 75px;
+    &:before,
+    &:after {
+        position: absolute;
+        content: "";
+    }
+    &:before {
+        border-radius: 100%;
+        height: 11px;
+        left: 32px;
+        top: 4px;
+        width: 11px;
+        background: $brand-primary;
+        z-index: 2;
+    }
+    &:after {
+        top: 8px;
+        width: 1px;
+        left: 37px;
+        height: 100%;
+        background: $input-border;
+    }
+    &:last-child {
+        padding-bottom: 0;
+        &:after {
+            display: none;
+        }
+    }
+}
+
+.box-type-border {
+    >* {
+        @include border(1px solid, $input-border, left right top bottom);
+    }
+}
+
+.prtm-pie-chart {
+    @extend .pos-relative;
+    span {
+        left: 0;
+        @extend .pos-absolute;
+        right: 0;
+        top: 43%;
+    }
+}
+
+.profile-tabs {
+    .nav li:first-child {
+        margin: 0;
+    }
+}
+
+.user-setting .form-group .form-control {
+    margin-bottom: 10px;
+}
+.user-setting .form-group .selectbox .form-control {
+    margin-bottom: 10px;
+}
+.user-setting .selectbox {
+    border:none;
+}
+@media(min-width:1200px) and (max-width:1500px) {
+    .custom-type-wid {
+        .thumb-wid,
+        .prtm-7 {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .thumb-wid {
+            margin-bottom: 10px;
+        }
+    }
+}
+
+@media(min-width:1200px) and (max-width:1280px) {
+    .box-type-border {
+        >div {
+            width: 100%;
+        }
+    }
+}
+
+@media(max-width:480px) {
+    .timeline-post-details .bg-default .pull-left {
+        width: 100%;
+    }
+}

@@ -1,0 +1,92 @@
+/*=================== User agent css ========================*/
+
+.agent-list {
+    > ul {
+        margin-bottom: 30px;
+        i {
+            margin-right: 8px;
+            line-height: normal;
+        }
+    }
+    span {
+        text-transform: capitalize;
+    }
+    h6 {
+        letter-spacing: 1.2px;
+    }
+    li {
+        &:last-child {
+            border: none;
+        }
+        i {
+            margin-right: 7px;
+        }
+    }
+    .list-summery {
+        margin: 0;
+        li {
+            @include border(1px solid, lighten($brand-info, 10%), right);
+            width: 32%;
+            text-align: center;
+            &:last-child {
+                border: none;
+            }
+            i {
+                font-size: 2.9em;
+                line-height: normal;
+            }
+        }
+    }
+}
+
+.user-agent-v2 a {
+    padding: 18px 20px 12px;
+    i.fa-2x {
+        margin-top: -5px;
+    }
+}
+
+@media(max-width:1680px) {
+    .agent-list {
+        .list-summery li {
+            padding-right: 5px;
+        }
+    }
+}
+
+@media(max-width:1600px) {
+    .agent-list {
+        .user-agent >div {
+            text-align: center;
+        }
+        .list-summery {
+            li {}
+        }
+    }
+    .user-agent-v2 {
+        >div {
+            width: 100%;
+        }
+    }
+}
+
+@media(min-width:992px) and (max-width:1366px) {
+    .prtm-counter-email-list {
+        >div {
+            width: 50%;
+        }
+    }
+    .wheather-v2 {
+        .round-outline {
+            margin-left: 0;
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+    }
+    .counter-email-list {
+        >div {
+            width: 50%;
+            margin: 0 auto;
+        }
+    }
+}

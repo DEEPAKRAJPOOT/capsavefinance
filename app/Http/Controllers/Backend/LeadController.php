@@ -82,4 +82,14 @@ class LeadController extends Controller
     {
         //
     }
+    
+    /**
+     * Display a listing of the resource.
+     * All leads
+     * @return \Illuminate\Http\Response
+     */
+     public function leadspool(){
+         
+         return view('backend.lead.leadpoll');
+     }
 }

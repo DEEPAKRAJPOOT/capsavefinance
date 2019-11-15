@@ -1,130 +1,96 @@
-<!DOCTYPE html>
-<html class="no-js" lang="{{ app()->getLocale() }}">
+<!doctype html>
+<html lang="en">
     <head>
-        <meta charset="utf-8" />
+     <!-- Basic Page Needs-->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes" />
+        <!-- Mobile Specific Metas-->
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- For Search Engine Meta Data  -->
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <meta name="author" content="{{ config('app.name') }}" />
+        <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
-
         {{-- Page Title --}}
         <title>@yield('pageTitle')</title>
+        <!-- Favicon -->
+        <link rel="shortcut icon" type="image/icon" href="#" />
+        <!-- Bootstrap CSS -->
 
-        {{-- Favicon --}}
-        <link rel="shortcut icon" href="">
-        {{-- project theme css --}}
+    	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="{{asset('backend/assets/css/style.css')}}">
+        <link rel="stylesheet" href="{{asset('backend/assets/plugins/datatables/css/datatable.min.css')}}">
+        <link rel="stylesheet" href="{{asset('backend/assets/plugins/datatables/css/dataTables.bootstrap.css')}}">
+        <link rel="shortcut icon" href="{{url('backend/assets/images/favicon.png')}}" />
+    <!--<link rel="stylesheet" href="fonts/font-awesome/font-awesome.min.css" />-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{url('backend/assets/css/perfect-scrollbar.min.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/jsgrid.min.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/jsgrid-theme.min.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/uploadfile.css')}}" >
+    <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
+        
+</head>
 
-        <!--Datepicker-->
-        <link rel='stylesheet' href="{{ asset('frontend/inside/plugin/datepicker/jquery-ui.css') }}">
 
-        <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
-        <link rel="stylesheet" href="{{ asset('backend/theme/assets/plugins/fontawesome/css/font-awesome.min.css')}}" type="text/css" />
-        <link rel="stylesheet" href="{{ asset('backend/theme/assets/plugins/animate/animate.min.css')}}" type="text/css" />        
-        <link rel="stylesheet" type="text/css" href="{{ asset('backend/theme/assets/plugins/datatables/css/datatables.min.css')}}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('backend/theme/assets/plugins/datatables/css/dataTables.bootstrap.css')}}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('backend/theme/assets/plugins/datatables/Buttons/css/buttons.dataTables.min.css')}}">
-<!--        <link rel="stylesheet" type="text/css" href="{{ asset('backend/theme/assets/css/pratham.min.css')}}">-->
-        <link rel="stylesheet" type="text/css" href="{{ asset('backend/theme/assets/css/backend-common.css')}}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('backend/theme/assets/css/site.css')}}">
-        @yield('addtional_css')
-
-    </head>
-    <style>
-        .sidebar-menu li > a:hover {
-            background-color: #489fbb;
-        }
-        .sidebar-menu li.active > a {
-            background-color: #48a0bc;
-        }
-        .table-border-top {
-            padding: 5px;
-        }
-        input#delete_selected_user {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            margin-left: 10px;
-        }
-        .navbar {
-            background-color: #48a0bc;
-        }
-        .btn-success.search:hover,  .btn-success.search:focus,  .btn-success.search:active ,.btn-success.search:active:hover {
-            color: #fff;
-            background-color: #20465a;
-            border-color: #20465a;
-        }
-        .btn-success.search {
-            color: #fff;
-            background-color: #48a0bc;
-            border-color: #48a0bc;
-        }
-        a {
-            color: #48a0bc;
-        }
-
-    </style>
-    <body>
-
-        <header>
-            <div class="container-fluid header-bg">
-                <div class="logo">
-                    <a href="#"><img src="{{ asset('frontend/outside/images/00_dexter.svg') }}" class="img-responsive"></a>
-                </div>
+<body class="sidebar-icon-only">
+    <div class=" container-scroller">
+        @include('layouts.admin_header')
+        <div class="container-fluid page-body-wrapper">
+            <div class="row row-offcanvas row-offcanvas-right">
+                <!-- partial -->
+                @yield('content')
+                
+               @include('layouts.admin_footer')
             </div>
-        </header>
+        </div>
+    </div>
+    <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
+    <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
+    <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{url('backend/assets/js/perfect-scrollbar.jquery.min.js')}}"></script>
+    <script src="{{url('backend/assets/js/jsgrid.min.js')}}"></script>
+    <script src="{{url('backend/assets/js/hoverable-collapse.js')}}"></script>
+    <script src="{{url('backend/assets/js/misc.js')}}"></script>
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
 
+            $(".trigger").click(function(){
+                if($(this).hasClass("minus")){
+                    $(this).removeClass("minus"); 
+                }
+                else{
+                    $(this).addClass("minus");   
+                }
 
-        <section>
-            <div class="container-fluid">
-                <div class="row">
+            //$(".trigger").removeClass("minus");
+            //$(this).addClass("minus");
 
-                    <!--sidebar-->
-                    <div id="header" class="col-md-2">
-                        <div class="list-section">
-                            <div class="kyc">
-                                <ul class="menu-left">
-                                    <li><a class="active" onclick="window.location.href = '{{ route('backend_dashboard') }}'">DashBoard</a></li>
-                                    <li><a class="" onclick="window.location.href = '{{ route('show_user') }}'">Manage Users</a></li>
-                                    <li><a href="#">Professional Access</a></li>
-                                    <li><a href="#">Manage Documents</a></li>
-                                </ul>
+            $(this).parents("tr").next(".dpr").slideToggle();
+            });
+        });
+    </script>
+   
+</body>
+           
+@yield('jscript')
 
-
-                            </div>
-                        </div>
-                    </div>
-                    <!--sidebar-->
-                    <div class="col-md-10 dashbord-white">
-                        @yield('content')
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-        {{-- Theme JS --}}
-        <script src="{{ asset('backend/theme/assets/plugins/jquery/jquery-2.2.4.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('backend/theme/assets/plugins/jquery-ui/jquery-ui.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('backend/theme/assets/plugins/bootstrap/bootstrap.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('backend/theme/assets/plugins/bootstrap-hover/bootstrap-hover.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('backend/theme/assets/plugins/datatables/js/datatable.min.js') }}" type="text/javascript"></script>
-        <script>
-            window.setTimeout(function () {
-                $(".alert").fadeTo(500, 0).slideUp(500, function () {
-                    $(this).remove();
-                });
-            }, 2000);
-
-
-               
-
-        </script>
-
-
-
-       
-
-
-
-        @yield('jscript')
-
-    </body>
 </html>
+
+        
+        
+   
+
+
+
+
+
+
+
+
+

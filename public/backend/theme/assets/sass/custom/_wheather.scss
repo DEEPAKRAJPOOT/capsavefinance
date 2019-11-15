@@ -1,0 +1,151 @@
+/*=================== Wheather sections ========================*/
+
+.overflow-wrapper {
+    overflow: hidden;
+}
+
+.prtm-wheather-widget {
+    .city-active {
+        border-radius: 50px;
+        @extend .display-ib;
+        @extend .mrgn-b-lg;
+        padding: 14px 46px;
+        h3 {
+            margin-bottom: 0;
+        }
+    }
+    .temp-value {
+        font-size: 50px;
+        font-weight: 300;
+        i {
+            font-size: 22px;
+            margin-top: 11px;
+            vertical-align: top;
+        }
+    }
+    .temp-status {
+        img {
+            margin-right: 15px;
+            vertical-align: sub;
+            width: 19px;
+        }
+    }
+    .wheather-list-wrap {
+        border-radius: 5px;
+        padding: 17px 0 10px;
+        .feature-box-list {
+            @extend .display-ib;
+            img {
+                @extend .mrgn-b-md;
+            }
+        }
+    }
+    .list-img {
+        display: inline-block;
+        height: 45px;
+        text-align: center;
+        vertical-align: middle;
+        width: 70px;
+    }
+}
+
+.round-outline {
+    border: 1px solid #fff;
+    border-radius: 30px;
+    display: inline-block;
+    padding: 5px 20px;
+    font-weight: 300;
+}
+
+.wheather-v2-list {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    .thumb-content {
+        margin: 7px 0;
+        width: calc(100% - 75px);
+        width: -webkit-calc(100% - 75px);
+        width: -moz-calc(100% - 75px); 
+        width: -ms-calc(100% - 75px);
+    }
+}
+
+.thumb-content {
+    margin: 7px 0;
+}
+
+@media(max-width:1680px) {
+    .prtm-wheather-widget {
+        .temp-value {
+            font-size: 35px;
+        }
+        .temp-value i {
+            font-size: 14px;
+        }
+        .temp-status {
+            img {
+                width: 15px;
+            }
+        }
+    }
+    .city-active {
+        h3 {
+            font-size: 18px;
+        }
+    }
+}
+
+@media only screen and (max-width: 1440px) and (min-width: 1367px) {
+    .prtm-main .prtm-wheather-widget {
+        .wheather-time-list + .wheather-time-list {
+            margin-left: 10px;
+        }
+    }
+}
+
+@media(max-width:1366px) {
+    .prtm-wheather-widget {
+        h2 {
+            font-size: 21px;
+        }
+        .temp-value {
+            font-size: 30px;
+        }
+        .temp-value i {
+            font-size: 10px;
+        }
+        .city-active {
+            padding: 10px 30px;
+            margin-bottom: 15px;
+            h3 {
+                font-size: 16px;
+            }
+        }
+    }
+}
+
+@media(min-width:1200px) and (max-width:1280px) {
+    .prtm-wheather-widget .temp-status img {
+        width: 12px;
+    }
+    .prtm-wheather-widget .temp-value {
+        font-size: 28px;
+    }
+}
+
+.wheather-type-3 {
+    .wheather-future-day,
+    .current-icon,
+    .current-wheather-info {
+        min-height: 169px;
+    }
+    .wheather-future-day,
+    .current-wheather-info {
+        box-shadow: 0 0px 1px rgba(0, 0, 0, 0.1);
+    }
+}
+@media(max-width:480px) {
+    .wheather-v2-list.prtm-block-no-gutter {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}

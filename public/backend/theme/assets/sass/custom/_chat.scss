@@ -1,0 +1,197 @@
+/*=============== Chat page css ====================*/
+
+.user-chat-wrap {
+    padding-top: 0;
+    padding-bottom: 0;
+    .chat-window {
+        padding-top: 30px;
+    }
+}
+
+.chat-wrap-list {
+    .clearfix.right-side {
+        h6 {
+            color: $msg-block-odd-bg;
+        }
+        .prtm-chat-content {
+            background-color: $msg-block-odd-bg;
+        }
+    }
+    .clearfix {
+        h6 {
+            color: $msg-block-even-bg;
+        }
+        .prtm-chat-content {
+            background-color: $msg-block-even-bg;
+        }
+    }
+}
+
+.arrow-box {
+    position: relative;
+    background: $chat-msg-box-odd-bg;
+    border: 1px solid $chat-msg-box-odd-border;
+    p {
+        color: $chat-msg-box-odd-font-color;
+    }
+    &:before,
+    &:after {
+        right: 100%;
+        top: 20px;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+    &:after {
+        border-color: rgba(249, 250, 252, 0);
+        border-right-color: $body-bg;
+        border-width: 10px;
+        margin-top: -10px;
+    }
+    &:before {
+        border-color: rgba(215, 222, 228, 0);
+        border-right-color: $chat-msg-box-odd-border;
+        border-width: 11px;
+        margin-top: -11px;
+    }
+}
+
+.sent-msg .arrow-box-right {
+    position: relative;
+    background: $chat-msg-box-even-bg;
+    border: 1px solid $chat-msg-box-even-border;
+    &:after {
+        left: 100%;
+        top: 20px;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        @extend .pos-absolute;
+        pointer-events: none;
+        border-color: rgba(94, 109, 179, 0);
+        border-left-color: $chat-msg-box-even-border;
+        border-width: 10px;
+        margin-top: -10px;
+    }
+    p {
+        color: $chat-msg-box-even-font-color;
+    }
+}
+
+.chat-list-sidebar ul.nav.nav-tabs.prtm-large-tabs {
+    border: none;
+    li {
+        a {
+            @extend .pad-all-lg;
+            @extend .display-b;
+            border: none;
+            border-radius: 0;
+            @extend .mrgn-all-none;
+            background: $chat-left-tab-bg;
+            @extend .gray;
+            border: none;
+            @include border(1px solid, $chat-left-tab-border, top);
+        }
+        margin: 0;
+        width: 100%;
+    }
+    li:active,
+    li:hover,
+    li:focus,
+    li.active {
+        a {
+            background: $chat-left-tab-hover-bg;
+            border-left: none;
+            border-bottom: none;
+            border-right: none;
+        }
+    }
+}
+
+.chat-list-sidebar {
+    .search-form {
+        input[type="text"] {
+            height: 50px;
+            border-right: none;
+        }
+        .input-group-addon {
+            background: $block-bg;
+        }
+        input[type="submit"] {
+            background: Transparent none repeat scroll 0 0;
+            border: medium none;
+            font-family: fontawesome;
+            font-size: 19px;
+            padding-left: 11px;
+        }
+    }
+}
+
+.chat-list-sidebar {
+    background: $chat-left-tab-bg;
+}
+
+.pos-abs-right-top {
+    right: 0;
+    top: 0;
+}
+
+.send-msg-form {
+    textarea {
+        border: 1px solid $input-border;
+        @include border(1px solid, $input-border, top right bottom left);
+        height: 55px;
+        resize: none;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        &:focus {
+            border: 1px solid $input-border-focus;
+            color: $text-color;
+        }
+    }
+    input[type="file"] {
+        display: none;
+    }
+    input[type="submit"] {
+        height: 55px;
+        padding: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}
+
+.file-field-label {
+    @extend .bg-default;
+    padding: 8px 23px;
+    @include border(1px solid, $input-border, top right bottom left);
+    border-radius: $border-radius-base;
+    &:hover {
+        @extend .bg-primary;
+        color: #fff;
+    }
+}
+
+.thumb-wid {
+    width: 75px;
+}
+
+.thumb-content {
+    width: calc(100% - 100px);
+    width: -webkit-calc(100% - 100px);
+    width: -moz-calc(100% - 100px);
+    width: -ms-calc(100% - 100px);
+}
+
+@media(max-width:992px) {
+    .chat-window {
+        padding-left: 0;
+    }
+    .chat-list-sidebar {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+}

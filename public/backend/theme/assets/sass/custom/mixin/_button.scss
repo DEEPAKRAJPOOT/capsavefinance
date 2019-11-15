@@ -1,0 +1,51 @@
+
+//--- Buttons varients ---//
+@mixin button-modifier($background, $border, $color) {
+  background-color: $background;
+  border-color: $border;
+  color: $color;
+  &:hover, &:focus, &.active {
+  	background-color: darken($background, 10%);
+    border-color: darken($border, 10%);
+    color: $color;
+  }
+}
+//--- Buttons outline modifier ---//
+@mixin button-outline-modifier($border, $color) {
+  background-color: transparent;
+  border-color: $border;
+  color: $border;
+  
+  &:hover, &:focus, &.active {
+    background-color: $border;
+    border-color: $border;
+    color: $color;
+  }
+
+  &:active, &.active,
+  .open > &.dropdown-toggle {
+    background-color: $border;
+    border-color: $border;
+    color: $color;
+
+    &:hover, &:focus, &.active {
+      background-color: darken($border, 15%);
+      border-color: darken($border, 15%);
+      color: $color;
+    }
+  }
+
+  &.disabled, &[disabled], fieldset[disabled] & {
+    &:hover, &:focus, &.active {
+      background-color: transparent;
+      border-color: $border;
+      color: $border;
+    }
+  }
+
+  .badge {
+    background-color: $border;
+    border-color: transparent;
+    color: $color;
+  }
+}

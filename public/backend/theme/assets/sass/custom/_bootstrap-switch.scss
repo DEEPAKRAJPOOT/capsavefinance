@@ -1,0 +1,39 @@
+/*================ Bootstrap Switch css ================*/
+.bootstrap-switch {
+	.bootstrap-switch-handle-on.bootstrap-switch-primary,
+	.bootstrap-switch-handle-off.bootstrap-switch-primary {
+		background-color: $brand-primary;
+	}
+	.bootstrap-switch-handle-on.bootstrap-switch-info,
+	.bootstrap-switch-handle-off.bootstrap-switch-info {
+		background-color: $brand-info;
+	}
+	.bootstrap-switch-handle-on.bootstrap-switch-success,
+	.bootstrap-switch-handle-off.bootstrap-switch-success {
+		background-color: $brand-success;
+	}
+	.bootstrap-switch-handle-on.bootstrap-switch-warning,
+	.bootstrap-switch-handle-off.bootstrap-switch-warning {
+		background-color: $brand-warning;
+	}
+	.bootstrap-switch-handle-on.bootstrap-switch-danger,
+	.bootstrap-switch-handle-off.bootstrap-switch-danger {
+		background-color: $brand-danger;
+	}
+	.bootstrap-switch-handle-on.bootstrap-switch-default,
+	.bootstrap-switch-handle-off.bootstrap-switch-default {
+		background-color: $brand-inverse;
+		color: #fff;
+	}
+	.bootstrap-switch-container,
+	.bootstrap-switch-handle-on,
+	.bootstrap-switch-handle-off {
+		border-radius: $border-radius-base;
+	}
+	border-radius: $border-radius-base;	
+}
+@media(max-width:678px) and (min-width:320px) {
+	.bootstrap-switch-wrapper {
+	  margin: 0 0 10px;
+	}
+}

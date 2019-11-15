@@ -1,0 +1,28 @@
+//--- Background color ---//
+
+.no-background {
+  background-color: transparent;
+}
+.bg-facebook {
+	background: #496dae;
+}
+.bg-youtube {
+	background: #ca1b00;
+}
+.bg-twitter {
+	background: #00bbf1;
+}
+.bg-google {
+	background: #66c376;
+}
+//--- Theme colors ---//
+
+@each $name, $colors in $theme-bg-colors {
+  @include background-variant(
+    bg-#{$name},
+    map-get($colors, "background"),
+    map-get($colors, "border"),
+    map-get($colors, "color")
+  );
+}
+

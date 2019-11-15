@@ -1,0 +1,330 @@
+/*=================== Social icon page css ========================*/
+.social-icon button, .circle-line-icon a {
+  margin-bottom: 10px;
+  display: inline-block;
+}
+.social-icon a {
+  margin-bottom: 10px;
+  display: inline-block;
+  color: #fff;
+  text-transform: capitalize;
+  border-radius: $border-radius-base;
+  &:hover{
+    opacity:0.8;
+    color:#fff;
+  }
+}
+.base-icon li > a {
+  color: $brand-base;
+  &:hover, &.active, &:focus {
+    color: $brand-primary;
+  }
+}
+%circle {
+  border-radius: 100% !important;
+}
+%facebook-bg {
+  background: #5e6db3;
+}
+%twitter-bg {
+  background: #65bbf2;
+}
+%google-bg {
+  background: #e56148;
+}
+%linkedin-bg {
+  background: #008fc3;
+}
+%pinterest-bg {
+  background: #d73633;
+}
+%dribble-bg {
+  background: #f1679b;
+}
+%youtube-bg {
+  background: #ca1b00;
+}
+%instagram-bg {
+  background: #4e86ab;
+}
+%stumbleupon-bg {
+  background: #da590b;
+}
+%flickr-bg {
+  background: #8916b9;
+}
+%medium-bg {
+  background: #1eb1e8;
+}
+%modx-bg {
+  background: #1a66b8;
+}
+%reddit-bg {
+  background: #e51a53;
+}
+%skype-bg {
+  background: #1477d3;
+}
+%vimeo-bg {
+  background: #699d16;
+}
+%buysellads-bg {
+  background: #ce3a3a;
+}
+%behance-bg {
+  background: #0953a6;
+}
+%deviantart-bg {
+  background: #5b9911;
+}
+%digg-bg {
+  background: #0882d7;
+}
+%forumbee-bg {
+  background: #f4a721;
+}
+%github-bg {
+  background: #691dda;
+}
+%google-wallet-bg {
+  background: #248eff;
+}
+%share-alt-bg {
+  background: #4e86ab;
+}
+%hashtag-bg {
+  background: #606060;
+}
+%slideshare-bg {
+  background: #5773cd;
+}
+%snapchat-bg {
+  background: #e9d252;
+}
+%soundcloud-bg {
+  background: #fc9a00;
+}
+%tumblr-bg {
+  background: #135e89;
+}
+%wechat-bg {
+  background: #53b60b;
+}
+%whatsapp-bg {
+  background: #21eb00;
+}
+%yahoo-bg {
+  background: #8e23c0;
+}
+%yelp-bg {
+  background: #ca1c1c;
+}
+%gray-bg {
+  background: #758494;
+}
+%app-bg {
+  background: #d77b66;
+}
+%bitbucket-bg {
+  background: #215283;
+}
+%dropbox-bg {
+  background: #158ae1;
+}
+%foursquare-bg {
+  background: #f74d78;
+}
+%windows-bg {
+  background: #2476f0;
+}
+%odnoklassniki-bg {
+  background: #f27400;
+}
+%openid-bg {
+  background: #f69300;
+}
+%vk-bg {
+  background: #597fa5;
+}
+
+
+.btn {
+  &-gray {
+    @extend %gray-bg;
+  }
+  &-twitter {
+    @extend %twitter-bg;
+  }
+  &-facebook {
+    @extend %facebook-bg;
+  }
+  &-google {
+    @extend %google-bg;
+  }
+  &-linkedin {
+    @extend %linkedin-bg;
+  }
+  &-pinterest {
+    @extend %pinterest-bg;
+  }
+  &-dribble {
+    @extend %dribble-bg;
+  }
+  &-youtube {
+    @extend %youtube-bg;
+  }
+  &-instagram {
+    @extend %instagram-bg;
+  }
+  &-stumbleupon {
+    @extend %stumbleupon-bg;
+  }
+  &-flickr {
+    @extend %flickr-bg;
+  }
+  &-medium {
+    @extend %medium-bg;
+  }
+  &-modx {
+    @extend %modx-bg;
+  }
+  &-reddit {
+    @extend %reddit-bg;
+  }
+  &-skype {
+    @extend %skype-bg;
+  }
+  &-vimeo {    
+    @extend %vimeo-bg;
+  }
+  &-buysellads {
+    @extend %buysellads-bg;
+  }
+  &-behance {
+    @extend %behance-bg;
+  }
+  &-deviantart {
+    @extend %deviantart-bg;
+  }
+  &-digg {
+    @extend %digg-bg;
+  }
+  &-forumbee {
+    @extend %forumbee-bg;
+  }
+  &-github {
+    @extend %github-bg;
+  }
+  &-google-wallet {
+    @extend %google-wallet-bg;
+  }
+  &-share-alt {
+    @extend %share-alt-bg;
+  }
+  &-hashtag {
+    @extend %hashtag-bg;
+  }
+  &-slideshare {
+    @extend %slideshare-bg;
+  }
+  &-snapchat {
+    @extend %snapchat-bg;
+  }
+  &-soundcloud {
+    @extend %soundcloud-bg;
+  }
+  &-tumblr {
+    @extend %tumblr-bg;
+  }
+  &-wechat {
+    @extend %wechat-bg;
+  }
+  &-whatsapp {
+    @extend %whatsapp-bg;
+  }
+  &-yahoo {
+    @extend %yahoo-bg;
+  }
+  &-yelp {
+    @extend %yelp-bg;
+  }
+  &-app {
+    @extend %app-bg;
+  }
+  &-bitbucket {    
+    @extend %bitbucket-bg;
+  }
+  &-dropbox {
+    @extend %dropbox-bg;
+  }
+  &-foursquare {
+    @extend %foursquare-bg;
+  }
+  &-windows {
+    @extend %windows-bg;
+  }
+  &-odnoklassniki {
+    @extend %odnoklassniki-bg;
+  }
+  &-openid {
+    @extend %openid-bg;
+  }
+  &-vk {
+    @extend %vk-bg;
+  }
+
+}
+
+/*============== Btn circle ==================*/
+
+.btn {
+  &-circle {
+    @extend %circle; 
+  }
+}
+
+/*=========== Btn outline-circle =============*/
+
+.btn-outline {
+  &-twitter {
+    @include button-outline-modifier(#65bbf2, #65bbf2);
+    @extend %btn-outline-circle;
+  }
+  &-facebook {
+    @include button-outline-modifier(#5e6db3, #5e6db3);
+    @extend %btn-outline-circle;
+  }
+  &-google {
+    @include button-outline-modifier(#e56148, #e56148);
+    @extend %btn-outline-circle;
+  }
+  &-linkedin {
+    @include button-outline-modifier(#008fc3, #008fc3);
+    @extend %btn-outline-circle;
+  }
+  &-pinterest {
+    @include button-outline-modifier(#d73633, #d73633);
+    @extend %btn-outline-circle;
+  }
+  &-dribble {
+    @include button-outline-modifier(#f1679b, #f1679b);
+    @extend %btn-outline-circle;
+  }
+  &-instagram {
+    @include button-outline-modifier(#4e86ab, #4e86ab);
+    @extend %btn-outline-circle;
+  }
+  &-youtube {
+    @include button-outline-modifier(#ca1b00, #ca1b00);
+    @extend %btn-outline-circle;
+  }
+}
+.button-block-icon ul li {
+  vertical-align: top;
+}
+%btn-outline-circle {
+  border-radius: 100%;
+  &:hover, &:focus, &.active {
+    color:#fff;
+  }
+}

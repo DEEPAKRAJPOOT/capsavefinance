@@ -1,0 +1,12 @@
+
+/*=================== User feeds css ========================*/
+
+.prtm-user-feeds {
+    li {
+        margin-bottom: 20px;
+        padding: 15px;
+        &:last-child{
+            margin: 0;
+        }
+    }
+}

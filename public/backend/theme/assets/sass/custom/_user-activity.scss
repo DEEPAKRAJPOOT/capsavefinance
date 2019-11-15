@@ -1,0 +1,22 @@
+/*=================== User activity css ========================*/
+
+.table-border-top {
+    @include border(1px solid, $input-border, top);
+    .data-table {
+        th {
+            background: transparent;
+            color: $table-th-font-color;
+        }
+        td .badge {
+            font-size: 10px;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+    }
+    table {
+        >tr {
+            border-bottom: 1px solid $table-border-color;
+        }
+    }
+}

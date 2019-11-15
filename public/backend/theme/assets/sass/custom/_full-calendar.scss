@@ -1,0 +1,44 @@
+/*=========== Full calender style ============*/
+
+.basic-full-calendar,
+.agenda-full-calendar,
+.rtl-full-calendar,
+#external-events,
+.external-full-calendar,
+.language-full-calendar,
+.format-full-calendar,
+.event-color-full-calendar,
+.bg-color-full-calendar {
+   .fc-event,
+   .fc-event-dot {
+      background-color: $brand-primary;
+      border-color: $brand-primary;
+      padding: 6px 10px;
+   }
+   .fc td {
+      padding: 10px;
+   }
+   .fc-button {
+      @extend .btn-outline-primary;
+      background-image: none;
+      .fc-state-active {
+         background-color: $brand-primary;
+      }
+   }
+   .fc-widget-header th {
+      padding: 15px 5px;
+   }
+}
+
+@media(max-width:736px) {
+   .fc-toolbar .fc-center {
+      margin-top: 15px;
+   }
+}
+
+@media(max-width:480px) {
+   .fc button {
+      font-size: 0.8em;
+      padding: 0 0.1em;
+   }
+}

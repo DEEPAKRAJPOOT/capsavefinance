@@ -1,0 +1,101 @@
+//--- Common mixin function ---//
+@mixin before-after {
+    &:before,
+    &:after {
+        @content
+    }
+}
+
+@mixin before {
+    &:before {
+        @content
+    }
+}
+
+@mixin after {
+    &:after {
+        @content
+    }
+}
+
+@mixin hover-focus {
+    &:hover,
+    &:focus {
+        @content
+    }
+}
+
+@mixin focus {
+    &:focus {
+        @content
+    }
+}
+
+//--- For color opacity ---//
+@mixin background-opacity($color, $opacity) {
+    background: $color;
+    background: rgba($color, $opacity);
+}
+
+//--- For used square box ---//
+@each $size in $square-box {
+    .square-#{$size} {
+        $size: $size * 1px;
+        $font-size: floor( $size * $square-font-size);
+        display: inline-block;
+        font-size: $font-size;
+        height: $size;
+        line-height: $size;
+        text-align: center;
+        width: $size;
+        @extend .pad-all-none;
+        vertical-align: middle;
+    }
+}
+
+
+
+//--- Custom button modifier ---//
+@mixin btn-modifier($background, $border, $color) {
+    background: $background;
+    border: 1px solid $border;
+    color: $color;
+    &:hover,
+    &:focus,
+    &.action {
+        background-color: darken($background, 10%);
+        border-color: darken($border, 10%);
+        color: $color;
+    }
+}
+//--- Table striped varient ---//
+
+@mixin table-row-striped($state, $background) {
+  // Exact selectors below required to override `.table-striped` and prevent
+  // inheritance to nested tables.
+  .table > thead > tr,
+  .table > tbody > tr,
+  .table > tfoot > tr {
+    > td.#{$state},
+    > th.#{$state},
+    &.#{$state} > td,
+    &.#{$state} > th {
+      background: $background;
+         background: rgba($background, 0.09);
+    }
+  }
+
+  // Hover states for `.table-hover`
+  // Note: this is not available for cells or rows within `thead` or `tfoot`.
+  .table-hover > tbody > tr {
+    > td.#{$state}:hover,
+    > th.#{$state}:hover,
+    &.#{$state}:hover > td,
+    &:hover > .#{$state},
+    &.#{$state}:hover > th {
+      background: darken($background, 5%);
+        background: rgba($background, 0.09);
+    }
+  }
+}
+

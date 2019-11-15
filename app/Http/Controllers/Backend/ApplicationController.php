@@ -47,7 +47,9 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-            $business_info = $this->businessRepo->saveBusinessInfo($arrFileData,1);//Auth::user()->id
+            $business_info = $this->businessRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
+            $appId  = Session::put('appId', $business_info['app_id']);
+
             if ($business_info) {
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return redirect()->route('promoter-detail');
@@ -103,17 +105,28 @@ class ApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showBankDocument()
+    public function showDocument()
     {
-        $userId  = Session::has('userId') ? Session::get('userId') : 1;
-        $appId = 1;
+        $appId  = Session::has('appId') ? Session::get('appId') : 1;
+        $userId = Auth::user()->user_id;
+//        dd($appId);
         $userArr = [];
-        if ($userId > 0) {
-            $requiredDocs = $this->docRepo->findRequiredDocs($userId,$appId);
+        if ($appId > 0) {
+//            die("here q");
+            $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
+            
+            if(!empty($requiredDocs)){
+                $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
+            }
+        }
+        else {
+//            die("here");
+            return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
         
-        return view('frontend.application.bank-document')->with([
-            'requiredDocs' => $requiredDocs
+        return view('frontend.application.document')->with([
+            'requiredDocs' => $requiredDocs,
+            'documentData' => $docData
         ]);
     } 
     
@@ -124,16 +137,16 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     
-    public function saveBankDocument(DocumentRequest $request)
+    public function saveDocument(DocumentRequest $request)
     {
         try {
 //            dd($request);
             $arrFileData = $request->all();
             $docId = 1; //  fetch document id
-            $document_info = $this->docRepo->saveDocument($arrFileData,$docId);
+            $document_info = $this->docRepo->saveDocument($arrFileData, $docId);
             if ($document_info) {
-                Session::flash('message',trans('success_messages.bank_document.uploaded'));
-                return redirect()->route('gst-document');
+                Session::flash('message',trans('success_messages.uploaded'));
+                return redirect()->back();
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }

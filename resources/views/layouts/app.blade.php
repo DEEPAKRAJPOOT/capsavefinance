@@ -25,11 +25,17 @@
 </head>
     <!-- dashboard part -->
     <body class="">
-	@include('layouts.admin_header')
+	@include('layouts.front_header')
         
     @yield('content')
         
+<<<<<<< HEAD
+        @include('layouts.front_footer')
+       
+
+=======
     @include('layouts.admin_footer')
+>>>>>>> 8ebf5dc48666c628e70d4ec5e47b1c8ac36ab6f8
 </body>
 <script src="{{ asset('backend/assets/js/jquery.min.js')}}" type="text/javascript"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>

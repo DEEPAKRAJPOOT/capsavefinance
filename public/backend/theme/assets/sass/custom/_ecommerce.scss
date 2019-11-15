@@ -1,0 +1,114 @@
+/*================ Ecommerce pages css ==========================*/
+
+.order-detail {
+   address span {
+      margin: 0 0 10px 0;
+   }
+}
+
+.value,
+address {
+   color: $base-dark;
+}
+
+.icon {
+   font-size: 100px;
+   color: $body-bg;
+}
+
+.overlay-wrap:hover .primary-tp-layer {
+   display: block;
+}
+
+.primary-tp-layer {
+   @include background-opacity($brand-primary, 0.8);
+   display: none;
+   a {
+      margin-bottom: 10px;
+   }
+}
+
+.pos-center {
+   &:before {
+      content: "";
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+   }
+}
+
+.center-holder {
+   display: inline-block;
+   height: auto;
+   padding: 20px;
+   vertical-align: middle;
+   width: 90%;
+}
+
+.wrapper-content {
+   h5 {
+      color: $base-dark;
+      font-weight: 600;
+   }
+   span {
+      color: $base-dark;
+   }
+}
+
+.thumb-nail img {
+   margin: 0 auto;
+}
+
+select {
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;
+}
+
+.selectbox {
+   overflow: hidden;
+   border-radius: $border-radius-base;
+   position: relative;
+   display: block;
+   border: 1px solid $input-border;
+   &:after {
+      content: "\f0dc";
+      font-family: FontAwesome;
+      color: #fff;
+      padding: 8px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      background: $brand-primary;
+      z-index: 1;
+      text-align: center;
+      width: 10%;
+      height: 100%;
+      pointer-events: none;
+      box-sizing: border-box;
+   }
+}
+
+#gallery_01 > a {
+   display: block;
+   float: left;
+   width: 25%;
+   text-align: center;
+   text-align: center;
+   margin-bottom: 25px;
+}
+
+//--- Media query ----//
+@media (max-width: 568px) {
+   .ecommerce-page-style {
+      .col-xs-6 {
+         width: 100%;
+      }
+   }
+}
+
+@media (max-width: 480px) {
+   .prtm-block {
+      padding: 10px;
+   }
+}

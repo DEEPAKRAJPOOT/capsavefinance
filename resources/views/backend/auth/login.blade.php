@@ -1,73 +1,71 @@
-<!doctype html>
-<html lang="en">
+@extends('layouts.admin_guest')
 
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <!-- Favicon -->
-        <link rel="shortcut icon" type="image/icon" href="#" />
-        <!-- Bootstrap CSS -->
-
-        <link rel="stylesheet" href="{{ asset('/frontend/outside/lending-asset/css/font.css') }}">
-        <link rel="stylesheet" href="{{ asset('/frontend/outside/lending-asset/css/font-awesome.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('/frontend/outside/lending-asset/css/site.css') }}">
-
-
-        <title>DexterCapital</title>
-    </head>
-    <!-- dashboard part -->
-    <body class="login-page">
-        <section>
- <div class="content-wrap height-auto">
-    <div class="login-section">
-	  <div class="logo-box text-center marB20">
-	    <a href="#"><img src="{{ asset('frontend/outside/images/00_dexter.svg') }}" class="img-responsive"></a>
-		<h2 class="head-line2 marT25">Sign in (Individual)</h2>
-	  </div>
-
-	  <div class="sign-up-box">
-
-		<form class="loginForm" autocomplete="off" method="POST" action="{{ route('backend_login_open') }}" id="frmLogin">
+@section('content')
+<div class="prtm-wrapper">
+    <div class="prtm-main">
+        <div class="login-banner"></div>
+        <div class="login-form-wrapper mrgn-b-lg">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-9 col-md-8 col-lg-5 center-block">
+                        <div class="prtm-form-block prtm-full-block overflow-wrappper">
+                            <div class="login-bar"> <img src="{{ asset('backend/theme/assets/img/login-bars.png') }}" class="img-responsive" alt="login bar" width="743" height="7"> </div>
+                            <div class="prtm-block-title text-center">
+                                <div class="mrgn-b-lg">
+                                    <a href="javascript:;"> <img src="{{ asset('backend/theme/assets/img/prtm-logo.png') }}" alt="login logo" class="img-responsive display-ib" width="218" height="23"> </a>
+                                </div>
+                                <div class="login-top mrgn-b-lg">
+                                    <div class="mrgn-b-md">
+                                        <h2 class="text-capitalize base-dark font-2x fw-normal">Login</h2> </div>
+                                    <p>Please enter your user information</p>
+                                </div>
+                            </div>
+                            <div class="prtm-block-content">
+                                <form class="login-form" method="POST" action="{{ route('backend_login_open') }}" id="backendFrmLogin" >
                                     {{ csrf_field() }}
-
-		 <div class="row">
-		  <div class="col-md-12">
-			<div class="form-group">
-			  <label for="pwd">Username</label>
-			  <input type="text" class="form-control"  placeholder="Enter username" name="username" value="{{ old('username') }}" id="username" required>
-			</div>
-		  </div>
-         </div>
-
-		 <div class="row">
-		   <div class="col-md-12">
-			<div class="form-group">
-			   <label class="float-left" for="pwd">Password</label>
-			   <a class="float-right theme-colors" href="#">Forgot Password?</a></label>
-			  <input type="password" id="password" class="form-control" placeholder="Enter Password" name="password" required>
-			</div>
-		  </div>
-
-		  </div>
-
-		 <div class="row">
-         <div class="col-md-12">
-         
-		 
-                  <input type='submit' class='btn btn-sign verify-btn' name='Sign-in' value='Sign in' />
-		 </div>
-		</div>
-	</form>
-
-
-	  </div>
-
-
-	</div>
- </div>
-</section>
-    </body>
-</html>
-
-
+                                    <div class="form-group has-feedback">
+                                        <input id="email" type="email" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}" autofocus>
+                                        <span class="glyphicon glyphicon-user form-control-feedback fa-lg" aria-hidden="true"></span> </div>
+                                    <div class="form-group has-feedback">
+                                        <input id="password" type="password" aria-describedby="user-pwd" placeholder="Password" class="form-control" name="password">
+                                        <span class="glyphicon glyphicon-lock form-control-feedback fa-lg" aria-hidden="true"></span> </div>
+                                    <div class="login-meta mrgn-b-lg">
+                                        <div class="row">
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }} />
+                                                        <span class="text-capitalize">Remember me</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6 col-sm-6 col-md-6 text-right"> <a href="{{ route('password.do.reset') }}" class="text-primary password-style">Forgot Password?</a> </div>
+                                        </div>
+                                    </div>
+                                    <div class="mrgn-b-lg">
+                                        <button type="submit" class="btn btn-success btn-block font-2x">Sign In</button>
+                                    </div>                                                                         
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+@section('pageTitle')
+Admin- Login
+@endsection
+@section('jscript')
+<script>
+    var messages = {
+        req_email: "{{ trans('admin_error_messages.req_email') }}",
+        invalid_email: "{{ trans('admin_error_messages.invalid_email') }}",
+        req_password: "{{ trans('admin_error_messages.req_password') }}",
+    };
+</script>
+<script src="{{ asset('js/common/jquery.validate.js') }}"></script>
+<script src="{{ asset('js/backend/validation/backend_login.js') }}"></script>
+@endsection

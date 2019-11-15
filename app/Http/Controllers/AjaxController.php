@@ -2636,4 +2636,14 @@ if ($err) {
 
         
     }
+    /**
+     * Get all User list
+     *
+     * @return json user data
+     */
+    public function getLeadsPools(DataProviderInterface $dataProvider) {
+        $usersList = $this->userRepo->getAllUsers();
+        $users = $dataProvider->getUsersList($this->request, $usersList);
+        return $users;
+    }
 }
