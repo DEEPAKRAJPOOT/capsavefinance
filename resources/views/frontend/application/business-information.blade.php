@@ -75,7 +75,7 @@
 			</div>
 			<div class="col-md-12 form-design ">
 				<div id="reg-box">
-					<form id="business_information_form" method="POST" action="business-information-save">
+					<form id="business_information_form" method="POST" action="business-information-save" onsubmit="return checkValidation();">
 						@csrf
 						<input type="hidden" name="biz_cin" value="">
 						<input type="hidden" name="pan_api_res" value="">
@@ -378,7 +378,7 @@
 								</div>
 								<div class="d-flex btn-section ">
 									<div class="col-md-4 ml-auto text-right">
-										<input type="submit" value="Save and Continue" class="btn btn-primary" disabled="">
+										<input type="submit" value="Save and Continue" class="btn btn-primary">
 									</div>
 								</div>
 
@@ -483,7 +483,7 @@
 		})
 		$('select[name=biz_gst_number]').html(option_html);
 		$('input[name=pan_api_res]').val(res);
-		$('#business_information_form input[type=submit]').prop("disabled", false);
+		//$('#business_information_form input[type=submit]').prop("disabled", false);
 	}
 
 	function fillEntity(gstinId){
@@ -533,6 +533,15 @@
 			    }
 			}
 		});
+	}
+
+	function checkValidation(){
+		if($('.pan-verify').text() == 'Verify'){
+			alert('First verify Business PAN');
+			return false
+		}else{
+			return true;
+		}
 	}
 </script>
 @endsection
