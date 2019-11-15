@@ -1,9 +1,9 @@
-<?php namespace App\B2c\Repositories\Models\Master;
+<?php namespace App\Inv\Repositories\Models\Master;
 
-use App\B2c\Repositories\Models\Master\Permission;
-use App\B2c\Repositories\Factory\Models\BaseModel;
-use App\B2c\Repositories\Entities\User\Exceptions\BlankDataExceptions;
-use App\B2c\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
 class Role extends BaseModel
 {

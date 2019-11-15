@@ -11,10 +11,9 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
 
-class User extends Authenticatable implements AuthenticatableContract, AuthorizableContract
+class User extends Authenticatable
 {
-
-    use Notifiable;
+     use Notifiable;
     /**
      * The database table used by the model.
      *
