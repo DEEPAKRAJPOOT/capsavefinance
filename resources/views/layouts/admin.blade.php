@@ -56,6 +56,8 @@
     <script src="{{url('backend/assets/js/jsgrid.min.js')}}"></script>
     <script src="{{url('backend/assets/js/hoverable-collapse.js')}}"></script>
     <script src="{{url('backend/assets/js/misc.js')}}"></script>
+   
+    
     <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
@@ -78,7 +80,7 @@
        <script src="{{ asset('backend/theme/assets/plugins/datatables/js/datatable.min.js') }}" type="text/javascript"></script>
 
 </body>
-           
+   <script src="{{url('common/js/iframePopup.js')}}"></script>         
 @yield('jscript')
 
 </html>
