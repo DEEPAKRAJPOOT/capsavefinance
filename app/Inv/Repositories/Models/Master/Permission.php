@@ -1,9 +1,9 @@
 <?php
 
-namespace App\B2c\Repositories\Models\Master;
+namespace App\Inv\Repositories\Models\Master;
 
-use App\B2c\Repositories\Models\Master\Role;
-use App\B2c\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\Master\Role;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class Permission extends BaseModel
 {
