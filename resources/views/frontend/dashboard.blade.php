@@ -2,10 +2,10 @@
 
 @section('content')
 
-               @if($benifinary["user_type"] =='2') 
+               @if($benifinary["user_type"] =='1') 
                 @include('layouts.backend.partials.admin-sidebar')
                @else
-               @include('layouts.partials.left-corp-menu')
+               	@include('layouts.partials.left-corp-menu')
                @endif
 <!-- partial dasboard content -->
 			<div class="content-wrapper">

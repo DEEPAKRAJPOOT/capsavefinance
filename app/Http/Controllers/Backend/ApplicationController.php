@@ -107,15 +107,21 @@ class ApplicationController extends Controller
      */
     public function showDocument()
     {
-        $userId  = Session::has('userId') ? Session::get('userId') : 1;
-        $appId = 1;
+        $appId  = Session::has('appId') ? Session::get('appId') : 1;
+        $userId = Auth::user()->user_id;
+//        dd($appId);
         $userArr = [];
-        if ($userId > 0) {
+        if ($appId > 0) {
+//            die("here q");
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
             
             if(!empty($requiredDocs)){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
             }
+        }
+        else {
+//            die("here");
+            return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
         
         return view('frontend.application.document')->with([

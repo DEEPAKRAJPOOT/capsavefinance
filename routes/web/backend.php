@@ -48,7 +48,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     
         }); 
         
-    Route::get('cam/overview', 'Backend\CamController@index'); 
+    
     
 //    Route::group(['prefix' => 'profile'],
 //        function () {
