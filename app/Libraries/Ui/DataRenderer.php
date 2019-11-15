@@ -110,23 +110,23 @@ class DataRenderer implements DataProviderInterface
                     }
                 )
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('email') != '') {
-                        if ($request->has('email')) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('email'));
-                                $query->where('users.first_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.last_name', 'like', "%$by_nameOrEmail%")
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
                                 //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
                                 ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
-                    if ($request->get('status') != '') {
-                        if ($request->has('status')) {
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
                             $query->where(function ($query) use ($request) {
-                                $by_status = (int) trim($request->get('status'));
+                                $by_status = (int) trim($request->get('is_assign'));
                                 
-                                $query->where('users.status', 'like',
+                                $query->where('users.is_assign', 'like',
                                         "%$by_status%");
                             });
                         }

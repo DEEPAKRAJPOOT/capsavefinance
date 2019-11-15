@@ -8,20 +8,18 @@ var oTable;
                 "sDom": "<'row'<'col-md-2'l><'col-md-7'a><'col-md-2'f>r>t<'row'<'col-md-6'i><'col-md-6'p>>",
                 //"sPaginationType": "bootstrap",
                 "processing": true,
-                "serverSide": true,
-                "searchable":false,
+                "searching": false,
                 ajax: {
                 "url": messages.get_lead, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                  //  d.email = $('#customSearchBox').val();
-                  //d.status = $('select[name=status]').val();
+                  d.by_email = $('input[name=by_email]').val();
+                    d.is_assign = $('select[name=is_assign]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
-                    //$(".rightMaster-error").html("");
-                    //$("#rightMaster").append('<tbody class="countryMaster-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
-                    //$("#rightMaster_processing").css("display", "none");
+                    $("#leadMaster").append('<tbody class="leadMaster-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#leadMaster_processing").css("display", "none");
                 }
             },
                 columns: [
@@ -36,10 +34,12 @@ var oTable;
                     {data: 'created_at'},
                     //{data: 'status'},
                     {data: 'action'}
-                ]
+                ],
+                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4]}]
             });
-            $('#manageUser').on('click', function (e) {
-                e.preventDefault();
+           //Search
+        $('#manageUser').on('submit', function (e) {
+            e.preventDefault();
             oTable1.draw();
 
         });
