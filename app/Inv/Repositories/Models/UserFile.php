@@ -67,6 +67,23 @@ class UserFile extends Authenticatable
     
     
     /**
+    * Create a new record in document file
+    *
+    * @param Array $attributes
+    *
+    * @return Array
+    */
+    
+    public static function deletes($fileId)
+    {
+        $deleteFile = UserFile::where('file_id', $fileId)
+                ->update(['is_active' => 0, 'deleted_at' => date("Y-m-d h:m:s",time()) ]);
+        
+        return $deleteFile;
+    }
+    
+    
+    /**
      * Managing inputs as required Array
      *
      * @param Array $attributes
