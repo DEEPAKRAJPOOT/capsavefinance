@@ -25,31 +25,11 @@
             <div class="collapse" id="layoutsSubmenu1">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('lead.index') }}">My Leads</a>
+                        <a class="nav-link" href="#">My Leads</a>
                     </li>
                                                 
                 </ul>
             </div>
-     </li>
-    <li class="nav-item">
-        <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
-            <i class="fa fa-bandcamp" aria-hidden="true"></i>
-            <span class="menu-title">Access Management</span>
-            <i class="fa fa-angle-right" aria-hidden="true"></i>
-        </a>
-            <div class="collapse" id="layoutsSubmenu">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="manage-role.php">Manage Roles</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="role-permission.php">Manage Permissions</a>
-                    </li> 
-                    <li class="nav-item">
-                        <a class="nav-link" href="users.php">Manage Users</a>
-                    </li>                                   
-                </ul>
-            </div>
-        </li>      
+     </li>      
     </ul>
 </nav>
