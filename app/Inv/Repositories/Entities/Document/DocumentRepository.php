@@ -118,8 +118,27 @@ class DocumentRepository implements DocumentInterface
         
         foreach ($requiredDocs as $key => $value) {
             $result[$value->document->doc_name] = AppDocumentFile::where('doc_id', $value->doc_id)
+                    ->where('is_active', 1)
                     ->get();
             
+        }
+        
+        return (!empty($result)) ? $result : false;
+    }
+    
+    /**
+     * application document
+     *
+     * @param mixed $ids
+     */
+    
+    public function deleteDocument($appDocFileId){
+        
+        $appDocFile = AppDocumentFile::find($appDocFileId);
+        $response = AppDocumentFile::deletes($appDocFileId);
+        
+        if($response){
+            $result = UserFile::deletes($appDocFile->file_id);
         }
         
         return (!empty($result)) ? $result : false;

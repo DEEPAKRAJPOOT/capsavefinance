@@ -33,32 +33,10 @@
 				</div>
 			</li>
             <li>
-                <div class="count-heading">Business Documents </div>
+                <div class="count-heading">KYC</div>
                 <div class="top-circle-bg">
                     <div class="count-top">
                         <img src="{{url('frontend/assets/images/business-document.png')}}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="count-heading"> Associate Buyers </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{url('frontend/assets/images/buyers.png')}}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="count-heading"> Associate Logistics </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{url('frontend/assets/images/logistics.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
                         <img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
@@ -346,7 +324,7 @@
                             if (res.status == 1)
                             {
 
-                                window.location.href = "bank-document";
+                                window.location.href = "/application/document";
                             }
                         },
                         error: function (error)

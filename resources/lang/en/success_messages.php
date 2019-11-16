@@ -1,6 +1,7 @@
 <?php
 return [
     'uploaded' => 'Uploaded Successfully.',
+    'deleted' => 'Deleted Successfully.',
     'education_saved_successfully' => 'Education details have been saved successfully',
     'skill_saved_successfully' => 'Skills have been saved successfully',
     'research_saved_successfully' => 'Research and publications details have been saved successfully',

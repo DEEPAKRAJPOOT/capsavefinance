@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-@include('layouts.backend.partials.admin-sidebar')
+
 <ul class="main-menu">
     <li>
         <a href="company-details.php" class="active">Application details</a>

@@ -59,6 +59,22 @@ class AppDocumentFile extends Authenticatable
         return $appDocFile;
     }
     
+    /**
+    * Create a new record in document file
+    *
+    * @param Array $attributes
+    *
+    * @return Array
+    */
+    
+    public static function deletes($appDocFileId)
+    {
+        $deleteRes =  AppDocumentFile::where('app_doc_file_id', $appDocFileId)
+                ->update(['is_active' => 0]);
+        
+        return $deleteRes;
+    }
+    
     
     /**
      * Managing inputs as required Array
