@@ -413,7 +413,7 @@
 				    	$('input[name=biz_pan_number] +span').remove();
 				    	fillGSTinput(res.result);
 				    }else{
-				    	alert('Something went wrong, Try again later');
+				    	alert('No GST associated with the entered PAN.');
 				    }
 				    $('.isloader').hide();
 				  }

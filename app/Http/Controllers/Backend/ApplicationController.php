@@ -19,7 +19,6 @@ class ApplicationController extends Controller
     protected $docRepo;
 
     public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
-        $this->middleware('auth');
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
@@ -178,6 +177,33 @@ class ApplicationController extends Controller
                 return redirect()->back();
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    
+    /**
+     * Handling deleting documents file for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function applicationSave(Request $request)
+    {
+        try {
+            $appId  = Session::has('appId') ? Session::get('appId') : 1;
+            $userId = Auth::user()->user_id;
+            $response = $this->docRepo->isUploadedCheck($userId, $appId);
+            
+            if ($response->count() < 1) {
+//                die("here");
+                return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
+            } else {
+                die("1");
+                return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
