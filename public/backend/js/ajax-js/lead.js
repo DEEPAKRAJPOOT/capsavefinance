@@ -32,15 +32,17 @@ try {
                     {data: 'id'},
                     {data: 'name'},
                     {data: 'email'},
+                    {data: 'mobile_no'},
+                    {data: 'anchor'},
                     {data: 'assigned'},
                     
-                    //{data: 'mobile_no'},
+                    
                     //{data: 'biz_name'},
                     {data: 'created_at'},
                     //{data: 'status'},
                     {data: 'action'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6,7]}]
 
         });
 
