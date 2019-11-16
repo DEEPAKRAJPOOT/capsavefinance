@@ -20,7 +20,6 @@
         <div class="card-body">
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;">
-
                     <a  data-toggle="modal" data-target="#editLead" data-url ="{{route('edit_backend_lead')}}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
 
                         <span class="btn-label">
@@ -32,7 +31,6 @@
             </div>
             <div class="row">
                 <div class="col-md-4">
-
                     {!!
                     Form::text('by_email',
                     null,
@@ -62,10 +60,8 @@
                                     <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
-
                                                 <th>Email</th>
                                                 <th>Mobile</th>
                                                 <th>Anchor</th>
@@ -89,9 +85,8 @@
             </div>
         </div>
     </div>
-
 </div>
-{!!Helpers::makeIframePopup('editLead','Edit Lead')!!}
+{!!Helpers::makeIframePopup('editLead','Manage Lead')!!}
 @endsection
 
 @section('jscript')

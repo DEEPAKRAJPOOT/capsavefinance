@@ -42,7 +42,7 @@ try {
                     //{data: 'status'},
                     {data: 'action'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6,7]}]
 
         });
 
