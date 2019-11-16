@@ -7,3 +7,8 @@ ALTER TABLE `rta_biz_owner` CHANGE `email` `email` VARCHAR(50) CHARACTER SET utf
 ALTER TABLE `rta_biz_owner` CHANGE `mobile_no` `mobile_no` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 
 ALTER TABLE `rta_biz_owner` CHANGE `home_no` `home_no` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+-------------
+ALTER TABLE `rta_file` ADD `is_active` TINYINT NOT NULL DEFAULT '1' COMMENT '0=> deleted,1=>not deleted' AFTER `file_path`;
+ALTER TABLE `rta_file` ADD `deleted_at` TIMESTAMP NULL AFTER `updated_by`;
+ALTER TABLE `rta_app_doc_file` ADD `is_active` TINYINT NOT NULL DEFAULT '1' COMMENT '1=> Not Deleted, 0=> Deleted' AFTER `file_id`;

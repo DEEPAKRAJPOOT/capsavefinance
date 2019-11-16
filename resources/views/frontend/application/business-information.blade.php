@@ -29,32 +29,10 @@
 				</div>
 			</li>
 			<li>
-				<div class="count-heading">Bank Statement </div>
+				<div class="count-heading">KYC </div>
 				<div class="top-circle-bg">
 					<div class="count-top">
 						<img src="{{url('frontend/assets/images/business-document.png')}}" width="36" height="36">
-					</div>
-					<div class="count-bottom">
-						<img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
-					</div>
-				</div>
-			</li>
-			<li>
-				<div class="count-heading"> GST Statement </div>
-				<div class="top-circle-bg">
-					<div class="count-top">
-						<img src="{{url('frontend/assets/images/buyers.png')}}" width="36" height="36">
-					</div>
-					<div class="count-bottom">
-						<img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
-					</div>
-				</div>
-			</li>
-			<li>
-				<div class="count-heading"> Financial Statement </div>
-				<div class="top-circle-bg">
-					<div class="count-top">
-						<img src="{{url('frontend/assets/images/logistics.png')}}" width="36" height="36">
 					</div>
 					<div class="count-bottom">
 						<img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">

@@ -66,6 +66,24 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'as' => 'document-save',
                 'uses' => 'Backend\ApplicationController@saveDocument'
             ]);
+            
+            Route::get('document-delete/{appDocFileId}',
+                [
+                'as' => 'document-delete',
+                'uses' => 'Backend\ApplicationController@documentDelete'
+            ]);
+            
+            Route::get('document-view',
+                [
+                'as' => 'document-view',
+                'uses' => 'Backend\ApplicationController@documentView'
+            ]);
+            
+            Route::get('document-download',
+                [
+                'as' => 'document-download',
+                'uses' => 'Backend\ApplicationController@documentDownload'
+            ]);
         });
     });
 
