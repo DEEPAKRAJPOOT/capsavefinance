@@ -19,7 +19,6 @@ class ApplicationController extends Controller
     protected $docRepo;
 
     public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
-        $this->middleware('auth');
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
