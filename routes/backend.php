@@ -11,8 +11,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         Route::group(
         ['middleware' => 'auth'],
         function () {
-    
-    
             Route::resource('lead', 'Backend\LeadController');
             Route::resource('supplier', 'Backend\SupplierController');
             Route::resource('buyer', 'Backend\BuyerController');
@@ -35,8 +33,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         'as' => 'edit_backend_lead',
          'uses' => 'Backend\LeadController@editBackendLead'
     ]);
+
+    Route::get('notes-from',
+     [
+        'as' => 'backend_notes_from',
+         'uses' => 'Backend\NotesController@showNoteForm'
+    ]);
+
     Route::get('notes', 'Backend\NotesController@index');
-    Route::get('notesForm', 'Backend\NotesController@showNoteForm');
+    //Route::get('notesForm', 'Backend\NotesController@showNoteForm');
     Route::post('notes', 'Backend\NotesController@store');
     
     
