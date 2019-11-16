@@ -1,8 +1,6 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-           
-  
 
 
 <!-- partial dasboard content -->
@@ -140,7 +138,4 @@
 		</div>
 	</div>
 </div>
-
-
-
 @endsection

@@ -118,7 +118,7 @@
 <script>
 
     var messages = {
-        get_lead: "{{ URL::route('get-lead') }}",
+        get_lead: "{{ URL::route('ajax_app_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 

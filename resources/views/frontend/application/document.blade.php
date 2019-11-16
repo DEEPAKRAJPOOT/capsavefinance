@@ -39,28 +39,6 @@
                     </div>
                 </div>
             </li>
-            <li>
-                <div class="count-heading"> ---- </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{ url('frontend/assets/images/buyers.png') }}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{ url('frontend/assets/images/tick-image.png') }}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="count-heading"> ------ </div>
-                <div class="top-circle-bg">
-                    <div class="count-top">
-                        <img src="{{ url('frontend/assets/images/logistics.png') }}" width="36" height="36">
-                    </div>
-                    <div class="count-bottom">
-                        <img src="{{ url('frontend/assets/images/tick-image.png') }}" width="36" height="36">
-                    </div>
-                </div>
-            </li>
         </ul>
     </div>
 
@@ -69,9 +47,7 @@
             <div class="col-md-12 form-design ">
 
                 @if(session()->has('message'))
-                <div class="alert alert-success">
-                    {{ session()->get('message') }}
-                </div>
+                <p class="alert alert-info">{{ Session::get('message') }}</p>
                 @endif
 
                 @foreach($errors->all() as $error)
@@ -107,7 +83,7 @@
                                 <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
                                     <tbody>
                                         <tr>
-                                            <td width="20%"><b>Document Name</b></td>
+                                            <td width="20%"><b>Document Id</b></td>
                                             <td width="20%"><b>Bank</b></td>
                                             <td width="20%"><b>Upload On </b></td>
                                             <td width="20%">Download</td>
@@ -118,11 +94,29 @@
                                             <td width="20%">{{ $value->doc_id_no }}</td>
                                             <td width="20%">{{ $value->doc_name }}</td>
                                             <td width="20%"> {{ date('d-m-Y', strtotime($value->created_at))}} </td>
-                                            <td width="20%"><a href="#"><i class="fa fa-download"></i></a></td>
-                                            <td align="center" width="20%"><a class="mr-2" href="#"><i class="fa fa-eye"></i></a>
-                                                <a href=""><i class="fa fa-times-circle-o"></i></a>
+                                            <td width="20%"><a href="{{ Route('document-download') }}"><i class="fa fa-download"></i></a></td>
+                                            <td align="center" width="20%">
+                                                <a class="mr-2" href="{{ Route('document-view') }}"><i class="fa fa-eye"></i></a>
+                                                <a href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o"></i></a>
                                             </td>
                                         </tr>
+                                        <div class="modal" id="confirm">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                        <h4 class="modal-title">Delete Confirmation</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you, want to delete?</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-sm btn-primary" id="delete-btn">Delete</button>
+                                                        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -180,7 +174,7 @@
 
                         <div class="d-flex btn-section ">
                             <div class="col-md-4 ml-auto text-right">
-                                <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details.php'">
+                                <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">
                                 <input type="submit" value="Save and Continue" class="btn btn-primary">
                             </div>
                         </div>
