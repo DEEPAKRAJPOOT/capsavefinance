@@ -88,6 +88,22 @@ class DocumentRepository implements DocumentInterface
         return $result ?: false;
     }
     
+    
+    /**
+     * find application required documents
+     *
+     * @param mixed $ids
+     */
+    
+    public function isUploadedCheck($userId, $appId){
+        $result = AppDocument::where('user_id', $userId)
+                ->where('app_id', $appId)
+                ->where('is_upload', 0)
+                ->get();
+
+        return $result ?: false;
+    }
+    
     /**
      * save document method
      *

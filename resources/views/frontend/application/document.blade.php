@@ -121,7 +121,6 @@
                                     </tbody>
                                 </table>
 
-
                             </div>
                         </div>
 
@@ -174,8 +173,11 @@
 
                         <div class="d-flex btn-section ">
                             <div class="col-md-4 ml-auto text-right">
-                                <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">
-                                <input type="submit" value="Save and Continue" class="btn btn-primary">
+                                <form method="POST" action="{{ Route('application_save') }}">
+                                    @csrf
+                                    <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">
+                                    <input type="submit" value="Submit" class="btn btn-primary">
+                                </form>
                             </div>
                         </div>
 
