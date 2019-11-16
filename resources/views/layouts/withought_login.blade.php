@@ -16,19 +16,9 @@
     <body class="login-page">
         <section>
             @yield('content')
-
         </section>
-
-
-
-
     </body>
     <script src="{{ asset('backend/assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('backend/assets/js/jquery.validate.js') }}"></script>
-    <script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script>
-   
+    <script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script> 
 </html>
-
-
-
-
