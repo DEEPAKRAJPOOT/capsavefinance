@@ -15,20 +15,20 @@
         if(current === "") {
           //for root url
           if($this.attr('href').indexOf("index.html") !== -1){
-              $(this).parents('.nav-item').last().addClass('active');
+             // $(this).parents('.nav-item').last().addClass('active');
               if ($(this).parents('.sub-menu').length) {
                 $(this).closest('.collapse').addClass('show');
-                $(this).addClass('active');
+               // $(this).addClass('active');
               }
           }
         }
         else {
           //for other url
           if($this.attr('href').indexOf(current) !== -1){
-              $(this).parents('.nav-item').last().addClass('active');
+             // $(this).parents('.nav-item').last().addClass('active');
               if ($(this).parents('.sub-menu').length) {
                 $(this).closest('.collapse').addClass('show');
-                $(this).addClass('active');
+                //$(this).addClass('active');
               }
           }
         }

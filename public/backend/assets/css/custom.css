@@ -5,6 +5,38 @@
 	margin:10px 0 10px 0;
 	
 }
+.btn-action-btn {
+    border: 1px solid #138864;
+}
+.inline-action-btn a {
+    margin: 0px 5px;
+}
+.sr-no {
+    color: #138864;
+    font-weight: 700;
+}
+.sub-title-bg {
+    text-align: left;
+    font-size: 18px !important;
+    font-weight: 700;
+    background: #e8e8e8;
+}
+table.table-td-right td {
+    border-right: 1px solid #ccc;
+}
+.inline-action-btn a{
+	color:#138864;
+}
+.check-table{
+	position: relative;
+    top: -15px;
+}
+.btn-pickup {
+    border: 1px solid #138864;
+    border-radius: 4px !important;
+    margin: 0px 5px !important;
+}
+
 .main-menu li {
     /* flex: 1; */
     text-align: center;
