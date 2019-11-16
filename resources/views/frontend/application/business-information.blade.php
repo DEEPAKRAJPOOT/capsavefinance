@@ -537,7 +537,7 @@
 
 	function checkValidation(){
 		if($('.pan-verify').text() == 'Verify'){
-			alert('First verify Business PAN');
+			alert('Please fill and verify Business PAN First');
 			return false
 		}else{
 			return true;
