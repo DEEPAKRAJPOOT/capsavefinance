@@ -2,21 +2,22 @@
 
 namespace App\Inv\Repositories\Entities\Application;
 
+use DB;
+use Session;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
-use Session;
-use DB;
 
 
 
 
 /**
- * Application repository class for right
+ * Application repository class
  */
 class ApplicationRepository extends BaseRepositories implements ApplicationInterface {
 
@@ -26,11 +27,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * Class constructor
      *
      * @return void
-     */
-    
-    public function __construct(AppDocumentFile $document) {
-        $this->document=$document;
-
+     */    
+    public function __construct() {
     }
 
     /**
@@ -38,8 +36,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      *
      * @param array $attributes
      */
-    protected function create(array $attributes) {
-        return Rights::saveRights($attributes);
+    protected function create(array $attributes) {        
     }
 
     /**
@@ -47,8 +44,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      *
      * @param array $attributes
      */
-    protected function update(array $attributes, $rightId) {
-        return Rights::updateRights((int) $rightId, $attributes);
+    protected function update(array $attributes, $id) {        
     }
 
     /**
@@ -56,8 +52,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      *
      * @param array $columns
      */
-    public function all($columns = array('*')) {
-        return Rights::all($columns);
+    public function all($columns = array('*')) {        
     }
 
     /**
@@ -66,10 +61,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param mixed $id
      * @param array $columns     
      */
-    public function find($id, $columns = array('*')) {
-        $varRightData = Rights::find((int) $id, $columns);
-
-        return $varRightData;
+    public function find($id, $columns = array('*')) {        
     }
 
      public function saveBusinessInfo($attributes = [], $userId = null){
@@ -93,5 +85,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Business::creates($attributes, $userId);
     }
 
-
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getApplications() 
+    {
+        return Application::select('*')->where('status', 1)->orderBy('app_id');
+    }
 }

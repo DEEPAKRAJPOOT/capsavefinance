@@ -44,4 +44,14 @@ class Application extends Model
         'updated_by'
     ];
 
+    /**
+     * Get Applications for Application list data tables
+     */
+    protected static function getApplications() 
+    {
+        return self::select('app.app_id', 'biz.biz_entity_name', "'' as assoc_anchor", "'' as user_type", "'' as assignee", "'' as shared_detail", "'' as status", "'' as action")
+                ->join('app', 'app.biz_id', '=', 'biz.biz_id')
+                ->where('status', 1)
+                ->orderBy('app_id');
+    }    
 }

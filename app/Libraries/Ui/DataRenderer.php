@@ -134,4 +134,87 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+    
+    /*      
+     * Get application list
+     */
+    public function getAppList(Request $request, $app)
+    {
+        return DataTables::of($app)
+                ->rawColumns(['app_id', 'action'])
+                ->addColumn(
+                    'app_id',
+                    function ($app) {
+                        $link = $app->app_id;
+                        return "<a id=\"" . $app->app_id . "\" href=\"#\" rel=\"tooltip\">$link</a> ";
+                    }
+                )
+                ->editColumn(
+                    'biz_entity_name',
+                    function ($app) {                        
+                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                })
+                ->editColumn(
+                    'assoc_anchor',
+                    function ($app) {
+                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
+                        return $app->assoc_anchor ? $app->assoc_anchor : '';
+                })
+                ->editColumn(
+                    'user_type',
+                    function ($app) {                        
+                        return $app->user_type ? $app->user_type : '';
+                })                
+                ->editColumn(
+                    'assignee',
+                    function ($app) {
+                        return $app->assignee ? $app->assignee : '';
+                })
+                ->editColumn(
+                    'shared_detail',
+                    function ($app) {
+                    return $app->shared_detail ? $app->shared_detail : '';
+
+                })
+                ->editColumn(
+                    'status',
+                    function ($app) {
+                    $app_status = config('common.app_status');
+                    return $app_status[$app->status];
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($app) {
+                        //return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
+                    return "";
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    /*
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
+                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                
+                                $query->where('users.is_assign', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }                    
+                    */
+                })
+                ->make(true);
+    }    
 }
