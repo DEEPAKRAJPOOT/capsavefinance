@@ -125,6 +125,7 @@ input[type='search']{
             </div>
         </div>
     </div>
+</div>
 {!!Helpers::makeIframePopup('editLead','Edit Lead')!!}
 
     @endsection
