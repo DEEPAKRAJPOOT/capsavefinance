@@ -51,24 +51,9 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     $link = '000'.$user->user_id;
                         return "<a id=\"" . $user->user_id . "\" href=\"#\" rel=\"tooltip\"   >$link</a> ";
+                        
                     }
                 )
-//                ->editColumn(
-//                        'status',
-//                        function ($user) {
-//                    if ($user->is_active == config('inv_common.ACTIVE')) {
-//                        return "Active";
-//                    } else {
-//                        return "In Active";
-//                    }
-//                })
-//                ->addColumn(
-//                        'checkbox',
-//                        function ($user) {
-//                        $ids = $user->user_id;
-//                    $chkBox = '<input type="checkbox" name="del_selected[]" value="'.$ids.'" class="checkAllBox del_selected" />';
-//                    return $chkBox;
-//                })
                 ->editColumn(
                         'name',
                         function ($user) {
@@ -79,14 +64,26 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'email',
                     function ($user) {
-                    return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
+                    return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
 
+                })
+                ->editColumn(
+                    'anchor',
+                    function ($user) {
+                    $achorId = $user->anchor_id; 
+                    return $achorId;
+                })
+                ->editColumn(
+                    '',
+                    function ($user) {
+                    $full_name = $user->mobile_no; 
+                    return $full_name;
                 })
                 ->editColumn(
                         'assigned',
                         function ($user) {
                     if ($user->is_assign == 0) {
-                        return "<span style=\"color:red\">Not Assigned</span>";
+                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
                     } else {
                         return "<span style='color:green'>Assigned</span>";
                     }
@@ -106,7 +103,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
+                    return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"280px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {

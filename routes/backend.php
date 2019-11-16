@@ -45,7 +45,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         [
                         'as' => 'cam_overview',
                         'uses' => 'Backend\CamController@index'
-                    ]);            
+                    ]);
+
+                    Route::get('company-details/{id}',
+                        [
+                        'as' => 'company_details',
+                        'uses' => 'Backend\ApplicationController@showCompanyDetails'
+                    ]);           
             });   
 
 
