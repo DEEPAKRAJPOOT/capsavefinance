@@ -6,6 +6,7 @@ use Session;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
+use App\Inv\Repositories\Models\AppDocument;
 
 class BizOwner extends Model
 {
@@ -54,6 +55,37 @@ class BizOwner extends Model
     {
           $inputArr =  BizOwner::arrayInputData($attributes);
           $owner = BizOwner::insert($inputArr);
+          //insert into rta_app_doc
+          
+          $owner = AppDocument::insert([
+            [
+            'rcu_status' => 0,
+            'user_id' => Auth::user()->user_id,
+            'app_id' => Session::has('appId') ? Session::get('appId') : 0,
+            'doc_id' => 4,
+            'is_upload' => 0,
+            'created_by' => Auth::user()->user_id,
+            'updated_by' => Auth::user()->user_id
+            ],
+            [
+            'rcu_status' => 0,
+            'user_id' => Auth::user()->user_id,
+            'app_id' => Session::has('appId') ? Session::get('appId') : 0,
+            'doc_id' => 5,
+            'is_upload' => 0,
+            'created_by' => Auth::user()->user_id,
+            'updated_by' => Auth::user()->user_id
+            ],
+            [
+            'rcu_status' => 0,
+            'user_id' => Auth::user()->user_id,
+            'app_id' => Session::has('appId') ? Session::get('appId') : 0,
+            'doc_id' => 6,
+            'is_upload' => 0,
+            'created_by' => Auth::user()->user_id,
+            'updated_by' => Auth::user()->user_id
+            ]
+            ]);
           return $owner;
     }
   /*  Save input array data //////////////////  */
