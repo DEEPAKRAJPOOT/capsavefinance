@@ -32,9 +32,11 @@ try {
                     {data: 'id'},
                     {data: 'name'},
                     {data: 'email'},
+                    {data: 'mobile_no'},
+                    {data: 'anchor'},
                     {data: 'assigned'},
                     
-                    //{data: 'mobile_no'},
+                    
                     //{data: 'biz_name'},
                     {data: 'created_at'},
                     //{data: 'status'},
