@@ -324,7 +324,7 @@
                             if (res.status == 1)
                             {
 
-                                window.location.href = "bank-document";
+                                window.location.href = "/application/document";
                             }
                         },
                         error: function (error)
