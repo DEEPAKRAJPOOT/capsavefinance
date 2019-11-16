@@ -5641,7 +5641,7 @@ a.text-dark:focus, a.text-dark:hover {
       .sidebar .nav .nav-item .nav-link:hover {
         color: #3f4549; }
     .sidebar .nav .nav-item.active > .nav-link {
-      background: #138864; }
+      background: #138864; color:#fff;}
       .sidebar .nav .nav-item.active > .nav-link .menu-title,
       .sidebar .nav .nav-item.active > .nav-link i {
         color: #ffffff; }
@@ -6216,7 +6216,7 @@ button:visited {
 .dropdown-menu > li > a:visited {
   outline: 0 !important; }
 
-a:focus,
+
 input:focus {
   border-color: transparent;
   outline: none; }
