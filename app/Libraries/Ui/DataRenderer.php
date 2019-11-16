@@ -145,8 +145,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'app_id',
                     function ($app) {
-                        $link = $app->app_id;
-                        return "<a id=\"" . $app->app_id . "\" href=\"#\" rel=\"tooltip\">$link</a> ";
+                        $link = route('cam_overview', ['app_user_id' => $app->user_id, 'app_id' => $app->app_id]);
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
                     }
                 )
                 ->editColumn(

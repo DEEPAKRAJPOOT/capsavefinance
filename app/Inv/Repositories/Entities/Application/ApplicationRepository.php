@@ -90,6 +90,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getApplications() 
     {
-        return Application::select('*')->where('status', 1)->orderBy('app_id');
+        return Application::getApplications();
     }
 }

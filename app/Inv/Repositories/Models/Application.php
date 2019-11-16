@@ -49,9 +49,13 @@ class Application extends Model
      */
     protected static function getApplications() 
     {
-        return self::select('app.app_id', 'biz.biz_entity_name', "'' as assoc_anchor", "'' as user_type", "'' as assignee", "'' as shared_detail", "'' as status", "'' as action")
+        $appData = self::select('app.app_id', 'biz.biz_entity_name', 
+                'biz.biz_entity_name as assoc_anchor', 'biz.biz_entity_name as user_type', 
+                'biz.biz_entity_name as assignee', 'biz.biz_entity_name as shared_detail', 
+                'biz.biz_entity_name as status', 'biz.biz_entity_name as action')
                 ->join('app', 'app.biz_id', '=', 'biz.biz_id')
                 ->where('status', 1)
-                ->orderBy('app_id');
+                ->orderBy('app_id');        
+        return $appData;
     }    
 }
