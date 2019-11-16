@@ -149,10 +149,10 @@ class ApplicationController extends Controller
     public function saveDocument(DocumentRequest $request)
     {
         try {
-//            dd($request);
             $arrFileData = $request->all();
             $docId = 1; //  fetch document id
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId);
+            
             if ($document_info) {
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->back();
@@ -165,41 +165,20 @@ class ApplicationController extends Controller
     }
     
     /**
-     * Show the Associate Logistics form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function showGSTDocument()
-    {
-        $userId  = Session::has('userId') ? Session::get('userId') : 0;
-        $userArr = [];
-        if ($userId > 0) {
-            $userArr = $this->userRepo->find($userId);
-        }
-
-        return view('frontend.application.gst-document', compact('userArr'));
-    } 
-     
-   /**
-     * Handle a Associate Logistics for the application.
+     * Handling deleting documents file for the application.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     
-    public function saveGSTDocument(Request $request)
+    public function documentDelete($appDocFileId)
     {
         try {
+            $response = $this->docRepo->deleteDocument($appDocFileId);
             
-            $data        = [];
-            $arrFileData = [];
-            $arrFileData = $request->all();
-            dd($arrFileData);
-            $user = $this->create($arrFileData);
-           
-            if ($user) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('authorized_signatory_open');
+            if ($response) {
+                Session::flash('message',trans('success_messages.deleted'));
+                return redirect()->back();
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -207,4 +186,5 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    
 }
