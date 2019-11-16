@@ -49,7 +49,6 @@
                                                     <td class="text-right">Lorem ispur data here</td>                                                                        
                                                 </tr>	<tr>
                                                     <th class="text-left">Abc under writer</th>
-                                                    <td class="text-right">Lorem ispur data here</td>                                                                        
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -57,34 +56,12 @@
                                 </div>
                             </div>
                         </div>
-            
-            
         </div>	
-        </div>	
-        
-        
-        
-            
+        </div>	 
         </div>
     </div>
 </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <!--modal-->
 <div class="modal" id="myModal">
@@ -109,14 +86,8 @@
 </div>
 </div>
 
-
-
-
 @endsection
 @section('jscript')
-
-@endsection
-
 <script>
    function submitNotes(){ 
        var notesData = $.trim($('#notesData').val());
@@ -127,15 +98,15 @@
            $.ajax({
                type: 'POST',
                url:'/notes',
-               data:{
-                   'notesData':notesData
-               },
+               data:{'notesData':notesData},
                dataType:'html',
+               headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                success:function(data){
-                   alert
+                console.log(data);
                }
            });
        }
 
     }
 </script>
+@endsection

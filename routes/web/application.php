@@ -55,7 +55,8 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     
 //   Resource controller @Supplier,@buyer,@lender,@logistics    //
     Route::get('cam/overview', 'Backend\CamController@index'); 
-
+    Route::get('notes', 'Backend\NotesController@index');
+    Route::post('notes', 'Backend\NotesController@store');
 
  
     
