@@ -187,4 +187,31 @@ class ApplicationController extends Controller
         }
     }
     
+    
+    /**
+     * Handling deleting documents file for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function applicationSave(Request $request)
+    {
+        try {
+            $appId  = Session::has('appId') ? Session::get('appId') : 1;
+            $userId = Auth::user()->user_id;
+            $response = $this->docRepo->isUploadedCheck($userId, $appId);
+            
+            if ($response->count() < 1) {
+//                die("here");
+                return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
+            } else {
+                die("1");
+                return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
 }

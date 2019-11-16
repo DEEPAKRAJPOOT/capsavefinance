@@ -84,6 +84,12 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'as' => 'document-download',
                 'uses' => 'Backend\ApplicationController@documentDownload'
             ]);
+            
+            Route::post('application-save',
+                [
+                'as' => 'application_save',
+                'uses' => 'Backend\ApplicationController@applicationSave'
+            ]);
         });
     });
 
