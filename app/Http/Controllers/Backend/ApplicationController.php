@@ -27,6 +27,17 @@ class ApplicationController extends Controller
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
     }
+    
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('backend.app.index');
+    }
+    
 
     /**
      * Show the business information form.

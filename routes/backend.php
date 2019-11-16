@@ -8,28 +8,9 @@
  * @author Prolitus Dev Team
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
-
-    
     Route::group(
-        ['prefix' => 'dashboard'],
+        ['middleware' => 'auth'],
         function () {
-        Route::group(
-            ['middleware' => 'adminauth'],
-            function () {
-            Route::get(
-                '/',
-                [
-                'as' => 'backend_dashboard',
-                'uses' => 'Backend\DashboardController@index'
-                ]
-            );
-        });
-           
-    });
-    
-      Route::group(
-            ['middleware' => 'adminauth'],
-            function () {
     
     
     Route::resource('lead', 'Backend\LeadController');
@@ -86,4 +67,57 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 //        });
 //    });
 
-    
+            Route::group(
+                ['prefix' => 'dashboard'],
+                function () {
+
+                    Route::get(
+                        '/',
+                        [
+                        'as' => 'backend_dashboard',
+                        'uses' => 'Backend\DashboardController@index'
+                        ]
+                    );
+
+            });
+
+            Route::group(
+                ['prefix' => 'application'],
+                function () {
+                    Route::get('/',
+                        [
+                        'as' => 'application_list',
+                        'uses' => 'Backend\ApplicationController@index'
+                    ]);
+
+                    Route::get('/supplier',
+                        [
+                        'as' => 'supplier_list',
+                        'uses' => 'Backend\SupplierController@index'
+                    ]);
+
+                    Route::get('cam/overview',
+                        [
+                        'as' => 'cam_overview',
+                        'uses' => 'Backend\CamController@index'
+                    ]);            
+            });   
+
+
+            Route::group(
+                ['prefix' => 'lead'],
+                function () {
+                    Route::get('/',
+                        [
+                        'as' => 'lead_list',
+                        'uses' => 'Backend\LeadController@index'
+                    ]);
+
+                    Route::get('edit-backend-lead',
+                        [
+                        'as' => 'edit_backend_lead',
+                        'uses' => 'Backend\LeadController@editBackendLead'
+                    ]);
+            });
+    });    
+});
