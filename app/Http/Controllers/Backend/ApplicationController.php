@@ -8,22 +8,19 @@ use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
 use App\Http\Requests\DocumentRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-use App\Inv\Repositories\Contracts\OwnerInterface as InvOwnerRepoInterface;
-use App\Inv\Repositories\Contracts\BusinessInterface as InvBusinessRepoInterface;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Session;
 
 class ApplicationController extends Controller
 {
-    protected $businessRepo;
-    protected $ownerRepo;
+    protected $appRepo;
     protected $userRepo;
     protected $docRepo;
 
-    public function __construct(InvBusinessRepoInterface $buss_repo, InvOwnerRepoInterface $owner_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
         $this->middleware('auth');
-        $this->businessRepo = $buss_repo;
-        $this->ownerRepo = $owner_repo;
+        $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
     }
@@ -58,7 +55,7 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-            $business_info = $this->businessRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
+            $business_info = $this->appRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
             $appId  = Session::put('appId', $business_info['app_id']);
 
             if ($business_info) {
@@ -85,7 +82,7 @@ class ApplicationController extends Controller
             $userArr = $this->userRepo->find($userId);
         }
        
-       $getCin = $this->ownerRepo->getCinByUserId($userId);
+       $getCin = $this->userRepo->getCinByUserId($userId);
        $cinNo  =  $getCin;       
        
        return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' =>$cinNo));
@@ -100,7 +97,7 @@ class ApplicationController extends Controller
     public function savePromoterDetail(Request $request) {
        try {
             $arrFileData = $request->all();
-            $owner_info = $this->ownerRepo->saveOwnerInfo($arrFileData); //Auth::user()->id
+            $owner_info = $this->userRepo->saveOwnerInfo($arrFileData); //Auth::user()->id
           if ($owner_info) {
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             } else {
