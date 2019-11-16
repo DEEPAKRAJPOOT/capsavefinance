@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
-
+    <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
 </head>
 
 <body class="sidebar-icon-only">
@@ -39,6 +39,8 @@
     <script src="{{url('backend/assets/js/jsgrid.min.js')}}"></script>
     <script src="{{url('backend/assets/js/hoverable-collapse.js')}}"></script>
     <script src="{{url('backend/assets/js/misc.js')}}"></script>
+    <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
+   
     <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();

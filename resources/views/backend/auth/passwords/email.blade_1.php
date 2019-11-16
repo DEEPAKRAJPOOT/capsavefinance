@@ -1,4 +1,4 @@
-@extends('layouts.admin_guest')
+@extends('layouts.backend.admin_guest')
 
 @section('content')
 <div class="container">

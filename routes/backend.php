@@ -27,6 +27,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
            
     });
     
+    
+    Route::group(
+        ['prefix' => 'application'],
+        function () {
+        Route::group(
+            ['middleware' => 'auth'],
+            function () {  
+            Route::get('/',
+                [
+                'as' => 'application_list',
+                'uses' => 'Backend\ApplicationController@index'
+            ]);
+
+            
+        });
+    });
+
+    
       Route::group(
             ['middleware' => 'adminauth'],
             function () {
