@@ -30,4 +30,9 @@ class NotesController extends Controller
         );
         return response()->json(['message'=>'Note inserted successfully','status'=>1]);
     }
+
+
+    public function showNoteForm(){
+        return view('backend.notes.notesForm');
+    }
 }

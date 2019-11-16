@@ -7,6 +7,8 @@
           <div class=" form-fields">
            <div class="col-md-12">
             <h5 class="card-title form-head-h5">Notes  <a class="add-btn-cls float-right" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i> Add Note</a></h5>
+
+            <h5 class="card-title form-head-h5">Notes Demo <a class="add-btn-cls float-right" data-toggle="modal" data-target="#myModal2"> <i class="fa fa-plus"></i> Add Note2</a></h5>
             <div class="col-md-12-cls">
                             <div class="prtm-full-block">       
                                 <div class="prtm-block-content">
@@ -79,6 +81,24 @@
   </div>
 </div>
 </div>
+
+<!--modal-->
+<div class="modal" id="myModal2">
+<div class="modal-dialog">
+  <div class="modal-content">
+     <!-- Modal Header -->
+     <div class="modal-header">
+        <h5>Add Note</h5>
+        <button type="button" class="close close-btns" data-dismiss="modal">&times;</button>
+     </div>
+     <!-- Modal body -->
+     <div class="modal-body text-left">
+            <iframe src="{{url('/notesForm')}}" width="100%" height="600"></iframe>
+     </div>
+  </div>
+</div>
+</div>
+
 
 @endsection
 @section('jscript')
