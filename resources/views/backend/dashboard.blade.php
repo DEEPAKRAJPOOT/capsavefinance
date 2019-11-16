@@ -1,11 +1,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-    @if($benifinary["user_type"] =='2') 
-   		@include('layouts.backend.partials.admin-sidebar')
-   	@else
-   		@include('layouts.partials.left-corp-menu')
-   	@endif
+
 
 <!-- partial dasboard content -->
 			<div class="content-wrapper">

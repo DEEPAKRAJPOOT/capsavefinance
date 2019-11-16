@@ -2,11 +2,6 @@
 
 @section('content')
 
-    @if($benifinary["user_type"] =='1') 
-   		@include('layouts.partials.front_sidebar')
-   	@else
-   		@include('layouts.partials.left-corp-menu')
-   	@endif
 <!-- partial dasboard content -->
 			<div class="content-wrapper">
 				<h3 class="page-title">Zuron - Frontend Dashboard</h3>

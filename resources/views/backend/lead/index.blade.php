@@ -1,22 +1,6 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-
-@include('layouts.backend.partials.admin-sidebar')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css">
-<style>
-    select[name='leadMaster_length']{
-        height: calc(1.8125rem + 2px);
-        margin: 0 10px 0 10px;
-        width: 100px;
-    }
-    input[type='search']{
-        height: calc(1.8125rem + 2px);
-        display: inline;
-        position: absolute;
-        border: 1px solid rgba(0, 0, 0, 0.15);
-    }
-</style>
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
