@@ -1,8 +1,16 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
+return [
+    //Application List Head
+    'app_list_head' => [
+        'app_id'        => 'App Id',
+        'name'          => 'Name',
+        'anchor'        => 'Associate Anchor',
+        'user_type'     => 'User Type',
+        'assignee'      => 'Assignee',
+        'shared_detail' => 'Shared Details',
+        'status'        => 'Status',
+        'action'        => 'Action',
+    ]
+];

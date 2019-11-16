@@ -2646,4 +2646,15 @@ if ($err) {
         $users = $dataProvider->getUsersList($this->request, $usersList);
         return $users;
     }
+    
+    /**
+     * Get all Application list
+     *
+     * @return json user data
+     */
+    public function getApplications(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getApplications();
+        $applications = $dataProvider->getAppList($this->request, $appList);
+        return $applications;
+    }
 }

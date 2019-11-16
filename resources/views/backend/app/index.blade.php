@@ -2,7 +2,7 @@
 
 @section('content')
 
-@include('layouts.backend.partials.admin-sidebar')
+
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css">
 <style>
     select[name='leadMaster_length']{
@@ -56,7 +56,7 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by First name, Last name and Email',
+                    'placeholder' => 'Search by App Id, Name',
                     'id'=>'by_name'
                     ])
                     !!}
@@ -80,18 +80,18 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="appList" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
 
-                                                <th>App Id</th>
-                                                <th>Name</th>
-                                                <th>Associate Anchor</th>
-                                                <th>User Type</th>
-                                                <th>Assignee</th>
-                                                <th>Shared Details</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
+                                                <th>{{ trans('backend.app_list_head.app_id') }}</th>
+                                                <th>{{ trans('backend.app_list_head.name') }}</th>
+                                                <th>{{ trans('backend.app_list_head.anchor') }}</th>
+                                                <th>{{ trans('backend.app_list_head.user_type') }}</th>
+                                                <th>{{ trans('backend.app_list_head.assignee') }}</th>
+                                                <th>{{ trans('backend.app_list_head.shared_detail') }}</th>
+                                                <th>{{ trans('backend.app_list_head.status') }}</th>
+                                                <th>{{ trans('backend.app_list_head.action') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -125,5 +125,5 @@
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/ajax-js/application.js') }}" type="text/javascript"></script>
 @endsection
