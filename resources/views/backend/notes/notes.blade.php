@@ -1,18 +1,12 @@
 @extends('layouts.backend.admin-layout')
-
 @section('content')
-
-
-
 <div class="row grid-margin mt-3 mb-2">
-
 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
     <div class="card">
         <div class="card-body">
           <div class=" form-fields">
            <div class="col-md-12">
             <h5 class="card-title form-head-h5">Notes  <a class="add-btn-cls float-right" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i> Add Note</a></h5>
-            
             <div class="col-md-12-cls">
                             <div class="prtm-full-block">       
                                 <div class="prtm-block-content">
@@ -56,8 +50,8 @@
                                 </div>
                             </div>
                         </div>
-        </div>	
-        </div>	 
+                     </div>	
+              </div>	 
         </div>
     </div>
 </div>
@@ -80,7 +74,7 @@
                 <textarea class="form-control" id='notesData'></textarea>
                 <span id='errorMsg'></span>
             </div> 
-        <button type="submit" class="btn btn-primary float-right" onclick="submitNotes();">Submit</button>  
+        <button type="submit" class="btn btn-primary float-right" onclick="submitNotes();">Submit</button> 
      </div>
   </div>
 </div>

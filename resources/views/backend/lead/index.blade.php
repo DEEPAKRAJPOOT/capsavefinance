@@ -2,7 +2,7 @@
 
 @section('content')
 
-@include('layouts.partials.left-menu')
+ @include('layouts.backend.partials.admin-sidebar')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css">
 <style>
 select[name='leadMaster_length']{
@@ -57,6 +57,42 @@ input[type='search']{
 
 
             <div class="row">
+           
+                 <div class="col-md-4">
+                          {!!
+            Form::open(
+            array('name' => 'ProCountryMaster',
+            'autocomplete' => 'off', 
+            'id' => 'manageUser',  
+
+            )
+            ) 
+        !!}
+                 
+       {!!
+            Form::text('by_email',
+            null,
+            [
+            'class' => 'form-control',
+            'placeholder' => 'Search by First name, Last name and Email',
+            'id'=>'by_name'
+            ])
+            !!}
+        </div>
+        <div class="col-md-4">
+
+            {!!
+                Form::select('is_assign',
+                [''=>'Status', '1'=>'Assigned','0'=> 'Not Assigned'],
+                null,
+                array('id' => 'is_active',
+                'class'=>'form-control'))
+            !!}
+        </div>
+        <button type="submit" class="btn btn-success search">Search</button>
+         {!!
+        Form::close()
+    !!}
                 <div class="col-12 dataTables_wrapper">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
@@ -66,13 +102,11 @@ input[type='search']{
                                         <thead>
                                             <tr role="row">
                                                 
-                                                <th>Sr.No.</th>
+                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
-                                                <th>Mobile No</th>
-                                                <th>Business Name</th>
+                                                 <th>Assigned</th>
                                                 <th>Created At</th>
-                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -91,9 +125,10 @@ input[type='search']{
             </div>
         </div>
     </div>
-
+{!!Helpers::makeIframePopup('editLead','Edit Lead')!!}
 
     @endsection
+    
     @section('jscript')
     <script>
 

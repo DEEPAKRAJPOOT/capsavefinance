@@ -38,7 +38,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     Route::resource('lender', 'Backend\LenderController');
     Route::resource('logistics', 'Backend\LogisticsController');
 });
-    
+    Route::get('cam/overview', 'Backend\CamController@index');
     Route::get('lead-pool',
                 [
                 'as' => 'lead_leadspool',
@@ -48,6 +48,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     
         }); 
         
+        
+    Route::get('edit-backend-lead',
+                [
+                'as' => 'edit_backend_lead',
+                'uses' => 'Backend\LeadController@editBackendLead'
+            ]);
+    Route::get('notes', 'Backend\NotesController@index');
+    Route::post('notes', 'Backend\NotesController@store');
+    
     
     
 //    Route::group(['prefix' => 'profile'],

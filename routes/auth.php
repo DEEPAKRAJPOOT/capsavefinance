@@ -47,42 +47,6 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'as' => 'user_register_open',
         'uses' => 'Auth\RegisterController@register'
     ]);
-
-    Route::get('business-information',
-        [
-        'as' => 'business_information_open',
-        'uses' => 'Backend\ApplicationController@showBusinessInformationForm'
-    ]);
-
-    Route::post('business-information-save',
-        [
-        'as' => 'business_information_save',
-        'uses' => 'Backend\ApplicationController@saveBusinessInformation'
-    ]);
-
-    Route::get('promoter-detail',
-        [
-        'as' => 'promoter-detail',
-        'uses' => 'Backend\ApplicationController@showPromoterDetail'
-    ]);
-    
-    Route::post('promoter-detail-save',
-        [
-            'as' => 'promoter_detail_save',
-            'uses' => 'Backend\ApplicationController@savePromoterDetail'
-    ]);
-    
-    Route::get('document',
-        [
-        'as' => 'document',
-        'uses' => 'Backend\ApplicationController@showDocument'
-    ]);
-    
-    Route::post('document-save',
-        [
-        'as' => 'document-save',
-        'uses' => 'Backend\ApplicationController@saveDocument'
-    ]);
     
     // for password
    Route::group(['prefix' => 'password'],
