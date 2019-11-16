@@ -51,24 +51,9 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     $link = '000'.$user->user_id;
                         return "<a id=\"" . $user->user_id . "\" href=\"#\" rel=\"tooltip\"   >$link</a> ";
+                        
                     }
                 )
-//                ->editColumn(
-//                        'status',
-//                        function ($user) {
-//                    if ($user->is_active == config('inv_common.ACTIVE')) {
-//                        return "Active";
-//                    } else {
-//                        return "In Active";
-//                    }
-//                })
-//                ->addColumn(
-//                        'checkbox',
-//                        function ($user) {
-//                        $ids = $user->user_id;
-//                    $chkBox = '<input type="checkbox" name="del_selected[]" value="'.$ids.'" class="checkAllBox del_selected" />';
-//                    return $chkBox;
-//                })
                 ->editColumn(
                         'name',
                         function ($user) {
@@ -83,10 +68,22 @@ class DataRenderer implements DataProviderInterface
 
                 })
                 ->editColumn(
+                    'anchor',
+                    function ($user) {
+                    $achorId = $user->anchor_id; 
+                    return $achorId;
+                })
+                ->editColumn(
+                    '',
+                    function ($user) {
+                    $full_name = $user->mobile_no; 
+                    return $full_name;
+                })
+                ->editColumn(
                         'assigned',
                         function ($user) {
                     if ($user->is_assign == 0) {
-                        return "<span style=\"color:red\">Not Assigned</span>";
+                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
                     } else {
                         return "<span style='color:green'>Assigned</span>";
                     }

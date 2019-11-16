@@ -3,7 +3,7 @@
 @section('content')
 
 @include('layouts.backend.partials.admin-sidebar')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css">
+
 <style>
     select[name='leadMaster_length']{
         height: calc(1.8125rem + 2px);
@@ -43,14 +43,17 @@
 
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;">
-                    <a href="javascript:void(0);" id="register">
-                        <button class="btn btn-labeled btn-success m-b-5" type="button">
+                    
+                    <a  data-toggle="modal" data-target="#editLead" data-url ="{{route('edit_backend_lead')}}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
+                        
                             <span class="btn-label">
                                 <i class="fa fa-plus"></i>
                             </span>
                             Add Supplier
-                        </button>
+                        
+                        
                     </a>
+                   
                 </div>
             </div>
 
@@ -74,7 +77,7 @@
 
                     {!!
                     Form::select('is_assign',
-                    [''=>'Status', '1'=>'Assigned','0'=> 'Not Assigned'],
+                    [''=>'Status', '1'=>'Assigned','0'=> 'Pending'],
                     null,
                     array('id' => 'is_active',
                     'class'=>'form-control'))
@@ -82,6 +85,9 @@
                 </div>
                 <button id="searchB" type="button" class="btn btn-success search">Search</button>
 
+                
+                
+                
                 <div class="col-12 dataTables_wrapper">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
@@ -93,7 +99,10 @@
 
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
+                                               
                                                 <th>Email</th>
+                                                 <th>Mobile</th>
+                                                 <th>Anchor</th>
                                                 <th>Assigned</th>
                                                 <th>Created At</th>
                                                 <th>Action</th>
