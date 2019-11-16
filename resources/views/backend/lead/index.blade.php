@@ -1,6 +1,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
@@ -10,40 +11,26 @@
             <h3>Manage Leads</h3>
             <small>Supplier List</small>
             <ol class="breadcrumb">
-                <li><a href="https://admin.zuron.in/admin/dashboard"><i class="mdi mdi-home"></i> Home</a></li>
+                <li><a href="#"><i class="mdi mdi-home"></i> Home</a></li>
                 <li class="active">Manage Leads</li>
             </ol>
         </div>
     </section>
-
-
-
-
     <div class="card">
         <div class="card-body">
-
-            <input type="hidden" name="status" value="">
-            <input type="hidden" name="head" value="">
-
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;">
-                    <a href="javascript:void(0);" id="register">
-                        <button class="btn btn-labeled btn-success m-b-5" type="button">
-                            <span class="btn-label">
-                                <i class="fa fa-plus"></i>
-                            </span>
-                            Add Supplier
-                        </button>
+                    <a  data-toggle="modal" data-target="#editLead" data-url ="{{route('edit_backend_lead')}}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
+
+                        <span class="btn-label">
+                            <i class="fa fa-plus"></i>
+                        </span>
+                        Add Supplier
                     </a>
                 </div>
             </div>
-
-
-
             <div class="row">
-
                 <div class="col-md-4">
-
                     {!!
                     Form::text('by_email',
                     null,
@@ -58,14 +45,13 @@
 
                     {!!
                     Form::select('is_assign',
-                    [''=>'Status', '1'=>'Assigned','0'=> 'Not Assigned'],
+                    [''=>'Status', '1'=>'Assigned','0'=> 'Pending'],
                     null,
                     array('id' => 'is_active',
                     'class'=>'form-control'))
                     !!}
                 </div>
                 <button id="searchB" type="button" class="btn btn-success search">Search</button>
-
                 <div class="col-12 dataTables_wrapper">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
@@ -74,10 +60,11 @@
                                     <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
+                                                <th>Mobile</th>
+                                                <th>Anchor</th>
                                                 <th>Assigned</th>
                                                 <th>Created At</th>
                                                 <th>Action</th>
@@ -98,9 +85,8 @@
             </div>
         </div>
     </div>
-
 </div>
-{!!Helpers::makeIframePopup('editLead','Edit Lead')!!}
+{!!Helpers::makeIframePopup('editLead','Manage Lead')!!}
 @endsection
 
 @section('jscript')
