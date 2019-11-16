@@ -25,7 +25,7 @@
             <div class="collapse" id="layoutsSubmenu1">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('lead.index') }}">My Leads</a>
+                        <a class="nav-link" href="{{ route('lead_list') }}">My Leads</a>
                     </li>
                                                 
                 </ul>
