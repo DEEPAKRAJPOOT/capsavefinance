@@ -57,7 +57,9 @@
 
             </div>
         </div>
-
+        @if(Session::has('message'))
+            <p class="alert alert-info">{{ Session::get('message') }}</p>
+        @endif
         <div class="card mt-4">
             <div class="card-body ">
              <form method="POST" action="{{url('application/cam/cam-information-save')}}"> 
@@ -117,28 +119,28 @@
                             <td><b>External Rating ( If any )</b></td>
                             <td style="text-align: center;">
                                 <fieldset class="rating" id="goof" name="goof">
-                                    <input type="radio" id="star5" name="rating" value="5">
+                                    <input type="radio" id="star5" name="rating_no" value="5">
                                     <label class="full" for="star5" title="Awesome - 5 stars"></label>
-                                    <input type="radio" id="star4half" name="rating" value="4.5">
+                                    <input type="radio" id="star4half" name="rating_no" value="4.5">
                                     <label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
-                                    <input type="radio" id="star4" name="rating" value="4">
+                                    <input type="radio" id="star4" name="rating_no" value="4">
                                     <label class="full" for="star4" title="Pretty good - 4 stars"></label>
-                                    <input type="radio" id="star3half" name="rating" value="3.5">
+                                    <input type="radio" id="star3half" name="rating_no" value="3.5">
                                     <label class="half" for="star3half" title="Meh - 3.5 stars"></label>
-                                    <input type="radio" id="star3" name="rating" value="3">
+                                    <input type="radio" id="star3" name="rating_no" value="3">
                                     <label class="full" for="star3" title="Meh - 3 stars"></label>
-                                    <input type="radio" id="star2half" name="rating" value="2.5">
+                                    <input type="radio" id="star2half" name="rating_no" value="2.5">
                                     <label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
-                                    <input type="radio" id="star2" name="rating" value="2">
+                                    <input type="radio" id="star2" name="rating_no" value="2">
                                     <label class="full" for="star2" title="Kinda bad - 2 stars"></label>
-                                    <input type="radio" id="star1half" name="rating" value="1.5">
+                                    <input type="radio" id="star1half" name="rating_no" value="1.5">
                                     <label class="half" for="star1half" title="Meh - 1.5 stars"></label>
-                                    <input type="radio" id="star1" name="rating" value="1">
+                                    <input type="radio" id="star1" name="rating_no" value="1">
                                     <label class="full" for="star1" title="Sucks big time - 1 star"></label>
-                                    <input type="radio" id="starhalf" name="rating" value=".5">
+                                    <input type="radio" id="starhalf" name="rating_no" value=".5">
                                     <label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
                                 </fieldset>
-                                <textarea class="form-control" id="external_rating_comments" rows="2" value=""> </textarea>
+                                <textarea class="form-control" id="external_rating_comments" rows="2" value="" name="rating_comment"> </textarea>
                             </td>
                         </tr>
 
@@ -150,7 +152,7 @@
                         <div class="data mt-4">
                             <h2 class="sub-title bg">Existing Group Exposure  </h2>
                             <div class="pl-4 pr-4 pb-4 pt-2">
-                                <textarea name="existing_group_exposure" id="existing_group_exposure" class="form-control" value=""> </textarea>
+                                <textarea name="existing_exposure" id="existing_group_exposure" class="form-control" value=""> </textarea>
                             </div>
                         </div>
                     </div>
@@ -158,7 +160,7 @@
                         <div class="data mt-4">
                             <h2 class="sub-title bg">Proposed Group Exposure</h2>
                             <div class="pl-4 pr-4 pb-4 pt-2">
-                                <textarea name="existing_group_exposure" id="existing_group_exposure" class="form-control" value=""> </textarea>
+                                <textarea name="proposed_exposure" id="existing_group_exposure" class="form-control" value=""> </textarea>
                             </div>
                         </div>
 
@@ -195,7 +197,7 @@
                                     <td id="limits" name="limits">₹ </td>
                                     <td><b>Exiting Limits ( If any ) </b></td>
                                     <td>
-                                        <input type="text" name="existing_limits" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr" value="0">
+                                        <input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr" value="0">
                                     </td>
                                 </tr>
 
@@ -204,36 +206,36 @@
                                     <td value=""></td>
                                     <td><b>Purpose</b></td>
                                     <td>
-                                        <input type="text" name="purpose" id="purpose" class="form-control" value="">
+                                        <input type="text" name="t_o_f_purpose" id="purpose" class="form-control" value="">
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <td><b>Takeout</b></td>
                                     <td>
-                                        <input type="text" name="takeout" id="takeout" class="form-control" value="">
+                                        <input type="text" name="t_o_f_takeout" id="takeout" class="form-control" value="">
                                     </td>
                                     <td><b>Recourse</b></td>
                                     <td>
-                                        <input type="text" name="recourse" id="recourse" class="form-control" value="">
+                                        <input type="text" name="t_o_f_recourse" id="recourse" class="form-control" value="">
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <td><b>Security</b></td>
                                     <td>
-                                        <input type="text" name="security" id="security" class="form-control" value="" <="" td="">
+                                        <input type="text" name="t_o_f_security" id="security" class="form-control" value="" <="" td="">
                                     </td>
                                     <td><b>Adhoc Limit</b></td>
                                     <td>
-                                        <input type="text" name="adhoc_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" id="adhoc_limit" class="form-control inr" onfocusout="checkNumber(this)" value="0">
+                                        <input type="text" name="t_o_f_adhoc_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" id="adhoc_limit" class="form-control inr" onfocusout="checkNumber(this)" value="0">
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <td><b>Status of Covenants stipulated during last approval</b></td>
                                     <td colspan="3">
-                                        <input type="text" name="last_approval_status_stipulated" id="last_approval_status_stipulated" class="form-control" value="">
+                                        <input type="text" name="t_o_f_covenants" id="last_approval_status_stipulated" class="form-control" value="">
                                     </td>
                                 </tr>
 
@@ -245,21 +247,21 @@
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Brief Profile of the Company</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="profile_of_company" name="profile_of_company" rows="3" spellcheck="false"></textarea>
+                        <textarea class="form-control" id="profile_of_company" name="t_o_f_profile_comp" rows="3" spellcheck="false"></textarea>
                     </div>
                 </div>
 
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Risk Comments</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="profile_of_company" name="profile_of_company" rows="3" spellcheck="false"></textarea>
+                        <textarea class="form-control" id="profile_of_company" name="risk_comments" rows="3" spellcheck="false"></textarea>
                     </div>
                 </div>
 
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false"></textarea>
+                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment"></textarea>
 
                         <div class="clearfix"></div>
                     </div>

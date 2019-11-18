@@ -8,6 +8,7 @@
  * @author Prolitus Dev Team
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
+
     Route::group(
             ['middleware' => 'auth'], function () {
         Route::group(
@@ -98,6 +99,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@leadDetail'
             ]);
         });
-    });
+            });
 });
 

@@ -56,38 +56,38 @@
                                         </tr>
 
 
-
-<!--                                                      <tr>
-    <td class="text-left" width="30%"><b>PAN Number</b></td>
-    <td>	27377XDTYASYS6</td> 
-     <td class="text-left" width="30%"><b>Pin Code </b></td>
-    <td>	203245</td> 
-     <td class="text-left" width="30%"><b>GST Number</b></td>
-    <td>	xyz Singh</td> 
-</tr>
-
-<tr>
-    <td class="text-left" width="30%"><b>Industry </b></td>
-    <td>	Industry</td> 
-    <td class="text-left" width="30%"><b>Nature of Business </b></td>
-    <td>	Nature of Business</td> 
-    
-</tr>
-
-
- <tr>
-    <td class="text-left" width="30%"><b>Business Constitution </b></td>
-    <td>{{$userInfo->f_name}} {{$userInfo->m_name}} {{$userInfo->l_name}}	</td> 
-    <td class="text-left" width="30%"><b>Business Turnover </b></td>
-    <td>	400000.00</td> 
- </tr>                                             
-
- <tr>
-    <td class="text-left" width="30%"><b>Address </b></td>
-    <td>	xyx hdhhd jhdyh</td> 
-    <td class="text-left" width="30%"><b>City </b> </td>
-    <td>	Noida</td> 
-</tr>-->
+                                        <!--
+                                                                                              <tr>
+                                            <td class="text-left" width="30%"><b>PAN Number</b></td>
+                                            <td>	27377XDTYASYS6</td> 
+                                             <td class="text-left" width="30%"><b>Pin Code </b></td>
+                                            <td>	203245</td> 
+                                             <td class="text-left" width="30%"><b>GST Number</b></td>
+                                            <td>	xyz Singh</td> 
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td class="text-left" width="30%"><b>Industry </b></td>
+                                            <td>	Industry</td> 
+                                            <td class="text-left" width="30%"><b>Nature of Business </b></td>
+                                            <td>	Nature of Business</td> 
+                                            
+                                        </tr>
+                                        
+                                        
+                                         <tr>
+                                            <td class="text-left" width="30%"><b>Business Constitution </b></td>
+                                            <td>{{$userInfo->f_name}} {{$userInfo->m_name}} {{$userInfo->l_name}}	</td> 
+                                            <td class="text-left" width="30%"><b>Business Turnover </b></td>
+                                            <td>	400000.00</td> 
+                                         </tr>                                             
+                                        
+                                         <tr>
+                                            <td class="text-left" width="30%"><b>Address </b></td>
+                                            <td>	xyx hdhhd jhdyh</td> 
+                                            <td class="text-left" width="30%"><b>City </b> </td>
+                                            <td>	Noida</td> 
+                                        </tr>-->
                                     </tbody>
                                 </table>
                             </div> 
@@ -105,29 +105,28 @@
                                     </thead>
                                     <tbody>
 
+                                        @if(count($application)>0)
+                                        @foreach ($application AS $app)
                                         <tr>
-                                            <td class="text-left">1,2,3</td>
-                                            <td><button type="button" class="btn btn-success btn-sm">Active</button>	</td>
-                                            <td><div class="d-flex inline-action-btn justify-content-center"><a title="Add App Note" href="company-details.php" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                            <td class="text-left">{{$app['app_id']}}</td>
+                                            <td>
+                                                @if($app['status'] == 1)
+                                                <button type="button" class="btn btn-success btn-sm">Complete</button>
+                                                @else
+                                                <button type="button" class="btn btn-info btn-sm">Not Complete</button>
+                                                @endif 
+                                            </td>
+                                            <td><div class="d-flex inline-action-btn justify-content-center"><a title="Add App Note" href="{{route('cam_overview',['user_id'=>$app['user_id'], 'app_id'=>$app['app_id']])}}" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
                                                 </div>	           
                                             </td>  
-                                        </tr>
-                                        <tr>
-                                            <td class="text-left">4,5,6</td>
-                                            <td><button type="button" class="btn btn-success btn-sm">Active</button>	</td>
-                                            <td><div class="d-flex inline-action-btn justify-content-center"><a title="Add App Note" href="company-details.php" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                                                </div>	           
-                                            </td>  
-                                        </tr>
-                                        <tr>
-                                            <td class="text-left">7,8,9</td>
-                                            <td><button type="button" class="btn btn-success btn-sm">Active</button>	</td>
-                                            <td><div class="d-flex inline-action-btn justify-content-center"><a title="Add App Note" href="company-details.php" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                                                </div>	           
-                                            </td>  
-                                        </tr>				
+                                        </tr>	
 
-
+                                        @endforeach
+                                        @else
+                                        <tr>
+                                            <td  colspan = "3"> No Application Found:</td>
+                                        </tr>
+                                        @endif
                                     </tbody>
                                 </table>
 
@@ -159,5 +158,4 @@
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
 @endsection
