@@ -33,14 +33,29 @@ class ApplicationController extends Controller
     {
         return view('backend.app.index');
     }
-    
-    public function showCompanyDetails($id){
-        return view('backend.app.company-details');
+
+    public function showCompanyDetails(Request $request){
+        try {
+            $arrFileData = $request->all();
+            $business_info = $this->appRepo->getApplicationById($request->app_id);
+            //dd($business_info);
+
+            if ($business_info) {
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return view('backend.app.company-details')->with(['business_info'=>$business_info]);
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
+
+
+
+
      public function showPromoterDetails($id){
         $id = Auth::user()->user_id;
-        $res = Route('promoter-details',['user-id',$id]);
-        dd($res);
         return view('backend.app.promoter-details');
     }
     
