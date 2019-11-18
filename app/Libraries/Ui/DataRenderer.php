@@ -50,7 +50,7 @@ class DataRenderer implements DataProviderInterface
                     'id',
                     function ($user) {
                     $link = '000'.$user->user_id;
-                        return "<a id=\"" . $user->user_id . "\" href=\"#\" rel=\"tooltip\"   >$link</a> ";
+                        return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                         
                     }
                 )
