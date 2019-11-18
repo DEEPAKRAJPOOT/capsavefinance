@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Backend;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Auth;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Contracts\Ui\DataProviderInterface;
+
 
 class DashboardController extends Controller
 {
@@ -14,9 +17,16 @@ class DashboardController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    
+     
+    
+    public function __construct( InvUserRepoInterface $user)
     {
+        $this->middleware('guest')->except('logout');
+        $this->middleware('checkBackendLeadAccess');
 
+        $this->userRepo = $user;
+         
     }
 
     /**

@@ -8,6 +8,60 @@
  * @author Prolitus Dev Team
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
+<<<<<<< HEAD
+    Route::group(
+            ['middleware' => 'auth'], function () {
+
+        Route::group(
+                ['prefix' => 'dashboard'], function () {
+
+            Route::get(
+                    '/', [
+                'as' => 'backend_dashboard',
+                'uses' => 'Backend\DashboardController@index'
+                    ]
+            );
+        });
+
+        Route::group(
+                ['prefix' => 'application'], function () {
+            Route::get('/', [
+                'as' => 'application_list',
+                'uses' => 'Backend\ApplicationController@index'
+            ]);
+
+            Route::get('/supplier', [
+                'as' => 'supplier_list',
+                'uses' => 'Backend\SupplierController@index'
+            ]);
+
+            Route::get('cam/overview', [
+                'as' => 'cam_overview',
+                'uses' => 'Backend\CamController@index'
+            ]);
+
+            Route::get('company-details/{id}', [
+                'as' => 'company_details',
+                'uses' => 'Backend\ApplicationController@showCompanyDetails'
+            ]);
+        });
+
+
+        Route::group(
+                ['prefix' => 'lead'], function () {
+            Route::get('/', [
+                'as' => 'lead_list',
+                'uses' => 'Backend\LeadController@index'
+            ]);
+
+            Route::get('edit-backend-lead', [
+                'as' => 'edit_backend_lead',
+                'uses' => 'Backend\LeadController@editBackendLead'
+            ]);
+        });
+    });
+});
+=======
         Route::group(
         ['middleware' => 'auth'],
         function () {
@@ -132,3 +186,4 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     ]);
             });
 
+>>>>>>> f133fc5680657d87e8b519a39945a2611c6d4ae1
