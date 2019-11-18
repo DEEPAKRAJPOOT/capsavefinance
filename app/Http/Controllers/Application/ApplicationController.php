@@ -190,7 +190,6 @@ class ApplicationController extends Controller
             if ($response->count() < 1) {
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             } else {
-                die("1");
                 return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
             }
         } catch (Exception $ex) {
