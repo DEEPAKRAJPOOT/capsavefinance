@@ -98,6 +98,39 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@leadDetail'
             ]);
         });
+        
+Route::group(
+        ['prefix' => 'anchor'],
+        function () {
+            Route::get('/',
+                [
+                'as' => 'get_anchor_list',
+                'uses' => 'Backend\LeadController@allAnchorList'
+            ]);
+             Route::get('add-anchor', [
+                'as' => 'edit_backend_lead',
+                'uses' => 'Backend\LeadController@addAnchorReg'
+            ]);
+
+           /* Route::get('/supplier',
+                [
+                'as' => 'supplier_list',
+                'uses' => 'Backend\SupplierController@index'
+            ]);
+
+            Route::get('cam/overview',
+                [
+                'as' => 'cam_overview',
+                'uses' => 'Backend\CamController@index'
+            ]);
+
+            Route::get('company-details/{id}',
+                [
+                'as' => 'company_details',
+                'uses' => 'Backend\ApplicationController@showCompanyDetails'
+            ]);    */       
+    }); 
+        
     });
 });
 

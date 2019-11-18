@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 use Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 
 class LeadController extends Controller
@@ -96,5 +97,34 @@ class LeadController extends Controller
        
      }
      
-     
+  
+ /**
+     * Display anchor listing
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function allAnchorList()
+    {
+        return view('backend.anchor.index');
+    }
+    
+    
+     public function addAnchorReg(AnchorRegisterRequest $request){
+         try {
+                /*$user_id = $request->get('user_id');
+                $arr = [];    
+                if($user_id){
+                        $userInfo = $this->userRepo->getUserDetail($user_id);
+                        $arr['full_name'] = $userInfo->f_name;
+                        
+                    }*/
+                     
+                    return view('backend.anchor.add_anchor_reg');
+                
+         } catch (Exception $ex) {
+             dd($ex);
+         }
+       
+     }
+    
 }

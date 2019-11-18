@@ -25,7 +25,7 @@
                         <span class="btn-label">
                             <i class="fa fa-plus"></i>
                         </span>
-                        Add Supplier
+                        Add Anchor
                     </a>
                 </div>
             </div>
