@@ -388,7 +388,7 @@
                 });
           
         jQuery(document).ready(function () {
-            $('.isloader1').show();
+            $('.isloader').show();
             var CIN = '{{ (isset($cin_no->cin)) ? $cin_no->cin : "" }}';
             var consent = "Y";
             var key = "h3JOdjfOvay7J8SF";
@@ -404,11 +404,12 @@
                 dataType: 'json',
                 data: jsonData,
                 error:function (xhr, status, errorThrown) {
-                                $('.isloader').none();
-        			alert(errorThrown);
+                                alert(errorThrown);
+                                $('.isloader').hide();
+        		
     			},
                 success: function (result) {
-                   
+                  
                     $(".isloader").hide();
                     obj = result.result.directors;
                     var count = 0;
