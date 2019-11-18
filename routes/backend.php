@@ -63,6 +63,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'edit_backend_lead',
                         'uses' => 'Backend\LeadController@editBackendLead'
                     ]);
+                    
+                    Route::get('lead-detail',
+                        [
+                        'as' => 'lead_detail',
+                        'uses' => 'Backend\LeadController@leadDetail'
+                    ]);
             });
     });    
 });

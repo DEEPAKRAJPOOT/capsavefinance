@@ -67,5 +67,27 @@ class LeadController extends Controller
        
      }
      
+      
+    /**
+     *backend Lead Details
+     * 
+     * @param Request $request
+     * @return type
+     */
+     
+     public function leadDetail(Request $request){
+         try {
+                $user_id = $request->get('user_id');
+                $userInfo = $this->userRepo->getUserDetail($user_id);//dd($userInfo);
+                return view('backend.lead.lead_details')
+                            ->with('userInfo' ,$userInfo);
+                
+                
+         } catch (Exception $ex) {
+             dd($ex);
+         }
+       
+     }
+     
      
 }
