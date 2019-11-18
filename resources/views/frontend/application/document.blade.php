@@ -84,7 +84,9 @@
                                     <tbody>
                                         <tr>
                                             <td width="20%"><b>Document Name</b></td>
+                                            @if($data->doc_id == '4')
                                             <td width="20%"><b>Bank</b></td>
+                                            @endif
                                             <td width="20%"><b>Upload On </b></td>
                                             <td width="20%">Download</td>
                                             <td align="center" width="20%">Action</td>
@@ -92,7 +94,9 @@
                                         @foreach($documentData[$data->document->doc_name] as $value)
                                         <tr>
                                             <td width="20%">{{ $value->doc_id_no }}</td>
+                                            @if($data->doc_id == '4')
                                             <td width="20%">{{ $value->doc_name }}</td>
+                                            @endif
                                             <td width="20%"> {{ date('d-m-Y', strtotime($value->created_at))}} </td>
                                             <td width="20%"><a href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
                                             <td align="center" width="20%">
