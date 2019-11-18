@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-
+@include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
 
