@@ -289,7 +289,8 @@
                 $('input.networth').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                number: true
                             })
                 });
                 $('textarea.address').each(function () {
@@ -387,7 +388,7 @@
                 });
           
         jQuery(document).ready(function () {
-            $('.isloader').show();
+            $('.isloader1').show();
             var CIN = '{{ (isset($cin_no->cin)) ? $cin_no->cin : "" }}';
             var consent = "Y";
             var key = "h3JOdjfOvay7J8SF";
