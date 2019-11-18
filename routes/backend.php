@@ -97,7 +97,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lead_detail',
                 'uses' => 'Backend\LeadController@leadDetail'
             ]);
-        })
+        });
     });
 });
 
