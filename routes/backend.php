@@ -17,7 +17,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::resource('lender', 'Backend\LenderController');
             Route::resource('logistics', 'Backend\LogisticsController');
         });
-            Route::get('cam/overview', 'Backend\CamController@index');
             Route::get('lead-pool',
                     [
                     'as' => 'lead_leadspool',
@@ -112,9 +111,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         [
                         'as' => 'company_details',
                         'uses' => 'Backend\ApplicationController@showCompanyDetails'
-                    ]);           
-            });   
+                    ]);  
 
+                    Route::post('cam/cam-information-save',
+                        [
+                        'as' => 'cam/cam-information-save',
+                        'uses' => 'Backend\CamController@camInformationSave'
+                    ]); 
+                 
+            });   
 
             Route::group(
                 ['prefix' => 'lead'],
@@ -132,3 +137,4 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     ]);
             });
 
+                     

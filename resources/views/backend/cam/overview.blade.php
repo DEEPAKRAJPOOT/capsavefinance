@@ -81,6 +81,8 @@
 
         <div class="card mt-4">
             <div class="card-body ">
+             <form method="POST" action="{{url('application/cam/cam-information-save')}}"> 
+             @csrf
                 <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0" border="1">
                     <tbody>
                         <tr>
@@ -284,8 +286,8 @@
                     </div>
 
                 </div>
-                <button class="btn btn-success pull-right  mt-3"> Save</button>
-
+                <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+              </form>
             </div>
         </div>
     </div>
