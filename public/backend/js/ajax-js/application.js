@@ -12,8 +12,8 @@ var oTable;
                 ajax: {
                 "url": messages.get_applications, // json datasource
                 "method": 'POST',
-                data: function (d) {
-                    d.by_email = $('input[name=by_email]').val();
+                data: function (d) {                    
+                    d.search_keyword = $('input[name=search_keyword]').val();
                     d.is_assign = $('select[name=is_assign]').val();
                     d._token = messages.token;
                 },
@@ -35,13 +35,13 @@ var oTable;
                  aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4]}]
             });
            //Search
-        $('#manageUser').on('submit', function (e) {
+        $('#searchForm').on('submit', function (e) {            
             e.preventDefault();
             oTable1.draw();
 
         });
             
-        });
+    });
         
 } catch (e) {
     if (typeof console !== 'undefined') {

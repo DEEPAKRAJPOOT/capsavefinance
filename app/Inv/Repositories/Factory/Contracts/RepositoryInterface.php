@@ -1,4 +1,6 @@
-<?php namespace App\Inv\Repositories\Factory\Contracts;
+<?php 
+
+namespace App\Inv\Repositories\Factory\Contracts;
 
 /**
  * RepositoryInterface provides the standard functions to be expected of ANY

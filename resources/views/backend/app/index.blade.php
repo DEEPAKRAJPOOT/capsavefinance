@@ -45,14 +45,14 @@
                     Form::open(
                     array('name' => 'ProCountryMaster',
                     'autocomplete' => 'off', 
-                    'id' => 'manageUser',  
+                    'id' => 'searchForm',  
 
                     )
                     ) 
                     !!}
 
                     {!!
-                    Form::text('by_email',
+                    Form::text('search_keyword',
                     null,
                     [
                     'class' => 'form-control',
