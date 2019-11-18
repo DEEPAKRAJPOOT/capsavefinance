@@ -83,7 +83,7 @@
                                 <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
                                     <tbody>
                                         <tr>
-                                            <td width="20%"><b>Document Id</b></td>
+                                            <td width="20%"><b>Document Name</b></td>
                                             <td width="20%"><b>Bank</b></td>
                                             <td width="20%"><b>Upload On </b></td>
                                             <td width="20%">Download</td>
@@ -154,10 +154,6 @@
                                                 <input class="form-control" type="text" name="doc_name" value="" placeholder="Enter Document Name" >
                                             </div>
                                             @endif
-                                            <div class="form-group">
-                                                <label for="email">Document ID No</label>
-                                                <input class="form-control" type="text" name="doc_id_no" value="" placeholder="Enter Document ID Number" >
-                                            </div>
                                             <div class="custom-file mb-3 mt-2">
                                                 <label for="email">Upload Document</label>
                                                 <input type="file" class="custom-file-input" id="customFile" name="bank_docs[]" multiple="">
