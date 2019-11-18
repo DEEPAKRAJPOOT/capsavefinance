@@ -10,6 +10,10 @@ use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\Otp;
 use App\Inv\Repositories\Contracts\UserInterface;
 use App\Inv\Repositories\Models\User as UserModel;
+use App\Inv\Repositories\Models\Master\Role;
+use App\Inv\Repositories\Models\Master\Permission as PermissionModel;
+use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
+
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -776,6 +780,7 @@ class UserRepository extends BaseRepositories implements UserInterface
         
         return UserBussinessAddress::getData($user_kyc_id);
     }
+ 
 
     /**
      * Save Promoter Details
@@ -819,4 +824,25 @@ class UserRepository extends BaseRepositories implements UserInterface
            return $table;
     }
    
+     /**
+     * Get a backend user by id
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getBackendUser($user_id)
+    {
+        $user = UserModel::getBackendUser((int) $user_id);
+
+        if (empty($user)) {
+            return false;
+        }
+
+        return $user[0];
+    }
+
+ 
 }
