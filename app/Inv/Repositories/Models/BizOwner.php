@@ -89,6 +89,7 @@ class BizOwner extends Model
             'updated_by' => Auth::user()->user_id
             ]
             ]);
+         
           return $owner;
 
     }
@@ -108,14 +109,14 @@ class BizOwner extends Model
          $inputArr['created_at'] = $dateTime;
          $inputArr['created_by'] = $userId;
          $res = BizPanGstApi::create($inputArr); 
+//         dd($attributes);
          /* save Owner api data */
         if($res->biz_pan_gst_api_id > 0){
-            $date = Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i]);
            $ownerInputArr[$i]['biz_id']  = 1;   
            $ownerInputArr[$i]['user_id']  = $userId; 
            $ownerInputArr[$i]['first_name'] = $attributes['first_name'][$i];
            $ownerInputArr[$i]['last_name'] = $attributes['last_name'][$i];
-           $ownerInputArr[$i]['date_of_birth'] = $date;
+           $ownerInputArr[$i]['date_of_birth'] =  $attributes['date_of_birth'][$i];
            $ownerInputArr[$i]['gender'] = $attributes['gender'][$i];
            $ownerInputArr[$i]['owner_addr'] = $attributes['owner_addr'][$i];
            $ownerInputArr[$i]['is_pan_verified'] = 1; 
@@ -125,6 +126,7 @@ class BizOwner extends Model
            $ownerInputArr[$i]['created_by'] =  $userId;
          }
      }
+   
      $ownerInputArr =  BizOwner::insert($ownerInputArr);
      return $ownerInputArr;
   }
