@@ -6,13 +6,13 @@
                 <div class="content-wrapper">
                 <ul class="sub-menu-main pl-0 m-0">
 		<li>
-			<a href="company-details.php" class="active">Company Details</a>
+			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Company Details</a>
 		</li>
 		<li>
-			<a href="promoter-details.php">Promoter Details</a>
+			<a href="#">Promoter Details</a>
 		</li>
 		<li>
-			<a href="document.php">Documents</a>
+			<a href="#">Documents</a>
 		</li>
 		<!--<li>
 			<a href="buyers.php">Buyers </a>
