@@ -1,26 +1,6 @@
 @extends('layouts.backend.admin-layout')
-@include('layouts.backend.partials.admin-sidebar')
 @section('content')
-<ul class="main-menu">
-    <li>
-        <a href="company-details.php" >Application details</a>
-    </li>
-    <li>
-              <a href="cam.php">CAM</a>
-    </li>
-    <li>
-        <a href="residence.php">FI/RCU</a>
-    </li>
-    <li>
-        <a href="Collateral.php">Collateral</a>
-    </li>
-    <li>
-        <a href="notes" class="active">Notes</a>
-    </li>
-    <li>
-        <a href="commercial.php">Submit Commercial</a>
-    </li>
-</ul>
+@include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
 <div class="row grid-margin mt-3 mb-2">
 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
