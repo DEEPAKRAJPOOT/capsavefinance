@@ -10,13 +10,11 @@
 Route::domain(config('proin.backend_uri'))->group(function () {
 
     
-    Route::group(
-        ['prefix' => 'dashboard'],
+    Route::group(['prefix' => 'dashboard'],
         function () {
-        Route::group(
-            ['middleware' => 'adminauth'],
+            Route::group(['middleware' => 'auth'],
             function () {
-            Route::get(
+             Route::get(
                 '/',
                 [
                 'as' => 'backend_dashboard',
@@ -27,13 +25,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
            
     });
     
-      Route::group(
-            ['middleware' => 'adminauth'],
-            function () {
-    
-    
+    Route::group(
+            ['middleware' => 'auth'],
+    function () {
     Route::resource('lead', 'Backend\LeadController');
-    Route::resource('supplier', 'Backend\SupplierController');
+     Route::resource('supplier', 'Backend\SupplierController');
     Route::resource('buyer', 'Backend\BuyerController');
     Route::resource('lender', 'Backend\LenderController');
     Route::resource('logistics', 'Backend\LogisticsController');
@@ -61,7 +57,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     
 //    Route::group(['prefix' => 'profile'],
 //        function () {
-//        Route::group(['middleware' => 'adminauth'],
+//        Route::group(['middleware' => 'auth'],
 //            function () {
 //
 //            Route::get('/',

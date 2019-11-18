@@ -2,14 +2,14 @@
 
 namespace App\Http\Middleware;
 
+use Auth;
 use Closure;
-use Session;
+use App\B2c\Libraries\CmLogger;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Support\Facades\Input;
-
 
 class Authenticate
 {
+
     /**
      * The Guard implementation.
      *
@@ -23,6 +23,9 @@ class Authenticate
      * @var array
      */
     protected $excluded_routes = [
+        'backend_logout',
+        'login_password_reset',
+        'login_password_update',
     ];
 
     /**
@@ -45,19 +48,35 @@ class Authenticate
      */
     public function handle($request, Closure $next)
     {
-        $go_on_right = 0;
         if ($this->auth->guest()) {
             if ($request->ajax()) {
                 return response('Unauthorized.', 401);
             } else {
-                
-                //$u_id = Input::get('user_id');
-               
-                // Session::put('uId', $u_id);
-                return redirect()->route('login_open');
+                return redirect()->guest('/');
             }
         }
 
+        // Add our Case Manager Activity tracking here
+        $domain = $request->server('HTTP_HOST');
+        $route = $request->route()->getName();
+
+        if ($domain == config('b2cin.backend_uri')) {
+            if ($this->passwordResetOnFirstLogin() && !in_array($route, $this->excluded_routes)) {
+                return redirect(route('login_password_reset'));
+            }
+            (new CmLogger())->handle($request);
+        }
+
         return $next($request);
+    }
+
+    /**
+     * Returns whether a use is required to update his/her password
+     *
+     * @return boolean
+     */
+    protected function passwordResetOnFirstLogin()
+    {
+        return (Auth::user()->is_password_set_onlogin === null);
     }
 }

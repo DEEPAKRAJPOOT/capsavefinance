@@ -152,8 +152,7 @@ class Role extends BaseModel
     public static function checkRoleAssigntoUser($role_id)
     {
         $countRow = self::where('roles.id', $role_id)->join('role_user', 'roles.id', '=', 'role_user.role_id')->count();
-        
-        return ($countRow ? : 0);
+         return ($countRow ? : 0);
     }
 
     

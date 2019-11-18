@@ -16,7 +16,7 @@ class CheckBackendLeadAccess extends BaseAuthorization
      */
     public function handle($request, Closure $next)
     {
-        if ($this->gate->denies($request->route()->getName())) {
+         if ($this->gate->denies($request->route()->getName())) {
             return response()->view('errors.403', [], 403);
         }
 

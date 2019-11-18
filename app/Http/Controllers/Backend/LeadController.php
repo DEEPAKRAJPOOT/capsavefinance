@@ -1,12 +1,33 @@
 <?php
 
 namespace App\Http\Controllers\Backend;
+use Auth;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
 {
+    
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    
+     
+    
+    public function __construct( InvUserRepoInterface $user)
+    {
+        $this->middleware('guest')->except('logout');
+        $this->middleware('checkBackendLeadAccess');
+
+        $this->userRepo = $user;
+         
+    }
+
+    
     /**
      * Display a listing of the resource.
      *

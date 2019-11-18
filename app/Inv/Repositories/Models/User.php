@@ -9,6 +9,9 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\Master\Role as Role;
+use App\Inv\Repositories\Models\Master\Permission;
+
 
 
 class User extends Authenticatable
@@ -393,7 +396,7 @@ class User extends Authenticatable
      */
     public function roles()
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class, "role_user", 'user_id');
     }
 
     /**
@@ -461,5 +464,30 @@ class User extends Authenticatable
 
         return ($arrRoles ? : false);
     }
+    
+    
+    /**
+     * Backend user scope
+     *
+     * @param type $query
+     *
+     * @return type
+     */
+    public  function scopeBackendUser($query)
+    {
+        return $query->where('user_type', '=', 2);
+    }
 
+   /**
+     * Get backend user data w.r.t id
+     *
+     * @param integer $user_id
+     *
+     * @return array User List
+     */
+    public static function getBackendUser($user_id)
+    {
+         $users = self::getUserRoles($user_id);
+          return $users;
+    }
 }
