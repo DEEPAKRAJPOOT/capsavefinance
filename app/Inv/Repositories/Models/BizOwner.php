@@ -51,6 +51,8 @@ class BizOwner extends Model
         'gender',
         'share_per',
         'edu_qualification',
+        'other_ownership',
+        'networth',
         'owner_addr',
         'created_by',
         'created_at',
@@ -128,6 +130,8 @@ class BizOwner extends Model
            'biz_pan_gst_id' =>$res->biz_pan_gst_api_id,	
            'share_per' => $attributes['share_per'][$i],
            'edu_qualification' => $attributes['edu_qualification'][$i],
+           'other_ownership' => $attributes['other_ownership'][$i],
+           'networth' => $attributes['networth'][$i],
            'created_by' =>  $userId]);
         }
         if($ownerInputArr->biz_owner_id > 0){
