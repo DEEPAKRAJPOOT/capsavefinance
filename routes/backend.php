@@ -103,4 +103,4 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_backend_lead',
                 'uses' => 'Backend\LeadController@editBackendLead'
             ]);
-        });
+        }); 
