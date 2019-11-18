@@ -21,7 +21,7 @@
        }else{
            $.ajax({
                type: 'POST',
-               url:'/notes',
+               url:'/application/notes',
                data:{'notesData':notesData},
                dataType:'json',
                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
