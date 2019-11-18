@@ -323,8 +323,7 @@
                         {
                             if (res.status == 1)
                             {
-
-                                window.location.href = "/application/document";
+                                     window.location.href = "/application/document";
                             }
                         },
                         error: function (error)
@@ -382,7 +381,7 @@
                 });
           
         jQuery(document).ready(function () {
-            $('.isloader').show();
+            $('.isloader1').show();
             var CIN = '{{ (isset($cin_no->cin)) ? $cin_no->cin : "" }}';
             var consent = "Y";
             var key = "h3JOdjfOvay7J8SF";
@@ -450,9 +449,14 @@
         			alert(errorThrown);
     			},
                 success: function (data) {
-                                            if(data['status-code'] == 101)
-                                            {    
-                                                  $('#response'+count).val(data);
+                                    var name = data['result']['name'];
+                                    var request_id = data['request_id'];
+                                    var status =  data['status-code'];
+                                                             
+                                    if(data['status-code'] == 101)
+                                            {   
+                                                 var MergeResonse = name.concat(request_id, status);       
+                                                  $('#response'+count).val(MergeResonse);
                                                   $('#pan_no'+count).attr('readonly',true);
                                                   $('#pan_verify'+count).text('Verified')
                                                   $('#pan_verify'+count).css('pointer-events','none');
