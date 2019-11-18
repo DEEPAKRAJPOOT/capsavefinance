@@ -67,5 +67,16 @@ class LeadController extends Controller
        
      }
      
+     /**
+     * Display anchor listing
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function allAnchorList()
+    {
+        return view('backend.anchor.index');
+    }
+
+     
      
 }
