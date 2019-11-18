@@ -42,6 +42,7 @@
     <script src="{{url('backend/assets/js/hoverable-collapse.js')}}"></script>
     <script src="{{url('backend/assets/js/misc.js')}}"></script>
     <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
+    <script src="{{url('common/js/iframePopup.js')}}"></script>
    
     <script>
         $(document).ready(function(){

@@ -34,61 +34,61 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
             Route::get('business-information',
                 [
                 'as' => 'business_information_open',
-                'uses' => 'Backend\ApplicationController@showBusinessInformationForm'
+                'uses' => 'Application\ApplicationController@showBusinessInformationForm'
             ]);
 
             Route::post('business-information-save',
                 [
                 'as' => 'business_information_save',
-                'uses' => 'Backend\ApplicationController@saveBusinessInformation'
+                'uses' => 'Application\ApplicationController@saveBusinessInformation'
             ]);
 
             Route::get('promoter-detail',
                 [
                 'as' => 'promoter-detail',
-                'uses' => 'Backend\ApplicationController@showPromoterDetail'
+                'uses' => 'Application\ApplicationController@showPromoterDetail'
             ]);
             
             Route::post('promoter-detail-save',
                 [
                     'as' => 'promoter_detail_save',
-                    'uses' => 'Backend\ApplicationController@savePromoterDetail'
+                    'uses' => 'Application\ApplicationController@savePromoterDetail'
             ]);
             
             Route::get('document',
                 [
                 'as' => 'document',
-                'uses' => 'Backend\ApplicationController@showDocument'
+                'uses' => 'Application\ApplicationController@showDocument'
             ]);
             
             Route::post('document-save',
                 [
                 'as' => 'document-save',
-                'uses' => 'Backend\ApplicationController@saveDocument'
+                'uses' => 'Application\ApplicationController@saveDocument'
             ]);
             
             Route::get('document-delete/{appDocFileId}',
                 [
                 'as' => 'document-delete',
-                'uses' => 'Backend\ApplicationController@documentDelete'
+                'uses' => 'Application\ApplicationController@documentDelete'
             ]);
             
             Route::get('document-view',
                 [
                 'as' => 'document-view',
-                'uses' => 'Backend\ApplicationController@documentView'
+                'uses' => 'Application\ApplicationController@documentView'
             ]);
             
             Route::get('document-download',
                 [
                 'as' => 'document-download',
-                'uses' => 'Backend\ApplicationController@documentDownload'
+                'uses' => 'Application\ApplicationController@documentDownload'
             ]);
             
             Route::post('application-save',
                 [
                 'as' => 'application_save',
-                'uses' => 'Backend\ApplicationController@applicationSave'
+                'uses' => 'Application\ApplicationController@applicationSave'
             ]);
         });
     });
