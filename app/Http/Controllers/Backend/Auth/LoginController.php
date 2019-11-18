@@ -1,7 +1,6 @@
 <?php
-
+use Clouser;
 namespace App\Http\Controllers\Backend\Auth;
-
 use Redirect;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -45,6 +44,7 @@ use AuthenticatesUsers;
     {
         $this->middleware('guest')->except('logout');
         $this->userRepo = $user;
+       // dd($this->userRepo->getBackendUsers(1));
     }
 
     /**
@@ -78,8 +78,7 @@ use AuthenticatesUsers;
        
         $userEmail    = $request['email'];
         $userInfo = $this->userRepo->getUserByEmail($userEmail);
-
-       
+        
         if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);
         }
@@ -119,5 +118,32 @@ use AuthenticatesUsers;
         $request->session()->invalidate();
 
         return $this->loggedOut($request) ?: redirect('/');
+    }
+    
+    protected function authenticated(Request $request, $user) {
+         
+         $domain = $request->route()->domain();
+          if (\Auth::check()) {
+               $user_type = \Auth::user()->user_type;
+            if (config('proin.frontend_uri') === $domain && $user_type==1) {
+                return redirect('front_dashboard');
+            } elseif (config('proin.backend_uri') === $domain && $user_type==2) {
+                $user = $this->userRepo->getBackendUser(\Auth::user()->user_id);
+                if (isset($user->redirect_path) && $user->redirect_path != '') {
+                    return redirect($user->redirect_path);
+                } elseif (!empty(request()->get('rtoken'))) {
+                    try {
+                        $decryptData = Crypt::decrypt(request()->get('rtoken'));
+                        $decryptData = explode("#", $decryptData);
+                        return redirect(route('case_detail', ['user_id' => $decryptData[0], 'app_id' => $decryptData[1]]));
+                    } catch (Exception $ex) {
+                        throw new DecryptException($ex->getMessage());
+                    }
+                }
+
+                return redirect(route('backend_dashboard'));
+            }
+        }
+   
     }
 }

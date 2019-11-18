@@ -1,28 +1,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-
-<ul class="main-menu">
-    <li>
-        <a href="company-details.php" class="active">Application details</a>
-    </li>
-    <li>
-        <a href="cam.php">CAM</a>
-    </li>
-    <li>
-        <a href="residence.php">FI/RCU</a>
-    </li>
-    <li>
-        <a href="Collateral.php">Collateral</a>
-    </li>
-    <li>
-        <a href="notes.php">Notes</a>
-    </li>
-    <li>
-        <a href="commercial.php">Submit Commercial</a>
-    </li>
-</ul>
-
+@include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
 
@@ -81,6 +60,8 @@
 
         <div class="card mt-4">
             <div class="card-body ">
+             <form method="POST" action="{{url('application/cam/cam-information-save')}}"> 
+             @csrf
                 <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0" border="1">
                     <tbody>
                         <tr>
@@ -284,8 +265,8 @@
                     </div>
 
                 </div>
-                <button class="btn btn-success pull-right  mt-3"> Save</button>
-
+                <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+              </form>
             </div>
         </div>
     </div>
