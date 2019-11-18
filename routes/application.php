@@ -8,8 +8,7 @@
  * @author Prolitus Dev Team
  */
 Route::domain(config('proin.frontend_uri'))->group(function () {
-
-    Route::group(
+     Route::group(
         ['prefix' => 'dashboard'],
         function () {
         Route::group(

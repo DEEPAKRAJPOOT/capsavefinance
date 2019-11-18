@@ -8,6 +8,7 @@
  * @author Prolitus Dev Team
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
+
         Route::group(
         ['middleware' => 'auth'],
         function () {
@@ -17,124 +18,89 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::resource('lender', 'Backend\LenderController');
             Route::resource('logistics', 'Backend\LogisticsController');
         });
-            Route::get('lead-pool',
-                    [
-                    'as' => 'lead_leadspool',
-                    'uses' => 'Backend\LeadController@leadspool'
-            ]);
+        Route::get('lead-pool',
+        [
+                'as' => 'lead_leadspool',
+                'uses' => 'Backend\LeadController@leadspool'
+        ]);
     
     
 }); 
         
-        
-    Route::get('edit-backend-lead',
-     [
-        'as' => 'edit_backend_lead',
-         'uses' => 'Backend\LeadController@editBackendLead'
-    ]);
+        Route::group(
+                ['prefix' => 'dashboard'], function () {
 
-    Route::get('notes-from',
-     [
-        'as' => 'backend_notes_from',
-         'uses' => 'Backend\NotesController@showNoteForm'
-    ]);
+            Route::get(
+                    '/', [
+                'as' => 'backend_dashboard',
+                'uses' => 'Backend\DashboardController@index'
+                    ]
+            );
+        });
 
-    Route::get('notes', 'Backend\NotesController@index');
-    //Route::get('notesForm', 'Backend\NotesController@showNoteForm');
-    Route::post('notes', 'Backend\NotesController@store');
-    
-    
-    
-//    Route::group(['prefix' => 'profile'],
-//        function () {
-//        Route::group(['middleware' => 'adminauth'],
-//            function () {
-//
-//            Route::get('/',
-//                [
-//                'as' => 'profile',
-//                'uses' => 'Application\AccountController@index'
-//            ]);
-//           /* 
-//            Route::get('edit',
-//                [
-//                'as' => 'edit_profile',
-//                'uses' => 'Application\AccountController@editPersonalProfile'
-//            ]);*/
-//            
-//            Route::post('edit',
-//                [
-//                'as' => 'update_personal_profile',
-//                'uses' => 'Application\AccountController@savePersonalProfile'
-//            ]);
-//            
-//
-//        });
-//    });
+        Route::group(
+                ['prefix' => 'application'], function () {
+            Route::get('/', [
+                'as' => 'application_list',
+                'uses' => 'Backend\ApplicationController@index'
+            ]);
 
-            Route::group(
-                ['prefix' => 'dashboard'],
-                function () {
+            Route::get('/supplier', [
+                'as' => 'supplier_list',
+                'uses' => 'Backend\SupplierController@index'
+            ]);
 
-                    Route::get(
-                        '/',
-                        [
-                        'as' => 'backend_dashboard',
-                        'uses' => 'Backend\DashboardController@index'
-                        ]
-                    );
+            Route::get('cam/overview', [
+                'as' => 'cam_overview',
+                'uses' => 'Backend\CamController@index'
+            ]);
 
-            });
 
-            Route::group(
-                ['prefix' => 'application'],
-                function () {
-                    Route::get('/',
-                        [
-                        'as' => 'application_list',
-                        'uses' => 'Backend\ApplicationController@index'
-                    ]);
+            Route::get('company-details/{id}',
+            [
+                'as' => 'company_details',
+                    'uses' => 'Backend\ApplicationController@showCompanyDetails'
+                ]);  
 
-                    Route::get('/supplier',
-                        [
-                        'as' => 'supplier_list',
-                        'uses' => 'Backend\SupplierController@index'
-                    ]);
-
-                    Route::get('cam/overview',
-                        [
-                        'as' => 'cam_overview',
-                        'uses' => 'Backend\CamController@index'
-                    ]);
-
-                    Route::get('company-details/{id}',
-                        [
-                        'as' => 'company_details',
-                        'uses' => 'Backend\ApplicationController@showCompanyDetails'
-                    ]);  
-
-                    Route::post('cam/cam-information-save',
-                        [
-                        'as' => 'cam/cam-information-save',
-                        'uses' => 'Backend\CamController@camInformationSave'
-                    ]); 
+            Route::post('cam/cam-information-save',
+                [
+                    'as' => 'cam/cam-information-save',
+                    'uses' => 'Backend\CamController@camInformationSave'
+                ]); 
                  
-            });   
+            Route::get('company-details/{id}', [
+                'as' => 'company_details',
+                'uses' => 'Backend\ApplicationController@showCompanyDetails'
+            ]);
+            
+            Route::get('notes-from', [
+                'as' => 'backend_notes_from',
+                'uses' => 'Backend\NotesController@showNoteForm'
+            ]);
 
-            Route::group(
-                ['prefix' => 'lead'],
-                function () {
-                    Route::get('/',
-                        [
-                        'as' => 'lead_list',
-                        'uses' => 'Backend\LeadController@index'
-                    ]);
+            Route::get('notes', [
+                'as' => 'notes_list',
+                'uses' => 'Backend\NotesController@index'
+            ]);
+            
+            Route::post('notes', [
+                'as' => 'note_save',
+                'uses' => 'Backend\NotesController@store'
+            ]);            
+            
+        });
 
-                    Route::get('edit-backend-lead',
-                        [
-                        'as' => 'edit_backend_lead',
-                        'uses' => 'Backend\LeadController@editBackendLead'
-                    ]);
-            });
 
-                     
+        Route::group(
+                ['prefix' => 'lead'], function () {
+            Route::get('/', [
+                'as' => 'lead_list',
+                'uses' => 'Backend\LeadController@index'
+            ]);
+
+
+            Route::get('edit-backend-lead', [
+                'as' => 'edit_backend_lead',
+                'uses' => 'Backend\LeadController@editBackendLead'
+            ]);
+        });

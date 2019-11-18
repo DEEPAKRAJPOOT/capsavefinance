@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Factory\Models;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model;
+use App\Inv\Repositories\Factory\Models\Relations\BelongsToMany;
 
 class BaseModel extends Model
 {
