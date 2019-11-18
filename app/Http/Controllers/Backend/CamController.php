@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class CamController extends Controller
 {
+	  public function __construct(){
+        $this->middleware('auth');
+       
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,5 +19,12 @@ class CamController extends Controller
     public function index()
     {
         return view('backend.cam.overview');
+
     }
+
+    public function camInformationSave(Request $request)
+    {
+    	$arrCamData = $request->all();
+    }
+
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Backend;
 use Auth;
-use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
