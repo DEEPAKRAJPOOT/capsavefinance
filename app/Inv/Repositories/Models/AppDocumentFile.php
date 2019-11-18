@@ -106,7 +106,12 @@ class AppDocumentFile extends Authenticatable
         
         return $inputArr;
     }
-  
+    
+    
+    public function userFile()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id');
+    }
 }
   
 
