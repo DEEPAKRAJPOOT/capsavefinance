@@ -1,26 +1,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-<ul class="main-menu">
-					<li>
-						<a href="company-details.php" class="active">Application details</a>
-					</li>
-					<li>
-						<a href="cam.php">CAM</a>
-					</li>
-					<li>
-						<a href="residence.php">FI/RCU</a>
-					</li>
-					<li>
-						<a href="Collateral.php">Collateral</a>
-					</li>
-					<li>
-						<a href="notes.php">Notes</a>
-					</li>
-					<li>
-						<a href="commercial.php">Submit Commercial</a>
-					</li>
-				</ul>
+@include('layouts.backend.partials.admin-subnav')
                 <!-- partial -->
                 <div class="content-wrapper">
                 <ul class="sub-menu-main pl-0 m-0">
@@ -519,7 +500,4 @@
 		</div>
 	</div>
 	</div>
-@endsection
-@section('jscript')
-
 @endsection

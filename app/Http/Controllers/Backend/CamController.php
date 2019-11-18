@@ -37,4 +37,14 @@ class CamController extends Controller
         return redirect()->route('cam_overview');
     }
 
+
+
+
+
+    public function finance()
+    {
+        return view('backend.cam.finance');
+
+    }
+
 }

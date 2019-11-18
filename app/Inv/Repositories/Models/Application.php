@@ -4,6 +4,8 @@ namespace App\Inv\Repositories\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
 class Application extends Model
 {
@@ -49,10 +51,35 @@ class Application extends Model
      */
     protected static function getApplications() 
     {
-        $appData = self::select('app.app_id', 'biz.biz_entity_name')
+        $appData = self::select('app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                ->where('app.status', 1)
+                //->where('app.status', 1)
                 ->orderBy('app.app_id');        
         return $appData;
-    }    
+    }   
+   
+    
+     public static function getApplicationsDetail($user_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($user_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($user_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+               
+        
+        $appData = self::select('app.*')
+                ->where('app.user_id', $user_id)->get();
+                       
+        return ($appData?$appData:null);
+        
+    }
 }

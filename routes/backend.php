@@ -9,24 +9,8 @@
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
 
-        Route::group(
-        ['middleware' => 'auth'],
-        function () {
-            Route::resource('lead', 'Backend\LeadController');
-            Route::resource('supplier', 'Backend\SupplierController');
-            Route::resource('buyer', 'Backend\BuyerController');
-            Route::resource('lender', 'Backend\LenderController');
-            Route::resource('logistics', 'Backend\LogisticsController');
-        });
-        Route::get('lead-pool',
-        [
-                'as' => 'lead_leadspool',
-                'uses' => 'Backend\LeadController@leadspool'
-        ]);
-    
-    
-}); 
-        
+    Route::group(
+            ['middleware' => 'auth'], function () {
         Route::group(
                 ['prefix' => 'dashboard'], function () {
 
@@ -55,22 +39,30 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@index'
             ]);
 
-
-            Route::get('company-details/{id}',
-            [
-                'as' => 'company_details',
-                    'uses' => 'Backend\ApplicationController@showCompanyDetails'
-                ]);  
-
-            Route::post('cam/cam-information-save',
-                [
-                    'as' => 'cam/cam-information-save',
-                    'uses' => 'Backend\CamController@camInformationSave'
-                ]); 
-                 
             Route::get('company-details/{id}', [
                 'as' => 'company_details',
                 'uses' => 'Backend\ApplicationController@showCompanyDetails'
+            ]);
+
+            Route::get('promoter-details/{id}', [
+                'as' => 'promoter_details',
+                'uses' => 'Backend\ApplicationController@showPromoterDetails'
+            ]);
+
+            Route::get('company-details',
+                [
+                'as' => 'company_details',
+                'uses' => 'Backend\ApplicationController@showCompanyDetails'
+            ]);
+
+            Route::post('cam/cam-information-save', [
+                'as' => 'cam/cam-information-save',
+                'uses' => 'Backend\CamController@camInformationSave'
+            ]);
+
+            Route::get('cam/finance', [
+                'as' => 'cam_finance',
+                'uses' => 'Backend\CamController@finance'
             ]);
             
             Route::get('notes-from', [
@@ -82,14 +74,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'notes_list',
                 'uses' => 'Backend\NotesController@index'
             ]);
-            
+
             Route::post('notes', [
                 'as' => 'note_save',
                 'uses' => 'Backend\NotesController@store'
-            ]);            
-            
+            ]);
         });
-
 
         Route::group(
                 ['prefix' => 'lead'], function () {
@@ -103,4 +93,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_backend_lead',
                 'uses' => 'Backend\LeadController@editBackendLead'
             ]);
-        }); 
+
+            Route::get('lead-detail', [
+                'as' => 'lead_detail',
+                'uses' => 'Backend\LeadController@leadDetail'
+            ]);
+        });
+            });
+});
+

@@ -99,7 +99,7 @@ class AppDocumentFile extends Authenticatable
         $inputArr['app_id']  = 1;   
         $inputArr['doc_id']  = $attributes['docId']; 
         $inputArr['doc_name']  = $attributes['doc_name']; 
-        $inputArr['doc_id_no']  = $attributes['doc_id_no']; 
+        $inputArr['doc_id_no']  = (isset($attributes['doc_id_no'])) ? $attributes['doc_id_no'] : ''; 
         $inputArr['file_id']  = $fileId; 
         $inputArr['is_upload'] = 1;
         $inputArr['created_by'] = 1;
