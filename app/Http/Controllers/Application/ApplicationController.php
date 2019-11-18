@@ -109,7 +109,6 @@ class ApplicationController extends Controller
         $userArr = [];
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
-            
             if(!empty($requiredDocs)){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
             }
@@ -117,7 +116,7 @@ class ApplicationController extends Controller
         else {
             return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
-        
+//        dd($docData);   
         return view('frontend.application.document')->with([
             'requiredDocs' => $requiredDocs,
             'documentData' => $docData
@@ -188,10 +187,8 @@ class ApplicationController extends Controller
             $response = $this->docRepo->isUploadedCheck($userId, $appId);
             
             if ($response->count() < 1) {
-//                die("here");
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             } else {
-                die("1");
                 return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
             }
         } catch (Exception $ex) {

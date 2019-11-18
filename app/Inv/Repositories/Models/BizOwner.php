@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Models\AppDocument;
 use App\Inv\Repositories\Models\BizPanGstApi;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\BizPanGst;
 
 class BizOwner extends Model
 {
@@ -59,74 +61,98 @@ class BizOwner extends Model
     public static function creates($attributes)
     {
           //insert into rta_app_doc
-          $getRes =  BizOwner::savePanApiRes($attributes);
+          $uid = Auth::user()->user_id;
+          /* Get App id and biz id behalf of user id */
+          $appData = self::getAppId($uid);
+          $getRes =  self::savePanApiRes($attributes,$appData->biz_id);
           $owner = AppDocument::insert([
             [
             'rcu_status' => 0,
-            'user_id' => Auth::user()->user_id,
-            'app_id' => Session::has('appId') ? Session::get('appId') : 0,
+            'user_id' => $uid,
+            'app_id' => Session::has('appId') ? Session::get('appId') : $appData->app_id,
             'doc_id' => 4,
             'is_upload' => 0,
-            'created_by' => Auth::user()->user_id,
-            'updated_by' => Auth::user()->user_id
+            'created_by' => $uid,
+            'updated_by' => $uid
             ],
             [
             'rcu_status' => 0,
-            'user_id' => Auth::user()->user_id,
-            'app_id' => Session::has('appId') ? Session::get('appId') : 0,
+            'user_id' => $uid,
+            'app_id' => Session::has('appId') ? Session::get('appId') : $appData->app_id,
             'doc_id' => 5,
             'is_upload' => 0,
-            'created_by' => Auth::user()->user_id,
-            'updated_by' => Auth::user()->user_id
+            'created_by' => $uid,
+            'updated_by' => $uid
             ],
             [
             'rcu_status' => 0,
-            'user_id' => Auth::user()->user_id,
-            'app_id' => Session::has('appId') ? Session::get('appId') : 0,
+            'user_id' => $uid,
+            'app_id' => Session::has('appId') ? Session::get('appId') : $appData->app_id,
             'doc_id' => 6,
             'is_upload' => 0,
-            'created_by' => Auth::user()->user_id,
-            'updated_by' => Auth::user()->user_id
+            'created_by' => $uid,
+            'updated_by' => $uid
             ]
             ]);
+         
           return $owner;
 
     }
   
     /*  Save Pan Api Response data //////////////////  */
-  public static function savePanApiRes($attributes)
+  public static function savePanApiRes($attributes,$biz_id)
   {
-    $inputArr = [];
-    $ownerInputArr=[];
+      
     $count = count($attributes['response']);
     $userId  = Auth::user()->user_id;
     $mytime = Carbon::now();
     $dateTime = $mytime->toDateTimeString();
      for ($i=0;$i<$count;$i++) 
      {  /* save response api data */
-         $inputArr['file_name'] = $attributes['response'][$i];
-         $inputArr['created_at'] = $dateTime;
-         $inputArr['created_by'] = $userId;
-         $res = BizPanGstApi::create($inputArr); 
+         
+         $res = BizPanGstApi::create(['file_name' => $attributes['response'][$i],
+         'created_at' => $dateTime,
+         'created_by' => $userId]); 
+//         dd($attributes);
          /* save Owner api data */
         if($res->biz_pan_gst_api_id > 0){
-            $date = Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i]);
-           $ownerInputArr[$i]['biz_id']  = 1;   
-           $ownerInputArr[$i]['user_id']  = $userId; 
-           $ownerInputArr[$i]['first_name'] = $attributes['first_name'][$i];
-           $ownerInputArr[$i]['last_name'] = $attributes['last_name'][$i];
-           $ownerInputArr[$i]['date_of_birth'] = $date;
-           $ownerInputArr[$i]['gender'] = $attributes['gender'][$i];
-           $ownerInputArr[$i]['owner_addr'] = $attributes['owner_addr'][$i];
-           $ownerInputArr[$i]['is_pan_verified'] = 1; 
-           $ownerInputArr[$i]['biz_pan_gst_id'] =$res->biz_pan_gst_api_id;	
-           $ownerInputArr[$i]['share_per'] = $attributes['share_per'][$i];
-           $ownerInputArr[$i]['edu_qualification'] = $attributes['edu_qualification'][$i];
-           $ownerInputArr[$i]['created_by'] =  $userId;
-         }
+          
+           $ownerInputArr =  BizOwner::create( ['biz_id' => $biz_id,   
+           'user_id' => $userId, 
+           'first_name' => $attributes['first_name'][$i],
+           'last_name' => $attributes['last_name'][$i],
+           'date_of_birth' => '2019-03-03',
+           'gender' => $attributes['gender'][$i],
+           'owner_addr' => $attributes['owner_addr'][$i],
+           'is_pan_verified' => 1, 
+           'biz_pan_gst_id' =>$res->biz_pan_gst_api_id,	
+           'share_per' => $attributes['share_per'][$i],
+           'edu_qualification' => $attributes['edu_qualification'][$i],
+           'created_by' =>  $userId]);
+        }
+        if($ownerInputArr->biz_owner_id > 0){
+          
+           $bizPanRes =  BizPanGst::create( [   
+           'user_id' => $userId, 
+           'biz_id' => $biz_id,    
+           'biz_owner_id' => $ownerInputArr->biz_owner_id,
+           'type' => 1,
+           'pan_gst_hash' =>  $attributes['pan_no'][$i], 
+           'status' => 1,
+           'parent_pan_gst_id' =>0,    
+           'biz_pan_gst_api_id' => $res->biz_pan_gst_api_id,
+           'created_by' =>  $userId]);
+        }
      }
-     $ownerInputArr =  BizOwner::insert($ownerInputArr);
-     return $ownerInputArr;
+
+     return $bizPanRes;
+  }
+  
+  public static function getAppId($uid)
+  {
+      $res =  Application::where(['status' => 0,'user_id' => $uid])->first();
+      return $res;
+      
   }
    
 }
