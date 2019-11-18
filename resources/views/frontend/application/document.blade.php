@@ -83,15 +83,13 @@
                                 <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
                                     <tbody>
                                         <tr>
-                                            <td width="20%"><b>Document Name</b></td>
-                                            <td width="20%"><b>Bank</b></td>
+                                            <td width="20%"><b>{{ ($data->doc_id == '4') ? 'Bank' : 'Document Name' }}</b></td>
                                             <td width="20%"><b>Upload On </b></td>
                                             <td width="20%">Download</td>
                                             <td align="center" width="20%">Action</td>
                                         </tr>
                                         @foreach($documentData[$data->document->doc_name] as $value)
                                         <tr>
-                                            <td width="20%">{{ $value->doc_id_no }}</td>
                                             <td width="20%">{{ $value->doc_name }}</td>
                                             <td width="20%"> {{ date('d-m-Y', strtotime($value->created_at))}} </td>
                                             <td width="20%"><a href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
