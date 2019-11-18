@@ -31,13 +31,12 @@ Route::group(
         'as' => 'shareholder_save_ajax',
         'uses' => 'AjaxController@saveShareholder'
         ]
-    ); 
-});
-
+    );
+    
    Route::post(
         'get-lead',
         [
-        'as' => 'get-lead',
+        'as' => 'get_lead',
         'uses' => 'AjaxController@getLeads'
         ]
     ); 
@@ -48,4 +47,15 @@ Route::group(
         'uses' => 'AjaxController@getLeadsPools'
         ]
     ); 
+      
+   Route::post(
+        'get-application',
+        [
+        'as' => 'ajax_app_list',
+        'uses' => 'AjaxController@getApplications'
+        ]
+    );    
+});
+
+
 

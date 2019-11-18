@@ -5,11 +5,12 @@ namespace App\Inv\Repositories\Entities\Application;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
-use DB;
+use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use Session;
+use DB;
 
 
 
@@ -69,6 +70,27 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $varRightData = Rights::find((int) $id, $columns);
 
         return $varRightData;
+    }
+
+     public function saveBusinessInfo($attributes = [], $userId = null){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        if(is_null($userId)){
+            throw new BlankDataExceptions('No Data Found');
+        }
+        return Business::creates($attributes, $userId);
     }
 
 

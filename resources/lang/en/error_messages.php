@@ -52,6 +52,8 @@ return [
     'req_right_date' =>'Please choose Date of Rights.',
     'req_right_description' =>'Please enter Description.',
     
+    'app.incomplete' =>'Please uplaoad all documents carefully.',
+    
    
     //Admin Error Messages
     'admin' => [

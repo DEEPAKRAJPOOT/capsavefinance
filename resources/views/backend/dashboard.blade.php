@@ -1,19 +1,11 @@
-@extends('layouts.admin')
+@extends('layouts.backend.admin-layout')
 
 @section('content')
-
-               @if($benifinary["user_type"] =='2') 
-                @include('layouts.backend.partials.admin-sidebar')
-               @else
-               @include('layouts.partials.left-corp-menu')
-               @endif
-           
-  
 
 
 <!-- partial dasboard content -->
 			<div class="content-wrapper">
-				<h3 class="page-title">Zuron - Admin Dashboard111111</h3>
+				<h3 class="page-title">Zuron - Admin Dashboard</h3>
 				<div class="row  grid-margin">
 					<div class="col-12 col-lg-6">
 						<div class="row">
@@ -146,7 +138,4 @@
 		</div>
 	</div>
 </div>
-
-
-
 @endsection

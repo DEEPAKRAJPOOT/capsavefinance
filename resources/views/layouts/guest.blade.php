@@ -21,60 +21,43 @@
         <header>
             <div class="container">
                 <div class="d-flex">
-
                     <a href="#"><img src="{{url('frontend/assets/images/logo_mini.svg')}}" alt="logo" width="50px"> </a>
-
                 </div>
-
         </header>
-
-
         @yield('content')
-
-
-  <div class="isloader" style="display:none;">
-        
+  <div class="isloader" style="display:none;">  
         <img src="{{asset('backend/assets/images/loader.gif')}}">
     </div>
 <style>
-        .error
-        {
+    .error
+    {
+        color:red;
+    }
+    .isloader{ 
+        position: fixed;    
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,.6);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        z-index: 9;
+    }
+</style>
+<script>
+    $(".sign-UP .btn").click(function () {
+        $(".otp-section").fadeIn();
+        $("body").addClass("scroll-hiddin");
+    })
 
-            color:red;
-        }
-        .isloader{
-            
-            position: fixed;
-            
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: rgba(0,0,0,.6);
-display: flex;
-flex-wrap: wrap;
-justify-content: center;
-align-content: center;
-z-index: 9;
-        }
-    </style>
-        <script>
-            $(".sign-UP .btn").click(function () {
-                $(".otp-section").fadeIn();
-                $("body").addClass("scroll-hiddin");
-
-            })
-
-
-            $(".section-header button").click(function () {
-                $(".otp-section").fadeOut();
-                $("body").removeClass("scroll-hiddin");
-
-            })
-
-        </script>
-        @yield('scripts')
-
+    $(".section-header button").click(function () {
+        $(".otp-section").fadeOut();
+        $("body").removeClass("scroll-hiddin");
+    })
+</script>
+    @yield('scripts')
     </body>
-
 </html>

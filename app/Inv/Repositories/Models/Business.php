@@ -81,7 +81,7 @@ class Business extends Model
                 'type'=>1,
                 'pan_gst_hash'=>$attributes['biz_pan_number'],
                 'status'=>1,
-                'pan_gst_parent_id'=>0,
+                'parent_pan_gst_id'=>0,
                 'biz_pan_gst_api_id'=>$bpga_id,
                 'cin'=>$attributes['biz_cin'],
                 'created_by'=>$userId
@@ -96,7 +96,7 @@ class Business extends Model
             $data[$key]['type']=2;
             $data[$key]['pan_gst_hash']=$value;
             $data[$key]['status']=1;
-            $data[$key]['pan_gst_parent_id']=$pan_id;
+            $data[$key]['parent_pan_gst_id']=$pan_id;
             $data[$key]['created_by']=$userId;
             $data[$key]['biz_pan_gst_api_id']=0;
             $data[$key]['created_by']=$userId;
