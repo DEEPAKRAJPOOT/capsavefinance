@@ -49,9 +49,9 @@ class Application extends Model
      */
     protected static function getApplications() 
     {
-        $appData = self::select('app.app_id', 'biz.biz_entity_name', 'biz.biz_id')
+        $appData = self::select('app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                ->where('app.status', 1)
+                //->where('app.status', 1)
                 ->orderBy('app.app_id');        
         return $appData;
     }    
