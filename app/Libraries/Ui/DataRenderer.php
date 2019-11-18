@@ -142,7 +142,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'app_id',
                     function ($app) {
-                        $link = route('cam_overview', ['app_user_id' => $app->user_id, 'app_id' => $app->app_id]);
+                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
                     }
                 )
@@ -155,29 +155,29 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {
                         //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                        return $app->assoc_anchor ? $app->assoc_anchor : '';
+                        return '';
                 })
                 ->addColumn(
                     'user_type',
                     function ($app) {                        
-                        return $app->user_type ? $app->user_type : '';
+                        return '';
                 })                
                 ->addColumn(
                     'assignee',
                     function ($app) {
-                        return $app->assignee ? $app->assignee : '';
+                        return '';
                 })
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
-                    return $app->shared_detail ? $app->shared_detail : '';
+                    return '';
 
                 })
-                ->editColumn(
+                ->addColumn(
                     'status',
                     function ($app) {
-                    $app_status = config('common.app_status');
-                    return $app_status[$app->status];
+                    //$app_status = config('inv_common.app_status');                    
+                    return $app->status == 1 ? 'Completed' : 'Incomplete';
 
                 })
                 ->addColumn(

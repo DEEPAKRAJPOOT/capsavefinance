@@ -109,7 +109,6 @@ class ApplicationController extends Controller
         $userArr = [];
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
-            
             if(!empty($requiredDocs)){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
             }

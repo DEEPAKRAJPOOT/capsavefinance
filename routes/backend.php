@@ -8,6 +8,7 @@
  * @author Prolitus Dev Team
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
+
     Route::group(
             ['middleware' => 'auth'], function () {
         Route::group(
@@ -42,9 +43,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'company_details',
                 'uses' => 'Backend\ApplicationController@showCompanyDetails'
             ]);
+
             Route::get('promoter-details/{id}', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
+            ]);
+
+            Route::get('company-details',
+                [
+                'as' => 'company_details',
+                'uses' => 'Backend\ApplicationController@showCompanyDetails'
             ]);
 
             Route::post('cam/cam-information-save', [
@@ -96,6 +104,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@leadDetail'
             ]);
         });
-    });
+            });
 });
 
