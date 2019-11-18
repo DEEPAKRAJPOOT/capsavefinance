@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Backend;
 use Auth;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -68,6 +67,28 @@ class LeadController extends Controller
                     }
                      
                     return view('backend.edit_lead');
+                
+         } catch (Exception $ex) {
+             dd($ex);
+         }
+       
+     }
+     
+      
+    /**
+     *backend Lead Details
+     * 
+     * @param Request $request
+     * @return type
+     */
+     
+     public function leadDetail(Request $request){
+         try {
+                $user_id = $request->get('user_id');
+                $userInfo = $this->userRepo->getUserDetail($user_id);//dd($userInfo);
+                return view('backend.lead.lead_details')
+                            ->with('userInfo' ,$userInfo);
+                
                 
          } catch (Exception $ex) {
              dd($ex);
