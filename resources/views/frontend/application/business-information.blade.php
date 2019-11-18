@@ -413,7 +413,7 @@
 				    	$('input[name=biz_pan_number] +span').remove();
 				    	fillGSTinput(res.result);
 				    }else{
-				    	alert('Something went wrong, Try again later');
+				    	alert('No GST associated with the entered PAN.');
 				    }
 				    $('.isloader').hide();
 				  }
@@ -514,9 +514,12 @@
 	}
 
 	function checkValidation(){
-		if($('.pan-verify').text() == 'Verify'){
+		if($('.pan-verify').text() == 'Verify' || $('biz_cin').val() == ''){
 			alert('Please fill and verify Business PAN First');
-			return false
+			return false;
+		}else if($('biz_cin').val()  == ''){
+			alert('Service unavailable!');
+			return false;
 		}else{
 			return true;
 		}

@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Models;
 
 use DB;
 use File;
+use Auth;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -39,6 +40,7 @@ class AppDocumentFile extends Authenticatable
         'doc_id',
         'doc_name',
         'doc_id_no',
+        'file_id',
         'is_upload',
         'created_by'
      ];
@@ -55,8 +57,14 @@ class AppDocumentFile extends Authenticatable
     public static function creates($attributes, $fileId)
     {
         $inputArr =  AppDocumentFile::arrayInputData($attributes, $fileId);
-        $appDocFile = AppDocumentFile::insert($inputArr);
-        return $appDocFile;
+        $appDocFile = AppDocumentFile::create($inputArr);
+        if($appDocFile){
+            $result = AppDocument::where('user_id', Auth::user()->user_id)
+                    ->where('app_id', $appDocFile->app_id)
+                    ->where('doc_id', $appDocFile->doc_id)
+                    ->update(['is_upload' => 1]);
+        }
+        return $result;
     }
     
     /**
@@ -98,7 +106,12 @@ class AppDocumentFile extends Authenticatable
         
         return $inputArr;
     }
-  
+    
+    
+    public function userFile()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id');
+    }
 }
   
 

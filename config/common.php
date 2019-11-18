@@ -20,5 +20,9 @@ return [
     'contentType' => env('contentType', ''),
     'gatwayhost'  => env('gatwayhost', ''),
     'google_recaptcha_key'  => env('GOOGLE_RECAPTCHA_KEY', ''), 
-    'google_recaptcha_secret'  => env('GOOGLE_RECAPTCHA_SECRET', ''), 
+    'google_recaptcha_secret'  => env('GOOGLE_RECAPTCHA_SECRET', ''),    
+    'app_status' => [
+        0 => 'In complete',
+        1 => 'Completed'
+    ]
 ];
