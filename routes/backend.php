@@ -11,7 +11,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
     Route::group(
             ['middleware' => 'auth'], function () {
-        Route::resource('lead', 'Backend\LeadController');
+        //Route::resource('lead', 'Backend\LeadController');
         Route::resource('supplier', 'Backend\SupplierController');
         Route::resource('buyer', 'Backend\BuyerController');
         Route::resource('lender', 'Backend\LenderController');
