@@ -27,13 +27,14 @@ class CamController extends Controller
     	$arrCamData = $request->all();
     }
 
-
-
-
-
     public function finance()
     {
         return view('backend.cam.finance');
+
+    }
+    public function finance_store(Request $request)
+    {
+        dd($request);
 
     }
 

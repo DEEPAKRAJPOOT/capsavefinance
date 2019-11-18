@@ -56,6 +56,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'cam_finance',
                 'uses' => 'Backend\CamController@finance'
             ]);
+
+            Route::post('cam/finance_store', [
+                'as' => 'cam_finance_store',
+                'uses' => 'Backend\CamController@finance_store'
+            ]);
             
             Route::get('notes-from', [
                 'as' => 'backend_notes_from',
