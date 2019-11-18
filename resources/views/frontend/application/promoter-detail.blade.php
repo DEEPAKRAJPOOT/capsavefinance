@@ -408,8 +408,9 @@
                         var dob = v.dob;
                         var dateAr = dob.split('-');
                         var newDate =  '';
-                        if(dateAr[0]!="undefined")
+                        if(dateAr!='')
                         {
+                         
                             var newDate = dateAr[0] + '/' + dateAr[1] + '/' + dateAr[2]; 
                         }
                         count++;
