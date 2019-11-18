@@ -144,10 +144,12 @@ class User extends Authenticatable
         if (!is_int($user_id)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-
-        $arrUser = self::select('users.*')
-            ->where('users.user_id', (int) $user_id)
+        
+         $arrUser = self::from('users as u')
+            ->select('u.*')
+            ->where('u.user_id', (int) $user_id)
             ->first();
+         
 
         return ($arrUser ?: false);
     }
