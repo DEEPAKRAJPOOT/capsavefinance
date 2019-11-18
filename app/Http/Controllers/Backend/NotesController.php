@@ -19,7 +19,8 @@ class NotesController extends Controller
   
     public function index()
     {
-        return view('backend.notes.notes');
+        $arrData = DB::table('note')->join('users', 'users.user_id', '=', 'note.created_by')->select('note.*', 'users.f_name', 'users.m_name', 'users.l_name')->get();     
+        return view('backend.notes.notes',compact('arrData'));
     }
 
     public  function store(Request $request)

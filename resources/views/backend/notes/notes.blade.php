@@ -28,10 +28,8 @@
         <div class="card-body">
           <div class=" form-fields">
            <div class="col-md-12">
-            <h5 class="card-title form-head-h5">Notes  <a class="add-btn-cls float-right" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i> Add Note</a></h5>
-
-            <h5 class="card-title form-head-h5">Notes Demo 
-              <a data-toggle="modal" data-target="#noteFrame" data-url ="{{route('backend_notes_from')}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls float-right"><i class="fa fa-plus"></i>Add Note2</a>
+              <h5 class="card-title form-head-h5">Notes  
+              <a data-toggle="modal" data-target="#noteFrame" data-url ="{{route('backend_notes_from')}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls float-right"><i class="fa fa-plus"></i>Add Note</a>
             </h5>
             <div class="col-md-12-cls">
                             <div class="prtm-full-block">       
@@ -49,27 +47,14 @@
                                                     <th class="text-left">Note Details</th>
                                                     <td class="text-right">Added By</td>                                                                        
                                                 </tr> 
+
+                                                @foreach($arrData as $data)
+                                                   
                                                 <tr>
-                                                    <th class="text-left">Abc under writer</th>
-                                                    <td class="text-right">Lorem ispur data here</td>                                                                        
-                                                </tr>	<tr>
-                                                    <th class="text-left">Abc under writer</th>
-                                                    <td class="text-right">Lorem ispur data here</td>                                                                        
-                                                </tr>	<tr>
-                                                    <th class="text-left">Abc under writer</th>
-                                                    <td class="text-right">Lorem ispur data here</td>                                                                        
-                                                </tr>	<tr>
-                                                    <th class="text-left">Abc under writer</th>
-                                                    <td class="text-right">Lorem ispur data here</td>                                                                        
-                                                </tr>	<tr>
-                                                    <th class="text-left">Abc under writer</th>
-                                                    <td class="text-right">Lorem ispur data here</td>                                                                        
-                                                </tr>	<tr>
-                                                    <th class="text-left">Abc under writer</th>
-                                                    <td class="text-right">Lorem ispur data here</td>                                                                        
-                                                </tr>	<tr>
-                                                    <th class="text-left">Abc under writer</th>
+                                                    <th class="text-left">{{$data->note_data}}</th>
+                                                    <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>                                                                        
                                                 </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
@@ -84,55 +69,6 @@
 </div>
 </div>
 
-<!--modal-->
-<div class="modal" id="myModal">
-<div class="modal-dialog">
-  <div class="modal-content">
-     <!-- Modal Header -->
-     <div class="modal-header">
-        <h5>Add Note</h5>
-        <button type="button" class="close close-btns" data-dismiss="modal">&times;</button>
-     </div>
-     <!-- Modal body -->
-     <div class="modal-body text-left">
-       
-            <div class="form-group">
-                <label class="">Comment</label>                                          
-                <textarea class="form-control" id='notesData'></textarea>
-                <span id='errorMsg'></span>
-            </div> 
-        <button type="submit" class="btn btn-primary float-right" onclick="submitNotes();">Submit</button> 
-     </div>
-  </div>
-</div>
-</div>
-
-
-
-
 {!!Helpers::makeIframePopup('noteFrame','Add Note')!!}
 
-@endsection
-@section('jscript')
-<script>
-   function submitNotes(){ 
-       var notesData = $.trim($('#notesData').val());
-       if(notesData == ''){
-            $('#errorMsg').html('Please Enter Comment');
-            setTimeout(function(){ $('#errorMsg').html(''); }, 1000);
-       }else{
-           $.ajax({
-               type: 'POST',
-               url:'/notes',
-               data:{'notesData':notesData},
-               dataType:'html',
-               headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-               success:function(data){
-                console.log(data);
-               }
-           });
-       }
-
-    }
-</script>
 @endsection
