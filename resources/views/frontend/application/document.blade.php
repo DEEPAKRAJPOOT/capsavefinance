@@ -94,7 +94,7 @@
                                             <td width="20%">{{ $value->doc_id_no }}</td>
                                             <td width="20%">{{ $value->doc_name }}</td>
                                             <td width="20%"> {{ date('d-m-Y', strtotime($value->created_at))}} </td>
-                                            <td width="20%"><a href="{{ Route('document-download') }}"><i class="fa fa-download"></i></a></td>
+                                            <td width="20%"><a href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
                                             <td align="center" width="20%">
                                                 <a class="mr-2" href="{{ Route('document-view') }}"><i class="fa fa-eye"></i></a>
                                                 <a href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o"></i></a>

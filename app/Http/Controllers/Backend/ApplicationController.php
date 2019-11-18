@@ -33,7 +33,7 @@ class ApplicationController extends Controller
     {
         return view('backend.app.index');
     }
-
+    
     public function showCompanyDetails($id){
         return view('backend.app.company-details');
     }

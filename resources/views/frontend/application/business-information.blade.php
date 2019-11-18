@@ -514,9 +514,12 @@
 	}
 
 	function checkValidation(){
-		if($('.pan-verify').text() == 'Verify'){
+		if($('.pan-verify').text() == 'Verify' || $('biz_cin').val() == ''){
 			alert('Please fill and verify Business PAN First');
-			return false
+			return false;
+		}else if($('biz_cin').val()  == ''){
+			alert('Service unavailable!');
+			return false;
 		}else{
 			return true;
 		}

@@ -39,8 +39,8 @@ use AuthenticatesUsers;
      *
      * @var string
      */
-    //protected $redirectTo = '/dashboard';
-    protected $redirectTo = '/application/business-information';
+    protected $redirectTo = '/dashboard';
+    //protected $redirectTo = '/application/business-information';
 
     /**
      * Multiple times user login blocking.  
@@ -59,6 +59,7 @@ use AuthenticatesUsers;
     public function __construct(InvUserRepoInterface $user) {
         $this->middleware('guest')->except('logout');
         $this->userRepo = $user;
+        
     }
 
     /**
