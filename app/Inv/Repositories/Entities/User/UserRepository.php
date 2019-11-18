@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Inv\Repositories\Entities\User;
-
 use Carbon\Carbon;
-
 use App\Inv\Repositories\Models\Relationship;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizOwner;
@@ -13,7 +11,6 @@ use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\Master\Permission as PermissionModel;
 use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
-
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
