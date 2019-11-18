@@ -112,6 +112,8 @@
 
 </div>
 
+{!!Helpers::makeIframePopup('noteFrame','Add Note')!!}
+
 @endsection
 
 @section('jscript')

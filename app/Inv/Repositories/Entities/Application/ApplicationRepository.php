@@ -64,7 +64,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function find($id, $columns = array('*')) {        
     }
 
-     public function saveBusinessInfo($attributes = [], $userId = null){
+    public function saveBusinessInfo($attributes = [], $userId = null){
         /**
          * Check Data is Array
          */
@@ -91,5 +91,31 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getApplications() 
     {
         return Application::getApplications();
+    }
+
+    /**
+     * Get business information according to app id
+     */
+    public function getBusinessInfo($appId = null){
+        if(is_null($appId)){
+            throw new BlankDataExceptions('No Data Found');
+        }
+        return Application::get($appId);
+    }
+
+    /**
+     * Get Application by app id
+     */
+    public function getApplicationById($bizId) 
+    {
+        return Business::getApplicationById($bizId);
+    }
+    
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getApplicationsDetail($user_id) 
+    {
+        return Application::getApplicationsDetail($user_id);
     }
 }
