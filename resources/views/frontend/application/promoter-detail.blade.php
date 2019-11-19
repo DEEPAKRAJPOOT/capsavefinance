@@ -289,7 +289,8 @@
                 $('input.networth').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                number: true
                             })
                 });
                 $('textarea.address').each(function () {
@@ -403,11 +404,12 @@
                 dataType: 'json',
                 data: jsonData,
                 error:function (xhr, status, errorThrown) {
-                                $('.isloader').none();
-        			alert(errorThrown);
+                                alert(errorThrown);
+                                $('.isloader').hide();
+        		
     			},
                 success: function (result) {
-                   
+                  
                     $(".isloader").hide();
                     obj = result.result.directors;
                     var count = 0;

@@ -43,7 +43,7 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-            $business_info = $this->appRepo->saveBusinessInfo($arrFileData, 88/*Auth::user()->user_id*/);
+            $business_info = $this->appRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
             $appId  = Session::put('appId', $business_info['app_id']);
 
             if ($business_info) {
