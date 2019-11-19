@@ -578,6 +578,11 @@ position: absolute;
   /*chandan*/
  
  .full-width{width:100%;}
+
+ .error{
+    color: red;
+    font-size: 11px;
+ }
  
  
  
