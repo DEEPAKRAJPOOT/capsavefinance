@@ -8,7 +8,7 @@
 
         
     <li class="nav-item active">
-            <a class="nav-link"  href="dashboard.php">
+            <a class="nav-link"  href="#">
                 <i class="fa fa fa-home"></i>
                 <span class="menu-title">Home</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
