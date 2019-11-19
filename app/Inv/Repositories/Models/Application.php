@@ -55,7 +55,8 @@ class Application extends Model
     {
         $appData = self::select('app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                //->where('app.status', 1)
+                 ->join('app_assign', 'app_assign.assigned_user_id', '=', 'app.user_id')
+                ->where('app_assign.to_id', \Auth::user()->user_id)
                 ->orderBy('app.app_id');        
         return $appData;
     }
@@ -91,7 +92,7 @@ class Application extends Model
     public static function getApplicationPoolData() 
     {
         $appData = self::select('app.*')
-                ->where('app.is_assignd', 0)
+                ->where('app.is_assigned', 0)
                 ->orderBy('app.app_id');        
         return $appData;
     } 

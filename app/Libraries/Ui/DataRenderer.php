@@ -228,34 +228,34 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
-                        return $app->biz_entity_name ? $app->biz_entity_name : 'xxx';
+                        return $app->biz_entity_name ? $app->biz_entity_name : 'yyy';
                 })
                 ->addColumn(
                     'assoc_anchor',
                     function ($app) {
                         //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                        return 'xxx';
+                        return 'yyy';
                 })
                 ->addColumn(
                     'user_type',
                     function ($app) {                        
-                        return 'xxx';
+                        return 'yyy';
                 })                
                 ->addColumn(
                     'assignee',
                     function ($app) {
-                        return 'xxx';
+                        return 'Not Assign';
                 })
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
-                    return 'xxx';
+                    return 'yyy';
 
                 })
                 ->addColumn(
                     'status',
                     function ($app) {
-                    return 'Incomplete';
+                 return $app->status == 1 ? 'Completed' : 'Incomplete';
 
                 })
                 ->addColumn(

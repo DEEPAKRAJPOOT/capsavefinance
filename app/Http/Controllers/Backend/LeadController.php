@@ -165,7 +165,7 @@ class LeadController extends Controller
              $dataArr['assign_status'] = '0';
              $dataArr['sharing_comment'] = "comment";
              $dataArr['is_owner'] = 1;
-            $application = $this->appRepo->updateAppDetails($app_id, ['is_assignd'=>1]); 
+            $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
             $application = $this->appRepo->saveShaircase($dataArr); 
              
              Session::flash('is_accept', 1);
