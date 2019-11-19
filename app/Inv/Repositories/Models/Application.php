@@ -57,6 +57,7 @@ class Application extends Model
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                  ->join('app_assign', 'app_assign.assigned_user_id', '=', 'app.user_id')
                 ->where('app_assign.to_id', \Auth::user()->user_id)
+                ->groupBy('app.app_id')
                 ->orderBy('app.app_id');        
         return $appData;
     }
