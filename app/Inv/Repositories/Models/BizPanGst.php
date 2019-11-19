@@ -35,9 +35,9 @@ class BizPanGst extends BaseModel
         'biz_pan_gst_api_id',
         'created_by'
     ];
-
-    
-    
+   
 }
+
+
 
 

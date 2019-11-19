@@ -56,8 +56,6 @@ class ApplicationController extends Controller
 
      public function showPromoterDetails($id){
         $id = Auth::user()->user_id;
-        $res = Route('promoter-details',['user-id',$id]);
-        dd($res);
         return view('backend.app.promoter-details');
     }
     

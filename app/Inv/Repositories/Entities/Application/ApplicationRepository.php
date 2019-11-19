@@ -111,6 +111,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Business::getApplicationById($bizId);
     }
     
+    /**
+     * Update Application Status
+     * 
+     * @param integer $appId
+     * @param array $attributes
+     * @return boolean
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions
+     */
     public function updateAppStatus($appId, $attributes = []){
         /**
          * Check Data is Array
@@ -132,6 +141,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return true;
     }
 
+    /**
+     * Update Application Assignee
+     * 
+     * @param type $appId
+     * @param type $attributes
+     * @return boolean
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions
+     */
     public function updateAssignee($appId, $attributes = []){
         /**
          * Check Data is Array
@@ -151,5 +169,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
             throw new BlankDataExceptions('No Data Found');
         }
         return true;        
+    }
+    
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getApplicationsDetail($user_id) 
+    {
+        return Application::getApplicationsDetail($user_id);
     }
 }
