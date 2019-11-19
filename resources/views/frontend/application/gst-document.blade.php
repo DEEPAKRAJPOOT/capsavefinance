@@ -109,7 +109,7 @@
                             </div>
                             <div class="d-flex btn-section ">
                                 <div class="col-md-4 ml-auto text-right">
-                                    <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'bank-statement.php'">
+                                    <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = '#'">
                                     <input type="submit" value="Save and Continue" class="btn btn-primary">
                                 </div>
                             </div>
