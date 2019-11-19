@@ -115,7 +115,7 @@ class ApplicationController extends Controller
             }
         }
         else {
-            return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
+            return redirect()->back();
         }
 //        dd($docData);   
         return view('frontend.application.document')->with([
