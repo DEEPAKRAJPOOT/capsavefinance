@@ -59,12 +59,18 @@ class BizOwner extends Model
         'updated_at'
     
     ];
+    /* get owner api details */
+    /* created by gajendra chauhan   */
+   public static function getOwnerApiDetails($bizId)
+   {
+      $biz_id = $bizId['biz_id'];
+      return BizOwner::with('pan')->where('biz_id', $biz_id)->get();
+   }
     /* Relation of Owner and Gst Api relation*/
     /* created by gajendra chauhan   */
-   function getOwnerApiDetails()
+   public function pan()
    {
-       
-      return $this->belongsTo('App\Inv\Repositories\Factory\Models\BizPanGst', 'biz_pan_gst_id','');  
+      return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst', 'biz_pan_gst_id','biz_pan_gst_id')->where(['type' => 1]);  
        
    }
    
