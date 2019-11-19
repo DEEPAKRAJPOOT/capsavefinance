@@ -221,145 +221,330 @@
 							</div>
 							<hr>
 							<div class="form-sections">
-								<div class="row">
-									<div class="col-md-6">
-										<div class="col-md-12">
-											<h3>Business Address
-											</h3>
-										</div>
-										<div class="col-md-12 address-block">
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group">
-														<label for="txtCreditPeriod">Address
-															<span class="mandatory">*</span>
-														</label>
-														<input type="text" name="biz_address" value="{{old('biz_address')}}" class="form-control" placeholder="Enter Your Address">
-														@error('biz_address')
-						                                    <span class="text-danger error">{{ $message }}</span>
-						                                @enderror
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group">
-														<label for="txtEmail">City
-															<span class="mandatory">*</span>
-														</label>
-														<input type="text" name="biz_city" value="{{old('biz_city')}}" class="form-control" tabindex="1" placeholder="Enter City Name">
-														@error('biz_city')
-						                                    <span class="text-danger error">{{ $message }}</span>
-						                                @enderror
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group password-input">
-														<label for="txtPassword">State
-															<span class="mandatory">*</span>
-														</label>
-														<select class="form-control" name="biz_state">
-															<option value=""> Select State</option>
-															<option value="1" {{(old('biz_state') == 1)? 'selected':''}}> State 1 </option>
-															<option value="2" {{(old('biz_state') == 2)? 'selected':''}}> State 2 </option>
-															<option value="3" {{(old('biz_state') == 3)? 'selected':''}}> State 3 </option>
-														</select>
-														@error('biz_state')
-						                                    <span class="text-danger error">{{ $message }}</span>
-						                                @enderror
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group password-input">
-														<label for="txtPassword">Pin Code
-															<span class="mandatory">*</span>
-														</label>
-														<input type="text" name="biz_pin" value="{{old('biz_pin')}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
-														@error('biz_pin')
-						                                    <span class="text-danger error">{{ $message }}</span>
-						                                @enderror
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="col-md-12 ">
-											<h3 class="full-width">Correspondence Address
-												<div class="sameas"><input type="checkbox" name="address_same" onchange="copyAddress()"> <span> Same as Business Address</span></div>
-											</h3>
-										</div>
-										<div class="col-md-12 copy-address-block">
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group">
-														<label for="txtCreditPeriod">Address
-															<span class="mandatory">*</span>
-														</label>
-														<input type="text" name="biz_corres_address" value="{{old('biz_corres_address')}}" class="form-control" placeholder="Enter Your Address">
-														@error('biz_corres_address')
-						                                    <span class="text-danger error">{{ $message }}</span>
-						                                @enderror
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group">
-														<label for="txtEmail">City
-															<span class="mandatory">*</span>
-														</label>
-														<input type="text" name="biz_corres_city" value="{{old('biz_corres_city')}}" class="form-control" tabindex="1" placeholder="Enter City Name">
-														@error('biz_corres_city')
-						                                    <span class="text-danger error">{{ $message }}</span>
-						                                @enderror
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group password-input">
-														<label for="txtPassword">State
-															<span class="mandatory">*</span>
-														</label>
-														<select class="form-control" name="biz_corres_state">
-															<option value=""> Select State</option>
-															<option value="1" {{(old('biz_corres_state') == 1)? 'selected':''}}> State 1 </option>
-															<option value="2" {{(old('biz_corres_state') == 2)? 'selected':''}}> State 2 </option>
-															<option value="3" {{(old('biz_corres_state') == 3)? 'selected':''}}> State 3 </option>
-														</select>
-														@error('biz_corres_state')
-						                                    <span class="text-danger error">{{ $message }}</span>
-						                                @enderror
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group password-input">
-														<label for="txtPassword">Pin Code
-															<span class="mandatory">*</span>
-														</label>
-														<input type="text" name="biz_corres_pin" value="{{old('biz_corres_pin')}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
-														@error('biz_corres_pin')
-						                                    <span class="text-danger error">{{ $message }}</span>
-						                                @enderror
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
+							    <div class="row">
+							        <div class="col-md-12">
+							            <div class="col-md-12">
+							                <h3 class="form-head-h5">Registered Address</h3>
+							            </div>
+							            <div class="col-md-12">
+							                <div class="row">
+							                    <div class="col-md-12">
+							                        <div class="form-group">
+							                            <label for="txtCreditPeriod">Address
+							                                <span class="mandatory">*</span>
+							                            </label>
+							                            <input type="text" name="biz_address" value="{{old('biz_address')}}" value="" class="form-control" placeholder="Enter Your Address">
+							                            @error('biz_address')
+                                                            <span class="text-danger error">{{ $message }}</span>
+                                                        @enderror
+							                        </div>
+							                    </div>
+							                </div>
+							                <div class="row">
+							                    <div class="col-md-4">
+							                        <div class="form-group password-input">
+							                            <label for="txtPassword">State
+							                                <span class="mandatory">*</span>
+							                            </label>
+							                            <select class="form-control" name="biz_state">
+                                                            <option value=""> Select State</option>
+                                                            <option value="1" {{(old('biz_state') == 1)? 'selected':''}}> State 1 </option>
+                                                            <option value="2" {{(old('biz_state') == 2)? 'selected':''}}> State 2 </option>
+                                                            <option value="3" {{(old('biz_state') == 3)? 'selected':''}}> State 3 </option>
+                                                        </select>
+                                                        @error('biz_state')
+                                                            <span class="text-danger error">{{ $message }}</span>
+                                                        @enderror
+							                        </div>
+							                    </div>
+							                    <div class="col-md-4">
+							                        <div class="form-group">
+							                            <label for="txtEmail">City
+							                                <span class="mandatory">*</span>
+							                            </label>
+							                            <input type="text" name="biz_city" value="{{old('biz_city')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
+							                            @error('biz_city')
+                                                            <span class="text-danger error">{{ $message }}</span>
+                                                        @enderror
+							                        </div>
+							                    </div>
+							                    <div class="col-md-4">
+							                        <div class="form-group password-input">
+							                            <label for="txtPassword">Pin Code
+							                                <span class="mandatory">*</span>
+							                            </label>
+							                            <input type="text" name="biz_pin" value="{{old('biz_pin')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
+							                            @error('biz_pin')
+                                                            <span class="text-danger error">{{ $message }}</span>
+                                                        @enderror
+							                        </div>
+							                    </div>
+							                </div>
+							            </div>
+							        </div>
+							    </div>
+							    <div class="col-md-12">
+							        <h3 class="form-head-h5">Other Addresses</h3>
+							        <div id="accordion" class="accordion mb-5">
+							            <div class="card card-color mb-0">
+							                <div class="sameas">
+							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address</span>
+							                 </div>
+							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
+							                    <a class="card-title">Communication Address</a>
+							                </div>
+							                <div id="collapseOne" class="card-body collapse" data-parent="#accordion" style="">
+							                    <div class="col-md-12">
+							                        <div class="row">
+							                            <div class="col-md-12">
+							                                <div class="form-group">
+							                                    <label for="txtCreditPeriod">Address
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address')}}" value="" class="form-control" placeholder="Enter Your Address">
+							                                    @error('biz_other_address')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group password-input">
+							                                    <label for="txtPassword">State
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <select class="form-control" name="biz_other_state[]">
+		                                                            <option value=""> Select State</option>
+		                                                            <option value="1" {{(old('biz_other_state') == 1)? 'selected':''}}> State 1 </option>
+		                                                            <option value="2" {{(old('biz_other_state') == 2)? 'selected':''}}> State 2 </option>
+		                                                            <option value="3" {{(old('biz_other_state') == 3)? 'selected':''}}> State 3 </option>
+		                                                        </select>
+		                                                        @error('biz_other_state')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group">
+							                                    <label for="txtEmail">City
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
+							                                    @error('biz_other_city')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group password-input">
+							                                    <label for="txtPassword">Pin Code
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
+							                                    @error('biz_other_pin')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                        </div>
+							                    </div>
+							                </div>
+							            </div>
+							            <div class="card card-color mb-0">
+							                <div class="sameas">
+							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address</span>
+							                </div>
+							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
+							                    <a class="card-title">GST Address</a>
+							                </div>
+							                <div id="collapseTwo" class="card-body collapse" data-parent="#accordion">
+							                    <div class="col-md-12">
+							                        <div class="row">
+							                            <div class="col-md-12">
+							                                <div class="form-group">
+							                                    <label for="txtCreditPeriod">Address
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address')}}" value="" class="form-control" placeholder="Enter Your Address">
+							                                    @error('biz_other_address')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group password-input">
+							                                    <label for="txtPassword">State
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <select class="form-control" name="biz_other_state[]">
+		                                                            <option value=""> Select State</option>
+		                                                            <option value="1" {{(old('biz_other_state') == 1)? 'selected':''}}> State 1 </option>
+		                                                            <option value="2" {{(old('biz_other_state') == 2)? 'selected':''}}> State 2 </option>
+		                                                            <option value="3" {{(old('biz_other_state') == 3)? 'selected':''}}> State 3 </option>
+		                                                        </select>
+		                                                        @error('biz_other_state')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group">
+							                                    <label for="txtEmail">City
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
+							                                    @error('biz_other_city')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group password-input">
+							                                    <label for="txtPassword">Pin Code
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
+							                                    @error('biz_other_pin')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                        </div>
+							                    </div>
+							                </div>
+							            </div>
+							            <div class="card card-color mb-0">
+							                <div class="sameas">
+							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address</span>
+							                </div>
+							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
+							                    <a class="card-title">Warehouse Address</a>
+							                </div>
+							                <div id="collapseThree" class="card-body collapse" data-parent="#accordion">
+							                    <div class="col-md-12">
+							                        <div class="row">
+							                            <div class="col-md-12">
+							                                <div class="form-group">
+							                                    <label for="txtCreditPeriod">Address
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address')}}" value="" class="form-control" placeholder="Enter Your Address">
+							                                    @error('biz_other_address')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group password-input">
+							                                    <label for="txtPassword">State
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <select class="form-control" name="biz_other_state[]">
+		                                                            <option value=""> Select State</option>
+		                                                            <option value="1" {{(old('biz_other_state') == 1)? 'selected':''}}> State 1 </option>
+		                                                            <option value="2" {{(old('biz_other_state') == 2)? 'selected':''}}> State 2 </option>
+		                                                            <option value="3" {{(old('biz_other_state') == 3)? 'selected':''}}> State 3 </option>
+		                                                        </select>
+		                                                        @error('biz_other_state')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group">
+							                                    <label for="txtEmail">City
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
+							                                    @error('biz_other_city')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group password-input">
+							                                    <label for="txtPassword">Pin Code
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
+							                                    @error('biz_other_pin')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                        </div>
+							                    </div>
+							                </div>
+							            </div>
+							            <div class="card card-color mb-0">
+							                <div class="sameas">
+							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address</span>
+							                </div>
+							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
+							                    <a class="card-title">Factory Address</a>
+							                </div>
+							                <div id="collapseFour" class="card-body collapse" data-parent="#accordion">
+							                    <div class="col-md-12">
+							                        <div class="row">
+							                            <div class="col-md-12">
+							                                <div class="form-group">
+							                                    <label for="txtCreditPeriod">Address
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address')}}" value="" class="form-control" placeholder="Enter Your Address">
+							                                    @error('biz_other_address')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group password-input">
+							                                    <label for="txtPassword">State
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <select class="form-control" name="biz_other_state[]">
+		                                                            <option value=""> Select State</option>
+		                                                            <option value="1" {{(old('biz_other_state') == 1)? 'selected':''}}> State 1 </option>
+		                                                            <option value="2" {{(old('biz_other_state') == 2)? 'selected':''}}> State 2 </option>
+		                                                            <option value="3" {{(old('biz_other_state') == 3)? 'selected':''}}> State 3 </option>
+		                                                        </select>
+		                                                        @error('biz_other_state')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group">
+							                                    <label for="txtEmail">City
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
+							                                    @error('biz_other_city')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                            <div class="col-md-4">
+							                                <div class="form-group password-input">
+							                                    <label for="txtPassword">Pin Code
+							                                        <span class="mandatory">*</span>
+							                                    </label>
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
+							                                    @error('biz_other_pin')
+		                                                            <span class="text-danger error">{{ $message }}</span>
+		                                                        @enderror
+							                                </div>
+							                            </div>
+							                        </div>
+							                    </div>
+							                </div>
+							            </div>
+							        </div>
+							    </div>
+							</div>
+							<div class="d-flex btn-section ">
+								<div class="ml-auto text-right">
+									<input type="submit" value="Save and Continue" class="btn btn-primary">
 								</div>
-								<div class="d-flex btn-section ">
-									<div class="col-md-4 ml-auto text-right">
-										<input type="submit" value="Save and Continue" class="btn btn-primary">
-									</div>
-								</div>
-
 							</div>
 						</div>
 					</form>
@@ -372,17 +557,18 @@
 
 @section('scripts')
 <script>
-	function copyAddress(){
-		if($('input[name=address_same]').is(':checked')){
-			$('.copy-address-block input[name=biz_corres_address]').val($('.address-block input[name=biz_address]').val());
-			$('.copy-address-block input[name=biz_corres_city]').val($('.address-block input[name=biz_city]').val());
-			$('.copy-address-block select[name=biz_corres_state]').val($('.address-block select[name=biz_state]').val());
-			$('.copy-address-block input[name=biz_corres_pin]').val($('.address-block input[name=biz_pin]').val());
+	function copyAddress(id,th){
+		console.log(id);
+		if($(th).is(':checked')){
+			$(id+' input[name*=biz_other_address]').val($('input[name=biz_address]').val());
+			$(id+' input[name*=biz_other_city]').val($('input[name=biz_city]').val());
+			$(id+' select[name*=biz_other_state]').val($('select[name=biz_state]').val());
+			$(id+' input[name*=biz_other_pin]').val($('input[name=biz_pin]').val());
 		}else{
-			$('.copy-address-block input[name=biz_corres_address]').val('');
-			$('.copy-address-block input[name=biz_corres_city]').val('');
-			$('.copy-address-block select[name=biz_corres_state]').val('');
-			$('.copy-address-block input[name=biz_corres_pin]').val('');
+			$(id+' input[name*=biz_other_address]').val('');
+			$(id+' input[name*=biz_other_city]').val('');
+			$(id+' select[name*=biz_other_state]').val('');
+			$(id+' input[name*=biz_other_pin]').val('');
 		}
 	}
 

@@ -6,8 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class Business extends Model
+class Business extends BaseModel
 {
     use Notifiable;
     /**
@@ -119,11 +120,12 @@ class Business extends Model
             ]);
 
         //insert address
-        $address_data = array(
-            array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId,'rcu_status'=>0),
-            array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_corres_address'],'city_name'=>$attributes['biz_corres_city'],'state_name'=>$attributes['biz_corres_state'],'pin_code'=>$attributes['biz_corres_pin'],'address_type'=>1,'created_by'=>$userId,'rcu_status'=>0),
-        );
-
+        $address_data=[];
+        array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId,'rcu_status'=>0));
+        for ($i=0; $i <=3 ; $i++) { 
+            $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_name'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'address_type'=>($i+1),'created_by'=>$userId,'rcu_status'=>0);
+            array_push($address_data, $temp);
+        }
         BusinessAddress::insert($address_data);
 
         return ['biz_id'=>$business->biz_id,'app_id'=>$app_id];
