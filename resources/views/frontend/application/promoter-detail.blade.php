@@ -77,6 +77,13 @@
                                                         {{$errors->first('f_name')}}
                                                     </div>
                                                 </div>
+                                                  <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="txtCreditPeriod">Last Name
+                                        </label>
+                                         <input type="text" name="last_name[]" id="last_name1" value="" class="form-control last_name" placeholder="Enter Last Name" >
+                                                     </div>
+                                </div>
  <div class="col-md-4">
                                                     <div class="form-group password-input">
                                                         <label for="txtPassword">DOB
