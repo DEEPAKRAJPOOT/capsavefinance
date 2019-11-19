@@ -43,8 +43,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'company_details',
                 'uses' => 'Backend\ApplicationController@showCompanyDetails'
             ]);
-
-            Route::get('promoter-details/{id}', [
+            
+           Route::get('promoter-details/{id}', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
             ]);
@@ -79,6 +79,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'note_save',
                 'uses' => 'Backend\NotesController@store'
             ]);
+                        
+            Route::get('change-status', [
+                'as' => 'change_app_status',
+                'uses' => 'Backend\ApplicationController@changeAppStatus'
+            ]);
+            
+            Route::get('assign-case', [
+                'as' => 'assign_case',
+                'uses' => 'Backend\ApplicationController@assignCase'
+            ]);
+            
+            Route::post('update-app-status', [
+                'as' => 'update_app_status',
+                'uses' => 'Backend\ApplicationController@updateAppStatus'
+            ]);
+            
+            Route::post('save-assign-case', [
+                'as' => 'save_assign_case',
+                'uses' => 'Backend\ApplicationController@updateAssignee'
+            ]);            
         });
 
         Route::group(
@@ -98,6 +118,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lead_detail',
                 'uses' => 'Backend\LeadController@leadDetail'
             ]);
+            
+            Route::get('application-pool', [
+                'as' => 'application_pool',
+                'uses' => 'Backend\LeadController@showApplicationPool'
+            ]);
+            
+            
+            Route::get('confirm-box', [
+                'as' => 'confirm_box',
+                'uses' => 'Backend\LeadController@confirmBox'
+            ]);
+            
+            Route::post('accept-application-pool', [
+                'as' => 'accept_application_pool',
+                'uses' => 'Backend\LeadController@acceptApplicationPool'
+            ]);
+            
+            
+            
         });
             });
 });

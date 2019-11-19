@@ -41,10 +41,10 @@ Route::group(
         ]
     ); 
    Route::post(
-        'get-lead-pool',
+        'get-case-pool',
         [
-        'as' => 'get_lead_pool',
-        'uses' => 'AjaxController@getLeadsPools'
+        'as' => 'get_case_pool',
+        'uses' => 'AjaxController@getCasePools'
         ]
     ); 
       
