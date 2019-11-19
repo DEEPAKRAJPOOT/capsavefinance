@@ -843,6 +843,7 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $user[0];
     }
     
+
 /**
  * function for save anchor company detail
  * @param type $attributes
@@ -869,9 +870,37 @@ class UserRepository extends BaseRepositories implements UserInterface
         public function getAllAnchorUsers()
         {
           $result = AnchorUser::getAllAnchorUsers();
-
+        
           return $result ?: false;
         }
     
-     
+
+     /**
+     * Validating and parsing data passed thos this method
+     *
+     * @param array $attributes
+     * @param mixed $user_id
+     *
+     * @return New record ID that was added
+     *
+     * @since 0.1
+     */
+    public function getOwnerApiDetail($attributes = [])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return BizOwner::getOwnerApiDetails($attributes); 
+    }
 }

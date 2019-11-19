@@ -41,6 +41,9 @@
             <div class="collapse" id="layoutsSubmenu">
                 <ul class="nav flex-column sub-menu">                    
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('application_pool') }}">Application pool</a>
+                        </li> 
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('application_list') }}">Manage Application</a>
                         </li>                                   
                 </ul>

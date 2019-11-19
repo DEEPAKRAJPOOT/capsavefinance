@@ -78,12 +78,12 @@ class Helper extends PaypalHelper
      * make model popup with Iframe
      * 
      */
-    public static function makeIframePopup($modelId, $title){
+    public static function makeIframePopup($modelId, $title, $model){
 
      //return \App\Inv\Repositories\Models\CorpStatus::all(); 
     
         return "<div  class=\"modal\" id=\"$modelId\">
-        <div class=\"modal-dialog modal-lg\">
+        <div class=\"modal-dialog $model\">
           <div class=\"modal-content\">
               <div class=\"modal-header\">
               <h4 class=\"modal-title\">$title</h4>
