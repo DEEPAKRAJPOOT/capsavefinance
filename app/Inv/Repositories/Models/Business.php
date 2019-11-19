@@ -75,7 +75,7 @@ class Business extends BaseModel
                 'status'=>1,
                 'created_by'=>$userId
             ]);
-        //entry for parent
+        //entry for parent PAN
         $pan_id = DB::table('biz_pan_gst')->insertGetId([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
@@ -87,8 +87,19 @@ class Business extends BaseModel
                 'cin'=>$attributes['biz_cin'],
                 'created_by'=>$userId
             ]);
+        //entry for parent GST
+        DB::table('biz_pan_gst')->insert([
+                'user_id'=>$userId,
+                'biz_id'=>$business->biz_id,
+                'type'=>2,
+                'pan_gst_hash'=>$attributes['biz_gst_number'],
+                'status'=>1,
+                'parent_pan_gst_id'=>0,
+                'biz_pan_gst_api_id'=>0,
+                'created_by'=>$userId
+            ]);
 
-        //entry for child
+        //entry for all GST against the PAN
         $pan_api_res = explode(',', rtrim($attributes['pan_api_res'],','));
         $data = [];
         foreach ($pan_api_res as $key=>$value) {
@@ -104,7 +115,7 @@ class Business extends BaseModel
         }
         DB::table('biz_pan_gst')->insert($data);
 
-
+        // insert into rta_app table
         $app_id = DB::table('app')->insertGetId([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
@@ -119,7 +130,7 @@ class Business extends BaseModel
             'is_gst_verified'=>1,
             ]);
 
-        //insert address
+        //insert address into rta_biz_addr
         $address_data=[];
         array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId,'rcu_status'=>0));
         for ($i=0; $i <=3 ; $i++) { 
@@ -132,13 +143,32 @@ class Business extends BaseModel
     }
 
     public static function getApplicationById($bizId){
-        //dd($bizId);
-        $bizData = self::select('app.app_id', 'app.loan_amt','biz.biz_entity_name','biz.date_of_in_corp','biz.entity_type_id','biz.turnover_amt','biz.nature_of_biz','biz.org_id','bpg1.cin','bpg1.pan_gst_hash')
+        return Business::where('biz.biz_id', $bizId)->first();
+        /*$bizData = self::select('app.app_id', 'app.loan_amt','biz.biz_entity_name','biz.date_of_in_corp','biz.entity_type_id','biz.turnover_amt','biz.nature_of_biz','biz.org_id','bpg1.cin','bpg1.pan_gst_hash')
                 ->join('app', 'biz.biz_id', '=', 'app.biz_id')
                 ->join('biz_pan_gst as bpg1', 'bpg1.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
                 //->join('biz_pan_gst as bpg2', 'bpg2.biz_pan_gst_id', '=', 'biz.gstno_pan_gst_id')
                 ->where('biz.biz_id', $bizId)
-                ->get();
-        return $bizData;
+                ->get();*/
+    }
+
+    public function app(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','biz_id','biz_id');
+    }
+
+    public function address(){
+        return $this->hasMany('App\Inv\Repositories\Models\BusinessAddress','biz_id','biz_id');
+    }
+
+    public function gsts(){
+        return $this->hasMany('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>2, 'biz_owner_id'=>null])->where('parent_pan_gst_id','<>',0);
+    }
+
+    public function pan(){
+        return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>1, 'biz_owner_id'=>null]);
+    }
+
+    public function gst(){
+        return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>2, 'biz_owner_id'=>null, 'parent_pan_gst_id'=>0]);
     }
 }
