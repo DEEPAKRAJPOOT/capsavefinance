@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Models;
 
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use DB;
 
 class AppNote extends BaseModel {
     /* The database table used by the model.
@@ -44,5 +45,15 @@ class AppNote extends BaseModel {
         'created_by',
         'created_at'
     ];
+
+
+    public static function showData($app_id){
+        $appNote = self::select('note.*', 'users.f_name', 'users.m_name', 'users.l_name')
+                ->join('users', 'users.user_id', '=', 'note.created_by')
+                ->where('note.app_id', $app_id)
+                ->get();      
+        return $appNote;
+    }
+
 
 }
