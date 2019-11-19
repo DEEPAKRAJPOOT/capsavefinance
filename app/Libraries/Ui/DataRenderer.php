@@ -198,8 +198,12 @@ class DataRenderer implements DataProviderInterface
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
                         });                        
                     }
-                    if ($request->get('is_assign') != '') {                                 
-                    }                    
+                    if ($request->get('is_assign') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_assign');
+                            $query->where('app.is_assigned', $is_assigned);
+                        });
+                    }
                     
                 })
                 ->make(true);
