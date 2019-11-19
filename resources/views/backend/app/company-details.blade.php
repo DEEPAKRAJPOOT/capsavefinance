@@ -117,7 +117,7 @@
 											<select class="form-control" name="biz_gst_number">
 												<option value="">Select GST Number</option>
 												@forelse($business_info->gsts as $gst_key => $gst_value)
-													<option val="{{$gst_value->pan_gst_hash}}" {{(old('biz_gst_number',$business_info->gst->pan_gst_hash) == $gst_value->pan_gst_hash)? 'selected':''}}>{{$gst_value->pan_gst_hash}}</option>
+													<option val="{{$gst_value->pan_gst_hash}}" {{(old('biz_gst_number', Helpers::customIsset($business_info->gst, 'pan_gst_hash')) == $gst_value->pan_gst_hash)? 'selected':''}}>{{$gst_value->pan_gst_hash}}</option>
 												@empty
 												@endforelse
 											</select>
