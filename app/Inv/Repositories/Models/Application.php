@@ -91,7 +91,7 @@ class Application extends Model
     public static function getApplicationPoolData() 
     {
         $appData = self::select('app.*')
-                ->where('app.is_assignd', 0)
+                ->where('app.is_assigned', 0)
                 ->orderBy('app.app_id');        
         return $appData;
     } 
