@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="{{ url('frontend/assets/css/style2.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/custom.css') }}" />
         <script src="{{url('frontend/assets/js/jquery-3.4.1.min.js')}}"></script>
+        <script src="{{url('frontend/assets/js/bootstrap.min.js')}}"></script>
         <script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
     </head>
     <body>

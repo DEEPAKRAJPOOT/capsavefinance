@@ -112,6 +112,66 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
     
     /**
+     * Update Application Status
+     * 
+     * @param integer $appId
+     * @param array $attributes
+     * @return boolean
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions
+     */
+    public function updateAppStatus($appId, $attributes = []){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        if(empty($appId)){
+            throw new BlankDataExceptions('No Data Found');
+        }
+        return true;
+    }
+
+    /**
+     * Update Application Assignee
+     * 
+     * @param type $appId
+     * @param type $attributes
+     * @return boolean
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions
+     */
+    public function updateAssignee($appId, $attributes = []){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        if(empty($appId)){
+            throw new BlankDataExceptions('No Data Found');
+        }
+        return true;        
+    }
+    
+    /**
      * Get Applications for Application list data tables
      */
     public function getApplicationsDetail($user_id) 

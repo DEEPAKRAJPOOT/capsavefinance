@@ -32,18 +32,18 @@ class BusinessInformationRequest extends FormRequest
             'loan_amount' => 'required|numeric',
             'incorporation_date' => 'required|date|date_format:Y-m-d',
             'biz_constitution' => 'required|numeric',
-            //'biz_email' => 'required|email',
-            //'biz_mobile' => 'required|numeric|digits:10',
+            // 'biz_email' => 'required|email',
+            // 'biz_mobile' => 'required|numeric|digits:10',
             'entity_type_id' => 'required|numeric',
-            //'biz_cin' => 'required|string|max:50',
+            // 'biz_cin' => 'required|string|max:50',
             'biz_address' => 'required|string|max:100',
             'biz_city' => 'required|string|max:50',
             'biz_state' => 'required|string|max:50',
             'biz_pin' => 'required|numeric|digits:6',
-            'biz_corres_address' => 'required|string|max:100',
-            'biz_corres_city' => 'required|string|max:50',
-            'biz_corres_state' => 'required|string|max:50',
-            'biz_corres_pin' => 'required|numeric|digits:6',
+            // 'biz_corres_address' => 'required|string|max:100',
+            // 'biz_corres_city' => 'required|string|max:50',
+            // 'biz_corres_state' => 'required|string|max:50',
+            // 'biz_corres_pin' => 'required|numeric|digits:6',
         ];
     }
 
@@ -66,10 +66,10 @@ class BusinessInformationRequest extends FormRequest
             'biz_city.required' => 'Business city is required',
             'biz_state.required' => 'Business state is required',
             'biz_pin.required' => 'Business PIN is required',
-            'biz_corres_address.required' => 'Correspondence address is required',
-            'biz_corres_city.required' => 'Correspondence city is required',
-            'biz_corres_state.required' => 'Correspondence state is required',
-            'biz_corres_pin.required' => 'Correspondence PIN is required',
+            // 'biz_corres_address.required' => 'Correspondence address is required',
+            // 'biz_corres_city.required' => 'Correspondence city is required',
+            // 'biz_corres_state.required' => 'Correspondence state is required',
+            // 'biz_corres_pin.required' => 'Correspondence PIN is required',
         ];
     }
 }

@@ -113,6 +113,8 @@
 </div>
 
 {!!Helpers::makeIframePopup('noteFrame','Add Note')!!}
+{!!Helpers::makeIframePopup('appStatusFrame','Change Status')!!}
+{!!Helpers::makeIframePopup('assignCaseFrame','Assign Case')!!}
 
 @endsection
 
