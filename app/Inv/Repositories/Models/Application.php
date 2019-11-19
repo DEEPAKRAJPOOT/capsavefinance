@@ -40,6 +40,7 @@ class Application extends Model
         'user_id',
         'biz_id',
         'loan_amt',
+        'is_assignd',
         'created_by',
         'created_at',
         'updated_at',
@@ -93,5 +94,49 @@ class Application extends Model
                 ->orderBy('app.app_id');        
         return $appData;
     } 
+    /**
+     * update application details
+     *
+     * @param integer $user_id     user id
+     * @param array   $arrUserData user data
+     *
+     * @return boolean
+     */
+
+    
+     public static function updateAppDetails($app_id, $arrUserData = [])
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($arrUserData)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($arrUserData)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        $rowUpdate = self::find((int) $app_id)->update($arrUserData);
+
+        return ($rowUpdate ? $rowUpdate : false);
+    }
     
 }
