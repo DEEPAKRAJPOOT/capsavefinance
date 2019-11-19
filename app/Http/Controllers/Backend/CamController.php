@@ -75,7 +75,8 @@ class CamController extends Controller
         foreach ($insert_data as  $ins_arr) {
             $fin->create($ins_arr);
         }
-        return redirect()->route('cam_finance')->with('success','Record Inserted Successfully');
+        Session::flash('message',trans('Record Inserted Successfully'));
+        return redirect()->route('cam_finance');
     }
 
     private function getFinanceId() {
