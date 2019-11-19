@@ -135,7 +135,7 @@ class DataRenderer implements DataProviderInterface
                             $query->where(function ($query) use ($request) {
                                 $by_status = (int) trim($request->get('is_assign'));
                                 
-                                $query->where('users.is_assign', 'like',
+                                $query->where('users.is_assigned', 'like',
                                         "%$by_status%");
                             });
                         }

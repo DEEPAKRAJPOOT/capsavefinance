@@ -142,7 +142,7 @@ class ApplicationController extends Controller
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->back();
             } else {
-                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+                return redirect()->back();
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
