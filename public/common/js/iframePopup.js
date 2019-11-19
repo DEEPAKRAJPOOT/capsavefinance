@@ -31,7 +31,21 @@ $(document).ready(function(){
                         }
                 );
         });
-        
+ 
+    $("#pickLead").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#pickLead iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
+    
 
 
     

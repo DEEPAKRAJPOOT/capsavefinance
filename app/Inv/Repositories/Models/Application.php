@@ -59,7 +59,7 @@ class Application extends Model
     }   
    
     
-     public static function getApplicationsDetail($user_id)
+    public static function getApplicationsDetail($user_id)
     {
         /**
          * Check id is not blank
@@ -82,4 +82,16 @@ class Application extends Model
         return ($appData?$appData:null);
         
     }
+    
+    /**
+     * Get Applications for Application list data tables
+     */
+    public static function getApplicationPoolData() 
+    {
+        $appData = self::select('app.*')
+                ->where('app.is_assignd', 0)
+                ->orderBy('app.app_id');        
+        return $appData;
+    } 
+    
 }
