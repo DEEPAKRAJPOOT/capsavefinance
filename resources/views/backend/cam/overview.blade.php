@@ -57,9 +57,7 @@
 
             </div>
         </div>
-        @if(Session::has('message'))
-            <p class="alert alert-info">{{ Session::get('message') }}</p>
-        @endif
+
         <div class="card mt-4">
             <div class="card-body ">
              <form method="POST" action="{{url('application/cam/cam-information-save')}}"> 
