@@ -98,6 +98,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('save-assign-case', [
                 'as' => 'save_assign_case',
                 'uses' => 'Backend\ApplicationController@updateAssignee'
+            ]);
+
+            Route::get('add-app-note', [
+                'as' => 'add_app_note',
+                'uses' => 'Backend\ApplicationController@addAppNote'
+            ]);
+            
+            Route::post('save-app-note', [
+                'as' => 'save_app_note',
+                'uses' => 'Backend\ApplicationController@saveAppNote'
             ]);            
         });
 
