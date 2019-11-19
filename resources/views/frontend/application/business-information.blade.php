@@ -301,10 +301,7 @@
 							                                    <label for="txtCreditPeriod">Address
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address')}}" value="" class="form-control" placeholder="Enter Your Address">
-							                                    @error('biz_other_address')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0')}}" value="" class="form-control" placeholder="Enter Your Address">
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -314,13 +311,10 @@
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
-		                                                            <option value="1" {{(old('biz_other_state') == 1)? 'selected':''}}> State 1 </option>
-		                                                            <option value="2" {{(old('biz_other_state') == 2)? 'selected':''}}> State 2 </option>
-		                                                            <option value="3" {{(old('biz_other_state') == 3)? 'selected':''}}> State 3 </option>
+		                                                            <option value="1" {{(old('biz_other_state.0') == 1)? 'selected':''}}> State 1 </option>
+		                                                            <option value="2" {{(old('biz_other_state.0') == 2)? 'selected':''}}> State 2 </option>
+		                                                            <option value="3" {{(old('biz_other_state.0') == 3)? 'selected':''}}> State 3 </option>
 		                                                        </select>
-		                                                        @error('biz_other_state')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -328,10 +322,7 @@
 							                                    <label for="txtEmail">City
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
-							                                    @error('biz_other_city')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city.0')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -339,10 +330,7 @@
 							                                    <label for="txtPassword">Pin Code
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
-							                                    @error('biz_other_pin')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 							                                </div>
 							                            </div>
 							                        </div>
@@ -364,10 +352,7 @@
 							                                    <label for="txtCreditPeriod">Address
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address')}}" value="" class="form-control" placeholder="Enter Your Address">
-							                                    @error('biz_other_address')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address.1')}}" value="" class="form-control" placeholder="Enter Your Address">
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -377,13 +362,10 @@
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
-		                                                            <option value="1" {{(old('biz_other_state') == 1)? 'selected':''}}> State 1 </option>
-		                                                            <option value="2" {{(old('biz_other_state') == 2)? 'selected':''}}> State 2 </option>
-		                                                            <option value="3" {{(old('biz_other_state') == 3)? 'selected':''}}> State 3 </option>
+		                                                            <option value="1" {{(old('biz_other_state.1') == 1)? 'selected':''}}> State 1 </option>
+		                                                            <option value="2" {{(old('biz_other_state.1') == 2)? 'selected':''}}> State 2 </option>
+		                                                            <option value="3" {{(old('biz_other_state.1') == 3)? 'selected':''}}> State 3 </option>
 		                                                        </select>
-		                                                        @error('biz_other_state')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -391,10 +373,7 @@
 							                                    <label for="txtEmail">City
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
-							                                    @error('biz_other_city')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city.1')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -402,10 +381,7 @@
 							                                    <label for="txtPassword">Pin Code
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
-							                                    @error('biz_other_pin')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 							                                </div>
 							                            </div>
 							                        </div>
@@ -427,10 +403,7 @@
 							                                    <label for="txtCreditPeriod">Address
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address')}}" value="" class="form-control" placeholder="Enter Your Address">
-							                                    @error('biz_other_address')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address.2')}}" value="" class="form-control" placeholder="Enter Your Address">
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -440,13 +413,10 @@
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
-		                                                            <option value="1" {{(old('biz_other_state') == 1)? 'selected':''}}> State 1 </option>
-		                                                            <option value="2" {{(old('biz_other_state') == 2)? 'selected':''}}> State 2 </option>
-		                                                            <option value="3" {{(old('biz_other_state') == 3)? 'selected':''}}> State 3 </option>
+		                                                            <option value="1" {{(old('biz_other_state.2') == 1)? 'selected':''}}> State 1 </option>
+		                                                            <option value="2" {{(old('biz_other_state.2') == 2)? 'selected':''}}> State 2 </option>
+		                                                            <option value="3" {{(old('biz_other_state.2') == 3)? 'selected':''}}> State 3 </option>
 		                                                        </select>
-		                                                        @error('biz_other_state')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -454,10 +424,7 @@
 							                                    <label for="txtEmail">City
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
-							                                    @error('biz_other_city')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city.2')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -465,10 +432,7 @@
 							                                    <label for="txtPassword">Pin Code
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
-							                                    @error('biz_other_pin')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 							                                </div>
 							                            </div>
 							                        </div>
@@ -490,10 +454,7 @@
 							                                    <label for="txtCreditPeriod">Address
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address')}}" value="" class="form-control" placeholder="Enter Your Address">
-							                                    @error('biz_other_address')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address.3')}}" value="" class="form-control" placeholder="Enter Your Address">
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -503,13 +464,10 @@
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
-		                                                            <option value="1" {{(old('biz_other_state') == 1)? 'selected':''}}> State 1 </option>
-		                                                            <option value="2" {{(old('biz_other_state') == 2)? 'selected':''}}> State 2 </option>
-		                                                            <option value="3" {{(old('biz_other_state') == 3)? 'selected':''}}> State 3 </option>
+		                                                            <option value="1" {{(old('biz_other_state.3') == 1)? 'selected':''}}> State 1 </option>
+		                                                            <option value="2" {{(old('biz_other_state.3') == 2)? 'selected':''}}> State 2 </option>
+		                                                            <option value="3" {{(old('biz_other_state.3') == 3)? 'selected':''}}> State 3 </option>
 		                                                        </select>
-		                                                        @error('biz_other_state')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -517,10 +475,7 @@
 							                                    <label for="txtEmail">City
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
-							                                    @error('biz_other_city')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city.3')}}" value="" class="form-control" tabindex="1" placeholder="Enter City Name">
 							                                </div>
 							                            </div>
 							                            <div class="col-md-4">
@@ -528,10 +483,7 @@
 							                                    <label for="txtPassword">Pin Code
 							                                        <span class="mandatory">*</span>
 							                                    </label>
-							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
-							                                    @error('biz_other_pin')
-		                                                            <span class="text-danger error">{{ $message }}</span>
-		                                                        @enderror
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3')}}" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 							                                </div>
 							                            </div>
 							                        </div>
