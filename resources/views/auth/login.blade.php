@@ -3,6 +3,8 @@
 
 <div class="login-wrapper col-sm-6 col-sm-offset-3">
     <div class="container-center">
+        <div class="card">
+           <div class="card-body">
         <div class="panel mb-0">
             <div class="panel-heading">
                 <div class="view-header">
@@ -66,6 +68,8 @@
         </div>
         </form>
     </div>
+     </div>
+        </div>
 </div>
 </div>
 </div>

@@ -4,7 +4,16 @@ body {
 	font-size: 15px;
 	background: #e2e9f0;
 }
-
+.card-body {
+    padding: 20px;
+}
+.form-group.Forgot {
+    padding: 5px 15px;
+    margin-top: 0px;
+}
+.Forgot a{
+    color:#2a8b6a;
+}
 .panel-heading {
 	padding: 10px 15px;
 	border-bottom: 1px solid transparent;
