@@ -3,7 +3,7 @@
 
 try {
 
-    var oTable;
+    var oTable,oTables1;
     jQuery(document).ready(function ($) {
         
         //User Listing code
@@ -52,6 +52,44 @@ try {
 
         });
         
+     
+      
+    //User Listing code
+        oTables1 = $('#anchUserList').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 25,
+            searching: false,
+            bSort: true,
+            ajax: {
+               "url": messages.get_anch_user_list, // json datasource
+                "method": 'POST',
+                data: function (d) {
+                    d.by_email = $('input[name=by_email]').val();
+                    d.is_assign = $('select[name=is_assign]').val();
+                    d._token = messages.token;
+                },
+                "error": function () {  // error handling
+                   
+                    $("#anchUserList").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#leadMaster_processing").css("display", "none");
+                }
+            },
+           columns: [
+                    {data: 'anchor_user_id'},
+                    {data: 'name'},
+                    {data: 'email'},
+                    {data: 'phone'},
+                    {data: 'email'},
+                    {data: 'created_at'},
+                    {data: 'action'}
+                ],
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6]}]
+
+        });  
+      
+      
+      
        
     });
 } catch (e) {

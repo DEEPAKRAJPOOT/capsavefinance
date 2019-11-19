@@ -222,7 +222,29 @@ class UserEventsListener extends BaseEvent
         }
     }
 
-    
+    public function onAnchorRegistUserSuccess($userData) {
+        $user = unserialize($userData);
+
+        //Send mail to User
+        $email_content = EmailTemplate::getEmailTemplate("ANCHOR_REGISTER_USER_MAIL");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name', '%url'],
+                [ucwords($user['name']),$user['url']],
+                $email_content->message
+            );
+
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content) {
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+            });
+        }
+    }
+
+
     /**
      * Event subscribers
      *
@@ -276,6 +298,10 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'RESET_PASSWORD_SUCCESSS',
             'App\Inv\Repositories\Events\UserEventsListener@onResetPasswordSuccess'
+        );
+        $events->listen(
+            'ANCHOR_REGISTER_USER_MAIL',
+            'App\Inv\Repositories\Events\UserEventsListener@onAnchorRegistUserSuccess'
         );
         
         //

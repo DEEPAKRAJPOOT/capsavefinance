@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use Event;
 class LeadController extends Controller
 {
     
@@ -218,6 +219,12 @@ class LeadController extends Controller
               //return redirect()->route('get_anchor_list')->with('message', trans('success_messages.basic_saved_successfully'));
               //Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 //return redirect()->route('manage-anchor');
+              $mailUrl=config('proin.frontend_uri').'/sign-up?email='.$arrAnchUserData['email'];
+              $anchUserMailArr = [];
+                $anchUserMailArr['email'] = $arrAnchUserData['email'];
+                $anchUserMailArr['name'] = $arrAnchUserData['name'];
+                $anchUserMailArr['url'] = $mailUrl;
+                Event::dispatch("ANCHOR_REGISTER_USER_MAIL", serialize($anchUserMailArr));
               
                  Session::flash('message',trans('backend_messages.change_app_status'));
                   return redirect()->route('get_anchor_list');

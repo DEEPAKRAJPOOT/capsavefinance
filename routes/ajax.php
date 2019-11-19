@@ -56,9 +56,9 @@ Route::group(
         ]
     );
     Route::post(
-        'get-anchor-list',
+        'get-anchor-user-list',
         [
-        'as' => 'get_anchser_list',
+        'as' => 'get_anch_user_list',
         'uses' => 'AjaxController@getAnchorLists'
         ]
     ); 

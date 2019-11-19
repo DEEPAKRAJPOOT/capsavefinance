@@ -57,7 +57,7 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <table id="anchRegUserList" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="anchUserList" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
                                                 <th>Sr.No.</th>
@@ -66,7 +66,7 @@
                                                 <th>Mobile</th>
                                                 <th>Anchor</th>
                                                 <th>Created At</th>
-                                                <th>Action</th>
+                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -89,53 +89,16 @@
 @endsection
 
 @section('jscript')
-
-<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
 <script>
 
     var messages = {
-        get_anchser_list: "{{ URL::route('get_anchser_list') }}",
+        get_anch_user_list: "{{ URL::route('get_anch_user_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
     };
 </script>
-<script>
-  var oTable;
-    jQuery(document).ready(function ($) {
-        oTables = $('#anchRegUserList').DataTable({
-            processing: true,
-            serverSide: true,
-            pageLength: 25,
-            searching: false,
-            bSort: true,
-            ajax: {
-               "url": messages.get_anchser_list, // json datasource
-                "method": 'POST',
-                data: function (d) {
-                    d.by_email = $('input[name=by_email]').val();
-                    d.is_assign = $('select[name=is_assign]').val();
-                    d._token = messages.token;
-                },
-                "error": function () {  // error handling
-                   
-                    $("#anchRegUserList").append('<tbody class="leadMaster-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
-                    $("#leadMaster_processing").css("display", "none");
-                }
-            },
-           columns: [
-                    {data: 'anchor_user_id'},
-                    {data: 'name'},
-                    {data: 'email'},
-                    {data: 'phone'},
-                    {data: 'email'},
-                    {data: 'created_by'},
-                    {data: 'created_at'},
-                    {data: 'action'}
-                ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6,7]}]
-});
-        }); 
-</script>
+
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
 @endsection

@@ -2653,9 +2653,7 @@ if ($err) {
     }
     
     
-       public function getAnchorLists(DataProviderInterface $dataProvider) {
-           dd("this is my anchor lead");
-           exit;
+       public function getAnchorLists(DataProviderInterface $dataProvider) { 
         $anchUsersList = $this->userRepo->getAllAnchorUsers();
         $users = $dataProvider->getUsersList($this->request, $anchUsersList);
         return $users;
