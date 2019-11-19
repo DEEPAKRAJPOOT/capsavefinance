@@ -3,15 +3,16 @@
 try {
 var oTable;
         $(document).ready(function () {
-            oTable1 = $('#leadpollMaster').DataTable({
+            oTable1 = $('#apppollMaster').DataTable({
                 "order" : [[0, "asc"]],
                 "sDom": "<'row'<'col-md-2'l><'col-md-7'a><'col-md-2'f>r>t<'row'<'col-md-6'i><'col-md-6'p>>",
                 //"sPaginationType": "bootstrap",
                 "processing": true,
                 "serverSide": true,
-                "searchable":false,
+                searching: false,
+            bSort: true,
                 ajax: {
-                "url": messages.get_lead_pool, // json datasource
+                "url": messages.get_case_pool, // json datasource
                 "method": 'POST',
                 data: function (d) {
                   //  d.email = $('#customSearchBox').val();
@@ -25,18 +26,17 @@ var oTable;
                 }
             },
                 columns: [
-                 // {data: 'checkbox'},
-                    {data: 'id'},
-                    {data: 'name'},
-                    {data: 'email'},
-                    {data: 'assigned'},
-                    
-                    //{data: 'mobile_no'},
-                    //{data: 'biz_name'},
-                    {data: 'created_at'},
-                    //{data: 'status'},
+                    {data: 'app_id'},
+                    {data: 'biz_entity_name'},
+                    {data: 'assoc_anchor'},
+                    {data: 'user_type'},
+                    {data: 'assignee'},
+                    {data: 'shared_detail'},
+                    {data: 'status'},
                     {data: 'action'}
-                ]
+                ],
+          aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6,7]}]
+
             });
             $('#manageUser').on('click', function (e) {
                 e.preventDefault();

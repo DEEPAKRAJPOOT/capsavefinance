@@ -47,6 +47,6 @@
 </div>
 </div>
 
-{!!Helpers::makeIframePopup('noteFrame','Add Note')!!}
+{!!Helpers::makeIframePopup('noteFrame','Add Note', 'modal-lg')!!}
 
 @endsection

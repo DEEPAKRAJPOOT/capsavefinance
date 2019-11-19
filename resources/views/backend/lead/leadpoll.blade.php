@@ -95,7 +95,7 @@ input[type='search']{
     @section('pageTitle')
 Admin- Login
 @endsection
-{!!Helpers::makeIframePopup('editLeadpoll','Edit Lead')!!}
+{!!Helpers::makeIframePopup('editLeadpoll','Edit Lead', 'modal-lg')!!}
     @section('jscript')
     <script>
 

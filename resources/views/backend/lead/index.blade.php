@@ -86,7 +86,7 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('editLead','Manage Lead')!!}
+{!!Helpers::makeIframePopup('editLead','Manage Lead', 'modal-lg')!!}
 @endsection
 
 @section('jscript')
