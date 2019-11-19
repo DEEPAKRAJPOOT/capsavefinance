@@ -30,8 +30,11 @@ class CamController extends Controller
     	$arrCamData = $request->all();
         $arrCamData['biz_id'] = '12';
         $arrCamData['app_id'] = '12';
+
         $userId = Auth::user()->user_id;
-        //$cam_info = $this->appRepo->camInfo($arrCamData);
+        if(!isset($arrCamData['rating_no'])){
+            $arrCamData['rating_no'] = NULL;
+        }
         Cam::creates($arrCamData, $userId);
         Session::flash('message',trans('Cam Information Saved Successfully'));
         return redirect()->route('cam_overview');
