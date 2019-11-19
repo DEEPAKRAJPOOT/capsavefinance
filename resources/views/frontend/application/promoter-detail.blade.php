@@ -17,7 +17,7 @@
                         <img src="{{url('frontend/assets/images/business-document.png')}}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src="{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
+                        <img src=t"{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
                     </div>
                 </div>
             </li>
@@ -33,7 +33,7 @@
 				</div>
 			</li>
             <li>
-                <div class="count-heading">KYC</div>
+                <div class="count-heading">Documents</div>
                 <div class="top-circle-bg">
                     <div class="count-top">
                         <img src="{{url('frontend/assets/images/business-document.png')}}" width="36" height="36">
@@ -75,14 +75,6 @@
                                                         </label>
                                                         <input type="text" name="first_name[]" id="first_name1" vname="first_name1" value="" class="form-control first_name" placeholder="Enter First Name" >
                                                         {{$errors->first('f_name')}}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                          <label for="txtCreditPeriod" for="first_name" >Last Name</label>
-                                                        
-                                         
-                                                        <input type="text" name="last_name[]" id="last_name1" value="" class="form-control last_name" placeholder="Enter Last Name" >
                                                     </div>
                                                 </div>
  <div class="col-md-4">

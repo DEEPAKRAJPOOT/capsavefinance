@@ -2,7 +2,7 @@
 <tr>
 <td class="header" style=" text-align: center;">
         <a href="#">
-            <img src="{{ asset('backend/assets/images/logo.png') }}"  alt="Rent Alpha" />
+            <img src="{{ asset('frontend/assets/images/logo.svg') }}"  alt="CAP Save" width="300px;" />
         </a>
     </td>
 </tr>

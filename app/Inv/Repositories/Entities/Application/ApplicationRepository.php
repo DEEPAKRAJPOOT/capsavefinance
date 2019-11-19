@@ -13,7 +13,7 @@ use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
-
+use App\Inv\Repositories\Models\AppNote;
 
 
 
@@ -186,7 +186,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getApplicationPoolData() 
     {
         return Application::getApplicationPoolData();
+    }    
+        
+    /**
+     * Save application note
+     * 
+     * @param array $noteData
+     * @return mixed
+     */
+    public function saveAppNote($noteData) 
+    {
+        return AppNote::create($noteData);
     }
+
     
     /**
      * Get Applications for Application list data tables
@@ -203,5 +215,5 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Application::updateAppDetails((int)$app_id, $arrUserData);
     }
-    
+ 
 }

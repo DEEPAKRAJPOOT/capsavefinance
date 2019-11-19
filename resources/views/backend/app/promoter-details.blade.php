@@ -1,4 +1,13 @@
 @extends('layouts.backend.admin-layout')
+@section('additional_css')
+<style>
+.upload-btn-wrapper input[type=file] {
+    font-size: inherit;
+    width: 85px;
+    position: absolute;
+}
+</style>
+@endsection
 @section('content')
 <ul class="main-menu">
     <li>
@@ -161,16 +170,21 @@
                                                         <tr>
                                                             <th class="text-left">S.No</th>
                                                             <th>Document Name</th>
-                                                            <th>File Name	</th>
+                                                            <th>Document ID No.</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <th class="text-left">1</th>
-                                                            <td>PAN Card	</td>
-                                                            <td>drop-box.jpg	</td>
-                                                            <td>
+                                                            <td class="text-left">1</td>
+                                                            <td width="30%">Driving License</td>
+                                                            <td width="30%" >
+                                                                <div class="col-md-12">
+                                                                    <a href="javascript:void(0);" class="verify-owner-no verify-show" style="top:0px;">Verify</a>
+                                                                <input type="text" name="pan_no" id="pan_no" value="" class="form-control" tabindex="1" placeholder="PAN Number" required="">
+                                                                </div>
+                                                                </td>
+                                                            <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
@@ -182,10 +196,15 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <th class="text-left">1</th>
-                                                            <td>PAN Card	</td>
-                                                            <td>drop-box.jpg	</td>
-                                                            <td>
+                                                            <td class="text-left">1</td>
+                                                            <td width="30%"><input type="text" name="pan_name" id="pan_name" value="" class="form-control" tabindex="1" placeholder="PAN Holder Name" required=""></td>
+                                                            <td width="30%" >
+                                                                <div class="col-md-12">
+                                                                    <a href="javascript:void(0);" class="verify-owner-no verify-show" style="top:0px;">Verify</a>
+                                                                <input type="text" name="pan_no" id="pan_no" value="" class="form-control" tabindex="1" placeholder="PAN Number" required="">
+                                                                </div>
+                                                                </td>
+                                                            <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
@@ -197,10 +216,35 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <th class="text-left">1</th>
-                                                            <td>PAN Card	</td>
-                                                            <td>drop-box.jpg	</td>
-                                                            <td>
+                                                            <td class="text-left">1</td>
+                                                            <td width="30%"><input type="text" name="pan_name" id="pan_name" value="" class="form-control" tabindex="1" placeholder="PAN Holder Name" required=""></td>
+                                                            <td width="30%" >
+                                                                <div class="col-md-12">
+                                                                    <a href="javascript:void(0);" class="verify-owner-no verify-show" style="top:0px;">Verify</a>
+                                                                <input type="text" name="pan_no" id="pan_no" value="" class="form-control" tabindex="1" placeholder="PAN Number" required="">
+                                                                </div>
+                                                                </td>
+                                                            <td width="28%">
+                                                                <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
+                                                                    <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                </div>
+                                                                <div class="upload-btn-wrapper setupload-btn">
+                                                                    <button class="btn">Upload</button>
+                                                                    <input type="file" name="myfile">
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-left">1</td>
+                                                            <td width="30%"><input type="text" name="pan_name" id="pan_name" value="" class="form-control" tabindex="1" placeholder="PAN Holder Name" required=""></td>
+                                                            <td width="30%" >
+                                                                <div class="col-md-12">
+                                                                    <a href="javascript:void(0);" class="verify-owner-no verify-show" style="top:0px;">Verify</a>
+                                                                <input type="text" name="pan_no" id="pan_no" value="" class="form-control" tabindex="1" placeholder="PAN Number" required="">
+                                                                </div>
+                                                                </td>
+                                                            <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">

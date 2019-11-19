@@ -37,11 +37,10 @@ class ApplicationController extends Controller
     public function showCompanyDetails(Request $request){
         try {
             $arrFileData = $request->all();
-            $business_info = $this->appRepo->getApplicationById($request->app_id);
-            //dd($business_info);
+            $business_info = $this->appRepo->getApplicationById($request->biz_id);
+            //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return view('backend.app.company-details')->with(['business_info'=>$business_info]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
@@ -139,4 +138,47 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    
+    /**
+     * Render view for add application note
+     * 
+     * @param Request $request
+     * @return view
+     */
+    public function addAppNote(Request $request) {
+        $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');        
+        
+        return view('backend.app.add_app_note')
+                ->with('app_id', $app_id)
+                ->with('biz_id', $biz_id);
+    } 
+    
+    /**
+     * Save application note
+     * 
+     * @param Request $request
+     * @return view
+     */    
+    public function saveAppNote(Request $request) {
+        
+        try {
+            $app_id = $request->get('app_id');
+            $biz_id = $request->get('biz_id');
+            $notes = $request->get('notes');
+            $noteData = [
+                'app_id' => $app_id, 
+                'note_data' => $notes,
+                'created_at' => \Carbon\Carbon::now(),
+                'created_by' => \Auth::user()->user_id
+            ];
+            
+            $this->appRepo->saveAppNote($noteData);
+            Session::flash('message',trans('backend_messages.add_note'));
+            //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
+            return redirect()->route('application_list');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }    
 }
