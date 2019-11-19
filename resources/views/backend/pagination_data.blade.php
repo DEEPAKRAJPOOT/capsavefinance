@@ -51,8 +51,8 @@
                                                         <li></li>
                                                 </ul>
                                                 <ul class="show-invoice">
-                                                        <li><a href="Invoice.php">Get Invoice</a></li>
-                                                        <li><a href="ContractDetails.php">Contract Details</a></li>
+                                                        <li><a href="#">Get Invoice</a></li>
+                                                        <li><a href="#">Contract Details</a></li>
                                                         <li><a href="#" onclick="db_blockchain()">Blockchain Details</a></li>
                                                 </ul>
                                         </div>
