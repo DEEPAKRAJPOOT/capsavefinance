@@ -117,7 +117,7 @@
 											<select class="form-control" name="biz_gst_number">
 												<option value="">Select GST Number</option>
 												@forelse($business_info->gsts as $gst_key => $gst_value)
-													<option val="{{$gst_value->pan_gst_hash}}">{{$gst_value->pan_gst_hash}}</option>
+													<option val="{{$gst_value->pan_gst_hash}}" {{(old('biz_gst_number',$business_info->gst->pan_gst_hash) == $gst_value->pan_gst_hash)? 'selected':''}}>{{$gst_value->pan_gst_hash}}</option>
 												@empty
 												@endforelse
 											</select>
@@ -193,12 +193,12 @@
 													<label for="txtPassword">State
 														<span class="mandatory">*</span>
 													</label>
-													<select class="form-control">
-														<option> Select State</option>
-														<option> Test 1 </option>
-														<option> Test 2 </option>
-														<option> Test 3 </option>
-													</select>
+													<select class="form-control" name="biz_state">
+                                                        <option value=""> Select State</option>
+                                                        <option value="1" {{(old('biz_state', $business_info->address[0]->state_name) == 1)? 'selected':''}}> State 1 </option>
+                                                        <option value="2" {{(old('biz_state', $business_info->address[0]->state_name) == 2)? 'selected':''}}> State 2 </option>
+                                                        <option value="3" {{(old('biz_state', $business_info->address[0]->state_name) == 3)? 'selected':''}}> State 3 </option>
+                                                    </select>
 												</div>
 											</div>
 											<div class="col-md-4">
@@ -206,7 +206,7 @@
 													<label for="txtEmail">City
 														<span class="mandatory">*</span>
 													</label>
-													<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter City Name" required="">
+													<input type="text" name="biz_city" value="{{old('biz_city', $business_info->address[0]->city_name)}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 												</div>
 											</div>
 											<div class="col-md-4">
@@ -215,7 +215,7 @@
 													<label for="txtPassword">Pin Code
 														<span class="mandatory">*</span>
 													</label>
-													<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+													<input type="text" name="biz_pin" value="{{old('biz_pin', $business_info->address[0]->pin_code)}}" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
 												</div>
 											</div>	
 										</div>	
@@ -242,7 +242,6 @@
 											<a class="card-title">
 												Communication Address
 											</a>
-
 										</div>
 										<div id="collapseOne" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
@@ -252,7 +251,7 @@
 															<label for="txtCreditPeriod">Address
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Your Address" required="">
+															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0', $business_info->address[1]->addr_1)}}" class="form-control" placeholder="Enter Your Address" required="">
 														</div>
 													</div>
 
@@ -262,13 +261,12 @@
 															<label for="txtPassword">State
 																<span class="mandatory">*</span>
 															</label>
-
-															<select class="form-control">
-																<option> Select State</option>
-																<option> Test 1 </option>
-																<option> Test 2 </option>
-																<option> Test 3 </option>
-															</select>
+															<select class="form-control" name="biz_other_state[]">
+		                                                        <option value=""> Select State</option>
+		                                                        <option value="1" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == 1)? 'selected':''}}> State 1 </option>
+		                                                        <option value="2" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == 2)? 'selected':''}}> State 2 </option>
+		                                                        <option value="3" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == 3)? 'selected':''}}> State 3 </option>
+		                                                    </select>
 														</div>
 													</div>
 
@@ -278,7 +276,7 @@
 															<label for="txtEmail">City
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter City Name" required="">
+															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.0',$business_info->address[1]->city_name)}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 														</div>
 													</div>
 													<div class="col-md-4">
@@ -287,7 +285,7 @@
 															<label for="txtPassword">Pin Code
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0', $business_info->address[1]->pin_code)}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 														</div>
 													</div>
 												</div>
@@ -312,7 +310,7 @@
 															<label for="txtCreditPeriod">Address
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Your Address" required="">
+															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.1', $business_info->address[2]->addr_1)}}" class="form-control" placeholder="Enter Your Address">
 														</div>
 													</div>
 
@@ -322,12 +320,12 @@
 																<span class="mandatory">*</span>
 															</label>
 
-															<select class="form-control">
-																<option> Select State</option>
-																<option> Test 1 </option>
-																<option> Test 2 </option>
-																<option> Test 3 </option>
-															</select>
+															<select class="form-control" name="biz_other_state[]">
+		                                                        <option value=""> Select State</option>
+		                                                        <option value="1" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == 1)? 'selected':''}}> State 1 </option>
+		                                                        <option value="2" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == 2)? 'selected':''}}> State 2 </option>
+		                                                        <option value="3" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == 3)? 'selected':''}}> State 3 </option>
+		                                                    </select>
 														</div>
 													</div>
 
@@ -337,7 +335,7 @@
 															<label for="txtEmail">City
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter City Name" required="">
+															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.1',$business_info->address[2]->city_name)}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 														</div>
 													</div>
 
@@ -346,7 +344,7 @@
 															<label for="txtPassword">Pin Code
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1', $business_info->address[2]->pin_code)}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 														</div>
 													</div>
 												</div>
@@ -372,7 +370,7 @@
 															<label for="txtCreditPeriod">Address
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Your Address" required="">
+															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.2', $business_info->address[3]->addr_1)}}" class="form-control" placeholder="Enter Your Address">
 														</div>
 													</div>
 
@@ -383,12 +381,12 @@
 																<span class="mandatory">*</span>
 															</label>
 
-															<select class="form-control">
-																<option> Select State</option>
-																<option> Test 1 </option>
-																<option> Test 2 </option>
-																<option> Test 3 </option>
-															</select>
+															<select class="form-control" name="biz_other_state[]">
+		                                                        <option value=""> Select State</option>
+		                                                        <option value="1" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == 1)? 'selected':''}}> State 1 </option>
+		                                                        <option value="2" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == 2)? 'selected':''}}> State 2 </option>
+		                                                        <option value="3" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == 3)? 'selected':''}}> State 3 </option>
+		                                                    </select>
 														</div>
 													</div>
 
@@ -397,7 +395,7 @@
 															<label for="txtEmail">City
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter City Name" required="">
+															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.2',$business_info->address[3]->city_name)}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 														</div>
 													</div>
 
@@ -407,7 +405,7 @@
 															<label for="txtPassword">Pin Code
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2', $business_info->address[3]->pin_code)}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 														</div>
 													</div>
 												</div>
@@ -430,7 +428,7 @@
 															<label for="txtCreditPeriod">Address
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Enter Your Address" required="">
+															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.3', $business_info->address[4]->addr_1)}}" class="form-control" placeholder="Enter Your Address">
 														</div>
 													</div>
 													<div class="col-md-4">
@@ -438,12 +436,12 @@
 															<label for="txtPassword">State
 																<span class="mandatory">*</span>
 															</label>
-															<select class="form-control">
-																<option> Select State</option>
-																<option> Test 1 </option>
-																<option> Test 2 </option>
-																<option> Test 3 </option>
-															</select>
+															<select class="form-control" name="biz_other_state[]">
+		                                                        <option value=""> Select State</option>
+		                                                        <option value="1" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == 1)? 'selected':''}}> State 1 </option>
+		                                                        <option value="2" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == 2)? 'selected':''}}> State 2 </option>
+		                                                        <option value="3" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == 3)? 'selected':''}}> State 3 </option>
+		                                                    </select>
 														</div>
 													</div>
 													<div class="col-md-4">
@@ -451,7 +449,7 @@
 															<label for="txtEmail">City
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter City Name" required="">
+															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.3',$business_info->address[4]->city_name)}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 														</div>
 													</div>
 													<div class="col-md-4">
@@ -459,7 +457,7 @@
 															<label for="txtPassword">Pin Code
 																<span class="mandatory">*</span>
 															</label>
-															<input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Enter Pin Code" required="">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3', $business_info->address[4]->pin_code)}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 														</div>
 													</div>
 												</div>
