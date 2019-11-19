@@ -5,6 +5,18 @@
 	margin:10px 0 10px 0;
 	
 }
+.header-msg{
+    width: calc(100% - 100px);
+    margin-left: 92px;
+    padding: 10px;
+    margin-top: 10px;
+    color:#fff;
+}
+.header-msg .close {
+    padding: 0px;
+    right: 3px;
+    top: -3px;
+}
 .btn-action-btn {
     border: 1px solid #138864;
 }
@@ -566,6 +578,11 @@ position: absolute;
   /*chandan*/
  
  .full-width{width:100%;}
+
+ .error{
+    color: red;
+    font-size: 11px;
+ }
  
  
  

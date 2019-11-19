@@ -24,7 +24,7 @@
         </li>
 
         <li>
-            <a href="financial.php">Financial</a>
+            <a href="{{ route('cam_finance') }}">Financial</a>
         </li>
         <li>
             <a href="gst-ledger.php">GST/Ledger Detail</a>
@@ -57,9 +57,7 @@
 
             </div>
         </div>
-        @if(Session::has('message'))
-            <p class="alert alert-info">{{ Session::get('message') }}</p>
-        @endif
+
         <div class="card mt-4">
             <div class="card-body ">
              <form method="POST" action="{{url('application/cam/cam-information-save')}}"> 
