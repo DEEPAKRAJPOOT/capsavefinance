@@ -12,28 +12,35 @@ use DB;
 class NotesController extends Controller
 {
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->middleware('auth');
        
     }
   
     public function index()
     {
-        $arrData = DB::table('note')->join('users', 'users.user_id', '=', 'note.created_by')->select('note.*', 'users.f_name', 'users.m_name', 'users.l_name')->get();     
+        $app_id = 1;
+        $arrData = DB::table('note')->join('users', 'users.user_id', '=', 'note.created_by')->select('note.*', 'users.f_name', 'users.m_name', 'users.l_name')->where('note.app_id', $app_id)->get();  
         return view('backend.notes.notes',compact('arrData'));
     }
+
 
     public  function store(Request $request)
     {
         $notesData = $request->get('notesData');
+        $app_id = '1';
         DB::table('note')->insert(
-            ['note_data' => $notesData,'created_by'=>Auth::user()->user_id]
+            ['note_data' => $notesData,'app_id'=>$app_id,'created_by'=>Auth::user()->user_id]
         );
         return response()->json(['message'=>'Note inserted successfully','status'=>1]);
     }
 
 
-    public function showNoteForm(){
+    public function showNoteForm()
+    {
         return view('backend.notes.notesForm');
     }
+
+
 }
