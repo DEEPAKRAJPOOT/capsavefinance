@@ -59,7 +59,17 @@ class BizOwner extends Model
         'updated_at'
     
     ];
-//////////////// save biz owner data///////////////////
+    /* Relation of Owner and Gst Api relation*/
+    /* created by gajendra chauhan   */
+   function getOwnerApiDetails()
+   {
+       
+      return $this->belongsTo('App\Inv\Repositories\Factory\Models\BizPanGst', 'biz_pan_gst_id','');  
+       
+   }
+   
+/* save biz owner data*/
+    /* By gajendra chauhan  */  
     public static function creates($attributes)
     {
           //insert into rta_app_doc
@@ -118,8 +128,20 @@ class BizOwner extends Model
 //         dd($attributes);
          /* save Owner api data */
         if($res->biz_pan_gst_api_id > 0){
+            $bizPanRes =  BizPanGst::create( [   
+           'user_id' => $userId, 
+           'biz_id' => $biz_id,    
+           'type' => 1,
+           'pan_gst_hash' =>  $attributes['pan_no'][$i], 
+           'status' => 1,
+           'parent_pan_gst_id' =>0,    
+           'biz_pan_gst_api_id' => $res->biz_pan_gst_api_id,
+           'created_by' =>  $userId]);
           
-           $ownerInputArr =  BizOwner::create( ['biz_id' => $biz_id,   
+        }
+        if($bizPanRes->biz_pan_gst_id > 0){
+          
+            $ownerInputArr =  BizOwner::create( ['biz_id' => $biz_id,   
            'user_id' => $userId, 
            'first_name' => $attributes['first_name'][$i],
            'last_name' => $attributes['last_name'][$i],
@@ -127,7 +149,7 @@ class BizOwner extends Model
            'gender' => $attributes['gender'][$i],
            'owner_addr' => $attributes['owner_addr'][$i],
            'is_pan_verified' => 1, 
-           'biz_pan_gst_id' =>$res->biz_pan_gst_api_id,	
+           'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
            'share_per' => $attributes['share_per'][$i],
            'edu_qualification' => $attributes['edu_qualification'][$i],
            'other_ownership' => $attributes['other_ownership'][$i],
@@ -135,21 +157,12 @@ class BizOwner extends Model
            'created_by' =>  $userId]);
         }
         if($ownerInputArr->biz_owner_id > 0){
-          
-           $bizPanRes =  BizPanGst::create( [   
-           'user_id' => $userId, 
-           'biz_id' => $biz_id,    
-           'biz_owner_id' => $ownerInputArr->biz_owner_id,
-           'type' => 1,
-           'pan_gst_hash' =>  $attributes['pan_no'][$i], 
-           'status' => 1,
-           'parent_pan_gst_id' =>0,    
-           'biz_pan_gst_api_id' => $res->biz_pan_gst_api_id,
-           'created_by' =>  $userId]);
+             $ownerUpdate =  BizPanGst::where('biz_pan_gst_id',$bizPanRes->biz_pan_gst_id)
+                            ->update(['biz_owner_id' => $ownerInputArr->biz_owner_id]);
         }
      }
 
-     return $bizPanRes;
+     return $ownerUpdate;
   }
   
   public static function getAppId($uid)

@@ -21,7 +21,25 @@
 	background-color:#138864;
 	color:#fff;
 }
-
+.modal-header .close.close-btns {
+    top: 1px;
+    right: 0px;
+    padding: 0px;
+    width: 32px;
+    height: 32px;
+}
+.upload-btn-cls  .custom-file-input {
+    position: absolute;
+    left:0px;
+}
+.fileUpload {
+    position: absolute;
+    left: 0;
+    bottom: -22px;
+    color: #138864;
+    font-style: italic;
+    font-size: 14px;
+}
 .sub-menu-main{
     display: flex;
     padding-left: 80px;
