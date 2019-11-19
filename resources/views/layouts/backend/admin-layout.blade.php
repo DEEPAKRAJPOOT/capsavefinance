@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
     @yield('additional_css')
+        <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
+    <script src="{{url('backend/assets/js/jquery.validate.js')}}"></script>
 </head>
 
 <body class="sidebar-icon-only">
@@ -62,7 +64,6 @@
             </div>
         </div>
     </div>
-    <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
     <script src="{{url('backend/assets/js/perfect-scrollbar.jquery.min.js')}}"></script>
