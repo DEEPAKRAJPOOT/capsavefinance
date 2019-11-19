@@ -33,6 +33,33 @@ $(document).ready(function(){
         });
         
 
+        $("#appStatusFrame").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#appStatusFrame iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
+        
+        $("#assignCaseFrame").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#assignCaseFrame iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });        
 
     
     

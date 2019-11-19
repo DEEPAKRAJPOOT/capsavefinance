@@ -110,4 +110,46 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Business::getApplicationById($bizId);
     }
+    
+    public function updateAppStatus($appId, $attributes = []){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        if(empty($appId)){
+            throw new BlankDataExceptions('No Data Found');
+        }
+        return true;
+    }
+
+    public function updateAssignee($appId, $attributes = []){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        if(empty($appId)){
+            throw new BlankDataExceptions('No Data Found');
+        }
+        return true;        
+    }
 }
