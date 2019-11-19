@@ -2626,25 +2626,19 @@ if ($err) {
        echo "<br>Gender : ".$gender;
        echo "<br>DOB : ".$eventsDataDOB;
        echo "<br>Country : ".$countryLinksName;
-
-       
 //$BindData = '';
 //$BindData = $referenceId."#".$primaryName."#".$category."#".$providerTypes."#".$gender."#".$eventsDataDOB."#".$countryLinksName."#".$identityDocumentsType."#".$identityDocumentsNumber;
-
-
-
-
-        
     }
+    
     /**
      * Get all User list
      *
      * @return json user data
      */
-    public function getLeadsPools(DataProviderInterface $dataProvider) {
-        $usersList = $this->userRepo->getAllUsers();
-        $users = $dataProvider->getUsersList($this->request, $usersList);
-        return $users;
+    public function getCasePools(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getApplicationPoolData()->get();
+        $apppool = $dataProvider->getAppLicationPool($this->request, $appList);
+        return $apppool;
     }
     
     /**

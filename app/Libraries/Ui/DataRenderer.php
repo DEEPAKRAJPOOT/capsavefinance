@@ -182,38 +182,103 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'action',
-                    function ($app) {
+                    function ($app) use ($request) {
                         //return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
-                    return '<div class="d-flex inline-action-btn"><a title="Add App Note" href="#" data-toggle="modal" data-target="#noteFrame" data-url ="' . route('backend_notes_from') . '" data-height="500px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>
-									   <a href="#" data-toggle="modal" data-target="#myModal1" title="Add Status" class="btn btn-action-btn btn-sm"><i class="fa fa-outdent" aria-hidden="true"></i></a>
-									   <a href="#" title="Assign Case" data-toggle="modal" data-target="#myModal2" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> </div>';
+                    return '<div class="d-flex inline-action-btn"><a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>
+									   <a href="#" data-toggle="modal" data-target="#appStatusFrame" title="Change Status" data-url="' . route('change_app_status', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id') ]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-outdent" aria-hidden="true"></i></a>
+									   <a href="#" title="Assign Case" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('assign_case', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> </div>';
                     }
                 )
                 ->filter(function ($query) use ($request) {
-                    /*
-                    if ($request->get('by_email') != '') {
-                        if ($request->has('by_email')) {
-                            $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
-                            });
-                        }
+                    
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
                     }
                     if ($request->get('is_assign') != '') {
-                        if ($request->has('is_assign')) {
-                            $query->where(function ($query) use ($request) {
-                                $by_status = (int) trim($request->get('is_assign'));
-                                
-                                $query->where('users.is_assign', 'like',
-                                        "%$by_status%");
-                            });
-                        }
-                    }                    
-                    */
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_assign');
+                            $query->where('app.is_assigned', $is_assigned);
+                        });
+                    }
+                    
                 })
                 ->make(true);
-    }    
+    } 
+    
+    /*
+     * get application pool
+     * 
+     */
+    
+    public function getAppLicationPool(Request $request, $app)
+    {
+        return DataTables::of($app)
+                ->rawColumns(['app_id', 'action'])
+                ->addColumn(
+                    'app_id',
+                    function ($app) {
+                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                    }
+                )
+                ->addColumn(
+                    'biz_entity_name',
+                    function ($app) {                        
+                        return $app->biz_entity_name ? $app->biz_entity_name : 'yyy';
+                })
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($app) {
+                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
+                        return 'yyy';
+                })
+                ->addColumn(
+                    'user_type',
+                    function ($app) {                        
+                        return 'yyy';
+                })                
+                ->addColumn(
+                    'assignee',
+                    function ($app) {
+                        return 'Not Assign';
+                })
+                ->addColumn(
+                    'shared_detail',
+                    function ($app) {
+                    return 'yyy';
+
+                })
+                ->addColumn(
+                    'status',
+                    function ($app) {
+                 return $app->status == 1 ? 'Completed' : 'Incomplete';
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($app) {
+                    return  "<div class=\"d-flex inline-action-btn\">
+            <a  data-toggle=\"modal\" data-target=\"#pickLead\" data-url =\"" . route('confirm_box', ['user_id' => $app->user_id , 'app_id' => $app->app_id] ) . "\" data-height=\"200px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\">Pickup Case</a>
+    <div>";
+              }
+                )
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    if ($request->get('is_assign') != '') {                                 
+                    }                    
+                    
+                })
+                ->make(true);
+    } 
 }

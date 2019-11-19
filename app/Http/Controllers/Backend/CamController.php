@@ -6,15 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FinanceInformationRequest as FinanceRequest;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\FinanceModel;
-
 date_default_timezone_set('Asia/Kolkata');
+use App\Inv\Repositories\Models\Cam;
+use Auth;
+use Session;
 
 class CamController extends Controller
 {
+     protected $appRepo;
 	  public function __construct(){
         $this->middleware('auth');
        
-    }
+        }
     /**
      * Display a listing of the resource.
      *
@@ -23,12 +26,20 @@ class CamController extends Controller
     public function index()
     {
         return view('backend.cam.overview');
-
     }
 
     public function camInformationSave(Request $request)
     {
     	$arrCamData = $request->all();
+        $arrCamData['biz_id'] = '12';
+        $arrCamData['app_id'] = '12';
+        $userId = Auth::user()->user_id;
+        if(!isset($arrCamData['rating_no'])){
+            $arrCamData['rating_no'] = NULL;
+        }
+        Cam::creates($arrCamData, $userId);
+        Session::flash('message',trans('Cam Information Saved Successfully'));
+        return redirect()->route('cam_overview');
     }
 
     public function finance()

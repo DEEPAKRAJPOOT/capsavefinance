@@ -19,14 +19,12 @@
                                             <thead class="thead-primary">
                                                 <tr>
                                                     <th class="text-left" conspan="2">Case Note</th>
-                                                    
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
                                                     <th class="text-left">Note Details</th>
-                                                    <td class="text-right">Added By</td>                                                                        
-                                                </tr> 
+                                                    <td class="text-right">Added By</td>                                 </tr> 
 
                                                 @foreach($arrData as $data)
                                                    
@@ -49,6 +47,6 @@
 </div>
 </div>
 
-{!!Helpers::makeIframePopup('noteFrame','Add Note')!!}
+{!!Helpers::makeIframePopup('noteFrame','Add Note', 'modal-lg')!!}
 
 @endsection

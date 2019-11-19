@@ -29,7 +29,7 @@
                 </div>
             </li>
             <li class="count-active">
-                <div class="count-heading">KYC</div>
+                <div class="count-heading">Documents</div>
                 <div class="top-circle-bg">
                     <div class="count-top">
                         <img src="{{ url('frontend/assets/images/business-document.png') }}" width="36" height="36">
@@ -125,7 +125,7 @@
                         <!--modal-->
                         <div class="modal" id="myModal{{ $data->app_doc_id }}">
                             <div class="modal-dialog">
-                                <div class="modal-content">
+                                <div class="modal-content pb-3">
                                     <!-- Modal Header -->
                                     <div class="modal-header">
                                         <button type="button" class="close close-btns" data-dismiss="modal">&times;</button>
@@ -152,10 +152,11 @@
                                                 <input class="form-control" type="text" name="doc_name" value="" placeholder="Enter Document Name" >
                                             </div>
                                             @endif
-                                            <div class="custom-file mb-3 mt-2">
+                                            <div class="custom-file upload-btn-cls mb-3 mt-2">
                                                 <label for="email">Upload Document</label>
                                                 <input type="file" class="custom-file-input" id="customFile" name="bank_docs[]" multiple="">
                                                 <label class="custom-file-label" for="customFile">Choose file</label>
+                                                <span class="fileUpload"></span>
                                             </div>
                                             <button type="submit" class="btn btn-primary float-right">Submit</button>  
                                         </div>
@@ -193,92 +194,26 @@
         <script src="{{ url('frontend/assets/js/misc.js') }}"></script>
 
         <script>
-                                    $(document).ready(function () {
-                                        $('[data-toggle="tooltip"]').tooltip();
-
-                                        $(".trigger").click(function () {
-
-                                            if ($(this).hasClass("minus")) {
-
-                                                $(this).removeClass("minus");
-
-                                            } else {
-                                                $(this).addClass("minus");
-
-                                            }
-
-
-                                            //$(".trigger").removeClass("minus");
-                                            //$(this).addClass("minus");
-
-                                            $(this).parents("tr").next(".dpr").slideToggle();
-
-
-                                        });
-                                    });
-        </script>
-        <script>
-            var count = 2;
-            function FileDetails(clicked_id) {
-                // GET THE FILE INPUT.
-                var fi = document.getElementById('file_' + clicked_id);
-                // VALIDATE OR CHECK IF ANY FILE IS SELECTED.
-                if (fi.files.length > 0) {
-
-                    // THE TOTAL FILE COUNT.
-                    var x = 'filePath_' + clicked_id;
-                    //var x = document.getElementById(id);alert(id);
-                    document.getElementById(x).innerHTML = '';
-
-                    // RUN A LOOP TO CHECK EACH SELECTED FILE.
-                    for (var i = 0; i <= fi.files.length - 1; i++) {
-
-                        var fname = fi.files.item(i).name; // THE NAME OF THE FILE.
-                        var fsize = fi.files.item(i).size; // THE SIZE OF THE FILE.
-                        // SHOW THE EXTRACTED DETAILS OF THE FILE.
-                        document.getElementById(x).innerHTML =
-                                '<div class="file-name"> ' +
-                                fname + '' + '<button type="button"  class="close-file"> x' + '</button>' + '</div>';
+            
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+                $(".trigger").click(function(){
+                    if($(this).hasClass("minus")){
+                        $(this).removeClass("minus"); 
                     }
-                } else {
-                    alert('Please select a file.');
-                }
-            }
-
-            $(document).ready(function () {
-                $('#add-bank-block').on('click', function () {
-                    let html_block = '<div class="col-md-12 doc-block">\
-                                            <div class="justify-content-center align-items-baseline d-flex">\
-                                                <label class="mb-0"><span class="file-icon"><img src="{{ url("frontend/assets/images/contractdocs.svg") }}"> </span> Document Name </label>\
-                                                <div class="select-bank ml-auto col-md-3">\
-                                                    <select class="form-control">\
-                                                        <option>Select bank</option>\
-                                                        <option>HDFC</option>\
-                                                        <option>ICICI</option>\
-                                                    </select>\
-                                                </div>\
-                                                <div class="ml-auto col-md-4 text-right d-flex justify-content-end align-items-center">\
-                                                    <div id="filePath_' + count + '" class="filePath mt-0"></div>\
-                                                    <div class="file-browse">\
-                                                        <button class="btn-upload btn btn-sm" type="button"> <i class="fa fa-upload"></i> </button>\
-                                                        <input type="file" name="bank_docs[]" id="file_' + count + '" dir="' + count + '" onchange="FileDetails(' + count + ')">\
-                                                        <button class="btn custom-btn btn-sm delete-btn" type="button"> <i class="fa fa-trash delete-block"></i> </button>\
-                                                    </div>\
-                                                </div>\
-                                            </div>\
-                                            <hr>\
-                                        </div>';
-                    $('.bank-document-div').append(html_block);
-                    count++;
+                    else {
+                        $(this).addClass("minus");   
+                    }
+                    $(this).parents("tr").next(".dpr").slideToggle();
                 });
 
-                $(document).on('click', '.delete-block', function () {
-                    $(this).closest('div.doc-block').remove();
-                });
-
-                $(document).on('click', '.close-file', function () {
-                    $(this).parent('div').remove();
-                });
-            })
+            });
+            $(document).ready(function(){
+                    $('input[type="file"]').change(function(e){
+                        var fileName = e.target.files[0].name;
+                                    $(".fileUpload").text(fileName);
+                        //alert('The file "' + fileName +  '" has been selected.');
+                    });
+            });
         </script>
         @endsection

@@ -4,36 +4,41 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Inv\Repositories\Models\AppNote;
 use Auth;
 use Session;
-use DB;
-//use GuzzleHttp\Psr7\Request;
 
 class NotesController extends Controller
 {
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->middleware('auth');
        
     }
   
     public function index()
     {
-        $arrData = DB::table('note')->join('users', 'users.user_id', '=', 'note.created_by')->select('note.*', 'users.f_name', 'users.m_name', 'users.l_name')->get();     
+        $app_id = 1;
+        $arrData = AppNote::showData($app_id);
         return view('backend.notes.notes',compact('arrData'));
     }
 
+
     public  function store(Request $request)
     {
-        $notesData = $request->get('notesData');
-        DB::table('note')->insert(
-            ['note_data' => $notesData,'created_by'=>Auth::user()->user_id]
-        );
+        $arrData['note_data'] = $request->get('notesData');
+        $arrData['created_by'] = Auth::user()->user_id;
+        $arrData['app_id']= 1;
+        AppNote::create($arrData);
         return response()->json(['message'=>'Note inserted successfully','status'=>1]);
     }
 
 
-    public function showNoteForm(){
+    public function showNoteForm()
+    {
         return view('backend.notes.notesForm');
     }
+
+
 }
