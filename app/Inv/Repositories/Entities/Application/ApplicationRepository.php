@@ -9,6 +9,7 @@ use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -197,4 +198,22 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return AppNote::create($noteData);
     }
+
+    
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function saveShaircase($attributes) 
+    {
+        return AppAssignment::saveData($attributes);
+    }
+    
+     /**
+     * update Applications for Application list data tables
+     */
+    public function updateAppDetails($app_id, $arrUserData = []) 
+    {
+        return Application::updateAppDetails((int)$app_id, $arrUserData);
+    }
+ 
 }
