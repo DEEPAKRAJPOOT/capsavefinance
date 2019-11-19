@@ -28,7 +28,7 @@
             <div class="row row-offcanvas row-offcanvas-right">
                 <!-- partial -->
                 @if(Session::has('message'))
-                <div class=" my-alert-success alert bg-success base-reverse alert-dismissible" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+                <div class=" my-alert-success alert bg-success base-reverse alert-dismissible header-msg" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
                     {{ Session::get('message') }}
                 </div>
