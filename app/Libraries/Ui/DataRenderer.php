@@ -155,29 +155,29 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {
                         //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                        return $app->assoc_anchor ? $app->assoc_anchor : '';
+                        return '';
                 })
                 ->addColumn(
                     'user_type',
                     function ($app) {                        
-                        return $app->user_type ? $app->user_type : '';
+                        return '';
                 })                
                 ->addColumn(
                     'assignee',
                     function ($app) {
-                        return $app->assignee ? $app->assignee : '';
+                        return '';
                 })
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
-                    return $app->shared_detail ? $app->shared_detail : '';
+                    return '';
 
                 })
-                ->editColumn(
+                ->addColumn(
                     'status',
                     function ($app) {
-                    $app_status = config('common.app_status');
-                    return $app_status[$app->status];
+                    //$app_status = config('inv_common.app_status');                    
+                    return $app->status == 1 ? 'Completed' : 'Incomplete';
 
                 })
                 ->addColumn(
@@ -190,29 +190,17 @@ class DataRenderer implements DataProviderInterface
                     }
                 )
                 ->filter(function ($query) use ($request) {
-                    /*
-                    if ($request->get('by_email') != '') {
-                        if ($request->has('by_email')) {
-                            $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
-                            });
-                        }
+                    
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
                     }
-                    if ($request->get('is_assign') != '') {
-                        if ($request->has('is_assign')) {
-                            $query->where(function ($query) use ($request) {
-                                $by_status = (int) trim($request->get('is_assign'));
-                                
-                                $query->where('users.is_assign', 'like',
-                                        "%$by_status%");
-                            });
-                        }
+                    if ($request->get('is_assign') != '') {                                 
                     }                    
-                    */
+                    
                 })
                 ->make(true);
     }    

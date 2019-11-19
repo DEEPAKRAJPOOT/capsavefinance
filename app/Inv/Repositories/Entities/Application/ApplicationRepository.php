@@ -110,4 +110,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Business::getApplicationById($bizId);
     }
+    
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getApplicationsDetail($user_id) 
+    {
+        return Application::getApplicationsDetail($user_id);
+    }
 }

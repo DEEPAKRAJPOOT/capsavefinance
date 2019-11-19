@@ -1,37 +1,18 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-<ul class="main-menu">
-					<li>
-						<a href="company-details.php" class="active">Application details</a>
-					</li>
-					<li>
-						<a href="cam.php">CAM</a>
-					</li>
-					<li>
-						<a href="residence.php">FI/RCU</a>
-					</li>
-					<li>
-						<a href="Collateral.php">Collateral</a>
-					</li>
-					<li>
-						<a href="notes.php">Notes</a>
-					</li>
-					<li>
-						<a href="commercial.php">Submit Commercial</a>
-					</li>
-				</ul>
+@include('layouts.backend.partials.admin-subnav')
                 <!-- partial -->
                 <div class="content-wrapper">
                 <ul class="sub-menu-main pl-0 m-0">
 		<li>
-			<a href="company-details.php" class="active">Company Details</a>
+			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Company Details</a>
 		</li>
 		<li>
-			<a href="promoter-details.php">Promoter Details</a>
+			<a href="#">Promoter Details</a>
 		</li>
 		<li>
-			<a href="document.php">Documents</a>
+			<a href="#">Documents</a>
 		</li>
 		<!--<li>
 			<a href="buyers.php">Buyers </a>
@@ -519,3 +500,4 @@
 		</div>
 	</div>
 	</div>
+@endsection
