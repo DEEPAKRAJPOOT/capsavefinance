@@ -1,12 +1,21 @@
 @extends('layouts.withought_login')
+@section('style')
+<style>
+ .logo-box img {
+    max-width: 300px;
+}   
+</style>
+@endsection
 @section('content')
 
 <div class="login-wrapper col-sm-6 col-sm-offset-3">
     <div class="container-center">
+        <div class="card">
+           <div class="card-body">
         <div class="panel mb-0">
             <div class="panel-heading">
                 <div class="view-header">
-                    <div class="logo-box p-2"><img src="{{url('backend/assets/images/logo.png')}}"></div>
+                    <div class="logo-box p-2"><img src="{{url('frontend/assets/images/logo.svg')}}" width="200px;"></div>
                     <div class="header-title">
                         <h3>Login</h3>
                         <small>
@@ -66,6 +75,8 @@
         </div>
         </form>
     </div>
+     </div>
+        </div>
 </div>
 </div>
 </div>

@@ -29,7 +29,7 @@
                 </div>
             </li>
             <li class="count-active">
-                <div class="count-heading">KYC</div>
+                <div class="count-heading">Documents</div>
                 <div class="top-circle-bg">
                     <div class="count-top">
                         <img src="{{ url('frontend/assets/images/business-document.png') }}" width="36" height="36">

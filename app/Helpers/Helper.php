@@ -96,7 +96,15 @@ class Helper extends PaypalHelper
         </div>
     </div>";
     }
-    
-    
+
+    public static function customIsset($obj, $key){
+        if(is_null($obj)){
+            return '';
+        }else if(isset($obj->$key)){
+            return $obj->$key;
+        }else{
+            return '';
+        }
+    }
 
 }

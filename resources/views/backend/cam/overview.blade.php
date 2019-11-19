@@ -24,7 +24,7 @@
         </li>
 
         <li>
-            <a href="#">Financial</a>
+            <a href="{{ route('cam_finance') }}">Financial</a>
         </li>
         <li>
             <a href="#">GST/Ledger Detail</a>
