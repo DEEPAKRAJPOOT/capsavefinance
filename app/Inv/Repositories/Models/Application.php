@@ -40,6 +40,8 @@ class Application extends Model
         'user_id',
         'biz_id',
         'loan_amt',
+        'status',
+        'is_assigned',
         'created_by',
         'created_at',
         'updated_at',
@@ -56,10 +58,10 @@ class Application extends Model
                 //->where('app.status', 1)
                 ->orderBy('app.app_id');        
         return $appData;
-    }   
+    }
    
     
-     public static function getApplicationsDetail($user_id)
+    public static function getApplicationsDetail($user_id)
     {
         /**
          * Check id is not blank
@@ -82,4 +84,16 @@ class Application extends Model
         return ($appData?$appData:null);
         
     }
+    
+    /**
+     * Get Applications for Application list data tables
+     */
+    public static function getApplicationPoolData() 
+    {
+        $appData = self::select('app.*')
+                ->where('app.is_assignd', 0)
+                ->orderBy('app.app_id');        
+        return $appData;
+    } 
+    
 }

@@ -178,4 +178,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Application::getApplicationsDetail($user_id);
     }
+    
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getApplicationPoolData() 
+    {
+        return Application::getApplicationPoolData();
+    }
+    
 }
