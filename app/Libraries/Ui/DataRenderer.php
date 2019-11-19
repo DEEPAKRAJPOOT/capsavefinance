@@ -74,6 +74,18 @@ class DataRenderer implements DataProviderInterface
                     return $achorId;
                 })
                 ->editColumn(
+                    'userType',
+                    function ($user) {
+                    $achorId = $user->anchor_id; 
+                    return '';;
+                })
+                ->editColumn(
+                    'salesper',
+                    function ($user) {
+                    $achorId = $user->anchor_id; 
+                    return '';
+                })
+                ->editColumn(
                     '',
                     function ($user) {
                     $full_name = $user->mobile_no; 

@@ -34,9 +34,9 @@ try {
                     {data: 'email'},
                     {data: 'mobile_no'},
                     {data: 'anchor'},
+                    {data: 'userType'},
+                    {data: 'salesper'},
                     {data: 'assigned'},
-                    
-                    
                     //{data: 'biz_name'},
                     {data: 'created_at'},
                     //{data: 'status'},
