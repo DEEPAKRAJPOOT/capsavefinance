@@ -69,7 +69,7 @@
 												<label for="txtCreditPeriod">Applied Loan Amount
 													<span class="mandatory">*</span>
 												</label>
-												<a href="javascript:void(0);" class="verify-owner-no">INR</a>
+												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" placeholder="Enter Applied Loan Amount">
 												@error('loan_amount')
 									                <span class="text-danger error">{{ $message }}</span>
@@ -131,7 +131,8 @@
 										<div class="col-md-6">
 											<div class="form-group password-input INR">
 												<label for="txtPassword">Business Turnover
-												</label> <a href="javascript:void(0);" class="verify-owner-no">INR</a>
+												</label>
+												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="1" placeholder="Enter Business Turnover">
 												@error('biz_turnover')
 									                <span class="text-danger error">{{ $message }}</span>
