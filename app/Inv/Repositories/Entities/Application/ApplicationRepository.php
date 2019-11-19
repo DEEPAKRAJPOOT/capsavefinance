@@ -12,7 +12,7 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
-
+use App\Inv\Repositories\Models\AppNote;
 
 
 
@@ -178,4 +178,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Application::getApplicationsDetail($user_id);
     }
+        
+    /**
+     * Save application note
+     * 
+     * @param array $noteData
+     * @return mixed
+     */
+    public function saveAppNote($noteData) 
+    {
+        return AppNote::create($noteData);
+    }    
 }
