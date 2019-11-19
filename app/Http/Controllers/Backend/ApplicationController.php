@@ -138,4 +138,47 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    
+    /**
+     * Render view for add application note
+     * 
+     * @param Request $request
+     * @return view
+     */
+    public function addAppNote(Request $request) {
+        $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');        
+        
+        return view('backend.app.add_app_note')
+                ->with('app_id', $app_id)
+                ->with('biz_id', $biz_id);
+    } 
+    
+    /**
+     * Save application note
+     * 
+     * @param Request $request
+     * @return view
+     */    
+    public function saveAppNote(Request $request) {
+        
+        try {
+            $app_id = $request->get('app_id');
+            $biz_id = $request->get('biz_id');
+            $notes = $request->get('notes');
+            $noteData = [
+                'app_id' => $app_id, 
+                'note_data' => $notes,
+                'created_at' => \Carbon\Carbon::now(),
+                'created_by' => \Auth::user()->user_id
+            ];
+            
+            $this->appRepo->saveAppNote($noteData);
+            Session::flash('message',trans('backend_messages.add_note'));
+            //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
+            return redirect()->route('application_list');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }    
 }

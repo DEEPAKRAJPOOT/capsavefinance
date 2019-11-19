@@ -19,7 +19,6 @@ use App\Http\Requests\BusinessDocumentRequest;
 use Illuminate\Contracts\Encryption\DecryptException;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
-use App\Inv\Repositories\Contracts\BusinessInterface as InvBusinessRepoInterface;
 use App\Inv\Repositories\Libraries\Storage\Contract\StorageManagerInterface;
 use App\Inv\Repositories\Contracts\Traits\StorageAccessTraits;
 use App\Inv\Repositories\Contracts\Traits\ApiAccessTrait;
@@ -65,11 +64,10 @@ use RegistersUsers,
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $application, InvBusinessRepoInterface $buss_repo) {
+    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $application) {
         $this->middleware('guest');
         $this->userRepo = $user;
         $this->application = $application;
-        $this->businessRepo = $buss_repo;
     }
 
     /**
