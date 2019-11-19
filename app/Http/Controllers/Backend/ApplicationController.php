@@ -50,13 +50,12 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-
-
-
-
-     public function showPromoterDetails($id){
+     /* Show promoter details page  */
+     public function showPromoterDetails($bizId){
         $id = Auth::user()->user_id;
-        return view('backend.app.promoter-details');
+        $attribute['biz_id'] = $bizId;
+        $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
+        return view('backend.app.promoter-details')->;
     }
     
     /**
