@@ -116,7 +116,7 @@
                             </div>
                         </div>
                         <div class="d-flex btn-section sign-UP">
-                            <div class="col-md-4">
+                            <div class="col-md-4 mt-3">
                                 <input type="submit" value="Submit" class="btn btn-primary"> </div>
                         </div>
                     </div>
