@@ -226,7 +226,8 @@ class User extends Authenticatable
     public static function getAllUsers()
     {
         $result = self::select('users.*')
-            ->where('user_type', 1);
+            ->where('user_type', 1)
+                 ->orderBy('users.user_id', 'desc');
         return ($result ? $result : '');
     }
     
