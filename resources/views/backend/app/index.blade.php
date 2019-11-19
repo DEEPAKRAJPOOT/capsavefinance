@@ -98,7 +98,7 @@
 
 </div>
 
-{!!Helpers::makeIframePopup('noteFrame','Add Note', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('addCaseNote','Add Note', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('appStatusFrame','Change Status', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('assignCaseFrame','Assign Case', 'modal-lg')!!}
 

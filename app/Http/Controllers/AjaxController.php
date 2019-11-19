@@ -2647,7 +2647,7 @@ if ($err) {
      * @return json user data
      */
     public function getApplications(DataProviderInterface $dataProvider) {
-        $appList = $this->application->getApplicationPoolData();
+        $appList = $this->application->getApplications();
         $applications = $dataProvider->getAppList($this->request, $appList);
         return $applications;
     }
