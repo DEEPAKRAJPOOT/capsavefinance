@@ -37,11 +37,10 @@ class ApplicationController extends Controller
     public function showCompanyDetails(Request $request){
         try {
             $arrFileData = $request->all();
-            $business_info = $this->appRepo->getApplicationById($request->app_id);
-            //dd($business_info);
+            $business_info = $this->appRepo->getApplicationById($request->biz_id);
+            //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return view('backend.app.company-details')->with(['business_info'=>$business_info]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
