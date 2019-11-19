@@ -49,7 +49,7 @@ class CamController extends Controller
     }
     public function finance_store(FinanceRequest $request, FinanceModel $fin)
     {
-        $financeid = $this->getFinanceId();
+        $financeid = $this->_getFinanceId();
         $insert_data = [];
         $post_data = $request->all();
         unset($post_data['_token']);
@@ -79,7 +79,7 @@ class CamController extends Controller
         return redirect()->route('cam_finance');
     }
 
-    private function getFinanceId() {
+    private function _getFinanceId() {
         $y = date('Y') - 2018 + 64;
         $m = date('m') + 64;
         $d = date('d');
@@ -91,7 +91,7 @@ class CamController extends Controller
         return $no;
     }
 
-    private function financeid_reverse($value='AKSK31268170')
+    private function _financeid_reverse($value='AKSK31268170')
     {
         $date = substr($value, 0, 4);
         $time = substr($value, 4, 4);
