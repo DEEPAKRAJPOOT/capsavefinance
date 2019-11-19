@@ -55,7 +55,7 @@ class ApplicationController extends Controller
         $id = Auth::user()->user_id;
         $attribute['biz_id'] = $bizId;
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-        return view('backend.app.promoter-details')->;
+        return view('backend.app.promoter-details')->with('ownerDetails',$OwnerPanApi);
     }
     
     /**
