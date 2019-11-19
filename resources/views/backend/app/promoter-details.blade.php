@@ -11,35 +11,35 @@
 @section('content')
 <ul class="main-menu">
     <li>
-        <a href="company-details.php" class="active">Application details</a>
+        <a href="#" class="active">Application details</a>
     </li>
     <li>
-        <a href="cam.php">CAM</a>
+        <a href="#">CAM</a>
     </li>
     <li>
-        <a href="residence.php">FI/RCU</a>
+        <a href="#">FI/RCU</a>
     </li>
     <li>
-        <a href="Collateral.php">Collateral</a>
+        <a href="#">Collateral</a>
     </li>
     <li>
-        <a href="notes.php">Notes</a>
+        <a href="#">Notes</a>
     </li>
     <li>
-        <a href="commercial.php">Submit Commercial</a>
+        <a href="#">Submit Commercial</a>
     </li>
 </ul>
 <!-- partial -->
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
         <li>
-            <a href="company-details.php" class="active">Company Details</a>
+            <a href="#" class="active">Company Details</a>
         </li>
         <li>
-            <a href="promoter-details.php">Promoter Details</a>
+            <a href="#">Promoter Details</a>
         </li>
         <li>
-            <a href="document.php">Documents</a>
+            <a href="#">Documents</a>
         </li>
         <!--<li>
                 <a href="buyers.php">Buyers </a>

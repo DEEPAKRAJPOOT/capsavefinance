@@ -117,7 +117,7 @@
                             <div class="d-flex btn-section ">
 
                                 <div class="col-md-4 ml-auto text-right">
-                                    <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'associate-buyers.php'">
+                                    <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = '#'">
 
                                     <input type="button" value="Skip" class="btn btn-primary" onclick="window.location.href = '#'"> <input type="button" value="Submit" class="btn btn-primary" onclick="window.location.href = '#'"> </div>
                             </div>
