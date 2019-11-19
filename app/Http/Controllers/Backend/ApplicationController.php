@@ -37,8 +37,8 @@ class ApplicationController extends Controller
     public function showCompanyDetails(Request $request){
         try {
             $arrFileData = $request->all();
-            $business_info = $this->appRepo->getApplicationById($request->app_id);
-            //dd($business_info);
+            $business_info = $this->appRepo->getApplicationById($request->biz_id);
+            //dd($business_info->app->loan_amt);
 
             if ($business_info) {
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));

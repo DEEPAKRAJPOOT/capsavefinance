@@ -132,13 +132,28 @@ class Business extends BaseModel
     }
 
     public static function getApplicationById($bizId){
-        //dd($bizId);
-        $bizData = self::select('app.app_id', 'app.loan_amt','biz.biz_entity_name','biz.date_of_in_corp','biz.entity_type_id','biz.turnover_amt','biz.nature_of_biz','biz.org_id','bpg1.cin','bpg1.pan_gst_hash')
+        return Business::where('biz.biz_id', $bizId)->first();
+        /*$bizData = self::select('app.app_id', 'app.loan_amt','biz.biz_entity_name','biz.date_of_in_corp','biz.entity_type_id','biz.turnover_amt','biz.nature_of_biz','biz.org_id','bpg1.cin','bpg1.pan_gst_hash')
                 ->join('app', 'biz.biz_id', '=', 'app.biz_id')
                 ->join('biz_pan_gst as bpg1', 'bpg1.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
                 //->join('biz_pan_gst as bpg2', 'bpg2.biz_pan_gst_id', '=', 'biz.gstno_pan_gst_id')
                 ->where('biz.biz_id', $bizId)
-                ->get();
-        return $bizData;
+                ->get();*/
+    }
+
+    public function app(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','biz_id','biz_id');
+    }
+
+    public function address(){
+        return $this->hasMany('App\Inv\Repositories\Models\BusinessAddress','biz_id','biz_id');
+    }
+
+    public function gsts(){
+        return $this->hasMany('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>2, 'biz_owner_id'=>null]);
+    }
+
+    public function pan(){
+        return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>1, 'biz_owner_id'=>null]);
     }
 }

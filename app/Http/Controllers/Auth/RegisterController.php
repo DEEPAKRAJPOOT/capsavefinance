@@ -26,7 +26,7 @@ use App\Inv\Repositories\Contracts\Traits\ApiAccessTrait;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
 use App\Inv\Repositories\Models\Userkyc;
-use App\Inv\Repositories\Models\BusinessModel;
+use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\UserDetail;
 
 class RegisterController extends Controller {

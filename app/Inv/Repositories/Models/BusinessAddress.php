@@ -3,10 +3,10 @@
 namespace App\Inv\Repositories\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use DB;
 use Illuminate\Notifications\Notifiable;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class BusinessAddress extends Model
+class BusinessAddress extends BaseModel
 {
     use Notifiable;
     /**
