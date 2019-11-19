@@ -2657,4 +2657,12 @@ if ($err) {
         $applications = $dataProvider->getAppList($this->request, $appList);
         return $applications;
     }
+    
+    
+       public function getAnchorLists(DataProviderInterface $dataProvider) {
+        $anchUsersList = $this->userRepo->getAllAnchorUsers();
+        $users = $dataProvider->getUsersList($this->request, $anchUsersList);
+        return $users;
+    }
+
 }

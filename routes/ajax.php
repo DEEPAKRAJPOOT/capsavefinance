@@ -54,7 +54,14 @@ Route::group(
         'as' => 'ajax_app_list',
         'uses' => 'AjaxController@getApplications'
         ]
-    );    
+    );
+    Route::post(
+        'get-anchor-list',
+        [
+        'as' => 'get_anchser_list',
+        'uses' => 'AjaxController@getAnchorLists'
+        ]
+    ); 
 });
 
 

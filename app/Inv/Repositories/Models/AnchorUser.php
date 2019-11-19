@@ -6,9 +6,8 @@ use Carbon\Carbon;
 use DateTime;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
+class AnchorUser extends BaseModel {
 
-class AnchorUser extends BaseModel
-{
     /**
      * The database table used by the model.
      *
@@ -42,7 +41,6 @@ class AnchorUser extends BaseModel
         'phone'
     ];
 
-    
     /**
      * update user details
      *
@@ -51,8 +49,7 @@ class AnchorUser extends BaseModel
      *
      * @return boolean
      */
-public static function saveAnchorUser($arrAnchorUser)
-    {
+    public static function saveAnchorUser($arrAnchorUser) {
         //Check data is Array
         if (!is_array($arrAnchorUser)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
@@ -62,7 +59,7 @@ public static function saveAnchorUser($arrAnchorUser)
         if (empty($arrAnchorUser)) {
             throw new BlankDataExceptions(trans('error_message.data_not_found'));
         }
-        
+
         /**
          * Create anchor
          */
@@ -70,4 +67,16 @@ public static function saveAnchorUser($arrAnchorUser)
 
         return ($arrAnchorUser->anchor_user_id ?: false);
     }
+
+    /**
+     * 
+     * @return type
+     */
+    public static function getAllAnchorUsers() {
+        $result = self::select('anchor_user.*')
+            ->orderByRaw('anchor_user_id DESC');
+                //->where('user_type', 1);
+        return ($result ? $result : '');
+    }
+
 }

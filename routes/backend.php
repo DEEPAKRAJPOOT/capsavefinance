@@ -104,7 +104,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 Route::group(
         ['prefix' => 'anchor'],
         function () {
-            Route::get('/manage-anchor',
+            Route::get('/',
                 [
                 'as' => 'get_anchor_list',
                 'uses' => 'Backend\LeadController@allAnchorList'

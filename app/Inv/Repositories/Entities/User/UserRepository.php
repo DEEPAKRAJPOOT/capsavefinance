@@ -860,5 +860,18 @@ class UserRepository extends BaseRepositories implements UserInterface
      public function saveAnchorUser($arrAnchorUser){
          return AnchorUser::saveAnchorUser($arrAnchorUser);
      }
+    
+     /**
+      * function for get all anchor register user detail
+      * @return type
+      */
+     
+        public function getAllAnchorUsers()
+        {
+          $result = AnchorUser::getAllAnchorUsers();
+
+          return $result ?: false;
+        }
+    
      
 }

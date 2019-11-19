@@ -147,8 +147,13 @@ class LeadController extends Controller
             $anchor_user_info = $this->userRepo->saveAnchorUser($arrAnchUserData);
             //Auth::user()->id
           if ($anchor_info && $anchor_user_info) {
+              //return redirect()->route('get_anchor_list')->with('message', trans('success_messages.basic_saved_successfully'));
               //Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 //return redirect()->route('manage-anchor');
+              
+                 Session::flash('message',trans('backend_messages.change_app_status'));
+                  return redirect()->route('get_anchor_list');
+
 
                 //return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             } else {

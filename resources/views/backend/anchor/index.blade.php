@@ -8,11 +8,11 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Leads</h3>
-            <small>Supplier List</small>
+            <h3>Manage Anchor</h3>
+            <small>Anchor List</small>
             <ol class="breadcrumb">
                 <li><a href="#"><i class="mdi mdi-home"></i> Home</a></li>
-                <li class="active">Manage Leads</li>
+                <li class="active">Manage Anchor</li>
             </ol>
         </div>
     </section>
@@ -20,7 +20,7 @@
         <div class="card-body">
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;">
-                    <a  data-toggle="modal" data-target="#editLead" data-url ="{{route('add_anchor_reg')}}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
+                    <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_anchor_reg')}}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
 
                         <span class="btn-label">
                             <i class="fa fa-plus"></i>
@@ -57,7 +57,7 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="anchUserList" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
                                                 <th>Sr.No.</th>
@@ -65,7 +65,6 @@
                                                 <th>Email</th>
                                                 <th>Mobile</th>
                                                 <th>Anchor</th>
-                                                <th>Assigned</th>
                                                 <th>Created At</th>
                                                 <th>Action</th>
                                             </tr>
@@ -86,19 +85,21 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('editLead','Manage Lead')!!}
+{!!Helpers::makeIframePopup('addAnchorFrm','Manage Anchor')!!}
 @endsection
 
 @section('jscript')
 <script>
 
     var messages = {
-        get_lead: "{{ URL::route('get_lead') }}",
+        get_anchser_list: "{{ URL::route('get_anchser_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
     };
 </script>
+ 
+
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
 @endsection
