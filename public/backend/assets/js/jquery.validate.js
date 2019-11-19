@@ -1,9 +1,9 @@
 /*!
- * jQuery Validation Plugin v1.19.0
+ * jQuery Validation Plugin v1.19.1
  *
  * https://jqueryvalidation.org/
  *
- * Copyright (c) 2018 Jörn Zaefferer
+ * Copyright (c) 2019 Jörn Zaefferer
  * Released under the MIT license
  */
 (function( factory ) {
@@ -344,7 +344,7 @@ $.extend( $.validator, {
 			if ( element.type === "radio" ) {
 				this.findByName( element.name ).addClass( errorClass ).removeClass( validClass );
 			} else {
-				//$( element ).addClass( errorClass ).removeClass( validClass );
+				$( element ).addClass( errorClass ).removeClass( validClass );
 			}
 		},
 		unhighlight: function( element, errorClass, validClass ) {
@@ -461,13 +461,19 @@ $.extend( $.validator, {
 			this.showErrors();
 			return this.valid();
 		},
-
+       //////////////////////////////////////  for array input code start//////////////////////
 		checkForm: function() {
 			this.prepareForm();
-			for ( var i = 0, elements = ( this.currentElements = this.elements() ); elements[ i ]; i++ ) {
-				this.check( elements[ i ] );
-			}
-			return this.valid();
+		    for (var i = 0, elements = (this.currentElements = this.elements()); elements[i]; i++) {
+		        if (this.findByName(elements[i].name).length != undefined && this.findByName(elements[i].name).length > 1) {
+		            for (var cnt = 0; cnt < this.findByName(elements[i].name).length; cnt++) {
+		                this.check(this.findByName(elements[i].name)[cnt]);
+		            }
+		        } else {
+		            this.check(elements[i]);
+		        }
+		    }
+		    return this.valid();
 		},
 
 		// https://jqueryvalidation.org/Validator.element/
@@ -620,7 +626,7 @@ $.extend( $.validator, {
 				try {
 					$( this.findLastActive() || this.errorList.length && this.errorList[ 0 ].element || [] )
 					.filter( ":visible" )
-					.focus()
+					.trigger( "focus" )
 
 					// Manually trigger focusin event; without it, focusin handler isn't called, findLastActive won't have anything to find
 					.trigger( "focusin" );
