@@ -40,6 +40,8 @@ class Application extends Model
         'user_id',
         'biz_id',
         'loan_amt',
+        'status',
+        'is_assigned',
         'created_by',
         'created_at',
         'updated_at',
@@ -56,7 +58,7 @@ class Application extends Model
                 //->where('app.status', 1)
                 ->orderBy('app.app_id');        
         return $appData;
-    }   
+    }
    
     
     public static function getApplicationsDetail($user_id)
