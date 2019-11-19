@@ -55,7 +55,8 @@ class Application extends Model
     {
         $appData = self::select('app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                //->where('app.status', 1)
+                 ->join('app_assign', 'app_assign.assigned_user_id', '=', 'app.user_id')
+                ->where('app_assign.to_id', \Auth::user()->user_id)
                 ->orderBy('app.app_id');        
         return $appData;
     }
@@ -95,5 +96,49 @@ class Application extends Model
                 ->orderBy('app.app_id');        
         return $appData;
     } 
+    /**
+     * update application details
+     *
+     * @param integer $user_id     user id
+     * @param array   $arrUserData user data
+     *
+     * @return boolean
+     */
+
+    
+     public static function updateAppDetails($app_id, $arrUserData = [])
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($arrUserData)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($arrUserData)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        $rowUpdate = self::find((int) $app_id)->update($arrUserData);
+
+        return ($rowUpdate ? $rowUpdate : false);
+    }
     
 }
