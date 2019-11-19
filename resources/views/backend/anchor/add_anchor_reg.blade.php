@@ -3,7 +3,7 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="business_information_form" method="POST" action="business-information-save" onsubmit="return checkValidation();">
+           <form id="business_information_form" method="POST" action="{{route('add_anchor_reg')}}" onsubmit="return checkValidation();">
 		@csrf
                         <div class="row">
                            <div class="col-md-6">
@@ -19,17 +19,16 @@
                                  <label for="txtSupplierName">Business Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="name" id="name" value="" class="form-control" tabindex="3" placeholder="Business Name" required="">
+                                 <input type="text" name="comp_name" id="comp_name" value="" class="form-control" tabindex="3" placeholder="Business Name" required="">
                               </div>
                            </div>
                         </div>
-                                                <div class="row">
+                           <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="hidden" name="send_otp" id="send-otp" value="">
                                  <input type="email" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Email" required="">
                               </div>
                            </div>
@@ -48,9 +47,59 @@
                                        </div>
                                     </div>
                                  </div>
-                                 <input name="password" id="passwordRegistration" type="hidden" oninput="removeSpace(this);" value="nr40od5m">
                               </div>
                         </div>
+                
+                
+                <div class="row">
+                           <div class="col-md-6">
+                              <div class="form-group">
+                                 <label for="txtEmail">State
+                                 <span class="mandatory">*</span>
+                                 </label>
+                                  <select class="form-control" name="state" id="state"  required="">
+                                      <option value="">please select</option>
+                                      <option value="1">state1</option>
+                                      <option value="2">state2</option>
+                                      <option value="3">state3</option>
+                                  </select>
+                              </div>
+                           </div>
+
+                           <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label for="txtMobile">City
+                                    <span class="mandatory">*</span>
+                                    </label>
+
+                                    <input class="form-control" name="city" id="city" tabindex="6" type="text" maxlength="10" placeholder="City" required="">
+                                    <div class="failed">
+                                       <div style="color:#FF0000">
+                                          <small class="erro-sms" id="erro-sms">
+                                          </small>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                        </div>
+                <div class="row">
+                           <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label for="txtMobile">Pin Code
+                                    <span class="mandatory">*</span>
+                                    </label>
+
+                                    <input class="form-control numbercls" name="pin_code" id="pin_code" tabindex="6" type="text" maxlength="6" placeholder="Pin Code" required="">
+                                    <div class="failed">
+                                       <div style="color:#FF0000">
+                                          <small class="erro-sms" id="erro-sms">
+                                          </small>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                        </div>
+                
             <button type="submit" class="btn btn-primary float-right">Submit</button>  
            </form>
          </div>

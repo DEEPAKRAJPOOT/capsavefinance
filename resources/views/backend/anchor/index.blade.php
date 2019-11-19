@@ -20,7 +20,7 @@
         <div class="card-body">
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;">
-                    <a  data-toggle="modal" data-target="#editLead" data-url ="{{route('edit_backend_lead')}}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
+                    <a  data-toggle="modal" data-target="#editLead" data-url ="{{route('add_anchor_reg')}}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
 
                         <span class="btn-label">
                             <i class="fa fa-plus"></i>

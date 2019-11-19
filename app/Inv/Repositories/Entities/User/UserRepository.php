@@ -11,6 +11,8 @@ use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\Master\Permission as PermissionModel;
 use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
+use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -840,6 +842,23 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return $user[0];
     }
-
- 
+    
+/**
+ * function for save anchor company detail
+ * @param type $attributes
+ * @return type
+ */
+    public function saveAnchor($attributes){
+         return Anchor::saveAnchor($attributes);
+     }
+    
+   /**
+    *  function for add anchor company information 
+    * @param type $arrAnchorUser
+    * @return type
+    */  
+     public function saveAnchorUser($arrAnchorUser){
+         return AnchorUser::saveAnchorUser($arrAnchorUser);
+     }
+     
 }
