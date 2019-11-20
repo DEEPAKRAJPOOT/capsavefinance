@@ -20,15 +20,15 @@ class DocumentRequest extends Request
     public function rules()
     {
         return [
-            'bank_docs' => 'required',
-            'bank_docs.*' => 'required'
+            'doc_file' => 'required',
+            'doc_file.*' => 'required'
         ];
     }
 
     public function messages()
     {
         return [
-            'bank_docs.required' => 'Input files Required. '
+            'doc_file.required' => 'Input files Required. '
         ];
     }
 }
