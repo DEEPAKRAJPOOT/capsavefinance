@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Session;
+use Helpers;
 
 class ApplicationController extends Controller
 {
@@ -31,7 +32,11 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-        return view('backend.app.index');
+//       if($currStage){
+//        Helpers::updateWfStage($currStage->stage_code, 1, $wf_status = 1);
+//      }
+       return view('backend.app.index');   
+              
     }
 
     public function showCompanyDetails(Request $request){

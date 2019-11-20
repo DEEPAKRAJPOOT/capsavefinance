@@ -7,6 +7,8 @@ use Exception;
 use Carbon\Carbon;
 use App\Helpers\PaypalHelper;
 use App\Inv\Repositories\Models\Patent;
+use App\Inv\Repositories\Models\WfStage;
+use App\Inv\Repositories\Models\WfAppStage;
 use DB;
 class Helper extends PaypalHelper
 {
@@ -96,7 +98,14 @@ class Helper extends PaypalHelper
         </div>
     </div>";
     }
-
+  
+    /**
+     * customIsset
+     * 
+     * @param type $obj
+     * @param type $key
+     * @return string
+     */
     public static function customIsset($obj, $key){
         if(is_null($obj)){
             return '';
@@ -105,6 +114,52 @@ class Helper extends PaypalHelper
         }else{
             return '';
         }
-    }
+    }    
+    
+    /**
+     * Update workflow app stage
+     * 
+     * @param string $wf_stage_code
+     * @param integer $app_id
+     * @param integer $wf_status
+     * @return boolean
+     */
+    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0)
+    {
+        $wfData = WfStage::getWfDetailById($wf_stage_code);
+        if ($wfData) {
+            $wf_stage_id = $wfData->wf_stage_id;
+            $wf_order_no = $wfData->order_no;
+            $updateData = [                
+                'app_wf_status' => $wf_status,
+                'is_complete' => $wf_status
+            ];
+            $result = WfAppStage::updateWfStage($wf_stage_id, $updateData);
+            if ($wf_status == 1) {
+                $nextWfData = WfStage::getNextWfStage($wf_order_no);                
+                $insertData = [
+                    'wf_stage_id' => $nextWfData->wf_stage_id,
+                    'biz_app_id' => $app_id,
+                    'app_wf_status' => 2,
+                    'is_complete' => 2
+                ];
 
+                $result = WfAppStage::saveWfDetail($insertData);
+                return $result;
+            }
+            return $result;
+        } else {
+            return false;
+        }
+    }
+   
+    
+    /**
+     * Get current workflow stage
+     * 
+     * @param integer $app_id
+     */
+    public static function getCurrentWfStage($app_id){
+        return WfAppStage::getCurrentWfStage($app_id);
+    }
 }

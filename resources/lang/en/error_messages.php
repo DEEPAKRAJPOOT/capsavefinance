@@ -55,6 +55,7 @@ return [
     'req_right_description' =>'Please enter description.',
     
     'app.incomplete' =>'Please upload all documents carefully.',
+    'minlen_password' => 'Passwords must be at least 6 characters.',
     
    
     //Admin Error Messages
