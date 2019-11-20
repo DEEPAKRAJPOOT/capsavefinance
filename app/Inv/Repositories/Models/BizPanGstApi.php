@@ -26,6 +26,7 @@ class BizPanGstApi extends BaseModel
     
     protected $fillable = [
         'file_name',
+        'status',
         'created_at',
         'created_by'
     ];

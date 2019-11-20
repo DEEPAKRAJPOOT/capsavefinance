@@ -47,6 +47,8 @@ class Business extends BaseModel
         'entity_type_id',
         'turnover_amt',
         'nature_of_biz',
+        'is_pan_verified',
+        'is_gst_verified',
         'panno_pan_gst_id',
         'gstno_pan_gst_id',
         'org_id',
