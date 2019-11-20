@@ -16,7 +16,7 @@
             <a href="#">Promoter</a>
         </li>
         <li>
-            <a href="#">Credit History &amp; Hygine Check</a>
+            <a href="{{route('cam_cibil', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}">Credit History &amp; Hygine Check</a>
         </li>
 
         <li>
@@ -24,7 +24,7 @@
         </li>
 
         <li>
-            <a href="{{ route('cam_finance') }}">Financial</a>
+            <a href="{{ route('cam_finance', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Financial</a>
         </li>
         <li>
             <a href="#">GST/Ledger Detail</a>
