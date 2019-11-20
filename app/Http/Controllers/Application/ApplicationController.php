@@ -49,7 +49,7 @@ class ApplicationController extends Controller
         try {
             $arrFileData = $request->all();
             $business_info = $this->appRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
-            $appId  = Session::put('appId', $business_info['app_id']);
+            //$appId  = Session::put('appId', $business_info['app_id']);
             
             //Add application workflow stages
             Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
@@ -60,7 +60,7 @@ class ApplicationController extends Controller
                 Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
                 
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('promoter-detail');
+                return redirect()->route('promoter-detail',['app_id'=>$business_info['biz_id'], 'biz_id'=>$business_info['app_id']]);
             } else {                
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -74,7 +74,7 @@ class ApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showPromoterDetail()
+    public function showPromoterDetail(Request $request)
     {
         $userId = Auth::user()->user_id;
         $userArr = [];
@@ -118,14 +118,12 @@ class ApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showDocument()
+    public function showDocument(Request $request)
     {
-        $appId  = Session::has('appId') ? Session::get('appId') : 1;
+        $appId = $request->get('app_id');
         $userId = Auth::user()->user_id;
-        
-        $userArr = [];
+
         if ($appId > 0) {
-            // dd($appId);
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
             if(!empty($requiredDocs)){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
@@ -134,7 +132,7 @@ class ApplicationController extends Controller
         else {
             return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
-//        dd($docData);   
+
         return view('frontend.application.document')->with([
             'requiredDocs' => $requiredDocs,
             'documentData' => $docData
