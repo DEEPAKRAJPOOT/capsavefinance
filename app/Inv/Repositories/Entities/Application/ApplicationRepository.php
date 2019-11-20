@@ -98,7 +98,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     * @param array $attributes     
     */
 
-    public function updateCompanyDetail($attributes = [], $bizId = null){
+    public function updateCompanyDetail($attributes = [], $bizId = null, $userId){
         /**
          * Check Data is Array
          */
@@ -116,7 +116,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         if(is_null($bizId)){
             throw new BlankDataExceptions('No Data Found');
         }
-        return Business::updateCompanyDetail($attributes, $bizId);
+        return Business::updateCompanyDetail($attributes, $bizId, $userId);
     }
 
     /**

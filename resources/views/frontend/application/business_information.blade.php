@@ -249,9 +249,9 @@
 							                            </label>
 							                            <select class="form-control" name="biz_state" required>
                                                             <option value=""> Select State</option>
-                                                            <option value="1" {{(old('biz_state') == 1)? 'selected':''}}> State 1 </option>
-                                                            <option value="2" {{(old('biz_state') == 2)? 'selected':''}}> State 2 </option>
-                                                            <option value="3" {{(old('biz_state') == 3)? 'selected':''}}> State 3 </option>
+                                                            @foreach($states as $key => $state)
+                                                            <option value="{{$state->id}}" {{(old('biz_state') == $state->id)? 'selected':''}}> {{$state->name}} </option>
+                                                            @endforeach
                                                         </select>
                                                         @error('biz_state')
                                                             <span class="text-danger error">{{ $message }}</span>
@@ -312,9 +312,9 @@
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
-		                                                            <option value="1" {{(old('biz_other_state.0') == 1)? 'selected':''}}> State 1 </option>
-		                                                            <option value="2" {{(old('biz_other_state.0') == 2)? 'selected':''}}> State 2 </option>
-		                                                            <option value="3" {{(old('biz_other_state.0') == 3)? 'selected':''}}> State 3 </option>
+		                                                            @foreach($states as $key => $state)
+			                                                        <option value="{{$state->id}}" {{(old('biz_other_state.0') == $state->id)? 'selected':''}}> {{$state->name}} </option>
+			                                                        @endforeach
 		                                                        </select>
 							                                </div>
 							                            </div>
@@ -363,9 +363,9 @@
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
-		                                                            <option value="1" {{(old('biz_other_state.1') == 1)? 'selected':''}}> State 1 </option>
-		                                                            <option value="2" {{(old('biz_other_state.1') == 2)? 'selected':''}}> State 2 </option>
-		                                                            <option value="3" {{(old('biz_other_state.1') == 3)? 'selected':''}}> State 3 </option>
+		                                                            @foreach($states as $key => $state)
+			                                                        <option value="{{$state->id}}" {{(old('biz_other_state.1') == $state->id)? 'selected':''}}> {{$state->name}} </option>
+			                                                        @endforeach
 		                                                        </select>
 							                                </div>
 							                            </div>
@@ -414,9 +414,9 @@
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
-		                                                            <option value="1" {{(old('biz_other_state.2') == 1)? 'selected':''}}> State 1 </option>
-		                                                            <option value="2" {{(old('biz_other_state.2') == 2)? 'selected':''}}> State 2 </option>
-		                                                            <option value="3" {{(old('biz_other_state.2') == 3)? 'selected':''}}> State 3 </option>
+		                                                            @foreach($states as $key => $state)
+			                                                        <option value="{{$state->id}}" {{(old('biz_other_state.2') == $state->id)? 'selected':''}}> {{$state->name}} </option>
+			                                                        @endforeach
 		                                                        </select>
 							                                </div>
 							                            </div>
@@ -465,9 +465,9 @@
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
-		                                                            <option value="1" {{(old('biz_other_state.3') == 1)? 'selected':''}}> State 1 </option>
-		                                                            <option value="2" {{(old('biz_other_state.3') == 2)? 'selected':''}}> State 2 </option>
-		                                                            <option value="3" {{(old('biz_other_state.3') == 3)? 'selected':''}}> State 3 </option>
+		                                                            @foreach($states as $key => $state)
+			                                                        <option value="{{$state->id}}" {{(old('biz_other_state.3') == $state->id)? 'selected':''}}> {{$state->name}} </option>
+			                                                        @endforeach
 		                                                        </select>
 							                                </div>
 							                            </div>
@@ -535,7 +535,8 @@
 			}
 			$('.isloader').show();
 			$.ajax({
-				url: "https://gst.karza.in/uat/v1/search",
+				//url: "https://gst.karza.in/uat/v1/search",
+				url: "https://gst.karza.in/stub/v1/search",
 				type: "POST",
 				data: JSON.stringify({"consent": "Y","pan": pan_no}),
 				dataType:'json',
