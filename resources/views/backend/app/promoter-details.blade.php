@@ -538,6 +538,7 @@
                 });
           
         jQuery(document).ready(function () {
+            exit;
             $('.isloader').show();
           //  var CIN = '{{ (isset($cin_no->cin)) ? $cin_no->cin : "" }}';
            var  CIN = 'dssddssdsd';
