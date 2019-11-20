@@ -39,6 +39,9 @@ class AppDocumentFile extends Authenticatable
         'app_id',
         'doc_id',
         'doc_name',
+        'finc_year',
+        'gst_month',
+        'gst_year',
         'doc_id_no',
         'file_id',
         'is_upload',
@@ -98,7 +101,10 @@ class AppDocumentFile extends Authenticatable
         
         $inputArr['app_id']  = 1;   
         $inputArr['doc_id']  = $attributes['docId']; 
-        $inputArr['doc_name']  = $attributes['doc_name']; 
+        $inputArr['doc_name']  = (isset($attributes['doc_name'])) ? $attributes['doc_name'] : ''; 
+        $inputArr['finc_year']  = (isset($attributes['finc_year'])) ? $attributes['finc_year'] : ''; 
+        $inputArr['gst_month']  = (isset($attributes['gst_month'])) ? $attributes['gst_month'] : ''; 
+        $inputArr['gst_year']  = (isset($attributes['gst_year'])) ? $attributes['gst_year'] : ''; 
         $inputArr['doc_id_no']  = (isset($attributes['doc_id_no'])) ? $attributes['doc_id_no'] : ''; 
         $inputArr['file_id']  = $fileId; 
         $inputArr['is_upload'] = 1;

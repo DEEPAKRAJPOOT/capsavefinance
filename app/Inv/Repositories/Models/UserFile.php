@@ -95,25 +95,25 @@ class UserFile extends Authenticatable
     {
        $userId = 1;
         $inputArr = [];
-        $count = count($attributes['bank_docs']);
+        $count = count($attributes['doc_file']);
         for ( $i=0; $i < $count; $i++) 
         {   
-            if($attributes['bank_docs'][$i]) {
+            if($attributes['doc_file'][$i]) {
                 if(!Storage::exists('/public/user/' .$userId. '/' .$attributes['appId'])) {
                     Storage::makeDirectory('/public/user/' .$userId. '/' .$attributes['appId'], 0775, true);
                 }
-                $path = Storage::disk('public')->put('/user/' .$userId. '/' .$attributes['appId'], $attributes['bank_docs'][$i], null);
+                $path = Storage::disk('public')->put('/user/' .$userId. '/' .$attributes['appId'], $attributes['doc_file'][$i], null);
                 $inputArr[$i]['file_path'] = $path;
             }
              
-            $inputArr[$i]['file_type'] = $attributes['bank_docs'][$i]->getClientMimeType();
-            $inputArr[$i]['file_name'] = $attributes['bank_docs'][$i]->getClientOriginalName();
-            $inputArr[$i]['file_size'] = $attributes['bank_docs'][$i]->getClientSize();
+            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
+            $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
+            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getClientSize();
             $inputArr[$i]['file_encp_key'] =  md5('2');
             $inputArr[$i]['created_by'] = 1;
             $inputArr[$i]['updated_by'] = 1;
         }
-//        dd($inputArr);
+        
         return $inputArr;
   }
   
