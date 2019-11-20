@@ -93,7 +93,22 @@ class WfAppStage extends BaseModel
                 ->limit(1)
                 ->first();
         return $appData ? $appData : null;
-    }    
+    }
+
+    /**
+     * Get application workflow stage by code
+     * 
+     * @param string $wf_stage_code
+     * @return mixed
+     */    
+    protected static function getAppWfStage($wf_stage_code) 
+    {
+        $appData = self::select('app_wf.wf_stage_id')
+                ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')                 
+                ->where('wf_stage.stage_code', $wf_stage_code)                
+                ->first();
+        return $appData ? $appData : false;
+    }
   
 }
   

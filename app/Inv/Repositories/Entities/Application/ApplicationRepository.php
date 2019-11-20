@@ -216,4 +216,29 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::updateAppDetails((int)$app_id, $arrUserData);
     }
  
+    /**
+     * Get Application Data By Biz Id
+     * 
+     * @param integer $biz_id
+     * @return mixed
+     */
+    public function getAppDataByBizId($biz_id)
+    {
+       return Application::getAppDataByBizId((int)$biz_id); 
+    }
+    
+    /**
+     * Update Application Data By application Id
+     * 
+     * @param integer $app_id
+     * @param array $arrData
+     *
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateAppData($app_id, $arrData)
+    {
+       return Application::updateAppData((int)$app_id, $arrData);  
+    }    
 }
