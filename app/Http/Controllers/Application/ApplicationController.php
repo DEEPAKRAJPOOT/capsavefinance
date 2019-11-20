@@ -10,6 +10,7 @@ use App\Http\Requests\DocumentRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Models\Master\State;
 use Session;
 
 class ApplicationController extends Controller
@@ -33,10 +34,12 @@ class ApplicationController extends Controller
     {
         $userId  = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
+        $states = State::getStateList()->get();
+
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        return view('frontend.application.business_information', compact('userArr'));
+        return view('frontend.application.business_information', compact(['userArr','states']));
     }
 
     public function saveBusinessInformation(BusinessInformationRequest $request)
