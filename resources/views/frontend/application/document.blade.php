@@ -83,18 +83,35 @@
                                 <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
                                     <tbody>
                                         <tr>
-                                            <td width="20%"><b>{{ ($data->doc_id == '4') ? 'Bank' : 'Document Name' }}</b></td>
+                                            @if($data->doc_id == '4')
+                                            <td width="20%"><b>Bank</b></td>
+                                            @endif
+                                            @if($data->doc_id == '5')
+                                            <td width="20%"><b>Finance Year</b></td>
+                                            @endif
+                                            @if($data->doc_id == '6')
+                                            <td width="20%"><b>GST Month</b></td>
+                                            <td width="20%"><b>GST Year</b></td>
+                                            @endif
                                             <td width="20%"><b>Upload On </b></td>
                                             <td width="20%">Download</td>
                                             <td align="center" width="20%">Action</td>
                                         </tr>
                                         @foreach($documentData[$data->document->doc_name] as $value)
                                         <tr>
+                                            @if($data->doc_id == '4')
                                             <td width="20%">{{ $value->doc_name }}</td>
+                                            @endif
+                                            @if($data->doc_id == '5')
+                                            <td width="20%">{{ $value->finc_year }}</td>
+                                            @endif
+                                            @if($data->doc_id == '6')
+                                            <td width="20%">{{ $value->gst_month }}</td>
+                                            <td width="20%">{{ $value->gst_year }}</td>
+                                            @endif
                                             <td width="20%"> {{ date('d-m-Y', strtotime($value->created_at))}} </td>
                                             <td width="20%"><a href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
                                             <td align="center" width="20%">
-                                                <a class="mr-2" href="{{ Route('document-view') }}"><i class="fa fa-eye"></i></a>
                                                 <a href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o"></i></a>
                                             </td>
                                         </tr>
@@ -146,15 +163,74 @@
                                                     <option>ICICI Bank</option>
                                                 </select>
                                             </div>
-                                            @else
+                                            @endif
+                                            @if($data->doc_id == '5')
                                             <div class="form-group">
-                                                <label for="email">Document Name</label>
-                                                <input class="form-control" type="text" name="doc_name" value="" placeholder="Enter Document Name" >
-                                            </div>
+                                                <label for="email">Select Financial  Year</label>
+                                                <select class="form-control" id="sel1" name="finc_year">
+                                                   <option value=''>Select Year</option>
+                                                   <option>2009</option>
+                                                   <option>2010</option>
+                                                   <option>2011</option>
+                                                   <option>2012</option>
+                                                   <option>2013</option>
+                                                   <option>2014</option>
+                                                   <option>2015</option>
+                                                   <option>2016</option>
+                                                   <option>2017</option>
+                                                   <option>2018</option>
+                                                   <option>2019</option>
+                                                   <option>2020</option>
+                                                </select>
+                                             </div>
+                                            @endif
+                                            @if($data->doc_id == '6')
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                   <div class="form-group">
+                                                      <label for="email">Select GST Month</label>
+                                                      <select class="form-control" id="sel1" name="gst_month">
+                                                         <option selected value=''>Select Month</option>
+                                                         <option  value='1'>Janaury</option>
+                                                         <option value='2'>February</option>
+                                                         <option value='3'>March</option>
+                                                         <option value='4'>April</option>
+                                                         <option value='5'>May</option>
+                                                         <option value='6'>June</option>
+                                                         <option value='7'>July</option>
+                                                         <option value='8'>August</option>
+                                                         <option value='9'>September</option>
+                                                         <option value='10'>October</option>
+                                                         <option value='11'>November</option>
+                                                         <option value='12'>December</option>
+                                                      </select>
+                                                   </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                   <div class="form-group">
+                                                      <label for="email">Select GST Year</label>
+                                                      <select class="form-control" id="sel1" name="gst_year">
+                                                         <option value=''>Select Year</option>
+                                                         <option>2009</option>
+                                                         <option>2010</option>
+                                                         <option>2011</option>
+                                                         <option>2012</option>
+                                                         <option>2013</option>
+                                                         <option>2014</option>
+                                                         <option>2015</option>
+                                                         <option>2016</option>
+                                                         <option>2017</option>
+                                                         <option>2018</option>
+                                                         <option>2019</option>
+                                                         <option>2020</option>
+                                                      </select>
+                                                   </div>
+                                                </div>
+                                             </div>
                                             @endif
                                             <div class="custom-file upload-btn-cls mb-3 mt-2">
                                                 <label for="email">Upload Document</label>
-                                                <input type="file" class="custom-file-input" id="customFile" name="bank_docs[]" multiple="">
+                                                <input type="file" class="custom-file-input" id="customFile" name="doc_file[]" multiple="">
                                                 <label class="custom-file-label" for="customFile">Choose file</label>
                                                 <span class="fileUpload"></span>
                                             </div>

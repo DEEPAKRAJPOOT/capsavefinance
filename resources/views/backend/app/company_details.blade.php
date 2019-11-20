@@ -33,9 +33,14 @@
 						<h5 class="card-title form-head-h5">Business Details</h5>
 					</div>	
 				</div>	
+				<form id="business_information_form" method="POST" action="{{route('company_details_save')}}" onsubmit="return checkValidation();">
+				@csrf
+				<input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
+				<input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
+				<input type="hidden" name="biz_cin" value="">
+				<input type="hidden" name="pan_api_res" value="">
 				<div class=" form-fields">
 					<div class="form-sections">
-
 						<div class="col-md-12">
 							<div class="row">
 								<div class="col-md-6">
@@ -45,8 +50,8 @@
 										</label>
 										<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 										<input type="text" name="loan_amount" value="{{old('loan_amount', $business_info->app->loan_amt)}}" class="form-control" placeholder="Enter Applied Loan Amount">
-										<p class="float-right inr-box"><i>Enter amount in lakhs</i>
-										</p></div>
+										<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+									</div>
 
 									</div>
 									<div class="col-md-6">
@@ -104,7 +109,7 @@
 												<span class="mandatory">*</span>
 											</label>
 											<span class="alert-verify float-right">Enter Valid PAN No.</span>
-											<a href="javascript:void(0);" class="verify-owner-no verify-show">Verified</a>
+											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="pointer-events: none;">Verified</a>
 											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number', $business_info->pan->pan_gst_hash)}}" class="form-control" tabindex="1" placeholder="Enter Company Pan">
 										</div>
 									</div>
@@ -230,7 +235,6 @@
 								<h5 class="form-head-h5">Other Addresses</h5>
 							</div>	
 						</div>			
-
 						<div class="form-sections">
 							<div class="col-md-12">
 								<div id="accordion" class="accordion">
@@ -249,7 +253,7 @@
 													<div class="col-md-12">
 														<div class="form-group">
 															<label for="txtCreditPeriod">Address
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0', $business_info->address[1]->addr_1)}}" class="form-control" placeholder="Enter Your Address" required="">
 														</div>
@@ -259,7 +263,7 @@
 													<div class="col-md-4">
 														<div class="form-group password-input">
 															<label for="txtPassword">State
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<select class="form-control" name="biz_other_state[]">
 		                                                        <option value=""> Select State</option>
@@ -274,7 +278,7 @@
 													<div class="col-md-4">
 														<div class="form-group">
 															<label for="txtEmail">City
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.0',$business_info->address[1]->city_name)}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 														</div>
@@ -283,7 +287,7 @@
 
 														<div class="form-group password-input">
 															<label for="txtPassword">Pin Code
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0', $business_info->address[1]->pin_code)}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 														</div>
@@ -308,7 +312,7 @@
 													<div class="col-md-12">
 														<div class="form-group">
 															<label for="txtCreditPeriod">Address
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.1', $business_info->address[2]->addr_1)}}" class="form-control" placeholder="Enter Your Address">
 														</div>
@@ -317,7 +321,7 @@
 													<div class="col-md-4">
 														<div class="form-group password-input">
 															<label for="txtPassword">State
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 
 															<select class="form-control" name="biz_other_state[]">
@@ -333,7 +337,7 @@
 													<div class="col-md-4">
 														<div class="form-group">
 															<label for="txtEmail">City
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.1',$business_info->address[2]->city_name)}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 														</div>
@@ -342,7 +346,7 @@
 													<div class="col-md-4">
 														<div class="form-group password-input">
 															<label for="txtPassword">Pin Code
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1', $business_info->address[2]->pin_code)}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 														</div>
@@ -368,7 +372,7 @@
 													<div class="col-md-12">
 														<div class="form-group">
 															<label for="txtCreditPeriod">Address
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.2', $business_info->address[3]->addr_1)}}" class="form-control" placeholder="Enter Your Address">
 														</div>
@@ -378,9 +382,8 @@
 													<div class="col-md-4">
 														<div class="form-group password-input">
 															<label for="txtPassword">State
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
-
 															<select class="form-control" name="biz_other_state[]">
 		                                                        <option value=""> Select State</option>
 		                                                        <option value="1" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == 1)? 'selected':''}}> State 1 </option>
@@ -393,7 +396,7 @@
 													<div class="col-md-4">
 														<div class="form-group">
 															<label for="txtEmail">City
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.2',$business_info->address[3]->city_name)}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 														</div>
@@ -403,7 +406,7 @@
 													<div class="col-md-4">
 														<div class="form-group password-input">
 															<label for="txtPassword">Pin Code
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2', $business_info->address[3]->pin_code)}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 														</div>
@@ -426,7 +429,7 @@
 													<div class="col-md-12">
 														<div class="form-group">
 															<label for="txtCreditPeriod">Address
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.3', $business_info->address[4]->addr_1)}}" class="form-control" placeholder="Enter Your Address">
 														</div>
@@ -434,7 +437,7 @@
 													<div class="col-md-4">
 														<div class="form-group password-input">
 															<label for="txtPassword">State
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<select class="form-control" name="biz_other_state[]">
 		                                                        <option value=""> Select State</option>
@@ -447,7 +450,7 @@
 													<div class="col-md-4">
 														<div class="form-group">
 															<label for="txtEmail">City
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.3',$business_info->address[4]->city_name)}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 														</div>
@@ -455,7 +458,7 @@
 													<div class="col-md-4">
 														<div class="form-group password-input">
 															<label for="txtPassword">Pin Code
-																<span class="mandatory">*</span>
+																<!-- <span class="mandatory">*</span> -->
 															</label>
 															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3', $business_info->address[4]->pin_code)}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 														</div>
@@ -467,10 +470,174 @@
 								</div>	
 							</div>
 						</div>
+						<div class="d-flex btn-section" style="display: none !important;">
+							<div class="ml-auto text-right">
+								<input type="submit" value="Save and Continue" class="btn btn-primary">
+							</div>
+						</div>
 					</div>
+					</form>
 				</div>
 			</div>
 		</div>
 	</div>
 	</div>
+@endsection
+
+@section('jscript')
+<script>
+	function copyAddress(id,th){
+		console.log(id);
+		if($(th).is(':checked')){
+			$(id+' input[name*=biz_other_address]').val($('input[name=biz_address]').val());
+			$(id+' input[name*=biz_other_city]').val($('input[name=biz_city]').val());
+			$(id+' select[name*=biz_other_state]').val($('select[name=biz_state]').val());
+			$(id+' input[name*=biz_other_pin]').val($('input[name=biz_pin]').val());
+		}else{
+			$(id+' input[name*=biz_other_address]').val('');
+			$(id+' input[name*=biz_other_city]').val('');
+			$(id+' select[name*=biz_other_state]').val('');
+			$(id+' input[name*=biz_other_pin]').val('');
+		}
+	}
+
+	$(document).ready(function(){
+		$('.pan-verify').on('click',function(){
+			let pan_no = $('input[name=biz_pan_number]').val().trim();
+			if(pan_no.length != 10){
+				$('input[name=biz_pan_number] +span').remove();
+				$('input[name=biz_pan_number]').after('<span class="text-danger error">Enter valid PAN Number</span>');
+				return false;
+			}
+			$('.isloader').show();
+			$.ajax({
+				url: "https://gst.karza.in/uat/v1/search",
+				type: "POST",
+				data: JSON.stringify({"consent": "Y","pan": pan_no}),
+				dataType:'json',
+				headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+				error:function (xhr, status, errorThrown) {
+					$('.isloader').hide();
+        			alert(errorThrown);
+    			},
+				success: function(res){
+				    if(res['statusCode'] == 101){
+				    	$('.pan-verify').text('Verified');
+				    	$('.pan-verify').css('pointer-events','none');
+				    	$('input[name=biz_pan_number]').attr('readonly',true);
+				    	$('input[name=biz_pan_number] +span').remove();
+				    	fillGSTinput(res.result);
+				    }else{
+				    	alert('No GST associated with the entered PAN.');
+				    }
+				    $('.isloader').hide();
+				  }
+			});
+		})
+
+		/*$('.gst-verify').on('click',function(){
+			let gst_no = $('input[name=biz_gst_number]').val().trim();
+				$('input[name=biz_gst_number] +span').remove()
+			if(gst_no.length != 15){
+				$('input[name=biz_gst_number]').after('<span class="text-danger error">Enter valid GST Number</span>');
+				return false;
+			}
+			$.ajax({
+				url: "https://gst.karza.in/uat/v1/gstdetailed",
+				type: "POST",
+				data: JSON.stringify({"consent": "Y","gstin": gst_no}),
+				dataType:'json',
+				headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+				error:function (xhr, status, errorThrown) {
+        			alert(errorThrown);
+    			},
+				success: function(res){
+				    if(res['status-code'] == 101){
+				    	$('.gst-verify').text('Verified');
+				    	$('.gst-verify').css('pointer-events','none');
+				    	$('input[name=biz_gst_number]').attr('readonly',true);
+				    	$('input[name=biz_gst_number] +span').remove();
+				    }else{
+				    	alert('Something went wrong, Try again later');
+				    }
+				}
+			});
+		})*/
+	})
+
+	function fillGSTinput(datas){
+		let res ='';
+		let option_html = '<option val="">Select GST Number</option>';
+		$(datas).each(function(i,data){
+			if(data.authStatus == 'Active'){
+				res += data.gstinId+',';
+				option_html += '<option val="'+data.gstinId+'">'+data.gstinId+'</option>';
+			}
+		})
+		$('select[name=biz_gst_number]').html(option_html);
+		$('input[name=pan_api_res]').val(res);
+		//$('#business_information_form input[type=submit]').prop("disabled", false);
+	}
+
+	function fillEntity(gstinId){
+		$('.isloader').show();
+		$.ajax({
+				url: "https://gst.karza.in/uat/v1/gst-verification",
+				type: "POST",
+				data: JSON.stringify({"consent": "Y","gstin": gstinId}),
+				dataType:'json',
+				headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+				error:function (xhr, status, errorThrown) {
+					$('.isloader').hide();
+        			alert(errorThrown);
+    			},
+				success: function(res){
+				    if(res['statusCode'] == 101){
+				    	$('input[name=biz_entity_name]').val(res.result.lgnm);
+				    	getCIN(res.result.lgnm);
+				    	//for cin number https://testapi.karza.in/v2/compsearch-lite
+				    	// $('.gst-verify').text('Verified');
+				    	// $('.gst-verify').css('pointer-events','none');
+				    	// $('input[name=biz_gst_number]').attr('readonly',true);
+				    	// $('input[name=biz_gst_number] +span').remove();
+				    }else{
+				    	alert('Something went wrong, Try again later');
+				    }
+				    $('.isloader').hide();
+				}
+			});
+	}
+
+	function getCIN(entityName){
+		$.ajax({
+			url: "https://testapi.karza.in/v2/compsearch-lite",
+			type: "POST",
+			data: JSON.stringify({"consent": "Y","companyName": entityName}),
+			dataType:'json',
+			headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+			error:function (xhr, status, errorThrown) {
+    			alert(errorThrown);
+			},
+			success: function(res){
+			    if(res['status-code'] == 101){
+			    	$('input[name=biz_cin]').val(res.result[0].cin);
+			    }else{
+			    	alert('Something went wrong, Try again later');
+			    }
+			}
+		});
+	}
+
+	function checkValidation(){
+		if($('.pan-verify').text() == 'Verify' || $('biz_cin').val() == ''){
+			alert('Please fill and verify Business PAN First');
+			return false;
+		}else if($('biz_cin').val()  == ''){
+			alert('Service unavailable!');
+			return false;
+		}else{
+			return true;
+		}
+	}
+</script>
 @endsection

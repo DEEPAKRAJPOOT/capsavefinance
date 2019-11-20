@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Session;
+use Helpers;
 
 class ApplicationController extends Controller
 {
@@ -31,9 +32,19 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-        return view('backend.app.index');
+//       if($currStage){
+//        Helpers::updateWfStage($currStage->stage_code, 1, $wf_status = 1);
+//      }
+       return view('backend.app.index');   
+              
     }
 
+    /**
+     * Render view for company detail page according to biz id
+     * 
+     * @param Request $request
+     * @return view
+     */
     public function showCompanyDetails(Request $request){
         try {
             $arrFileData = $request->all();
@@ -41,7 +52,7 @@ class ApplicationController extends Controller
             //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
-                return view('backend.app.company-details')->with(['business_info'=>$business_info]);
+                return view('backend.app.company_details')->with(['business_info'=>$business_info]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -49,6 +60,33 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+    /**
+     * Update company detail page according to biz id
+     * 
+     * @param Request $request
+     * @return to promoter detail page
+     */
+    public function updateCompanyDetail(BusinessInformationRequest $request){
+        try {
+            $arrFileData = $request->all();
+            $appId = $request->app_id;
+            $bizId = $request->biz_id;
+            
+            $business_info = $this->appRepo->updateCompanyDetail($arrFileData, Auth::user()->user_id);
+
+            if ($business_info) {
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return redirect()->route('promoter-detail');
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+
      /* Show promoter details page  */
      public function showPromoterDetails($bizId){
         $id = Auth::user()->user_id;

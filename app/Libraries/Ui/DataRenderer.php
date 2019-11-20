@@ -74,6 +74,18 @@ class DataRenderer implements DataProviderInterface
                     return $achorId;
                 })
                 ->editColumn(
+                    'userType',
+                    function ($user) {
+                    $achorId = $user->anchor_id; 
+                    return '';;
+                })
+                ->editColumn(
+                    'salesper',
+                    function ($user) {
+                    $achorId = $user->anchor_id; 
+                    return '';
+                })
+                ->editColumn(
                     '',
                     function ($user) {
                     $full_name = $user->mobile_no; 
@@ -123,7 +135,7 @@ class DataRenderer implements DataProviderInterface
                             $query->where(function ($query) use ($request) {
                                 $by_status = (int) trim($request->get('is_assign'));
                                 
-                                $query->where('users.is_assign', 'like',
+                                $query->where('users.is_assigned', 'like',
                                         "%$by_status%");
                             });
                         }

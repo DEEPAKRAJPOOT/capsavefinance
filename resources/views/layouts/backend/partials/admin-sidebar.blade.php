@@ -8,7 +8,7 @@
 
         
     <li class="nav-item active">
-            <a class="nav-link"  href="dashboard.php">
+            <a class="nav-link"  href="#">
                 <i class="fa fa fa-home"></i>
                 <span class="menu-title">Home</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -60,6 +60,7 @@
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_anchor_list') }}">Manage Anchor</a>
+
                     </li>
                                                 
                 </ul>
@@ -75,13 +76,13 @@
             <div class="collapse" id="layoutsSubmenu">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="manage-role.php">Manage Roles</a>
+                        <a class="nav-link" href="#">Manage Roles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="role-permission.php">Manage Permissions</a>
+                        <a class="nav-link" href="#">Manage Permissions</a>
                     </li> 
                     <li class="nav-item">
-                        <a class="nav-link" href="users.php">Manage Users</a>
+                        <a class="nav-link" href="#">Manage Users</a>
                     </li>                                   
                 </ul>
             </div>

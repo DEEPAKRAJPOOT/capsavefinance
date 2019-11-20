@@ -32,7 +32,7 @@ class RegistrationFormRequest extends Request
             'business_name' => 'required',
             'email'  => 'required|email|max:50|unique:users',
             'mobile_no' => 'required|digits:10|min:0',
-            'password'   => 'required',
+            'password'   => 'required|min:6',
             'password_confirm' => 'required|same:password',
             'g-recaptcha-response' => 'required', 
             ];
@@ -61,6 +61,9 @@ class RegistrationFormRequest extends Request
             'email.email' => trans('error_messages.invalid_email'),
             'email.unique' => trans('error_messages.email_already_exists'),
             'mobile_no.required'=>trans('error_messages.req_phone'),
+            'password.required'=>trans('error_messages.req_password'),
+            'password.min'=>trans('error_messages.minlen_password'),
+            'password_confirm.required'=>trans('error_messages.req_confirm_password'),
 
             'mobile_no.min'=>trans('error_messages.phone_minlength'),
             'mobile_no.max'=>trans('error_messages.phone_maxlength'),

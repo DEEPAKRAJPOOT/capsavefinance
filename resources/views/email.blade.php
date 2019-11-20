@@ -3,6 +3,7 @@
 <td class="header" style=" text-align: center;">
         <a href="#">
             <img src="{{ asset('frontend/assets/images/logo.svg') }}"  alt="Rent Alpha" width="200px;" />
+
         </a>
     </td>
 </tr>
