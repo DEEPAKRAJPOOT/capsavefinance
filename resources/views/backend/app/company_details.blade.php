@@ -200,9 +200,9 @@
 													</label>
 													<select class="form-control" name="biz_state">
                                                         <option value=""> Select State</option>
-                                                        <option value="1" {{(old('biz_state', $business_info->address[0]->state_name) == 1)? 'selected':''}}> State 1 </option>
-                                                        <option value="2" {{(old('biz_state', $business_info->address[0]->state_name) == 2)? 'selected':''}}> State 2 </option>
-                                                        <option value="3" {{(old('biz_state', $business_info->address[0]->state_name) == 3)? 'selected':''}}> State 3 </option>
+                                                        @foreach($states as $key => $state)
+                                                        <option value="{{$state->id}}" {{(old('biz_state', $business_info->address[0]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+                                                        @endforeach
                                                     </select>
 												</div>
 											</div>
@@ -267,9 +267,9 @@
 															</label>
 															<select class="form-control" name="biz_other_state[]">
 		                                                        <option value=""> Select State</option>
-		                                                        <option value="1" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == 1)? 'selected':''}}> State 1 </option>
-		                                                        <option value="2" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == 2)? 'selected':''}}> State 2 </option>
-		                                                        <option value="3" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == 3)? 'selected':''}}> State 3 </option>
+		                                                        @foreach($states as $key => $state)
+		                                                        <option value="{{$state->id}}" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+		                                                        @endforeach
 		                                                    </select>
 														</div>
 													</div>
@@ -326,9 +326,9 @@
 
 															<select class="form-control" name="biz_other_state[]">
 		                                                        <option value=""> Select State</option>
-		                                                        <option value="1" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == 1)? 'selected':''}}> State 1 </option>
-		                                                        <option value="2" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == 2)? 'selected':''}}> State 2 </option>
-		                                                        <option value="3" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == 3)? 'selected':''}}> State 3 </option>
+		                                                        @foreach($states as $key => $state)
+		                                                        <option value="{{$state->id}}" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+		                                                        @endforeach
 		                                                    </select>
 														</div>
 													</div>
@@ -386,9 +386,9 @@
 															</label>
 															<select class="form-control" name="biz_other_state[]">
 		                                                        <option value=""> Select State</option>
-		                                                        <option value="1" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == 1)? 'selected':''}}> State 1 </option>
-		                                                        <option value="2" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == 2)? 'selected':''}}> State 2 </option>
-		                                                        <option value="3" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == 3)? 'selected':''}}> State 3 </option>
+		                                                        @foreach($states as $key => $state)
+		                                                        <option value="{{$state->id}}" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+		                                                        @endforeach
 		                                                    </select>
 														</div>
 													</div>
@@ -441,9 +441,9 @@
 															</label>
 															<select class="form-control" name="biz_other_state[]">
 		                                                        <option value=""> Select State</option>
-		                                                        <option value="1" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == 1)? 'selected':''}}> State 1 </option>
-		                                                        <option value="2" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == 2)? 'selected':''}}> State 2 </option>
-		                                                        <option value="3" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == 3)? 'selected':''}}> State 3 </option>
+		                                                        @foreach($states as $key => $state)
+		                                                        <option value="{{$state->id}}" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+		                                                        @endforeach
 		                                                    </select>
 														</div>
 													</div>

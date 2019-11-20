@@ -10,6 +10,7 @@ use App\Http\Requests\DocumentRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Models\Master\State;
 use Session;
 use Helpers;
 
@@ -49,10 +50,11 @@ class ApplicationController extends Controller
         try {
             $arrFileData = $request->all();
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
+            $states = State::getStateList()->get();
             //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
-                return view('backend.app.company_details')->with(['business_info'=>$business_info]);
+                return view('backend.app.company_details')->with(['business_info'=>$business_info, 'states'=>$states]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
