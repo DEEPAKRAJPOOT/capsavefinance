@@ -18,4 +18,5 @@ return [
     'ResetLinkExpired' => 'Reset link has expired. Please generate password reset link again',
     'PasswordResetSuccessfully' => 'Password reset successfully. Please login',
     'UpdateShareHolderSuccessfully' => 'ShareHolding Structure Updated successfully!',
+    'update_company_detail_successfully' => 'Company details updated successfully!',
 ];

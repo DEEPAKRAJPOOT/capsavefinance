@@ -73,11 +73,11 @@ class ApplicationController extends Controller
             $appId = $request->app_id;
             $bizId = $request->biz_id;
             
-            $business_info = $this->appRepo->updateCompanyDetail($arrFileData, Auth::user()->user_id);
+            $business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
 
             if ($business_info) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('promoter-detail');
+                Session::flash('message',trans('success_messages.update_company_detail_successfully'));
+                return redirect()->route('promoter_details',1);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
