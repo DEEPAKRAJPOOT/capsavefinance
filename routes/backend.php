@@ -47,7 +47,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('company-details',
                 [
                 'as' => 'company_details_save',
-                'uses' => 'Backend\ApplicationController@saveCompanyDetails'
+                'uses' => 'Backend\ApplicationController@updateCompanyDetail'
             ]);
 
             

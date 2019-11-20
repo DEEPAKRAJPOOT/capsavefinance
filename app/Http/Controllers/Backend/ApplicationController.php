@@ -34,6 +34,12 @@ class ApplicationController extends Controller
         return view('backend.app.index');
     }
 
+    /**
+     * Render view for company detail page according to biz id
+     * 
+     * @param Request $request
+     * @return view
+     */
     public function showCompanyDetails(Request $request){
         try {
             $arrFileData = $request->all();
@@ -49,6 +55,33 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+    /**
+     * Update company detail page according to biz id
+     * 
+     * @param Request $request
+     * @return to promoter detail page
+     */
+    public function updateCompanyDetail(BusinessInformationRequest $request){
+        try {
+            $arrFileData = $request->all();
+            $appId = $request->app_id;
+            $bizId = $request->biz_id;
+            
+            $business_info = $this->appRepo->updateCompanyDetail($arrFileData, Auth::user()->user_id);
+
+            if ($business_info) {
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return redirect()->route('promoter-detail');
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+
      /* Show promoter details page  */
      public function showPromoterDetails($bizId){
         $id = Auth::user()->user_id;
