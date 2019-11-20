@@ -103,4 +103,8 @@ class CamController extends Controller
         return $datetime;
     }
 
+    public function showCibilForm(Request $request){
+        return view('backend.cam.cibil');
+    }
+
 }

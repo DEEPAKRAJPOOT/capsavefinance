@@ -24,6 +24,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
         Route::group(
                 ['prefix' => 'application'], function () {
+
             Route::get('/', [
                 'as' => 'application_list',
                 'uses' => 'Backend\ApplicationController@index'
@@ -114,7 +115,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('save-app-note', [
                 'as' => 'save_app_note',
                 'uses' => 'Backend\ApplicationController@saveAppNote'
-            ]);            
+            ]);   
+
+
+            Route::get('cam/cibil', [
+                'as' => 'cam_cibil',
+                'uses' => 'Backend\CamController@showCibilForm'
+            ]);
+         
         });
 
         Route::group(
