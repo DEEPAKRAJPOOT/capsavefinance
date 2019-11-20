@@ -100,9 +100,9 @@ class ApplicationController extends Controller
             $owner_info = $this->userRepo->saveOwnerInfo($arrFileData); //Auth::user()->id
           if ($owner_info) {
                 //Add application workflow stages
-                $appData = $this->appRepo->getAppDataByBizId($arrFileData['biz_id']);
-                $appId = $appData ? $appData->app_id : null; 
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                //$appData = $this->appRepo->getAppDataByBizId($arrFileData['biz_id']);
+                //$appId = $appData ? $appData->app_id : null; 
+                //Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
                  
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             } else {
@@ -118,15 +118,15 @@ class ApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showDocument()
+    public function showDocument(Request $request)
     {
-        $appId  = Session::has('appId') ? Session::get('appId') : 1;
+        $data  = $request->all();
         $userId = Auth::user()->user_id;
         
         $userArr = [];
         if ($appId > 0) {
             // dd($appId);
-            $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
+            $requiredDocs = $this->docRepo->findRequiredDocs($userId, $data->app_id);
             if(!empty($requiredDocs)){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
             }
@@ -158,9 +158,9 @@ class ApplicationController extends Controller
             if ($document_info) {
                 
                 //Add application workflow stages
-                $appData = $this->appRepo->getAppDataByBizId($arrFileData['biz_id']);
-                $appId = $appData ? $appData->app_id : null; 
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                //$appData = $this->appRepo->getAppDataByBizId($arrFileData['biz_id']);
+                //$appId = $appData ? $appData->app_id : null;                
+                //Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
                 
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->back();
@@ -212,10 +212,10 @@ class ApplicationController extends Controller
             
             if ($response->count() < 1) {
                 
-                $this->appRepo->updateAppData($appId, ['status' => 1]);
+                //$this->appRepo->updateAppData($appId, ['status' => 1]);
                 
                 //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                //Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
                 
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             } else {
