@@ -171,4 +171,15 @@ class Business extends BaseModel
     public function gst(){
         return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>2, 'biz_owner_id'=>null, 'parent_pan_gst_id'=>0]);
     }
+
+    public static function getCompanyDataByBizId($biz_id)
+    {
+        $arrData = self::select('biz.biz_entity_name','biz_pan_gst.pan_gst_hash')
+        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
+        ->where('biz.biz_id', $biz_id)
+        ->get();
+        return $arrData;
+    }
+
+
 }
