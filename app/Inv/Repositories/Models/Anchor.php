@@ -79,4 +79,26 @@ public static function saveAnchor($arrAnchor = [])
 
         return ($arrAnchorVal->anchor_id ?: false);
     }
+    
+      /**
+     * 
+     * @return type
+     */
+    public static function getAllAnchor() {
+        $result = self::select('anchor.*')
+            ->orderByRaw('anchor_id DESC');
+                //->where('user_type', 1);
+        return ($result ? $result : false);
+    }
+     /**
+     * function for get particular user detail
+     * @param type $email
+     * @return type
+     */
+    public static function getAnchorById($anch_id){
+        $arrUser = self::select('anchor.*')
+             ->where('anchor_id', '=', $anch_id)
+            ->first();
+           return ($arrUser ? $arrUser : FALSE);
+    }
 }

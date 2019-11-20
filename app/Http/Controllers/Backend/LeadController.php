@@ -198,7 +198,12 @@ class LeadController extends Controller
     
     
      public function addAnchorReg(Request $request){
-         try {               
+         try {
+             $anchorUserinfo=$request->get('anchor_id');
+             if($anchorUserinfo){
+                 $anchorVal=$this->userRepo->getAnchorById($anchorUserinfo);
+                 
+             }
              return view('backend.anchor.add_anchor_reg');
                 
          } catch (Exception $ex) {
@@ -264,63 +269,47 @@ class LeadController extends Controller
        
      }
      public function saveUploadAnchorlead(Request $request){
-         try {    
-              //$arrAnchorVal = $request->all();
-              //dd($arrAnchorVal);
-              //exit;
-        $uploadedFile = $request->file('anchor_lead'); 
-        $destinationPath = storage_path() . '/uploads';
-        $fileName = time() . '.csv';
-        if ($uploadedFile->isValid()) {
-            $uploadedFile->move($destinationPath, $fileName);
-        }
-             
-              $fileD = fopen($destinationPath . '/'.$fileName ,"r");
-        $column=fgetcsv($fileD);
-        
-        while(!feof($fileD)){
-         $rowData[]=fgetcsv($fileD);
-        }
-      
-        foreach ($rowData as $key => $value) {
-            $hashval=time().'ANCHORLEAD'.$key;
-            $token=md5($hashval);
-             $arrAnchLeadData = [
-                'name' =>  $value[0],
-                'email' =>  $value[1],
-                'phone' => $value[2],
-                'created_at' => \Carbon\Carbon::now(),
-                 'token'=>$token,
+         try {
+            $uploadedFile = $request->file('anchor_lead');
+            $destinationPath = storage_path() . '/uploads';
+            $fileName = time() . '.csv';
+            if ($uploadedFile->isValid()) {
+                $uploadedFile->move($destinationPath, $fileName);
+            }
+            $fileD = fopen($destinationPath . '/' . $fileName, "r");
+            $column = fgetcsv($fileD);
+            while (!feof($fileD)) {
+                $rowData[] = fgetcsv($fileD);
+            }
+
+             $anchLeadMailArr = [];
+             $arrAnchLeadData =[];
+            foreach ($rowData as $key => $value) {
+                $hashval = time() . 'ANCHORLEAD' . $key;
+                $token = md5($hashval);
+                $arrAnchLeadData = [
+                    'name' => $value[0],
+                    'email' => $value[1],
+                    'phone' => $value[2],
+                    'created_at' => \Carbon\Carbon::now(),
+                    'token' => $token,
                 ];
-             $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
-             if($anchor_lead){
-                $mailUrl=config('proin.frontend_uri').'/sign-up?token='.$hashval;
-                 $anchLeadMailArr = [];
-                $anchLeadMailArr['name'] = $arrAnchLeadData['name'];
-                $anchLeadMailArr['email'] = $arrAnchLeadData['email'];
-                $anchLeadMailArr['url'] = $mailUrl;
-                Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
-             }
-             
-           /* $inserted_data=array('name'=>$value[0],
-                                 'details'=>$value[1],
-                            );
-            */
-            
-             //Product::create($inserted_data);
+                $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
+                if ($anchor_lead) {
+                    $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
+                    $anchLeadMailArr['name'] = $arrAnchLeadData['name'];
+                    $anchLeadMailArr['email'] = $arrAnchLeadData['email'];
+                    $anchLeadMailArr['url'] = $mailUrl;
+                    Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
+                }
+            }
+            unlink($destinationPath . '/' . $fileName);
+            Session::flash('message', trans('backend_messages.anchor_registration_success'));
+            return redirect()->route('lead_list');
+        } catch (Exception $ex) {
+            dd($ex);
         }
-        unlink($destinationPath . '/'.$fileName);
-         if ($anchor_info && $anchor_user_info) {
-                 Session::flash('message',trans('backend_messages.anchor_registration_success'));
-                  return redirect()->route('lead_list');
-                  
-          }
-                
-         } catch (Exception $ex) {
-             dd($ex);
-         }
-       
-     }
+    }
      
      
      

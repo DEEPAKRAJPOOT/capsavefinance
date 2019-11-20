@@ -140,13 +140,18 @@
                 $('input.email').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                 email: true,
+                                 //accept:"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}"
                             })
                 });
                 $('input.phone').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                number: true,
+                                minlength:10,
+                                maxlength:10
                             })
                 });
                 $('select.state').each(function () {
@@ -164,7 +169,8 @@
                 $('input.pin_code').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                number: true,
                             })
                 });
                 // test if form is valid                

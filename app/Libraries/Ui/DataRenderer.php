@@ -293,4 +293,107 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     } 
+    
+    
+    public function getAnchorList(Request $request, $user)
+    {
+        return DataTables::of($user)
+                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned'])
+                ->addColumn(
+                    'id',
+                    function ($user) {
+                    $link = '000'.$user->anchor_id;
+                        //return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        
+                    }
+                )
+                ->editColumn(
+                        'name',
+                        function ($user) {
+                    $full_name = $user->comp_name;
+                    return $full_name;
+                    
+                })
+                ->editColumn(
+                    'email',
+                    function ($user) {
+                    return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".$user->comp_email."</a> ";
+
+                })
+                ->editColumn(
+                    'anchor',
+                    function ($user) {
+                    $achorId = $user->anchor_id; 
+                    return $achorId;
+                })
+                ->editColumn(
+                    'userType',
+                    function ($user) {
+                    $achorId = $user->anchor_id; 
+                    return '';;
+                })
+                ->editColumn(
+                    'salesper',
+                    function ($user) {
+                    $achorId = $user->anchor_id; 
+                    return '';
+                })
+                ->editColumn(
+                    '',
+                    function ($user) {
+                    $full_name = $user->comp_phone; 
+                    return $full_name;
+                })
+                ->editColumn(
+                        'assigned',
+                        function ($user) {
+                    if ($user->is_active == 0) {
+                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                    } else {
+                        return "<span style='color:green'>Assigned</span>";
+                    }
+                })
+                ->editColumn(
+                    'biz_name',
+                    function ($user) {
+                    return ($user->comp_name)? $user->comp_name: '---';
+
+                })
+                ->editColumn(
+                    'created_at',
+                    function ($user) {
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($users) {
+                    return  "<a  data-toggle=\"modal\" data-target=\"#addAnchorFrm\" data-url =\"" . route('add_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"280px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
+                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                
+                                $query->where('users.is_assigned', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }
+                })
+                ->make(true);
+    }
 }

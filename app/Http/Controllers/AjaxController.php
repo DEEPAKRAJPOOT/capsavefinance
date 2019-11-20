@@ -2654,8 +2654,8 @@ if ($err) {
     
     
        public function getAnchorLists(DataProviderInterface $dataProvider) { 
-        $anchUsersList = $this->userRepo->getAllAnchorUsers();
-        $users = $dataProvider->getUsersList($this->request, $anchUsersList);
+        $anchUsersList = $this->userRepo->getAllAnchor();
+        $users = $dataProvider->getAnchorList($this->request, $anchUsersList);
         return $users;
     }
 

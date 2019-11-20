@@ -101,7 +101,17 @@
 
 <div class="card">
         <div class="card-body">
-            
+            <div class="head-sec">
+                <div class="pull-right" style="margin-bottom: 10px;">
+                    <a  data-toggle="modal" data-target="#uploadAnchLead" data-url ="{{route('add_anchor_lead')}}" data-height="200px" data-width="50%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
+
+                        <span class="btn-label">
+                            <i class="fa fa-plus"></i>
+                        </span>
+                        Upload User
+                    </a>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4">
                     {!!
