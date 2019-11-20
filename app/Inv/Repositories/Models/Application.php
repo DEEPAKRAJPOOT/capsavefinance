@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\User;
 
 class Application extends Model
 {
@@ -53,7 +54,7 @@ class Application extends Model
      */
     protected static function getApplications() 
     {
-        $appData = self::select('app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status')
+        $appData = self::select('app.user_id','app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                  ->join('app_assign', 'app_assign.assigned_user_id', '=', 'app.user_id')
                 ->where('app_assign.to_id', \Auth::user()->user_id)
@@ -92,8 +93,13 @@ class Application extends Model
      */
     public static function getApplicationPoolData() 
     {
+        
+       $roleData = User::getBackendUser(\Auth::user()->user_id);
         $appData = self::select('app.*')
+                 ->join('app_wf', 'app_wf.biz_app_id', '=', 'app.app_id')
+                 ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')
                 ->where('app.is_assigned', 0)
+                ->where('wf_stage.role_id', $roleData[0]->id)
                 ->orderBy('app.app_id');        
         return $appData;
     } 

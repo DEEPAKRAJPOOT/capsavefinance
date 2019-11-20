@@ -57,17 +57,25 @@
                         </tr>
                      </thead>
                      <tbody>
-                        <tr role="row" class="odd">
-                           <td class="sorting_1" width="15%">01</td>
-                           <td width="20%">trtretr</td>
-                           <td width="20%"></td>
-                           <td width="20%">0</td>
-                           <td class=" numericCol" width="25%">
-                              <button class="btn btn-success" supplier="49" onclick="pull_cibil_org(this)"><small>PULL</small></button>
-                              <button class="btn btn-warning" supplier="49" onclick="pull_cibil_org(this)"><small>DOWNLOAD</small></button>
-                              <button class="btn btn-info" supplier="49" onclick="pull_cibil_org(this)"><small>UPLOAD</small></button>
-                           </td>
-                        </tr>
+                           @php
+                              $i = 0;
+                           @endphp
+                       @foreach($arrCompanyDetail as $arr)
+                              @php
+                                 $i++;
+                              @endphp
+                              <tr role="row" class="odd">
+                                 <td class="sorting_1" width="15%">{{$i}}</td>
+                                 <td width="20%">{{$arr->biz_entity_name}}</td>
+                                 <td width="20%">{{$arr->pan_gst_hash}}</td>
+                                 <td width="20%"></td>
+                                 <td class=" numericCol" width="25%">
+                                    <button class="btn btn-success" supplier="49" onclick="pull_cibil_org(this)"><small>PULL</small></button>
+                                    <button class="btn btn-warning" supplier="49" onclick="pull_cibil_org(this)"><small>DOWNLOAD</small></button>
+                                    <button class="btn btn-info" supplier="49" onclick="pull_cibil_org(this)"><small>UPLOAD</small></button>
+                                 </td>
+                              </tr>
+                        @endforeach
                      </tbody>
                   </table>
                </div>
@@ -90,17 +98,25 @@
                         </tr>
                      </thead>
                      <tbody>
-                        <tr class="odd">
-                           <td valign="top"  class="dataTables_empty"></td>
-                           <td valign="top"  class="dataTables_empty"></td>
-                           <td valign="top"  class="dataTables_empty"></td>
-                           <td valign="top"  class="dataTables_empty"></td>
-                           <td>
-                              <button class="btn btn-success" supplier="49" onclick="pull_cibil_org(this)"><small>PULL</small></button>
-                              <button class="btn btn-warning" supplier="49" onclick="pull_cibil_org(this)"><small>DOWNLOAD</small></button>
-                              <button class="btn btn-info" supplier="49" onclick="pull_cibil_org(this)"><small>UPLOAD</small></button>
-                           </td>
-                        </tr>
+                         @php
+                              $i = 0;
+                           @endphp
+                       @foreach($arrCompanyOwnersData as $arr)
+                              @php
+                                 $i++;
+                              @endphp
+                              <tr role="row" class="odd">
+                                 <td class="sorting_1" width="15%">{{$i}}</td>
+                                 <td width="20%">{{$arr->first_name." ".$arr->last_name}}</td>
+                                 <td width="20%">{{$arr->pan_gst_hash}}</td>
+                                 <td width="20%"></td>
+                                 <td class=" numericCol" width="25%">
+                                    <button class="btn btn-success" supplier="49" onclick="pull_cibil_org(this)"><small>PULL</small></button>
+                                    <button class="btn btn-warning" supplier="49" onclick="pull_cibil_org(this)"><small>DOWNLOAD</small></button>
+                                    <button class="btn btn-info" supplier="49" onclick="pull_cibil_org(this)"><small>UPLOAD</small></button>
+                                 </td>
+                              </tr>
+                        @endforeach  
                      </tbody>
                   </table>
                   
