@@ -1,56 +1,71 @@
-@extends('layouts.withought_login')
+@extends('layouts.guest')
 @section('content')
-<div class="content-wrap height-auto">
+<div class="form-content no-padding sign-up mt-5">
+    <div class="row justify-content-center align-items-center m-0">
+        <div class="col-md-4 form-design">
 
-    <div class="login-section">
-            @if(Session::has('message_div'))
-            <div style="color:green;margin-top: -30px;" role="alert">
-            <strong>{{ Session::get('message_div') }}</strong>
-            </div>
-            @endif
-        <div class="logo-box text-center marB20">
-            <a href="index.html"><img src="{{ asset('frontend/outside/images/00_dexter.svg') }}" class="img-responsive"></a>
-            <h2 class="head-line2 marT25">Recover Your Password</h2>
-        </div>
+            <div id="reg-box">
+                <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ url('password/email') }}" id="forgotPassFrm">
+                {{ csrf_field() }} 
+                    <div class="section-header">
+                        <h4 class="section-title"> Recover Your Password</h4>
+                    </div>
+                    <div class="failed">
+                        <div>
+                            @if(Session::has("messages"))
+                            <strong class="erro-sms text-success">
+                                {{ Session::get('messages') }}
+                            </strong>
+                            @endif
+                        </div>
+                        <div>
+                            @if($errors->has('messages'))
+                            <strong class="erro-sms text-danger">
+                                {{trans('auth.throttle')}}
+                            </strong>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row form-fields">
+                        <div class="col-md-12">
 
-        <div class="sign-up-box">
-
-             <div class="authfy-panel panel-forgot">
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="authfy-heading">
-                                    <h3 class="auth-title">Reset password</h3>
-                                    <p>Fill in your e-mail address below and we will send you an email with further instructions.</p>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="txtEmail">{{trans('master.loginForm.email')}}
+                                            <span class="mandatory">*</span>
+                                        </label>
+                                        <input type="hidden" name="send_otp" id="send-otp" value="">
+                                        <input type="email" class="form-control" placeholder="{{trans('master.loginForm.email')}}" name="email" value="{{ old('email') ? old('email') : '' }}" id="email" >
+                                        @error('email')
+                                            <span class="text-danger"> {{$message}} </span>
+                                        @enderror
+                                    </div>
                                 </div>
-                                <form class="forgetForm form form-cls" autocomplete="off" method="POST" action="{{ url('password/email') }}" id="forgotPassFrm">
-                                    {{ csrf_field() }}
-                                    <div class="form-group">
-                                        <input id="email" autocomplete="off" type="email" autofocus="" class="form-control" placeholder="Email address" name="email" value="{{ old('email') ? old('email') : '' }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <button class="btn btn-sign verify-btn" type="submit">Reset my password</button>
-                                    </div>
-                                    <div class="form-group">
-                                        <p class=" have-account marB15">
-                                        <a class="lnk-toggler have-account marB15" data-panel=".panel-login" href="{{url('login')}}">Already have an account?</a>
-                                        </p>
-                                    </div>
-                                    <div class="form-group">
-                                        <p class=" have-account marB15">
-                                        <a  class=" marB15" href="{{url('/')}}">Don’t have an account?</a>
-                                        </p>
-                                    </div>
-                                </form>
+                                
+                                <div class="d-flex btn-section sign-UP col-md-12">
+                                    <button class="btn btn-primary pull-right" type="submit">Reset my password</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <p class=" have-account marB15">
+                                <a class="lnk-toggler have-account marB15" data-panel=".panel-login" href="{{url('login')}}">Already have an account?</a>
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <p class=" have-account marB15">
+                                <a  class=" marB15" href="{{url('/sign-up')}}">Don’t have an account?</a>
+                                </p>
                             </div>
                         </div>
                     </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
-
 <script>
-    var messages = {
+   var messages = {
         req_email: "{{ trans('error_messages.req_email') }}",
         req_password: "{{ trans('error_messages.req_password') }}",
         req_confirm_password: "{{ trans('error_messages.req_confirm_password') }}"

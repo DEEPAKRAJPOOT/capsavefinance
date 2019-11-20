@@ -1,4 +1,4 @@
-@extends('layouts.withought_login')
+@extends('layouts.guest')
 @section('content')
         @if (count($errors) > 0)
         <div class="alertMsgBox">
@@ -12,15 +12,14 @@
             </div>
         </div>
         @endif
-<div class="content-wrap height-auto">
-    <div class="login-section">
-        <div class="logo-box text-center marB20">
-            <a href="index.html"><img src="{{ asset('frontend/outside/images/00_dexter.svg') }}" class="img-responsive"></a>
-            <h2 class="head-line2 marT25">{{trans('master.resetForm.heading')}}</h2>
-        </div>
-
+<div class="form-content no-padding sign-up mt-5">
+ <div class="row justify-content-center align-items-center m-0">
+    <div class="col-md-4 form-design">
         <div class="sign-up-box">
             <form class="form-horizontal" method="POST" id="resetForgotFm" action="{{ url('password/reset') }}">
+                <div class="section-header" style="background: #2a8b6a;">
+                    <h4 class="section-title"> {{trans('master.resetForm.heading')}}</h4>
+               </div>
                 {{ csrf_field() }}
 
                 <input type="hidden" name="token" value="{{ $token }}">
@@ -61,7 +60,7 @@
                 </div>
             </form>
         </div>
-
+    </div>
 
     </div>
 </div>
