@@ -36,7 +36,7 @@ class ApplicationController extends Controller
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        return view('frontend.application.business-information', compact('userArr'));
+        return view('frontend.application.business_information', compact('userArr'));
     }
 
     public function saveBusinessInformation(BusinessInformationRequest $request)

@@ -41,7 +41,7 @@ class ApplicationController extends Controller
             //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
-                return view('backend.app.company-details')->with(['business_info'=>$business_info]);
+                return view('backend.app.company_details')->with(['business_info'=>$business_info]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }

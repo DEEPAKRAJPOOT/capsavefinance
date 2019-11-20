@@ -53,7 +53,7 @@
 			</div>
 			<div class="col-md-12 form-design ">
 				<div id="reg-box">
-					<form id="business_information_form" method="POST" action="business-information-save" onsubmit="return checkValidation();">
+					<form id="business_information_form" method="POST" action="{{route('business_information_save')}}" onsubmit="return checkValidation();">
 						@csrf
 						<input type="hidden" name="biz_cin" value="">
 						<input type="hidden" name="pan_api_res" value="">
@@ -300,7 +300,7 @@
 							                            <div class="col-md-12">
 							                                <div class="form-group">
 							                                    <label for="txtCreditPeriod">Address
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0')}}" class="form-control" placeholder="Enter Your Address">
 							                                </div>
@@ -308,7 +308,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group password-input">
 							                                    <label for="txtPassword">State
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
@@ -321,7 +321,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group">
 							                                    <label for="txtEmail">City
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city.0')}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 							                                </div>
@@ -329,7 +329,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group password-input">
 							                                    <label for="txtPassword">Pin Code
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0')}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 							                                </div>
@@ -351,7 +351,7 @@
 							                            <div class="col-md-12">
 							                                <div class="form-group">
 							                                    <label for="txtCreditPeriod">Address
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address.1')}}" class="form-control" placeholder="Enter Your Address">
 							                                </div>
@@ -359,7 +359,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group password-input">
 							                                    <label for="txtPassword">State
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
@@ -372,7 +372,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group">
 							                                    <label for="txtEmail">City
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city.1')}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 							                                </div>
@@ -380,7 +380,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group password-input">
 							                                    <label for="txtPassword">Pin Code
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1')}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 							                                </div>
@@ -402,7 +402,7 @@
 							                            <div class="col-md-12">
 							                                <div class="form-group">
 							                                    <label for="txtCreditPeriod">Address
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address.2')}}" class="form-control" placeholder="Enter Your Address">
 							                                </div>
@@ -410,7 +410,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group password-input">
 							                                    <label for="txtPassword">State
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
@@ -423,7 +423,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group">
 							                                    <label for="txtEmail">City
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city.2')}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 							                                </div>
@@ -431,7 +431,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group password-input">
 							                                    <label for="txtPassword">Pin Code
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2')}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 							                                </div>
@@ -453,7 +453,7 @@
 							                            <div class="col-md-12">
 							                                <div class="form-group">
 							                                    <label for="txtCreditPeriod">Address
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_address[]" value="{{old('biz_other_address.3')}}" class="form-control" placeholder="Enter Your Address">
 							                                </div>
@@ -461,7 +461,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group password-input">
 							                                    <label for="txtPassword">State
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <select class="form-control" name="biz_other_state[]">
 		                                                            <option value=""> Select State</option>
@@ -474,7 +474,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group">
 							                                    <label for="txtEmail">City
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_city[]" value="{{old('biz_other_city.3')}}" class="form-control" tabindex="1" placeholder="Enter City Name">
 							                                </div>
@@ -482,7 +482,7 @@
 							                            <div class="col-md-4">
 							                                <div class="form-group password-input">
 							                                    <label for="txtPassword">Pin Code
-							                                        <span class="mandatory">*</span>
+							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
 							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3')}}" class="form-control" tabindex="1" placeholder="Enter Pin Code">
 							                                </div>

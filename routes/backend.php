@@ -39,20 +39,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@index'
             ]);
 
-            Route::get('company-details/{id}', [
+            Route::get('company-details', [
                 'as' => 'company_details',
                 'uses' => 'Backend\ApplicationController@showCompanyDetails'
             ]);
+
+            Route::post('company-details',
+                [
+                'as' => 'company_details_save',
+                'uses' => 'Backend\ApplicationController@saveCompanyDetails'
+            ]);
+
             
            Route::get('promoter-details/{id}', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
-            ]);
-
-            Route::get('company-details',
-                [
-                'as' => 'company_details',
-                'uses' => 'Backend\ApplicationController@showCompanyDetails'
             ]);
 
             Route::post('cam/cam-information-save', [
