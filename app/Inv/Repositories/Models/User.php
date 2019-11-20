@@ -44,6 +44,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'anchor_id',
         'f_name',
         'm_name',
         'l_name',

@@ -29,6 +29,18 @@
                     </a>
                 </div>
             </div>
+            
+             <div class="head-sec">
+                <div class="pull-right" style="margin-bottom: 10px;">
+                    <a  data-toggle="modal" data-target="#uploadAnchLead" data-url ="{{route('add_anchor_lead')}}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
+
+                        <span class="btn-label">
+                            <i class="fa fa-plus"></i>
+                        </span>
+                        Upload User
+                    </a>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4">
                     {!!
@@ -87,6 +99,8 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('editLead','Manage Lead', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('uploadAnchLead','Upload User List', 'modal-lg')!!}
+
 @endsection
 
 @section('jscript')

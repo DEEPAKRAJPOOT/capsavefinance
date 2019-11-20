@@ -165,15 +165,28 @@ use RegistersUsers,
      *
      * @return \Illuminate\Http\Response
      */
-    public function showRegistrationForm() {
-
-
+    public function showRegistrationForm(Request $request) {
+           try{
+         $anchortoken = $request->get('token');
+         //dd($anchorEmail);
         $userId = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
+        $anchorDetail = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        return view('auth.sign-up', compact('userArr'));
+        $anchorLeadInfo = $this->userRepo->getAnchorUsersByEmail($anchortoken);
+        //dd($anchorLeadInfo);
+        if(isset($anchortoken) && $anchorLeadInfo){
+            $anchorDetail = $anchorLeadInfo;
+        }else{
+            $anchorDetail = '';
+        }
+           return view('auth.sign-up', compact('userArr','anchorDetail'));
+           
+           }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+         }
     }
 
     /**

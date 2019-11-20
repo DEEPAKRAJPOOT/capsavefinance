@@ -128,7 +128,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_backend_lead',
                 'uses' => 'Backend\LeadController@editBackendLead'
             ]);
-
             Route::get('lead-detail', [
                 'as' => 'lead_detail',
                 'uses' => 'Backend\LeadController@leadDetail'
@@ -172,13 +171,19 @@ Route::group(
                 'uses' => 'Backend\LeadController@saveaddAnchorReg'
             ]);
 
-           /* Route::get('/supplier',
+           Route::get('/add-anchor-lead',
                 [
-                'as' => 'supplier_list',
-                'uses' => 'Backend\SupplierController@index'
+                'as' => 'add_anchor_lead',
+                'uses' => 'Backend\LeadController@uploadAnchorlead'
+            ]);
+            Route::post('/add-anchor-lead',
+                [
+                'as' => 'add_anchor_lead',
+                'uses' => 'Backend\LeadController@saveUploadAnchorlead'
             ]);
 
-            Route::get('cam/overview',
+
+             /*Route::get('cam/overview',
                 [
                 'as' => 'cam_overview',
                 'uses' => 'Backend\CamController@index'

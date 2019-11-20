@@ -167,32 +167,7 @@
                                 required: true
                             })
                 });
-                // test if form is valid 
-                if ($('form#anchorForm').validate().form()) {
-                    var form = $("#anchorForm");
-                    $.ajax({
-                        type: "POST",
-                        url: '{{Route('add_anchor_reg')}}',
-                        data: form.serialize(), // serializes the form's elements.
-                        cache: false,
-                        success: function (res)
-                        {
-                            if (res.status == 1)
-                            {
-                               
-                                       $('#addAnchorFrm').dialog('close');
-                                     window.location.href = "/anchor";
-                            }
-                        },
-                        error: function (error)
-                        {
-                            console.log(error);
-                        }
-
-                    });
-                } else {
-                    console.log("does not validate");
-                }
+                // test if form is valid                
             })
             //$("#btnAddMore").on('click', addInput);
             $('form#anchorForm').validate();

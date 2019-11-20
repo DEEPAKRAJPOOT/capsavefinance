@@ -21,7 +21,7 @@
                                         <label for="txtCreditPeriod">First Name
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input type="text" name="f_name" value="{{old('f_name')}}" class="form-control" tabindex="1" placeholder="First Name">
+                                        <input type="text" name="f_name" value="@if($anchorDetail){{$anchorDetail->name}}@else{{old('f_name')}}@endif" class="form-control" tabindex="1"  placeholder="First Name" @if($anchorDetail)readonly @else @endif>
                                         <span class="text-danger error">{{$errors->first('f_name')}}</span>
                                     </div>
 
@@ -63,7 +63,7 @@
                                             <span class="mandatory">*</span>
                                         </label>
                                         <input type="hidden" name="send_otp" id="send-otp" value="">
-                                        <input type="text" name="email" id="email" value="{{old('email')}}" class="form-control" tabindex="4" placeholder="Email">
+                                        <input type="text" name="email" id="email" value="@if($anchorDetail){{$anchorDetail->email}}@else{{old('email')}}@endif" class="form-control" tabindex="4" placeholder="Email"  @if($anchorDetail)readonly @else @endif>
                                         <span class="text-danger error"> {{$errors->first('email')}} </span>
                                     </div>
                                 </div>
@@ -74,7 +74,7 @@
                                         </label>
                                         <div class="relative d-flex">
                                             <input class="form-control cont" name="phone-ext" id="phone-ext" type="text" value="+91" readonly="">
-                                            <input class="form-control numbercls" name="mobile_no" value="{{old('mobile_no')}}" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile">
+                                            <input class="form-control numbercls" name="mobile_no" value="@if($anchorDetail){{$anchorDetail->phone}}@else{{old('mobile_no')}}@endif" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" @if($anchorDetail)readonly @else @endif>
 
 
                                         </div>

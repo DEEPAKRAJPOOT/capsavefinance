@@ -903,4 +903,17 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return BizOwner::getOwnerApiDetails($attributes); 
     }
+    
+    /**
+      * function for get all anchor register user detail
+      * @return type
+      */
+     
+        public function getAnchorUsersByEmail($token)
+        {
+          $result = AnchorUser::getAnchorUsersByEmail($token);
+        
+          return $result ?: false;
+        }
+    
 }

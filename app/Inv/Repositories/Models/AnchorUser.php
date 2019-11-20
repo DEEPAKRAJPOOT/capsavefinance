@@ -38,7 +38,8 @@ class AnchorUser extends BaseModel {
         'user_id',
         'name',
         'email',
-        'phone'
+        'phone',
+        'token'
     ];
 
     /**
@@ -77,6 +78,18 @@ class AnchorUser extends BaseModel {
             ->orderByRaw('anchor_user_id DESC');
                 //->where('user_type', 1);
         return ($result ? $result : '');
+    }
+    
+    /**
+     * function for get particular user detail
+     * @param type $email
+     * @return type
+     */
+    public static function getAnchorUsersByEmail($token){
+        $arrUser = self::select('anchor_user.*')
+             ->where('token', '=', $token)
+            ->first();
+           return ($arrUser ? $arrUser : FALSE);
     }
 
 }
