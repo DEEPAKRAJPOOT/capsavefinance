@@ -11,7 +11,7 @@
               <h5 class="card-title form-head-h5">Notes  
               <a data-toggle="modal" data-target="#noteFrame" data-url ="{{route('backend_notes_from')}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls float-right"><i class="fa fa-plus"></i>Add Note</a>
             </h5>
-            <div class="col-md-12-cls">
+                    <div class="col-md-12-cls">
                             <div class="prtm-full-block">       
                                 <div class="prtm-block-content">
                                     <div class="table-responsive">
@@ -25,9 +25,7 @@
                                                 <tr>
                                                     <th class="text-left">Note Details</th>
                                                     <td class="text-right">Added By</td>                                 </tr> 
-
                                                 @foreach($arrData as $data)
-                                                   
                                                 <tr>
                                                     <th class="text-left">{{$data->note_data}}</th>
                                                     <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>                                                                        
