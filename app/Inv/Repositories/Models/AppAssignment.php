@@ -7,13 +7,10 @@ use File;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class AppAssignment extends Authenticatable
+class AppAssignment extends BaseModel
 {
-
-    use Notifiable;
- 
 
     /**
      * The database table used by the model.
@@ -34,14 +31,14 @@ class AppAssignment extends Authenticatable
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
