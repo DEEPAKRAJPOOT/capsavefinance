@@ -185,5 +185,44 @@ class ApplicationController extends Controller
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
-    }    
+    } 
+    
+    /**
+     * Save application note
+     * 
+     * @param Request $request
+     * @return view
+     */    
+    public function sendCaseConfirmbox(Request $request) {
+        try{
+            $user_id = $request->get('user_id');
+            $app_id = $request->get('app_id');
+           return view('backend.app.next_stage_confirmBox')
+                ->with('app_id', $app_id)
+                ->with('user_id', $user_id);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    /**
+     * Save application note
+     * 
+     * @param Request $request
+     * @return view
+     */    
+    public function AcceptNextStage(Request $request) {
+        try{
+            
+            $user_id = $request->get('user_id');
+            $app_id = $request->get('app_id');
+           $currStage = Helpers::getCurrentWfStage($app_id);
+           Helpers::updateWfStage($currStage->stage_code, 1, $wf_status = 1);
+           
+           
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    
 }
