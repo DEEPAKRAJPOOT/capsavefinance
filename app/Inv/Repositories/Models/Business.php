@@ -270,3 +270,5 @@ class Business extends BaseModel
 
         return ['biz_id'=>$business->biz_id,'app_id'=>$app_id];
     }
+
+}

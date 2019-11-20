@@ -22,7 +22,7 @@
         <header>
             <div class="container">
                 <div class="d-flex">
-                    <a href="#"><img src="{{url('frontend/assets/images/logo_mini.svg')}}" alt="logo" width="50px"> </a>
+                    <a href="#"><img src="{{url('frontend/assets/images/logo.svg')}}" alt="logo" width="150px"> </a>
                 </div>
         </header>
         @yield('content')
