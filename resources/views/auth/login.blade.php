@@ -1,110 +1,82 @@
-@extends('layouts.withought_login')
-@section('style')
-<style>
- .logo-box img {
-    max-width: 300px;
-}   
-</style>
-@endsection
+@extends('layouts.guest')
 @section('content')
+<div class="form-content no-padding sign-up mt-5">
+    <div class="row justify-content-center align-items-center m-0">
+        <div class="col-md-4 form-design">
 
-<div class="login-wrapper col-sm-6 col-sm-offset-3">
-    <div class="container-center">
-        <div class="card">
-           <div class="card-body">
-        <div class="panel mb-0">
-            <div class="panel-heading">
-                <div class="view-header">
-                    <div class="logo-box p-2"><img src="{{url('frontend/assets/images/logo.svg')}}" width="200px;"></div>
-                    <div class="header-title">
-                        <h3>Login</h3>
-                        <small>
-                            <strong>Please enter your credentials to login.</strong>
-                        </small>
-
-                        <div class="failed">
-                            <div>
-                                @if(Session::has("messages"))
-                                <strong class="erro-sms colorRed">
-                                    {{ Session::get('messages') }}
-                                </strong>
-                                @endif
-                            </div>
-                            <div>
-                                @if($errors->has('messages'))
-                                <strong class="erro-sms colorRed">
-                                    {{trans('auth.throttle')}}
-                                </strong>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="panel-body">
+            <div id="reg-box">
                 <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ route('login_open') }}" id="frmLogin">
-                    {{ csrf_field() }} 
-                    <div class="form-group mb-2">
-
-                        <label for="email" class="control-label" >{{trans('master.loginForm.email')}}</label>
-                        <input type="text" class="form-control required"  placeholder="{{trans('master.loginForm.email')}}" name="email" value="{{ old('email') }}" id="email" >
-                        @error('email')
-                        <span class="colorRed"> {{$message}} </span>
-                        @enderror
-
+                {{ csrf_field() }} 
+                    <div class="section-header">
+                        <h4 class="section-title"> Login</h4>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label" for="pwd">{{trans('master.loginForm.password')}}</label>
-                        <div class="hideShowPassword-wrapper">
-                            <input type="password" id="password" class="form-control required" placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" >
+                    <div class="failed">
+                        <div>
+                            @if(Session::has("messages"))
+                            <strong class="erro-sms text-danger">
+                                {{ Session::get('messages') }}
+                            </strong>
+                            @endif
+                        </div>
+                        <div>
+                            @if($errors->has('messages'))
+                            <strong class="erro-sms text-danger">
+                                {{trans('auth.throttle')}}
+                            </strong>
+                            @endif
                         </div>
                     </div>
-                    @error('password')
-                    <span class="colorRed">{{$message}}</span>
-                    @enderror
+                    <div class="row form-fields">
+                        <div class="col-md-12">
 
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="txtEmail">{{trans('master.loginForm.email')}}
+                                            <span class="mandatory">*</span>
+                                        </label>
+                                        <input type="hidden" name="send_otp" id="send-otp" value="">
+                                        <input type="email" class="form-control" placeholder="{{trans('master.loginForm.email')}}" name="email" value="{{ old('email') }}" id="email" >
+                                        @error('email')
+                                            <span class="colorRed"> {{$message}} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group password-input">
+                                        <label for="txtPassword">{{trans('master.loginForm.password')}}
+                                            <span class="mandatory">*</span>
+                                        </label>
+                                        <input  type="password"  class="form-control" name="password"  placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" oninput="removeSpace(this);" >
+                                        @error('password')
+                                        <span class="colorRed"> {{$message}} </span>
+                                        @enderror
+                                        <a href="{{ url('password/email') }}" style="display:block; margin-top:5px; text-decoration:underline;">Forgot Password</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="d-flex btn-section sign-UP col-md-12">
+                            <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
+                            <span class=" mt-2 ml-2">or</span>
+                            <a class=" mt-2 ml-2" href="{{ url('/sign-up') }}">Sign up</a>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="form-group mt-3 Forgot">
-            <a href="{{ url('password/email') }}" class="forgot-link"> Forgot Password </a>
-            <a href="{{ url('/sign-up')}}" class="forgot-link pull-right"> Sign Up ? </a>
-            <div>
-                <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
-            </div>
-
-        </div>
-        </form>
     </div>
-     </div>
-        </div>
 </div>
-</div>
-</div>
-<style>
-    .colorRed
-    {
+<script>
+    var messages = {
+        req_email: "{{ trans('error_messages.req_user_name') }}",
+        req_password: "{{ trans('error_messages.req_password') }}",
 
-        color:red;
-    }
-    .login-wrapper input.btn.btn-primary {
-        padding: 8px 30px;
-        font-weight: 600;
-        text-shadow: none;
-        font-size: 20px;
-        display: block;
-        float: left;
-        margin: 20px 0px 0;
-        cursor: pointer;
-    </style>
-    <script>
-        var messages = {
-            req_email: "{{ trans('error_messages.req_user_name') }}",
-            req_password: "{{ trans('error_messages.req_password') }}",
-
-        };
-    </script>
-    <script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script>
-    @endsection
+    };
+</script>
+<script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script>
+@endsection
 
 
 

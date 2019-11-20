@@ -1,9 +1,9 @@
 <?php
 return [
-    'uploaded' => 'Uploaded Successfully.',
-    'deleted' => 'Deleted Successfully.',
+    'uploaded' => 'File uploaded successfully.',
+    'deleted' => 'File deleted successfully.',
     'app.completed' => 'Your application is submitted successfully.',
-    'education_saved_successfully' => 'Education details have been saved successfully',
+    'education_saved_successfully' => 'Education details have been saved successfully.',
     'skill_saved_successfully' => 'Skills have been saved successfully',
     'research_saved_successfully' => 'Research and publications details have been saved successfully',
     'registration_completed' => 'Thanks for registering on Inventrust. Please verify the account through Email.',
@@ -17,5 +17,5 @@ return [
     'fogot_password_successfully' => 'Reset Password Link is sent on your registered Email ID.',
     'ResetLinkExpired' => 'Reset link has expired. Please generate password reset link again',
     'PasswordResetSuccessfully' => 'Password reset successfully. Please login',
-    'UpdateShareHolderSuccessfully' => 'Share Holding Structure Updated successfully!',
+    'UpdateShareHolderSuccessfully' => 'ShareHolding Structure Updated successfully!',
 ];
