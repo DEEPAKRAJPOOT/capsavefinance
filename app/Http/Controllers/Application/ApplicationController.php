@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Application;
-use App\Http\Controllers\Controller;
+
 use Auth;
+use Helpers;
+use Session;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
@@ -10,7 +13,6 @@ use App\Http\Requests\DocumentRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
-use Session;
 
 class ApplicationController extends Controller
 {
@@ -46,10 +48,10 @@ class ApplicationController extends Controller
             $business_info = $this->appRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
             $appId  = Session::put('appId', $business_info['app_id']);
             
-            //Add application workflow stages            
-            Helpers::addWfAppStage('biz_info', $business_info['app_id'], $wf_status = 2);
+            //Add application workflow stages
+            Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
             
-            
+                        
             if ($business_info) {
                 //Add application workflow stages
                 Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
