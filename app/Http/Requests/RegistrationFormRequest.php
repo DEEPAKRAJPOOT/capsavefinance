@@ -61,6 +61,8 @@ class RegistrationFormRequest extends Request
             'email.email' => trans('error_messages.invalid_email'),
             'email.unique' => trans('error_messages.email_already_exists'),
             'mobile_no.required'=>trans('error_messages.req_phone'),
+            'password.required'=>trans('error_messages.req_password'),
+            'password_confirm.required'=>trans('error_messages.req_confirm_password'),
 
             'mobile_no.min'=>trans('error_messages.phone_minlength'),
             'mobile_no.max'=>trans('error_messages.phone_maxlength'),

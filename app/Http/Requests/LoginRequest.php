@@ -36,8 +36,8 @@ class LoginRequest extends Request {
      */
     public function messages() {
         return $messages = [
-            'email.required' => 'Please enter currect email.',
-            'password.required' => 'Please enter currect password.'
+            'email.required' => 'Please enter your email address.',
+            'password.required' => 'Please enter your password.'
         ];
     }
 
