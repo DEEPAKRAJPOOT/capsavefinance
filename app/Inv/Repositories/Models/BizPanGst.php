@@ -27,13 +27,17 @@ class BizPanGst extends BaseModel
     protected $fillable = [
         'user_id',
         'biz_id',
-        'type',
         'biz_owner_id',
+        'type',
+        'cin',
         'pan_gst_hash',
         'status',
         'parent_pan_gst_id',
         'biz_pan_gst_api_id',
-        'created_by'
+        'created_by',
+        'created_at',
+        'updated_at',
+        'updated_by'
     ];
    
 }

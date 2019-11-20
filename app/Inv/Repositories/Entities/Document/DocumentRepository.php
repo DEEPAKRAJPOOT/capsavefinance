@@ -138,6 +138,7 @@ class DocumentRepository implements DocumentInterface
         
         foreach ($requiredDocs as $key => $value) {
             $result[$value->document->doc_name] = AppDocumentFile::where('doc_id', $value->doc_id)
+                    ->where('app_id', $appId)
                     ->where('is_active', 1)
                     ->with('userFile')
                     ->get();

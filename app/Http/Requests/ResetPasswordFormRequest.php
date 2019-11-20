@@ -38,8 +38,8 @@ class ResetPasswordFormRequest extends Request
     public function messages()
     {
         return $messages = [
-            'email.required' => trans('messages.error.req_email'),
-            'email.email' => trans('messages.error.invalid_email'),
+            'email.required' => trans('error_messages.req_email'),
+            'email.email' => trans('error_messages.invalid_email'),
         ];
     }
 }

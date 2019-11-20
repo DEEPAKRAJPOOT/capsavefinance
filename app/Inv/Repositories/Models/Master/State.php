@@ -44,9 +44,10 @@ class State extends BaseModel
     protected $fillable = [
         'country_id',
         'name',
-        'state_key',
         'is_active',
-        'is_active'
+        'code',
+        'created_at',
+        'updated_at'
     ];
 
 
