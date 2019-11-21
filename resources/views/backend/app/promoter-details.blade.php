@@ -58,7 +58,8 @@
             <div class="card">
                   <form id="signupForm">
                 <div class="card-body">
-                   
+                  <input type="hidden" name="app_id" id="app_id"  value="{{ (!empty($appId)) ? $appId : '' }}" >
+                  <input type="hidden" name="biz_id" id="biz_id"  value="{{ (!empty($bizId)) ? $bizId : '' }}" >   
                  @php ($i = 0)
                  @foreach($ownerDetails as $row)    @php ($i++)
                     <div class=" form-fields">
@@ -199,7 +200,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}">
+                                                                    <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}});">
                                                                     <span class="fileUpload"></span>
                                                                 </div>
                                                             </td>
@@ -371,12 +372,7 @@
 @section('jscript')
 
 <script type="text/javascript">
-$(document).ready(function () {
-    $('input[type="file"]').change(function (e) {
-        var fileName = e.target.files[0].name;
-        $(".fileUpload").text(fileName);
-    });
-});
+    
 $(document).ready(function () {
     $('#submit').on('click', function (event) {
         $('input.first_name').each(function () {

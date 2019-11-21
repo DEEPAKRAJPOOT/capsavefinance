@@ -77,7 +77,7 @@ class ApplicationController extends Controller
 
             if ($business_info) {
                 Session::flash('message',trans('success_messages.update_company_detail_successfully'));
-                return redirect()->route('promoter_details',1);
+                return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -90,11 +90,43 @@ class ApplicationController extends Controller
      /* Show promoter details page  */
      public function showPromoterDetails($bizId){
         $id = Auth::user()->user_id;
+//        $appId = $request->get('app_id');
+//        $bizId = $request->get('biz_id');
         $attribute['biz_id'] = $bizId;
+        
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-        return view('backend.app.promoter-details')->with('ownerDetails',$OwnerPanApi);
+        return view('backend.app.promoter-details')->with([
+            'ownerDetails' => $OwnerPanApi, 
+//            'appId' => $appId, 
+//            '$bizId' => $bizId
+            ]);
     }
     
+    /**
+     * Handle a Business documents for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function saveDocument(Request $request)
+    {
+        try {
+            $arrFileData = $request->all();
+            dd($arrFileData);
+            $docId = 1; //  fetch document id
+            $document_info = $this->docRepo->saveDocument($arrFileData, $docId);
+            
+            if ($document_info) {
+                Session::flash('message',trans('success_messages.uploaded'));
+                return redirect()->back();
+            } else {
+                return redirect()->back();
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     /**
      * Render view for change application status
      * 
