@@ -105,7 +105,7 @@ use RegistersUsers,
             $this->userRepo->saveUserDetails($detailArr);
             
             //Add application workflow stages
-            Helpers::addWfAppStage('new_case');
+            Helpers::addWfAppStage('new_case', $userDataArray->user_id);
         }
         return $userDataArray;
     }

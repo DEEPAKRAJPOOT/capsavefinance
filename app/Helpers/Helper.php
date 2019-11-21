@@ -7,6 +7,7 @@ use Exception;
 use Carbon\Carbon;
 use App\Helpers\PaypalHelper;
 use App\Inv\Repositories\Models\Patent;
+use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
 use DB;
@@ -134,10 +135,14 @@ class Helper extends PaypalHelper
                 'app_wf_status' => $wf_status,
                 'is_complete' => $wf_status
             ];
+            $appData = Application::getAppData((int)$app_id);
+            $user_id = $appData->user_id;
             if ($wf_stage_code == 'new_case') {
-                $updateData['app_id'] = $app_id;
+                $updateData['biz_app_id'] = $app_id;
+                $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
+            } else {
+                $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
-            $result = WfAppStage::updateWfStage($wf_stage_id, $updateData);
             if ($wf_status == 1) {
                 $nextWfData = WfStage::getNextWfStage($wf_order_no);
                 $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code);
@@ -145,6 +150,7 @@ class Helper extends PaypalHelper
                     $insertData = [
                         'wf_stage_id' => $nextWfData->wf_stage_id,
                         'biz_app_id' => $app_id,
+                        'user_id' => $user_id,
                         'app_wf_status' => 2,
                         'is_complete' => 2
                     ];
@@ -173,13 +179,14 @@ class Helper extends PaypalHelper
      * 
      * @param integer $app_id
      */
-    public static function addWfAppStage($wf_stage_code, $app_id=0, $wf_status = 0){
+    public static function addWfAppStage($wf_stage_code, $user_id, $app_id=0, $wf_status = 0){
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
             $wfAppStageData = WfAppStage::getAppWfStage($wf_stage_code);
             if ( !$wfAppStageData ) {            
                 $arrData = [
                     'wf_stage_id' => $wfData->wf_stage_id,
+                    'user_id' => $user_id,
                     'biz_app_id' => $app_id,
                     'app_wf_status' => $wf_status,
                     'is_complete' => $wf_status
