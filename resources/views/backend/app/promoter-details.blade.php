@@ -373,7 +373,12 @@
 @section('jscript')
 
 <script type="text/javascript">
-    
+    var messages = {
+        promoter_document_save: "{{ URL::route('promoter_document_save') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+
+    };
 $(document).ready(function () {
     $('#submit').on('click', function (event) {
         $('input.first_name').each(function () {
