@@ -24,6 +24,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
         Route::group(
                 ['prefix' => 'application'], function () {
+
             Route::get('/', [
                 'as' => 'application_list',
                 'uses' => 'Backend\ApplicationController@index'
@@ -39,20 +40,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@index'
             ]);
 
-            Route::get('company-details/{id}', [
+            Route::get('company-details', [
                 'as' => 'company_details',
                 'uses' => 'Backend\ApplicationController@showCompanyDetails'
             ]);
+
+            Route::post('company-details',
+                [
+                'as' => 'company_details_save',
+                'uses' => 'Backend\ApplicationController@updateCompanyDetail'
+            ]);
+
             
-           Route::get('promoter-details/{id}', [
+            Route::get('promoter-details/{id}', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
             ]);
-
-            Route::get('company-details',
-                [
-                'as' => 'company_details',
-                'uses' => 'Backend\ApplicationController@showCompanyDetails'
+            
+            Route::post('promoter-document-save', [
+                'as' => 'promoter_document_save',
+                'uses' => 'Backend\ApplicationController@promoterDocumentSave'
             ]);
 
             Route::post('cam/cam-information-save', [
@@ -113,7 +120,23 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('save-app-note', [
                 'as' => 'save_app_note',
                 'uses' => 'Backend\ApplicationController@saveAppNote'
-            ]);            
+            ]); 
+            
+            Route::get('send-case-confirmBox', [
+                'as' => 'send_case_confirmBox',
+                'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
+            ]); 
+            
+            Route::post('accept-next-stage', [
+                'as' => 'accept_next_stage',
+                'uses' => 'Backend\ApplicationController@AcceptNextStage'
+            ]); 
+
+            Route::get('cam/cibil', [
+                'as' => 'cam_cibil',
+                'uses' => 'Backend\CamController@showCibilForm'
+            ]);
+
         });
 
         Route::group(
@@ -150,9 +173,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);
             
-            
-            
         });
-            });
+    });
 });
 

@@ -81,14 +81,14 @@ class DocumentRepository implements DocumentInterface
      */
     
     public function findRequiredDocs($userId, $appId){
-        // $appData = BizOwner::getAppId($userId);
-        $appId = (!empty($appId)) ? $appId : 0;
-        // dd($appId);
+        $appData = BizOwner::getAppId($userId);
+        $appId = (!empty($appData->app_id)) ? $appData->app_id : 0;
+        
         $result = AppDocument::where('user_id', $userId)
                 ->where('app_id', $appId)
                 ->with('document')
                 ->get();
-        // dd($result);
+        
         return $result ?: false;
     }
     
@@ -138,6 +138,7 @@ class DocumentRepository implements DocumentInterface
         
         foreach ($requiredDocs as $key => $value) {
             $result[$value->document->doc_name] = AppDocumentFile::where('doc_id', $value->doc_id)
+                    ->where('app_id', $appId)
                     ->where('is_active', 1)
                     ->with('userFile')
                     ->get();

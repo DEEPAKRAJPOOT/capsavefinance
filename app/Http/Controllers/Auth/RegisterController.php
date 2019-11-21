@@ -103,6 +103,9 @@ use RegistersUsers,
             $detailArr['access_token'] = bcrypt($userDataArray->email);
             $detailArr['created_by'] = $userDataArray->user_id;
             $this->userRepo->saveUserDetails($detailArr);
+            
+            //Add application workflow stages
+            Helpers::addWfAppStage('new_case');
         }
         return $userDataArray;
     }

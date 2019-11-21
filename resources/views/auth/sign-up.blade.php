@@ -31,7 +31,7 @@
                                         <label for="txtSupplierName">Middle Name
                                             <span class="mandatory"></span>
                                         </label>
-                                        <input type="text" name="m_name" id="name" value="{{old('m_name')}}" class="form-control" tabindex="3" placeholder="Middle Name">
+                                        <input type="text" name="m_name" id="name" value="{{old('m_name')}}" class="form-control" tabindex="2" placeholder="Middle Name">
                                         <span class="text-danger error">{{$errors->first('m_name')}}</span>
                                     </div>
                                 </div>
@@ -42,7 +42,7 @@
                                         <label for="txtCreditPeriod">Last Name
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input type="text" name="l_name" value="{{old('l_name')}}" class="form-control" tabindex="1" placeholder="Last Name">
+                                        <input type="text" name="l_name" value="{{old('l_name')}}" class="form-control" tabindex="3" placeholder="Last Name">
                                         <span class="text-danger error">{{$errors->first('l_name')}} </span>
                                     </div>
                                 </div>
@@ -51,7 +51,7 @@
                                         <label for="txtSupplierName">Business Name
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input type="text" name="business_name" id="business_name" value="{{old('business_name')}}" class="form-control" tabindex="3" placeholder="Business Name">
+                                        <input type="text" name="business_name" id="business_name" value="{{old('business_name')}}" class="form-control" tabindex="4" placeholder="Business Name">
                                         <span class="text-danger error">{{$errors->first('business_name')}}</span>
                                     </div>
                                 </div>
@@ -63,7 +63,7 @@
                                             <span class="mandatory">*</span>
                                         </label>
                                         <input type="hidden" name="send_otp" id="send-otp" value="">
-                                        <input type="text" name="email" id="email" value="{{old('email')}}" class="form-control" tabindex="4" placeholder="Email">
+                                        <input type="text" name="email" id="email" value="{{old('email')}}" class="form-control" tabindex="5" placeholder="Email">
                                         <span class="text-danger error"> {{$errors->first('email')}} </span>
                                     </div>
                                 </div>
@@ -90,7 +90,7 @@
                                             <span class="mandatory">*</span>
                                         </label>
 
-                                        <input class="form-control" value="{{old('password')}}" name="password" type="password" tabindex="5" placeholder="Password" value="{{old('password')}}" oninput="removeSpace(this);">
+                                        <input class="form-control" name="password" type="password" tabindex="7" placeholder="Password" value="{{old('password')}}" oninput="removeSpace(this);">
 
                                         <span class="text-danger error"> {{$errors->first('password')}}	</span>
                                     </div>
@@ -102,7 +102,7 @@
                                             <span class="mandatory">*</span>
                                         </label>
 
-                                        <input class="form-control"  value="{{old('password_confirm')}}" name="password_confirm" type="password" tabindex="5" placeholder="Confirm Password" value="{{old('password_confirm')}}"  oninput="removeSpace(this);">
+                                        <input class="form-control"  value="{{old('password_confirm')}}" name="password_confirm" type="password" tabindex="8" placeholder="Confirm Password" value="{{old('password_confirm')}}"  oninput="removeSpace(this);">
 
                                         <span class="text-danger error">{{$errors->first('password_confirm')}}</span>
                                     </div>
@@ -117,7 +117,7 @@
                         </div>
                         <div class="d-flex btn-section sign-UP">
                             <div class="col-md-4 mt-3">
-                                <input type="submit" value="Submit" class="btn btn-primary"> </div>
+                                <input type="submit" value="Submit" tabindex="9"  class="btn btn-primary"> </div>
                         </div>
                     </div>
                 </form>

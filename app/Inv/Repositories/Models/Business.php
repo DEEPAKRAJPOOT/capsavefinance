@@ -3,10 +3,13 @@
 namespace App\Inv\Repositories\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use DB;
 use Illuminate\Notifications\Notifiable;
-use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\BizPanGstApi;
+use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\Application;
+use DB;
 
 class Business extends BaseModel
 {
@@ -44,6 +47,8 @@ class Business extends BaseModel
         'entity_type_id',
         'turnover_amt',
         'nature_of_biz',
+        'is_pan_verified',
+        'is_gst_verified',
         'panno_pan_gst_id',
         'gstno_pan_gst_id',
         'org_id',
@@ -64,31 +69,29 @@ class Business extends BaseModel
         'segment_id'=>$attributes['segment'],
         'org_id'=>1,
         'created_by'=>$userId,
-        //'biz_pan_id'=>$attributes['zzz'],
-        //'is_pan_verified'=>$attributes['zzz'],
-        //'biz_gst_id'=>$attributes['zzz'],
-        //'is_gst_verified'=>$attributes['zzz'],
         ]);
 
-        $bpga_id = DB::table('biz_pan_gst_api')->insertGetId([
+        $bpga = BizPanGstApi::create([
                 'file_name'=>'file name goes here',
                 'status'=>1,
                 'created_by'=>$userId
             ]);
+
         //entry for parent PAN
-        $pan_id = DB::table('biz_pan_gst')->insertGetId([
+        $bpg = BizPanGst::create([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
                 'type'=>1,
                 'pan_gst_hash'=>$attributes['biz_pan_number'],
                 'status'=>1,
                 'parent_pan_gst_id'=>0,
-                'biz_pan_gst_api_id'=>$bpga_id,
+                'biz_pan_gst_api_id'=>$bpga->biz_pan_gst_api_id,
                 'cin'=>$attributes['biz_cin'],
                 'created_by'=>$userId
             ]);
+
         //entry for parent GST
-        DB::table('biz_pan_gst')->insert([
+        BizPanGst::create([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
                 'type'=>2,
@@ -108,15 +111,14 @@ class Business extends BaseModel
             $data[$key]['type']=2;
             $data[$key]['pan_gst_hash']=$value;
             $data[$key]['status']=1;
-            $data[$key]['parent_pan_gst_id']=$pan_id;
+            $data[$key]['parent_pan_gst_id']=$bpg->biz_pan_gst_id;
             $data[$key]['created_by']=$userId;
             $data[$key]['biz_pan_gst_api_id']=0;
-            $data[$key]['created_by']=$userId;
         }
-        DB::table('biz_pan_gst')->insert($data);
+        BizPanGst::insert($data);
 
         // insert into rta_app table
-        $app_id = DB::table('app')->insertGetId([
+        $app = Application::create([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
                 'loan_amt'=>$attributes['loan_amount'],
@@ -124,7 +126,7 @@ class Business extends BaseModel
             ]);
 
         Business::where('biz_id', $business->biz_id)->update([
-            'panno_pan_gst_id'=>$pan_id,
+            'panno_pan_gst_id'=>$bpg->biz_pan_gst_id,
             'is_pan_verified'=>1,
             'gstno_pan_gst_id'=>0,
             'is_gst_verified'=>1,
@@ -133,13 +135,13 @@ class Business extends BaseModel
         //insert address into rta_biz_addr
         $address_data=[];
         array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId,'rcu_status'=>0));
-        for ($i=0; $i <=3 ; $i++) { 
+        for($i=0; $i <=3 ; $i++) { 
             $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_name'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'address_type'=>($i+1),'created_by'=>$userId,'rcu_status'=>0);
             array_push($address_data, $temp);
         }
         BusinessAddress::insert($address_data);
 
-        return ['biz_id'=>$business->biz_id,'app_id'=>$app_id];
+        return ['biz_id'=>$business->biz_id,'app_id'=>$app->app_id];
     }
 
     public static function getApplicationById($bizId){
@@ -171,4 +173,108 @@ class Business extends BaseModel
     public function gst(){
         return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>2, 'biz_owner_id'=>null, 'parent_pan_gst_id'=>0]);
     }
+
+    public static function getCompanyDataByBizId($biz_id)
+    {
+        $arrData = self::select('biz.biz_entity_name','biz_pan_gst.pan_gst_hash')
+        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
+        ->where('biz.biz_id', $biz_id)
+        ->get();
+        return $arrData;
+    }
+
+
+    public static function updateCompanyDetail($attributes, $bizId, $userId){
+        $business = Business::where('biz_id', $bizId)->first();
+
+        //update business table
+        $business->update([
+        'biz_entity_name'=>$attributes['biz_entity_name'],
+        'date_of_in_corp'=>$attributes['incorporation_date'],
+        'entity_type_id'=>$attributes['entity_type_id'],
+        'nature_of_biz'=>$attributes['biz_type_id'],
+        'turnover_amt'=>$attributes['biz_turnover'],
+        //'segment_id'=>$attributes['segment'],
+        'org_id'=>1,
+        'updated_by'=>$userId,
+        ]);
+
+        if(!empty($attributes->pan_api_res)){
+            BizPanGst::where(['biz_id'=>$bizId,'biz_owner_id'=>null])->delete();
+            $bpga = BizPanGstApi::create([
+                    'file_name'=>'file name goes here',
+                    'status'=>1,
+                    'created_by'=>$userId
+                ]);
+
+            //entry for parent PAN
+            $bpg = BizPanGst::create([
+                    'user_id'=>$business->user_id,
+                    'biz_id'=>$bizId,
+                    'type'=>1,
+                    'pan_gst_hash'=>$attributes['biz_pan_number'],
+                    'status'=>1,
+                    'parent_pan_gst_id'=>0,
+                    'biz_pan_gst_api_id'=>$bpga->biz_pan_gst_api_id,
+                    'cin'=>$attributes['biz_cin'],
+                    'updated_by'=>$userId
+                ]);
+
+            //entry for parent GST
+            BizPanGst::create([
+                    'user_id'=>$business->user_id,
+                    'biz_id'=>$bizId,
+                    'type'=>2,
+                    'pan_gst_hash'=>$attributes['biz_gst_number'],
+                    'status'=>1,
+                    'parent_pan_gst_id'=>0,
+                    'biz_pan_gst_api_id'=>0,
+                    'created_by'=>$userId
+                ]);
+
+            //entry for all GST against the PAN
+            $pan_api_res = explode(',', rtrim($attributes['pan_api_res'],','));
+            $data = [];
+            foreach ($pan_api_res as $key=>$value) {
+                $data[$key]['user_id']=$business->user_id;
+                $data[$key]['biz_id']=$bizId;
+                $data[$key]['type']=2;
+                $data[$key]['pan_gst_hash']=$value;
+                $data[$key]['status']=1;
+                $data[$key]['parent_pan_gst_id']=$bpg->biz_pan_gst_id;
+                $data[$key]['created_by']=$userId;
+                $data[$key]['biz_pan_gst_api_id']=0;
+            }
+            BizPanGst::insert($data);
+
+            $business->update([
+                'panno_pan_gst_id'=>$bpg->biz_pan_gst_id,
+                'is_pan_verified'=>1,
+                'gstno_pan_gst_id'=>0,
+                'is_gst_verified'=>1,
+                ]);
+        }
+
+        // update into rta_app table
+        $app_id = Application::where('biz_id',$bizId)->update([
+                'loan_amt'=>$attributes['loan_amount'],
+                'updated_by'=>$userId
+            ]);
+
+
+        //get id from address and then update address into rta_biz_addr
+        $biz_addr_ids = BusinessAddress::where('biz_id',$bizId)->pluck('biz_addr_id');
+        $address_data=[];
+        BusinessAddress::where('biz_addr_id',$biz_addr_ids[0])->update(
+            array('addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'updated_by'=>$userId)
+            );
+        
+        for ($i=0; $i <=3 ; $i++) { 
+            $temp = array('addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_name'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'created_by'=>$userId);
+            BusinessAddress::where('biz_addr_id',$biz_addr_ids[$i+1])->update($temp);
+        }
+
+        return true;
+    }
+
 }

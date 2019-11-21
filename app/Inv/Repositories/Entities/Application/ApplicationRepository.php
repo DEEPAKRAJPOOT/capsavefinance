@@ -65,6 +65,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function find($id, $columns = array('*')) {        
     }
 
+    /**
+    *create business information details
+    * @param mixed $userId
+    * @param array $attributes     
+    */
+
     public function saveBusinessInfo($attributes = [], $userId = null){
         /**
          * Check Data is Array
@@ -84,6 +90,33 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
             throw new BlankDataExceptions('No Data Found');
         }
         return Business::creates($attributes, $userId);
+    }
+
+    /**
+    *update company details
+    * @param mixed $bizId
+    * @param array $attributes     
+    */
+
+    public function updateCompanyDetail($attributes = [], $bizId = null, $userId){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        if(is_null($bizId)){
+            throw new BlankDataExceptions('No Data Found');
+        }
+        return Business::updateCompanyDetail($attributes, $bizId, $userId);
     }
 
     /**
@@ -216,4 +249,29 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::updateAppDetails((int)$app_id, $arrUserData);
     }
  
+    /**
+     * Get Application Data By Biz Id
+     * 
+     * @param integer $biz_id
+     * @return mixed
+     */
+    public function getAppDataByBizId($biz_id)
+    {
+       return Application::getAppDataByBizId((int)$biz_id); 
+    }
+    
+    /**
+     * Update Application Data By application Id
+     * 
+     * @param integer $app_id
+     * @param array $arrData
+     *
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateAppData($app_id, $arrData)
+    {
+       return Application::updateAppData((int)$app_id, $arrData);  
+    }    
 }
