@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
-use App\Helpers\DocumentHelper;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
@@ -120,13 +119,13 @@ class ApplicationController extends Controller
             $arrFileData = $request->all();
             $docId = 2; //  fetch document id
             $appId = $request->get('app_id'); //  fetch document id
-            $uploadData = DocumentHelper::uploadAppFile($arrFileData, $appId);
+            $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
             
             $userFile = $this->docRepo->saveFile($uploadData);
             
             if(!empty($userFile->file_id)) {
                 
-                $appDocData = DocumentHelper::appDocData($arrFileData, $userFile->file_id);
+                $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
                 $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
                 dd($appDocResponse);
             }
