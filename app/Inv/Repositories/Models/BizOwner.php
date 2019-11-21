@@ -83,7 +83,7 @@ class BizOwner extends Model
        foreach($attributes as $key=>$val)
        {
            
-                $ownerInputArr =  BizOwner::create( ['biz_id' =>$appData->biz_id,   
+                $ownerInputArr =  BizOwner::create( ['biz_id' =>4,   
                 'user_id' => $uid, 
                 'first_name' => $val['first_name'],
                 'date_of_birth' => date('Y-m-d', strtotime($val['dob'])),

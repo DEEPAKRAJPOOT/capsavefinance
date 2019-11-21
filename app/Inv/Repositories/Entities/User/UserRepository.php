@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use App\Inv\Repositories\Models\Relationship;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Otp;
 use App\Inv\Repositories\Contracts\UserInterface;
 use App\Inv\Repositories\Models\User as UserModel;
@@ -832,13 +833,15 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param mixed $id
      * @param array $columns
      */
-    public function getCinByUserId($uid)
+    public function getCinByUserId($biz_id)
     {
-            $table =  DB::table('biz_pan_gst as bg')
-           ->select('bg.cin','bg.biz_id','bg.user_id')
-           ->where('bg.user_id',$uid)
-           ->first();
-           return $table;
+          $owner =  BizPanGst::where('biz_id',$biz_id)->first();
+             if (empty($owner)) {
+            return false;
+        }
+
+        return $owner;
+           
     }
    
      /**
@@ -888,6 +891,26 @@ class UserRepository extends BaseRepositories implements UserInterface
         }
 
         return BizOwner::getOwnerApiDetails($attributes); 
+    }
+    /* get owner details behalf of biz id    */
+    /* Created by gajendra chauhan  */
+    public function getOwnerDetail($attributes = [])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return BizOwner::where('biz_id',$attributes['biz_id'])->get(); 
     }
 
  

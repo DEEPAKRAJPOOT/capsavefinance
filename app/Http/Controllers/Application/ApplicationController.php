@@ -77,16 +77,20 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail(Request $request)
     {
+        $biz_id = 4;
         $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-       
-       $getCin = $this->userRepo->getCinByUserId($userId);
-       $cinNo  =  $getCin;       
-       
-       return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' =>$cinNo));
+       $attribute['biz_id'] = $biz_id;
+       $ownerDetail = $this->userRepo->getOwnerDetail($attribute); 
+       $getCin = $this->userRepo->getCinByUserId($biz_id);
+       if($getCin==false)
+       {
+           return redirect()->route('business_information_open');
+       }
+       return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' => $getCin->cin,'ownerDetails' => $ownerDetail));
     } 
 
     /**
