@@ -58,6 +58,7 @@
             <div class="card">
                   <form id="signupForm">
                 <div class="card-body">
+                   @csrf
                   <input type="hidden" name="app_id" id="app_id"  value="{{ (!empty($appId)) ? $appId : '' }}" >
                   <input type="hidden" name="biz_id" id="biz_id"  value="{{ (!empty($bizId)) ? $bizId : '' }}" >   
                  @php ($i = 0)
@@ -372,7 +373,12 @@
 @section('jscript')
 
 <script type="text/javascript">
-    
+    var messages = {
+        promoter_document_save: "{{ URL::route('promoter_document_save') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+
+    };
 $(document).ready(function () {
     $('#submit').on('click', function (event) {
         $('input.first_name').each(function () {
@@ -634,6 +640,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
         }
     });
 });
+
  </script>
  <style>
      .error

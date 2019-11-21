@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
+use App\Helpers\DocumentHelper;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
@@ -111,22 +112,31 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     
-    public function saveDocument(Request $request)
+    public function promoterDocumentSave(Request $request)
     {
         try {
-            $arrFileData = $request->all();
-            dd($arrFileData);
-            $docId = 1; //  fetch document id
-            $document_info = $this->docRepo->saveDocument($arrFileData, $docId);
             
-            if ($document_info) {
-                Session::flash('message',trans('success_messages.uploaded'));
-                return redirect()->back();
+            $userId = Auth::user()->user_id;
+            $arrFileData = $request->all();
+            $docId = 2; //  fetch document id
+            $appId = $request->get('app_id'); //  fetch document id
+            $uploadData = DocumentHelper::uploadAppFile($arrFileData, $appId);
+            
+            $userFile = $this->docRepo->saveFile($uploadData);
+            
+            if(!empty($userFile->file_id)) {
+                
+                $appDocData = DocumentHelper::appDocData($arrFileData, $userFile->file_id);
+                $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+                dd($appDocResponse);
+            }
+            if ($response) {
+                return $response;
             } else {
-                return redirect()->back();
+                return false;
             }
         } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            return Helpers::getExceptionMessage($ex);
         }
     }
     /**
