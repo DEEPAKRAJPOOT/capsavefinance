@@ -145,7 +145,7 @@ class Helper extends PaypalHelper
             }
             if ($wf_status == 1) {
                 $nextWfData = WfStage::getNextWfStage($wf_order_no);
-                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code);
+                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
                 if ( !$wfAppStageData ) {
                     $insertData = [
                         'wf_stage_id' => $nextWfData->wf_stage_id,
@@ -180,9 +180,9 @@ class Helper extends PaypalHelper
      * @param integer $app_id
      */
     public static function addWfAppStage($wf_stage_code, $user_id, $app_id=0, $wf_status = 0){
-        $wfData = WfStage::getWfDetailById($wf_stage_code);
+        $wfData = WfStage::getWfDetailById($wf_stage_code);        
         if ($wfData) {
-            $wfAppStageData = WfAppStage::getAppWfStage($wf_stage_code);
+            $wfAppStageData = WfAppStage::getAppWfStage($wf_stage_code, $user_id, $app_id);
             if ( !$wfAppStageData ) {            
                 $arrData = [
                     'wf_stage_id' => $wfData->wf_stage_id,
