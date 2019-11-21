@@ -249,4 +249,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::updateAppDetails((int)$app_id, $arrUserData);
     }
  
+    
+     /**
+     * update Applications for Application list data tables
+     */
+    public function updateAppAssignById($app_id, $arrUserData = []) 
+    {
+        return AppAssignment::updateAppAssignById((int)$app_id, $arrUserData);
+    }
 }

@@ -153,19 +153,21 @@ class LeadController extends Controller
      
      public function acceptApplicationPool(Request $request){
          try {
-             
+            $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
              $user_id = $request->get('user_id');
              $app_id = $request->get('app_id');
             
              $dataArr = []; 
              $dataArr['from_id'] = Auth::user()->user_id;
              $dataArr['to_id'] = Auth::user()->user_id;
+             $dataArr['role_id'] = $roleData->id;
              $dataArr['assigned_user_id'] = $user_id;
              $dataArr['app_id'] = $app_id;
              $dataArr['assign_status'] = '0';
              $dataArr['sharing_comment'] = "comment";
              $dataArr['is_owner'] = 1;
             $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
+            $this->appRepo->updateAppAssignById($app_id, ['is_owner'=>0]);
             $application = $this->appRepo->saveShaircase($dataArr); 
              
              Session::flash('is_accept', 1);

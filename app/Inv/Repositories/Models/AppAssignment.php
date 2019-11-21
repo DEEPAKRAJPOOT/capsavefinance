@@ -53,6 +53,7 @@ class AppAssignment extends BaseModel
     protected $fillable = [
         'from_id',
         'to_id',
+        'role_id',
         'assigned_user_id',
         'app_id',
         'assign_status',
@@ -88,6 +89,51 @@ class AppAssignment extends BaseModel
 
         $status =  self::create($attributes);
         return true;
+    }
+    
+    /**
+     * update application details
+     *
+     * @param integer $user_id     user id
+     * @param array   $arrUserData user data
+     *
+     * @return boolean
+     */
+
+    
+     public static function updateAppAssignById($app_id, $arr = [])
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($arr)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($arr)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        $rowUpdate = self::where('app_id',(int) $app_id)->where('is_owner',1)->update($arr);
+
+        return ($rowUpdate ? $rowUpdate : false);
     }
   
 }

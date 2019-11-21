@@ -47,8 +47,8 @@ var messages = {
      $(document).ready(function(){
        var parent =  window.parent;    
      if(messages.is_accept == 1){
-       parent.jQuery("#pickLead").modal('hide');  
-        parent.oTable1.draw();
+       parent.jQuery("#sendNextstage").modal('hide');  
+        parent.oTable.draw();
     }
     
     $('#close_btn').click(function() {

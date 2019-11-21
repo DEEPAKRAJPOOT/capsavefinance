@@ -9,6 +9,7 @@ use App\Helpers\PaypalHelper;
 use App\Inv\Repositories\Models\Patent;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
+use App\Inv\Repositories\Models\AppAssignment;
 use DB;
 class Helper extends PaypalHelper
 {
@@ -130,6 +131,7 @@ class Helper extends PaypalHelper
         if ($wfData) {
             $wf_stage_id = $wfData->wf_stage_id;
             $wf_order_no = $wfData->order_no;
+            $assignedRoleId = $wfData->role_id;
             $updateData = [                
                 'app_wf_status' => $wf_status,
                 'is_complete' => $wf_status
@@ -145,7 +147,11 @@ class Helper extends PaypalHelper
                 ];
 
                 $result = WfAppStage::saveWfDetail($insertData);
-                return $result;
+                //get role id by wf_stage_id
+                $data = WfStage::find($result->wf_stage_id);
+                //update assign table
+               AppAssignment::updateAppAssignById($app_id,['role_id'=>$data->role_id]);
+                return $data;
             }
             return $result;
         } else {
