@@ -86,6 +86,7 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('addAnchorFrm','Manage Anchor', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

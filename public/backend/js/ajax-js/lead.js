@@ -76,7 +76,7 @@ try {
                 }
             },
            columns: [
-                    {data: 'anchor_user_id'},
+                    {data: 'anchor_id'},
                     {data: 'name'},
                     {data: 'email'},
                     {data: 'phone'},

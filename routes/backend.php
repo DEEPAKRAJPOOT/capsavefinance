@@ -190,7 +190,14 @@ Route::group(
                 'as' => 'add_anchor_lead',
                 'uses' => 'Backend\LeadController@saveUploadAnchorlead'
             ]);
-
+             Route::get('update-anchor', [
+                'as' => 'edit_anchor_reg',
+                'uses' => 'Backend\LeadController@editAnchorReg'
+            ]);
+               Route::post('update-anchor', [
+                'as' => 'edit_anchor_reg',
+                'uses' => 'Backend\LeadController@updateAnchorReg'
+            ]);
 
              /*Route::get('cam/overview',
                 [

@@ -321,12 +321,12 @@ class DataRenderer implements DataProviderInterface
 
                 })
                 ->editColumn(
-                    'anchor',
+                    'phone',
                     function ($user) {
-                    $achorId = $user->anchor_id; 
+                    $achorId = $user->comp_phone; 
                     return $achorId;
                 })
-                ->editColumn(
+               /* ->editColumn(
                     'userType',
                     function ($user) {
                     $achorId = $user->anchor_id; 
@@ -352,7 +352,7 @@ class DataRenderer implements DataProviderInterface
                     } else {
                         return "<span style='color:green'>Assigned</span>";
                     }
-                })
+                })*/
                 ->editColumn(
                     'biz_name',
                     function ($user) {
@@ -368,7 +368,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    return  "<a  data-toggle=\"modal\" data-target=\"#addAnchorFrm\" data-url =\"" . route('add_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"280px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
+                    return  "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"280px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {
