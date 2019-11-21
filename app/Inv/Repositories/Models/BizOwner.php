@@ -76,6 +76,22 @@ class BizOwner extends Model
    
 /* save biz owner data*/
     /* By gajendra chauhan  */  
+   public static function createsOwner($attributes)
+    { 
+        $uid = Auth::user()->user_id;
+        $appData = self::getAppId($uid);
+       foreach($attributes as $key=>$val)
+       {
+           
+                $ownerInputArr =  BizOwner::create( ['biz_id' =>$appData->biz_id,   
+                'user_id' => $uid, 
+                'first_name' => $val['first_name'],
+                'date_of_birth' => date('Y-m-d', strtotime($val['dob'])),
+                'owner_addr' => $val['address'],
+                'created_by' =>  $uid]);
+       }      
+       return  $ownerInputArr;
+   }
     public static function creates($attributes)
     {
           //insert into rta_app_doc

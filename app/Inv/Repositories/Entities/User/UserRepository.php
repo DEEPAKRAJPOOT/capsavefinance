@@ -806,6 +806,26 @@ class UserRepository extends BaseRepositories implements UserInterface
         return BizOwner::creates($attributes);
     }
     
+     public function saveOwner($attributes = []){
+        /**
+         * Check Data is Array
+         */
+       
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       
+        return BizOwner::createsOwner($attributes);
+    }
+    
      /**
      * Find CIN Number By user id
      *

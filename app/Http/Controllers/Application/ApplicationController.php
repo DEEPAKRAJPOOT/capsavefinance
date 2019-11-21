@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
 use App\Http\Requests\DocumentRequest;
+use Eastwest\Json\Facades\Json;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
@@ -77,7 +78,7 @@ class ApplicationController extends Controller
     } 
 
     /**
-     * Show the business information form.
+     * Save Promoter details form.
      *
      * @return \Illuminate\Http\Response
      */
@@ -95,7 +96,26 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-
+    
+    /**
+     * Save Promoter details form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    //////////////////Save Promoter Multiple Details///////////////////////// 
+    public function savePromoter(Request $request) {
+       try {
+          $arrFileData = json_decode($request->getContent(), true);
+          $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
+          if ($owner_info) {
+                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
+            } else {
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     /**
      * Show the Business documents form.
      *

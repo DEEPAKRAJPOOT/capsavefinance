@@ -52,8 +52,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 [
                     'as' => 'promoter_detail_save',
                     'uses' => 'Application\ApplicationController@savePromoterDetail'
+            ]); Route::post('promoter-save',
+                [
+                    'as' => 'promoter_save',
+                    'uses' => 'Application\ApplicationController@savePromoter'
             ]);
-            
             Route::get('document',
                 [
                 'as' => 'document',
