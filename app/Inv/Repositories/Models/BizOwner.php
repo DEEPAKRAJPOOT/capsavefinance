@@ -82,12 +82,12 @@ class BizOwner extends Model
           $uid = Auth::user()->user_id;
           /* Get App id and biz id behalf of user id */
           $appData = self::getAppId($uid);
-          $getRes =  self::savePanApiRes($attributes,$appData->biz_id);
+          $getRes =  self::savePanApiRes($attributes,$appData->biz_id); 
           $owner = AppDocument::insert([
             [
             'rcu_status' => 0,
             'user_id' => $uid,
-            'app_id' => Session::has('appId') ? Session::get('appId') : $appData->app_id,
+            'app_id' => (int) $attributes['app_id'],
             'doc_id' => 4,
             'is_upload' => 0,
             'created_by' => $uid,
@@ -96,7 +96,7 @@ class BizOwner extends Model
             [
             'rcu_status' => 0,
             'user_id' => $uid,
-            'app_id' => Session::has('appId') ? Session::get('appId') : $appData->app_id,
+            'app_id' => (int) $attributes['app_id'],
             'doc_id' => 5,
             'is_upload' => 0,
             'created_by' => $uid,
@@ -105,7 +105,7 @@ class BizOwner extends Model
             [
             'rcu_status' => 0,
             'user_id' => $uid,
-            'app_id' => Session::has('appId') ? Session::get('appId') : $appData->app_id,
+            'app_id' => (int) $attributes['app_id'],
             'doc_id' => 6,
             'is_upload' => 0,
             'created_by' => $uid,

@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Application;
-use App\Http\Controllers\Controller;
+
 use Auth;
+use Helpers;
+use Session;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
@@ -11,7 +14,6 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
-use Session;
 
 class ApplicationController extends Controller
 {
@@ -47,12 +49,19 @@ class ApplicationController extends Controller
         try {
             $arrFileData = $request->all();
             $business_info = $this->appRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
-            $appId  = Session::put('appId', $business_info['app_id']);
-
+            //$appId  = Session::put('appId', $business_info['app_id']);
+            
+            //Add application workflow stages
+            Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
+            
+                        
             if ($business_info) {
+                //Add application workflow stages
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
+                
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('promoter-detail');
-            } else {
+                return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+            } else {                
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
         } catch (Exception $ex) {
@@ -65,7 +74,7 @@ class ApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showPromoterDetail()
+    public function showPromoterDetail(Request $request)
     {
         $userId = Auth::user()->user_id;
         $userArr = [];
@@ -90,6 +99,10 @@ class ApplicationController extends Controller
             $arrFileData = $request->all();
             $owner_info = $this->userRepo->saveOwnerInfo($arrFileData); //Auth::user()->id
           if ($owner_info) {
+                //Add application workflow stages
+                $appId = $arrFileData['app_id']; 
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                 
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
@@ -104,14 +117,12 @@ class ApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showDocument()
+    public function showDocument(Request $request)
     {
-        $appId  = Session::has('appId') ? Session::get('appId') : 1;
+        $appId = $request->get('app_id');
         $userId = Auth::user()->user_id;
-        
-        $userArr = [];
+
         if ($appId > 0) {
-            // dd($appId);
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
             if(!empty($requiredDocs)){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
@@ -120,7 +131,7 @@ class ApplicationController extends Controller
         else {
             return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
-//        dd($docData);   
+
         return view('frontend.application.document')->with([
             'requiredDocs' => $requiredDocs,
             'documentData' => $docData
@@ -140,8 +151,15 @@ class ApplicationController extends Controller
             $arrFileData = $request->all();
             $docId = 1; //  fetch document id
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId);
-            
+            $userId = Auth::user()->user_id;
             if ($document_info) {
+                
+                //Add/Update application workflow stages
+                $appId = $arrFileData['appId'];       
+                $response = $this->docRepo->isUploadedCheck($userId, $appId);            
+                $wf_status = $response->count() < 1 ? 1 : 2;
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->back();
             } else {
@@ -186,11 +204,17 @@ class ApplicationController extends Controller
     public function applicationSave(Request $request)
     {
         try {
-            $appId  = Session::has('appId') ? Session::get('appId') : 1;
+            $appId  = $request->get('app_id');
             $userId = Auth::user()->user_id;
             $response = $this->docRepo->isUploadedCheck($userId, $appId);
             
             if ($response->count() < 1) {
+                
+                $this->appRepo->updateAppData($appId, ['status' => 1]);
+                
+                //Add application workflow stages                
+                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             } else {
                 return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));

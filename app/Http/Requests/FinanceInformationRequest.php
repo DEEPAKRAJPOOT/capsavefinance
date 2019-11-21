@@ -25,7 +25,6 @@ class FinanceInformationRequest extends FormRequest
     public function rules()
     {
         return [
-          /*
            'audit' => 'required|array|min:3|max:3',
            'audit.*' => "required|string",
 
@@ -169,7 +168,7 @@ class FinanceInformationRequest extends FormRequest
            'debtors' => "required|numeric",
            'financial_risk_comments' => "required|string|min:20|max:200",
            'inventory_payable_days' => "required|numeric",
-           'inventory_projections' => "required|numeric",*/
+           'inventory_projections' => "required|numeric",
         ];
     }
 

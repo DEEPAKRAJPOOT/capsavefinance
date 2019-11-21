@@ -35,7 +35,7 @@ class WfAppStage extends BaseModel
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -50,6 +50,7 @@ class WfAppStage extends BaseModel
     protected $fillable = [
         'wf_stage_id',
         'biz_app_id',
+        'user_id',
         'app_wf_status',        
         'is_complete'        
      ];
@@ -58,12 +59,24 @@ class WfAppStage extends BaseModel
      * Get Wf stage Details 
      *
     */
-    public static function updateWfStage($wf_stage_id, $arrData = [])
+    public static function updateWfStage($wf_stage_id, $app_id, $arrData = [])
     {
-       $rowUpdate = self::where('wf_stage_id', $wf_stage_id)->update($arrData);
+       $rowUpdate = self::where('wf_stage_id', $wf_stage_id)->where('biz_app_id', $app_id)->update($arrData);
 
         return ($rowUpdate ? $rowUpdate : false);
     }
+    
+        
+    /**
+     * Get Wf stage Details 
+     *
+     */
+    public static function updateWfStageByUserId($wf_stage_id, $user_id, $arrData = [])
+    {
+        $rowUpdate = self::where('wf_stage_id', $wf_stage_id)->where('user_id', $user_id)->where('biz_app_id', '0')->update($arrData);
+
+        return ($rowUpdate ? $rowUpdate : false);
+    }    
     
     /**
      * Get workflow detail by wf stage code
@@ -93,7 +106,22 @@ class WfAppStage extends BaseModel
                 ->limit(1)
                 ->first();
         return $appData ? $appData : null;
-    }    
+    }
+
+    /**
+     * Get application workflow stage by code
+     * 
+     * @param string $wf_stage_code
+     * @return mixed
+     */    
+    protected static function getAppWfStage($wf_stage_code) 
+    {
+        $appData = self::select('app_wf.wf_stage_id')
+                ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')                 
+                ->where('wf_stage.stage_code', $wf_stage_code)                
+                ->first();
+        return $appData ? $appData : false;
+    }
   
 }
   
