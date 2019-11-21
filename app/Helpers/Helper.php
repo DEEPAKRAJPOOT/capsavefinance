@@ -151,8 +151,8 @@ class Helper extends PaypalHelper
                         'wf_stage_id' => $nextWfData->wf_stage_id,
                         'biz_app_id' => $app_id,
                         'user_id' => $user_id,
-                        'app_wf_status' => 2,
-                        'is_complete' => 2
+                        'app_wf_status' => 0,
+                        'is_complete' => 0
                     ];
                     $result = WfAppStage::saveWfDetail($insertData);
                     return $result;
