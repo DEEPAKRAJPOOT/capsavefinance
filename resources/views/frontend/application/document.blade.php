@@ -152,7 +152,8 @@
                                         @csrf
                                         <input type="hidden" name="dir" value="{{ $data->document->doc_name }}">
                                         <input type="hidden" name="docId" value="{{ $data->doc_id }}">
-                                        <input type="hidden" name="appId" value="{{ $data->app_id }}">
+                                        <input type="hidden" name="bizId" value="{{ request()->get('biz_id') }}">
+                                        <input type="hidden" name="appId" value="{{ request()->get('app_id') }}">
                                         <div class="modal-body text-left">
                                             @if($data->doc_id == '4')
                                             <div class="form-group">

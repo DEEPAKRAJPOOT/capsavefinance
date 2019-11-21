@@ -97,9 +97,11 @@ class AppDocumentFile extends Authenticatable
     
     public static function arrayInputData($attributes, $fileId)
     {
+        $userId = Auth::user()->user_id;
+        $appData = BizOwner::getAppId($userId);
         $inputArr = [];
         
-        $inputArr['app_id']  = 1;   
+        $inputArr['app_id']  = $appData->app_id;   
         $inputArr['doc_id']  = $attributes['docId']; 
         $inputArr['doc_name']  = (isset($attributes['doc_name'])) ? $attributes['doc_name'] : ''; 
         $inputArr['finc_year']  = (isset($attributes['finc_year'])) ? $attributes['finc_year'] : ''; 

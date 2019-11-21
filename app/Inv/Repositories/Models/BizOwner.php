@@ -98,12 +98,12 @@ class BizOwner extends Model
           $uid = Auth::user()->user_id;
           /* Get App id and biz id behalf of user id */
           $appData = self::getAppId($uid);
-          $getRes =  self::savePanApiRes($attributes,$appData->biz_id);
+          $getRes =  self::savePanApiRes($attributes,$appData->biz_id); 
           $owner = AppDocument::insert([
             [
             'rcu_status' => 0,
             'user_id' => $uid,
-            'app_id' => Session::has('appId') ? Session::get('appId') : $appData->app_id,
+            'app_id' => (int) $attributes['app_id'],
             'doc_id' => 4,
             'is_upload' => 0,
             'created_by' => $uid,
@@ -112,7 +112,7 @@ class BizOwner extends Model
             [
             'rcu_status' => 0,
             'user_id' => $uid,
-            'app_id' => Session::has('appId') ? Session::get('appId') : $appData->app_id,
+            'app_id' => (int) $attributes['app_id'],
             'doc_id' => 5,
             'is_upload' => 0,
             'created_by' => $uid,
@@ -121,7 +121,7 @@ class BizOwner extends Model
             [
             'rcu_status' => 0,
             'user_id' => $uid,
-            'app_id' => Session::has('appId') ? Session::get('appId') : $appData->app_id,
+            'app_id' => (int) $attributes['app_id'],
             'doc_id' => 6,
             'is_upload' => 0,
             'created_by' => $uid,
@@ -191,7 +191,15 @@ class BizOwner extends Model
   {
       $res =  Application::where(['status' => 0,'user_id' => $uid])->first();
       return $res;
-      
   }
+
+  public static function getCompanyOwnerByBizId($biz_id)
+    {
+        $arrData = self::select('biz_owner.first_name','biz_owner.last_name','biz_pan_gst.pan_gst_hash')
+        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
+        ->where('biz_owner.biz_id', $biz_id)
+        ->get();
+        return $arrData;
+    }
    
 }

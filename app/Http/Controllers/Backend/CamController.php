@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FinanceInformationRequest as FinanceRequest;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\FinanceModel;
+use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\BizOwner;
 date_default_timezone_set('Asia/Kolkata');
 use App\Inv\Repositories\Models\Cam;
 use Auth;
@@ -104,7 +106,10 @@ class CamController extends Controller
     }
 
     public function showCibilForm(Request $request){
-        return view('backend.cam.cibil');
+        $biz_id=1;
+        $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
+        $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
+        return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData'));
     }
 
 }

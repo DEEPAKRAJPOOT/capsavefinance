@@ -57,6 +57,8 @@
                 <div id="reg-box">
                     <form id="signupForm">
                         @csrf
+                        <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
+                        <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
                         <div class=" form-fields">
                             <div class="form-sections">
 
@@ -326,7 +328,7 @@
                         {
                             if (res.status == 1)
                             {
-                                     window.location.href = "/application/document";
+                                window.location.href = "{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
                             }
                         },
                         error: function (error)
