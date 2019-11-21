@@ -53,7 +53,7 @@ class ApplicationController extends Controller
             //$appId  = Session::put('appId', $business_info['app_id']);
             
             //Add application workflow stages
-            Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
+            ///Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
             
                         
             if ($business_info) {
@@ -77,13 +77,13 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail(Request $request)
     {
-        $biz_id = 4;
+        $biz_id =1;
         $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-       $attribute['biz_id'] = $biz_id;
+       $attribute['biz_id'] = 1;
        $ownerDetail = $this->userRepo->getOwnerDetail($attribute); 
        $getCin = $this->userRepo->getCinByUserId($biz_id);
        if($getCin==false)
@@ -99,14 +99,15 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     //////////////////Save Promoter Multiple Details///////////////////////// 
-    public function savePromoterDetail(Request $request) {
+    public function updatePromoterDetail(Request $request) {
        try {
             $arrFileData = $request->all();
-            $owner_info = $this->userRepo->saveOwnerInfo($arrFileData); //Auth::user()->id
+            $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
+            dd( $owner_info );
           if ($owner_info) {
                 //Add application workflow stages
-                $appData = $this->appRepo->getAppDataByBizId($arrFileData['biz_id']);
-                $appId = $appData ? $appData->app_id : null; 
+              //  $appData = $this->appRepo->getAppDataByBizId($arrFileData['biz_id']);
+                //$appId = $appData ? $appData->app_id : null; 
                 Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
                  
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);

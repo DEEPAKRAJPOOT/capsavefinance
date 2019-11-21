@@ -80,15 +80,27 @@ class BizOwner extends Model
     { 
         $uid = Auth::user()->user_id;
         $appData = self::getAppId($uid);
+        $i =0;
        foreach($attributes as $key=>$val)
        {
-           
+                $first_name = $val['first_name'];
+                $last_name = '';
+                $ex =  explode(' ',$first_name);
+                $count =   count($ex);
+                if($count > 1) {
+                        $ucount  =  $count-1;
+                        unset($ex[$ucount]);
+                        $first_name =  implode(' ',$ex);
+                        $last_name =  end($ex);
+                }
                 $ownerInputArr =  BizOwner::create( ['biz_id' =>4,   
                 'user_id' => $uid, 
-                'first_name' => $val['first_name'],
+                'first_name' => $first_name,
+                'last_name'   =>  $last_name,
                 'date_of_birth' => date('Y-m-d', strtotime($val['dob'])),
                 'owner_addr' => $val['address'],
                 'created_by' =>  $uid]);
+          $i++;      
        }      
        return  $ownerInputArr;
    }
@@ -139,6 +151,7 @@ class BizOwner extends Model
       
     $count = count($attributes['response']);
     $userId  = Auth::user()->user_id;
+    $updateCount =  count($attributes['ownerid']);
     $mytime = Carbon::now();
     $dateTime = $mytime->toDateTimeString();
      for ($i=0;$i<$count;$i++) 
@@ -159,28 +172,49 @@ class BizOwner extends Model
            'parent_pan_gst_id' =>0,    
            'biz_pan_gst_api_id' => $res->biz_pan_gst_api_id,
            'created_by' =>  $userId]);
-          
         }
         if($bizPanRes->biz_pan_gst_id > 0){
-          
+           if($i < $updateCount)
+           {
+             $biz_owner_id =   $attributes['ownerid'][$i];
+             $ownerInputArr =  BizOwner::where('biz_owner_id',$attributes['ownerid'][$i])->update( ['biz_id' => $biz_id,   
+            'user_id' => $userId, 
+            'first_name' => $attributes['first_name'][$i],
+            'last_name' => $attributes['last_name'][$i],
+            'date_of_birth' => date('Y-m-d', strtotime($attributes['date_of_birth'][$i])),
+            'gender' => $attributes['gender'][$i],
+            'owner_addr' => $attributes['owner_addr'][$i],
+            'is_pan_verified' => 1, 
+            'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
+            'share_per' => $attributes['share_per'][$i],
+            'edu_qualification' => $attributes['edu_qualification'][$i],
+            'other_ownership' => $attributes['other_ownership'][$i],
+            'networth' => $attributes['networth'][$i],
+            'created_by' =>  $userId]);
+              
+           }
+      else {
             $ownerInputArr =  BizOwner::create( ['biz_id' => $biz_id,   
-           'user_id' => $userId, 
-           'first_name' => $attributes['first_name'][$i],
-           'last_name' => $attributes['last_name'][$i],
-           'date_of_birth' => date('Y-m-d', strtotime($attributes['date_of_birth'][$i])),
-           'gender' => $attributes['gender'][$i],
-           'owner_addr' => $attributes['owner_addr'][$i],
-           'is_pan_verified' => 1, 
-           'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
-           'share_per' => $attributes['share_per'][$i],
-           'edu_qualification' => $attributes['edu_qualification'][$i],
-           'other_ownership' => $attributes['other_ownership'][$i],
-           'networth' => $attributes['networth'][$i],
-           'created_by' =>  $userId]);
+            'user_id' => $userId, 
+            'first_name' => $attributes['first_name'][$i],
+            'last_name' => $attributes['last_name'][$i],
+            'date_of_birth' => date('Y-m-d', strtotime($attributes['date_of_birth'][$i])),
+            'gender' => $attributes['gender'][$i],
+            'owner_addr' => $attributes['owner_addr'][$i],
+            'is_pan_verified' => 1, 
+            'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
+            'share_per' => $attributes['share_per'][$i],
+            'edu_qualification' => $attributes['edu_qualification'][$i],
+            'other_ownership' => $attributes['other_ownership'][$i],
+            'networth' => $attributes['networth'][$i],
+            'created_by' =>  $userId]);
+            $biz_owner_id  = $ownerInputArr->biz_owner_id;
+          }
         }
-        if($ownerInputArr->biz_owner_id > 0){
+        
+        if($biz_owner_id > 0){
              $ownerUpdate =  BizPanGst::where('biz_pan_gst_id',$bizPanRes->biz_pan_gst_id)
-                            ->update(['biz_owner_id' => $ownerInputArr->biz_owner_id]);
+                            ->update(['biz_owner_id' => $biz_owner_id ]);
         }
      }
 

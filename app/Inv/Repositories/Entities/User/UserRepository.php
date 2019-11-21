@@ -787,7 +787,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param array $columns
      */
 
-    public function saveOwnerInfo($attributes = []){
+    public function updateOwnerInfo($attributes = []){
         /**
          * Check Data is Array
          */
