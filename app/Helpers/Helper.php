@@ -7,6 +7,7 @@ use Exception;
 use Carbon\Carbon;
 use App\Helpers\PaypalHelper;
 use App\Inv\Repositories\Models\Patent;
+use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppAssignment;
@@ -136,22 +137,44 @@ class Helper extends PaypalHelper
                 'app_wf_status' => $wf_status,
                 'is_complete' => $wf_status
             ];
-            $result = WfAppStage::updateWfStage($wf_stage_id, $updateData);
+            $appData = Application::getAppData((int)$app_id);
+            $user_id = $appData->user_id;
+            if ($wf_stage_code == 'new_case') {
+                $updateData['biz_app_id'] = $app_id;
+                $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
+            } else {
+                $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
+            }
             if ($wf_status == 1) {
-                $nextWfData = WfStage::getNextWfStage($wf_order_no);                
-                $insertData = [
-                    'wf_stage_id' => $nextWfData->wf_stage_id,
-                    'biz_app_id' => $app_id,
-                    'app_wf_status' => 2,
-                    'is_complete' => 2
-                ];
-
-                $result = WfAppStage::saveWfDetail($insertData);
+                $nextWfData = WfStage::getNextWfStage($wf_order_no);
+                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
+                if ( !$wfAppStageData ) {
+                    $insertData = [
+                        'wf_stage_id' => $nextWfData->wf_stage_id,
+                        'biz_app_id' => $app_id,
+                        'user_id' => $user_id,
+                        'app_wf_status' => 0,
+                        'is_complete' => 0
+                    ];
+                    $result = WfAppStage::saveWfDetail($insertData);
                 //get role id by wf_stage_id
                 $data = WfStage::find($result->wf_stage_id);
+                 AppAssignment:: updateAppAssignById($app_id, ['is_owner'=>0]);
                 //update assign table
-               AppAssignment::updateAppAssignById($app_id,['role_id'=>$data->role_id]);
+            $dataArr = []; 
+             $dataArr['from_id'] = \Auth::user()->user_id;
+             $dataArr['to_id'] = null;
+             $dataArr['role_id'] = $data->role_id;
+             $dataArr['assigned_user_id'] = $user_id;
+             $dataArr['app_id'] = $app_id;
+             $dataArr['assign_status'] = '0';
+             $dataArr['sharing_comment'] = "comment";
+             $dataArr['is_owner'] = 1;
+             
+            AppAssignment::saveData($dataArr);
+          
                 return $data;
+                }
             }
             return $result;
         } else {
@@ -167,5 +190,29 @@ class Helper extends PaypalHelper
      */
     public static function getCurrentWfStage($app_id){
         return WfAppStage::getCurrentWfStage($app_id);
+    }
+    
+    /**
+     * Add workflow stage
+     * 
+     * @param integer $app_id
+     */
+    public static function addWfAppStage($wf_stage_code, $user_id, $app_id=0, $wf_status = 0){
+        $wfData = WfStage::getWfDetailById($wf_stage_code);        
+        if ($wfData) {
+            $wfAppStageData = WfAppStage::getAppWfStage($wf_stage_code, $user_id, $app_id);
+            if ( !$wfAppStageData ) {            
+                $arrData = [
+                    'wf_stage_id' => $wfData->wf_stage_id,
+                    'user_id' => $user_id,
+                    'biz_app_id' => $app_id,
+                    'app_wf_status' => $wf_status,
+                    'is_complete' => $wf_status
+                ];        
+                return WfAppStage::saveWfDetail($arrData);
+            }
+        } else {
+            return false;
+        }
     }
 }

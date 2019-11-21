@@ -52,9 +52,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
 
             
-           Route::get('promoter-details/{id}', [
+            Route::get('promoter-details/{id}', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
+            ]);
+            
+            Route::post('promoter-document-save', [
+                'as' => 'promoter_document_save',
+                'uses' => 'Backend\ApplicationController@promoterDocumentSave'
             ]);
 
             Route::post('cam/cam-information-save', [

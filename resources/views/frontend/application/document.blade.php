@@ -152,7 +152,8 @@
                                         @csrf
                                         <input type="hidden" name="dir" value="{{ $data->document->doc_name }}">
                                         <input type="hidden" name="docId" value="{{ $data->doc_id }}">
-                                        <input type="hidden" name="appId" value="{{ $data->app_id }}">
+                                        <input type="hidden" name="bizId" value="{{ request()->get('biz_id') }}">
+                                        <input type="hidden" name="appId" value="{{ request()->get('app_id') }}">
                                         <div class="modal-body text-left">
                                             @if($data->doc_id == '4')
                                             <div class="form-group">
@@ -246,6 +247,8 @@
                             <div class="col-md-4 ml-auto text-right">
                                 <form method="POST" action="{{ Route('application_save') }}">
                                     @csrf
+                                    <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
+                                    <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
                                     <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">
                                     <input type="submit" value="Submit" class="btn btn-primary">
                                 </form>

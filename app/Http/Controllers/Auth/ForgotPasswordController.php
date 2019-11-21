@@ -70,7 +70,7 @@ use SendsPasswordResetEmails;
             
             Event::dispatch("forgot_password", serialize($userMailArr));
             $response = PasswordBroker::RESET_LINK_SENT;
-            Session::flash('message_div',trans('success_messages.fogot_password_successfully'));
+            Session::flash('messages',trans('success_messages.fogot_password_successfully'));
             return redirect()->back()->with('status', trans($response));
             
         } catch (\Exception $ex) {

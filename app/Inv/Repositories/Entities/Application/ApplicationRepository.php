@@ -98,7 +98,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     * @param array $attributes     
     */
 
-    public function updateCompanyDetail($attributes = [], $bizId = null){
+    public function updateCompanyDetail($attributes = [], $bizId = null, $userId){
         /**
          * Check Data is Array
          */
@@ -116,7 +116,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         if(is_null($bizId)){
             throw new BlankDataExceptions('No Data Found');
         }
-        return Business::updateCompanyDetail($attributes, $bizId);
+        return Business::updateCompanyDetail($attributes, $bizId, $userId);
     }
 
     /**
@@ -257,4 +257,31 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return AppAssignment::updateAppAssignById((int)$app_id, $arrUserData);
     }
+
+    /**
+     * Get Application Data By Biz Id
+     * 
+     * @param integer $biz_id
+     * @return mixed
+     */
+    public function getAppDataByBizId($biz_id)
+    {
+       return Application::getAppDataByBizId((int)$biz_id); 
+    }
+    
+    /**
+     * Update Application Data By application Id
+     * 
+     * @param integer $app_id
+     * @param array $arrData
+     *
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateAppData($app_id, $arrData)
+    {
+       return Application::updateAppData((int)$app_id, $arrData);  
+    }    
+
 }

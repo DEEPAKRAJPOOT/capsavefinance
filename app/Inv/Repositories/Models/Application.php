@@ -54,13 +54,14 @@ class Application extends Model
      */
     protected static function getApplications() 
     {
-        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        //$roleData = User::getBackendUser(\Auth::user()->user_id);
         $appData = self::select('app.user_id','app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                  ->join('app_assign', 'app_assign.assigned_user_id', '=', 'app.user_id')
                 //->where('app_assign.to_id', \Auth::user()->user_id)
-                ->where('app_assign.role_id', $roleData['0']->id)
-                ->where('app.is_assigned', 1)
+                ->where('app_assign.to_id', \Auth::user()->user_id)
+                  ->where('app_assign.is_owner', 1)
+                //->where('app.is_assigned', 1)
                 ->groupBy('app.app_id')
                 ->orderBy('app.app_id');        
         return $appData;
@@ -102,9 +103,10 @@ class Application extends Model
                  ->join('app_assign',  'app_assign.app_id','app.app_id')
                  //->join('app_wf', 'app_wf.biz_app_id', '=', 'app.app_id')
                  //->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')
-                ->where('app.is_assigned', 0)
+                //->where('app.is_assigned', 0)
                 ->where('app_assign.role_id', $roleData[0]->id)
                 ->where('app_assign.is_owner', 1)
+                ->whereNull('app_assign.to_id')
                 ->orderBy('app.app_id');        
         return $appData;
     } 
@@ -152,5 +154,100 @@ class Application extends Model
 
         return ($rowUpdate ? $rowUpdate : false);
     }
+    
+    /**
+     * Get Application Data By Biz Id
+     * 
+     * @param integer $biz_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAppDataByBizId($biz_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($biz_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($biz_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+               
+        
+        $appData = self::select('app.app_id')
+                ->where('app.biz_id', $biz_id)->first();
+                       
+        return ($appData ? $appData : null);        
+    }
+
+    
+    /**
+     * Update Application Data By application Id
+     * 
+     * @param integer $app_id
+     * @param array $arrData
+     *
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function updateAppData($app_id, $arrData=[])
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+               
+        
+        $appData = self::where('app_id', $app_id)->update($arrData);                
+                       
+        return ($appData ? $appData : false);
+    }    
+    
+    /**
+     * Get Application Data By App Id
+     * 
+     * @param integer $app_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAppData($app_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+               
+        
+        $appData = self::select('app.*')
+                ->where('app.app_id', $app_id)->first();
+                       
+        return ($appData ? $appData : null);        
+    }    
     
 }
