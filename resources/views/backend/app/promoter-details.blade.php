@@ -58,6 +58,7 @@
             <div class="card">
                   <form id="signupForm">
                 <div class="card-body">
+                   @csrf
                   <input type="hidden" name="app_id" id="app_id"  value="{{ (!empty($appId)) ? $appId : '' }}" >
                   <input type="hidden" name="biz_id" id="biz_id"  value="{{ (!empty($bizId)) ? $bizId : '' }}" >   
                  @php ($i = 0)
@@ -634,6 +635,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
         }
     });
 });
+
  </script>
  <style>
      .error

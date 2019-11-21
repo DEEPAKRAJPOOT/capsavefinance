@@ -111,7 +111,7 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     
-    public function saveDocument(Request $request)
+    public function promoterDocumentSave(Request $request)
     {
         try {
             $arrFileData = $request->all();
