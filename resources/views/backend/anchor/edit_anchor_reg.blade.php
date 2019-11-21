@@ -2,16 +2,26 @@
 
 @section('content')
 
-       <div class="modal-body text-left">
-           <form id="anchorForm" name="anchorForm" method="POST" action="{{route('edit_anchor_reg')}}" onsubmit="return checkValidation();" target="_top">
-		@csrf
+       <div class="modal-body text-left">           
+                {!!
+                Form::open(
+                array(
+                'route' => 'edit_anchor_reg',
+                'name' => 'editAchorForm',
+                'autocomplete' => 'off', 
+                'id' => 'editAchorForm',
+                'target' => '_top',
+                'method'=> 'POST'
+                )
+                )
+                !!}
                         <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="txtCreditPeriod">Full Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="employee" id="employee" value="" class="form-control employee" tabindex="1" placeholder="Full Name" >
+                                  <input type="text" name="employee" id="employee" value="@if($anchorUserData){{$anchorUserData->f_name}}@else{}@endif" class="form-control employee" tabindex="1" placeholder="Full Name" >
                               </div>
                            </div>
                            <div class="col-md-6">
@@ -19,7 +29,7 @@
                                  <label for="txtSupplierName">Business Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="comp_name" id="comp_name" value="" class="form-control comp_name" tabindex="3" placeholder="Business Name" >
+                                 <input type="text" name="comp_name" id="comp_name" value="@if($anchorData){{$anchorData->comp_name}}@else{}@endif" class="form-control comp_name" tabindex="3" placeholder="Business Name" >
                               </div>
                            </div>
                         </div>
@@ -29,7 +39,7 @@
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="4" placeholder="Email" >
+                                 <input type="email" name="email" id="email" value="@if($anchorData){{$anchorData->comp_email}}@else{}@endif" class="form-control email" tabindex="4" placeholder="Email" readonly="">
                               </div>
                            </div>
 
@@ -39,7 +49,7 @@
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control numbercls phone" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
+                                 <input class="form-control numbercls phone" name="phone" id="phone" value="@if($anchorData){{$anchorData->comp_phone}}@else{}@endif" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -59,9 +69,9 @@
                                  </label>
                                   <select class="form-control state" name="state" id="state">
                                       <option value="">please select</option>
-                                      <option value="1">state1</option>
-                                      <option value="2">state2</option>
-                                      <option value="3">state3</option>
+                                      <option value="1" @if($anchorData->comp_state==1)selected @else @endif >state1</option>
+                                      <option value="2" @if($anchorData->comp_state==2)selected @else @endif>state2</option>
+                                      <option value="3" @if($anchorData->comp_state==3)selected @else @endif>state3</option>
                                   </select>
                               </div>
                            </div>
@@ -72,7 +82,7 @@
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control city" name="city" id="city" tabindex="6" type="text" maxlength="10" placeholder="City" required="">
+                                    <input class="form-control city" name="city" id="city" value="@if($anchorData){{$anchorData->comp_city}}@else{}@endif" tabindex="6" type="text" maxlength="10" placeholder="City" required="">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -89,7 +99,22 @@
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control numbercls pin_code" name="pin_code" id="pin_code" tabindex="6" type="text" maxlength="6" placeholder="Pin Code" required="">
+                                    <input class="form-control numbercls pin_code" name="pin_code" id="pin_code" value="@if($anchorData){{$anchorData->comp_zip}}@else{}@endif" tabindex="6" type="text" maxlength="6" placeholder="Pin Code" required="">
+                                    <div class="failed">
+                                       <div style="color:#FF0000">
+                                          <small class="erro-sms" id="erro-sms">
+                                          </small>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                        <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label for="txtMobile">Address
+                                    <span class="mandatory">*</span>
+                                    </label>
+
+                                    <input class="form-control comp_addr" name="comp_addr" id="comp_addr" value="@if($anchorData){{$anchorData->comp_addr}}@else{}@endif" tabindex="6" type="text"  placeholder="Address" required="">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -99,9 +124,11 @@
                                  </div>
                               </div>
                         </div>
-                
+                {!! Form::hidden('anchor_id', $anchor_id) !!}
                 <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
-           </form>
+        {!!
+        Form::close()
+        !!}
          </div>
      
 
@@ -178,6 +205,10 @@
             //$("#btnAddMore").on('click', addInput);
             $('form#anchorForm').validate();
         });
-
+$(document).ready(function(){
+  $("#email").click(function(){
+    $("#email").attr("readonly","readonly");  
+  });  
+})
 </script>
 @endsection

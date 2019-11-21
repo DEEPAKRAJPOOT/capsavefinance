@@ -98,6 +98,21 @@
                                     </div>
                                  </div>
                               </div>
+                            <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label for="txtMobile">Address
+                                    <span class="mandatory">*</span>
+                                    </label>
+
+                                    <input class="form-control comp_addr" name="comp_addr" id="comp_addr" tabindex="6" type="text"  placeholder="Address" required="">
+                                    <div class="failed">
+                                       <div style="color:#FF0000">
+                                          <small class="erro-sms" id="erro-sms">
+                                          </small>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
                         </div>
                 
                 <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
@@ -166,6 +181,12 @@
                                 required: true
                             })
                 });
+                $('input.comp_addr').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });                
                 $('input.pin_code').each(function () {
                     $(this).rules("add",
                             {

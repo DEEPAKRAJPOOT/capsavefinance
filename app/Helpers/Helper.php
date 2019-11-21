@@ -130,22 +130,27 @@ class Helper extends PaypalHelper
         if ($wfData) {
             $wf_stage_id = $wfData->wf_stage_id;
             $wf_order_no = $wfData->order_no;
-            $updateData = [                
+            $updateData = [
                 'app_wf_status' => $wf_status,
                 'is_complete' => $wf_status
             ];
+            if ($wf_stage_code == 'new_case') {
+                $updateData['app_id'] = $app_id;
+            }
             $result = WfAppStage::updateWfStage($wf_stage_id, $updateData);
             if ($wf_status == 1) {
-                $nextWfData = WfStage::getNextWfStage($wf_order_no);                
-                $insertData = [
-                    'wf_stage_id' => $nextWfData->wf_stage_id,
-                    'biz_app_id' => $app_id,
-                    'app_wf_status' => 2,
-                    'is_complete' => 2
-                ];
-
-                $result = WfAppStage::saveWfDetail($insertData);
-                return $result;
+                $nextWfData = WfStage::getNextWfStage($wf_order_no);
+                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code);
+                if ( !$wfAppStageData ) {
+                    $insertData = [
+                        'wf_stage_id' => $nextWfData->wf_stage_id,
+                        'biz_app_id' => $app_id,
+                        'app_wf_status' => 2,
+                        'is_complete' => 2
+                    ];
+                    $result = WfAppStage::saveWfDetail($insertData);
+                    return $result;
+                }
             }
             return $result;
         } else {
@@ -161,5 +166,28 @@ class Helper extends PaypalHelper
      */
     public static function getCurrentWfStage($app_id){
         return WfAppStage::getCurrentWfStage($app_id);
+    }
+    
+    /**
+     * Add workflow stage
+     * 
+     * @param integer $app_id
+     */
+    public static function addWfAppStage($wf_stage_code, $app_id=0, $wf_status = 0){
+        $wfData = WfStage::getWfDetailById($wf_stage_code);
+        if ($wfData) {
+            $wfAppStageData = WfAppStage::getAppWfStage($wf_stage_code);
+            if ( !$wfAppStageData ) {            
+                $arrData = [
+                    'wf_stage_id' => $wfData->wf_stage_id,
+                    'biz_app_id' => $app_id,
+                    'app_wf_status' => $wf_status,
+                    'is_complete' => $wf_status
+                ];        
+                return WfAppStage::saveWfDetail($arrData);
+            }
+        } else {
+            return false;
+        }
     }
 }

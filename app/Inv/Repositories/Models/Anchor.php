@@ -101,4 +101,46 @@ public static function saveAnchor($arrAnchor = [])
             ->first();
            return ($arrUser ? $arrUser : FALSE);
     }
+    
+   /**
+    * 
+    * @param type $anchId
+    * @param type $arrUserData
+    * @return type
+    * @throws BlankDataExceptions
+    * @throws InvalidDataTypeExceptions
+    */ 
+    public static function updateAnchor($anchId, $arrUserData = [])
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($anchId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($anchId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($arrUserData)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($arrUserData)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        $rowUpdate = self::find((int) $anchId)->update($arrUserData);
+        return ($rowUpdate ? true : false);
+    }
 }

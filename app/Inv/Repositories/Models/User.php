@@ -494,4 +494,33 @@ class User extends Authenticatable
          $users = self::getUserRoles($user_id);
           return $users;
     }
+    
+    /**
+     * Get User Details using anchor id
+     *
+     * @param  integer $anchId
+     * @return array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     * Since 0.1
+     */
+    public static function getUserByAnchorId($anchId)
+    {
+        
+        //Check anchId is not blank
+        if (empty($anchId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        //Check anchId is not an integer
+
+        if (!is_int($anchId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $arrAnchUser = self::select('users.*')
+            ->where('users.anchor_id', (int) $anchId)
+            ->first();
+
+        return ($arrAnchUser ?: false);
+    }
 }

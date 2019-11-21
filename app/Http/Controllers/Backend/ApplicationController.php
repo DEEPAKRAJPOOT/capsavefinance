@@ -10,6 +10,7 @@ use App\Http\Requests\DocumentRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Models\Master\State;
 use Session;
 use Helpers;
 
@@ -49,10 +50,11 @@ class ApplicationController extends Controller
         try {
             $arrFileData = $request->all();
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
+            $states = State::getStateList()->get();
             //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
-                return view('backend.app.company_details')->with(['business_info'=>$business_info]);
+                return view('backend.app.company_details')->with(['business_info'=>$business_info, 'states'=>$states]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -73,11 +75,11 @@ class ApplicationController extends Controller
             $appId = $request->app_id;
             $bizId = $request->biz_id;
             
-            $business_info = $this->appRepo->updateCompanyDetail($arrFileData, Auth::user()->user_id);
+            $business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
 
             if ($business_info) {
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('promoter-detail');
+                Session::flash('message',trans('success_messages.update_company_detail_successfully'));
+                return redirect()->route('promoter_details',1);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -218,5 +220,44 @@ class ApplicationController extends Controller
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
-    }    
+    } 
+    
+    /**
+     * Save application note
+     * 
+     * @param Request $request
+     * @return view
+     */    
+    public function sendCaseConfirmbox(Request $request) {
+        try{
+            $user_id = $request->get('user_id');
+            $app_id = $request->get('app_id');
+           return view('backend.app.next_stage_confirmBox')
+                ->with('app_id', $app_id)
+                ->with('user_id', $user_id);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    /**
+     * Save application note
+     * 
+     * @param Request $request
+     * @return view
+     */    
+    public function AcceptNextStage(Request $request) {
+        try{
+            
+            $user_id = $request->get('user_id');
+            $app_id = $request->get('app_id');
+           $currStage = Helpers::getCurrentWfStage($app_id);
+           Helpers::updateWfStage($currStage->stage_code, 1, $wf_status = 1);
+           
+           
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    
 }
