@@ -155,4 +155,3 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         });
             });
 });
-

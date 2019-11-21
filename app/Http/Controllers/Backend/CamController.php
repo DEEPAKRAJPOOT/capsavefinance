@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\FinanceModel;
 date_default_timezone_set('Asia/Kolkata');
 use App\Inv\Repositories\Models\Cam;
+use App\Libraries\Perfios_lib;
 use Auth;
 use Session;
 
@@ -83,7 +84,7 @@ class CamController extends Controller
         $y = date('Y') - 2018 + 64;
         $m = date('m') + 64;
         $d = date('d');
-        $d = (($d <= 26) ? ($d + 64) : ($d + 23));
+        $d = (($d <= 25) ? ($d + 64) : ($d + 23));
         $h = date('H') + 65;
         $i = date('i');
         $s = date('s');
@@ -97,7 +98,7 @@ class CamController extends Controller
         $time = substr($value, 4, 4);
         list($y , $m, $d, $h) = str_split($date);
         $y = ord($y) + 2018-64;
-        $m = ord($m) -64;
+        $m = ord($m) - 64;
         $d = is_string($d) ? ord($d) - 64 : ord($d) - 23;
         $h = ord($h) - 65;
         $datetime = "$y$m$d$h$time";
