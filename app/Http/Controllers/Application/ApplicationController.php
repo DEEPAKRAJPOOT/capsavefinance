@@ -61,10 +61,13 @@ class ApplicationController extends Controller
                 
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
-            } else {                
+            } else {
+                //Add application workflow stages
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2);
+                
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
-        } catch (Exception $ex) {
+        } catch (Exception $ex) {                
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
@@ -105,9 +108,13 @@ class ApplicationController extends Controller
                  
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             } else {
+               //Add application workflow stages 
+               Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
         } catch (Exception $ex) {
+            //Add application workflow stages
+            Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
@@ -163,9 +170,15 @@ class ApplicationController extends Controller
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->back();
             } else {
+                //Add application workflow stages
+                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+            
                 return redirect()->back();
             }
         } catch (Exception $ex) {
+            //Add application workflow stages
+            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+                
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
@@ -217,9 +230,15 @@ class ApplicationController extends Controller
                 
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             } else {
+                //Add application workflow stages                
+                Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+                
                 return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
             }
         } catch (Exception $ex) {
+            //Add application workflow stages                
+            Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+                
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
