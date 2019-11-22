@@ -63,6 +63,27 @@
             </div>
         </div>
     </div>
+    <div class="isloader" style="display:none;">  
+        <img src="{{asset('backend/assets/images/loader.gif')}}">
+    </div>
+    <style>
+        .error{
+            color:red;
+        }
+        .isloader{ 
+            position: fixed;    
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,.6);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            z-index: 9;
+        }
+    </style>
     <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
