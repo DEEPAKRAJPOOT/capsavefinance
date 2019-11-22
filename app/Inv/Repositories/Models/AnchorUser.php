@@ -5,6 +5,8 @@ namespace App\Inv\Repositories\Models;
 use Carbon\Carbon;
 use DateTime;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 
 class AnchorUser extends BaseModel {
 
@@ -57,12 +59,12 @@ class AnchorUser extends BaseModel {
     public static function saveAnchorUser($arrAnchorUser) {
         //Check data is Array
         if (!is_array($arrAnchorUser)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
         }
 
         //Check data is not blank
         if (empty($arrAnchorUser)) {
-            throw new BlankDataExceptions(trans('error_message.data_not_found'));
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
 
         /**
@@ -110,28 +112,28 @@ class AnchorUser extends BaseModel {
          * Check id is not blank
          */
         if (empty($anchUId)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }
 
         /**
          * Check id is not an integer
          */
         if (!is_int($anchUId)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
         /**
          * Check Data is Array
          */
         if (!is_array($arrUserData)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
         }
 
         /**
          * Check Data is not blank
          */
         if (empty($arrUserData)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }
 
         $rowUpdate = self::find((int) $anchUId)->update($arrUserData);

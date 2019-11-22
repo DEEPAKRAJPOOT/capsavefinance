@@ -57,13 +57,13 @@ class ApplicationController extends Controller
                         
             if ($business_info) {
                 //Add application workflow stages
-                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1, $assign_role = false);
                 
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2);
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2, $assign_role = false);
                 
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -104,17 +104,17 @@ class ApplicationController extends Controller
           if ($owner_info) {
                 //Add application workflow stages
                 $appId = $arrFileData['app_id']; 
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1, $assign_role = false);
                  
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             } else {
                //Add application workflow stages 
-               Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+               Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2, $assign_role = false);
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+            Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2, $assign_role = false);
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
@@ -165,19 +165,19 @@ class ApplicationController extends Controller
                 $appId = $arrFileData['appId'];       
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 $wf_status = $response->count() < 1 ? 1 : 2;
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status, $assign_role = false);
                 
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->back();
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2, $assign_role = false);
             
                 return redirect()->back();
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2, $assign_role = false);
                 
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -226,7 +226,7 @@ class ApplicationController extends Controller
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
                 
                 //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1, $assign_role = false);
                 
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             } else {
