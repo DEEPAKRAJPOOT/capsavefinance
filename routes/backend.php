@@ -205,7 +205,7 @@ Route::group(
                 'uses' => 'Backend\LeadController@editAnchorReg'
             ]);
                Route::post('update-anchor', [
-                'as' => 'edit_anchor_reg',
+                'as' => 'update_anchor_reg',
                 'uses' => 'Backend\LeadController@updateAnchorReg'
             ]); 
                 Route::get('manage-anchor-lead', [
