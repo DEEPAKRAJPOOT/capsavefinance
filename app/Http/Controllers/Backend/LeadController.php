@@ -166,12 +166,7 @@ class LeadController extends Controller {
     }
 
     public function addAnchorReg(Request $request) {
-        try {
-            /* $anchorUserinfo=$request->get('anchor_id');
-              if($anchorUserinfo){
-              $anchorVal=$this->userRepo->getAnchorById($anchorUserinfo);
-
-              } */
+        try {           
             return view('backend.anchor.add_anchor_reg');
         } catch (Exception $ex) {
             dd($ex);
@@ -225,7 +220,7 @@ class LeadController extends Controller {
                     return redirect()->route('get_anchor_list');
                 }        
             }else{
-            Session::flash('error', trans('email allready exist'));
+            Session::flash('error', trans('error_messages.email_already_exists'));
             return redirect()->route('get_anchor_list');
             }
         
@@ -281,6 +276,7 @@ class LeadController extends Controller {
                     'created_by' => Auth::user()->user_id,
                     'created_at' => \Carbon\Carbon::now(),
                     'is_registered'=>0,
+                    'registered_type'=>1,
                     'token' => $token,
                 ];
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
@@ -390,11 +386,13 @@ class LeadController extends Controller {
                 $token = md5($hashval);
              $arrAnchorData = [
                 'name' => trim($arrAnchorVal['f_name']),
+                 'l_name' => trim($arrAnchorVal['l_name']),
                 'biz_name' => $arrAnchorVal['comp_name'],
                 'email' => trim($arrAnchorVal['email']),
                 'phone' => $arrAnchorVal['phone'],
                 'user_type' => $arrAnchorVal['anchor_user_type'],
                  'is_registered'=>0,
+                 'registered_type'=>0,
                 'created_by' => Auth::user()->user_id,
                  'created_at' => \Carbon\Carbon::now(),
                  'token' => $token,
@@ -412,8 +410,9 @@ class LeadController extends Controller {
                 Session::flash('message', trans('backend_messages.anchor_registration_success'));
                 return redirect()->route('get_anchor_lead_list');
             }
-            } else {
-                // return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }else{
+            Session::flash('error', trans('error_messages.email_already_exists'));
+            return redirect()->route('get_anchor_lead_list');
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

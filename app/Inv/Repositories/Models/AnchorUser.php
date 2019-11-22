@@ -39,12 +39,14 @@ class AnchorUser extends BaseModel {
     protected $fillable = [
         'user_id',
         'name',
+        'l_name',
         'biz_name',
         'email',
         'phone',
         'user_type',
         'token',
         'is_registered',
+        'registered_type',
         'created_by'
     ];
 

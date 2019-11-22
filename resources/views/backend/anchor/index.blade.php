@@ -78,7 +78,7 @@
                 <div class="row">
                 <div class="col-sm-12">
                                      <div class="table-responsive">
-                                    <table id="anchUserList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="anchUserList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
                                                 <th>Anchor ID</th>
@@ -107,8 +107,8 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('addAnchorFrm','Manage Anchor', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('addAnchorFrm','Manage Anchor', 'modal-md')!!}
+{!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-md')!!}
 @endsection
 
 @section('jscript')

@@ -1,12 +1,11 @@
 @extends('layouts.backend.admin_popup_layout')
-
 @section('content')
 
        <div class="modal-body text-left">
            <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_reg')}}" onsubmit="return checkValidation();" target="_top">
 		@csrf
                         <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtCreditPeriod">Full Name
                                  <span class="mandatory">*</span>
@@ -14,7 +13,7 @@
                                  <input type="text" name="employee" id="employee" value="" class="form-control employee" tabindex="1" placeholder="Full Name" >
                               </div>
                            </div>
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtSupplierName">Business Name
                                  <span class="mandatory">*</span>
@@ -24,7 +23,7 @@
                            </div>
                         </div>
                            <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
@@ -33,7 +32,7 @@
                               </div>
                            </div>
 
-                           <div class="col-md-6">
+                           <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Mobile
                                     <span class="mandatory">*</span>
@@ -52,7 +51,7 @@
                 
                 
                 <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">State
                                  <span class="mandatory">*</span>
@@ -66,7 +65,7 @@
                               </div>
                            </div>
 
-                           <div class="col-md-6">
+                           <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">City
                                     <span class="mandatory">*</span>
@@ -83,7 +82,7 @@
                               </div>
                         </div>
                 <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Pin Code
                                     <span class="mandatory">*</span>
@@ -98,7 +97,7 @@
                                     </div>
                                  </div>
                               </div>
-                            <div class="col-md-6">
+                            <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Address
                                     <span class="mandatory">*</span>
@@ -116,7 +115,7 @@
                         </div>
                 
                    <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">Assigned Sale Manager
                                  <span class="mandatory">*</span>

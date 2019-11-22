@@ -8,10 +8,10 @@
                         <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
-                                 <label for="txtCreditPeriod">Full Name
+                                 <label for="txtCreditPeriod">Upload File
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="file" name="anchor_lead" id="anchor_lead" value="" class="form-control file" >
+                                 <input type="file" name="anchor_lead" id="anchor_lead" value="" class="form-control anchor_lead" >
                               </div>
                            </div>
                            
@@ -43,7 +43,7 @@
 <script type="text/javascript">
         $(document).ready(function () {
             $('#saveAnch').on('click', function (event) {
-                $('input.employee').each(function () {
+                $('input.anchor_lead').each(function () {
                     $(this).rules("add",
                             {
                                 required: true
