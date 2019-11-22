@@ -379,6 +379,7 @@ class LeadController extends Controller {
              
             $arrAnchorVal = $request->all();
             
+            $arrLeadAssingData =[];
              $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
              //dd($arrAnchorVal, $anchUserInfo);
              if(!$anchUserInfo){
@@ -399,8 +400,19 @@ class LeadController extends Controller {
             ];
             
              $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
-           
+            
             if ($anchor_lead) {
+                
+                $arrLeadAssingData = [
+                'from_id' =>Auth::user()->user_id,
+                 'to_id' => 11,
+                'assigned_user_id' => $anchor_lead,             
+                'created_by' => Auth::user()->user_id,
+                 'created_at' => \Carbon\Carbon::now(),
+                 ];
+                     $this->userRepo->createLeadAssign($arrLeadAssingData);
+                     
+                     
                     $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
                     $anchLeadMailArr['name'] = trim($arrAnchorData['name']);
                     $anchLeadMailArr['email'] =  trim($arrAnchorData['email']);
