@@ -19,10 +19,27 @@
     <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
-    @yield('additional_css')
-        <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
-    <script src="{{url('backend/assets/js/jquery.validate.js')}}"></script>
-    
+    <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
+    @yield('additional_css') 
+    <style>
+        .error
+        {
+            color:red;
+        }
+        .isloader{ 
+            position: fixed;    
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,.6);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            z-index: 9;
+        }
+    </style>
 </head>
 
 <body class="sidebar-icon-only">
@@ -49,7 +66,6 @@
                    </div>
                 @endif
 
-
                 @if (count($errors) > 0)
                   <div class="content-wrapper-msg">
                 <div class="alertMsgBox">
@@ -64,23 +80,28 @@
                 </div>
                   </div>
                 @endif
-        
+                
                 @include('layouts.backend.partials.admin-sidebar')
                 @yield('content')
-              
                 @include('layouts.backend.partials.admin-footer')
             </div>
         </div>
     </div>
+    <div class="isloader" style="display:none;">  
+        <img src="{{asset('backend/assets/images/loader.gif')}}">
+    </div>
+
+    <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
     <script src="{{url('backend/assets/js/perfect-scrollbar.jquery.min.js')}}"></script>
     <script src="{{url('backend/assets/js/jsgrid.min.js')}}"></script>
     <script src="{{url('backend/assets/js/hoverable-collapse.js')}}"></script>
     <script src="{{url('backend/assets/js/misc.js')}}"></script>
+    <script src="{{url('backend/assets/js/jquery.validate.js')}}"></script>
     <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
-     <script src="{{url('common/js/iframePopup.js')}}"></script>
-    
+    <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
+    <script src="{{url('common/js/iframePopup.js')}}"></script> 
     <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
@@ -97,6 +118,13 @@
             //$(this).addClass("minus");
 
             $(this).parents("tr").next(".dpr").slideToggle();
+            });
+
+            $(".datepicker-dis-fdate").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+                endDate: new Date()
             });
         });
     </script>

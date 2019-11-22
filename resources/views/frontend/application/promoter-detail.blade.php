@@ -56,10 +56,14 @@
             <div class="col-md-12 form-design ">
                 <div id="reg-box">
                     <form id="signupForm">
-                        @csrf
-                        <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
-                        <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
-                        <div class=" form-fields">
+               @csrf
+                       <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
+                       <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
+              
+                    <div class=" form-fields">
+                          @csrf
+                           @php ($i = 0)
+                             @foreach($ownerDetails as $row)    @php ($i++)
                             <div class="form-sections">
 
                                 <div class="row">
@@ -75,15 +79,16 @@
 
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <input type="text" name="first_name[]" id="first_name1" vname="first_name1" value="" class="form-control first_name" placeholder="Enter First Name" >
-                                                        {{$errors->first('f_name')}}
-                                                    </div>
+                                                        <input type="hidden" id="rowcount" value="{{count($ownerDetails)}}">
+                                                        <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">   
+                                                        <input type="text" name="first_name[]"  id="first_name{{isset($row->first_name) ? $i : '1'}}" vname="first_name1" value="{{$row->first_name}}" class="form-control first_name" placeholder="Enter First Name" >
+                                                      </div>
                                                 </div>
                                                   <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="txtCreditPeriod">Last Name
                                         </label>
-                                         <input type="text" name="last_name[]" id="last_name1" value="" class="form-control last_name" placeholder="Enter Last Name" >
+                                         <input type="text" name="last_name[]" id="last_name{{isset($row->first_name) ? $i : '1'}}" value="{{$row->last_name}}" class="form-control last_name" placeholder="Enter Last Name" >
                                                      </div>
                                 </div>
  <div class="col-md-4">
@@ -91,7 +96,7 @@
                                                         <label for="txtPassword">DOB
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <input type="date" name="date_of_birth[]" id="date_of_birth1" value="" class="form-control date_of_birth" tabindex="1" placeholder="Enter Date Of Birth" >
+                                                        <input type="date" name="date_of_birth[]" id="date_of_birth{{isset($row->first_name) ? $i : '1'}}" value="{{$row->date_of_birth}}" class="form-control date_of_birth" tabindex="1" placeholder="Enter Date Of Birth" >
                                                     </div>
                                                 </div>
                                             </div>
@@ -103,12 +108,10 @@
                                                         <label for="txtPassword">Gender
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <select class="form-control gender" name="gender[]" id="gender1">
-                                                            <option value=""> Select Gender</option>
-                                                            <option value="1"> Male </option>
-                                                            <option value="2">Female </option>
-
-
+                                                        <select class="form-control gender" name="gender[]" id="gender{{isset($row->first_name) ? $i : '1'}}">
+                                                           <option value=""> Select Gender</option>
+                                                            <option value="1" @if($row->gender==1)  selected="selected" @endif> Male </option>
+                                                            <option value="2" @if($row->gender==2)  selected="selected" @endif>Female </option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -120,13 +123,14 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="txtCreditPeriod">PAN Number
-
-                                                            <span class="mandatory">*</span>
+                                                             <span class="mandatory">*</span>
+                                                            <span class=" text-success" id="successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{ (isset($row->pan->pan_gst_hash)) ? 'inline' : 'none' }}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                          <span class=" text-danger" id="failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                                         </label>
-                                                        <a href="javascript:void(0);" data-id="1" id="pan_verify1" class="verify-owner-no promoter_pan_verify">Verify</a>
-                                                        <input type="text" name="pan_no[]" id="pan_no1" value="" class="form-control pan_no" placeholder="Enter Pan Number" >
-                                                        <input name="response[]" id="response1" type="hidden" value="">
-                                                    </div>
+                                                        <a href="javascript:void(0);" data-id="{{isset($row->first_name) ? $i : '1'}}" id="pan_verify{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no promoter_pan_verify" style="pointer-events:{{ (isset($row->pan->pan_gst_hash)) ? '    none' : '' }}">{{ (isset($row->pan->pan_gst_hash)) ? '    Verified' : 'Verify' }}</a>
+                                                         <input type="text" name="pan_no[]" id="pan_no{{isset($row->first_name) ? $i : '1'}}" value="{{ (isset($row->pan->pan_gst_hash)) ? $row->pan->pan_gst_hash : '' }}" class="form-control pan_no" placeholder="Enter Pan Number" {{ (isset($row->pan->pan_gst_hash)) ? '    readonly' : '' }}>
+                                                        <input name="response[]" id="response{{isset($row->first_name) ? $i : '1'}}" type="hidden" value="">
+                                                   </div>
                                                 </div>
 
   <div class="col-md-4">
@@ -136,7 +140,7 @@
 
                                                             <span class="mandatory">*</span>
                                                         </label>
-                                                        <input type="text" name="share_per[]" id="share_per1" value="" class="form-control share_per" tabindex="1" placeholder="Enter Shareholder" >
+                                                        <input type="text" name="share_per[]" id="share_per{{isset($row->first_name) ? $i : '1'}}" value="{{$row->share_per}}" class="form-control share_per" tabindex="1" placeholder="Enter Shareholder" >
                                                     </div>
                                                 </div>
                                             </div>
@@ -149,7 +153,7 @@
                                                         <label for="txtEmail">Educational Qualification
 
                                                         </label>
-                                                        <input type="text" name="edu_qualification[]" id="edu_qualification1" value="" class="form-control edu_qualification" tabindex="1" placeholder="Enter Education Qualification">
+                                                        <input type="text" name="edu_qualification[]" id="edu_qualification{{isset($row->first_name) ? $i : '1'}}" value="{{$row->edu_qualification}}" class="form-control edu_qualification" tabindex="1" placeholder="Enter Education Qualification">
                                                     </div>
                                                 </div>
 
@@ -159,13 +163,13 @@
 
 
                                                         </label>
-                                                        <input type="text" name="other_ownership[]" id="other_ownership1" value="" class="form-control other_ownership" tabindex="1" placeholder="Other Ownership">
+                                                        <input type="text" name="other_ownership[]" id="other_ownership{{isset($row->first_name) ? $i : '1'}}" value="{{$row->other_ownership}}" class="form-control other_ownership" tabindex="1" placeholder="Other Ownership">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group INR">
                                                         <label for="networth">Networth 
- </label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a> <input type="text" name="networth[]" id="networth1" value="" class="form-control networth" tabindex="1" placeholder="Enter Networth">
+ </label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a> <input type="text" name="networth[]" id="networth{{isset($row->first_name) ? $i : '1'}}" value="{{$row->networth}}" class="form-control networth" tabindex="1" placeholder="Enter Networth">
                                                     </div>
                                                 </div>
 
@@ -180,11 +184,18 @@
 
                                             <div class="form-group password-input">
                                                 <label for="address">Address </label>
-                                                <textarea class="form-control textarea address" placeholder="Enter Address" name="owner_addr[]" id="address1"></textarea>
+                                                <textarea class="form-control textarea address" placeholder="Enter Address" name="owner_addr[]" id="address{{isset($row->first_name) ? $i : '1'}}">{{$row->owner_addr}}</textarea>
 
                                             </div>
                                         </div>
-                                         <div class="row">
+                                        
+                                    </div>
+                                   
+                                </div>
+
+                            </div>
+                           @endforeach
+                            <div class="row">
 					<div class="col-md-12">
 					<div class="text-right mt-3">
 								
@@ -195,13 +206,7 @@
 							</div>
 					</div>						
 					</div>
-                                    </div>
-                                   
-                                </div>
-
-                            </div>
-
-                            <span class="form-fields-appand"></span>
+                           <span class="form-fields-appand"></span>   
                           <!--
                             <div class="term-apply ">
                                 <div class="d-flex align-items-center">
@@ -309,10 +314,11 @@
                       $(".pan_no").each(function(k,v){
                           panCount++;
                         var result =  $("#pan_verify"+panCount).text();
+                       
                         if(result=="Verify")
                         {
-                             $('#pan_no'+panCount).css({"border":"2px solid red"});
-                             $('#pan_no'+panCount).focus();
+                             $('#failurepanverify'+panCount).show();
+                             $('#failurepanverify'+panCount).focus();
                              e.preventDefault(); 
                              return false;
                         }
@@ -341,7 +347,7 @@
                     console.log("does not validate");
                 }
             })
-            $("#btnAddMore").on('click', addInput);
+          
             $('form#signupForm').validate();
         });
      function FileDetails(clicked_id) {
@@ -375,25 +381,39 @@
         }
 
 
-        var x = 2;
-        function addInput() {
-         $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' >Last Name</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='date' name='date_of_birth[]'  id='date_of_birth" + x + "' value='' class='form-control date_of_birth' tabindex='1' placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span></label><a href='javascript:void(0);' data-id='"+x+"' id='pan_verify"+x+"' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[] id='response"+x+"' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address" + x + "'></textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
+       
+    $(document).on('click', '#btnAddMore', function () {
+        var rowcount = parseInt($("#rowcount").val());
+        if (rowcount > 0)
+        {
+            var x = rowcount + 1;
+        } else
+        {
+            var x = 2;
+        }
+             $("#rowcount").val(x);
+         $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' >Last Name</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='date' name='date_of_birth[]'  id='date_of_birth" + x + "' value='' class='form-control date_of_birth' tabindex='1' placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span><span class='text-success' id='successpanverify"+x+"' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='failurepanverify"+x+"' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span></label><a href='javascript:void(0);' data-id='"+x+"' id='pan_verify"+x+"' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[] id='response"+x+"' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address" + x + "'></textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
                     x++;
-                }
+         });
         //////////CIN webservice for get promoter details start here//////////////////////////////////////        
         $(document).on('click', '.clsdiv', function () {
                     $(this).parent().parent().remove();
                 });
           
         jQuery(document).ready(function () {
+            var countOwnerRow = $("#rowcount").val();
+            if(countOwnerRow > 0) {
+                return false;
+            } 
             $('.isloader').show();
-            var CIN = '{{ (isset($cin_no->cin)) ? $cin_no->cin : "" }}';
+            var CIN = '{{ (isset($cin_no)) ? $cin_no : "" }}';
             var consent = "Y";
             var key = "h3JOdjfOvay7J8SF";
             var dataStore = ({'consent': consent, 'entityId': CIN});
             var jsonData = JSON.stringify(dataStore);
              jQuery.ajax({
-                url: "https://testapi.kscan.in/v1/corp/profile",
+               ///url: "https://stub.kscan.in/v1/corp/profile",
+                url:"https://testapi.kscan.in/v1/corp/profile",
                  headers: {
                     'Content-Type': "application/json",
                     'x-karza-key': key
@@ -407,11 +427,13 @@
         		
     			},
                 success: function (result) {
-                  
                     $(".isloader").hide();
                     obj = result.result.directors;
                     var count = 0;
-                    $(obj).each(function (k, v) {
+                    var arr = new Array();
+                    var x  = 0;
+                    $(obj).each(function (k, v) { 
+                        var temp = {};
                         var dob = v.dob;
                         var dateAr = dob.split('-');
                         var newDate =  '';
@@ -420,69 +442,116 @@
                          
                             var newDate = dateAr[0] + '/' + dateAr[1] + '/' + dateAr[2]; 
                         }
-                        count++;
+                      
                         $("#first_name" + count).val(v.name);
                         $("#address" + count).val(v.address);
                         $("#date_of_birth1").prop("type", "text").val(newDate);
-                        if (k > 0)
-                        {
-
-                          $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='" + v.name + "' class='form-control first_name'  placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' >Last Name</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' value='" + newDate + "' class='form-control date_of_birth' tabindex='1'  placeholder='Enter Date Of Birth'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span></label><a href='javascript:void(0);' data-id='"+x+"' id='pan_verify"+x+"' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[]' id='response"+ x +"' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]'  id='address" + x + "'>" + v.address + "</textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
-                                                    x++;
-                                                }
-
-                                            });
-                                        }
-                                    });
-                                });
+                        
+                        if (k >= 0)
+                        {  
+                           temp['first_name'] = v.name;
+                           temp['address'] = v.address;
+                           temp['dob'] = newDate;
+                           arr.push(temp);
+                         
+                             $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><!--<button class='close clsdiv' type='button'>x</button>--><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label> <input type='hidden' id='ownerid"+x+"' name='ownerid[]' value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='" + v.name + "' class='form-control first_name'  placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' >Last Name</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' value='" + newDate + "' class='form-control date_of_birth' tabindex='1'  placeholder='Enter Date Of Birth'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span><span class='text-success' id='successpanverify"+ x +"' style='display:none'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='failurepanverify"+ x +"' style='display:none'><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span></label><a href='javascript:void(0);' data-id='"+ x +"' id='pan_verify"+ x +"' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[]' id='response"+ x +"' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]'  id='address" + x + "'>" + v.address + "</textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
+                             x++;
+                        }
+                        count++;
+                    });
+                        var bizId = $('input[name=biz_id]').val();
+                        var getRes = savePromoter(arr, bizId);
+                        
+                        ///$(".form-design").load(" .form-design");
+                      /// window.location.href = "{{ route('promoter-detail',[])}}";
+                       /// console.log( getRes);
+                        
+                }
+            });
+        });
       ///////////////Promotor web service for pan verified start here//////////////////////////
-      $(document).on('click','.promoter_pan_verify',function () {
-            var count = $(this).attr('data-id');
-            var PAN = $("#pan_no"+count).val();
-            var consent = "Y";
-            var key = "h3JOdjfOvay7J8SF";
-            var dataStore = ({'consent': consent, 'pan': PAN});
-            var jsonData = JSON.stringify(dataStore);
-            $('#pan_verify'+count).text('Waiting...');
+       
+      /* save promoter details after cin number api hit */
+      function  savePromoter(data, bizId)
+      {
+          
+            var data = {'data' : data, 'biz_id' : bizId};
             jQuery.ajax({
-                url: "https://testapi.karza.in/v2/pan",
-                 headers: {
-                    'Content-Type': "application/json",
-                    'x-karza-key': key,
+                url: "/application/promoter-save",
+                headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 method: 'post',
-                dataType: 'json',
-                data: jsonData,
-                error:function (xhr, status, errorThrown) {
-        			alert(errorThrown);
-    			},
+                contentType: "json",
+                processData: false,
+                data: JSON.stringify(data),
                 success: function (data) {
-                                    var name = data['result']['name'];
-                                    var request_id = data['request_id'];
-                                    var status =  data['status-code'];
-                                                             
-                                    if(data['status-code'] == 101)
+                    var promoId = 0;
+                    $(data.data).each(function(k,v){
+                        console.log(v);
+                        $("#ownerid"+promoId).val(v);
+                        promoId++;
+                    });
+                    $("#rowcount").val(k);
+                    return data;
+                    }
+            });
+      }
+              
+      
+      /////////////////Karja Api/////////////////////////////////////
+      
+      var messages = {
+        chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+
+    };
+       $(document).on('click','.promoter_pan_verify',function () {
+      
+            var count = $(this).attr('data-id');
+            var PAN = $("#pan_no"+count).val();
+            var dataStore = {'pan': PAN,'_token': messages.token };
+            var postData = dataStore;
+            $('#pan_verify'+count).text('Waiting...');
+             jQuery.ajax({
+            
+                url: messages.chk_user_pan_karza,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                   alert(errorThrown);
+                },
+                success: function (data) {
+                                  var status =  data['status-code'];
+                                  if(status==101)
                                             {   
+                                                 var name = data['result']['name'];
+                                                 var request_id = data['request_id'];
                                                  var MergeResonse = name.concat(request_id, status);       
                                                   $('#response'+count).val(MergeResonse);
                                                   $('#pan_no'+count).attr('readonly',true);
-                                                  $('#pan_verify'+count).text('Verified')
+                                                  $('#pan_verify'+count).text('Verified');
+                                                  $('#successpanverify'+count).show();
+                                                  $('#failurepanverify'+count).hide();
                                                   $('#pan_verify'+count).css('pointer-events','none');
-                                                  $('#pan_verify'+count).css({"border":"1px solid #cacdd1"});
-                                                  $('#pan_no'+count).css({"border":"2px solid #cacdd1"});
                                                   $("#submit").attr("disabled", false); 
                                                   
                                             }else{
                                                 $('#pan_verify'+count).text('Verify');
-                                                $('#pan_verify'+count).css({"border":"1px solid red"});
-                                                $('#pan_no'+count).css({"border":"2px solid red"});
+                                                 $('#successpanverify'+count).hide();
+                                                $('#failurepanverify'+count).show();
                                                 $("#submit").attr("disabled", true);
-                                           }
+                                           }                           
+                                    
                                         }
+
                                     });
                                 });
- </script>
-    @endsection
-
-
-
+      
+      
+      
+      
+  </script>
+@endsection

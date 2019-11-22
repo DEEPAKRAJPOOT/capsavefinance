@@ -52,7 +52,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
 
             
-            Route::get('promoter-details/{id}', [
+            Route::get('promoter-details', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
             ]);
@@ -136,6 +136,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'cam_cibil',
                 'uses' => 'Backend\CamController@showCibilForm'
             ]);
+            Route::get('application-pool', [
+                'as' => 'application_pool',
+                'uses' => 'Backend\LeadController@showApplicationPool'
+            ]);
+            
+            
+            Route::get('confirm-box', [
+                'as' => 'confirm_box',
+                'uses' => 'Backend\LeadController@confirmBox'
+            ]);
+            
+            Route::post('accept-application-pool', [
+                'as' => 'accept_application_pool',
+                'uses' => 'Backend\LeadController@acceptApplicationPool'
+            ]);
 
         });
 
@@ -155,23 +170,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lead_detail',
                 'uses' => 'Backend\LeadController@leadDetail'
             ]);
-            
-            Route::get('application-pool', [
-                'as' => 'application_pool',
-                'uses' => 'Backend\LeadController@showApplicationPool'
-            ]);
-            
-            
-            Route::get('confirm-box', [
-                'as' => 'confirm_box',
-                'uses' => 'Backend\LeadController@confirmBox'
-            ]);
-            
-            Route::post('accept-application-pool', [
-                'as' => 'accept_application_pool',
-                'uses' => 'Backend\LeadController@acceptApplicationPool'
-            ]);
-            
+                        
         });
         
 Route::group(
@@ -206,7 +205,7 @@ Route::group(
                 'uses' => 'Backend\LeadController@editAnchorReg'
             ]);
                Route::post('update-anchor', [
-                'as' => 'edit_anchor_reg',
+                'as' => 'update_anchor_reg',
                 'uses' => 'Backend\LeadController@updateAnchorReg'
             ]); 
                 Route::get('manage-anchor-lead', [

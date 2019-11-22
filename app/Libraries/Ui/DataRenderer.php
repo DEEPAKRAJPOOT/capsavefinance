@@ -234,7 +234,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'app_id',
                     function ($app) {
-                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
                     }
                 )
