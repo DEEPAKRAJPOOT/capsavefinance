@@ -108,7 +108,9 @@
 											<label for="txtEmail">Company Pan
 												<span class="mandatory">*</span>
 											</label>
-											<span class="alert-verify float-right">Enter Valid PAN No.</span>
+											<span class="text-success" id="pan-msg" style="display: block;">
+													<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
+											</span>
 											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="pointer-events: none;">Verified</a>
 											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number', $business_info->pan->pan_gst_hash)}}" class="form-control" tabindex="1" placeholder="Enter Company Pan">
 										</div>
@@ -522,6 +524,7 @@
     			},
 				success: function(res){
 				    if(res['statusCode'] == 101){
+				    	//$('#pan-msg').show();
 				    	$('.pan-verify').text('Verified');
 				    	$('.pan-verify').css('pointer-events','none');
 				    	$('input[name=biz_pan_number]').attr('readonly',true);
@@ -595,11 +598,7 @@
 				    if(res['statusCode'] == 101){
 				    	$('input[name=biz_entity_name]').val(res.result.lgnm);
 				    	getCIN(res.result.lgnm);
-				    	//for cin number https://testapi.karza.in/v2/compsearch-lite
-				    	// $('.gst-verify').text('Verified');
-				    	// $('.gst-verify').css('pointer-events','none');
-				    	// $('input[name=biz_gst_number]').attr('readonly',true);
-				    	// $('input[name=biz_gst_number] +span').remove();
+				    	fillRegisteredAddress(res.result.pradr.adr);
 				    }else{
 				    	alert('Something went wrong, Try again later');
 				    }
@@ -637,6 +636,24 @@
 			return false;
 		}else{
 			return true;
+		}
+	}
+
+	function fillRegisteredAddress(addr_str){
+		try {
+			let addr_array = addr_str.split(',');
+			let pin = addr_array.pop().replace(/pin:/,'').trim();
+			let state = addr_array.pop().trim();
+			let city = addr_array.pop().trim();
+			let address = addr_array.toString().trim();
+			$('input[name=biz_address]').val(address);
+			$('select[name=biz_state] option:contains('+state+')').attr('selected', true);
+			$('input[name=biz_city]').val(city);
+			$('input[name=biz_pin]').val(pin);
+			//return {'address': address, 'city': city, 'state': state, 'pin': pin};
+		}
+		catch(err) {
+		  console.error(err);
 		}
 	}
 </script>
