@@ -81,13 +81,13 @@
                                     <table id="anchUserList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                                <th>Sr.No.</th>
-                                                <th>Name</th>
-                                                <th>Email</th>
+                                                <th>Anchor ID</th>
+                                                <th>Anchor Name</th>
+                                                <th>Business Name</th>
+                                                <th>Email ID</th>
                                                 <th>Mobile</th>
-                                                <th>Anchor</th>
                                                 <th>Created At</th>
-                                                 <th>Action</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>

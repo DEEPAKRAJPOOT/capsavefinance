@@ -78,9 +78,9 @@ try {
            columns: [
                     {data: 'anchor_id'},
                     {data: 'name'},
+                    {data: 'biz_name'},
                     {data: 'email'},
                     {data: 'phone'},
-                    {data: 'email'},
                     {data: 'created_at'},
                     {data: 'action'}
                 ],

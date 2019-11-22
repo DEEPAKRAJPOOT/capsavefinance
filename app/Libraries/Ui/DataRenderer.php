@@ -300,21 +300,28 @@ class DataRenderer implements DataProviderInterface
     {
         
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned'])
+                ->rawColumns(['anchor_id', 'checkbox', 'action', 'email','assigned'])
                 ->addColumn(
-                    'id',
+                    'anchor_id',
                     function ($user) {
                     $link = '000'.$user->anchor_id;
-                        //return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                    return $link;
+                        //return "<a id=\"" . $user->anchor_id . "\" href=\"".route('lead_detail', ['user_id' => $user->anchor_id])."\" rel=\"tooltip\"   >$link</a> ";
                         
-                    }
-                )
+                    } )
                 ->editColumn(
                         'name',
                         function ($user) {
                     $full_name = $user->comp_name;
                     return $full_name;
                     
+                })              
+                ->editColumn(
+                    'biz_name',
+                    function ($user) {
+                    $comp_name = $user->comp_name; 
+                    return $comp_name;
+
                 })
                 ->editColumn(
                     'email',
@@ -327,13 +334,7 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     $achorId = $user->comp_phone; 
                     return $achorId;
-                })               
-                ->editColumn(
-                    'biz_name',
-                    function ($user) {
-                    return ($user->comp_name)? $user->comp_name: '---';
-
-                })
+                }) 
                 ->editColumn(
                     'created_at',
                     function ($user) {
@@ -343,7 +344,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    return  "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></a>";
+                    $view="<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-eye\"></a>";
+                    return  $view."<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {
