@@ -467,51 +467,7 @@
             });
         });
       ///////////////Promotor web service for pan verified start here//////////////////////////
-      $(document).on('click','.promoter_pan_verify',function () {
-            var count = $(this).attr('data-id');
-            var PAN = $("#pan_no"+count).val();
-            var consent = "Y";
-            var key = "h3JOdjfOvay7J8SF";
-            var dataStore = ({'consent': consent, 'pan': PAN});
-            var jsonData = JSON.stringify(dataStore);
-            $('#pan_verify'+count).text('Waiting...');
-            jQuery.ajax({
-                url: "https://testapi.karza.in/v2/pan",
-                 headers: {
-                    'Content-Type': "application/json",
-                    'x-karza-key': key,
-                },
-                method: 'post',
-                dataType: 'json',
-                data: jsonData,
-                error:function (xhr, status, errorThrown) {
-        			alert(errorThrown);
-    			},
-                success: function (data) {
-                                    var name = data['result']['name'];
-                                    var request_id = data['request_id'];
-                                    var status =  data['status-code'];
-                                                             
-                                    if(data['status-code'] == 101)
-                                            {   
-                                                 var MergeResonse = name.concat(request_id, status);       
-                                                  $('#response'+count).val(MergeResonse);
-                                                  $('#pan_no'+count).attr('readonly',true);
-                                                  $('#pan_verify'+count).text('Verified');
-                                                  $('#successpanverify'+count).show();
-                                                  $('#failurepanverify'+count).hide();
-                                                  $('#pan_verify'+count).css('pointer-events','none');
-                                                  $("#submit").attr("disabled", false); 
-                                                  
-                                            }else{
-                                                $('#pan_verify'+count).text('Verify');
-                                                 $('#successpanverify'+count).hide();
-                                                $('#failurepanverify'+count).show();
-                                                $("#submit").attr("disabled", true);
-                                           }
-                                        }
-                                    });
-                                });
+       
       /* save promoter details after cin number api hit */
       function  savePromoter(data)
       {
@@ -529,8 +485,61 @@
                      }
                  });
       }
- </script>
-    @endsection
+              
+      
+      /////////////////Karja Api/////////////////////////////////////
+      
+      var messages = {
+        chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
 
+    };
+       $(document).on('click','.promoter_pan_verify',function () {
+      
+            var count = $(this).attr('data-id');
+            var PAN = $("#pan_no"+count).val();
+            var dataStore = {'pan': PAN,'_token': messages.token };
+            var postData = dataStore;
+            $('#pan_verify'+count).text('Waiting...');
+             jQuery.ajax({
+            
+                url: messages.chk_user_pan_karza,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                   alert(errorThrown);
+                },
+                success: function (data) {
+                                  var status =  data['status-code'];
+                                  if(status==101)
+                                            {   
+                                                 var name = data['result']['name'];
+                                                 var request_id = data['request_id'];
+                                                 var MergeResonse = name.concat(request_id, status);       
+                                                  $('#response'+count).val(MergeResonse);
+                                                  $('#pan_no'+count).attr('readonly',true);
+                                                  $('#pan_verify'+count).text('Verified');
+                                                  $('#successpanverify'+count).show();
+                                                  $('#failurepanverify'+count).hide();
+                                                  $('#pan_verify'+count).css('pointer-events','none');
+                                                  $("#submit").attr("disabled", false); 
+                                                  
+                                            }else{
+                                                $('#pan_verify'+count).text('Verify');
+                                                 $('#successpanverify'+count).hide();
+                                                $('#failurepanverify'+count).show();
+                                                $("#submit").attr("disabled", true);
+                                           }                           
+                                    
+                                        }
 
-
+                                    });
+                                });
+      
+      
+      
+      
+  </script>
+@endsection

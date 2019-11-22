@@ -5,8 +5,17 @@
 Route::group(
     ['middleware' => 'auth'],
     function () {
-
-
+   
+    Route::post(
+        'chk-user-pan-karza',
+        [
+        'as' => 'chk_user_pan_karza',
+        'uses' => 'Karza\KarzaController@checkPanVerification'
+        ]
+    );
+   
+    
+    
     Route::post(
         'get-users-wci',
         [
