@@ -24,13 +24,13 @@ class BusinessInformationRequest extends Request
     public function rules()
     {
         return [
-            'biz_gst_number' => 'required|string|min:15|max:15',
+            'biz_gst_number' => 'required|min:15|max:15',
             'biz_pan_number' => 'required|string|min:10|max:10',
             'biz_entity_name' => 'required|string|max:100',
             'biz_type_id' => 'required|numeric',
             'segment' => 'required|numeric',
             'loan_amount' => 'required|numeric',
-            'incorporation_date' => 'required|date|date_format:d/m/Y',
+            'incorporation_date' => 'required|date_format:d/m/Y',
             'biz_constitution' => 'required|numeric',
             // 'biz_email' => 'required|email',
             // 'biz_mobile' => 'required|numeric|digits:10',

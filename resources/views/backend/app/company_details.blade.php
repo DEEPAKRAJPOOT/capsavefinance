@@ -108,8 +108,8 @@
 											<label for="txtEmail">Company Pan
 												<span class="mandatory">*</span>
 											</label>
-											<span class="text-success" id="pan-msg" style="display: block;">
-													<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
+											<span class="text-success" id="pan-msg" style="">
+												<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 											</span>
 											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="pointer-events: none;">Verified</a>
 											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number', $business_info->pan->pan_gst_hash)}}" class="form-control" tabindex="1" placeholder="Enter Company Pan">
@@ -574,7 +574,7 @@
 		$(datas).each(function(i,data){
 			if(data.authStatus == 'Active'){
 				res += data.gstinId+',';
-				option_html += '<option val="'+data.gstinId+'">'+data.gstinId+'</option>';
+				option_html += '<option value="'+data.gstinId+'">'+data.gstinId+'</option>';
 			}
 		})
 		$('select[name=biz_gst_number]').html(option_html);
@@ -583,6 +583,9 @@
 	}
 
 	function fillEntity(gstinId){
+		if(gstinId == ''){
+			return false;
+		}
 		$('.isloader').show();
 		$.ajax({
 				url: "https://gst.karza.in/uat/v1/gst-verification",
