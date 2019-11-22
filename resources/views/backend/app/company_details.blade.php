@@ -570,7 +570,7 @@
 
 	function fillGSTinput(datas){
 		let res ='';
-		let option_html = '<option val="">Select GST Number</option>';
+		let option_html = '<option value="">Select GST Number</option>';
 		$(datas).each(function(i,data){
 			if(data.authStatus == 'Active'){
 				res += data.gstinId+',';
