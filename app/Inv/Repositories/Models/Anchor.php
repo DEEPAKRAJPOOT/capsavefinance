@@ -103,6 +103,18 @@ public static function saveAnchor($arrAnchor = [])
            return ($arrUser ? $arrUser : FALSE);
     }
     
+    
+    /**
+     * function for get particular user detail using email.
+     * @param type $email
+     * @return type
+     */
+    public static function getAnchorsByEmail($email){
+        $arrEmailUser = self::select('anchor.*')
+             ->where('email', '=', $email)
+            ->first();
+           return ($arrEmailUser ? $arrEmailUser : FALSE);
+    }
    /**
     * 
     * @param type $anchId

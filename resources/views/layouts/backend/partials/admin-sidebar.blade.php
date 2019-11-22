@@ -62,7 +62,9 @@
                         <a class="nav-link" href="{{ route('get_anchor_list') }}">Manage Anchor</a>
 
                     </li>
-                                                
+                        <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_anchor_lead_list') }}">Manage Anchor Lead</a>
+                    </li>                           
                 </ul>
             </div>
         </li>   

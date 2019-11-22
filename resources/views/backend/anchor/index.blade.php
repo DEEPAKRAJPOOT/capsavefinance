@@ -21,7 +21,7 @@
            
             <div class="row">
                 <div class="col-sm-12">
-                      <div class="head-sec">
+<!--                      <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;">
                     <a   href="{{route('get_anchor_lead_list')}}" >
                 <button class="btn  btn-success btn-sm" type="button">
@@ -33,7 +33,7 @@
                         
                     </a>
                 </div>
-            </div>
+            </div>-->
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
                     <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_anchor_reg')}}" data-height="420px" data-width="100%" data-placement="top" >

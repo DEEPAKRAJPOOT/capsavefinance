@@ -185,46 +185,49 @@ class LeadController extends Controller {
     public function saveaddAnchorReg(Request $request) {
         try {
             //$string = Helpers::randomPassword();
-            $string = 'Admin@123';
+            $string = time();
             $arrAnchorVal = $request->all();
-            $arrAnchorData = [
-                'comp_name' => $arrAnchorVal['comp_name'],
-                'sales_user_id' => $arrAnchorVal['assigned_sale_mgr'],
-                'comp_email' => $arrAnchorVal['email'],
-                'comp_phone' => $arrAnchorVal['phone'],
-                'comp_addr' => $arrAnchorVal['comp_addr'],                
-                'comp_state' => $arrAnchorVal['state'],
-                'comp_city' => $arrAnchorVal['city'],
-                'comp_zip' => $arrAnchorVal['pin_code']
-            ];
-            $anchor_info = $this->userRepo->saveAnchor($arrAnchorData);
+            $anchor_user_info = $this->userRepo->getUserByEmail($arrAnchorVal['email']);
+            if(!$anchor_user_info){
+                $arrAnchorData = [
+                    'comp_name' => $arrAnchorVal['comp_name'],
+                    'sales_user_id' => $arrAnchorVal['assigned_sale_mgr'],
+                    'comp_email' => $arrAnchorVal['email'],
+                    'comp_phone' => $arrAnchorVal['phone'],
+                    'comp_addr' => $arrAnchorVal['comp_addr'],                
+                    'comp_state' => $arrAnchorVal['state'],
+                    'comp_city' => $arrAnchorVal['city'],
+                    'comp_zip' => $arrAnchorVal['pin_code']
+                ];
+                $anchor_info = $this->userRepo->saveAnchor($arrAnchorData);
 
-            $arrAnchUserData = [
-                'anchor_id' => $anchor_info,
-                'f_name' => $arrAnchorVal['employee'],
-                'biz_name' => $arrAnchorData['comp_name'],
-                'email' => $arrAnchorData['comp_email'],
-                'mobile_no' => $arrAnchorData['comp_phone'],
-                'user_type' => 2,
-                'is_email_verified' => 1,
-                'is_active' => 1,
-                'password' => bcrypt($string)
-            ];
-            //dd($arrAnchUserData);
-            $anchor_user_info = $this->userRepo->save($arrAnchUserData);
-            $anchUserMailArr = [];
-            $anchUserMailArr['email'] = $arrAnchUserData['email'];
-            $anchUserMailArr['name'] = $arrAnchUserData['f_name'];
-            $anchUserMailArr['password'] = $string;
-            Event::dispatch("ANCHOR_REGISTER_USER_MAIL", serialize($anchUserMailArr));
-            if ($anchor_info && $anchor_user_info) {
-
-
-                Session::flash('message', trans('backend_messages.anchor_registration_success'));
-                return redirect()->route('get_anchor_list');
-            } else {
-                // return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+                $arrAnchUserData = [
+                    'anchor_id' => $anchor_info,
+                    'f_name' => $arrAnchorVal['employee'],
+                    'biz_name' => $arrAnchorData['comp_name'],
+                    'email' => $arrAnchorData['comp_email'],
+                    'mobile_no' => $arrAnchorData['comp_phone'],
+                    'user_type' => 2,
+                    'is_email_verified' => 1,
+                    'is_active' => 1,
+                    'password' => bcrypt($string)
+                ];
+                //dd($arrAnchUserData);
+                $anchor_user_info = $this->userRepo->save($arrAnchUserData);
+                $anchUserMailArr = [];
+                $anchUserMailArr['email'] = $arrAnchUserData['email'];
+                $anchUserMailArr['name'] = $arrAnchUserData['f_name'];
+                $anchUserMailArr['password'] = $string;
+                Event::dispatch("ANCHOR_REGISTER_USER_MAIL", serialize($anchUserMailArr));
+                if ($anchor_info && $anchor_user_info) {
+                    Session::flash('message', trans('backend_messages.anchor_registration_success'));
+                    return redirect()->route('get_anchor_list');
+                }        
+            }else{
+            Session::flash('error', trans('email allready exist'));
+            return redirect()->route('get_anchor_list');
             }
+        
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -265,10 +268,9 @@ class LeadController extends Controller {
             $anchLeadMailArr = [];
             $arrAnchLeadData = [];
             foreach ($rowData as $key => $value) {
-                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[1]));
-                //dd($anchUserInfo->email);
-                //if($anchUserInfo->email == trim($value[1])){
-               // }else{
+                
+                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[1]));  
+                if(!empty($value) && !$anchUserInfo){
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
                 $arrAnchLeadData = [
@@ -288,11 +290,11 @@ class LeadController extends Controller {
                     $anchLeadMailArr['url'] = $mailUrl;
                     Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
                 }
-         // }
+          }
             }
             unlink($destinationPath . '/' . $fileName);
             Session::flash('message', trans('backend_messages.anchor_registration_success'));
-            return redirect()->route('lead_list');
+           return redirect()->route('get_anchor_lead_list');
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
