@@ -106,10 +106,10 @@
 											<label for="txtEmail">Company Pan
 												<span class="mandatory">*</span>
 											</label>
-											<span class="text-success" id="pan-msg" style="">
+											<span class="text-success" id="pan-msg" style="display: none;">
 												<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 											</span>
-											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="pointer-events: none;">Verified</a>
+											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
 											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="7" placeholder="Enter Company Pan" required>
 										</div>
 									</div>
@@ -517,7 +517,7 @@
     			},
 				success: function(res){
 				    if(res['statusCode'] == 101){
-				    	//$('#pan-msg').show();
+				    	$('#pan-msg').show();
 				    	$('.pan-verify').text('Verified');
 				    	$('.pan-verify').css('pointer-events','none');
 				    	$('input[name=biz_pan_number]').attr('readonly',true);
