@@ -3,10 +3,13 @@
 namespace App\Helpers;
 
 use Mail;
+use Auth;
 use Exception;
 use Carbon\Carbon;
 use App\Helpers\PaypalHelper;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Patent;
+use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
 use DB;
@@ -134,19 +137,24 @@ class Helper extends PaypalHelper
                 'app_wf_status' => $wf_status,
                 'is_complete' => $wf_status
             ];
+            $appData = Application::getAppData((int)$app_id);
+            $user_id = $appData->user_id;
             if ($wf_stage_code == 'new_case') {
-                $updateData['app_id'] = $app_id;
+                $updateData['biz_app_id'] = $app_id;
+                $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
+            } else {
+                $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
-            $result = WfAppStage::updateWfStage($wf_stage_id, $updateData);
             if ($wf_status == 1) {
                 $nextWfData = WfStage::getNextWfStage($wf_order_no);
-                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code);
+                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
                 if ( !$wfAppStageData ) {
                     $insertData = [
                         'wf_stage_id' => $nextWfData->wf_stage_id,
                         'biz_app_id' => $app_id,
-                        'app_wf_status' => 2,
-                        'is_complete' => 2
+                        'user_id' => $user_id,
+                        'app_wf_status' => 0,
+                        'is_complete' => 0
                     ];
                     $result = WfAppStage::saveWfDetail($insertData);
                     return $result;
@@ -173,13 +181,14 @@ class Helper extends PaypalHelper
      * 
      * @param integer $app_id
      */
-    public static function addWfAppStage($wf_stage_code, $app_id=0, $wf_status = 0){
-        $wfData = WfStage::getWfDetailById($wf_stage_code);
+    public static function addWfAppStage($wf_stage_code, $user_id, $app_id=0, $wf_status = 0){
+        $wfData = WfStage::getWfDetailById($wf_stage_code);        
         if ($wfData) {
-            $wfAppStageData = WfAppStage::getAppWfStage($wf_stage_code);
+            $wfAppStageData = WfAppStage::getAppWfStage($wf_stage_code, $user_id, $app_id);
             if ( !$wfAppStageData ) {            
                 $arrData = [
                     'wf_stage_id' => $wfData->wf_stage_id,
+                    'user_id' => $user_id,
                     'biz_app_id' => $app_id,
                     'app_wf_status' => $wf_status,
                     'is_complete' => $wf_status
@@ -189,5 +198,120 @@ class Helper extends PaypalHelper
         } else {
             return false;
         }
+    }
+     /**
+     * uploading document data
+     *
+     * @param Exception $exception
+     * @param string    $exMessage
+     * @param boolean   $handler
+     */
+    public static function uploadAppFile($attributes, $appId) 
+    {
+        $userId = Auth::user()->user_id;
+        $inputArr = [];
+        if($attributes['doc_file']) {
+            if(!Storage::exists('/public/user/' .$userId. '/' .$appId)) {
+                Storage::makeDirectory('/public/user/' .$userId. '/' .$appId, 0775, true);
+            }
+            $path = Storage::disk('public')->put('/user/' .$userId. '/' .$appId, $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+             
+        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+        
+        return $inputArr;
+    }
+         /**
+     * uploading document data
+     *
+     * @param Exception $exception
+     * @param string    $exMessage
+     * @param boolean   $handler
+     */
+    public static function uploadAwsBucket($attributes, $appId) 
+    {
+        $userId = Auth::user()->user_id;
+        $inputArr = [];
+
+        if($attributes['doc_file']) {
+            if(!Storage::disk('s3')->exists('/Development/user/' .$userId. '/' .$appId)) {
+                Storage::disk('s3')->makeDirectory('/Development/user/' .$userId. '/' .$appId, 0775, true);
+            }
+            $path = Storage::disk('s3')->put('/Development/user/' .$userId. '/' .$appId, $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+             
+        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+        
+        return $inputArr;
+    }
+    /**
+     * uploading document data
+     *
+     * @param Exception $exception
+     * @param string    $exMessage
+     * @param boolean   $handler
+     */
+    public static function uploadAppFiles($attributes) 
+    {
+        $userId = Auth::user()->user_id;
+        $inputArr = [];
+        $count = count($attributes['doc_file']);
+        for ( $i=0; $i < $count; $i++) 
+        {   
+            if($attributes['doc_file'][$i]) {
+                if(!Storage::exists('/public/user/' .$userId. '/' .$attributes['appId'])) {
+                    Storage::makeDirectory('/public/user/' .$userId. '/' .$attributes['appId'], 0775, true);
+                }
+                $path = Storage::disk('public')->put('/user/' .$userId. '/' .$attributes['appId'], $attributes['doc_file'][$i], null);
+                $inputArr[$i]['file_path'] = $path;
+            }
+             
+            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
+            $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
+            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getClientSize();
+            $inputArr[$i]['file_encp_key'] =  md5('2');
+            $inputArr[$i]['created_by'] = 1;
+            $inputArr[$i]['updated_by'] = 1;
+        }
+        
+        return $inputArr;
+    }
+    
+    /**
+     * app_doc table data
+     *
+     * @param Exception $exception
+     * @param string    $exMessage
+     * @param boolean   $handler
+     */
+    public static function appDocData($attributes, $fileId) 
+    {
+        
+        $inputArr = [];
+
+        $inputArr['app_id']  = (isset($attributes['doc_id'])) ? $attributes['doc_id'] : 0;   
+        $inputArr['doc_id']  = (isset($attributes['doc_id'])) ? $attributes['doc_id'] : 0   ;  
+        $inputArr['doc_name']  = (isset($attributes['doc_name'])) ? $attributes['doc_name'] : ''; 
+        $inputArr['finc_year']  = (isset($attributes['finc_year'])) ? $attributes['finc_year'] : ''; 
+        $inputArr['gst_month']  = (isset($attributes['gst_month'])) ? $attributes['gst_month'] : ''; 
+        $inputArr['gst_year']  = (isset($attributes['gst_year'])) ? $attributes['gst_year'] : ''; 
+        $inputArr['doc_id_no']  = (isset($attributes['doc_id_no'])) ? $attributes['doc_id_no'] : ''; 
+        $inputArr['file_id']  = $fileId; 
+        $inputArr['is_upload'] = 1;
+        $inputArr['created_by'] = 1;
+        
+        return $inputArr;
     }
 }

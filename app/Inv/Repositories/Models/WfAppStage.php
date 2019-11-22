@@ -50,6 +50,7 @@ class WfAppStage extends BaseModel
     protected $fillable = [
         'wf_stage_id',
         'biz_app_id',
+        'user_id',
         'app_wf_status',        
         'is_complete'        
      ];
@@ -58,17 +59,29 @@ class WfAppStage extends BaseModel
      * Get Wf stage Details 
      *
     */
-    public static function updateWfStage($wf_stage_id, $arrData = [])
+    public static function updateWfStage($wf_stage_id, $app_id, $arrData = [])
     {
-       $rowUpdate = self::where('wf_stage_id', $wf_stage_id)->update($arrData);
+       $rowUpdate = self::where('wf_stage_id', $wf_stage_id)->where('biz_app_id', $app_id)->update($arrData);
 
         return ($rowUpdate ? $rowUpdate : false);
     }
     
+        
     /**
-     * Get workflow detail by wf stage code
+     * Get Wf stage Details 
+     *
+     */
+    public static function updateWfStageByUserId($wf_stage_id, $user_id, $arrData = [])
+    {
+        $rowUpdate = self::where('wf_stage_id', $wf_stage_id)->where('user_id', $user_id)->where('biz_app_id', '0')->update($arrData);
+
+        return ($rowUpdate ? $rowUpdate : false);
+    }    
+    
+    /**
+     * Save application workflow stage
      * 
-     * @param string $wf_stage_code
+     * @param array $arrData
      * @return mixed
      * @throws BlankDataExceptions
      */
@@ -79,11 +92,11 @@ class WfAppStage extends BaseModel
     }
     
     /**
-     * get Current WfStage by app id 
+     * Get Current WfStage by app id
+     * 
      * @param type $app_id
      * @return type
-     */
-    
+     */    
     protected static function getCurrentWfStage($app_id) 
     {
         $appData = self::select('wf_stage.stage_code')
@@ -99,13 +112,19 @@ class WfAppStage extends BaseModel
      * Get application workflow stage by code
      * 
      * @param string $wf_stage_code
+     * @param integer $user_id
+     * @param integer $app_id
+     * @param integer $prgm_id
      * @return mixed
-     */    
-    protected static function getAppWfStage($wf_stage_code) 
+     */
+    protected static function getAppWfStage($wf_stage_code, $user_id, $app_id=0, $prgm_id=1) 
     {
         $appData = self::select('app_wf.wf_stage_id')
-                ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')                 
+                ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')
                 ->where('wf_stage.stage_code', $wf_stage_code)                
+                ->where('wf_stage.prgm_id', $prgm_id)
+                ->where('app_wf.user_id', $user_id)
+                ->where('app_wf.biz_app_id', $app_id)
                 ->first();
         return $appData ? $appData : false;
     }

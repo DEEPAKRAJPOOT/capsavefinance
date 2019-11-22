@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BizOwner;
 date_default_timezone_set('Asia/Kolkata');
 use App\Inv\Repositories\Models\Cam;
+use App\Libraries\Perfios_lib;
 use Auth;
 use Session;
 
@@ -51,7 +52,7 @@ class CamController extends Controller
     }
     public function finance_store(FinanceRequest $request, FinanceModel $fin)
     {
-        $financeid = $this->getFinanceId();
+        $financeid = $this->_getFinanceId();
         $insert_data = [];
         $post_data = $request->all();
         unset($post_data['_token']);
@@ -77,14 +78,15 @@ class CamController extends Controller
         foreach ($insert_data as  $ins_arr) {
             $fin->create($ins_arr);
         }
-        return redirect()->route('cam_finance')->with('success','Record Inserted Successfully');
+        Session::flash('message',trans('Record Inserted Successfully'));
+        return redirect()->route('cam_finance');
     }
 
-    private function getFinanceId() {
+    private function _getFinanceId() {
         $y = date('Y') - 2018 + 64;
         $m = date('m') + 64;
         $d = date('d');
-        $d = (($d <= 26) ? ($d + 64) : ($d + 23));
+        $d = (($d <= 25) ? ($d + 64) : ($d + 23));
         $h = date('H') + 65;
         $i = date('i');
         $s = date('s');
@@ -92,13 +94,13 @@ class CamController extends Controller
         return $no;
     }
 
-    private function financeid_reverse($value='AKSK31268170')
+    private function _financeid_reverse($value='AKSK31268170')
     {
         $date = substr($value, 0, 4);
         $time = substr($value, 4, 4);
         list($y , $m, $d, $h) = str_split($date);
         $y = ord($y) + 2018-64;
-        $m = ord($m) -64;
+        $m = ord($m) - 64;
         $d = is_string($d) ? ord($d) - 64 : ord($d) - 23;
         $h = ord($h) - 65;
         $datetime = "$y$m$d$h$time";

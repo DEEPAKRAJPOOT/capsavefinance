@@ -93,7 +93,7 @@ class UserFile extends Authenticatable
     
     public static function arrayInputData($attributes, $mstDocId)
     {
-       $userId = 1;
+        $userId = 1;
         $inputArr = [];
         $count = count($attributes['doc_file']);
         for ( $i=0; $i < $count; $i++) 
@@ -115,7 +115,7 @@ class UserFile extends Authenticatable
         }
         
         return $inputArr;
-  }
+    }
   
 }
   
