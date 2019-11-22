@@ -193,7 +193,7 @@
                                                             <td width="30%">Pan Card</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
-                                                                    <a href="javascript:void(0);" id='ddriving{{isset($row->first_name) ? $i : '1'}}' class="verify-owner-no verify-show" style="top:0px;">Verify</a>
+                                                                    <a href="javascript:void(0);" id='ppan{{isset($row->first_name) ? $i : '1'}}' class="verify-owner-no verify-show" style="top:0px;">Verify</a>
                                                                     <input type="text"  name="verifydl[]" id="verifydl{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control verifydl" tabindex="1" placeholder="Enter PAN Number" required="">
                                                                 </div>
                                                             </td>
@@ -546,7 +546,7 @@ $(document).on('click', '.clsdiv', function () {
 });
 
 jQuery(document).ready(function () {
-    exit;
+    ///exit;
     $('.isloader').show();
     //  var CIN = '{{ (isset($cin_no->cin)) ? $cin_no->cin : "" }}';
     var CIN = 'dssddssdsd';
@@ -644,6 +644,210 @@ $(document).on('click', '.promoter_pan_verify', function () {
     });
 });
 
+var messages = {
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+        chk_user_voterid_karza: "{{ URL::route('chk_user_voterid_karza') }}",
+        chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
+        chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
+        chk_user_pan_status_karza: "{{ URL::route('chk_user_pan_status_karza') }}",
+        
+
+    };
+ /////////////////Karja Api pan status /////////////////////////////////////
+      
+       $(document).on('click','#ppan1',function () {
+      
+           // var count = $(this).attr('data-id');
+          //  var PAN = $("#vvoter1"+count).val();
+          
+        
+        var dataStore = {'pan': 'BVZPS1846R','name':'Omkar Milind Shirhatti','dob':'17/08/1987','_token': messages.token };
+            var postData = dataStore;
+           // $('#pan_verify'+count).text('Waiting...');
+             jQuery.ajax({
+            
+                url: messages.chk_user_pan_status_karza,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                   alert(errorThrown);
+                },
+                success: function (data) {
+                    
+                    alert(data);
+//                                  var status =  data['status-code'];
+//                                  if(status==101)
+//                                            {   
+//                                                 var name = data['result']['name'];
+//                                                 var request_id = data['request_id'];
+//                                                 var MergeResonse = name.concat(request_id, status);       
+//                                                  $('#response'+count).val(MergeResonse);
+//                                                  $('#pan_no'+count).attr('readonly',true);
+//                                                  $('#pan_verify'+count).text('Verified');
+//                                                  $('#successpanverify'+count).show();
+//                                                  $('#failurepanverify'+count).hide();
+//                                                  $('#pan_verify'+count).css('pointer-events','none');
+//                                                  $("#submit").attr("disabled", false); 
+//                                                  
+//                                            }else{
+//                                                $('#pan_verify'+count).text('Verify');
+//                                                 $('#successpanverify'+count).hide();
+//                                                $('#failurepanverify'+count).show();
+//                                                $("#submit").attr("disabled", true);
+//                                           }                           
+//                                    
+//                                        
+                                         }
+                                    });
+                                });
+                                
+      
+       $(document).on('click','#vvoter1',function () {
+      
+           // var count = $(this).attr('data-id');
+          //  var PAN = $("#vvoter1"+count).val();
+          
+        
+        var dataStore = {'epic_no': 'SHA4722088','_token': messages.token };
+            var postData = dataStore;
+           // $('#pan_verify'+count).text('Waiting...');
+             jQuery.ajax({
+            
+                url: messages.chk_user_voterid_karza,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                   alert(errorThrown);
+                },
+                success: function (data) {
+                    
+                    alert(data);
+//                                  var status =  data['status-code'];
+//                                  if(status==101)
+//                                            {   
+//                                                 var name = data['result']['name'];
+//                                                 var request_id = data['request_id'];
+//                                                 var MergeResonse = name.concat(request_id, status);       
+//                                                  $('#response'+count).val(MergeResonse);
+//                                                  $('#pan_no'+count).attr('readonly',true);
+//                                                  $('#pan_verify'+count).text('Verified');
+//                                                  $('#successpanverify'+count).show();
+//                                                  $('#failurepanverify'+count).hide();
+//                                                  $('#pan_verify'+count).css('pointer-events','none');
+//                                                  $("#submit").attr("disabled", false); 
+//                                                  
+//                                            }else{
+//                                                $('#pan_verify'+count).text('Verify');
+//                                                 $('#successpanverify'+count).hide();
+//                                                $('#failurepanverify'+count).show();
+//                                                $("#submit").attr("disabled", true);
+//                                           }                           
+//                                    
+//                                        
+                                         }
+                                    });
+                                });
+                                
+      
+      /////////////////Karja Api DL Card/////////////////////////////////////
+      
+       
+       $(document).on('click','#ddriving1',function () {
+            // var count = $(this).attr('data-id');
+          //  var PAN = $("#vvoter1"+count).val();
+          
+        
+        var dataStore = {'dl_no': 'MH01 20090091406','dob':'12-06-1987','_token': messages.token };
+            var postData = dataStore;
+           // $('#pan_verify'+count).text('Waiting...');
+            jQuery.ajax({
+            
+                url: messages.chk_user_dl_karza,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                   alert(errorThrown);
+                },
+                success: function (data) {
+                    
+                    alert(data);
+//                                  var status =  data['status-code'];
+//                                  if(status==101)
+//                                            {   
+//                                                 var name = data['result']['name'];
+//                                                 var request_id = data['request_id'];
+//                                                 var MergeResonse = name.concat(request_id, status);       
+//                                                  $('#response'+count).val(MergeResonse);
+//                                                  $('#pan_no'+count).attr('readonly',true);
+//                                                  $('#pan_verify'+count).text('Verified');
+//                                                  $('#successpanverify'+count).show();
+//                                                  $('#failurepanverify'+count).hide();
+//                                                  $('#pan_verify'+count).css('pointer-events','none');
+//                                                  $("#submit").attr("disabled", false); 
+//                                                  
+//                                            }else{
+//                                                $('#pan_verify'+count).text('Verify');
+//                                                 $('#successpanverify'+count).hide();
+//                                                $('#failurepanverify'+count).show();
+//                                                $("#submit").attr("disabled", true);
+//                                           }                           
+//                                    
+//                                        
+                                         }
+                                    });
+                                });
+                                
+                                
+ /////////////////Karja Api Passport Card/////////////////////////////////////
+      
+      
+       $(document).on('click','#ppassport1',function () {
+            
+        
+        var dataStore = {'fileNo': 'BO3072344560818','dob':'17/08/1987','_token': messages.token };
+            var postData = dataStore;
+           // $('#pan_verify'+count).text('Waiting...');
+            jQuery.ajax({
+            
+                url: messages.chk_user_passport_karza,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                   alert(errorThrown);
+                },
+                success: function (data) {
+                    
+                    alert(data);
+//                                  var status =  data['status-code'];
+//                                  if(status==101)
+//                                            {   
+//                                                 var name = data['result']['name'];
+//                                                 var request_id = data['request_id'];
+//                                                 var MergeResonse = name.concat(request_id, status);       
+//                                                  $('#response'+count).val(MergeResonse);
+//                                                  $('#pan_no'+count).attr('readonly',true);
+//                                                  $('#pan_verify'+count).text('Verified');
+//                                                  $('#successpanverify'+count).show();
+//                                                  $('#failurepanverify'+count).hide();
+//                                                  $('#pan_verify'+count).css('pointer-events','none');
+//                                                  $("#submit").attr("disabled", false); 
+//                                                  
+//                                            }else{
+//                                                $('#pan_verify'+count).text('Verify');
+//                                                 $('#successpanverify'+count).hide();
+//                                                $('#failurepanverify'+count).show();
+//                                                $("#submit").attr("disabled", true);
+//                                           }                           
+//                                    
+//                                        
+                                         }
+                                    });
+                                });
  </script>
  <style>
      .error
