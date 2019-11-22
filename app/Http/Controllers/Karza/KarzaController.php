@@ -31,5 +31,48 @@ class KarzaController extends Controller
           return $KarzaApi->panVerificationRequest($requestPan['pan']);
     }
 
+    /**
+     * Pan status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkPanStatusVerification(KarzaApi $KarzaApi, Request $request)
+    {
+          $requestPan   = $request->all();
+          return $KarzaApi->checkPanStatusVerification($requestPan);
+    }
     
+    
+    /**
+     * Voter ID Card Verification status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkVoterIdVerification(KarzaApi $KarzaApi, Request $request)
+    {
+          $requestPan   = $request->all();
+          return $KarzaApi->checkVoterIdVerification($requestPan['epic_no']);
+    }
+    
+       /**
+     * Voter ID Card Verification status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkDlVerification(KarzaApi $KarzaApi, Request $request)
+    {
+          $requestDl   = $request->all();
+          return $KarzaApi->checkDlVerification($requestDl);
+    }
+    
+    /**
+     * Passport ID Card Verification status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkPassportVerification(KarzaApi $KarzaApi, Request $request)
+    {
+          $requestPassport   = $request->all();
+          return $KarzaApi->checkPassportVerification($requestPassport);
+    }
 }
