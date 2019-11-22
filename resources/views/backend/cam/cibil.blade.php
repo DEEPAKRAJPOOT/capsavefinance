@@ -111,7 +111,7 @@
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
                                  <td width="20%"></td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_org()"><small>PULL</small></button>
+                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_promoter()"><small>PULL</small></button>
                                     <button class="btn btn-warning btn-sm" supplier="49" onclick=""><small>DOWNLOAD</small></button>
                                     <button class="btn btn-info btn-sm" supplier="49" onclick=""><small>UPLOAD</small></button>
                                  </td>
@@ -377,8 +377,50 @@
 @endsection
 @section('jscript')
 <script>
-      function pull_cibil_org(){
-         
+      function pull_cibil_promoter(){
+            var messages = {
+                 chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
+                 data_not_found: "{{ trans('error_messages.data_not_found') }}",
+                 token: "{{ csrf_token() }}",
+            };
+            var count = $(this).attr('data-id');
+            var PAN = $("#pan_no"+count).val();
+            var dataStore = {'pan': PAN,'_token': messages.token };
+            var postData = dataStore;
+            $('#pan_verify'+count).text('Waiting...');
+             jQuery.ajax({
+                url: messages.chk_user_pan_karza,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                   alert(errorThrown);
+                },
+                success: function (data) {
+                   var status =  data['status-code'];
+                     if(status==101)
+                       {  
+                            var name = data['result']['name'];
+                            var request_id = data['request_id'];
+                            var MergeResonse = name.concat(request_id, status);      
+                             $('#response'+count).val(MergeResonse);
+                             $('#pan_no'+count).attr('readonly',true);
+                             $('#pan_verify'+count).text('Verified');
+                             $('#successpanverify'+count).show();
+                             $('#failurepanverify'+count).hide();
+                             $('#pan_verify'+count).css('pointer-events','none');
+                             $("#submit").attr("disabled", false);
+                            
+                       }else{
+                           $('#pan_verify'+count).text('Verify');
+                            $('#successpanverify'+count).hide();
+                           $('#failurepanverify'+count).show();
+                           $("#submit").attr("disabled", true);
+                      }                          
+                       
+               }
+
+          });
       }   
 
 
