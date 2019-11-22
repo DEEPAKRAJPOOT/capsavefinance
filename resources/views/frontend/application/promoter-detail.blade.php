@@ -412,8 +412,8 @@
             var dataStore = ({'consent': consent, 'entityId': CIN});
             var jsonData = JSON.stringify(dataStore);
              jQuery.ajax({
-                url: "https://stub.kscan.in/v1/corp/profile",
-                //url:"https://testapi.kscan.in/v1/corp/profile",
+               ///url: "https://stub.kscan.in/v1/corp/profile",
+                url:"https://testapi.kscan.in/v1/corp/profile",
                  headers: {
                     'Content-Type': "application/json",
                     'x-karza-key': key
