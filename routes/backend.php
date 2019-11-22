@@ -152,6 +152,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);
 
+            Route::get('business-information', [
+                'as' => 'create_application',
+                'uses' => 'Backend\ApplicationController@showBusinessInformation'
+            ]);
+
+            Route::post('business-information', [
+                'as' => 'save_new_application',
+                'uses' => 'Backend\ApplicationController@saveBusinessInformation'
+            ]);
+
         });
 
         Route::group(
