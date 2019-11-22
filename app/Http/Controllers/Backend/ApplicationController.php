@@ -347,7 +347,7 @@ class ApplicationController extends Controller
             //$appId  = Session::put('appId', $business_info['app_id']);
             
             //Add application workflow stages
-            ///Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
+            Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
             
                         
             if ($business_info) {
