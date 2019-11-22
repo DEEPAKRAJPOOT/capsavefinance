@@ -254,17 +254,17 @@ class Helper extends PaypalHelper
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
 //            if ($wf_status == 1) {
-//                $nextWfData = WfStage::getNextWfStage($wf_order_no);
+                //$nextWfData = WfStage::getNextWfStage($wf_order_no);dd($nextWfData);
 //                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
 //                if ( !$wfAppStageData ) {
-//                    $insertData = [
-//                        'wf_stage_id' => $nextWfData->wf_stage_id,
-//                        'biz_app_id' => $app_id,
-//                        'user_id' => $user_id,
-//                        'app_wf_status' => 0,
-//                        'is_complete' => 0
-//                    ];
-//                    $result = WfAppStage::saveWfDetail($insertData);
+                    $insertData = [
+                        'wf_stage_id' => $wf_stage_id,
+                        'biz_app_id' => $app_id,
+                        'user_id' => $user_id,
+                        'app_wf_status' => 0,
+                        'is_complete' => 0
+                    ];
+                    $result = WfAppStage::saveWfDetail($insertData);
 //             }
                 //get role id by wf_stage_id
                 //$data = WfStage::find($result->wf_stage_id);
