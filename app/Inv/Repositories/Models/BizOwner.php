@@ -173,6 +173,7 @@ class BizOwner extends Model
   
   public static function getAppId($uid)
   {
+      $userId = Auth::user()->user_id;
       $res =  Application::where(['status' => 0,'user_id' => $uid])->first();
       return $res;
   }

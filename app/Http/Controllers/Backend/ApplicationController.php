@@ -79,7 +79,7 @@ class ApplicationController extends Controller
 
             if ($business_info) {
                 Session::flash('message',trans('success_messages.update_company_detail_successfully'));
-                return redirect()->route('promoter_details',1);
+                return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -92,11 +92,52 @@ class ApplicationController extends Controller
      /* Show promoter details page  */
      public function showPromoterDetails($bizId){
         $id = Auth::user()->user_id;
+//        $appId = $request->get('app_id');
+//        $bizId = $request->get('biz_id');
         $attribute['biz_id'] = $bizId;
+        
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-        return view('backend.app.promoter-details')->with('ownerDetails',$OwnerPanApi);
+        return view('backend.app.promoter-details')->with([
+            'ownerDetails' => $OwnerPanApi, 
+//            'appId' => $appId, 
+//            '$bizId' => $bizId
+            ]);
     }
     
+    /**
+     * Handle a Business documents for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function promoterDocumentSave(Request $request)
+    {
+        try {
+            
+            $userId = Auth::user()->user_id;
+            $arrFileData = $request->all();
+            $docId = 2; //  fetch document id
+            $appId = $request->get('app_id'); //  fetch document id
+            $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
+            
+            $userFile = $this->docRepo->saveFile($uploadData);
+            
+            if(!empty($userFile->file_id)) {
+                
+                $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+                $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+                dd($appDocResponse);
+            }
+            if ($response) {
+                return $response;
+            } else {
+                return false;
+            }
+        } catch (Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
     /**
      * Render view for change application status
      * 
