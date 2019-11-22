@@ -87,11 +87,20 @@ public static function saveAnchor($arrAnchor = [])
      * @return type
      */
     public static function getAllAnchor() {
-        $result = self::select('anchor.*')
+        $result = self::select('anchor.*', 'u.user_id', 'u.f_name')
+                ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id')        
             ->orderByRaw('anchor_id DESC');
-                //->where('user_type', 1);
         return ($result ? $result : false);
     }
+    
+//    public static function getAllAnchorUsers() {
+//        $result = self::select('anchor_user.*', 'ud.country_id',
+//             'ud.date_of_birth')
+//                ->join('users as u', 'anchor_user.anchor_id', '=', 'u.anchor_id')
+//            ->orderByRaw('anchor_user_id DESC');
+//                //->where('user_type', 1);
+//        return ($result ? $result : '');
+//    }
      /**
      * function for get particular user detail
      * @param type $email

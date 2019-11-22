@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\Master\Permission as PermissionModel;
 use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
+use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
@@ -1002,5 +1003,14 @@ class UserRepository extends BaseRepositories implements UserInterface
           $result = AnchorUser::getAnchorUsersByEmail($email);
         
           return $result ?: false;
-        }   
+        } 
+        
+        /**
+         * function for get state list
+         * @return type
+         */
+        public function getStateList() {
+        $all_state = State::getStateList();        
+        return $all_state ?: false;
+        }
 }
