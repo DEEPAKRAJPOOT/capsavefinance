@@ -8,6 +8,8 @@ use File;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 
 class AppAssignment extends BaseModel
 {

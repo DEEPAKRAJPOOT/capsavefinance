@@ -183,4 +183,17 @@ class Role extends BaseModel
         $arrRoles = Role::where('id', $role_id)->first();
         return ($arrRoles ? : false);
     }
+    
+    /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function getRoleByArray($arr)
+    {
+        $arrRoles = Role::whereIn('id', $arr)->get();
+        return ($arrRoles ? $arrRoles: []);
+    }
 }

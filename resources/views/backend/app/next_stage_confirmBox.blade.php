@@ -7,8 +7,17 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
-               <div class="col-md-4">
-                    {!!
+               <div class="col-md-12">
+                    
+                   @php $data = [];@endphp
+                   @foreach($roles as $role)
+                   @php $data[$role['id']] = $role['name'] @endphp
+                   @endforeach
+                   
+                  
+                   
+               Are you sure to move the next stage?<br>
+                   {!!
                     Form::open(
                     array(
                     'method' => 'post',
@@ -17,11 +26,20 @@
                     ) 
                     !!}
                     
+                    
+                    {!!
+                    Form::select('assign_role',
+                    [
+                    ''=>'Status']+$data,
+                    null,
+                    array('id' => 'is_active',
+                    'class'=>'form-control'))
+                    !!}
+                    
                     {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}
                    
-
-               Are you sure to move the next stage?
+                    <br>
                 <button type="submit" class="btn btn-success">Yes</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">No</button>
                 {!!

@@ -159,7 +159,7 @@ class Helper extends PaypalHelper
                     $result = WfAppStage::saveWfDetail($insertData);
                 //get role id by wf_stage_id
                 $data = WfStage::find($result->wf_stage_id);
-                 AppAssignment:: updateAppAssignById($app_id, ['is_owner'=>0]);
+                 AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
                 //update assign table
             $dataArr = []; 
              $dataArr['from_id'] = \Auth::user()->user_id;
@@ -215,4 +215,77 @@ class Helper extends PaypalHelper
             return false;
         }
     }
+    
+    
+    /**
+     * Get current workflow stage by Role id
+     * 
+     * @param integer $app_id
+     */
+    public static function getCurrentWfStagebyRole($roleId){
+        return WfStage::getCurrentWfStagebyRole($roleId);
+    }
+    
+     /**
+     * Update workflow Dynamic stage
+     * 
+     * @param string $wf_stage_code
+     * @param integer $app_id
+     * @param integer $wf_status
+     * @return boolean
+     */
+    public static function updateWfStageManual($wf_stage_code, $app_id, $wf_status = 0, $assign_role)
+    {
+        $wfData = WfStage::getWfDetailById($wf_stage_code);
+        if ($wfData) {
+            $wf_stage_id = $wfData->wf_stage_id;
+            $wf_order_no = $wfData->order_no;
+            $assignedRoleId = $wfData->role_id;
+            $updateData = [                
+                'app_wf_status' => $wf_status,
+                'is_complete' => $wf_status
+            ];
+            $appData = Application::getAppData((int)$app_id);
+            $user_id = $appData->user_id;
+            if ($wf_stage_code == 'new_case') {
+                $updateData['biz_app_id'] = $app_id;
+                $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
+            } else {
+                $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
+            }
+//            if ($wf_status == 1) {
+//                $nextWfData = WfStage::getNextWfStage($wf_order_no);
+//                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
+//                if ( !$wfAppStageData ) {
+//                    $insertData = [
+//                        'wf_stage_id' => $nextWfData->wf_stage_id,
+//                        'biz_app_id' => $app_id,
+//                        'user_id' => $user_id,
+//                        'app_wf_status' => 0,
+//                        'is_complete' => 0
+//                    ];
+//                    $result = WfAppStage::saveWfDetail($insertData);
+//             }
+                //get role id by wf_stage_id
+                //$data = WfStage::find($result->wf_stage_id);
+                 AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+                //update assign table
+            $dataArr = []; 
+             $dataArr['from_id'] = \Auth::user()->user_id;
+             $dataArr['to_id'] = null;
+             $dataArr['role_id'] = $assign_role;
+             $dataArr['assigned_user_id'] = $user_id;
+             $dataArr['app_id'] = $app_id;
+             $dataArr['assign_status'] = '0';
+             $dataArr['sharing_comment'] = "comment";
+             $dataArr['is_owner'] = 1;
+             
+            AppAssignment::saveData($dataArr);
+          
+                return true;
+        } else {
+            return false;
+        }
+    }
+    
 }

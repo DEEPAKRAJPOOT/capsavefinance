@@ -869,6 +869,21 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return BizOwner::getOwnerApiDetails($attributes); 
     }
+    
+      /**
+     * Get a backend user by id
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRoleByArray($arr)
+    {
+        $user = Role::getRoleByArray($arr);
+        return $user;
+    }
 
  
 }
