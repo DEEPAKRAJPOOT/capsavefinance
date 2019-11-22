@@ -1056,8 +1056,7 @@ class UserRepository extends BaseRepositories implements UserInterface
         public function getStateList() {
         $all_state = State::getStateList();        
         return $all_state ?: false;
-        }
-        
+        }        
         
         /**
          * function for assign lead
@@ -1069,4 +1068,14 @@ class UserRepository extends BaseRepositories implements UserInterface
           return $result ?: false;
         } 
         
+    /**
+     * Get Lead Sales Manager
+     * 
+     * @param integer $userId
+     * @return mixed
+     */    
+    public function getLeadSalesManager($userId)
+    {
+        return UserModel::getLeadSalesManager($userId);
+    }
 }

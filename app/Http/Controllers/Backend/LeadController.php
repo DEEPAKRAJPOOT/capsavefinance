@@ -377,11 +377,9 @@ class LeadController extends Controller {
     public function saveManualAnchorLead(Request $request){
        try {
              
-            $arrAnchorVal = $request->all();
-            
-            $arrLeadAssingData =[];
+            $arrAnchorVal = $request->all();            
              $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
-             //dd($arrAnchorVal, $anchUserInfo);
+             $arrUpdateAnchor =[];
              if(!$anchUserInfo){
               $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
@@ -400,25 +398,17 @@ class LeadController extends Controller {
             ];
             
              $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
-            
+            $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
+            $arrUpdateAnchor = [
+                'anchor_id' => $getAnchorId->anchor_id
+                ];
+            $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
             if ($anchor_lead) {
-                
-                $arrLeadAssingData = [
-                'from_id' =>Auth::user()->user_id,
-                 'to_id' => 11,
-                'assigned_user_id' => $anchor_lead,             
-                'created_by' => Auth::user()->user_id,
-                 'created_at' => \Carbon\Carbon::now(),
-                 ];
-                     $this->userRepo->createLeadAssign($arrLeadAssingData);
-                     
-                     
-                    $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
-                    $anchLeadMailArr['name'] = trim($arrAnchorData['name']);
-                    $anchLeadMailArr['email'] =  trim($arrAnchorData['email']);
-                    $anchLeadMailArr['url'] = $mailUrl;
-                    Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
-               
+                $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
+                $anchLeadMailArr['name'] = trim($arrAnchorData['name']);
+                $anchLeadMailArr['email'] =  trim($arrAnchorData['email']);
+                $anchLeadMailArr['url'] = $mailUrl;
+                Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
                 Session::flash('message', trans('backend_messages.anchor_registration_success'));
                 return redirect()->route('get_anchor_lead_list');
             }

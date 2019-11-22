@@ -523,4 +523,25 @@ class User extends Authenticatable
 
         return ($arrAnchUser ?: false);
     }
+    
+    /**
+     * Get Lead Sales Manager
+     * 
+     * @param integer $userId
+     * @return mixed
+     */
+    public static function getLeadSalesManager($userId) {
+        
+        //SELECT an.sales_user_id FROM `rta_users` u 
+        //INNER JOIN `rta_anchor_user` au ON u.user_id=au.user_id
+//INNER JOIN `rta_anchor` an ON an.anchor_id=au.anchor_id
+ //where `u`.`user_id` = 141 limit 1
+        
+        $result = self::select('anchor.sales_user_id')
+              ->join('anchor_user', 'users.user_id', '=', 'anchor_user.user_id')
+              ->join('anchor', 'anchor.anchor_id', '=', 'anchor_user.anchor_id')
+              ->where('users.user_id', '=', $userId)
+              ->first();
+        return ($result ? $result->sales_user_id : null);        
+    }
 }
