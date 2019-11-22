@@ -111,9 +111,9 @@
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
                                  <td width="20%"></td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_org(this)"><small>PULL</small></button>
-                                    <button class="btn btn-warning btn-sm" supplier="49" onclick="pull_cibil_org(this)"><small>DOWNLOAD</small></button>
-                                    <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)"><small>UPLOAD</small></button>
+                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_org()"><small>PULL</small></button>
+                                    <button class="btn btn-warning btn-sm" supplier="49" onclick=""><small>DOWNLOAD</small></button>
+                                    <button class="btn btn-info btn-sm" supplier="49" onclick=""><small>UPLOAD</small></button>
                                  </td>
                               </tr>
                         @endforeach  
@@ -376,5 +376,13 @@
 </div>
 @endsection
 @section('jscript')
+<script>
+      function pull_cibil_org(){
+         
+      }   
 
+
+</script>
+   
+   
 @endsection
