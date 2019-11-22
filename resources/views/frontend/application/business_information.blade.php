@@ -104,7 +104,7 @@
 												<label for="txtPassword">Date of Incorporation
 													<span class="mandatory">*</span>
 												</label>
-												<input type="date" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control" tabindex="4" required>
+												<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="4" autocomplete="off" required readonly>
 												@error('incorporation_date')
 									                <span class="text-danger error">{{ $message }}</span>
 									            @enderror
@@ -596,11 +596,11 @@
 
 	function fillGSTinput(datas){
 		let res ='';
-		let option_html = '<option val="">Select GST Number</option>';
+		let option_html = '<option value="">Select GST Number</option>';
 		$(datas).each(function(i,data){
 			if(data.authStatus == 'Active'){
 				res += data.gstinId+',';
-				option_html += '<option val="'+data.gstinId+'">'+data.gstinId+'</option>';
+				option_html += '<option value="'+data.gstinId+'">'+data.gstinId+'</option>';
 			}
 		})
 		$('select[name=biz_gst_number]').html(option_html);
@@ -609,6 +609,9 @@
 	}
 
 	function fillEntity(gstinId){
+		if(gstinId == ''){
+			return false;
+		}
 		$('.isloader').show();
 		$.ajax({
 				url: "https://gst.karza.in/uat/v1/gst-verification",
