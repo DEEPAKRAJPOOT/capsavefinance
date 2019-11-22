@@ -11,11 +11,9 @@
         <link rel="stylesheet" href="{{ url('frontend/assets/css/jsgrid-theme.min.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/uploadfile.css') }}">
         <link rel="stylesheet" href="{{ url('frontend/assets/css/data-table.css') }}" />
+        <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/style2.css') }}" />
         <link rel="stylesheet" href="{{ url('frontend/assets/css/custom.css') }}" />
-        <script src="{{url('frontend/assets/js/jquery-3.4.1.min.js')}}"></script>
-        <script src="{{url('frontend/assets/js/bootstrap.min.js')}}"></script>
-        <script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
     </head>
     <body>
 
@@ -48,6 +46,10 @@
         z-index: 9;
     }
 </style>
+<script src="{{url('frontend/assets/js/jquery-3.4.1.min.js')}}"></script>
+<script src="{{url('frontend/assets/js/bootstrap.min.js')}}"></script>
+<script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
+<script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
 <script>
     $(".sign-UP .btn").click(function () {
         $(".otp-section").fadeIn();
@@ -57,6 +59,16 @@
     $(".section-header button").click(function () {
         $(".otp-section").fadeOut();
         $("body").removeClass("scroll-hiddin");
+    })
+
+
+    $(document).ready(function(){
+        $(".datepicker-dis-fdate").datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView : 2,
+            endDate: new Date()
+        });   
     })
 </script>
     @yield('scripts')

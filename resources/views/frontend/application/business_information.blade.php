@@ -104,7 +104,7 @@
 												<label for="txtPassword">Date of Incorporation
 													<span class="mandatory">*</span>
 												</label>
-												<input type="date" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control" tabindex="4" required>
+												<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="4" autocomplete="off" required readonly>
 												@error('incorporation_date')
 									                <span class="text-danger error">{{ $message }}</span>
 									            @enderror

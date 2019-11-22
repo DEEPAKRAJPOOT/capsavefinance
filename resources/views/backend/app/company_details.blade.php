@@ -76,7 +76,7 @@
 											<label for="txtPassword">Date of Incorporation
 												<span class="mandatory">*</span>
 											</label>
-											<input type="date" name="incorporation_date" value="{{old('incorporation_date', $business_info->date_of_in_corp)}}" class="form-control" tabindex="1" placeholder="Enter Entity Name">
+											<input type="text" name="incorporation_date" value="{{old('incorporation_date', \Carbon\Carbon::parse($business_info->date_of_in_corp)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="1" placeholder="Enter Entity Name" autocomplete="off" readonly>
 										</div>
 									</div>
 								</div>

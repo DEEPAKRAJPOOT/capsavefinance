@@ -9,7 +9,7 @@ use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\BizPanGstApi;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
-use DB;
+use Carbon\Carbon;
 
 class Business extends BaseModel
 {
@@ -62,7 +62,7 @@ class Business extends BaseModel
         $business = Business::create([
         'user_id'=>$userId,
         'biz_entity_name'=>$attributes['biz_entity_name'],
-        'date_of_in_corp'=>$attributes['incorporation_date'],
+        'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
         'turnover_amt'=>$attributes['biz_turnover'],
@@ -190,7 +190,7 @@ class Business extends BaseModel
         //update business table
         $business->update([
         'biz_entity_name'=>$attributes['biz_entity_name'],
-        'date_of_in_corp'=>$attributes['incorporation_date'],
+        'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
         'turnover_amt'=>$attributes['biz_turnover'],
