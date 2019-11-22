@@ -326,6 +326,46 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+    /**
+     * Show the business information form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showBusinessInformation()
+    {
+        $states = State::getStateList()->get();
+        return view('backend.app.business_information',compact('states'));
+    }
+
+    public function saveBusinessInformation(BusinessInformationRequest $request)
+    {
+        try {
+            $arrFileData = $request->all();
+            $user_id = $request->user_id;
+            $business_info = $this->appRepo->saveBusinessInfo($arrFileData, $user_id);
+            //$appId  = Session::put('appId', $business_info['app_id']);
+            
+            //Add application workflow stages
+            ///Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
+            
+                        
+            if ($business_info) {
+                //Add application workflow stages
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1, $assign_role = false);
+                
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return redirect()->route('NEWROUTE',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+            } else {
+                //Add application workflow stages
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2, $assign_role = false);
+                
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {                
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     
     
 }

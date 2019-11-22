@@ -25,9 +25,20 @@
                     <div class="row">
 
                         <div class=" form-fields w-100">
-                            <div class="col-md-12">
-                                <h5 class="card-title form-head-h5">Manage Leads Details</h5>
-                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5 class="card-title form-head-h5">Manage Leads Details</h5>
+                                </div>
+                                <div class="col-sm-6">
+                                  <div class="head-sec">
+                                     <div class="pull-right" style="margin-bottom: 10px;">
+                                        <a href="{{route('create_application',['user_id' => request()->get('user_id')])}}">
+                                        <button class="btn  btn-success btn-sm" type="button">+ Create Application</button>
+                                        </a>
+                                     </div>
+                                  </div>
+                               </div>
+                           </div>
                         </div>
 
 
