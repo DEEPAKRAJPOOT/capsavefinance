@@ -52,7 +52,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
 
             
-            Route::get('promoter-details/{id}', [
+            Route::get('promoter-details', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
             ]);

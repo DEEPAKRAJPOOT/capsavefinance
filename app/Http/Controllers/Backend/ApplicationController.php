@@ -49,12 +49,22 @@ class ApplicationController extends Controller
     public function showCompanyDetails(Request $request){
         try {
             $arrFileData = $request->all();
+            
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $userId = $request->get('user_id');
+            
+           
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $states = State::getStateList()->get();
             //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
-                return view('backend.app.company_details')->with(['business_info'=>$business_info, 'states'=>$states]);
+                return view('backend.app.company_details')
+                        ->with(['business_info'=>$business_info, 'states'=>$states])
+                        ->with('user_id',$userId)
+                        ->with('app_id',$appId)
+                        ->with('biz_id',$bizId);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -90,10 +100,11 @@ class ApplicationController extends Controller
 
 
      /* Show promoter details page  */
-     public function showPromoterDetails($bizId){
+     public function showPromoterDetails(Request $request){
         $id = Auth::user()->user_id;
-//        $appId = $request->get('app_id');
-//        $bizId = $request->get('biz_id');
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        $userId = $request->get('user_id');
         $attribute['biz_id'] = $bizId;
         
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
