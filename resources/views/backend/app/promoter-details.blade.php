@@ -713,8 +713,8 @@ var messages = {
         var dataStore = {'epic_no': 'SHA4722088','_token': messages.token };
             var postData = dataStore;
            // $('#pan_verify'+count).text('Waiting...');
+ 
              jQuery.ajax({
-            
                 url: messages.chk_user_voterid_karza,
                 method: 'post',
                 dataType: 'json',
