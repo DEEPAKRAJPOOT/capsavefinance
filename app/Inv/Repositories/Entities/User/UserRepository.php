@@ -1056,4 +1056,15 @@ class UserRepository extends BaseRepositories implements UserInterface
         $all_state = State::getStateList();        
         return $all_state ?: false;
         }
+        
+    /**
+     * Get Lead Sales Manager
+     * 
+     * @param integer $userId
+     * @return mixed
+     */    
+    public function getLeadSalesManager($userId)
+    {
+        return UserModel::getLeadSalesManager($userId);
+    }
 }

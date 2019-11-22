@@ -282,6 +282,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function updateAppData($app_id, $arrData)
     {
        return Application::updateAppData((int)$app_id, $arrData);  
-    }    
+    }
+
+    /**
+     * Assign application
+     * 
+     * @param type $dataArr
+     */
+    public function assignApp($dataArr)
+    {
+        return AppAssignment::saveData($dataArr);
+    }
 
 }
