@@ -136,6 +136,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'cam_cibil',
                 'uses' => 'Backend\CamController@showCibilForm'
             ]);
+            Route::get('application-pool', [
+                'as' => 'application_pool',
+                'uses' => 'Backend\LeadController@showApplicationPool'
+            ]);
+            
+            
+            Route::get('confirm-box', [
+                'as' => 'confirm_box',
+                'uses' => 'Backend\LeadController@confirmBox'
+            ]);
+            
+            Route::post('accept-application-pool', [
+                'as' => 'accept_application_pool',
+                'uses' => 'Backend\LeadController@acceptApplicationPool'
+            ]);
 
         });
 
@@ -155,23 +170,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lead_detail',
                 'uses' => 'Backend\LeadController@leadDetail'
             ]);
-            
-            Route::get('application-pool', [
-                'as' => 'application_pool',
-                'uses' => 'Backend\LeadController@showApplicationPool'
-            ]);
-            
-            
-            Route::get('confirm-box', [
-                'as' => 'confirm_box',
-                'uses' => 'Backend\LeadController@confirmBox'
-            ]);
-            
-            Route::post('accept-application-pool', [
-                'as' => 'accept_application_pool',
-                'uses' => 'Backend\LeadController@acceptApplicationPool'
-            ]);
-            
+                        
         });
         
 Route::group(
