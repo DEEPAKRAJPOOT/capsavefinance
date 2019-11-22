@@ -5,7 +5,8 @@ namespace App\Inv\Repositories\Models;
 use Carbon\Carbon;
 use DateTime;
 use App\Inv\Repositories\Factory\Models\BaseModel;
-
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 
 class Anchor extends BaseModel
 {
@@ -65,12 +66,12 @@ public static function saveAnchor($arrAnchor = [])
     {
         //Check data is Array
         if (!is_array($arrAnchor)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
         }
 
         //Check data is not blank
         if (empty($arrAnchor)) {
-            throw new BlankDataExceptions(trans('error_message.data_not_found'));
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
         
         /**
@@ -86,11 +87,20 @@ public static function saveAnchor($arrAnchor = [])
      * @return type
      */
     public static function getAllAnchor() {
-        $result = self::select('anchor.*')
+        $result = self::select('anchor.*', 'u.user_id', 'u.f_name')
+                ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id')        
             ->orderByRaw('anchor_id DESC');
-                //->where('user_type', 1);
         return ($result ? $result : false);
     }
+    
+//    public static function getAllAnchorUsers() {
+//        $result = self::select('anchor_user.*', 'ud.country_id',
+//             'ud.date_of_birth')
+//                ->join('users as u', 'anchor_user.anchor_id', '=', 'u.anchor_id')
+//            ->orderByRaw('anchor_user_id DESC');
+//                //->where('user_type', 1);
+//        return ($result ? $result : '');
+//    }
      /**
      * function for get particular user detail
      * @param type $email
@@ -103,6 +113,18 @@ public static function saveAnchor($arrAnchor = [])
            return ($arrUser ? $arrUser : FALSE);
     }
     
+    
+    /**
+     * function for get particular user detail using email.
+     * @param type $email
+     * @return type
+     */
+    public static function getAnchorsByEmail($email){
+        $arrEmailUser = self::select('anchor.*')
+             ->where('email', '=', $email)
+            ->first();
+           return ($arrEmailUser ? $arrEmailUser : FALSE);
+    }
    /**
     * 
     * @param type $anchId
@@ -117,28 +139,28 @@ public static function saveAnchor($arrAnchor = [])
          * Check id is not blank
          */
         if (empty($anchId)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }
 
         /**
          * Check id is not an integer
          */
         if (!is_int($anchId)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
         /**
          * Check Data is Array
          */
         if (!is_array($arrUserData)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
         }
 
         /**
          * Check Data is not blank
          */
         if (empty($arrUserData)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }
 
         $rowUpdate = self::find((int) $anchId)->update($arrUserData);

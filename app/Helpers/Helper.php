@@ -128,7 +128,7 @@ class Helper extends PaypalHelper
      * @param integer $wf_status
      * @return boolean
      */
-    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0)
+    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = true)
     {
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
@@ -159,23 +159,28 @@ class Helper extends PaypalHelper
                         'is_complete' => 0
                     ];
                     $result = WfAppStage::saveWfDetail($insertData);
-                //get role id by wf_stage_id
-                $data = WfStage::find($result->wf_stage_id);
-                 AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
-                //update assign table
-            $dataArr = []; 
-             $dataArr['from_id'] = \Auth::user()->user_id;
-             $dataArr['to_id'] = null;
-             $dataArr['role_id'] = $data->role_id;
-             $dataArr['assigned_user_id'] = $user_id;
-             $dataArr['app_id'] = $app_id;
-             $dataArr['assign_status'] = '0';
-             $dataArr['sharing_comment'] = "comment";
-             $dataArr['is_owner'] = 1;
-             
-            AppAssignment::saveData($dataArr);
-          
-                return $data;
+                    
+                    if ($assign_role) {
+                        //get role id by wf_stage_id
+                        $data = WfStage::find($result->wf_stage_id);
+                        AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+                        //update assign table
+                        $dataArr = []; 
+                        $dataArr['from_id'] = \Auth::user()->user_id;
+                        $dataArr['to_id'] = null;
+                        $dataArr['role_id'] = $data->role_id;
+                        $dataArr['assigned_user_id'] = $user_id;
+                        $dataArr['app_id'] = $app_id;
+                        $dataArr['assign_status'] = '0';
+                        $dataArr['sharing_comment'] = "comment";
+                        $dataArr['is_owner'] = 1;
+
+                        AppAssignment::saveData($dataArr);
+
+                        return $data;
+                    } else {
+                        return $result;
+                    }
                 }
             }
             return $result;
@@ -246,7 +251,35 @@ class Helper extends PaypalHelper
         
         return $inputArr;
     }
-    
+         /**
+     * uploading document data
+     *
+     * @param Exception $exception
+     * @param string    $exMessage
+     * @param boolean   $handler
+     */
+    public static function uploadAwsBucket($attributes, $appId) 
+    {
+        $userId = Auth::user()->user_id;
+        $inputArr = [];
+
+        if($attributes['doc_file']) {
+            if(!Storage::disk('s3')->exists('/Development/user/' .$userId. '/' .$appId)) {
+                Storage::disk('s3')->makeDirectory('/Development/user/' .$userId. '/' .$appId, 0775, true);
+            }
+            $path = Storage::disk('s3')->put('/Development/user/' .$userId. '/' .$appId, $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+             
+        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+        
+        return $inputArr;
+    }
     /**
      * uploading document data
      *

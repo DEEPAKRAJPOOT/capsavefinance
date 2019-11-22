@@ -1,8 +1,9 @@
 /* check pan card verify before upload pan*/
 
 
-function uploadFile(uploadId)
+function uploadFile(uploadId, docId)
 {
+    $('.isloader').show();
     var biz_id  = $('#biz_id').val();
     var app_id  = $('#app_id').val();
     var file  = $("#panfile"+uploadId)[0].files[0];
@@ -12,13 +13,14 @@ function uploadFile(uploadId)
     datafile.append('_token', messages.token );
     datafile.append('biz_id', biz_id);
     datafile.append('app_id', app_id);
+    datafile.append('doc_id', docId);
     datafile.append('doc_file', file);
     
     
     console.log(datafile);
     $.ajax({
         headers: {'X-CSRF-TOKEN':  messages.token  },
-        url : '/application/promoter-document-save',
+        url : messages.promoter_document_save,
         type: "POST",
         data: datafile,
         processData: false,
@@ -30,7 +32,7 @@ function uploadFile(uploadId)
            $(".isloader").hide();
             //obj = result.result.directors;
             //var count = 0;
-            alert(r);
+//            alert(r);
         }
     });
 }
