@@ -1,0 +1,23 @@
+
+   UnexpectedValueException  : The stream or file "/var/www/html/rentalpha/storage/logs/laravel.log" could not be opened: failed to open stream: Permission denied
+
+  at /var/www/html/rentalpha/vendor/monolog/monolog/src/Monolog/Handler/StreamHandler.php:111
+    107|             restore_error_handler();
+    108|             if (!is_resource($this->stream)) {
+    109|                 $this->stream = null;
+    110| 
+  > 111|                 throw new \UnexpectedValueException(sprintf('The stream or file "%s" could not be opened: '.$this->errorMessage, $this->url));
+    112|             }
+    113|         }
+    114| 
+    115|         if ($this->useLocking) {
+
+  Exception trace:
+
+  1   Monolog\Handler\StreamHandler::write()
+      /var/www/html/rentalpha/vendor/monolog/monolog/src/Monolog/Handler/AbstractProcessingHandler.php:42
+
+  2   Monolog\Handler\AbstractProcessingHandler::handle()
+      /var/www/html/rentalpha/vendor/monolog/monolog/src/Monolog/Logger.php:323
+
+  Please use the argument -v to see more details.
