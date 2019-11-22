@@ -298,12 +298,12 @@ class ApplicationController extends Controller
             $app_id = $request->get('app_id');
             $assign_role = $request->get('assign_role');
            
-            if ($assign_role) {
+            if ($assign_role) {                
                 $currStage = Helpers::getCurrentWfStagebyRole($assign_role);
                 Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 0,$assign_role);
             } else {
-                $currStage = Helpers::getCurrentWfStage($app_id);
-                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1);
+                $currStage = Helpers::getCurrentWfStage($app_id);                
+                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign = true);
             }
 
 

@@ -1002,5 +1002,16 @@ class UserRepository extends BaseRepositories implements UserInterface
           $result = AnchorUser::getAnchorUsersByEmail($email);
         
           return $result ?: false;
-        }   
+        }
+        
+    /**
+     * Get Lead Sales Manager
+     * 
+     * @param integer $userId
+     * @return mixed
+     */    
+    public function getLeadSalesManager($userId)
+    {
+        return UserModel::getLeadSalesManager($userId);
+    }
 }
