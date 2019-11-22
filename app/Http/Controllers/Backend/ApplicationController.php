@@ -117,9 +117,9 @@ class ApplicationController extends Controller
             
             $userId = Auth::user()->user_id;
             $arrFileData = $request->all();
-            $docId = 2; //  fetch document id
+            $docId = $request->get('doc_id'); //  fetch document id
             $appId = $request->get('app_id'); //  fetch document id
-            $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
+            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
             
             $userFile = $this->docRepo->saveFile($uploadData);
             
