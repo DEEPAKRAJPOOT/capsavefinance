@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
 use App\Http\Requests\DocumentRequest;
+use Eastwest\Json\Facades\Json;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
@@ -52,7 +53,7 @@ class ApplicationController extends Controller
             //$appId  = Session::put('appId', $business_info['app_id']);
             
             //Add application workflow stages
-            Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
+            ///Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
             
                         
             if ($business_info) {
@@ -79,35 +80,45 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail(Request $request)
     {
+        $biz_id = $request->get('biz_id');
         $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-       
-       $getCin = $this->userRepo->getCinByUserId($userId);
-       $cinNo  =  $getCin;       
-       
-       return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' =>$cinNo));
+       $attribute['biz_id'] = $biz_id;
+       $ownerDetail = $this->userRepo->getOwnerDetail($attribute); 
+       $getCin = $this->userRepo->getCinByUserId($biz_id);
+       if($getCin==false)
+       {
+           return redirect()->route('business_information_open');
+       }
+       return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
+           'cin_no' => $getCin->cin,
+           'ownerDetails' => $ownerDetail,
+           'biz_id' => $biz_id
+        ]);
     } 
 
     /**
-     * Show the business information form.
+     * Save Promoter details form.
      *
      * @return \Illuminate\Http\Response
      */
     //////////////////Save Promoter Multiple Details///////////////////////// 
-    public function savePromoterDetail(Request $request) {
+    public function updatePromoterDetail(Request $request) {
        try {
             $arrFileData = $request->all();
-            $owner_info = $this->userRepo->saveOwnerInfo($arrFileData); //Auth::user()->id
-          if ($owner_info) {
+            $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
+            if ($owner_info) {
+            
                 //Add application workflow stages
                 $appId = $arrFileData['app_id']; 
                 Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1, $assign_role = false);
-                 
+
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
-            } else {
+            }
+            else {
                //Add application workflow stages 
                Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2, $assign_role = false);
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
@@ -118,7 +129,27 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-
+    
+    /**
+     * Save Promoter details form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    //////////////////Save Promoter Multiple Details///////////////////////// 
+    public function savePromoter(Request $request) {
+       try {
+          $arrFileData = json_decode($request->getContent(), true);
+          $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
+         
+          if ($owner_info) {
+                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
+            } else {
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     /**
      * Show the Business documents form.
      *
