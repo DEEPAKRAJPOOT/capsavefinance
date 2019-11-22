@@ -100,17 +100,19 @@ class BizOwner extends Model
                 'date_of_birth' => date('Y-m-d', strtotime($val['dob'])),
                 'owner_addr' => $val['address'],
                 'created_by' =>  $uid]);
+        $getOwnerId[] = $ownerInputArr->biz_owner_id;
           $i++;      
        }      
-       return  $ownerInputArr;
+       return  $getOwnerId;
    }
+   
     public static function creates($attributes)
     {
           //insert into rta_app_doc
           $uid = Auth::user()->user_id;
           /* Get App id and biz id behalf of user id */
           $appData = self::getAppId($uid);
-          $getRes =  self::savePanApiRes($attributes,$appData->biz_id); 
+          $getRes =  self::savePanApiRes($attributes,4); 
           $owner = AppDocument::insert([
             [
             'rcu_status' => 0,

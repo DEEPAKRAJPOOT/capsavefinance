@@ -77,13 +77,13 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail(Request $request)
     {
-        $biz_id =1;
+        $biz_id =4;
         $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-       $attribute['biz_id'] = 1;
+       $attribute['biz_id'] = 4;
        $ownerDetail = $this->userRepo->getOwnerDetail($attribute); 
        $getCin = $this->userRepo->getCinByUserId($biz_id);
        if($getCin==false)
@@ -108,7 +108,7 @@ class ApplicationController extends Controller
                 //Add application workflow stages
               //  $appData = $this->appRepo->getAppDataByBizId($arrFileData['biz_id']);
                 //$appId = $appData ? $appData->app_id : null; 
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+               /// Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
                  
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             } else {
@@ -129,6 +129,7 @@ class ApplicationController extends Controller
        try {
           $arrFileData = json_decode($request->getContent(), true);
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
+          dd( $owner_info);
           if ($owner_info) {
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             } else {
