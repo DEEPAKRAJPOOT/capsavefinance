@@ -100,11 +100,11 @@ class ApplicationController extends Controller
 
 
      /* Show promoter details page  */
-     public function showPromoterDetails(Request $request){
+     public function showPromoterDetails($bizId){
         $id = Auth::user()->user_id;
-        $appId = $request->get('app_id');
-        $bizId = $request->get('biz_id');
-        $userId = $request->get('user_id');
+//        $appId = $request->get('app_id');
+//        $bizId = $request->get('biz_id');
+//        $userId = $request->get('user_id');
         $attribute['biz_id'] = $bizId;
         
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
