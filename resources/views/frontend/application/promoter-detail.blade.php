@@ -459,7 +459,8 @@
                         }
                         count++;
                     });
-                        var getRes = savePromoter(arr);
+                        var bizId = $('input[name=biz_id]').val();
+                        var getRes = savePromoter(arr, bizId);
                         
                         ///$(".form-design").load(" .form-design");
                       /// window.location.href = "{{ route('promoter-detail',[])}}";
@@ -471,8 +472,10 @@
       ///////////////Promotor web service for pan verified start here//////////////////////////
        
       /* save promoter details after cin number api hit */
-      function  savePromoter(data)
+      function  savePromoter(data, bizId)
       {
+          
+            var data = {'data' : data, 'biz_id' : bizId};
             jQuery.ajax({
                 url: "/application/promoter-save",
                 headers: {

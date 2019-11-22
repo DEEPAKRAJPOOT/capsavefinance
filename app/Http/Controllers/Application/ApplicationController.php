@@ -80,20 +80,24 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail(Request $request)
     {
-        $biz_id =4;
+        $biz_id = $request->get('biz_id');
         $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-       $attribute['biz_id'] = 4;
+       $attribute['biz_id'] = $biz_id;
        $ownerDetail = $this->userRepo->getOwnerDetail($attribute); 
        $getCin = $this->userRepo->getCinByUserId($biz_id);
        if($getCin==false)
        {
            return redirect()->route('business_information_open');
        }
-       return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' => $getCin->cin,'ownerDetails' => $ownerDetail));
+       return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
+           'cin_no' => $getCin->cin,
+           'ownerDetails' => $ownerDetail,
+           'biz_id' => $biz_id
+        ]);
     } 
 
     /**
@@ -106,7 +110,6 @@ class ApplicationController extends Controller
        try {
             $arrFileData = $request->all();
             $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
-            dd( $owner_info );
           if ($owner_info) {
               //Add application workflow stages
                    //  $appData = $this->appRepo->getAppDataByBizId($arrFileData['biz_id']);

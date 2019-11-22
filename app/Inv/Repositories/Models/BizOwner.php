@@ -78,10 +78,11 @@ class BizOwner extends Model
     /* By gajendra chauhan  */  
    public static function createsOwner($attributes)
     { 
+       
         $uid = Auth::user()->user_id;
         $appData = self::getAppId($uid);
         $i =0;
-       foreach($attributes as $key=>$val)
+       foreach($attributes['data'] as $key=>$val)
        {
                 $first_name = $val['first_name'];
                 $last_name = '';
@@ -93,7 +94,7 @@ class BizOwner extends Model
                         $first_name =  implode(' ',$ex);
                         $last_name =  end($ex);
                 }
-                $ownerInputArr =  BizOwner::create( ['biz_id' =>4,   
+                $ownerInputArr =  BizOwner::create( ['biz_id' => $attributes['biz_id'],   
                 'user_id' => $uid, 
                 'first_name' => $first_name,
                 'last_name'   =>  $last_name,
@@ -112,7 +113,7 @@ class BizOwner extends Model
           $uid = Auth::user()->user_id;
           /* Get App id and biz id behalf of user id */
           $appData = self::getAppId($uid);
-          $getRes =  self::savePanApiRes($attributes,4); 
+          $getRes =  self::savePanApiRes($attributes, $attributes['biz_id']); 
           $owner = AppDocument::insert([
             [
             'rcu_status' => 0,
