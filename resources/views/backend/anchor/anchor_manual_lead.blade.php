@@ -3,15 +3,27 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_reg')}}" onsubmit="return checkValidation();" target="_top">
-		@csrf
+                
+                {!!
+                Form::open(
+                array(
+                'route' => 'add_manual_anchor_lead',
+                'name' => 'anchorForm',
+                'autocomplete' => 'off', 
+                'id' => 'anchorForm',
+                'target' => '_top',
+                'method'=> 'POST'
+                )
+                )
+                !!}
+                
                         <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
-                                 <label for="txtCreditPeriod">Full Name
+                                 <label for="txtCreditPeriod">Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="employee" id="employee" value="" class="form-control employee" tabindex="1" placeholder="Full Name" >
+                                 <input type="text" name="f_name" id="f_name" value="" class="form-control f_name" tabindex="1" placeholder="Name" >
                               </div>
                            </div>
                            <div class="col-md-6">
@@ -50,8 +62,21 @@
                               </div>
                         </div>
                 
-                
-                <div class="row">
+                    <div class="row">
+                           <div class="col-md-6">
+                              <div class="form-group">
+                                 <label for="txtEmail">User Type
+                                 <span class="mandatory">*</span>
+                                 </label>
+                                  <select class="form-control anchor_user_type" name="anchor_user_type" id="anchor_user_type">
+                                      <option value="">please select</option>
+                                      <option value="1">Supplier</option>
+                                      <option value="2">Buyer</option>
+                                  </select>
+                              </div>
+                           </div>
+                     </div>
+<!--                     <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="txtEmail">State
@@ -113,27 +138,12 @@
                                     </div>
                                  </div>
                               </div>
-                        </div>
-                
-                   <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtEmail">Assigned Sale Manager
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                  <select class="form-control assigned_sale_mgr" name="assigned_sale_mgr" id="assigned_sale_mgr">
-                                      <option value="">please select</option>
-                                      <option value="10">Sale Manager 1</option>
-                                      <option value="11">Sale Manager 2</option>
-                                      <option value="12">Sale Manager 3</option>
-                                  </select>
-                              </div>
-                           </div>                           
-                        </div>  
-                
+                        </div>-->
                 
                 <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
-           </form>
+          {!!
+        Form::close()
+        !!}
          </div>
      
 
@@ -157,7 +167,7 @@
 <script type="text/javascript">
         $(document).ready(function () {
             $('#saveAnch').on('click', function (event) {
-                $('input.employee').each(function () {
+                $('input.f_name').each(function () {
                     $(this).rules("add",
                             {
                                 required: true
@@ -193,7 +203,7 @@
                                 maxlength:10
                             })
                 });
-                $('select.state').each(function () {
+                $('select.anchor_user_type').each(function () {
                     $(this).rules("add",
                             {
                                 required: true
@@ -218,12 +228,6 @@
                                 number: true,
                             })
                 });
-                $('input.assigned_sale_mgr').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true,
-                            })
-                });                
                 // test if form is valid                
             })
             //$("#btnAddMore").on('click', addInput);

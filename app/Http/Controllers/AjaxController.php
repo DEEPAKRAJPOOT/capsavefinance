@@ -2653,10 +2653,22 @@ if ($err) {
     }
     
     
-       public function getAnchorLists(DataProviderInterface $dataProvider) { 
-        $anchUsersList = $this->userRepo->getAllAnchor();
-        $users = $dataProvider->getAnchorList($this->request, $anchUsersList);
-        return $users;
+    public function getAnchorLists(DataProviderInterface $dataProvider) { 
+     $anchUsersList = $this->userRepo->getAllAnchor();
+     $users = $dataProvider->getAnchorList($this->request, $anchUsersList);
+     return $users;
+    }
+    
+    public function getAnchorLeadLists(DataProviderInterface $dataProvider){
+      $anchLeadList = $this->userRepo->getAllAnchorUsers();
+        $users = $dataProvider->getAnchorLeadList($this->request, $anchLeadList);
+        return $users; 
     }
 
+    public function checkExistUser(Request $request) {
+        dd($request);
+        $email = $request->post('username');
+        $anchUsersList = $this->userRepo->getUserByemail($email);
+        return $anchUsersList;
+    } 
 }

@@ -62,6 +62,21 @@ Route::group(
         'uses' => 'AjaxController@getAnchorLists'
         ]
     ); 
+    Route::post(
+        'get-anchor-lead-list',
+        [
+        'as' => 'get_anch_lead_list',
+        'uses' => 'AjaxController@getAnchorLeadLists'
+        ]
+    ); 
+//    Route::get(
+//        'check-exist-user',
+//        [
+//        'as' => 'check_exist_user',
+//        'uses' => 'AjaxController@checkExistUser'
+//        ]
+//    );
+    
 });
 
 

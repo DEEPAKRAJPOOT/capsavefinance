@@ -36,6 +36,7 @@ class Anchor extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'sales_user_id',
         'comp_name',
         'comp_email',
         'comp_addr',

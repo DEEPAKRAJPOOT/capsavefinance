@@ -208,7 +208,19 @@ Route::group(
                Route::post('update-anchor', [
                 'as' => 'edit_anchor_reg',
                 'uses' => 'Backend\LeadController@updateAnchorReg'
-            ]);      
+            ]); 
+                Route::get('manage-anchor-lead', [
+                'as' => 'get_anchor_lead_list',
+                'uses' => 'Backend\LeadController@getAnchorLeadList'
+            ]); 
+            Route::get('add-manual-anchor-lead', [
+           'as' => 'add_manual_anchor_lead',
+           'uses' => 'Backend\LeadController@addManualAnchorLead'
+       ]);
+        Route::post('add-manual-anchor-lead', [
+           'as' => 'add_manual_anchor_lead',
+           'uses' => 'Backend\LeadController@saveManualAnchorLead'
+       ]);         
     }); 
         
     });

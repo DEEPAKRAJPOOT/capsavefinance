@@ -18,18 +18,38 @@
     </section>
     <div class="card">
         <div class="card-body">
-            <div class="head-sec">
+           
+            <div class="row">
+                <div class="col-sm-12">
+                      <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;">
-                    <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_anchor_reg')}}" data-height="420px" data-width="100%" data-placement="top" class="btn btn-warning btn-sm report-btn btn-x-sm">
-
+                    <a   href="{{route('get_anchor_lead_list')}}" >
+                <button class="btn  btn-success btn-sm" type="button">
                         <span class="btn-label">
-                            <i class="fa fa-plus"></i>
+                        <i class="fa fa-plus"></i>
                         </span>
-                        Add Anchor
+                        Manage Anchor Lead
+                        </button>
+                        
                     </a>
                 </div>
             </div>
-            <div class="row">
+            <div class="head-sec">
+                <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
+                    <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_anchor_reg')}}" data-height="420px" data-width="100%" data-placement="top" >
+                        <button class="btn  btn-success btn-sm" type="button">
+                            <span class="btn-label">
+                                <i class="fa fa-plus"></i>
+                            </span>
+                            Add Anchor
+                        </button>
+
+                    </a>
+                </div>
+            </div>
+          </div>     
+            </div>
+<!--            <div class="row">
                 <div class="col-md-4">
                     {!!
                     Form::text('by_email',
@@ -50,14 +70,15 @@
                     array('id' => 'is_active',
                     'class'=>'form-control'))
                     !!}
+                     
                 </div>
-                <button id="searchB" type="button" class="btn btn-success search">Search</button>
-                <div class="col-12 dataTables_wrapper">
-                    <div class="overflow">
-                        <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <table id="anchUserList" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+               <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
+            
+                </div>        -->
+                <div class="row">
+                <div class="col-sm-12">
+                                     <div class="table-responsive">
+                                    <table id="anchUserList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
                                                 <th>Sr.No.</th>
@@ -75,10 +96,11 @@
                                     </table>
                                     <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
+                                    </div>
                             </div>
 
-                        </div>
-                    </div>
+                       
+                   
 
                 </div>
             </div>
@@ -93,7 +115,7 @@
 <script>
 
     var messages = {
-        get_anch_user_list: "{{ URL::route('get_anch_user_list') }}",
+        get_anch_user_list: "{{ URL::route('get_anch_user_list') }}",       
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 

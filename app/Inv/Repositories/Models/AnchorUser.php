@@ -37,9 +37,13 @@ class AnchorUser extends BaseModel {
     protected $fillable = [
         'user_id',
         'name',
+        'biz_name',
         'email',
         'phone',
-        'token'
+        'user_type',
+        'token',
+        'is_registered',
+        'created_by'
     ];
 
     /**
@@ -85,11 +89,64 @@ class AnchorUser extends BaseModel {
      * @param type $email
      * @return type
      */
-    public static function getAnchorUsersByEmail($token){
+    public static function getAnchorUsersByToken($token){
         $arrUser = self::select('anchor_user.*')
              ->where('token', '=', $token)
             ->first();
            return ($arrUser ? $arrUser : FALSE);
     }
+    
+    /**
+    * 
+    * @param type $anchId
+    * @param type $arrUserData
+    * @return type
+    * @throws BlankDataExceptions
+    * @throws InvalidDataTypeExceptions
+    */ 
+    public static function updateAnchorUser($anchUId, $arrUserData = [])
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($anchUId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
 
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($anchUId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($arrUserData)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($arrUserData)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        $rowUpdate = self::find((int) $anchUId)->update($arrUserData);
+        return ($rowUpdate ? true : false);
+    }
+    
+    /**
+     * function for get particular user detail using email.
+     * @param type $email
+     * @return type
+     */
+    public static function getAnchorUsersByEmail($email){
+        $arrEmailUser = self::select('anchor_user.*')
+             ->where('email', '=', $email)
+            ->first();
+           return ($arrEmailUser ? $arrEmailUser : FALSE);
+    }
 }

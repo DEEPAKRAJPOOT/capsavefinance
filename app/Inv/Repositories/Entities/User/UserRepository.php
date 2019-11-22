@@ -909,13 +909,14 @@ class UserRepository extends BaseRepositories implements UserInterface
       * @return type
       */
      
-        public function getAnchorUsersByEmail($token)
+        public function getAnchorUsersByToken($token)
         {
-          $result = AnchorUser::getAnchorUsersByEmail($token);
+          $result = AnchorUser::getAnchorUsersByToken($token);
         
           return $result ?: false;
         }
     
+            
     /**
     * function for get all anchor register user detail
     * @return type
@@ -953,8 +954,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      public function updateAnchor($anchoId, $attributes = []){
         $result = Anchor::updateAnchor((int) $anchoId, $attributes);
         return $result ?: false;
-    }
-    
+    }    
     /**
      * function for get user details using anchor id
      * @param type $userName
@@ -967,4 +967,27 @@ class UserRepository extends BaseRepositories implements UserInterface
 
          return $result ?: false;
     } 
+    
+   /**
+     * 
+     * @param type $anchoId
+     * @param type $attributes
+     * @return type
+     */
+    public function updateAnchorUser($anchUId, $attributes = []) {
+        $result = AnchorUser::updateAnchorUser((int) $anchUId, $attributes);
+        return $result ?: false;
+    }
+
+    /**
+     * 
+     * @param type $email
+     * @return type
+     */
+     public function getAnchorUsersByEmail($email)
+        {
+          $result = AnchorUser::getAnchorUsersByEmail($email);
+        
+          return $result ?: false;
+        }   
 }

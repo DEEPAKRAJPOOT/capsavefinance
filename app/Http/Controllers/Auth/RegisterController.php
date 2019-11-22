@@ -80,6 +80,7 @@ use RegistersUsers,
 
 
         $arrData = [];
+        $arrAnchUser=[];
         $arrDetailData = [];
         $arrData['f_name'] = $data['f_name'];
         $arrData['m_name'] = $data['m_name'];
@@ -103,7 +104,11 @@ use RegistersUsers,
             $detailArr['access_token'] = bcrypt($userDataArray->email);
             $detailArr['created_by'] = $userDataArray->user_id;
             $this->userRepo->saveUserDetails($detailArr);
-            
+            $arrAnchUser['is_registered']=1;
+            $arrAnchUser['token']='';
+            $arrAnchUser['user_id']=$detailArr['user_id'];
+            //$anchId=$this->userRepo->getAnchorUsersByEmail($userDataArray->email);            
+            $this->userRepo->updateAnchorUser($data['anch_user_id'], $arrAnchUser);
             //Add application workflow stages
             Helpers::addWfAppStage('new_case', $userDataArray->user_id);
         }
@@ -178,7 +183,7 @@ use RegistersUsers,
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        $anchorLeadInfo = $this->userRepo->getAnchorUsersByEmail($anchortoken);
+        $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
         //dd($anchorLeadInfo);
         if(isset($anchortoken) && $anchorLeadInfo){
             $anchorDetail = $anchorLeadInfo;
