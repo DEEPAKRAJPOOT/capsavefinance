@@ -128,7 +128,7 @@ class Helper extends PaypalHelper
      * @param integer $wf_status
      * @return boolean
      */
-    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0)
+    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = true)
     {
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
@@ -159,23 +159,28 @@ class Helper extends PaypalHelper
                         'is_complete' => 0
                     ];
                     $result = WfAppStage::saveWfDetail($insertData);
-                //get role id by wf_stage_id
-                $data = WfStage::find($result->wf_stage_id);
-                 AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
-                //update assign table
-            $dataArr = []; 
-             $dataArr['from_id'] = \Auth::user()->user_id;
-             $dataArr['to_id'] = null;
-             $dataArr['role_id'] = $data->role_id;
-             $dataArr['assigned_user_id'] = $user_id;
-             $dataArr['app_id'] = $app_id;
-             $dataArr['assign_status'] = '0';
-             $dataArr['sharing_comment'] = "comment";
-             $dataArr['is_owner'] = 1;
-             
-            AppAssignment::saveData($dataArr);
-          
-                return $data;
+                    
+                    if ($assign_role) {
+                        //get role id by wf_stage_id
+                        $data = WfStage::find($result->wf_stage_id);
+                        AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+                        //update assign table
+                        $dataArr = []; 
+                        $dataArr['from_id'] = \Auth::user()->user_id;
+                        $dataArr['to_id'] = null;
+                        $dataArr['role_id'] = $data->role_id;
+                        $dataArr['assigned_user_id'] = $user_id;
+                        $dataArr['app_id'] = $app_id;
+                        $dataArr['assign_status'] = '0';
+                        $dataArr['sharing_comment'] = "comment";
+                        $dataArr['is_owner'] = 1;
+
+                        AppAssignment::saveData($dataArr);
+
+                        return $data;
+                    } else {
+                        return $result;
+                    }
                 }
             }
             return $result;
