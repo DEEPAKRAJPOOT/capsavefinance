@@ -273,8 +273,13 @@ class ApplicationController extends Controller
         try{
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
-           return view('backend.app.next_stage_confirmBox')
+            $currentStage = Helpers::getCurrentWfStage($app_id);
+            $e = explode(',', $currentStage->assign_role);
+            $roleDropDown = $this->userRepo->getRoleByArray($e)->toArray();
+            
+            return view('backend.app.next_stage_confirmBox')
                 ->with('app_id', $app_id)
+                ->with('roles', $roleDropDown)
                 ->with('user_id', $user_id);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -291,9 +296,20 @@ class ApplicationController extends Controller
             
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
-           $currStage = Helpers::getCurrentWfStage($app_id);
-           Helpers::updateWfStage($currStage->stage_code, 1, $wf_status = 1);
+            $assign_role = $request->get('assign_role');
            
+            if ($assign_role) {
+                $currStage = Helpers::getCurrentWfStagebyRole($assign_role);
+                Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 0,$assign_role);
+            } else {
+                $currStage = Helpers::getCurrentWfStage($app_id);
+                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1);
+            }
+
+
+            $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
+           Session::flash('is_accept', 1);
+            return redirect()->back();
            
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

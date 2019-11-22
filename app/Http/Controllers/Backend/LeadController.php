@@ -130,28 +130,29 @@ class LeadController extends Controller {
      * @param Request $request
      * @return type
      */
-    public function acceptApplicationPool(Request $request) {
-        try {
 
-            $user_id = $request->get('user_id');
-            $app_id = $request->get('app_id');
-
-            $dataArr = [];
-            $dataArr['from_id'] = Auth::user()->user_id;
-            $dataArr['to_id'] = Auth::user()->user_id;
-            $dataArr['assigned_user_id'] = $user_id;
-            $dataArr['app_id'] = $app_id;
-            $dataArr['assign_status'] = '0';
-            $dataArr['sharing_comment'] = "comment";
-            $dataArr['is_owner'] = 1;
-            $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned' => 1]);
-            $application = $this->appRepo->saveShaircase($dataArr);
-
-            Session::flash('is_accept', 1);
-
-            return redirect()->back();
-        } catch (Exception $ex) {
-            dd($ex);
+    public function acceptApplicationPool(Request $request){
+         try {
+            $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
+             $user_id = $request->get('user_id');
+             $app_id = $request->get('app_id');
+            
+             $dataArr = []; 
+             $dataArr['from_id'] = Auth::user()->user_id;
+             $dataArr['to_id'] = Auth::user()->user_id;
+             $dataArr['role_id'] = $roleData->id;
+             $dataArr['assigned_user_id'] = $user_id;
+             $dataArr['app_id'] = $app_id;
+             $dataArr['assign_status'] = '0';
+             $dataArr['sharing_comment'] = "comment";
+             $dataArr['is_owner'] = 1;
+            $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
+            $this->appRepo->updateAppAssignById($app_id, ['is_owner'=>0]);
+            $application = $this->appRepo->saveShaircase($dataArr); 
+             
+             Session::flash('is_accept', 1);
+             } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 
@@ -379,7 +380,7 @@ class LeadController extends Controller {
      */
     public function saveManualAnchorLead(Request $request){
        try {
-           
+             
             $arrAnchorVal = $request->all();
             
              $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));

@@ -904,6 +904,7 @@ class UserRepository extends BaseRepositories implements UserInterface
         return BizOwner::getOwnerApiDetails($attributes); 
     }
     
+
     /**
       * function for get all anchor register user detail
       * @return type
@@ -962,12 +963,24 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
    public function getUserByAnchorId($anchId)
     {
-       
         $result = UserModel::getUserByAnchorId($anchId);
-
          return $result ?: false;
     } 
-    
+      /**
+     * Get a backend user by id
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRoleByArray($arr)
+    {
+        $user = Role::getRoleByArray($arr);
+        return $user;
+    }
+
    /**
      * 
      * @param type $anchoId
