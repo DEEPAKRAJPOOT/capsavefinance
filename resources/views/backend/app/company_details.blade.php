@@ -49,7 +49,7 @@
 											<span class="mandatory">*</span>
 										</label>
 										<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-										<input type="text" name="loan_amount" value="{{old('loan_amount', $business_info->app->loan_amt)}}" class="form-control" tabindex="1" placeholder="Enter Applied Loan Amount" required>
+										<input type="text" name="loan_amount" value="{{old('loan_amount', $business_info->app->loan_amt)}}" class="form-control" tabindex="1" placeholder="Enter Applied Loan Amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="10" required>
 										<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
 									</div>
 
@@ -58,7 +58,7 @@
 										<div class="form-group">
 											<label for="txtSupplierName">Tranche Tenor (Days)
 											</label>
-											<input type="number" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="2" placeholder="Enter Tranche Tenor (1 - 120)">
+											<input type="text" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="2" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
 										</div>
 									</div>
 								</div>
@@ -98,7 +98,7 @@
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
 											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover', $business_info->turnover_amt)}}" class="form-control" tabindex="6" placeholder="Enter Business Turnover">
+											<input type="text" name="biz_turnover" value="{{old('biz_turnover', $business_info->turnover_amt)}}" class="form-control" tabindex="6" placeholder="Enter Business Turnover" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="15">
 										</div>
 									</div>
 								</div>
@@ -222,7 +222,7 @@
 													<label for="txtPassword">Pin Code
 														<span class="mandatory">*</span>
 													</label>
-													<input type="text" name="biz_pin" value="{{old('biz_pin', $business_info->address[0]->pin_code)}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" minlength="6" maxlength="6" required>
+													<input type="text" name="biz_pin" value="{{old('biz_pin', $business_info->address[0]->pin_code)}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" minlength="6" maxlength="6" required>
 												</div>
 											</div>	
 										</div>	
@@ -291,7 +291,7 @@
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0', $business_info->address[1]->pin_code)}}" class="form-control" tabindex="19" placeholder="Enter Pin Code">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0', $business_info->address[1]->pin_code)}}" class="form-control" tabindex="19" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 														</div>
 													</div>
 												</div>
@@ -350,7 +350,7 @@
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1', $business_info->address[2]->pin_code)}}" class="form-control" tabindex="23" placeholder="Enter Pin Code">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1', $business_info->address[2]->pin_code)}}" class="form-control" tabindex="23" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 														</div>
 													</div>
 												</div>
@@ -410,7 +410,7 @@
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2', $business_info->address[3]->pin_code)}}" class="form-control" tabindex="27" placeholder="Enter Pin Code">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2', $business_info->address[3]->pin_code)}}" class="form-control" tabindex="27" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 														</div>
 													</div>
 												</div>
@@ -462,7 +462,7 @@
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3', $business_info->address[4]->pin_code)}}" class="form-control" tabindex="31" placeholder="Enter Pin Code">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3', $business_info->address[4]->pin_code)}}" class="form-control" tabindex="31" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 														</div>
 													</div>
 												</div>
