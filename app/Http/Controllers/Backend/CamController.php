@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\BizOwner;
 date_default_timezone_set('Asia/Kolkata');
 use App\Inv\Repositories\Models\Cam;
 use App\Libraries\Perfios_lib;
+use App\Libraries\Bsa_lib;
 use Auth;
 use Session;
 
@@ -26,13 +27,11 @@ class CamController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index(){
         return view('backend.cam.overview');
     }
 
-    public function camInformationSave(Request $request)
-    {
+    public function camInformationSave(Request $request){
     	$arrCamData = $request->all();
         $arrCamData['biz_id'] = '12';
         $arrCamData['app_id'] = '12';
@@ -45,13 +44,11 @@ class CamController extends Controller
         return redirect()->route('cam_overview');
     }
 
-    public function finance()
-    {
+    public function finance(){
         return view('backend.cam.finance');
 
     }
-    public function finance_store(FinanceRequest $request, FinanceModel $fin)
-    {
+    public function finance_store(FinanceRequest $request, FinanceModel $fin){
         $financeid = $this->_getFinanceId();
         $insert_data = [];
         $post_data = $request->all();
@@ -94,8 +91,7 @@ class CamController extends Controller
         return $no;
     }
 
-    private function _financeid_reverse($value='AKSK31268170')
-    {
+    private function _financeid_reverse($value='AKSK31268170') {
         $date = substr($value, 0, 4);
         $time = substr($value, 4, 4);
         list($y , $m, $d, $h) = str_split($date);
