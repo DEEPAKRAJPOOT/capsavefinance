@@ -449,5 +449,14 @@ class Helper extends PaypalHelper
         $roleData = User::getBackendUser($user_id);
         return $roleData;
     }
+    /**
+     * Get User Role
+     * 
+     * @param integer $user_id | default
+     */
+    public static function getUserInfo($user_id = null) {        
+        $getUserInfo = User::getfullUserDetail($user_id);
+        return $getUserInfo;
+    }
   
 }

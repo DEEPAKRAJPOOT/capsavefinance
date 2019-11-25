@@ -3,7 +3,9 @@
 namespace App\Libraries\Ui;
 
 use DataTables;
+use Helpers;
 use Illuminate\Http\Request;
+use App\Inv\Repositories\Models\User;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 
@@ -69,21 +71,39 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->editColumn(
                     'anchor',
-                    function ($user) {
-                    $achorId = $user->anchor_id; 
+                    function ($user) {                    
+                    if($user->UserAnchorId){
+                      $userInfo=User::getUserByAnchorId($user->UserAnchorId);
+                       $achorId= $userInfo->f_name.''.$userInfo->l_name;
+                    }else{
+                      $achorId='';  
+                    }
+                    //$achorId = $user->UserAnchorId; 
                     return $achorId;
                 })
                 ->editColumn(
                     'userType',
                     function ($user) {
-                    $achorId = $user->anchor_id; 
-                    return '';;
+                    if($user->AnchUserType==1){
+                        $achorUserTpe='Supplier';
+                    }else if($user->AnchUserType==2){
+                         $achorUserTpe='Buyer';
+                    }else{
+                        $achorUserTpe='';
+                    }
+                    //$achorUserTpe = $user->AnchUserType; 
+                    return $achorUserTpe;
                 })
                 ->editColumn(
                     'salesper',
                     function ($user) {
-                    $achorId = $user->anchor_id; 
-                    return '';
+                    if($user->to_id){
+                    $userInfo=Helpers::getUserInfo($user->to_id);                    
+                       $saleName=$userInfo->f_name. ''.$userInfo->l_name;  
+                    }else{
+                       $saleName=''; 
+                    } 
+                    return $saleName;
                 })
                 ->editColumn(
                     '',
