@@ -281,11 +281,18 @@ class LeadController extends Controller {
                 if(!empty($value) && !$anchUserInfo){
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
+                    if(trim($value[4])=='Buyer'){
+                        $userType=2;
+                    }else{
+                        $userType=1; 
+                    }
                 $arrAnchLeadData = [
                     'name' =>  trim($value[0]),
-                    'email' =>  trim($value[1]),
-                    'phone' => $value[2],
-                    'user_type' => $value[3],
+                    'l_name'=>trim($value[1]),
+                    'email' =>  trim($value[2]),
+                    'biz_name'=>$value[3],
+                    'phone' => $value[4],
+                    'user_type' => $userType,
                     'created_by' => Auth::user()->user_id,
                     'created_at' => \Carbon\Carbon::now(),
                     'is_registered'=>0,
