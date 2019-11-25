@@ -263,6 +263,7 @@ class LeadController extends Controller {
 
             $anchLeadMailArr = [];
             $arrAnchLeadData = [];
+            $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
                 
                 $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[1]));  
@@ -273,6 +274,7 @@ class LeadController extends Controller {
                     'name' =>  trim($value[0]),
                     'email' =>  trim($value[1]),
                     'phone' => $value[2],
+                    'user_type' => $value[3],
                     'created_by' => Auth::user()->user_id,
                     'created_at' => \Carbon\Carbon::now(),
                     'is_registered'=>0,
@@ -280,6 +282,15 @@ class LeadController extends Controller {
                     'token' => $token,
                 ];
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
+                
+                $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
+                if($getAnchorId){
+                $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
+                }else{
+                 $arrUpdateAnchor ['anchor_id'] ='';
+                }
+               $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
+                
                 if ($anchor_lead) {
                     $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
                     $anchLeadMailArr['name'] = $arrAnchLeadData['name'];
@@ -399,9 +410,17 @@ class LeadController extends Controller {
             
              $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
             $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
-            $arrUpdateAnchor = [
-                'anchor_id' => $getAnchorId->anchor_id
-                ];
+            
+            if($getAnchorId){
+                $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
+            }else{
+                 $arrUpdateAnchor ['anchor_id'] ='';
+            }
+            
+//            $arrUpdateAnchor = [
+//                'anchor_id' => $getAnchorId->anchor_id
+//                ];
+            
             $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
             if ($anchor_lead) {
                 $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;

@@ -31,6 +31,7 @@
 
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script>
 
     var messages = {
@@ -42,77 +43,21 @@
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
-            $('#saveAnch').on('click', function (event) {
-                $('input.anchor_lead').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.comp_name').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.email').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.phone').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('select.state').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.city').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.pin_code').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                // test if form is valid 
-                if ($('form#anchorForm').validate().form()) {
-                    var form = $("#anchorForm");
-                    $.ajax({
-                        type: "POST",
-                        url: '{{Route('add_anchor_reg')}}',
-                        data: form.serialize(), // serializes the form's elements.
-                        cache: false,
-                        success: function (res)
-                        {
-                            if (res.status == 1)
-                            {
-                               
-                                       $('#addAnchorFrm').dialog('close');
-                                     window.location.href = "/anchor";
-                            }
-                        },
-                        error: function (error)
-                        {
-                            console.log(error);
-                        }
-
-                    });
-                } else {
-                    console.log("does not validate");
+              $('#anchorForm').validate({ // initialize the plugin
+                rules: {
+                anchor_lead: {
+                required: true,
+                extension: "csv"
                 }
-            })
-            //$("#btnAddMore").on('click', addInput);
+                },
+                messages: {
+                anchor_lead: {
+                required: "Please select file",
+                extension:"Please select only csv format",
+                }
+                }
+                });
+
             $('form#anchorForm').validate();
         });
 
