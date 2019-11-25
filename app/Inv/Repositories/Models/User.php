@@ -226,7 +226,7 @@ class User extends Authenticatable
     public static function getAllUsers()
     {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
-        $result = self::select('users.*')
+        $result = self::distinct()->select('users.user_id','users.f_name','users.l_name','users.email','users.mobile_no','users.created_at', 'anchor_user.anchor_id as UserAnchorId','anchor_user.user_type as AnchUserType','lead_assign.to_id')
                  ->leftJoin('lead_assign',  'lead_assign.assigned_user_id','users.user_id')
                  ->leftJoin('anchor_user',  'anchor_user.user_id','users.user_id') 
                  ->where('users.user_type', 1);
@@ -234,7 +234,7 @@ class User extends Authenticatable
             $result->where('lead_assign.to_id', \Auth::user()->user_id);
             $result->where('lead_assign.is_owner', 1);
         }
-        $result->groupBy('users.user_id');
+        //$result->groupBy('users.user_id');
         $result = $result->orderBy('users.user_id', 'desc');
                  
         return ($result ? $result : '');
@@ -538,12 +538,7 @@ class User extends Authenticatable
      * @param integer $userId
      * @return mixed
      */
-    public static function getLeadSalesManager($userId) {
-        
-        //SELECT an.sales_user_id FROM `rta_users` u 
-        //INNER JOIN `rta_anchor_user` au ON u.user_id=au.user_id
-//INNER JOIN `rta_anchor` an ON an.anchor_id=au.anchor_id
- //where `u`.`user_id` = 141 limit 1
+    public static function getLeadSalesManager($userId) {        
         
         $result = self::select('anchor.sales_user_id')
               ->join('anchor_user', 'users.user_id', '=', 'anchor_user.user_id')

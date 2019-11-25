@@ -5,39 +5,38 @@
        <div class="modal-body text-left">
            <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_lead')}}"  target="_top" enctype="multipart/form-data">
 		@csrf
-                        <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
+                        
+<!--                              <div class="form-group">
                                  <label for="txtCreditPeriod">Upload File
                                  <span class="mandatory">*</span>
                                  </label>
                                  <input type="file" name="anchor_lead" id="anchor_lead" value="" class="form-control anchor_lead" >
-                              </div>
-                           </div>
-                           
-                        </div>
-                @if ($is_superadmin == '1')
-                <div  class="row">                    
-                      <div class="col-6">
+                              </div>-->
+
+                          @if ($is_superadmin == '1')
+                
                               <div class="form-group">
                                  <label for="txtEmail">Anchor
                                  <span class="mandatory">*</span>
                                  </label>        
                                      <select class="form-control assigned_anchor" name="assigned_anchor" id="assigned_anchor">
-                            <option value="">please select</option>
+                            <option value="">Please Select</option>
                              @foreach($anchDropUserList as $key => $value)
                              <option value="{{$value->anchor_id}}"> {{$value->comp_name}} </option>
                              @endforeach
                          </select>
                                   
-                              </div>
-                           </div> 
-                       
                 </div>
                 @endif
-                           
                 
-                <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
+                <div class="custom-file mb-3 mt-2">
+               <label for="email">Upload Document</label>
+               <input type="file" class="custom-file-input" id="anchor_lead" name="anchor_lead">
+               <label class="custom-file-label" for="customFile">Choose file</label>
+            </div>
+                           
+                <br> <br>
+                <button type="submit" class="btn btn-success btn-sm float-right" id="saveAnch">Submit</button>  
            </form>
          </div>
      

@@ -18,7 +18,7 @@
                                  <label for="txtSupplierName">Business Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="comp_name" id="comp_name" value="" class="form-control comp_name" tabindex="3" placeholder="Business Name" >
+                                 <input type="text" name="comp_name" id="comp_name" value="" class="form-control comp_name" tabindex="2" placeholder="Business Name" >
                               </div>
                            </div>
                         </div>
@@ -28,7 +28,7 @@
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="4" placeholder="Email" >
+                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="3" placeholder="Email" >
                               </div>
                            </div>
 
@@ -38,7 +38,7 @@
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control numbercls phone" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
+                                    <input class="form-control numbercls phone" name="phone" id="phone" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -51,12 +51,29 @@
                 
                 
                 <div class="row">
+                    
+                     <div class="col-6">
+                                 <div class="form-group">
+                                    <label for="txtMobile">Address
+                                    <span class="mandatory">*</span>
+                                    </label>
+
+                                    <input class="form-control comp_addr" name="comp_addr" id="comp_addr" tabindex="5" type="text"  placeholder="Address" required="">
+                                    <div class="failed">
+                                       <div style="color:#FF0000">
+                                          <small class="erro-sms" id="erro-sms">
+                                          </small>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                    
                            <div class="col-6">
                            <div class="form-group">
                                  <label for="txtEmail">State
                                  <span class="mandatory">*</span>
                                  </label>                  
-                          <select class="form-control state" name="state" id="state">
+                          <select class="form-control state" name="state" id="state" tabindex="6">
                              <option value=""> Select State</option>
                              @foreach($states as $key => $state)
                              <option value="{{$state->id}}"> {{$state->name}} </option>
@@ -66,13 +83,16 @@
                               </div>
                            </div>
 
-                           <div class="col-6">
+                           
+                        </div>
+                <div class="row">
+                    <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">City
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control city" name="city" id="city" tabindex="6" type="text" maxlength="10" placeholder="City" required="">
+                                    <input class="form-control city" name="city" id="city" tabindex="7" type="text" maxlength="10" placeholder="City" required="">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -81,15 +101,13 @@
                                     </div>
                                  </div>
                               </div>
-                        </div>
-                <div class="row">
                            <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Pin Code
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control numbercls pin_code" name="pin_code" id="pin_code" tabindex="6" type="text" maxlength="6" placeholder="Pin Code" required="">
+                                    <input class="form-control numbercls pin_code" name="pin_code" id="pin_code" tabindex="8" type="text" maxlength="6" placeholder="Pin Code" required="">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -98,21 +116,7 @@
                                     </div>
                                  </div>
                               </div>
-                            <div class="col-6">
-                                 <div class="form-group">
-                                    <label for="txtMobile">Address
-                                    <span class="mandatory">*</span>
-                                    </label>
-
-                                    <input class="form-control comp_addr" name="comp_addr" id="comp_addr" tabindex="6" type="text"  placeholder="Address" required="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
+                           
                         </div>
                 
                    <div class="row">
@@ -121,8 +125,8 @@
                                  <label for="txtEmail">Assigned Sale Manager
                                  <span class="mandatory">*</span>
                                  </label>
-                                  <select class="form-control assigned_sale_mgr" name="assigned_sale_mgr" id="assigned_sale_mgr">
-                                      <option value="">please select</option>
+                                  <select class="form-control assigned_sale_mgr" name="assigned_sale_mgr" id="assigned_sale_mgr" tabindex="9">
+                                      <option value="">Please Select</option>
                                       <option value="10">Sale Manager 1</option>
                                       <option value="11">Sale Manager 2</option>
                                       <option value="12">Sale Manager 3</option>

@@ -3,7 +3,9 @@
 namespace App\Libraries\Ui;
 
 use DataTables;
+use Helpers;
 use Illuminate\Http\Request;
+use App\Inv\Repositories\Models\User;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 
@@ -69,21 +71,39 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->editColumn(
                     'anchor',
-                    function ($user) {
-                    $achorId = $user->anchor_id; 
+                    function ($user) {                    
+                    if($user->UserAnchorId){
+                      $userInfo=User::getUserByAnchorId($user->UserAnchorId);
+                       $achorId= $userInfo->f_name.''.$userInfo->l_name;
+                    }else{
+                      $achorId='';  
+                    }
+                    //$achorId = $user->UserAnchorId; 
                     return $achorId;
                 })
                 ->editColumn(
                     'userType',
                     function ($user) {
-                    $achorId = $user->anchor_id; 
-                    return '';;
+                    if($user->AnchUserType==1){
+                        $achorUserTpe='Supplier';
+                    }else if($user->AnchUserType==2){
+                         $achorUserTpe='Buyer';
+                    }else{
+                        $achorUserTpe='';
+                    }
+                    //$achorUserTpe = $user->AnchUserType; 
+                    return $achorUserTpe;
                 })
                 ->editColumn(
                     'salesper',
                     function ($user) {
-                    $achorId = $user->anchor_id; 
-                    return '';
+                    if($user->to_id){
+                    $userInfo=Helpers::getUserInfo($user->to_id);                    
+                       $saleName=$userInfo->f_name. ''.$userInfo->l_name;  
+                    }else{
+                       $saleName=''; 
+                    } 
+                    return $saleName;
                 })
                 ->editColumn(
                     '',
@@ -305,8 +325,8 @@ class DataRenderer implements DataProviderInterface
                     'anchor_id',
                     function ($user) {
                     $link = '000'.$user->anchor_id;
-                    //return $link;
-                       return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                    return $link;
+                      // return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                         
                     } )
                 ->editColumn(
@@ -345,7 +365,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($users) {
                     //$view="<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-eye\"></a>";
-                    return  "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></a>";
+                    return  "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {
