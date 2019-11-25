@@ -42,7 +42,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@updateCompanyDetail'
             ]);
             
-            Route::get('promoter-details/{id}', [
+            Route::get('promoter-details', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
             ]);
