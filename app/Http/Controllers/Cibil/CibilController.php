@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\BizApiLog;
+use App\Inv\Repositories\Models\BizApi;
 use Session;
 use File;
  
@@ -43,24 +45,38 @@ class CibilController extends Controller
         $con = json_encode($new); 
         // Convert into associative array 
         $newArr = json_decode($con, true); 
-        $creditScore = '0';
+        $cibilScore = '0';
         if(!empty($newArr['INDV-REPORTS']['INDV-REPORT']['SCORES']))
         {
-            $creditScore = $newArr['INDV-REPORTS']['INDV-REPORT']['SCORES']['SCORE'][0]['SCORE-VALUE'];
+            $cibilScore = $newArr['INDV-REPORTS']['INDV-REPORT']['SCORES']['SCORE'][0]['SCORE-VALUE'];
         }
 
-        $req =   json_encode(array('dl' => $result['dl_no'],'dob' => $result['dob']));
-           $createApiLog = BizApiLog::create(['req_file' =>$requestPan['epic_no'], 'res_file' => json_encode($result['response']->result),'status' => 0]);
-          if ($createApiLog) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
-            } else {
-               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
-            }
+        $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => json_encode($responce),'status' => 0,'created_by' => Auth::user()->user_id]);
 
 
+        if ($createApiLog) {
+                $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
+                                            'biz_id' =>   $arrOwnerData['biz_id'],
+                                            'biz_owner_id' => $arrOwnerData['biz_owner_id'],
+                                            'type' => 1,
+                                            'verify_doc_no' => 1,
+                                            'status' => 1,
+                                           'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                                           'created_by' => Auth::user()->user_id,
+                                          ]);
 
+                           if($createBizApi){
 
-        return $creditScore;
+                                 return response()->json(['message' =>'cibil pull successfully','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
+                           } 
+                           else 
+                           {
+                                 return response()->json(['message' =>'Something went wrong','status' => 0]);
+                           }
+        }else{
+             return response()->json(['message' =>'Something went wrong','status' => 0]);
+        }    
+
     }
 
 

@@ -109,9 +109,9 @@
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->first_name." ".$arr->last_name}}</td>
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
-                                 <td width="20%"></td>
+                                 <td width="20%" id="cibilScore{{$arr->biz_owner_id}}"></td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_promoter({{$arr->biz_owner_id}})"><small>PULL</small></button>
+                                    <button class="btn btn-success btn-sm" id="cibilScoreBtn{{$arr->biz_owner_id}}" supplier="49" onclick="pull_cibil_promoter({{$arr->biz_owner_id}})">PULL</button>
                                     <button class="btn btn-warning btn-sm" supplier="49" onclick=""><small>DOWNLOAD</small></button>
                                     <button class="btn btn-info btn-sm" supplier="49" onclick=""><small>UPLOAD</small></button>
                                  </td>
@@ -378,6 +378,7 @@
 @section('jscript')
 <script>
       function pull_cibil_promoter(biz_owner_id){
+            $("#cibilScoreBtn"+biz_owner_id).text("Waiting");
             var messages = {
                  chk_user_cibil: "{{ URL::route('chk_user_cibil') }}",
                  data_not_found: "{{ trans('error_messages.data_not_found') }}",
@@ -391,28 +392,18 @@
                 dataType: 'json',
                 data: postData,
                 error: function (xhr, status, errorThrown) {
-                                   alert(errorThrown);
+                                  // alert(errorThrown);
                 },
                 success: function (data) {
-                   var status =  data['status-code'];
-                     if(status==101)
+                  $("#cibilScoreBtn"+biz_owner_id).text("PULL");
+                   var status =  data['status'];
+                     if(status==1)
                        {  
-                            var name = data['result']['name'];
-                            var request_id = data['request_id'];
-                            var MergeResonse = name.concat(request_id, status);      
-                             $('#response'+count).val(MergeResonse);
-                             $('#pan_no'+count).attr('readonly',true);
-                             $('#pan_verify'+count).text('Verified');
-                             $('#successpanverify'+count).show();
-                             $('#failurepanverify'+count).hide();
-                             $('#pan_verify'+count).css('pointer-events','none');
-                             $("#submit").attr("disabled", false);
+                            //alert(data['message']);
+                            $("#cibilScore"+biz_owner_id).text(data['cibilScore']);
                             
                        }else{
-                           $('#pan_verify'+count).text('Verify');
-                            $('#successpanverify'+count).hide();
-                           $('#failurepanverify'+count).show();
-                           $("#submit").attr("disabled", true);
+                           alert(data['message']);
                       }                          
                        
                }
