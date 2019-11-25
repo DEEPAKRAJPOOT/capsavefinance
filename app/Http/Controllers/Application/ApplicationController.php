@@ -91,7 +91,7 @@ class ApplicationController extends Controller
        $getCin = $this->userRepo->getCinByUserId($biz_id);
        if($getCin==false)
        {
-           return redirect()->route('business_information_open');
+           return  Redirect::back();
        }
        return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
            'cin_no' => $getCin->cin,
