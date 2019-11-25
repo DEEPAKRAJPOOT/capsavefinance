@@ -390,7 +390,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'name',
                         function ($user) {
-                    $full_name = $user->name;
+                    $full_name = $user->name.' '.$user->l_name;
                     return $full_name;
                     
                 })               

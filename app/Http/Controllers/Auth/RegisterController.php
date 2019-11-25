@@ -205,6 +205,7 @@ use RegistersUsers,
             $anchorDetail = $anchorLeadInfo;
         }else{
             $anchorDetail = '';
+            return redirect(route('login_open'));
         }
            return view('auth.sign-up', compact('userArr','anchorDetail'));
            

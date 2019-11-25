@@ -443,9 +443,9 @@
                             var newDate = dateAr[0] + '/' + dateAr[1] + '/' + dateAr[2]; 
                         }
                       
-                        $("#first_name" + count).val(v.name);
-                        $("#address" + count).val(v.address);
-                        $("#date_of_birth1").prop("type", "text").val(newDate);
+                        $("#first_name"+count).val(v.name);
+                        $("#address"+count).val(v.address);
+                        $("#date_of_birth"+count).prop("type", "text").val(newDate);
                         
                         if (k >= 0)
                         {  
@@ -461,11 +461,6 @@
                     });
                         var bizId = $('input[name=biz_id]').val();
                         var getRes = savePromoter(arr, bizId);
-                        
-                        ///$(".form-design").load(" .form-design");
-                      /// window.location.href = "{{ route('promoter-detail',[])}}";
-                       /// console.log( getRes);
-                        
                 }
             });
         });
