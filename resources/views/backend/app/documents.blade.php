@@ -56,10 +56,6 @@
     <div class="card mt-4">
         <div class="card-body">
 
-            @if(session()->has('message'))
-            <p class="alert alert-info">{{ Session::get('message') }}</p>
-            @endif
-
             @foreach($errors->all() as $error)
             <span class="text-danger error">{{ $error }}</span>
             @endforeach

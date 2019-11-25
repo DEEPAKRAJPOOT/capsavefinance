@@ -112,7 +112,7 @@ class DocumentRepository implements DocumentInterface
      * @param mixed $ids
      */
     
-    public function saveDocument($attributes = [], $docId){
+    public function saveDocument($attributes = [], $docId, $userId){
         /**
          * Check Valid Array
          */
@@ -123,7 +123,7 @@ class DocumentRepository implements DocumentInterface
             throw new BlankDataExceptions('No Data Found');
         }
         
-        return UserFile::creates($attributes, $docId);
+        return UserFile::creates($attributes, $docId, $userId);
     }
     
     
