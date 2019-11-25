@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\User;
 use Session;
 use Helpers;
 
@@ -149,6 +150,86 @@ class ApplicationController extends Controller
             return Helpers::getExceptionMessage($ex);
         }
     }
+    
+    
+    /**
+     * Render view for company detail page according to biz id
+     * 
+     * @param Request $request
+     * @return view
+     */
+    public function showDocuments(Request $request){
+        try {
+            $arrFileData = $request->all();
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $userData = User::getUserByAppId($appId);
+            
+            if ($appId > 0) {
+                $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
+                if(!empty($requiredDocs)){
+                    $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
+                }
+            }
+            else {
+                return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
+            }
+            
+            if ($docData) {
+                return view('backend.app.documents', [
+                    'requiredDocs' => $requiredDocs,
+                    'documentData' => $docData,
+                    'user_id' => $userData->user_id,
+                    'app_id' => $appId,
+                    'biz_id' => $bizId
+                ]);
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+     
+    /**
+     * Handle a Business documents for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function saveDocument(DocumentRequest $request)
+    {
+        try {
+            $arrFileData = $request->all();
+            $docId = $request->get('doc_id'); //  fetch document id
+            $document_info = $this->docRepo->saveDocument($arrFileData, $docId);
+            $userId = Auth::user()->user_id;
+            if ($document_info) {
+                
+                //Add/Update application workflow stages
+                $appId = $arrFileData['appId'];       
+                $response = $this->docRepo->isUploadedCheck($userId, $appId);            
+                $wf_status = $response->count() < 1 ? 1 : 2;
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                
+                Session::flash('message',trans('success_messages.uploaded'));
+                return redirect()->back();
+            } else {
+                //Add application workflow stages
+                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+            
+                return redirect()->back();
+            }
+        } catch (Exception $ex) {
+            //Add application workflow stages
+            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+                
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
     /**
      * Render view for change application status
      * 
