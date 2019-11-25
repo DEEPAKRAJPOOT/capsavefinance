@@ -254,7 +254,8 @@ class Helper extends PaypalHelper
         
         return $inputArr;
     }
-         /**
+    
+    /**
      * uploading document data
      *
      * @param Exception $exception
