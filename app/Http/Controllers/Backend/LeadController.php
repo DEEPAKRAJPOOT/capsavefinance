@@ -289,8 +289,8 @@ class LeadController extends Controller {
                 $arrAnchLeadData = [
                     'name' =>  trim($value[0]),
                     'l_name'=>trim($value[1]),
-                    'email' =>  trim($value[2]),
-                    'biz_name'=>$value[3],
+                    'biz_name' =>  trim($value[2]),
+                    'email'=>$value[3],
                     'phone' => $value[4],
                     'user_type' => $userType,
                     'created_by' => Auth::user()->user_id,
