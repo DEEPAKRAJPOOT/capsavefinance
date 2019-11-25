@@ -113,7 +113,7 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'dl_no' => $dlArr['dl_no'],
-                    'dob' => $dlArr['dob'] 
+                    'dob' => date("d-m-Y", strtotime($dlArr['dob']))
                     ]
             ];
             $response = $this->client->post($api_url, $options);
