@@ -6,7 +6,6 @@ use DB;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Role as Role;
@@ -570,12 +569,7 @@ class User extends Authenticatable
         if (empty($appId)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-        //Check anchId is not an integer
-
-        if (!is_int($appId)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }
-
+       
         $arrUser = self::select('users.*')
               ->join('app', 'app.user_id', '=', 'users.user_id')
               ->where('app.app_id', '=', $appId)

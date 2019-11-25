@@ -94,7 +94,6 @@ class UserFile extends Authenticatable
     public static function arrayInputData($attributes, $mstDocId, $userId)
     {
         $inputArr = [];
-        dd($attributes);
         $count = count($attributes['doc_file']);
         $appId = (isset($attributes['appId'])) ? $attributes['appId'] : $attributes['app_id'];
         for ( $i=0; $i < $count; $i++) 

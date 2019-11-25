@@ -739,8 +739,14 @@ var messages = {
       ///////////////////////DL api ///////////////
        $(document).on('click','.veridl',function () {
          var count = $(this).attr('data-id');
+         var bizId = $('input[name=biz_id]').val();
+         var app_id = $('#app_id').val();
+         var ownerid = $('#ownerid'+count).val();
          var PAN = $("#verifydl"+count).val();
-           var dataStore = {'dl_no': 'MH01 20090091406','dob':'12-06-1987','_token': messages.token };
+         var dl_no = $("#verifydl"+count).val();
+         var dob = $("#date_of_birth"+count).val();
+         var dataStore = {'dl_no': dl_no,'dob':dob,'_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id};
+         ////var dataStore = {'dl_no': 'MH01 20090091406','dob':'12-06-1987','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id};
           var postData = dataStore;
             $('#ddriving'+count).text('Waiting...');
              jQuery.ajax({
@@ -752,10 +758,11 @@ var messages = {
                                    alert(errorThrown);
                 },
                   success: function (data) {
-                                          if(data['status-code'] > 0)
+                                   if(data['status']==1)
                                            {   
                                                  $('#verifydl'+count).attr('readonly',true);
                                                  $('#ddriving'+count).text('Verified');
+                                                 $('#verifydl'+count).css({"border": "1px solid #e9ecef"});
                                                  $('#ddriving'+count).css('pointer-events','none');
                                                  $("#submit").attr("disabled", false); 
                                            }else{
