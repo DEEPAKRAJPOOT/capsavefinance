@@ -148,10 +148,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('accept-application-pool', [
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
-            ]);
-            
-            
-            
+            ]);  
         });
-            });
+    });
 });
