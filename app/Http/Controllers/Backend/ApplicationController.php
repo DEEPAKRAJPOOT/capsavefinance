@@ -100,21 +100,44 @@ class ApplicationController extends Controller
 
 
      /* Show promoter details page  */
-     public function showPromoterDetails($bizId){
+     public function showPromoterDetails(Request $request){
         $id = Auth::user()->user_id;
-//        $appId = $request->get('app_id');
-//        $bizId = $request->get('biz_id');
-//        $userId = $request->get('user_id');
+        $appId = $request->get('app_id');  
+        $bizId = $request->get('biz_id'); 
         $attribute['biz_id'] = $bizId;
-        
+        $getCin = $this->userRepo->getCinByUserId($bizId);
+       if($getCin==false)
+       {
+          return Redirect::back();
+       }
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
-//            'appId' => $appId, 
-//            '$bizId' => $bizId
+              'cin_no' => $getCin->cin,
+             'appId' => $appId, 
+            'bizId' => $bizId
             ]);
     }
-    
+     /**
+     * Save Promoter details form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    //////////////////Save Promoter Multiple Details///////////////////////// 
+    public function savePromoter(Request $request) {
+       try {
+          $arrFileData = json_decode($request->getContent(), true);
+          $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
+         
+          if ($owner_info) {
+                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
+            } else {
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     /**
      * Handle a Business documents for the application.
      *
@@ -355,7 +378,7 @@ class ApplicationController extends Controller
                 Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1, $assign_role = false);
                 
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('NEWROUTE',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+                return redirect()->route('promoter_details',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
             } else {
                 //Add application workflow stages
                 Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2, $assign_role = false);
