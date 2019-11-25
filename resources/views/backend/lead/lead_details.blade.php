@@ -127,7 +127,7 @@
                                                 <button type="button" class="btn btn-info btn-sm">Not Complete</button>
                                                 @endif 
                                             </td>
-                                            <td><div class="d-flex inline-action-btn justify-content-center"><a title="Add App Note" href="{{route('cam_overview',['user_id'=>$app['user_id'], 'app_id'=>$app['app_id']])}}" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                            <td><div class="d-flex inline-action-btn justify-content-center"><a title="Edit Application" href="{{route('company_details',['user_id'=>$app['user_id'], 'app_id'=>$app['app_id'], 'biz_id'=>$app['biz_id']])}}" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
                                                 </div>	           
                                             </td>  
                                         </tr>	

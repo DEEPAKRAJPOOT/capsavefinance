@@ -91,7 +91,7 @@ class ApplicationController extends Controller
        $getCin = $this->userRepo->getCinByUserId($biz_id);
        if($getCin==false)
        {
-           return redirect()->route('business_information_open');
+           return  Redirect::back();
        }
        return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
            'cin_no' => $getCin->cin,
@@ -114,6 +114,12 @@ class ApplicationController extends Controller
             
                 //Add application workflow stages
                 $appId = $arrFileData['app_id']; 
+
+                $appId = $appData ? $appData->app_id : null; 
+
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                 
+
 
                 Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
                 

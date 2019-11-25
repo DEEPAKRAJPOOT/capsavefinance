@@ -12,7 +12,7 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         ['prefix' => 'dashboard'],
         function () {
         Route::group(
-            ['middleware' => 'auth'],
+            ['middleware' => ['auth','CheckWorkflow']],
             function () {
             Route::get(
                 '/',

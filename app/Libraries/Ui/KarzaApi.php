@@ -2,6 +2,7 @@
 
 namespace App\Libraries\Ui;
 
+use Helpers;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
@@ -34,12 +35,12 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'pan' => $pancard],
-            ];
-            $response = $this->client->post($api_url, $options);
+            ];            
+            $response = $this->client->post($api_url, $options);            
              $response = $response->getBody()->getContents();
              return $response;
             
-        } catch (\Exception $e) {
+        } catch (\Exception $e) {            
             return [];
         }
     }
@@ -113,7 +114,7 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'dl_no' => $dlArr['dl_no'],
-                    'dob' => $dlArr['dob'] 
+                    'dob' => date("d-m-Y", strtotime($dlArr['dob']))
                     ]
             ];
             $response = $this->client->post($api_url, $options);
@@ -139,7 +140,7 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'fileNo' => $passportArr['fileNo'],
-                     'dob' => $passportArr['dob'] 
+                     'dob' => date("d/m/Y", strtotime($passportArr['dob']))
                     ]
             ];
              $response = $this->client->post($api_url, $options);
@@ -176,5 +177,30 @@ class KarzaApi {
 
         return [];
     }
+
+
+    public function getPromoterCibilRequest($arrData) {
+        echo "sdfsd";
+        dd($arrData);
+
+        try {
+            $api_url = '/v2/pan';
+
+            $options = [
+                'json' => [
+                    'consent' => 'Y',
+                    'pan' => $pancard],
+            ];
+            $response = $this->client->post($api_url, $options);
+             $response = $response->getBody()->getContents();
+             return $response;
+            
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+    
+
+    
 
 }
