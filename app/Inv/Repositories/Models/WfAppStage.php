@@ -99,7 +99,7 @@ class WfAppStage extends BaseModel
      */    
     protected static function getCurrentWfStage($app_id) 
     {
-        $appData = self::select('wf_stage.stage_code','wf_stage.assign_role')
+        $appData = self::select('wf_stage.stage_code','wf_stage.assign_role','wf_stage.order_no')
                 ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')                 
                 ->where('app_wf.biz_app_id', $app_id)
                 ->where('app_wf.app_wf_status', 1)
