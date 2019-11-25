@@ -17,10 +17,13 @@ class CheckWorkflow extends BaseAuthorization
      */
     public function handle($request, Closure $next)
     {
-        if (\Auth::user()->user_type == '1' && $request->has('app_id')) {
-            $route_name = Helpers::getWfRedirectRoute($request->get('app_id'));
-            if ($request) {
-               redirect()->route($route_name,['app_id' =>  $request->get('app_id'), 'biz_id' => $request->get('biz_id')]);
+        $user = \Auth::user();
+        if ($user->user_type == '1') {
+            $route_name = Helpers::getWfRedirectRoute($user->user_id);
+            $appData = Helpers::getLatestAppData($user->user_id);            
+            if ($appData) {
+               //dd($route_name, $appData);
+               return redirect()->route($route_name, ['app_id' =>  $appData->app_id, 'biz_id' => $appData->biz_id]);
             }
         }
 

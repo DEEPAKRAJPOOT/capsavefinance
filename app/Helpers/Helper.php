@@ -420,12 +420,26 @@ class Helper extends PaypalHelper
      * @param integer $app_id
      * @return boolean
      */
-    public static function getWfRedirectRoute($app_id)
+    public static function getWfRedirectRoute($user_id)
     {
+        $appData = Application::getLatestApp($user_id);
+        $app_id = $appData ? $appData->app_id : 0;
         $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
         $wf_order_no = $last_completed_wf_stage->order_no;
         $wf_data = WfStage::getNextWfStage($wf_order_no);
         return $wf_data ? $wf_data->route_name : false;
+    }
+    
+    /**
+     * Get Latest Application Data
+     * 
+     * @param integer $user_id
+     * @return mixed
+     */
+    public static function getLatestAppData($user_id)
+    {
+        $appData = Application::getLatestApp($user_id);        
+        return $appData ? $appData : null;
     }
     
     /**

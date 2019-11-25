@@ -257,5 +257,37 @@ class Application extends Model
         return ($appData ? $appData : null);        
     }    
     
-    
+    /**
+     * Get Latest application
+     * 
+     * @param integer $user_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getLatestApp($user_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($user_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($user_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+               
+        
+        $appData = self::select('app.*')
+                ->where('app.user_id', $user_id)
+                ->where('app.status', '0')
+                ->orderBy('app.app_id', 'DESC')
+                ->first();
+                       
+        return ($appData ? $appData : null);        
+    }    
 }
