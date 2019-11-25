@@ -102,7 +102,7 @@ class DocumentRepository implements DocumentInterface
                 ->where('app_id', $appId)
                 ->where('is_upload', 0)
                 ->get();
-
+        
         return $result ?: false;
     }
     
