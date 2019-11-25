@@ -226,9 +226,18 @@ class User extends Authenticatable
      */
     public static function getAllUsers()
     {
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
         $result = self::select('users.*')
-            ->where('user_type', 1)
-                 ->orderBy('users.user_id', 'desc');
+                 ->leftJoin('lead_assign',  'lead_assign.assigned_user_id','users.user_id')
+                 ->leftJoin('anchor_user',  'anchor_user.user_id','users.user_id') 
+                 ->where('users.user_type', 1);
+        if ($roleData[0]->is_superadmin != 1) {
+            $result->where('lead_assign.to_id', \Auth::user()->user_id);
+            $result->where('lead_assign.is_owner', 1);
+        }
+        $result->groupBy('users.user_id');
+        $result = $result->orderBy('users.user_id', 'desc');
+                 
         return ($result ? $result : '');
     }
     

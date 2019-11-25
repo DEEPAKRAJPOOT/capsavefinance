@@ -52,7 +52,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
 
             
-            Route::get('promoter-details', [
+                Route::get('promoter-details/{id}', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
             ]);
@@ -150,6 +150,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('accept-application-pool', [
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
+            ]);
+
+            Route::get('business-information', [
+                'as' => 'create_application',
+                'uses' => 'Backend\ApplicationController@showBusinessInformation'
+            ]);
+
+            Route::post('business-information', [
+                'as' => 'save_new_application',
+                'uses' => 'Backend\ApplicationController@saveBusinessInformation'
             ]);
 
         });

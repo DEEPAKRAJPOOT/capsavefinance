@@ -5,7 +5,7 @@
 Route::group(
     ['middleware' => 'auth'],
     function () {
-   
+   //////////////////Pan card authontication//////////////////////////
     Route::post(
         'chk-user-pan-karza',
         [
@@ -14,8 +14,42 @@ Route::group(
         ]
     );
    
+    //////////////////Pan card status//////////////////////////
+    Route::post(
+        'chk-user-pan-status-karza',
+        [
+        'as' => 'chk_user_pan_status_karza',
+        'uses' => 'Karza\KarzaController@checkPanStatusVerification'
+        ]
+    );
+    //////Voter ID Verification
     
+    Route::post(
+        'chk-user-voterid-karza',
+        [
+        'as' => 'chk_user_voterid_karza',
+        'uses' => 'Karza\KarzaController@checkVoterIdVerification'
+        ]
+    );
     
+     //////Voter DL Verification
+    
+    Route::post(
+        'chk-user-dl-karza',
+        [
+        'as' => 'chk_user_dl_karza',
+        'uses' => 'Karza\KarzaController@checkDlVerification'
+        ]
+    );
+      //////Voter passport Verification
+    
+    Route::post(
+        'chk-user-passport-karza',
+        [
+        'as' => 'chk_user_passport_karza',
+        'uses' => 'Karza\KarzaController@checkPassportVerification'
+        ]
+    );
     Route::post(
         'get-users-wci',
         [
