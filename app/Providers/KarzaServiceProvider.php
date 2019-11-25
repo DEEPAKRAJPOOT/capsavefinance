@@ -14,6 +14,7 @@ class KarzaServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        /*
         //$baseUrl = env('KARZA_AUTHENTICATION_API_URL');
         $baseUrl = config('proin.karza_auth_api_url');
         $apiKey = config('proin.karza_auth_api_key');
@@ -27,6 +28,8 @@ class KarzaServiceProvider extends ServiceProvider
                 ]
              ]);
         });
+         * 
+         */
     }
 
     /**
