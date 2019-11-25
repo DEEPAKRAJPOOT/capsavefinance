@@ -118,6 +118,7 @@ use RegistersUsers,
               $arrLeadAssingData = [
                 'from_id' => $userDataArray->user_id,
                 'to_id' => $saleMngId,
+                  'is_owner'=>1,
                 'assigned_user_id' => $userDataArray->user_id,             
                 'created_by' => $userDataArray->user_id,
                 'created_at' => \Carbon\Carbon::now(),

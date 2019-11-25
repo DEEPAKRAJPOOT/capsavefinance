@@ -318,6 +318,7 @@ class LeadController extends Controller {
                 }
           }
             }
+            chmod($destinationPath . '/' . $fileName, 0775, true);
             unlink($destinationPath . '/' . $fileName);
             Session::flash('message', trans('backend_messages.anchor_registration_success'));
            return redirect()->route('get_anchor_lead_list');

@@ -81,6 +81,12 @@
                 });
 
             $('form#anchorForm').validate();
+            
+            $("#saveAnch").click(function(){
+            if($('form#anchorForm').valid()){                
+            $("#saveAnch").attr("disabled","disabled");
+            }  
+            })
         });
 
 </script>
