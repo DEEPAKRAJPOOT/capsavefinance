@@ -63,7 +63,7 @@
 
                     </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="{{ route('get_anchor_lead_list') }}">Manage Anchor Lead</a>
+                        <a class="nav-link" href="{{ route('get_anchor_lead_list') }}">Anchor Lead</a>
                     </li>                           
                 </ul>
             </div>

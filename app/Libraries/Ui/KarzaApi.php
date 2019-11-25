@@ -27,7 +27,7 @@ class KarzaApi {
 
     public function panVerificationRequest($pancard =null) {
 
-        try {
+       try {
             $api_url = '/v2/pan';
 
             $options = [
@@ -43,7 +43,112 @@ class KarzaApi {
             return [];
         }
     }
+  /**
+     * Pan Card  status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+     public function checkPanStatusVerification($pancard) {
 
+       try {
+            $api_url = '/v2/pan-authentication';
+
+            $options = [
+                'json' => [
+                    'consent' => 'Y',
+                    'pan' => $pancard['pan'],
+                    'name' => $pancard['name'],
+                    'dob' => $pancard['dob']
+                    ],
+            ];
+              $response = $this->client->post($api_url, $options);
+              $response = $response->getBody()->getContents();
+              return $response;
+            
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    
+      /**
+     * Voter ID Card Verification status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkVoterIdVerification($voterid)
+    {
+         try {
+            $api_url = '/v2/voter';
+
+            $options = [
+                'json' => [
+                    'consent' => 'Y',
+                    'epic_no' => $voterid]
+            ];
+            $response = $this->client->post($api_url, $options);
+             $response = $response->getBody()->getContents();
+             return $response;
+            
+        } catch (\Exception $e) {
+            return [];
+        }  
+         
+    }
+    
+       /**
+     * Dl Verification status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkDlVerification($dlArr)
+    {
+        
+         try {
+            $api_url = '/v2/dl';
+
+            $options = [
+                'json' => [
+                    'consent' => 'Y',
+                    'dl_no' => $dlArr['dl_no'],
+                    'dob' => $dlArr['dob'] 
+                    ]
+            ];
+            $response = $this->client->post($api_url, $options);
+             $response = $response->getBody()->getContents();
+             return $response;
+            
+        } catch (\Exception $e) {
+            return [];
+        }  
+    }
+    
+    /**
+     * Passport ID Card Verification status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkPassportVerification($passportArr)
+    {
+          try {
+            $api_url = '/v2/passport-verification';
+
+            $options = [
+                'json' => [
+                    'consent' => 'Y',
+                    'fileNo' => $passportArr['fileNo'],
+                     'dob' => $passportArr['dob'] 
+                    ]
+            ];
+             $response = $this->client->post($api_url, $options);
+             $response = $response->getBody()->getContents();
+             return $response;
+            
+        } catch (\Exception $e) {
+            return [];
+        }  
+    }
+    
     public function all() {
         return $this->endpointRequest('/dummy/posts');
     }

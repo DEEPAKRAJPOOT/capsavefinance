@@ -26,7 +26,7 @@
                     ) 
                     !!}
                     
-                    
+                    @if ($data)
                     {!!
                     Form::select('assign_role',
                     [
@@ -35,6 +35,7 @@
                     array('id' => 'is_active',
                     'class'=>'form-control'))
                     !!}
+                    @endif
                     
                     {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}

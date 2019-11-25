@@ -6,7 +6,7 @@
                 {!!
                 Form::open(
                 array(
-                'route' => 'edit_anchor_reg',
+                'route' => 'update_anchor_reg',
                 'name' => 'editAchorForm',
                 'autocomplete' => 'off', 
                 'id' => 'editAchorForm',

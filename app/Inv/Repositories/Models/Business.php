@@ -9,7 +9,7 @@ use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\BizPanGstApi;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
-use DB;
+use Carbon\Carbon;
 
 class Business extends BaseModel
 {
@@ -62,7 +62,7 @@ class Business extends BaseModel
         $business = Business::create([
         'user_id'=>$userId,
         'biz_entity_name'=>$attributes['biz_entity_name'],
-        'date_of_in_corp'=>$attributes['incorporation_date'],
+        'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
         'turnover_amt'=>$attributes['biz_turnover'],
@@ -190,7 +190,7 @@ class Business extends BaseModel
         //update business table
         $business->update([
         'biz_entity_name'=>$attributes['biz_entity_name'],
-        'date_of_in_corp'=>$attributes['incorporation_date'],
+        'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
         'turnover_amt'=>$attributes['biz_turnover'],
@@ -252,6 +252,18 @@ class Business extends BaseModel
                 'is_pan_verified'=>1,
                 'gstno_pan_gst_id'=>0,
                 'is_gst_verified'=>1,
+                ]);
+        }else if(empty($attributes->pan_api_res) && !empty($attributes->biz_cin)){
+            //update for parent GST
+            BizPanGst::where(['type'=>2,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
+                    'pan_gst_hash'=>$attributes['biz_gst_number'],
+                    'updated_by'=>$userId
+                ]);
+
+            //update for CIN
+            BizPanGst::where(['type'=>1,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
+                    'cin'=>$attributes['biz_cin'],
+                    'updated_by'=>$userId
                 ]);
         }
 

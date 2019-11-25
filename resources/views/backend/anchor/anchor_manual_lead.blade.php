@@ -18,15 +18,25 @@
                 !!}
                 
                         <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
-                                 <label for="txtCreditPeriod">Name
+                                 <label for="txtCreditPeriod">First Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="f_name" id="f_name" value="" class="form-control f_name" tabindex="1" placeholder="Name" >
+                                 <input type="text" name="f_name" id="f_name" value="" class="form-control f_name" tabindex="1" placeholder="First Name" >
                               </div>
                            </div>
-                           <div class="col-md-6">
+                            <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtCreditPeriod">Last Name
+                                 <span class="mandatory">*</span>
+                                 </label>
+                                 <input type="text" name="l_name" id="l_name" value="" class="form-control l_name" tabindex="1" placeholder="Last Name" >
+                              </div>
+                           </div>
+                            </div>
+                           <div class="row">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtSupplierName">Business Name
                                  <span class="mandatory">*</span>
@@ -34,9 +44,8 @@
                                  <input type="text" name="comp_name" id="comp_name" value="" class="form-control comp_name" tabindex="3" placeholder="Business Name" >
                               </div>
                            </div>
-                        </div>
-                           <div class="row">
-                           <div class="col-md-6">
+                        
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
@@ -44,8 +53,10 @@
                                  <input type="email" name="email" id="email" value="" class="form-control email" tabindex="4" placeholder="Email" >
                               </div>
                            </div>
-
-                           <div class="col-md-6">
+                         </div>
+                
+                       <div class="row">
+                           <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Mobile
                                     <span class="mandatory">*</span>
@@ -60,10 +71,8 @@
                                     </div>
                                  </div>
                               </div>
-                        </div>
-                
-                    <div class="row">
-                           <div class="col-md-6">
+                        
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">User Type
                                  <span class="mandatory">*</span>
@@ -168,6 +177,12 @@
         $(document).ready(function () {
             $('#saveAnch').on('click', function (event) {
                 $('input.f_name').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+                 $('input.l_name').each(function () {
                     $(this).rules("add",
                             {
                                 required: true

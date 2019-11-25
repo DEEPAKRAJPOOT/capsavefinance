@@ -15,6 +15,7 @@ use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -1055,5 +1056,26 @@ class UserRepository extends BaseRepositories implements UserInterface
         public function getStateList() {
         $all_state = State::getStateList();        
         return $all_state ?: false;
-        }
+        }        
+        
+        /**
+         * function for assign lead
+         * @param type $arrLeadAssign
+         * @return type
+         */
+        public function createLeadAssign($arrLeadAssign){
+          $result = LeadAssign::createLeadAssign($arrLeadAssign);        
+          return $result ?: false;
+        } 
+        
+    /**
+     * Get Lead Sales Manager
+     * 
+     * @param integer $userId
+     * @return mixed
+     */    
+    public function getLeadSalesManager($userId)
+    {
+        return UserModel::getLeadSalesManager($userId);
+    }
 }
