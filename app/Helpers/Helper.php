@@ -412,6 +412,12 @@ class Helper extends PaypalHelper
         }
     }
     
+    public static function redirectWfStage()
+    {
+        //getCurrentWfStage($app_id);
+        return true;
+    }
+    
     /**
      * Assign Application to User
      * 
