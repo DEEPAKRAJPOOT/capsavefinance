@@ -115,6 +115,12 @@ class ApplicationController extends Controller
                 //Add application workflow stages
                 $appId = $arrFileData['app_id']; 
 
+                $appId = $appData ? $appData->app_id : null; 
+
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                 
+
+
                 Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
                 
                 $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->id);

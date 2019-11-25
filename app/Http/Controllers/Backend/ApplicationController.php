@@ -226,7 +226,7 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-//            dd($arrFileData);
+            // dd($arrFileData);
             $docId = (int)$request->doc_id; //  fetch document id
             $appId = (int)$request->app_id; //  fetch document id
             $userData = User::getUserByAppId($appId);
