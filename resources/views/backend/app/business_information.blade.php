@@ -465,7 +465,7 @@
 								</div>	
 							</div>
 						</div>
-						<div class="d-flex btn-section" style="display: none !important;">
+						<div class="d-flex btn-section">
 							<div class="ml-auto text-right">
 								<input type="submit" value="Save and Continue" class="btn btn-primary">
 							</div>

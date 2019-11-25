@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Karza;
 
 use App\Http\Controllers\Controller;
 use App\Libraries\Ui\KarzaApi;
+use App\Inv\Repositories\Models\BizApiLog;
 use Auth;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -51,7 +52,13 @@ class KarzaController extends Controller
     public function checkVoterIdVerification(KarzaApi $KarzaApi, Request $request)
     {
           $requestPan   = $request->all();
-          return $KarzaApi->checkVoterIdVerification($requestPan['epic_no']);
+          $result = $KarzaApi->checkVoterIdVerification($requestPan['epic_no']);
+
+
+          $createApiLog = BizApiLog::create(['req_file' => $result['request'], 'res_file' => $result['response']->result]);
+          dd($createApiLog);
+
+          return $result['response'];
     }
     
        /**
