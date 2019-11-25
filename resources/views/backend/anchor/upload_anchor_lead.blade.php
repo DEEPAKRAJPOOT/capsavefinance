@@ -18,7 +18,7 @@
                         </div>
                            
                 
-                <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
            </form>
          </div>
      

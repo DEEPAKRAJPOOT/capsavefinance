@@ -166,10 +166,13 @@ class LeadController extends Controller {
     }
 
     public function addAnchorReg(Request $request) {
-        try {           
+        try {
+            //$stateList= $this->userRepo->getStateList();
+            
             return view('backend.anchor.add_anchor_reg');
+                     //->with('state', $stateList);
         } catch (Exception $ex) {
-            dd($ex);
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 

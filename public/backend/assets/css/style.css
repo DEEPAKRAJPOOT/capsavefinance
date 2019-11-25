@@ -6326,7 +6326,7 @@ ul {
           top: 0;
           width: 235px;
           z-index: 1;
-          height: 50px;
+          height: 41px;
           line-height: 2; }
           .rtl.sidebar-icon-only:not(.sidebar-expanded) .sidebar .nav .nav-item.hover-open .nav-link .menu-title {
             left: auto;
@@ -6339,7 +6339,7 @@ ul {
           background: #ffffff;
           padding: .5rem 0;
           position: absolute;
-          top: 50px;
+          top: 41px;
           left: calc(15px + 70px);
           width: calc(220px);
           -webkit-box-shadow: 0 1px 15px 1px rgba(113, 106, 202, 0.08);
