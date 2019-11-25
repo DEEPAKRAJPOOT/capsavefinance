@@ -54,12 +54,12 @@ class UserFile extends Authenticatable
     * @return Array
     */
     
-    public static function creates($attributes, $docId)
+    public static function creates($attributes, $docId, $userId)
     {
-        $inputArr = UserFile::arrayInputData($attributes, $docId);
+        $inputArr = UserFile::arrayInputData($attributes, $docId, $userId);
         foreach ($inputArr as $value) {
             $file = UserFile::create($value);
-            $file = AppDocumentFile::creates($attributes, $file->file_id);
+            $file = AppDocumentFile::creates($attributes, $file->file_id, $userId);
         }
         
         return $file;
@@ -91,18 +91,19 @@ class UserFile extends Authenticatable
      * @return Array
      */
     
-    public static function arrayInputData($attributes, $mstDocId)
+    public static function arrayInputData($attributes, $mstDocId, $userId)
     {
-        $userId = 1;
         $inputArr = [];
+        dd($attributes);
         $count = count($attributes['doc_file']);
+        $appId = (isset($attributes['appId'])) ? $attributes['appId'] : $attributes['app_id'];
         for ( $i=0; $i < $count; $i++) 
         {   
             if($attributes['doc_file'][$i]) {
-                if(!Storage::exists('/public/user/' .$userId. '/' .$attributes['appId'])) {
-                    Storage::makeDirectory('/public/user/' .$userId. '/' .$attributes['appId'], 0775, true);
+                if(!Storage::exists('/public/user/' .$userId. '/' .$appId)) {
+                    Storage::makeDirectory('/public/user/' .$userId. '/' .$appId, 0775, true);
                 }
-                $path = Storage::disk('public')->put('/user/' .$userId. '/' .$attributes['appId'], $attributes['doc_file'][$i], null);
+                $path = Storage::disk('public')->put('/user/' .$userId. '/' .$appId, $attributes['doc_file'][$i], null);
                 $inputArr[$i]['file_path'] = $path;
             }
              

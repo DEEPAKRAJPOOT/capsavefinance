@@ -193,8 +193,8 @@ class ApplicationController extends Controller
         try {
             $arrFileData = $request->all();
             $docId = 1; //  fetch document id
-            $document_info = $this->docRepo->saveDocument($arrFileData, $docId);
             $userId = Auth::user()->user_id;
+            $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 
                 //Add/Update application workflow stages
