@@ -422,12 +422,10 @@ class Helper extends PaypalHelper
      */
     public static function getWfRedirectRoute($app_id)
     {
-        //$last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
-        //$wf_order_no = $last_completed_wf_stage->order_no;
-        
-        //$wf_data = WfStage::getNextWfStage($wf_order_no);
-        //return $wf_data ? $wf_data->route_name : false;
-        return false;
+        $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
+        $wf_order_no = $last_completed_wf_stage->order_no;
+        $wf_data = WfStage::getNextWfStage($wf_order_no);
+        return $wf_data ? $wf_data->route_name : false;
     }
     
     /**

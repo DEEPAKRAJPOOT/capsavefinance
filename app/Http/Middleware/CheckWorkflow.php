@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Middleware\Authorization;
+namespace App\Http\Middleware;
 
 use Closure;
+use Helpers;
 use App\Http\Middleware\Authorization\BaseAuthorization;
 
-class CheckBackendLeadAccess extends BaseAuthorization
+class CheckWorkflow extends BaseAuthorization
 {
     /**
      * Handle an incoming request.
@@ -16,8 +17,11 @@ class CheckBackendLeadAccess extends BaseAuthorization
      */
     public function handle($request, Closure $next)
     {
-         if ($this->gate->denies($request->route()->getName())) {
-            return response()->view('errors.403', [], 403);
+        if (\Auth::user()->user_type == '1' && $request->has('app_id')) {
+            $route_name = Helpers::getWfRedirectRoute($request->get('app_id'));
+            if ($request) {
+               redirect()->route($route_name,['app_id' =>  $request->get('app_id'), 'biz_id' => $request->get('biz_id')]);
+            }
         }
 
         return $next($request);
