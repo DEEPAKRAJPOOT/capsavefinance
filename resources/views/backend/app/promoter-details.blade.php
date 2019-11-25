@@ -14,26 +14,7 @@
 </style>
 @endsection
 @section('content')
-<ul class="main-menu">
-    <li>
-        <a href="#" class="active">Application details</a>
-    </li>
-    <li>
-        <a href="#">CAM</a>
-    </li>
-    <li>
-        <a href="#">FI/RCU</a>
-    </li>
-    <li>
-        <a href="#">Collateral</a>
-    </li>
-    <li>
-        <a href="#">Notes</a>
-    </li>
-    <li>
-        <a href="#">Submit Commercial</a>
-    </li>
-</ul>
+@include('layouts.backend.partials.admin-subnav')
 <!-- partial -->
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
