@@ -412,10 +412,20 @@ class Helper extends PaypalHelper
         }
     }
     
-    public static function redirectWfStage()
+    /**
+     * Redirect workflow stage next to completed stage
+     * 
+     * @param integer $app_id
+     * @return boolean
+     */
+    public static function getWfRedirectRoute($app_id)
     {
-        //getCurrentWfStage($app_id);
-        return true;
+        //$last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
+        //$wf_order_no = $last_completed_wf_stage->order_no;
+        
+        //$wf_data = WfStage::getNextWfStage($wf_order_no);
+        //return $wf_data ? $wf_data->route_name : false;
+        return false;
     }
     
     /**
