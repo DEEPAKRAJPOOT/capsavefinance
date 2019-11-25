@@ -30,7 +30,7 @@ class BusinessInformationRequest extends Request
             'biz_type_id' => 'required|numeric',
             'segment' => 'required|numeric',
             'loan_amount' => 'required|numeric',
-            'incorporation_date' => 'required|date_format:d/m/Y',
+            'incorporation_date' => 'required',
             'biz_constitution' => 'required|numeric',
             // 'biz_email' => 'required|email',
             // 'biz_mobile' => 'required|numeric|digits:10',
