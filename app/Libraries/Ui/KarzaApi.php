@@ -58,7 +58,7 @@ class KarzaApi {
                     'consent' => 'Y',
                     'pan' => $pancard['pan'],
                     'name' => $pancard['name'],
-                    'dob' => $pancard['dob']
+                    'dob' =>  date("d/m/Y", strtotime($pancard['dob']))
                     ],
             ];
               $response = $this->client->post($api_url, $options);

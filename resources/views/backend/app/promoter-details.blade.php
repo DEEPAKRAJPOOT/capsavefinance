@@ -705,8 +705,14 @@ var messages = {
       
        $(document).on('click','.veripan',function () {
          var count = $(this).attr('data-id');
+         var bizId = $('input[name=biz_id]').val();
+         var app_id = $('#app_id').val();
+         var ownerid = $('#ownerid'+count).val();
          var PAN = $("#veripan"+count).val();
-         var dataStore = {'pan': 'BVZPS1846R','name':'Omkar Milind Shirhatti','dob':'17/08/1987','_token': messages.token };
+         var name = $("#first_name"+count).val();
+         var dob = $("#date_of_birth"+count).val();
+         var dataStore = {'pan': PAN,'name':name,'dob':dob,'_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id};
+        /// var dataStore = {'pan': 'BVZPS1846R','name':'Omkar Milind Shirhatti','dob':'17/08/1987','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
             var postData = dataStore;
             $('#ppan'+count).text('Waiting...');
              jQuery.ajax({
@@ -719,11 +725,12 @@ var messages = {
                                    alert(errorThrown);
                 },
                 success: function (data) {
-                                          if(data['status-code'] > 0)
+                                          if(data['status']==1)
                                            {   
                                                  $('#veripan'+count).attr('readonly',true);
                                                  $('#ppan'+count).text('Verified');
                                                  $('#ppan'+count).css('pointer-events','none');
+                                                 $('#veripan'+count).css({"border": "1px solid #e9ecef"});
                                                  $("#submit").attr("disabled", false); 
                                            }else{
                                                $('#ppan'+count).text('Verify');
