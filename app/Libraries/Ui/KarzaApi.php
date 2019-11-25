@@ -177,4 +177,29 @@ class KarzaApi {
         return [];
     }
 
+
+    public function getPromoterCibilRequest($arrData) {
+        echo "sdfsd";
+        dd($arrData);
+
+        try {
+            $api_url = '/v2/pan';
+
+            $options = [
+                'json' => [
+                    'consent' => 'Y',
+                    'pan' => $pancard],
+            ];
+            $response = $this->client->post($api_url, $options);
+             $response = $response->getBody()->getContents();
+             return $response;
+            
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+    
+
+    
+
 }

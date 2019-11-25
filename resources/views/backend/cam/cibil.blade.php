@@ -109,11 +109,11 @@
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->first_name." ".$arr->last_name}}</td>
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
-                                 <td width="20%"></td>
+                                 <td width="20%" id="cibilScore{{$arr->biz_owner_id}}"></td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_org(this)"><small>PULL</small></button>
-                                    <button class="btn btn-warning btn-sm" supplier="49" onclick="pull_cibil_org(this)"><small>DOWNLOAD</small></button>
-                                    <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)"><small>UPLOAD</small></button>
+                                    <button class="btn btn-success btn-sm" id="cibilScoreBtn{{$arr->biz_owner_id}}" supplier="49" onclick="pull_cibil_promoter({{$arr->biz_owner_id}})">PULL</button>
+                                    <button class="btn btn-warning btn-sm" supplier="49" onclick=""><small>DOWNLOAD</small></button>
+                                    <button class="btn btn-info btn-sm" supplier="49" onclick=""><small>UPLOAD</small></button>
                                  </td>
                               </tr>
                         @endforeach  
@@ -376,5 +376,43 @@
 </div>
 @endsection
 @section('jscript')
+<script>
+      function pull_cibil_promoter(biz_owner_id){
+            $("#cibilScoreBtn"+biz_owner_id).text("Waiting");
+            var messages = {
+                 chk_user_cibil: "{{ URL::route('chk_user_cibil') }}",
+                 data_not_found: "{{ trans('error_messages.data_not_found') }}",
+                 token: "{{ csrf_token() }}",
+            };
+            var dataStore = {'biz_owner_id': biz_owner_id,'_token': messages.token };
+            var postData = dataStore;
+             jQuery.ajax({
+                url: messages.chk_user_cibil,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                  // alert(errorThrown);
+                },
+                success: function (data) {
+                  $("#cibilScoreBtn"+biz_owner_id).text("PULL");
+                   var status =  data['status'];
+                     if(status==1)
+                       {  
+                            //alert(data['message']);
+                            $("#cibilScore"+biz_owner_id).text(data['cibilScore']);
+                            
+                       }else{
+                           alert(data['message']);
+                      }                          
+                       
+               }
 
+          });
+      }   
+
+
+</script>
+   
+   
 @endsection
