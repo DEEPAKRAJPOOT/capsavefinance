@@ -8,6 +8,7 @@ use Crypt;
 use Helpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Inv\Repositories\Models\Master\State;
 use App\Http\Requests\AnchorRegistrationFormRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
@@ -168,8 +169,10 @@ class LeadController extends Controller {
     public function addAnchorReg(Request $request) {
         try {
             //$stateList= $this->userRepo->getStateList();
-            
-            return view('backend.anchor.add_anchor_reg');
+            $states = State::getStateList()->get();
+            //dd($states);
+            return view('backend.anchor.add_anchor_reg')
+            ->with(['states'=>$states]);
                      //->with('state', $stateList);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -239,7 +242,16 @@ class LeadController extends Controller {
      */
     public function uploadAnchorlead(Request $request) {
         try {
-            return view('backend.anchor.upload_anchor_lead');
+                $anchLeadList = $this->userRepo->getAllAnchor();
+                $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
+                $anchorDropShow='';
+                if($getAnchorId && $getAnchorId->anchor_id==''){
+                $anchorDropShow='showAnchorDrop';
+                }else{
+                $anchorDropShow='hideAnchorDrop';
+                }
+            return view('backend.anchor.upload_anchor_lead')
+                 ->with('anchorDropShow',$anchorDropShow);
         } catch (Exception $ex) {
             dd($ex);
         }
@@ -287,10 +299,10 @@ class LeadController extends Controller {
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
                 
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
-                if($getAnchorId){
+                if($getAnchorId && $getAnchorId->anchor_id!=''){
                 $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
                 }else{
-                 $arrUpdateAnchor ['anchor_id'] ='';
+                 $arrUpdateAnchor ['anchor_id'] =$request->post('assigned_anchor');
                 }
                $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
                 
@@ -380,8 +392,21 @@ class LeadController extends Controller {
         return view('backend.anchor.anchor_lead_list');
     }
     
-     public function addManualAnchorLead() {         
-        return view('backend.anchor.anchor_manual_lead');
+     public function addManualAnchorLead() {
+      try{
+       $anchLeadList = $this->userRepo->getAllAnchor();
+      $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
+      $anchorDropShow='';
+      if($getAnchorId && $getAnchorId->anchor_id==''){
+          $anchorDropShow='showAnchorDrop';
+      }else{
+           $anchorDropShow='hideAnchorDrop';
+      }
+        return view('backend.anchor.anchor_manual_lead')
+      ->with('anchorDropShow',$anchorDropShow);
+         } catch (Exception $ex) {
+            dd($ex);
+        }
     }
   
     /**
@@ -414,10 +439,10 @@ class LeadController extends Controller {
              $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
             $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
-            if($getAnchorId){
+            if($getAnchorId && $getAnchorId->anchor_id!=''){
                 $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
             }else{
-                 $arrUpdateAnchor ['anchor_id'] ='';
+                 $arrUpdateAnchor ['anchor_id'] =$arrAnchorVal['assigned_anchor'];
             }
             
 //            $arrUpdateAnchor = [
