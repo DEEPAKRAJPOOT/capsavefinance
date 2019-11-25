@@ -57,16 +57,17 @@ class AppDocumentFile extends Authenticatable
     * @return Array
     */
     
-    public static function creates($attributes, $fileId)
+    public static function creates($attributes, $fileId, $userId)
     {
-        $inputArr =  AppDocumentFile::arrayInputData($attributes, $fileId);
+        $inputArr =  AppDocumentFile::arrayInputData($attributes, $fileId, $userId);
         $appDocFile = AppDocumentFile::create($inputArr);
         if($appDocFile){
-            $result = AppDocument::where('user_id', Auth::user()->user_id)
+            $result = AppDocument::where('user_id', $userId)
                     ->where('app_id', $appDocFile->app_id)
                     ->where('doc_id', $appDocFile->doc_id)
                     ->update(['is_upload' => 1]);
         }
+        
         return $result;
     }
     
@@ -95,14 +96,12 @@ class AppDocumentFile extends Authenticatable
      * @return Array
      */
     
-    public static function arrayInputData($attributes, $fileId)
+    public static function arrayInputData($attributes, $fileId, $userId)
     {
-        $userId = Auth::user()->user_id;
-        $appData = BizOwner::getAppId($userId);
         $inputArr = [];
-        
-        $inputArr['app_id']  = $appData->app_id;   
-        $inputArr['doc_id']  = $attributes['docId']; 
+//        dd($attributes);
+        $inputArr['app_id']  = (isset($attributes['appId'])) ? $attributes['appId'] : $attributes['app_id'];   
+        $inputArr['doc_id']  = (isset($attributes['docId'])) ? $attributes['docId'] : $attributes['doc_id']; 
         $inputArr['doc_name']  = (isset($attributes['doc_name'])) ? $attributes['doc_name'] : ''; 
         $inputArr['finc_year']  = (isset($attributes['finc_year'])) ? $attributes['finc_year'] : ''; 
         $inputArr['gst_month']  = (isset($attributes['gst_month'])) ? $attributes['gst_month'] : ''; 

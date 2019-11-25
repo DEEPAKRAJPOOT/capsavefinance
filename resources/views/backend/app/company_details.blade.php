@@ -9,10 +9,10 @@
 			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Company Details</a>
 		</li>
 		<li>
-			<a href="#">Promoter Details</a>
+			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Promoter Details</a>
 		</li>
 		<li>
-			<a href="#">Documents</a>
+			<a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
 		</li>
 		<!--<li>
 			<a href="buyers.php">Buyers </a>
