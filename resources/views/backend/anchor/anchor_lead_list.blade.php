@@ -54,9 +54,10 @@
                                             <tr role="row">
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
+                                                <th>Business Name</th>
                                                 <th>Email</th>
                                                 <th>Mobile</th>
-                                                <th>Anchor</th>
+<!--                                                <th>Anchor</th>-->
                                                 <th>Created At</th>
                                                  <th>Status</th>
                                             </tr>
