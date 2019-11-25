@@ -78,8 +78,8 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor Lead', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor Lead', 'modal-md')!!}
+{!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-md')!!}
 {!!Helpers::makeIframePopup('uploadAnchLead','Upload User List', 'modal-md')!!}
 @endsection
 
