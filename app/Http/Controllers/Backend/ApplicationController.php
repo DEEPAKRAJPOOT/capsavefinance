@@ -203,6 +203,7 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
+//            dd($arrFileData);
             $docId = (int)$request->doc_id; //  fetch document id
             $appId = (int)$request->app_id; //  fetch document id
             $userData = User::getUserByAppId($appId);
@@ -246,8 +247,8 @@ class ApplicationController extends Controller
             $userData = User::getUserByAppId($appId);
             $userId = $userData->user_id;
             $response = $this->docRepo->isUploadedCheck($userId, $appId);
-//            dd($response->count());
-            if ($response->count() > 0) {
+            
+            if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
                 
