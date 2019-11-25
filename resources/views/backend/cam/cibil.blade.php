@@ -111,7 +111,7 @@
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
                                  <td width="20%"></td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_promoter('FDLPS6741D')"><small>PULL</small></button>
+                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_promoter({{$arr->biz_owner_id}})"><small>PULL</small></button>
                                     <button class="btn btn-warning btn-sm" supplier="49" onclick=""><small>DOWNLOAD</small></button>
                                     <button class="btn btn-info btn-sm" supplier="49" onclick=""><small>UPLOAD</small></button>
                                  </td>
@@ -377,13 +377,13 @@
 @endsection
 @section('jscript')
 <script>
-      function pull_cibil_promoter(PAN){
+      function pull_cibil_promoter(biz_owner_id){
             var messages = {
                  chk_user_cibil: "{{ URL::route('chk_user_cibil') }}",
                  data_not_found: "{{ trans('error_messages.data_not_found') }}",
                  token: "{{ csrf_token() }}",
             };
-            var dataStore = {'pan': PAN,'_token': messages.token };
+            var dataStore = {'biz_owner_id': biz_owner_id,'_token': messages.token };
             var postData = dataStore;
              jQuery.ajax({
                 url: messages.chk_user_cibil,
