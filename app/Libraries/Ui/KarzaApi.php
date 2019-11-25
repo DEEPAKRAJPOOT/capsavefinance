@@ -139,7 +139,7 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'fileNo' => $passportArr['fileNo'],
-                     'dob' => $passportArr['dob'] 
+                     'dob' => date("d/m/Y", strtotime($passportArr['dob']))
                     ]
             ];
              $response = $this->client->post($api_url, $options);

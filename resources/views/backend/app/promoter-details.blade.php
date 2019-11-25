@@ -782,8 +782,12 @@ var messages = {
        
        $(document).on('click','.verivoter',function () {
              var count = $(this).attr('data-id');
-             var PAN = $("#verifyvoter"+count).val();
-             var dataStore = {'epic_no': 'SHA4722088','_token': messages.token };
+             var voterId = $("#verifyvoter"+count).val();
+             var bizId = $('input[name=biz_id]').val();
+             var app_id = $('#app_id').val();
+             var ownerid = $('#ownerid'+count).val();
+             var dataStore = {'epic_no':'SHA4722088','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
+            ///  var dataStore = {'epic_no': 'SHA4722088','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
              var postData = dataStore;
             $('#vvoter'+count).text('Waiting...');
             jQuery.ajax({
@@ -801,6 +805,7 @@ var messages = {
                                                  $('#verifyvoter'+count).attr('readonly',true);
                                                  $('#vvoter'+count).text('Verified');
                                                  $('#vvoter'+count).css('pointer-events','none');
+                                                 $('#verifyvoter'+count).css({"border": "1px solid #e9ecef"});
                                                  $("#submit").attr("disabled", false); 
                                            }else{
                                                $('#vvoter'+count).text('Verify');
@@ -817,10 +822,16 @@ var messages = {
  /////////////////Karja Api Passport Card/////////////////////////////////////
       
       
-       $(document).on('click','.veripass',function () {
-        var count = $(this).attr('data-id');  
-        var PAN = $("#verifypassport"+count).val();
-        var dataStore = {'fileNo': 'BO3072344560818','dob':'17/08/1987','_token': messages.token };
+       $(document).on('click','.veripass',function ()  {
+             var count = $(this).attr('data-id');
+             var voterId = $("#verifypassport"+count).val();
+             var bizId = $('input[name=biz_id]').val();
+             var app_id = $('#app_id').val();
+             var ownerid = $('#ownerid'+count).val();
+             var file = $("#verifypassport"+count).val();
+             var dob = $("#date_of_birth"+count).val();
+             var dataStore = {'fileNo': file,'dob':dob,'_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id};
+           //var dataStore = {'fileNo': 'BO3072344560818','dob':'17/08/1987','_token': messages.token };
             var postData = dataStore;
             $('#ppassport'+count).text('Waiting...');
             jQuery.ajax({
@@ -833,11 +844,13 @@ var messages = {
                                    alert(errorThrown);
                 },
                    success: function (data) {
-                                          if(data['status-code'] > 0)
+                                           if(data['status']==1)
                                            {   
+                                             
                                                  $('#verifypassport'+count).attr('readonly',true);
                                                  $('#ppassport'+count).text('Verified');
                                                  $('#ppassport'+count).css('pointer-events','none');
+                                                 $('#verifypassport'+count).css({"border": "1px solid #e9ecef"});
                                                  $("#submit").attr("disabled", false); 
                                            }else{
                                                $('#ppassport'+count).text('Verify');
