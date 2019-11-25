@@ -84,7 +84,26 @@
                                   </select>
                               </div>
                            </div>
-                     </div>
+                     </div>             
+                @if ($is_superadmin == '1')
+                <div  class="row">                    
+                      <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtEmail">Anchor
+                                 <span class="mandatory">*</span>
+                                 </label>        
+                                     <select class="form-control assigned_anchor" name="assigned_anchor" id="assigned_anchor">
+                            <option value="">please select</option>
+                             @foreach($anchDropUserList as $key => $value)
+                             <option value="{{$value->anchor_id}}"> {{$value->comp_name}} </option>
+                             @endforeach
+                         </select>
+                                  
+                              </div>
+                           </div> 
+                       
+                </div>
+                @endif
 <!--                     <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
@@ -149,7 +168,7 @@
                               </div>
                         </div>-->
                 
-                <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
           {!!
         Form::close()
         !!}
@@ -243,6 +262,14 @@
                                 number: true,
                             })
                 });
+                
+                $('select.assigned_anchor').each(function (){
+                    $(this).rules("add",
+                            {
+                                required: true,
+                            })
+                });                
+                
                 // test if form is valid                
             })
             //$("#btnAddMore").on('click', addInput);

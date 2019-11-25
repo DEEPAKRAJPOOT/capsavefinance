@@ -15,8 +15,7 @@ class KarzaServiceProvider extends ServiceProvider
     public function register()
     {
         $baseUrl = env('KARZA_AUTHENTICATION_API_URL');
-
-        $this->app->singleton('GuzzleHttp\Client', function($api) use ($baseUrl) {
+         $this->app->singleton('GuzzleHttp\Client', function($api) use ($baseUrl) {
             return new Client([
                 'base_uri' => $baseUrl,
                 'headers' => [

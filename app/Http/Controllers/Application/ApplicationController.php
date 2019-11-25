@@ -91,7 +91,7 @@ class ApplicationController extends Controller
        $getCin = $this->userRepo->getCinByUserId($biz_id);
        if($getCin==false)
        {
-           return redirect()->route('business_information_open');
+           return  Redirect::back();
        }
        return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
            'cin_no' => $getCin->cin,
@@ -199,8 +199,8 @@ class ApplicationController extends Controller
         try {
             $arrFileData = $request->all();
             $docId = 1; //  fetch document id
-            $document_info = $this->docRepo->saveDocument($arrFileData, $docId);
             $userId = Auth::user()->user_id;
+            $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 
                 //Add/Update application workflow stages

@@ -16,9 +16,28 @@
                            </div>
                            
                         </div>
+                @if ($is_superadmin == '1')
+                <div  class="row">                    
+                      <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtEmail">Anchor
+                                 <span class="mandatory">*</span>
+                                 </label>        
+                                     <select class="form-control assigned_anchor" name="assigned_anchor" id="assigned_anchor">
+                            <option value="">please select</option>
+                             @foreach($anchDropUserList as $key => $value)
+                             <option value="{{$value->anchor_id}}"> {{$value->comp_name}} </option>
+                             @endforeach
+                         </select>
+                                  
+                              </div>
+                           </div> 
+                       
+                </div>
+                @endif
                            
                 
-                <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
            </form>
          </div>
      
@@ -31,6 +50,7 @@
 
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script>
 
     var messages = {
@@ -42,78 +62,31 @@
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
-            $('#saveAnch').on('click', function (event) {
-                $('input.anchor_lead').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.comp_name').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.email').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.phone').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('select.state').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.city').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.pin_code').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                // test if form is valid 
-                if ($('form#anchorForm').validate().form()) {
-                    var form = $("#anchorForm");
-                    $.ajax({
-                        type: "POST",
-                        url: '{{Route('add_anchor_reg')}}',
-                        data: form.serialize(), // serializes the form's elements.
-                        cache: false,
-                        success: function (res)
-                        {
-                            if (res.status == 1)
-                            {
-                               
-                                       $('#addAnchorFrm').dialog('close');
-                                     window.location.href = "/anchor";
-                            }
-                        },
-                        error: function (error)
-                        {
-                            console.log(error);
-                        }
-
-                    });
-                } else {
-                    console.log("does not validate");
+              $('#anchorForm').validate({ // initialize the plugin
+                rules: {
+                anchor_lead: {
+                required: true,
+                extension: "csv"
+                },
+                 assigned_anchor: {
+                required: true,
                 }
-            })
-            //$("#btnAddMore").on('click', addInput);
+                },
+                messages: {
+                anchor_lead: {
+                required: "Please select file",
+                extension:"Please select only csv format",
+                }
+                }
+                });
+
             $('form#anchorForm').validate();
+            
+            $("#saveAnch").click(function(){
+            if($('form#anchorForm').valid()){                
+            $("#saveAnch").attr("disabled","disabled");
+            }  
+            })
         });
 
 </script>

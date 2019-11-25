@@ -18,7 +18,7 @@ class KarzaApi {
 
     public function __construct(Client $client) {
         $this->client = $client;
- //         $this->headers = [
+  //         $this->headers = [
 //            'cache-control' => "no-cache",
 //            'Content-Type' => "application/json",
 //            'x-karza-key' => env('KARZA_AUTHENTICATION_API_KEY'),
@@ -87,8 +87,10 @@ class KarzaApi {
                     'epic_no' => $voterid]
             ];
             $response = $this->client->post($api_url, $options);
-             $response = $response->getBody()->getContents();
-             return $response;
+            $response = $response->getBody()->getContents();
+            $response = json_decode($response); 
+
+            return ['response' => $response, 'request' => $options];
             
         } catch (\Exception $e) {
             return [];
