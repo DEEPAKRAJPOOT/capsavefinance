@@ -553,4 +553,34 @@ class User extends Authenticatable
               ->first();
         return ($result ? $result->sales_user_id : null);        
     }
+    
+    /**
+     * Get User Details using application id
+     *
+     * @param  integer $anchId
+     * @return array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     * Since 0.1
+     */
+    public static function getUserByAppId($appId)
+    {
+        
+        //Check anchId is not blank
+        if (empty($appId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        //Check anchId is not an integer
+
+        if (!is_int($appId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $arrUser = self::select('users.*')
+              ->join('app', 'app.user_id', '=', 'users.user_id')
+              ->where('app.app_id', '=', $appId)
+              ->first();
+
+        return ($arrUser ?: false);
+    }
 }

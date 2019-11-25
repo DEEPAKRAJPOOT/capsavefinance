@@ -51,7 +51,17 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'promoter_document_save',
                 'uses' => 'Backend\ApplicationController@promoterDocumentSave'
             ]);
-
+            
+            Route::get('documents', [
+                'as' => 'documents',
+                'uses' => 'Backend\ApplicationController@showDocuments'
+            ]);
+            
+            Route::post('documents-save', [
+                'as' => 'document_save',
+                'uses' => 'Backend\ApplicationController@saveDocument'
+            ]);
+            
             Route::post('cam/cam-information-save', [
                 'as' => 'cam/cam-information-save',
                 'uses' => 'Backend\CamController@camInformationSave'
