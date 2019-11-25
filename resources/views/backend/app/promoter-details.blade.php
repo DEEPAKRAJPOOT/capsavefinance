@@ -789,7 +789,8 @@ var messages = {
                                    alert(errorThrown);
                 },
                    success: function (data) {
-                                          if(data['status-code'] > 0)
+                     console.log(data.value);
+                                          if(data.value > 0)
                                            {   
                                                  $('#verifyvoter'+count).attr('readonly',true);
                                                  $('#vvoter'+count).text('Verified');
