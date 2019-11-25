@@ -52,16 +52,17 @@
                 
                 <div class="row">
                            <div class="col-6">
-                              <div class="form-group">
+                           <div class="form-group">
                                  <label for="txtEmail">State
                                  <span class="mandatory">*</span>
-                                 </label>
-                                  <select class="form-control state" name="state" id="state">
-                                      <option value="">please select</option>
-                                      <option value="1">state1</option>
-                                      <option value="2">state2</option>
-                                      <option value="3">state3</option>
-                                  </select>
+                                 </label>                  
+                          <select class="form-control state" name="state" id="state">
+                             <option value=""> Select State</option>
+                             @foreach($states as $key => $state)
+                             <option value="{{$state->id}}"> {{$state->name}} </option>
+                             @endforeach
+                         </select>
+                               
                               </div>
                            </div>
 
@@ -131,7 +132,7 @@
                         </div>  
                 
                 
-                <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
            </form>
          </div>
      

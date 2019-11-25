@@ -54,9 +54,10 @@
                                             <tr role="row">
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
+                                                <th>Business Name</th>
                                                 <th>Email</th>
                                                 <th>Mobile</th>
-                                                <th>Anchor</th>
+<!--                                                <th>Anchor</th>-->
                                                 <th>Created At</th>
                                                  <th>Status</th>
                                             </tr>
@@ -78,8 +79,8 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor Lead', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor Lead', 'modal-md')!!}
+{!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-md')!!}
 {!!Helpers::makeIframePopup('uploadAnchLead','Upload User List', 'modal-md')!!}
 @endsection
 

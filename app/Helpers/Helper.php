@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use App\Helpers\PaypalHelper;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Patent;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
@@ -253,7 +254,8 @@ class Helper extends PaypalHelper
         
         return $inputArr;
     }
-         /**
+    
+    /**
      * uploading document data
      *
      * @param Exception $exception
@@ -449,6 +451,19 @@ class Helper extends PaypalHelper
         $dataArr['is_owner'] = 1;
 
         AppAssignment::saveData($dataArr);        
+    }
+    
+    /**
+     * Get User Role
+     * 
+     * @param integer $user_id | default
+     */
+    public static function getUserRole($user_id = null) {
+        if (is_null($user_id)) {
+            $user_id = \Auth::user()->user_id;
+        }
+        $roleData = User::getBackendUser($user_id);
+        return $roleData;
     }
   
 }

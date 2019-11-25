@@ -16,9 +16,28 @@
                            </div>
                            
                         </div>
+                @if ($is_superadmin == '1')
+                <div  class="row">                    
+                      <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtEmail">Anchor
+                                 <span class="mandatory">*</span>
+                                 </label>        
+                                     <select class="form-control assigned_anchor" name="assigned_anchor" id="assigned_anchor">
+                            <option value="">please select</option>
+                             @foreach($anchDropUserList as $key => $value)
+                             <option value="{{$value->anchor_id}}"> {{$value->comp_name}} </option>
+                             @endforeach
+                         </select>
+                                  
+                              </div>
+                           </div> 
+                       
+                </div>
+                @endif
                            
                 
-                <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
            </form>
          </div>
      
@@ -48,6 +67,9 @@
                 anchor_lead: {
                 required: true,
                 extension: "csv"
+                },
+                 assigned_anchor: {
+                required: true,
                 }
                 },
                 messages: {
@@ -59,6 +81,12 @@
                 });
 
             $('form#anchorForm').validate();
+            
+            $("#saveAnch").click(function(){
+            if($('form#anchorForm').valid()){                
+            $("#saveAnch").attr("disabled","disabled");
+            }  
+            })
         });
 
 </script>

@@ -8,6 +8,7 @@ use Crypt;
 use Helpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Inv\Repositories\Models\Master\State;
 use App\Http\Requests\AnchorRegistrationFormRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
@@ -166,10 +167,15 @@ class LeadController extends Controller {
     }
 
     public function addAnchorReg(Request $request) {
-        try {           
-            return view('backend.anchor.add_anchor_reg');
+        try {
+            //$stateList= $this->userRepo->getStateList();
+            $states = State::getStateList()->get();
+            //dd($states);
+            return view('backend.anchor.add_anchor_reg')
+            ->with(['states'=>$states]);
+                     //->with('state', $stateList);
         } catch (Exception $ex) {
-            dd($ex);
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 
@@ -236,7 +242,12 @@ class LeadController extends Controller {
      */
     public function uploadAnchorlead(Request $request) {
         try {
-            return view('backend.anchor.upload_anchor_lead');
+              $roleData = Helpers::getUserRole();
+            $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
+                $anchLeadList = $this->userRepo->getAllAnchor();                
+            return view('backend.anchor.upload_anchor_lead')
+                 ->with('is_superadmin',$is_superadmin)                    
+                ->with('anchDropUserList',$anchLeadList);
         } catch (Exception $ex) {
             dd($ex);
         }
@@ -266,15 +277,22 @@ class LeadController extends Controller {
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
                 
-                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[1]));  
+                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
                 if(!empty($value) && !$anchUserInfo){
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
+                    if(trim($value[4])=='Buyer'){
+                        $userType=2;
+                    }else{
+                        $userType=1; 
+                    }
                 $arrAnchLeadData = [
                     'name' =>  trim($value[0]),
-                    'email' =>  trim($value[1]),
-                    'phone' => $value[2],
-                    'user_type' => $value[3],
+                    'l_name'=>trim($value[1]),
+                    'biz_name' =>  trim($value[2]),
+                    'email'=>$value[3],
+                    'phone' => $value[4],
+                    'user_type' => $userType,
                     'created_by' => Auth::user()->user_id,
                     'created_at' => \Carbon\Carbon::now(),
                     'is_registered'=>0,
@@ -284,10 +302,10 @@ class LeadController extends Controller {
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
                 
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
-                if($getAnchorId){
+                if($getAnchorId && $getAnchorId->anchor_id!=''){
                 $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
                 }else{
-                 $arrUpdateAnchor ['anchor_id'] ='';
+                 $arrUpdateAnchor ['anchor_id'] =$request->post('assigned_anchor');
                 }
                $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
                 
@@ -300,6 +318,7 @@ class LeadController extends Controller {
                 }
           }
             }
+            //chmod($destinationPath . '/' . $fileName, 0775, true);
             unlink($destinationPath . '/' . $fileName);
             Session::flash('message', trans('backend_messages.anchor_registration_success'));
            return redirect()->route('get_anchor_lead_list');
@@ -377,8 +396,17 @@ class LeadController extends Controller {
         return view('backend.anchor.anchor_lead_list');
     }
     
-     public function addManualAnchorLead() {         
-        return view('backend.anchor.anchor_manual_lead');
+     public function addManualAnchorLead() {
+      try{
+          $roleData = Helpers::getUserRole();
+          $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
+       $anchLeadList = $this->userRepo->getAllAnchor();
+        return view('backend.anchor.anchor_manual_lead')
+       ->with('anchDropUserList',$anchLeadList)
+        ->with('is_superadmin',$is_superadmin);
+         } catch (Exception $ex) {
+            dd($ex);
+        }
     }
   
     /**
@@ -411,10 +439,10 @@ class LeadController extends Controller {
              $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
             $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
-            if($getAnchorId){
+            if($getAnchorId && $getAnchorId->anchor_id!=''){
                 $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
             }else{
-                 $arrUpdateAnchor ['anchor_id'] ='';
+                 $arrUpdateAnchor ['anchor_id'] =$arrAnchorVal['assigned_anchor'];
             }
             
 //            $arrUpdateAnchor = [

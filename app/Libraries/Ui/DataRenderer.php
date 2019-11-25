@@ -390,9 +390,16 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'name',
                         function ($user) {
-                    $full_name = $user->name;
+                    $full_name = $user->name.' '.$user->l_name;
                     return $full_name;
                     
+                })               
+                ->editColumn(
+                    'biz_name',
+                    function ($user) {
+                    $biz_name = $user->biz_name;
+                    return $biz_name;
+
                 })
                 ->editColumn(
                     'email',
@@ -405,12 +412,6 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     $achorId = $user->phone; 
                     return $achorId;
-                })               
-                ->editColumn(
-                    'biz_name',
-                    function ($user) {
-                    return ($user->biz_name)? $user->biz_name: '---';
-
                 })
                 ->editColumn(
                     'created_at',
