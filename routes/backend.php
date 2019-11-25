@@ -8,23 +8,15 @@
  * @author Prolitus Dev Team
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
-
-    Route::group(
-            ['middleware' => 'auth'], function () {
-        Route::group(
-                ['prefix' => 'dashboard'], function () {
-
-            Route::get(
-                    '/', [
+    Route::group(['middleware' => 'auth'], function () {
+        Route::group(['prefix' => 'dashboard'], function () {
+            Route::get('/', [
                 'as' => 'backend_dashboard',
                 'uses' => 'Backend\DashboardController@index'
-                    ]
-            );
+            ]);
         });
 
-        Route::group(
-                ['prefix' => 'application'], function () {
-
+        Route::group(['prefix' => 'application'], function () {
             Route::get('/', [
                 'as' => 'application_list',
                 'uses' => 'Backend\ApplicationController@index'
@@ -45,14 +37,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@showCompanyDetails'
             ]);
 
-            Route::post('company-details',
-                [
+            Route::post('company-details', [
                 'as' => 'company_details_save',
                 'uses' => 'Backend\ApplicationController@updateCompanyDetail'
             ]);
-
             
-                Route::get('promoter-details/{id}', [
+            Route::get('promoter-details/{id}', [
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
             ]);
@@ -141,7 +131,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@showApplicationPool'
             ]);
             
-            
             Route::get('confirm-box', [
                 'as' => 'confirm_box',
                 'uses' => 'Backend\LeadController@confirmBox'
@@ -161,11 +150,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_new_application',
                 'uses' => 'Backend\ApplicationController@saveBusinessInformation'
             ]);
-
         });
 
-        Route::group(
-                ['prefix' => 'lead'], function () {
+        Route::group(['prefix' => 'lead'], function () {
             Route::get('/', [
                 'as' => 'lead_list',
                 'uses' => 'Backend\LeadController@index'
@@ -179,28 +166,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('lead-detail', [
                 'as' => 'lead_detail',
                 'uses' => 'Backend\LeadController@leadDetail'
-            ]);
-                        
+            ]);        
         });
         
-Route::group(
-        ['prefix' => 'anchor'],
-        function () {
-            Route::get('/',
-                [
+        Route::group(['prefix' => 'anchor'], function () {
+            Route::get('/', [
                 'as' => 'get_anchor_list',
                 'uses' => 'Backend\LeadController@allAnchorList'
             ]);
-             Route::get('add-anchor', [
+            Route::get('add-anchor', [
                 'as' => 'add_anchor_reg',
                 'uses' => 'Backend\LeadController@addAnchorReg'
             ]);
-               Route::post('add-anchor', [
+
+            Route::post('add-anchor', [
                 'as' => 'add_anchor_reg',
                 'uses' => 'Backend\LeadController@saveaddAnchorReg'
             ]);
 
-           Route::get('/add-anchor-lead',
+            Route::get('/add-anchor-lead',
                 [
                 'as' => 'add_anchor_lead',
                 'uses' => 'Backend\LeadController@uploadAnchorlead'
@@ -210,29 +194,31 @@ Route::group(
                 'as' => 'add_anchor_lead',
                 'uses' => 'Backend\LeadController@saveUploadAnchorlead'
             ]);
-             Route::get('update-anchor', [
+            Route::get('update-anchor', [
                 'as' => 'edit_anchor_reg',
                 'uses' => 'Backend\LeadController@editAnchorReg'
             ]);
-               Route::post('update-anchor', [
+            Route::post('update-anchor', [
                 'as' => 'update_anchor_reg',
                 'uses' => 'Backend\LeadController@updateAnchorReg'
             ]); 
-                Route::get('manage-anchor-lead', [
+            Route::get('manage-anchor-lead', [
                 'as' => 'get_anchor_lead_list',
                 'uses' => 'Backend\LeadController@getAnchorLeadList'
             ]); 
             Route::get('add-manual-anchor-lead', [
-           'as' => 'add_manual_anchor_lead',
-           'uses' => 'Backend\LeadController@addManualAnchorLead'
-       ]);
-        Route::post('add-manual-anchor-lead', [
-           'as' => 'add_manual_anchor_lead',
-           'uses' => 'Backend\LeadController@saveManualAnchorLead'
-       ]);         
-    }); 
-        
+                'as' => 'add_manual_anchor_lead',
+                'uses' => 'Backend\LeadController@addManualAnchorLead'
+            ]);
+            Route::post('add-manual-anchor-lead', [
+               'as' => 'add_manual_anchor_lead',
+               'uses' => 'Backend\LeadController@saveManualAnchorLead'
+            ]);         
+            
+            Route::post('accept-application-pool', [
+                'as' => 'accept_application_pool',
+                'uses' => 'Backend\LeadController@acceptApplicationPool'
+            ]);  
+        });
     });
-
 });
-
