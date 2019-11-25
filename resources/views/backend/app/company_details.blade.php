@@ -58,7 +58,7 @@
 										<div class="form-group">
 											<label for="txtSupplierName">Tranche Tenor (Days)
 											</label>
-											<input type="text" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="2" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
+											<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control" tabindex="2" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
 										</div>
 									</div>
 								</div>
@@ -88,9 +88,9 @@
 											</label>
 											<select class="form-control" name="biz_constitution" tabindex="5" required>
 													<option value=""> Select Business Constitution</option>
-													<option value="1" {{(old('biz_constitution') == 1)? 'selected':''}}> Business Constitution 1 </option>
-													<option value="2" {{(old('biz_constitution') == 2)? 'selected':''}}> Business Constitution 2 </option>
-													<option value="3" {{(old('biz_constitution') == 3)? 'selected':''}}> Business Constitution 3 </option>
+													<option value="1" {{(old('biz_constitution', $business_info->biz_constitution) == 1)? 'selected':''}}> Business Constitution 1 </option>
+													<option value="2" {{(old('biz_constitution', $business_info->biz_constitution) == 2)? 'selected':''}}> Business Constitution 2 </option>
+													<option value="3" {{(old('biz_constitution', $business_info->biz_constitution) == 3)? 'selected':''}}> Business Constitution 3 </option>
 												</select>
 										</div>
 									</div>
@@ -165,9 +165,9 @@
 											</label>
 											<select class="form-control" name="segment" tabindex="11" required>
 												<option value=""> Select Segment</option>
-												<option value="1" {{(old('segment') == 1)? 'selected':''}}> Segment 1 </option>
-												<option value="2" {{(old('segment') == 2)? 'selected':''}}> Segment 2 </option>
-												<option value="3" {{(old('segment') == 3)? 'selected':''}}> Segment 3 </option>
+												<option value="1" {{(old('segment', $business_info->biz_segment) == 1)? 'selected':''}}> Segment 1 </option>
+												<option value="2" {{(old('segment', $business_info->biz_segment) == 2)? 'selected':''}}> Segment 2 </option>
+												<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
 											</select>
 										</div>
 									</div>
