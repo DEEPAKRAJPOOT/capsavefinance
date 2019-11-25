@@ -30,17 +30,25 @@ class KarzaApi {
 
        try {
             $api_url = '/v2/pan';
-
+            $baseUrl = config('proin.karza_auth_api_url');
+            $apiKey = config('proin.karza_auth_api_key');
+        
             $options = [
+                'base_uri' => $baseUrl,
                 'json' => [
                     'consent' => 'Y',
                     'pan' => $pancard],
-            ];            
-            $response = $this->client->post($api_url, $options);            
+                'headers' => [
+                    'cache-control' => "no-cache",
+                    'Content-Type' => "application/json",
+                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                ]                
+            ];
+            $response = $this->client->post($api_url, $options);              
              $response = $response->getBody()->getContents();
              return $response;
             
-        } catch (\Exception $e) {            
+        } catch (\Exception $e) {              
             return [];
         }
     }
