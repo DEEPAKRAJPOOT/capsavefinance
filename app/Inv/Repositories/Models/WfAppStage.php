@@ -99,9 +99,10 @@ class WfAppStage extends BaseModel
      */    
     protected static function getCurrentWfStage($app_id) 
     {
-        $appData = self::select('wf_stage.stage_code')
+        $appData = self::select('wf_stage.stage_code','wf_stage.assign_role')
                 ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')                 
                 ->where('app_wf.biz_app_id', $app_id)
+                ->where('app_wf.app_wf_status', 1)
                 ->orderBy('app_wf.wf_stage_id', 'DESC')
                 ->limit(1)
                 ->first();
@@ -128,7 +129,7 @@ class WfAppStage extends BaseModel
                 ->first();
         return $appData ? $appData : false;
     }
-  
+    
+    
 }
   
-

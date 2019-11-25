@@ -80,6 +80,7 @@ use RegistersUsers,
 
 
         $arrData = [];
+        $arrAnchUser=[];
         $arrDetailData = [];
         $arrData['f_name'] = $data['f_name'];
         $arrData['m_name'] = $data['m_name'];
@@ -103,7 +104,13 @@ use RegistersUsers,
             $detailArr['access_token'] = bcrypt($userDataArray->email);
             $detailArr['created_by'] = $userDataArray->user_id;
             $this->userRepo->saveUserDetails($detailArr);
-            
+            if (isset($data['anch_user_id']) && !empty($data['anch_user_id'])) {
+                $arrAnchUser['is_registered']=1;
+                $arrAnchUser['token']='';
+                $arrAnchUser['user_id']=$detailArr['user_id'];            
+                //$anchId=$this->userRepo->getAnchorUsersByEmail($userDataArray->email);            
+                $this->userRepo->updateAnchorUser($data['anch_user_id'], $arrAnchUser);
+            }
             //Add application workflow stages
             Helpers::addWfAppStage('new_case', $userDataArray->user_id);
         }
@@ -168,15 +175,28 @@ use RegistersUsers,
      *
      * @return \Illuminate\Http\Response
      */
-    public function showRegistrationForm() {
-
-
+    public function showRegistrationForm(Request $request) {
+           try{
+         $anchortoken = $request->get('token');
+         //dd($anchorEmail);
         $userId = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
+        $anchorDetail = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        return view('auth.sign-up', compact('userArr'));
+        $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
+        //dd($anchorLeadInfo);
+        if(isset($anchortoken) && $anchorLeadInfo){
+            $anchorDetail = $anchorLeadInfo;
+        }else{
+            $anchorDetail = '';
+        }
+           return view('auth.sign-up', compact('userArr','anchorDetail'));
+           
+           }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+         }
     }
 
     /**

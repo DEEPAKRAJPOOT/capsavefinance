@@ -111,7 +111,7 @@
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
                                  <td width="20%"></td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_promoter()"><small>PULL</small></button>
+                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_promoter('FDLPS6741D')"><small>PULL</small></button>
                                     <button class="btn btn-warning btn-sm" supplier="49" onclick=""><small>DOWNLOAD</small></button>
                                     <button class="btn btn-info btn-sm" supplier="49" onclick=""><small>UPLOAD</small></button>
                                  </td>
@@ -377,19 +377,16 @@
 @endsection
 @section('jscript')
 <script>
-      function pull_cibil_promoter(){
+      function pull_cibil_promoter(PAN){
             var messages = {
-                 chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
+                 chk_user_cibil: "{{ URL::route('chk_user_cibil') }}",
                  data_not_found: "{{ trans('error_messages.data_not_found') }}",
                  token: "{{ csrf_token() }}",
             };
-            var count = $(this).attr('data-id');
-            var PAN = $("#pan_no"+count).val();
             var dataStore = {'pan': PAN,'_token': messages.token };
             var postData = dataStore;
-            $('#pan_verify'+count).text('Waiting...');
              jQuery.ajax({
-                url: messages.chk_user_pan_karza,
+                url: messages.chk_user_cibil,
                 method: 'post',
                 dataType: 'json',
                 data: postData,

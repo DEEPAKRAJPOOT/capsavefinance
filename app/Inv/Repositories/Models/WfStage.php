@@ -109,7 +109,24 @@ class WfStage extends BaseModel
             ->where('wf.prgm_id', $prgm_id)    
             ->skip($next_wf_order_no)->take(1)->first();
         return ($arr ? $arr : null);
-    }    
+    } 
+    
+    
+/**
+     * Get Current WfStage by Role id
+     * 
+     * @param type $app_id
+     * @return type
+     */    
+    protected static function getCurrentWfStagebyRole($roleId)
+    {
+        $appData = self::select('wf_stage.*')
+                ->where('wf_stage.role_id', $roleId)
+                ->orderBy('wf_stage.order_no')
+                ->limit(1)
+                ->first();
+        return $appData ? $appData : null;
+    }
 }
   
 

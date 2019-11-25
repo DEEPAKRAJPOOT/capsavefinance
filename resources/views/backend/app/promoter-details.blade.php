@@ -58,7 +58,9 @@
             <div class="card">
                   <form id="signupForm">
                 <div class="card-body">
-                   
+                   @csrf
+                  <input type="hidden" name="app_id" id="app_id"  value="{{ (!empty($appId)) ? $appId : '' }}" >
+                  <input type="hidden" name="biz_id" id="biz_id"  value="{{ (!empty($bizId)) ? $bizId : '' }}" >   
                  @php ($i = 0)
                  @foreach($ownerDetails as $row)    @php ($i++)
                     <div class=" form-fields">
@@ -190,7 +192,10 @@
                                                             <td class="text-left">1</td>
                                                             <td width="30%">Pan Card</td>
                                                             <td width="30%" >
-                                                                
+                                                                <div class="col-md-12">
+                                                                    <a href="javascript:void(0);" id='ddriving{{isset($row->first_name) ? $i : '1'}}' class="verify-owner-no verify-show" style="top:0px;">Verify</a>
+                                                                    <input type="text"  name="verifydl[]" id="verifydl{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control verifydl" tabindex="1" placeholder="Enter PAN Number" required="">
+                                                                </div>
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
@@ -199,7 +204,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}">
+                                                                    <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 2)">
                                                                     <span class="fileUpload"></span>
                                                                 </div>
                                                             </td>
@@ -212,7 +217,7 @@
                                                                     <a href="javascript:void(0);" id='ddriving{{isset($row->first_name) ? $i : '1'}}' class="verify-owner-no verify-show" style="top:0px;">Verify</a>
                                                                     <input type="text"  name="verifydl[]" id="verifydl{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control verifydl" tabindex="1" placeholder="Enter DL Number" required="">
                                                                 </div>
-                                                                </td>
+                                                            </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
@@ -220,7 +225,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile">
+                                                                    <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 22)">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -240,7 +245,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}">
+                                                                    <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 22)">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -261,7 +266,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}">
+                                                                    <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" required="required" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 22)">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -279,7 +284,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" class="photofile" required="required" name="photofile[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}">
+                                                                    <input type="file" class="photofile" required="required" name="photofile[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 22)">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -371,12 +376,12 @@
 @section('jscript')
 
 <script type="text/javascript">
-$(document).ready(function () {
-    $('input[type="file"]').change(function (e) {
-        var fileName = e.target.files[0].name;
-        $(".fileUpload").text(fileName);
-    });
-});
+    var messages = {
+        promoter_document_save: "{{ URL::route('promoter_document_save') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+
+    };
 $(document).ready(function () {
     $('#submit').on('click', function (event) {
         $('input.first_name').each(function () {
@@ -638,6 +643,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
         }
     });
 });
+
  </script>
  <style>
      .error

@@ -78,10 +78,11 @@ class BizOwner extends Model
     /* By gajendra chauhan  */  
    public static function createsOwner($attributes)
     { 
+       
         $uid = Auth::user()->user_id;
         $appData = self::getAppId($uid);
         $i =0;
-       foreach($attributes as $key=>$val)
+       foreach($attributes['data'] as $key=>$val)
        {
                 $first_name = $val['first_name'];
                 $last_name = '';
@@ -93,24 +94,26 @@ class BizOwner extends Model
                         $first_name =  implode(' ',$ex);
                         $last_name =  end($ex);
                 }
-                $ownerInputArr =  BizOwner::create( ['biz_id' =>4,   
+                $ownerInputArr =  BizOwner::create( ['biz_id' => $attributes['biz_id'],   
                 'user_id' => $uid, 
                 'first_name' => $first_name,
                 'last_name'   =>  $last_name,
                 'date_of_birth' => date('Y-m-d', strtotime($val['dob'])),
                 'owner_addr' => $val['address'],
                 'created_by' =>  $uid]);
+        $getOwnerId[] = $ownerInputArr->biz_owner_id;
           $i++;      
        }      
-       return  $ownerInputArr;
+       return  $getOwnerId;
    }
+   
     public static function creates($attributes)
     {
           //insert into rta_app_doc
           $uid = Auth::user()->user_id;
           /* Get App id and biz id behalf of user id */
           $appData = self::getAppId($uid);
-          $getRes =  self::savePanApiRes($attributes,$appData->biz_id); 
+          $getRes =  self::savePanApiRes($attributes, $attributes['biz_id']); 
           $owner = AppDocument::insert([
             [
             'rcu_status' => 0,
@@ -223,6 +226,7 @@ class BizOwner extends Model
   
   public static function getAppId($uid)
   {
+      $userId = Auth::user()->user_id;
       $res =  Application::where(['status' => 0,'user_id' => $uid])->first();
       return $res;
   }

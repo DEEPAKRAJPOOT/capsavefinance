@@ -12,6 +12,9 @@ use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\Master\Permission as PermissionModel;
 use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
+use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -864,6 +867,38 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $user[0];
     }
     
+
+/**
+ * function for save anchor company detail
+ * @param type $attributes
+ * @return type
+ */
+    public function saveAnchor($attributes){
+         return Anchor::saveAnchor($attributes);
+     }
+    
+   /**
+    *  function for add anchor company information 
+    * @param type $arrAnchorUser
+    * @return type
+    */  
+     public function saveAnchorUser($arrAnchorUser){
+         return AnchorUser::saveAnchorUser($arrAnchorUser);
+     }
+    
+     /**
+      * function for get all anchor register user detail
+      * @return type
+      */
+     
+        public function getAllAnchorUsers()
+        {
+          $result = AnchorUser::getAllAnchorUsers();
+        
+          return $result ?: false;
+        }
+    
+
      /**
      * Validating and parsing data passed thos this method
      *
@@ -892,6 +927,7 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return BizOwner::getOwnerApiDetails($attributes); 
     }
+    
     /* get owner details behalf of biz id    */
     /* Created by gajendra chauhan  */
     public function getOwnerDetail($attributes = [])
@@ -912,6 +948,112 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return BizOwner::where('biz_id',$attributes['biz_id'])->get(); 
     }
+    
+    /**
+      * function for get all anchor register user detail
+      * @return type
+      */
+     
+        public function getAnchorUsersByToken($token)
+        {
+          $result = AnchorUser::getAnchorUsersByToken($token);
+        
+          return $result ?: false;
+        }
+    
+            
+    /**
+    * function for get all anchor register user detail
+    * @return type
+    */
+     
+        public function getAllAnchor()
+        {
+          $result = Anchor::getAllAnchor();
+        
+          return $result ?: false;
+        }
+        
+        
+         /**
+      * function for get all anchor register user detail
+      * @return type
+      */
+        public function getAnchorById($anch_id)
+        {
+            
+          $result = Anchor::getAnchorById($anch_id);
+        
+          return $result ?: false;
+        }
+        
+     /**
+      * 
+      * @param type $appId
+      * @param type $attributes
+      * @return boolean
+      * @throws InvalidDataTypeExceptions
+      * @throws BlankDataExceptions
+      */  
+   
+     public function updateAnchor($anchoId, $attributes = []){
+        $result = Anchor::updateAnchor((int) $anchoId, $attributes);
+        return $result ?: false;
+    }    
+    /**
+     * function for get user details using anchor id
+     * @param type $userName
+     * @return type
+     */
+   public function getUserByAnchorId($anchId)
+    {
+        $result = UserModel::getUserByAnchorId($anchId);
+         return $result ?: false;
+    } 
+      /**
+     * Get a backend user by id
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRoleByArray($arr)
+    {
+        $user = Role::getRoleByArray($arr);
+        return $user;
+    }
 
- 
+   /**
+     * 
+     * @param type $anchoId
+     * @param type $attributes
+     * @return type
+     */
+    public function updateAnchorUser($anchUId, $attributes = []) {
+        $result = AnchorUser::updateAnchorUser((int) $anchUId, $attributes);
+        return $result ?: false;
+    }
+
+    /**
+     * 
+     * @param type $email
+     * @return type
+     */
+     public function getAnchorUsersByEmail($email)
+        {
+          $result = AnchorUser::getAnchorUsersByEmail($email);
+        
+          return $result ?: false;
+        } 
+        
+        /**
+         * function for get state list
+         * @return type
+         */
+        public function getStateList() {
+        $all_state = State::getStateList();        
+        return $all_state ?: false;
+        }
 }

@@ -22,7 +22,7 @@
 							       <a href="#" data-toggle="modal" data-target="#exampleModal-cls" class="btn btn-pickup btn-sm">Pick up Case</a>
                                    <a href="#" data-toggle="modal" data-target="#myModal2" class="btn btn-pickup btn-sm">Assign Case</a>
 							  </div>
-                                    <table id="apppollMaster" class="table white-space table-striped cell-border dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="apppollMaster" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
 

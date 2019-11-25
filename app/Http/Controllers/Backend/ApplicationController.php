@@ -49,12 +49,22 @@ class ApplicationController extends Controller
     public function showCompanyDetails(Request $request){
         try {
             $arrFileData = $request->all();
+            
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $userId = $request->get('user_id');
+            
+           
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $states = State::getStateList()->get();
             //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
-                return view('backend.app.company_details')->with(['business_info'=>$business_info, 'states'=>$states]);
+                return view('backend.app.company_details')
+                        ->with(['business_info'=>$business_info, 'states'=>$states])
+                        ->with('user_id',$userId)
+                        ->with('app_id',$appId)
+                        ->with('biz_id',$bizId);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -79,7 +89,7 @@ class ApplicationController extends Controller
 
             if ($business_info) {
                 Session::flash('message',trans('success_messages.update_company_detail_successfully'));
-                return redirect()->route('promoter_details',1);
+                return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -90,13 +100,55 @@ class ApplicationController extends Controller
 
 
      /* Show promoter details page  */
-     public function showPromoterDetails($bizId){
+     public function showPromoterDetails(Request $request){
         $id = Auth::user()->user_id;
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        $userId = $request->get('user_id');
         $attribute['biz_id'] = $bizId;
+        
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-        return view('backend.app.promoter-details')->with('ownerDetails',$OwnerPanApi);
+        return view('backend.app.promoter-details')->with([
+            'ownerDetails' => $OwnerPanApi, 
+//            'appId' => $appId, 
+//            '$bizId' => $bizId
+            ]);
     }
     
+    /**
+     * Handle a Business documents for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function promoterDocumentSave(Request $request)
+    {
+        try {
+            
+            $userId = Auth::user()->user_id;
+            $arrFileData = $request->all();
+            $docId = $request->get('doc_id'); //  fetch document id
+            $appId = $request->get('app_id'); //  fetch document id
+            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
+            
+            $userFile = $this->docRepo->saveFile($uploadData);
+            
+            if(!empty($userFile->file_id)) {
+                
+                $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+                $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+                dd($appDocResponse);
+            }
+            if ($response) {
+                return $response;
+            } else {
+                return false;
+            }
+        } catch (Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
     /**
      * Render view for change application status
      * 
@@ -232,8 +284,13 @@ class ApplicationController extends Controller
         try{
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
-           return view('backend.app.next_stage_confirmBox')
+            $currentStage = Helpers::getCurrentWfStage($app_id);
+            $e = explode(',', $currentStage->assign_role);
+            $roleDropDown = $this->userRepo->getRoleByArray($e)->toArray();
+            
+            return view('backend.app.next_stage_confirmBox')
                 ->with('app_id', $app_id)
+                ->with('roles', $roleDropDown)
                 ->with('user_id', $user_id);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -250,9 +307,20 @@ class ApplicationController extends Controller
             
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
-           $currStage = Helpers::getCurrentWfStage($app_id);
-           Helpers::updateWfStage($currStage->stage_code, 1, $wf_status = 1);
+            $assign_role = $request->get('assign_role');
            
+            if ($assign_role) {
+                $currStage = Helpers::getCurrentWfStagebyRole($assign_role);
+                Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 0,$assign_role);
+            } else {
+                $currStage = Helpers::getCurrentWfStage($app_id);
+                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1);
+            }
+
+
+            $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
+           Session::flash('is_accept', 1);
+            return redirect()->back();
            
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

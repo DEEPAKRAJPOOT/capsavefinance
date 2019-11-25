@@ -199,7 +199,7 @@ class DataRenderer implements DataProviderInterface
                     return '<div class="d-flex inline-action-btn"><a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>
 									   <a href="#" data-toggle="modal" data-target="#appStatusFrame" title="Change Status" data-url="' . route('change_app_status', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id') ]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-outdent" aria-hidden="true"></i></a>
 									   <a href="#" title="Assign Case" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('assign_case', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> </div>
-                            <a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="100px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Send next stage</a> </div>';
+                            <a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Send next stage</a> </div>';
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -234,7 +234,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'app_id',
                     function ($app) {
-                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
                     }
                 )
@@ -294,4 +294,163 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     } 
+    
+    
+    public function getAnchorList(Request $request, $user)
+    {
+        
+        return DataTables::of($user)
+                ->rawColumns(['anchor_id', 'checkbox', 'action', 'email','assigned'])
+                ->addColumn(
+                    'anchor_id',
+                    function ($user) {
+                    $link = '000'.$user->anchor_id;
+                    //return $link;
+                       return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        
+                    } )
+                ->editColumn(
+                        'name',
+                        function ($user) {
+                    $full_name = $user->f_name;
+                    return $full_name;
+                    
+                })              
+                ->editColumn(
+                    'biz_name',
+                    function ($user) {
+                    $comp_name = $user->comp_name; 
+                    return $comp_name;
+
+                })
+                ->editColumn(
+                    'email',
+                    function ($user) {
+                    return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".$user->comp_email."</a> ";
+
+                })
+                ->editColumn(
+                    'phone',
+                    function ($user) {
+                    $achorId = $user->comp_phone; 
+                    return $achorId;
+                }) 
+                ->editColumn(
+                    'created_at',
+                    function ($user) {
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($users) {
+                    //$view="<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-eye\"></a>";
+                    return  "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></a>";
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
+                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                
+                                $query->where('users.is_assigned', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }
+                })
+                ->make(true);
+    }
+    
+    public function getAnchorLeadList(Request $request, $user)
+    {
+        
+        return DataTables::of($user)
+                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned', 'status'])
+                ->addColumn(
+                    'id',
+                    function ($user) {
+                    $link = '000'.$user->anchor_user_id;
+                        //return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        
+                    }
+                )
+                ->editColumn(
+                        'name',
+                        function ($user) {
+                    $full_name = $user->name;
+                    return $full_name;
+                    
+                })
+                ->editColumn(
+                    'email',
+                    function ($user) {
+                    return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
+
+                })
+                ->editColumn(
+                    'phone',
+                    function ($user) {
+                    $achorId = $user->phone; 
+                    return $achorId;
+                })               
+                ->editColumn(
+                    'biz_name',
+                    function ($user) {
+                    return ($user->biz_name)? $user->biz_name: '---';
+
+                })
+                ->editColumn(
+                    'created_at',
+                    function ($user) {
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+
+                })
+                ->addColumn(
+                    'status',
+                    function ($users) {
+                    if($users->is_registered==1){
+                       return "<label class=\"badge badge-success current-status\">Registered</label>";
+                    } else {
+                        return "<label class=\"badge badge-warning current-status\">Unregistered</label>";
+                    }
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
+                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                
+                                $query->where('users.is_assigned', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }
+                })
+                ->make(true);
+    }
 }

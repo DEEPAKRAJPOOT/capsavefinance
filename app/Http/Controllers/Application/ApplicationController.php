@@ -58,13 +58,13 @@ class ApplicationController extends Controller
                         
             if ($business_info) {
                 //Add application workflow stages
-                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1, $assign_role = false);
                 
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2);
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2, $assign_role = false);
                 
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -80,20 +80,24 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail(Request $request)
     {
-        $biz_id =1;
+        $biz_id = $request->get('biz_id');
         $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-       $attribute['biz_id'] = 1;
+       $attribute['biz_id'] = $biz_id;
        $ownerDetail = $this->userRepo->getOwnerDetail($attribute); 
        $getCin = $this->userRepo->getCinByUserId($biz_id);
        if($getCin==false)
        {
            return redirect()->route('business_information_open');
        }
-       return view('frontend.application.promoter-detail')->with(array('userArr' => $userArr,'cin_no' => $getCin->cin,'ownerDetails' => $ownerDetail));
+       return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
+           'cin_no' => $getCin->cin,
+           'ownerDetails' => $ownerDetail,
+           'biz_id' => $biz_id
+        ]);
     } 
 
     /**
@@ -106,24 +110,25 @@ class ApplicationController extends Controller
        try {
             $arrFileData = $request->all();
             $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
-            dd( $owner_info );
-          if ($owner_info) {
+            if ($owner_info) {
+            
                 //Add application workflow stages
                 $appId = $arrFileData['app_id']; 
-              //  $appData = $this->appRepo->getAppDataByBizId($arrFileData['biz_id']);
-                //$appId = $appData ? $appData->app_id : null; 
+                $appId = $appData ? $appData->app_id : null; 
 
                 Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
                  
+
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
-            } else {
+            }
+            else {
                //Add application workflow stages 
-               Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+               Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2, $assign_role = false);
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+            Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2, $assign_role = false);
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
@@ -138,8 +143,9 @@ class ApplicationController extends Controller
        try {
           $arrFileData = json_decode($request->getContent(), true);
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
+         
           if ($owner_info) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
+                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
@@ -193,19 +199,19 @@ class ApplicationController extends Controller
                 $appId = $arrFileData['appId'];       
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 $wf_status = $response->count() < 1 ? 1 : 2;
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status, $assign_role = false);
                 
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->back();
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2, $assign_role = false);
             
                 return redirect()->back();
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2, $assign_role = false);
                 
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -254,7 +260,7 @@ class ApplicationController extends Controller
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
                 
                 //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1, $assign_role = false);
                 
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             } else {

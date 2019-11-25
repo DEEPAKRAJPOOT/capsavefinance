@@ -5,8 +5,25 @@
 Route::group(
     ['middleware' => 'auth'],
     function () {
+   
+    Route::post(
+        'chk-user-cibil',
+        [
+        'as' => 'chk_user_pan_karza',
+        'uses' => 'Karza\KarzaController@checkPanVerification'
+        ]
+    );
+   
+    
+    Route::post(
+        'chk_user_cibil',
+        [
+        'as' => 'chk_user_cibil',
+        'uses' => 'Cibil\CibilController@getPromoterCibilRequest'
+        ]
+    );
 
-
+    
     Route::post(
         'get-users-wci',
         [
@@ -54,7 +71,29 @@ Route::group(
         'as' => 'ajax_app_list',
         'uses' => 'AjaxController@getApplications'
         ]
-    );    
+    );
+    Route::post(
+        'get-anchor-user-list',
+        [
+        'as' => 'get_anch_user_list',
+        'uses' => 'AjaxController@getAnchorLists'
+        ]
+    ); 
+    Route::post(
+        'get-anchor-lead-list',
+        [
+        'as' => 'get_anch_lead_list',
+        'uses' => 'AjaxController@getAnchorLeadLists'
+        ]
+    ); 
+//    Route::get(
+//        'check-exist-user',
+//        [
+//        'as' => 'check_exist_user',
+//        'uses' => 'AjaxController@checkExistUser'
+//        ]
+//    );
+    
 });
 
 

@@ -59,9 +59,12 @@
             <div class="collapse" id="layoutsSubmenu">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Manage Anchor</a>
+                        <a class="nav-link" href="{{ route('get_anchor_list') }}">Manage Anchor</a>
+
                     </li>
-                                                
+                        <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_anchor_lead_list') }}">Manage Anchor Lead</a>
+                    </li>                           
                 </ul>
             </div>
         </li>   
