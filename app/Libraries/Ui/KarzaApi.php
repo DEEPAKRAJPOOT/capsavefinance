@@ -67,7 +67,7 @@ class KarzaApi {
                     'consent' => 'Y',
                     'pan' => $pancard['pan'],
                     'name' => $pancard['name'],
-                    'dob' => $pancard['dob']
+                    'dob' =>  date("d/m/Y", strtotime($pancard['dob']))
                     ],
             ];
               $response = $this->client->post($api_url, $options);
@@ -93,7 +93,7 @@ class KarzaApi {
             $options = [
                 'json' => [
                     'consent' => 'Y',
-                    'epic_no' => $voterid]
+                    'epic_no' => $voterid['epic_no']]
             ];
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
