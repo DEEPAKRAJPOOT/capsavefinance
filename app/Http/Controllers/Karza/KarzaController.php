@@ -53,7 +53,7 @@ class KarzaController extends Controller
               $status =0; 
               
           }
-          $req =   json_encode(array('name' => $requestPan['name'],'dob' => $requestPan['dob'],'dob' => $requestPan['dob']));
+          $req =   json_encode(array('name' => $requestPan['name'],'pan' => $requestPan['pan'],'dob' => $requestPan['dob']));
           $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($get_dec['result']),'status' => $status]);
           if ($createApiLog) {
                if($status==1)
@@ -99,9 +99,11 @@ class KarzaController extends Controller
      */
     public function checkVoterIdVerification(KarzaApi $KarzaApi, Request $request)
     {
-          $requestPan   = $request->all();
-          $result = $KarzaApi->checkVoterIdVerification($requestPan['epic_no']);
-          $get_dec = json_decode($result);
+          $requestvoterf   = $request->all();
+          $result = $KarzaApi->checkVoterIdVerification($requestvoterf);
+          dd( $result);
+          $get_dec = json_decode($result,1);
+          dd($get_dec);
           $status =  $get_dec['status-code'];
           dd($result);
           if($status==101) { 
@@ -111,7 +113,7 @@ class KarzaController extends Controller
               $status =0; 
               
           }
-          $createApiLog = BizApiLog::create(['req_file' =>$requestPan['epic_no'], 'res_file' => json_encode($result['response']->result),'status' => 0]);
+          $createApiLog = BizApiLog::create(['req_file' =>$requestvoterf['epic_no'], 'res_file' => json_encode($result['response']->result),'status' => 0]);
           if ($createApiLog) {
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
             } else {

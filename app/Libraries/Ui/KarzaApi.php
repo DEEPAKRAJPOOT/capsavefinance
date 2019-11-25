@@ -84,7 +84,7 @@ class KarzaApi {
             $options = [
                 'json' => [
                     'consent' => 'Y',
-                    'epic_no' => $voterid]
+                    'epic_no' => $voterid['epic_no']]
             ];
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
