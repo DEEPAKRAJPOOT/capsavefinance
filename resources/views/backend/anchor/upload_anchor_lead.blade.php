@@ -16,19 +16,20 @@
                            </div>
                            
                         </div>
-                 @if(isset($anchorDropShow) && $anchorDropShow=='showAnchorDrop')
+                @if ($is_superadmin == '1')
                 <div  class="row">                    
-                      <div class="col-md-6">
+                      <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">Anchor
                                  <span class="mandatory">*</span>
-                                 </label>
-                                  <select class="form-control assigned_anchor" name="assigned_anchor" id="assigned_anchor">
-                                     <option value="">please select</option>
-                                      <option value="3">Anchor 1</option>
-                                      <option value="4">Anchor 2</option>
-                                      <option value="5">Anchor 3</option>
-                                  </select>
+                                 </label>        
+                                     <select class="form-control assigned_anchor" name="assigned_anchor" id="assigned_anchor">
+                            <option value="">please select</option>
+                             @foreach($anchDropUserList as $key => $value)
+                             <option value="{{$value->anchor_id}}"> {{$value->comp_name}} </option>
+                             @endforeach
+                         </select>
+                                  
                               </div>
                            </div> 
                        

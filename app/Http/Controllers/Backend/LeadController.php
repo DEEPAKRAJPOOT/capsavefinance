@@ -242,16 +242,12 @@ class LeadController extends Controller {
      */
     public function uploadAnchorlead(Request $request) {
         try {
-                $anchLeadList = $this->userRepo->getAllAnchor();
-                $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
-                $anchorDropShow='';
-                if($getAnchorId && $getAnchorId->anchor_id==''){
-                $anchorDropShow='showAnchorDrop';
-                }else{
-                $anchorDropShow='hideAnchorDrop';
-                }
+              $roleData = Helpers::getUserRole();
+            $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
+                $anchLeadList = $this->userRepo->getAllAnchor();                
             return view('backend.anchor.upload_anchor_lead')
-                 ->with('anchorDropShow',$anchorDropShow);
+                 ->with('is_superadmin',$is_superadmin)                    
+                ->with('anchDropUserList',$anchLeadList);
         } catch (Exception $ex) {
             dd($ex);
         }
@@ -394,16 +390,12 @@ class LeadController extends Controller {
     
      public function addManualAnchorLead() {
       try{
+          $roleData = Helpers::getUserRole();
+          $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
        $anchLeadList = $this->userRepo->getAllAnchor();
-      $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
-      $anchorDropShow='';
-      if($getAnchorId && $getAnchorId->anchor_id==''){
-          $anchorDropShow='showAnchorDrop';
-      }else{
-           $anchorDropShow='hideAnchorDrop';
-      }
         return view('backend.anchor.anchor_manual_lead')
-      ->with('anchorDropShow',$anchorDropShow);
+       ->with('anchDropUserList',$anchLeadList)
+        ->with('is_superadmin',$is_superadmin);
          } catch (Exception $ex) {
             dd($ex);
         }

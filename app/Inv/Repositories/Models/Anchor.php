@@ -89,7 +89,7 @@ public static function saveAnchor($arrAnchor = [])
     public static function getAllAnchor() {
         $result = self::select('anchor.*', 'u.user_id', 'u.f_name')
                 ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id')        
-            ->orderByRaw('anchor_id DESC');
+            ->orderByRaw('anchor_id DESC')->get();
         return ($result ? $result : false);
     }
     
