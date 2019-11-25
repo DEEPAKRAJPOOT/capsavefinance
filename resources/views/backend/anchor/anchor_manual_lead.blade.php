@@ -78,7 +78,7 @@
                                  <span class="mandatory">*</span>
                                  </label>
                                   <select class="form-control anchor_user_type" name="anchor_user_type" id="anchor_user_type">
-                                      <option value="">please select</option>
+                                      <option value="">Please Select</option>
                                       <option value="1">Supplier</option>
                                       <option value="2">Buyer</option>
                                   </select>
@@ -93,7 +93,7 @@
                                  <span class="mandatory">*</span>
                                  </label>        
                                      <select class="form-control assigned_anchor" name="assigned_anchor" id="assigned_anchor">
-                            <option value="">please select</option>
+                            <option value="">Please Select</option>
                              @foreach($anchDropUserList as $key => $value)
                              <option value="{{$value->anchor_id}}"> {{$value->comp_name}} </option>
                              @endforeach
