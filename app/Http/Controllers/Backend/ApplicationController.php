@@ -150,7 +150,7 @@ class ApplicationController extends Controller
        try {
             $arrFileData = $request->all();
             $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
-          //  dd($owner_info);
+//            dd($owner_info);
             if ($owner_info > 0) {
             
                 //Add application workflow stages
@@ -221,10 +221,8 @@ class ApplicationController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userData = User::getUserByAppId($appId);
-            dd($userData);
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
-                dd($requiredDocs);
                 if(!empty($requiredDocs)){
                     $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
                 }

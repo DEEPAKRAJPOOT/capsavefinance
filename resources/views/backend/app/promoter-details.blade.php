@@ -526,7 +526,6 @@ $(document).ready(function () {
                 cache: false,
                 success: function (res)
                 {
-                     alert(res);console.log(res); 
                     if (res.status == 1)
                     {
                         window.location.href = "{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
@@ -654,7 +653,8 @@ jQuery(document).ready(function () {
                         count++;
                     });
                         var bizId = $('input[name=biz_id]').val();
-                        var getRes = savePromoter(arr, bizId);
+                        var appId = $('input[name=app_id]').val();
+                        var getRes = savePromoter(arr, bizId, appId);
                         
                         ///$(".form-design").load(" .form-design");
                       /// window.location.href = "{{ route('promoter-detail',[])}}";
@@ -665,10 +665,10 @@ jQuery(document).ready(function () {
 });
 
   /* save promoter details after cin number api hit */
-      function  savePromoter(data, bizId)
+      function  savePromoter(data, bizId, appId)
       {
           
-            var data = {'data' : data, 'biz_id' : bizId};
+            var data = {'data' : data, 'biz_id' : bizId, 'app_id' : appId};
             jQuery.ajax({
                 url: "/application/promoter-save",
                 headers: {
@@ -676,7 +676,7 @@ jQuery(document).ready(function () {
                 },
                 method: 'post',
                 contentType: "json",
-                processData: false,
+                processData: fal    se,
                 data: JSON.stringify(data),
                 success: function (data) {
                     var promoId = 0;

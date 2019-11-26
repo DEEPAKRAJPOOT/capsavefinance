@@ -462,17 +462,18 @@
                         count++;
                     });
                         var bizId = $('input[name=biz_id]').val();
-                        var getRes = savePromoter(arr, bizId);
+                        var appId = $('input[name=app_id]').val();
+                        var getRes = savePromoter(arr, bizId, appId);
                 }
             });
         });
       ///////////////Promotor web service for pan verified start here//////////////////////////
        
       /* save promoter details after cin number api hit */
-      function  savePromoter(data, bizId)
+      function  savePromoter(data, bizId, appId)
       {
           
-            var data = {'data' : data, 'biz_id' : bizId};
+            var data = {'data' : data, 'biz_id' : bizId, 'app_id' : appId};
             jQuery.ajax({
                 url: "/application/promoter-save",
                 headers: {
