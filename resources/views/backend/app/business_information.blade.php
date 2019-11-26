@@ -47,8 +47,11 @@
 											<span class="mandatory">*</span>
 										</label>
 										<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-										<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" tabindex="1" placeholder="Enter Applied Loan Amount" required>
+										<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" tabindex="1" placeholder="Enter Applied Loan Amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="10" required>
 										<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+										@error('loan_amount')
+							                <span class="text-danger error">{{ $message }}</span>
+							            @enderror
 									</div>
 
 									</div>
@@ -56,7 +59,10 @@
 										<div class="form-group">
 											<label for="txtSupplierName">Tranche Tenor (Days)
 											</label>
-											<input type="number" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="2" placeholder="Enter Tranche Tenor (1 - 120)">
+											<input type="number" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="2" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
+											@error('tenor_days')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
 								</div>
@@ -67,6 +73,9 @@
 												<span class="mandatory">*</span>
 											</label>
 											<input type="text" name="biz_entity_name" value="{{old('biz_entity_name')}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" required>
+											@error('biz_entity_name')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
 									<div class="col-md-6">
@@ -74,7 +83,10 @@
 											<label for="txtPassword">Date of Incorporation
 												<span class="mandatory">*</span>
 											</label>
-											<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="4" placeholder="Enter Entity Name" autocomplete="off" readonly required>
+											<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="4" autocomplete="off" required readonly>
+											@error('incorporation_date')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
 								</div>
@@ -90,13 +102,19 @@
 													<option value="2" {{(old('biz_constitution') == 2)? 'selected':''}}> Business Constitution 2 </option>
 													<option value="3" {{(old('biz_constitution') == 3)? 'selected':''}}> Business Constitution 3 </option>
 												</select>
+												@error('biz_constitution')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
 										</div>
 									</div>
 									<div class="col-md-6">
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
 											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="6" placeholder="Enter Business Turnover">
+											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="6" placeholder="Enter Business Turnover" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="15">
+											@error('biz_turnover')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
 								</div>
@@ -111,6 +129,9 @@
 											</span>
 											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
 											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="7" placeholder="Enter Company Pan" required>
+											@error('biz_pan_number')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
 									<div class="col-md-6">
@@ -120,6 +141,11 @@
 											</label>
 											<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
 											<select class="form-control" name="biz_gst_number" tabindex="8" onchange="fillEntity(this.value)" required>
+												</select>
+												<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
+												@error('biz_gst_number')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
 											</select>
 										</div>
 									</div>
@@ -136,6 +162,9 @@
 												<option value="2" {{(old('entity_type_id') == 2)? 'selected':''}}> Nature of Business 2 </option>
 												<option value="3" {{(old('entity_type_id') == 3)? 'selected':''}}> Nature of Business 3 </option>
 											</select>
+											@error('entity_type_id')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
 									<div class="col-md-6">
@@ -149,6 +178,9 @@
 												<option value="2" {{(old('biz_type_id') == 2)? 'selected':''}}> Industry 2 </option>
 												<option value="3" {{(old('biz_type_id') == 3)? 'selected':''}}> Industry 3 </option>
 											</select>
+											@error('biz_type_id')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
 									<div class="col-md-6">
@@ -162,6 +194,9 @@
 												<option value="2" {{(old('segment') == 2)? 'selected':''}}> Segment 2 </option>
 												<option value="3" {{(old('segment') == 3)? 'selected':''}}> Segment 3 </option>
 											</select>
+											@error('segment')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
 								</div>
@@ -183,6 +218,9 @@
 														<span class="mandatory">*</span>
 													</label>
 													<input type="text" name="biz_address" value="{{old('biz_address')}}" class="form-control" tabindex="12" placeholder="Enter Your Address" required>
+													@error('biz_address')
+                                                        <span class="text-danger error">{{ $message }}</span>
+                                                    @enderror
 												</div>
 											</div>
 										</div>
@@ -199,6 +237,9 @@
                                                         <option value="{{$state->id}}" {{(old('biz_state') == $state->id)? 'selected':''}}> {{$state->name}} </option>
                                                         @endforeach
                                                     </select>
+                                                    @error('biz_state')
+                                                        <span class="text-danger error">{{ $message }}</span>
+                                                    @enderror
 												</div>
 											</div>
 											<div class="col-md-4">
@@ -207,6 +248,9 @@
 														<span class="mandatory">*</span>
 													</label>
 													<input type="text" name="biz_city" value="{{old('biz_city')}}" class="form-control" tabindex="14" placeholder="Enter City Name" required>
+													@error('biz_city')
+                                                        <span class="text-danger error">{{ $message }}</span>
+                                                    @enderror
 												</div>
 											</div>
 											<div class="col-md-4">
@@ -215,7 +259,10 @@
 													<label for="txtPassword">Pin Code
 														<span class="mandatory">*</span>
 													</label>
-													<input type="text" name="biz_pin" value="{{old('biz_pin')}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" minlength="6" maxlength="6" required>
+													<input type="text" name="biz_pin" value="{{old('biz_pin')}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" minlength="6" maxlength="6" required>
+						                            @error('biz_pin')
+                                                        <span class="text-danger error">{{ $message }}</span>
+                                                    @enderror
 												</div>
 											</div>	
 										</div>	
@@ -235,7 +282,7 @@
 								<div id="accordion" class="accordion">
 
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne">
 											<a class="card-title">
@@ -284,7 +331,7 @@
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0')}}" class="form-control" tabindex="19" placeholder="Enter Pin Code">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0')}}" class="form-control" tabindex="19" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 														</div>
 													</div>
 												</div>
@@ -293,15 +340,15 @@
 									</div>
 
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address
 										</span></div>
-										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne24">
+										<div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
 											<a class="card-title">
 												GST Address
 											</a>
 
 										</div>
-										<div id="collapseOne24" class="card-body collapse" data-parent="#accordion">
+										<div id="collapseTwo" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
 												<div class="row">
 													<div class="col-md-12">
@@ -328,7 +375,6 @@
 														</div>
 													</div>
 
-
 													<div class="col-md-4">
 														<div class="form-group">
 															<label for="txtEmail">City
@@ -343,7 +389,7 @@
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1')}}" class="form-control" tabindex="23" placeholder="Enter Pin Code">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1')}}" class="form-control" tabindex="23" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 														</div>
 													</div>
 												</div>
@@ -353,15 +399,15 @@
 									</div>
 
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address
 										</span></div>
-										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne2">
+										<div class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
 											<a class="card-title">
 												Warehouse Address
 											</a>
 
 										</div>
-										<div id="collapseOne2" class="card-body collapse" data-parent="#accordion">
+										<div id="collapseThree" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
 												<div class="row">
 													<div class="col-md-12">
@@ -403,7 +449,7 @@
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2')}}" class="form-control" tabindex="27" placeholder="Enter Pin Code">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2')}}" class="form-control" tabindex="27" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 														</div>
 													</div>
 												</div>
@@ -411,14 +457,14 @@
 										</div>
 									</div>
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address
 										</span></div>
-										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne3">
+										<div class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
 											<a class="card-title">
 												Factory Address
 											</a>
 										</div>
-										<div id="collapseOne3" class="card-body collapse" data-parent="#accordion">
+										<div id="collapseFour" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
 												<div class="row">
 													<div class="col-md-12">
@@ -455,7 +501,7 @@
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3')}}" class="form-control" tabindex="31" placeholder="Enter Pin Code">
+															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3')}}" class="form-control" tabindex="31" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 														</div>
 													</div>
 												</div>

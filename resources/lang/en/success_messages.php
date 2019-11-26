@@ -20,4 +20,5 @@ return [
     'PasswordResetSuccessfully' => 'Password reset successfully. Please login',
     'UpdateShareHolderSuccessfully' => 'ShareHolding Structure Updated successfully!',
     'update_company_detail_successfully' => 'Company details updated successfully!',
+    'save_company_detail_successfully' => 'Company details saved successfully!',
 ];

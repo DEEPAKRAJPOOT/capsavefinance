@@ -60,7 +60,7 @@ class ApplicationController extends Controller
                 //Add application workflow stages
                 Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
                 
-                Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                Session::flash('message',trans('success_messages.save_company_detail_successfully'));
                 return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
             } else {
                 //Add application workflow stages
