@@ -1,6 +1,8 @@
 <?php 
 namespace App\Libraries;
 
+use phpseclib\Crypt\RSA;
+
 define('FIXED', array('vendorId' => 'capsave','time' => date('Ymd\THis\Z')));
 
 class Bsa_lib{
@@ -38,12 +40,12 @@ class Bsa_lib{
 
 
 	const STATUS = array(
-			SELF::INIT_TXN => 'success',
+			SELF::INIT_TXN => 'transaction',
 			SELF::CNCL_TXN => 'success',
-			SELF::UPL_FILE => 'accepted',
-			SELF::PRC_STMT => 'accepted',
+			SELF::UPL_FILE => 'file',
+			SELF::PRC_STMT => 'bankstatement',
 			SELF::REPRC_STMT => 'needtocheck',
-			SELF::REP_GEN => 'status',
+			SELF::REP_GEN => 'success',
 			SELF::GET_REP => 'status',
 	);
 
@@ -59,65 +61,52 @@ class Bsa_lib{
 			$resp['message'] = "Method not available";
 			return $resp;
 		 }
+		 $query_string = '';
+		 
 		 list($payload, $concat, $httpMethod) = $this->_genReq($method, $params);
-		 $date = '20191122T132340Z';//FIXED["time"];
+		 $date = FIXED["time"];
 		 $url = SELF::METHOD[$method]. $concat;
-		 list($scheme, $host, $path) = array_values(parse_url($url));
+		 $parsed_url = array_values(parse_url($url));
+
+		 list($scheme, $host, $path) = $parsed_url;
+		 if (strtoupper($httpMethod) == 'GET') {
+		 	list($scheme, $host, $path, $query_string) = $parsed_url;
+		 }
+
 		 if ($method == SELF::UPL_FILE) {
-		 	 $headers = array('Content-Type: multipart/form-data');
+		 	 $req_data = '';
+		 	 $content_type = "Content-Type: multipart/form-data";
 		 }else {
-	     	 $query_string = '';//http_build_query($params);
-			 $sha256Payload = $this->_getHash($payload);
-			 $canonical_url = $this->_uriEncode($path);
-			 $signed_headers = "host;x-perfios-content-sha256;x-perfios-date";
-			 $canonical_headers = "host:$host"."\n"."x-perfios-content-sha256:$sha256Payload"."\n"."x-perfios-date:$date";
-			 $canonical_req = "POST"."\n"."$canonical_url"."\n"."$query_string"."\n"."$canonical_headers"."\n"."$signed_headers"."\n"."$sha256Payload";
-			 $req_hex = $this->_getHash($canonical_req);
-			 $string2sign = "PERFIOS-RSA-SHA256"."\n"."$date"."\n"."$req_hex";
-			 $checksum = $this->_getHash($string2sign);
-			 $signature = $this->_genSignature($checksum);
-			 $headers = array(
-			 	"Content-Type: application/xml",
-				"X-Perfios-Algorithm: PERFIOS-RSA-SHA256",
-				"X-Perfios-Content-Sha256: $sha256Payload",
-				"X-Perfios-Date: $date",
-				"X-Perfios-Signature: $signature",
-				"X-Perfios-Signed-Headers: host;x-perfios-content-sha256;x-perfios-date",
-			 );
+		 	 $req_data = $payload;
+		 	 $content_type = "Content-Type: application/xml";
 	     }
-		 echo "<pre>";
-		 echo $url;
-		 echo "<br>";
-		 echo "CanonicalUri - $canonical_url";
-		 echo "<br>";
-		 /*echo "HttpRequestMethod - POST";
-		 echo "<br>";
-		 echo "CanonicalQueryString - $query_string";
-		 echo "<br>";
-		 echo "CanonicalHeaders - $canonical_headers";
-		 echo "<br>";
-		 echo "SignedHeaders - $signed_headers";
-		 echo "<br>";
-		 echo "hex(256(payload)) - $sha256Payload";
-		 echo "<br>";
-		 echo "CanonicalRequest - $canonical_req";
-		 echo "<br>";
-		 echo "hex(256(CanonicalRequest)) - $req_hex";
-		 echo "<br>";
-		 echo "string2sign - $string2sign";
-		 echo "<br>";
-		 echo "Checksum - $checksum";*/
-		 echo "<br>";
-		 echo "signature - $signature";
-		 echo "<br>";
-		 print_r($headers);
-		 echo "<br>";
-		 dd($payload);
+
+		 $sha256Payload = $this->_getHash($req_data);
+		 $canonical_url = $this->_uriEncode($path);
+		 $signed_headers = "host;x-perfios-content-sha256;x-perfios-date";
+		 $canonical_headers = "host:$host"."\n"."x-perfios-content-sha256:$sha256Payload"."\n"."x-perfios-date:$date";
+		 $canonical_req = "$httpMethod"."\n"."$canonical_url"."\n"."$query_string"."\n"."$canonical_headers"."\n"."$signed_headers"."\n"."$sha256Payload";
+		 $req_hex = $this->_getHash($canonical_req);
+		 $string2sign = "PERFIOS-RSA-SHA256"."\n"."$date"."\n"."$req_hex";
+		 $checksum = $this->_getHash($string2sign);
+		 $signature = $this->_genSignature($checksum);
+
+		 $headers = array(
+			'1' =>  "X-Perfios-Algorithm: PERFIOS-RSA-SHA256",
+					"X-Perfios-Content-Sha256: $sha256Payload",
+					"X-Perfios-Date: $date",
+					"X-Perfios-Signature: $signature",
+					"X-Perfios-Signed-Headers: host;x-perfios-content-sha256;x-perfios-date",
+		 );
+		 $headers[0] = $content_type;
 	     $response = $this->_curl_call($url, $payload, $headers);
 	     if (!empty($response['error_no'])) {
 	     	$resp['code'] 	 = "CurlError";
 	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
+	     }
+	     if ($method == SELF::REP_GEN) {
+	     	//dd($response['result']);
 	     }
 	     $result = $this->_parseResult($response['result'], $method);
 	     return $result;
@@ -224,8 +213,8 @@ class Bsa_lib{
 	    xml_parser_free($p);
 	    $status = strtolower($resp[0]['tag']);
 	    foreach ($resp as $key => $value) {
-	    	if ($value['type'] == 'complete' && !empty($value['value'])) {
-	    		$result[strtolower($value['tag'])] = $value['value'];
+	    	if ($value['type'] == 'complete' && (!empty($value['value']) || strtolower($value['tag']) == 'success')) {
+	    		$result[strtolower($value['tag'])] = $value['value'] ?? 'success';
 	    	}
 	    }
 	    if (SELF::STATUS[$method] != strtolower($status)) {
@@ -257,9 +246,15 @@ class Bsa_lib{
        return $signature;
     }
 
-    private function _encrypt($payload){
-     	openssl_private_encrypt($payload, $crypted, base64_decode(SELF::PRIVATE_KEY));
-     	return strtolower(bin2hex($crypted));
+    private function _encrypt($checksum){
+    	$rsa = new RSA();
+		if ($rsa->loadKey(base64_decode(SELF::PRIVATE_KEY)) != TRUE) {
+		    return false;
+		}
+		$rsa->setHash("sha256");
+		$rsa->setMGFHash("sha256");
+		$crypted = $rsa->sign($checksum);
+		return strtolower(bin2hex($crypted));
     }
 
 
