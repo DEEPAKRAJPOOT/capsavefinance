@@ -32,7 +32,7 @@
                 <div class="custom-file mb-3 mt-2">
                <label for="email">Upload Document</label>
                <input type="file" class="custom-file-input" id="anchor_lead" name="anchor_lead">
-               <label class="custom-file-label" for="anchor_lead">Choose file</label>
+               <label class="custom-file-label val_print" for="anchor_lead">Choose file</label>
             </div>
                            
                 <br> <br>
@@ -85,8 +85,16 @@
             if($('form#anchorForm').valid()){                
             $("#saveAnch").attr("disabled","disabled");
             }  
-            })
-        });
+            });            
+   
+ });
+ 
+$('#anchor_lead').click(function(){
+    $('#anchor_lead').change(function(e) {
+var fileName = e.target.files[0].name;
+$('.val_print').html(fileName);
+});
+})
 
 </script>
 @endsection
