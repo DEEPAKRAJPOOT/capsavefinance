@@ -85,7 +85,7 @@ class CibilController extends Controller
         $arrData  = BizApi::getPromoterCibilData($biz_owner_id);
        
         if(empty($arrData)){
-                return response()->json(['message' =>'Please Pull Cibil Score','status' => 0, 'cibilScoreData' => ' Please Pull Cibil Score']);
+                return response()->json(['message' =>'Please Pull the CIBIL Score to view the report.','status' => 0, 'cibilScoreData' => 'Please Pull the CIBIL Score to view the report.']);
         }else{
               
                 $arrCibilScoreData = json_decode($arrData['res_file'], true);
