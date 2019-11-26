@@ -184,6 +184,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm" type="button" title="view Details" data-toggle="modal" data-target="#myModal1"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -205,6 +206,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm" type="button" title="view Details" data-toggle="modal" data-target="#myModal1"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -225,6 +227,7 @@
                                                                 </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm" type="button" title="view Details" data-toggle="modal" data-target="#myModal1"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -246,6 +249,7 @@
                                                                 </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm" type="button" title="view Details" data-toggle="modal" data-target="#myModal1"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -264,6 +268,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm" type="button" title="view Details" data-toggle="modal" data-target="#myModal1"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
