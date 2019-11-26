@@ -35,11 +35,9 @@ class CibilController extends Controller
         $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($biz_owner_id);
         $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
         $responce =  $CibilApi->getPromoterCibilRequest($arrOwnerData);
-        
-        $file_name = 'cibil.txt';
-        File::put(storage_path('app/public/cibil').'/'.$file_name, $responce);
+      //  $file_name = 'cibil.txt';
+       // File::put(storage_path('app/public/cibil').'/'.$file_name, $responce);
         //$jsonData = json_encode($responce); 
- 
         $new = simplexml_load_string($responce); 
         // Convert into json 
         $con = json_encode($new); 
