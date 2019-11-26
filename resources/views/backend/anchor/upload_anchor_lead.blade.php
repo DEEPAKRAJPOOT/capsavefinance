@@ -32,7 +32,7 @@
                 <div class="custom-file mb-3 mt-2">
                <label for="email">Upload Document</label>
                <input type="file" class="custom-file-input" id="anchor_lead" name="anchor_lead">
-               <label class="custom-file-label" for="customFile">Choose file</label>
+               <label class="custom-file-label" for="anchor_lead">Choose file</label>
             </div>
                            
                 <br> <br>

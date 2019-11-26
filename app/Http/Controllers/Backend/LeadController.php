@@ -363,6 +363,7 @@ class LeadController extends Controller {
             $arrAnchorData = [
                 'comp_name' => $arrAnchorVal['comp_name'],
                 'comp_email' => $arrAnchorVal['email'],
+                'sales_user_id' => $arrAnchorVal['assigned_sale_mgr'],
                 'comp_phone' => $arrAnchorVal['phone'],
                 'comp_addr' => $arrAnchorVal['comp_addr'],
                 'comp_state' => $arrAnchorVal['state'],
