@@ -29,6 +29,7 @@ class CamController extends Controller
      */
     public function index(){
         return view('backend.cam.overview');
+
     }
 
     public function camInformationSave(Request $request){
