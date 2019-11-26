@@ -278,9 +278,6 @@ class CamController extends Controller
              $final_res['api_type'] = "Start New Txn";
          }
          dd($final_res);
-
-
-
         $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
