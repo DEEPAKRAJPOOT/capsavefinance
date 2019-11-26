@@ -292,7 +292,7 @@
 							        <div id="accordion" class="accordion mb-5">
 							            <div class="card card-color mb-0">
 							                <div class="sameas">
-							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address</span>
+							                    <input type="checkbox" name="address_same" class="mr-2" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address</span>
 							                 </div>
 							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
 							                    <a class="card-title">Communication Address</a>
@@ -343,7 +343,7 @@
 							            </div>
 							            <div class="card card-color mb-0">
 							                <div class="sameas">
-							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address</span>
+							                    <input type="checkbox" name="address_same" class="mr-2" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address</span>
 							                </div>
 							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
 							                    <a class="card-title">GST Address</a>
@@ -394,7 +394,7 @@
 							            </div>
 							            <div class="card card-color mb-0">
 							                <div class="sameas">
-							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address</span>
+							                    <input type="checkbox" name="address_same" class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address</span>
 							                </div>
 							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
 							                    <a class="card-title">Warehouse Address</a>
@@ -445,7 +445,7 @@
 							            </div>
 							            <div class="card card-color mb-0">
 							                <div class="sameas">
-							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address</span>
+							                    <input type="checkbox" name="address_same" class="mr-2" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address</span>
 							                </div>
 							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
 							                    <a class="card-title">Factory Address</a>
