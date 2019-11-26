@@ -67,12 +67,20 @@
                                  <label for="txtEmail">State
                                  <span class="mandatory">*</span>
                                  </label>
-                                  <select class="form-control state" name="state" id="state">
+<!--                                  <select class="form-control state" name="state" id="state">
                                       <option value="">please select</option>
                                       <option value="1" @if($anchorData->comp_state==1)selected @else @endif >state1</option>
                                       <option value="2" @if($anchorData->comp_state==2)selected @else @endif>state2</option>
                                       <option value="3" @if($anchorData->comp_state==3)selected @else @endif>state3</option>
-                                  </select>
+                                  </select>-->
+                                  
+                                    <select class="form-control state" name="state" id="state" tabindex="6">
+                                    <option value=""> Select State</option>
+                                    @foreach($states as $key => $state)
+                                    <option value="{{$state->id}}" @if($anchorData->comp_state==$state->id)selected @endif > {{$state->name}} </option>
+                                    @endforeach
+                                    </select> 
+                                  
                               </div>
                            </div>
 
