@@ -58,7 +58,7 @@
                     'class'=>'form-control'))
                     !!}
                 </div>
-                <button type="button" id="searchbtn" class="btn btn-success search">Search</button>
+                <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -98,10 +98,10 @@
 
 </div>
 
-{!!Helpers::makeIframePopup('addCaseNote','Add Note', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('appStatusFrame','Change Status', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('assignCaseFrame','Assign Case', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('sendNextstage','Send Next Stage', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('addCaseNote','Add Note', 'modal-md')!!}
+{!!Helpers::makeIframePopup('appStatusFrame','Change Status', 'modal-md')!!}
+{!!Helpers::makeIframePopup('assignCaseFrame','Assign Case', 'modal-md')!!}
+{!!Helpers::makeIframePopup('sendNextstage','Send Next Stage', 'modal-md')!!}
 
 @endsection
 

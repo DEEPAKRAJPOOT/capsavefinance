@@ -519,6 +519,7 @@
                 data: postData,
                 error: function (xhr, status, errorThrown) {
                                    alert(errorThrown);
+                                   
                 },
                 success: function (data) {
                                   var status =  data['status-code'];
