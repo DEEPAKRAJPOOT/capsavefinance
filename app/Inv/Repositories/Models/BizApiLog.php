@@ -27,7 +27,7 @@ class BizApiLog extends BaseModel
     protected $fillable = [
         'req_file',
         'res_file',
-        'status'.
+        'status',
         'created_by'
     ];
    
