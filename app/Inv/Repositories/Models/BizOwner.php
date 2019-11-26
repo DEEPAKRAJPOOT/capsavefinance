@@ -78,9 +78,8 @@ class BizOwner extends Model
     /* By gajendra chauhan  */  
    public static function createsOwner($attributes)
     { 
-       
-        $uid = Auth::user()->user_id;
-        $appData = self::getAppId($uid);
+        $userData  =  User::getUserByAppId($attributes['app_id']);
+        $uid =  $userData->user_id;
         $i =0;
        foreach($attributes['data'] as $key=>$val)
        {
@@ -100,7 +99,7 @@ class BizOwner extends Model
                 'last_name'   =>  $last_name,
                 'date_of_birth' => date('Y-m-d', strtotime($val['dob'])),
                 'owner_addr' => $val['address'],
-                'created_by' =>  $uid]);
+              'created_by' => Auth::user()->user_id]);
         $getOwnerId[] = $ownerInputArr->biz_owner_id;
           $i++;      
        }      
@@ -110,9 +109,8 @@ class BizOwner extends Model
     public static function creates($attributes)
     {
           //insert into rta_app_doc
-          $uid = Auth::user()->user_id;
-          /* Get App id and biz id behalf of user id */
-          $appData = self::getAppId($uid);
+          $userData  =  User::getUserByAppId($attributes['app_id']);
+          $uid =  $userData->user_id;
           $getRes =  self::savePanApiRes($attributes, $attributes['biz_id']); 
           $appDocCheck = AppDocument::where('app_id', $attributes['app_id'])
                     ->count();
@@ -124,8 +122,8 @@ class BizOwner extends Model
               'app_id' => (int) $attributes['app_id'],
               'doc_id' => 4,
               'is_upload' => 0,
-              'created_by' => $uid,
-              'updated_by' => $uid
+              'created_by' => Auth::user()->user_id,
+              'updated_by' => Auth::user()->user_id
               ],
               [
               'rcu_status' => 0,
@@ -133,8 +131,8 @@ class BizOwner extends Model
               'app_id' => (int) $attributes['app_id'],
               'doc_id' => 5,
               'is_upload' => 0,
-              'created_by' => $uid,
-              'updated_by' => $uid
+              'created_by' => Auth::user()->user_id,
+              'updated_by' => Auth::user()->user_id
               ],
               [
               'rcu_status' => 0,
@@ -142,13 +140,13 @@ class BizOwner extends Model
               'app_id' => (int) $attributes['app_id'],
               'doc_id' => 6,
               'is_upload' => 0,
-              'created_by' => $uid,
-              'updated_by' => $uid
+              'created_by' => Auth::user()->user_id,
+              'updated_by' => Auth::user()->user_id
               ]
               ]);
           }
          
-          return $owner;
+          return $appDocCheck;
 
     }
   
@@ -157,7 +155,8 @@ class BizOwner extends Model
   {
       
     $count = count($attributes['response']);
-    $userId  = Auth::user()->user_id;
+    $userData  =  User::getUserByAppId($attributes['app_id']);
+    $userId =  $userData->user_id;
     $updateCount =  count($attributes['ownerid']);
     $mytime = Carbon::now();
     $dateTime = $mytime->toDateTimeString();
@@ -166,7 +165,7 @@ class BizOwner extends Model
          
          $res = BizPanGstApi::create(['file_name' => $attributes['response'][$i],
          'created_at' => $dateTime,
-         'created_by' => $userId]); 
+         'created_by' => Auth::user()->user_id]); 
 //         dd($attributes);
          /* save Owner api data */
         if($res->biz_pan_gst_api_id > 0){
@@ -178,7 +177,7 @@ class BizOwner extends Model
            'status' => 1,
            'parent_pan_gst_id' =>0,    
            'biz_pan_gst_api_id' => $res->biz_pan_gst_api_id,
-           'created_by' =>  $userId]);
+           'created_by' =>  Auth::user()->user_id]);
         }
         if($bizPanRes->biz_pan_gst_id > 0){
            if($i < $updateCount)
@@ -197,7 +196,7 @@ class BizOwner extends Model
             'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
             'networth' => $attributes['networth'][$i],
-            'created_by' =>  $userId]);
+            'created_by' =>  Auth::user()->user_id]);
               
            }
       else {
@@ -214,7 +213,7 @@ class BizOwner extends Model
             'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
             'networth' => $attributes['networth'][$i],
-            'created_by' =>  $userId]);
+            'created_by' =>  Auth::user()->user_id]);
             $biz_owner_id  = $ownerInputArr->biz_owner_id;
           }
         }

@@ -31,7 +31,9 @@ class CibilController extends Controller
      */
     public function getPromoterCibilRequest(CibilApi $CibilApi, Request $request)
     {      
-        $biz_owner_id = 1;
+        //$biz_owner_id = 1;
+        $biz_owner_id = $request->get('biz_owner_id');
+
         $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($biz_owner_id);
         $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
         $responce =  $CibilApi->getPromoterCibilRequest($arrOwnerData);
@@ -62,7 +64,7 @@ class CibilController extends Controller
 
                            if($createBizApi){
 
-                                 return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
+                                 return response()->json(['message' =>'CIBIL score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
                            } 
                            else 
                            {
@@ -78,12 +80,12 @@ class CibilController extends Controller
     function downloadPromoterCibil(Request $request)
     {
 
-        //$biz_owner_id = $request->get('biz_owner_id');
-        $biz_owner_id = 1;
+        $biz_owner_id = $request->get('biz_owner_id');
+        //$biz_owner_id = 1;
         $arrData  = BizApi::getPromoterCibilData($biz_owner_id);
        
         if(empty($arrData)){
-                return response()->json(['message' =>'Please Pull Cibil Score','status' => 0, 'cibilScoreData' => ' Please Pull Cibil Score']);
+                return response()->json(['message' =>'Please Pull the CIBIL Score to view the report.','status' => 0, 'cibilScoreData' => 'Please Pull the CIBIL Score to view the report.']);
         }else{
               
                 $arrCibilScoreData = json_decode($arrData['res_file'], true);
