@@ -187,6 +187,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="3"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -211,6 +212,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="5"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -234,6 +236,7 @@
                                                                 </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="4"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -258,6 +261,7 @@
                                                                 </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="6"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -276,6 +280,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
+                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="5"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -289,7 +294,50 @@
                                                     </tbody>
                                                 </table>
                                                 
-                                                <div class="ps__scrollbar-x-rail" style="left: 0px; bottom: 0px;"><div class="ps__scrollbar-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__scrollbar-y-rail" style="top: 0px; right: 0px;"><div class="ps__scrollbar-y" tabindex="0" style="top: 0px; height: 0px;"></div></div>
+                                                <div class="modal" id="myModal1">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <!-- Modal Header -->
+                                                            <div class="modal-header">
+                                                                <h5>View PAN Card Detail</h5>
+                                                                <button type="button" class="close close-btns" data-dismiss="modal">×</button>
+                                                            </div>
+                                                            <!-- Modal body -->
+                                                            <div class="modal-body text-left">
+                                                                <div class="table-responsive ps ps--theme_default" data-ps-id="c019a9d0-57f7-7dd4-16ba-e6ea054ce839">
+                                                                    <table class="table  table-striped table-hover overview-table">
+                                                                        <thead class="thead-primary">
+                                                                            <tr>
+                                                                                <th width="10%" class="text-left" colspan="2">PAN Status Detail</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <th>Status of the PAN</th>
+                                                                                <td>Active</td>
+                                                                            </tr>
+
+                                                                            <tr>
+                                                                                <th>PAN has been tagged as duplicate by Income Tax Department(ITD)</th>
+                                                                                <td>No</td>
+                                                                            </tr> 
+                                                                            <tr>
+                                                                                <th>Given Name matches with the ITD Records</th>
+                                                                                <td>Yes</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Given DOB matches with the ITD Records</th>
+                                                                                <td>Yes</td>
+                                                                            </tr>                                                    
+                                                                        </tbody>
+                                                                    </table>    
+
+                                                                    <div class="ps__scrollbar-x-rail" style="left: 0px; bottom: 0px;"><div class="ps__scrollbar-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__scrollbar-y-rail" style="top: 0px; right: 0px;"><div class="ps__scrollbar-y" tabindex="0" style="top: 0px; height: 0px;"></div></div></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -899,6 +947,11 @@ var messages = {
                                          }
                                     });
                                 });
+ $(document).on('click','.viewDocument',function(){
+     let data_id = $(this).data('id');
+     let data_type = $(this).data('type');
+     $('#myModal1').modal('show');
+ });
  </script>
  <style>
      .error
