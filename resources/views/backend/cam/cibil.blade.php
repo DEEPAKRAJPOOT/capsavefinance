@@ -98,7 +98,7 @@
          </div>
       </div>
       <div class="data mt-4">
-         <h2 class="sub-title bg mb-3">Director / Properitor / Owner / Partner</h2>
+         <h2 class="sub-title bg mb-3">Director / Proprietor / Owner / Partner</h2>
          <div id="pullMsg"></div>
          <div class="pl-4 pr-4 pb-4 pt-2">
             <div class="row mt-3">
