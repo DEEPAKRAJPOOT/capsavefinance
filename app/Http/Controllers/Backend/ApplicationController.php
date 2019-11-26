@@ -109,7 +109,7 @@ class ApplicationController extends Controller
         $getCin = $this->userRepo->getCinByUserId($bizId);
        if($getCin==false)
        {
-          return Redirect::back();
+          return redirect()->back();
        }
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
         return view('backend.app.promoter-details')->with([
