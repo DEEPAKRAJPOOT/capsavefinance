@@ -240,9 +240,9 @@ class ApplicationController extends Controller
                     'biz_id' => $bizId
                 ]);
             }
-//            else {
-//                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
-//            }
+            else {
+                return redirect()->back()->withErrors(trans('error_messages.document'));
+            }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

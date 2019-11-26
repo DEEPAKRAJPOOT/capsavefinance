@@ -271,7 +271,8 @@
                     $(this).rules("add",
                             {
                                 required: true,
-                                number: true
+                                number: true,
+                                range: [0, 100]
                             })
                 });
 
@@ -325,13 +326,15 @@
                         
                     });
                     var form = $("#signupForm");
+                    $('.isloader').show();
                     $.ajax({
                         type: "POST",
-                        url: '{{Route('promoter_detail_save')}}',
+                        url: '{{Route('front_promoter_detail_save')}}',
                         data: form.serialize(), // serializes the form's elements.
                         cache: false,
                         success: function (res)
                         {
+                            $('.isloader').hide();
                             if (res.status == 1)
                             {
                                 window.location.href = "{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";

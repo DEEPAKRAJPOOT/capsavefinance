@@ -112,7 +112,8 @@ class BizOwner extends Model
           $userData  =  User::getUserByAppId($attributes['app_id']);
           $uid =  $userData->user_id;
           $getRes =  self::savePanApiRes($attributes, $attributes['biz_id']); 
-          $appDocCheck = AppDocument::where('app_id', $attributes['app_id'])
+          $appDocCheck = AppDocument::where('user_id', $uid)
+                    ->where('app_id', $attributes['app_id'])
                     ->count();
           if($appDocCheck == 0){
             $owner = AppDocument::insert([
@@ -146,7 +147,7 @@ class BizOwner extends Model
               ]);
           }
          
-          return $appDocCheck;
+          return true;
 
     }
   
