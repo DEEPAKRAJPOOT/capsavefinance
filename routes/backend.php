@@ -51,6 +51,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'promoter_save',
                     'uses' => 'Backend\ApplicationController@savePromoter'
             ]);
+             
+            Route::post('promoter-detail-save',
+                [
+                    'as' => 'promoter_detail_save',
+                    'uses' => 'Backend\ApplicationController@updatePromoterDetail'
+            ]); 
             Route::post('promoter-document-save', [
                 'as' => 'promoter_document_save',
                 'uses' => 'Backend\ApplicationController@promoterDocumentSave'
@@ -243,3 +249,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         });
     });
 });
+
+            Route::get('bank_statement', [
+                'as' => 'bank_statement',
+                'uses' => 'Backend\CamController@uploadBankStatement'
+            ]);
+            
+            Route::get('financial_statement', [
+                'as' => 'financial_statement',
+                'uses' => 'Backend\CamController@uploadFinancialStatement'
+            ]);
+
+

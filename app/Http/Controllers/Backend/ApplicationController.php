@@ -139,6 +139,39 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    
+     /**
+     * Save Promoter details form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    //////////////////Save Promoter Multiple Details///////////////////////// 
+    public function updatePromoterDetail(Request $request) {
+       try {
+            $arrFileData = $request->all();
+            $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
+            if ($owner_info) {
+            
+                //Add application workflow stages
+               /// $appId = $arrFileData['app_id']; 
+                 ////Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                /////  $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->id);
+              ///  if ($toUserId) {
+                ////    Helpers::assignAppToUser($toUserId, $appId);
+              ///  }
+                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
+            }
+            else {
+               //Add application workflow stages 
+              ///// Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        } catch (Exception $ex) {
+            //Add application workflow stages
+            /////Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     /**
      * Handle a Business documents for the application.
      *

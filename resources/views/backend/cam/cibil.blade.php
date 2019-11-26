@@ -57,7 +57,9 @@
   <div class="card mt-4">
    <div class="card-body ">
       <div class="data">
+       <!--
          <h2 class="sub-title bg mb-4"><span class=" mt-2">Company CIBIL</span> <button  class="btn btn-primary  btn-sm float-right"> Upload Document</button></h2>
+         -->
          <div class="pl-4 pr-4 pb-4 pt-2">
             <div class="row mt-3">
                <div class="col-sm-12">
@@ -85,9 +87,10 @@
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
                                  <td width="20%"></td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_org(this)">PULL</button>
+
+                                   <!-- <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_org(this)">PULL</button>
                                     <button class="btn btn-warning btn-sm" supplier="49" onclick="pull_cibil_org(this)">DOWNLOAD</button>
-                                    <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)">UPLOAD</button>
+                                    <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)">UPLOAD</button> -->
                                  </td>
                               </tr>
                         @endforeach
@@ -98,7 +101,7 @@
          </div>
       </div>
       <div class="data mt-4">
-         <h2 class="sub-title bg mb-3">Director / Properitor / Owner / Partner</h2>
+         <h2 class="sub-title bg mb-3">Director / Proprietor / Owner / Partner</h2>
          <div id="pullMsg"></div>
          <div class="pl-4 pr-4 pb-4 pt-2">
             <div class="row mt-3">
@@ -129,7 +132,9 @@
                                  <td class=" numericCol" width="25%">
                                     <button class="btn btn-success btn-sm" id="cibilScoreBtn{{$arr->biz_owner_id}}" supplier="49" onclick="pull_cibil_promoterModal({{$arr->biz_owner_id}})">PULL</button>
                                     <button class="btn btn-warning btn-sm" supplier="49" onclick="downloadPromoterCibil({{$arr->biz_owner_id}})" >View Report</button>
+                                     <!--
                                     <button class="btn btn-info btn-sm" supplier="49" onclick="">UPLOAD</button>
+                                    -->
                                  </td>
                               </tr>
                         @endforeach  
