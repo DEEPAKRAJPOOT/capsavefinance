@@ -130,8 +130,8 @@ class ApplicationController extends Controller
           $arrFileData = json_decode($request->getContent(), true);
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
          
-          if ($owner_info) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
+          if ($owner_info) {    
+                return response()->json(['status' => 1, 'data' => $owner_info]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
@@ -150,7 +150,8 @@ class ApplicationController extends Controller
        try {
             $arrFileData = $request->all();
             $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
-            if ($owner_info) {
+          //  dd($owner_info);
+            if ($owner_info > 0) {
             
                 //Add application workflow stages
                /// $appId = $arrFileData['app_id']; 
@@ -159,7 +160,7 @@ class ApplicationController extends Controller
               ///  if ($toUserId) {
                 ////    Helpers::assignAppToUser($toUserId, $appId);
               ///  }
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
+                return response()->json(['status' => 1]);
             }
             else {
                //Add application workflow stages 
@@ -220,9 +221,10 @@ class ApplicationController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userData = User::getUserByAppId($appId);
-            
+            dd($userData);
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
+                dd($requiredDocs);
                 if(!empty($requiredDocs)){
                     $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
                 }
@@ -239,9 +241,10 @@ class ApplicationController extends Controller
                     'app_id' => $appId,
                     'biz_id' => $bizId
                 ]);
-            } else {
-                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
+//            else {
+//                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+//            }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

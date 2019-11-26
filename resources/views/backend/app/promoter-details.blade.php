@@ -178,8 +178,8 @@
                                                             <td width="30%">Pan Card</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
-                                              <span class="text-success" id="v1successpanverify1" style="display:none"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-                                              <span class="text-danger" id="v1failurepanverify1" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                              <span class="text-success" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                              <span class="text-danger" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                                
                                                                     <a href="javascript:void(0);" id='ppan{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripan" style="top:0px;">Verify</a>
                                                                     <input type="text"  name="veripan[]" id="veripan{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control verifydl" tabindex="1" placeholder="Enter PAN Number" required="">
@@ -203,7 +203,7 @@
                                                             <td width="30%">Driving License</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
-                                               <span class="text-success" id="v1successpanverify2" style="display:none"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                               <span class="text-success" id="v2successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
                                             <span class="text-danger" id="v2failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                                
                                                                     <a href="javascript:void(0);" id='ddriving{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veridl" style="top:0px;">Verify</a>
@@ -227,7 +227,7 @@
                                                             <td width="30%">Voter ID</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
-                                                <span class="text-success" id="v3successpanverify1" style="display:none"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                <span class="text-success" id="v3successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
                                             <span class="text-danger" id="v3failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                                
                                                                     <a href="javascript:void(0);" id='vvoter{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show verivoter" style="top:0px;">Verify</a>
@@ -252,7 +252,7 @@
                                                             <td width="30%">Passport</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
-                                                  <span class="text-success" id="v4successpanverify1" style="display:none"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                  <span class="text-success" id="v4successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
                                            <span class="text-danger" id="v4failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                                
                                                                     <a href="javascript:void(0);" id='ppassport{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}"  class="verify-owner-no verify-show veripass" style="top:0px;">Verify</a>
@@ -431,7 +431,6 @@
         chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
         chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
         chk_user_pan_status_karza: "{{ URL::route('chk_user_pan_status_karza') }}",
-
     };
 $(document).ready(function () {
     $('#submit').on('click', function (event) {
@@ -527,9 +526,10 @@ $(document).ready(function () {
                 cache: false,
                 success: function (res)
                 {
+                     alert(res);console.log(res); 
                     if (res.status == 1)
                     {
-                        window.location.href = "/application/document";
+                        window.location.href = "{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
                     }
                 },
                 error: function (error)
