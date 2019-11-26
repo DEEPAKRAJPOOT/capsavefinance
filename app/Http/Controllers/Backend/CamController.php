@@ -296,6 +296,7 @@ class CamController extends Controller
             'reportType' => $reportType,
             'txnId' => '2019112513134830813211',//'2019112611540788638030',//$final_res['prolitusTransactionId'],
          );
+        
         $payload = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
         dd($payload);
     }
