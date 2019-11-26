@@ -100,12 +100,11 @@ class KarzaController extends Controller
     public function checkVoterIdVerification(KarzaApi $KarzaApi, Request $request)
     {
           $requestvoterf   = $request->all();
+       try{ 
           $result = $KarzaApi->checkVoterIdVerification($requestvoterf);
-          dd( $result);
-          $get_dec = json_decode($result,1);
-          dd($get_dec);
-          $status =  $get_dec['status-code'];
-          dd($result);
+          $get_dec = json_encode($result);
+          $jsonDec= json_decode($get_dec,1);
+          $status =  $jsonDec['response']['status-code'];
           if($status==101) { 
               $status =1; 
               
@@ -113,14 +112,42 @@ class KarzaController extends Controller
               $status =0; 
               
           }
-          $createApiLog = BizApiLog::create(['req_file' =>$requestvoterf['epic_no'], 'res_file' => json_encode($result['response']->result),'status' => 0]);
+        
+          $req =   json_encode(array('epic_no' => $requestvoterf['epic_no']));
+          $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($jsonDec['response']['result']),'status' => $status]);
           if ($createApiLog) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
-            } else {
+               if($status==1)
+               {
+                   $userData  =  User::getUserByAppId($requestvoterf['app_id']);
+                   $user_id    =  $userData->user_id;
+                   $createBizApi= BizApi::create(['user_id' =>$user_id, 
+                                            'biz_id' =>   $requestvoterf['biz_id'],
+                                            'biz_owner_id' => $requestvoterf['ownerid'],
+                                            'type' => 4,
+                                            'verify_doc_no' => 1,
+                                            'status' => 1,
+                                           'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                                           'created_by' => Auth::user()->user_id,
+                                          ]);
+                            if($createBizApi){
+
+                                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+                           } 
+                           else 
+                          {
+                                 return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+                           }
+                  }
+               return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 0, 'value' => $createApiLog['biz_api_log_id']]);
+          
+               } 
+            else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
-
-         
+         }
+         catch (Exception $e) {
+                      return false;
+              }
     }
     
        /**
@@ -142,7 +169,7 @@ class KarzaController extends Controller
               $status =0; 
               
           }
-          
+        
           $req =   json_encode(array('dl' => $requestDl['dl_no'],'dob' => $requestDl['dob']));
           $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($get_dec['result']),'status' => $status]);
           if ($createApiLog) {
