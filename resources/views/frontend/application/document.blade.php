@@ -108,9 +108,9 @@
                                             <td width="20%">{{ date('M', $value->gst_month) }} - {{ $value->gst_year }}</td>
                                             @endif
                                             <td width="20%"> {{ date('d-m-Y', strtotime($value->created_at))}} </td>
-                                            <td width="20%"><a alt="Download Document"  href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
+                                            <td width="20%"><a title="Download Document"  href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
                                             <td align="center" width="20%">
-                                                <a alt="Delete Document" href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
+                                                <a title="Delete Document" href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
                                             </td>
                                         </tr>
                                         <div class="modal" id="confirm">
