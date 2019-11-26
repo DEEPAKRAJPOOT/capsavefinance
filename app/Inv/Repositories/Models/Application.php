@@ -67,7 +67,7 @@ class Application extends Model
                 //->where('app.is_assigned', 1)
         }
         //$appData->groupBy('app.app_id');
-        $appData = $appData->orderBy('app.app_id');
+        $appData = $appData->orderBy('app.app_id', 'DESC');
         return $appData;
     }
    
