@@ -2671,4 +2671,17 @@ if ($err) {
         $anchUsersList = $this->userRepo->getUserByemail($email);
         return $anchUsersList;
     } 
+    
+    /**
+     * get role list
+     * @param Request $request
+     */
+    
+    public function getRoleLists(DataProviderInterface $dataProvider) {
+     $anchRoleList = $this->userRepo->getRoleList();
+       
+     $role = $dataProvider->getRoleList($this->request, $anchRoleList);
+     return $role;
+    }
+
 }

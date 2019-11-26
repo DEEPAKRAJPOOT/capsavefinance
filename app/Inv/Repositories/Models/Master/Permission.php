@@ -191,4 +191,31 @@ class Permission extends BaseModel
        
          return $arrPermissions->name;
     }
+    
+    
+     /**
+     *
+     * Get Route Name
+     * @return String
+     */
+    public static function getParentRoute()
+    {
+        $permission = self::whereNull('parent_permission_id')->get();
+        return ($permission ? $permission : []);
+    }
+    
+    /**
+     * get permission name
+     *
+     * @param type $role_id
+     *
+     * @return type
+     */
+    public static function getByParent($parentId, $isDisplay)
+    {
+        $permission_name = self::where('parent_permission_id', $parentId)
+                ->where('is_display', $isDisplay)->get();
+        return ($permission_name ? $permission_name : []);
+    }
+    
 }

@@ -78,11 +78,11 @@
             <div class="collapse" id="layoutsSubmenu">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Manage Roles</a>
+                        <a class="nav-link" href="{{ route('get_role') }}">Manage Roles</a>
                     </li>
-                    <li class="nav-item">
+<!--                    <li class="nav-item">
                         <a class="nav-link" href="#">Manage Permissions</a>
-                    </li> 
+                    </li> -->
                     <li class="nav-item">
                         <a class="nav-link" href="#">Manage Users</a>
                     </li>                                   

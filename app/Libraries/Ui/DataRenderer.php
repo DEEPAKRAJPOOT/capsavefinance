@@ -453,4 +453,93 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+    /**
+     * Get role
+     * 
+     * @param Request $request
+     * @param type $user
+     * @return type
+     */
+    
+    public function getRoleList(Request $request, $role)
+    {
+        
+        return DataTables::of($role)
+                ->rawColumns(['role_id', 'checkbox', 'action', 'active','assigned'])
+                
+                ->addColumn(
+                    'role_id',
+                    function ($role) {
+                    $link = '000'.$role->id;
+                    //return $link;
+                       return "<a id=\"" . $role->user_id . "\" href=\"#\" rel=\"tooltip\"   >$link</a> ";
+                    })
+                    
+                ->editColumn(
+                        'name',
+                        function ($role) {
+                    $name = $role->name;
+                    return $name;
+                    
+                })              
+                ->editColumn(
+                    'description',
+                    function ($role) {
+                    $disc = $role->description; 
+                    return $disc;
+
+                })
+                 ->editColumn(
+                    'active',
+                    function ($role) {
+                    return ($role->is_active == '0')?'<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">In Active</label>
+                                             
+                                          </div></b>':'<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">Active</label>
+                                             
+                                          </div></b>';
+
+                })
+                
+                ->editColumn(
+                    'created_at',
+                    function ($role) {
+                    return ($role->created_at)? date('d-M-Y',strtotime($role->created_at)) : '---';
+
+                })
+                
+                ->addColumn(
+                    'action',
+                    function ($role) {
+                    //$view="<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-eye\"></a>";
+                    return  "<a  data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
+                    }
+                )
+                    
+//                ->filter(function ($query) use ($request) {
+//                    if ($request->get('by_email') != '') {
+//                        if ($request->has('by_email')) {
+//                            $query->where(function ($query) use ($request) {
+//                                $by_nameOrEmail = trim($request->get('by_email'));
+//                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+//                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
+//                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
+//                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+//                            });
+//                        }
+//                    }
+//                    if ($request->get('is_assign') != '') {
+//                        if ($request->has('is_assign')) {
+//                            $query->where(function ($query) use ($request) {
+//                                $by_status = (int) trim($request->get('is_assign'));
+//                                
+//                                $query->where('users.is_assigned', 'like',
+//                                        "%$by_status%");
+//                            });
+//                        }
+//                    }
+//                })
+                ->make(true);
+    }
 }

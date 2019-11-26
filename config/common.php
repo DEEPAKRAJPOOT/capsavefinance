@@ -27,5 +27,6 @@ return [
     ],
     
     //Roles Ids
-    'anchor_role' => 11
+    'anchor_role' => 11,
+    'YES'=>1
 ];

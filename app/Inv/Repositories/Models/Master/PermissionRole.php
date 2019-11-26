@@ -14,8 +14,21 @@ class PermissionRole extends BaseModel
     protected $fillable = [
         'permission_id',
         'role_id',
+        'created_by',
+        'created_at',
+        'updated_at',
+        'updated_by'
     ];
 
+    
+        public $timestamps = true;
+
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = true;
     /**
      * The attributes excluded from the model's JSON form.
      *
@@ -49,4 +62,46 @@ class PermissionRole extends BaseModel
         $permissions = self::where('role_id', $role_id)->lists('permission_id');
         return ($permissions ? $permissions : false);
     }
+    
+    /**
+     * delete permission assign to role
+     *
+     * @param type $role_id
+     *
+     * @return type
+     */
+    public static function deleteRecById($role_id)
+    {
+        $permissions = self::where('role_id', $role_id)->delete();
+        return ($permissions ? $permissions : false);
+    }
+    
+    
+    
+    /**
+     * delete permission assign to role
+     *
+     * @param type $role_id
+     *
+     * @return type
+     */
+    public static function addPermissionRole($arr)
+    {
+        $permissions = self::create($arr);
+        return ($permissions ? $permissions : false);
+    }
+    
+    /**
+     * get permission assign to role
+     *
+     * @param type $role_id
+     *
+     * @return type
+     */
+    public static function checkRole($parentId,$role_id)
+    {
+        $permissions = self::where('role_id', $role_id)->where('permission_id', $parentId)->first();
+        return ($permissions ? $permissions : false);
+    }
+    
 }

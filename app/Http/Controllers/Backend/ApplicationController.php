@@ -24,6 +24,7 @@ class ApplicationController extends Controller
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
+        $this->middleware('checkBackendLeadAccess');
     }
     
     /**

@@ -13,7 +13,10 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Models\Master\PermissionRole;
 use DB;
+
 class Helper extends PaypalHelper
 {
 
@@ -409,5 +412,23 @@ class Helper extends PaypalHelper
             return false;
         }
     }
+    
+     /**
+     * Get permission by Role id
+     * 
+     * @param integer $app_id
+     */
+    public static function getByParent($parentId,$isDisplay){
+        return Permission::getByParent($parentId, $isDisplay);
+    }
+     /**
+     * Get permission by Role id
+     * 
+     * @param integer $app_id
+     */
+    public static function checkRole($parentId,$role_id){
+        return PermissionRole::checkRole($parentId,$role_id);
+    }
+    
   
 }
