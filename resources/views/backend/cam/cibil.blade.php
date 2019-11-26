@@ -1,6 +1,21 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
+<style>
+   .isloader{ 
+                position: fixed;    
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,.6);
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-content: center;
+                z-index: 9;
+            }
+</style>
 @include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
@@ -70,9 +85,9 @@
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
                                  <td width="20%"></td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_org(this)"><small>PULL</small></button>
-                                    <button class="btn btn-warning btn-sm" supplier="49" onclick="pull_cibil_org(this)"><small>DOWNLOAD</small></button>
-                                    <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)"><small>UPLOAD</small></button>
+                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_org(this)">PULL</button>
+                                    <button class="btn btn-warning btn-sm" supplier="49" onclick="pull_cibil_org(this)">DOWNLOAD</button>
+                                    <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)">UPLOAD</button>
                                  </td>
                               </tr>
                         @endforeach
@@ -84,6 +99,7 @@
       </div>
       <div class="data mt-4">
          <h2 class="sub-title bg mb-3">Director / Properitor / Owner / Partner</h2>
+         <div id="pullMsg"></div>
          <div class="pl-4 pr-4 pb-4 pt-2">
             <div class="row mt-3">
                <div class="col-sm-12">
@@ -111,9 +127,9 @@
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
                                  <td width="20%" id="cibilScore{{$arr->biz_owner_id}}"></td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" id="cibilScoreBtn{{$arr->biz_owner_id}}" supplier="49" onclick="pull_cibil_promoter({{$arr->biz_owner_id}})">PULL</button>
-                                    <button class="btn btn-warning btn-sm" supplier="49" onclick=""><small>DOWNLOAD</small></button>
-                                    <button class="btn btn-info btn-sm" supplier="49" onclick=""><small>UPLOAD</small></button>
+                                    <button class="btn btn-success btn-sm" id="cibilScoreBtn{{$arr->biz_owner_id}}" supplier="49" onclick="pull_cibil_promoterModal({{$arr->biz_owner_id}})">PULL</button>
+                                    <button class="btn btn-warning btn-sm" supplier="49" onclick="downloadPromoterCibil({{$arr->biz_owner_id}})" >View Report</button>
+                                    <button class="btn btn-info btn-sm" supplier="49" onclick="">UPLOAD</button>
                                  </td>
                               </tr>
                         @endforeach  
@@ -374,11 +390,71 @@
   </div>
  </div>
 </div>
+
+<div class="modal fade" id="pull_cibil_promoterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <input type="hidden"  id="biz_owner_id">
+        <p>Are you sure you want to pull the cibil score for this promoter?</p>
+        <p id="pullMsg"></p>
+      </div>
+      <div class="modal-footer">
+      
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">No</button>
+       <button type="button" class="btn btn-success btn-sm" id="cibilScoreBtn" onclick="pull_cibil_promoter()">Yes</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="download_cibil_promoterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="download_user_cibil">
+        
+      </div>
+      <div class="modal-footer">
+      
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="isloader" style="display:none;">  
+        <img src="http://rent.local/backend/assets/images/loader.gif">
+</div>
+
+
+                
 @endsection
 @section('jscript')
 <script>
+      function pull_cibil_promoterModal(biz_owner_id) {
+         $("#pull_cibil_promoterModal").modal("show");
+         $("#biz_owner_id").val(biz_owner_id);
+        
+      }
+
       function pull_cibil_promoter(biz_owner_id){
-            $("#cibilScoreBtn"+biz_owner_id).text("Waiting");
+            var biz_owner_id = $("#biz_owner_id").val();
+          // $("#cibilScoreBtn").text("Waiting...");
+          $("#pull_cibil_promoterModal").modal("hide");
+               $(".isloader").show();
             var messages = {
                  chk_user_cibil: "{{ URL::route('chk_user_cibil') }}",
                  data_not_found: "{{ trans('error_messages.data_not_found') }}",
@@ -395,11 +471,17 @@
                                   // alert(errorThrown);
                 },
                 success: function (data) {
-                  $("#cibilScoreBtn"+biz_owner_id).text("PULL");
+                 // $("#cibilScoreBtn").text("Yes");
+                  
+                 $(".isloader").hide();
                    var status =  data['status'];
                      if(status==1)
                        {  
                             //alert(data['message']);
+                           var html = '<div class="content-wrapper-msg"><div class="alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+data['message']+'</div></div>';
+                            $("#pullMsg").html(html);
+                            //setTimeout(function(){ $("#pullMsg").text('');}, 2000);
+                            setTimeOu
                             $("#cibilScore"+biz_owner_id).text(data['cibilScore']);
                             
                        }else{
@@ -411,6 +493,37 @@
           });
       }   
 
+
+      function downloadPromoterCibil(biz_owner_id) {
+         var messages = {
+                 download_user_cibil: "{{ URL::route('download_user_cibil') }}",
+                 data_not_found: "{{ trans('error_messages.data_not_found') }}",
+                 token: "{{ csrf_token() }}",
+            };
+            var dataStore = {'biz_owner_id': biz_owner_id,'_token': messages.token };
+            var postData = dataStore;
+         jQuery.ajax({
+                url: messages.download_user_cibil,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                  // alert(errorThrown);
+                },
+                success: function (data) {
+                   var status =  data['status'];
+                     if(status==1)
+                       {  
+                              $("#download_cibil_promoterModal").modal("show");
+                              $("#download_user_cibil").text(JSON.stringify(data['cibilScoreData']));
+                       }else{
+                           $("#download_cibil_promoterModal").modal("show");
+                              $("#download_user_cibil").text(data['cibilScoreData']);
+                      }                          
+                       
+               }
+         });
+      }
 
 </script>
    

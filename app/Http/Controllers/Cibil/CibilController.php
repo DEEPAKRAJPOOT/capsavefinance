@@ -48,10 +48,7 @@ class CibilController extends Controller
         {
             $cibilScore = $newArr['INDV-REPORTS']['INDV-REPORT']['SCORES']['SCORE'][0]['SCORE-VALUE'];
         }
-
         $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => json_encode($responce),'status' => 0,'created_by' => Auth::user()->user_id]);
-
-
         if ($createApiLog) {
                 $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
                                             'biz_id' =>   $arrOwnerData['biz_id'],
@@ -65,7 +62,7 @@ class CibilController extends Controller
 
                            if($createBizApi){
 
-                                 return response()->json(['message' =>'cibil pull successfully','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
+                                 return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
                            } 
                            else 
                            {
@@ -78,5 +75,25 @@ class CibilController extends Controller
     }
 
 
-    
+    function downloadPromoterCibil(Request $request)
+    {
+
+        //$biz_owner_id = $request->get('biz_owner_id');
+        $biz_owner_id = 1;
+        $arrData  = BizApi::getPromoterCibilData($biz_owner_id);
+       
+        if(empty($arrData)){
+                return response()->json(['message' =>'Please Pull Cibil Score','status' => 0, 'cibilScoreData' => ' Please Pull Cibil Score']);
+        }else{
+              
+                $arrCibilScoreData = json_decode($arrData['res_file'], true);
+
+                $new = simplexml_load_string($arrCibilScoreData); 
+                // Convert into json 
+                $con = json_encode($new); 
+                // Convert into associative array 
+                $newArr = json_decode($con, true); 
+                return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'cibilScoreData' => $newArr]);
+       }
+    }
 }

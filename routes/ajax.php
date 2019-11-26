@@ -41,7 +41,13 @@ Route::group(
         ]
     );
 
-
+    Route::post(
+        'download_user_cibil',
+        [
+        'as' => 'download_user_cibil',
+        'uses' => 'Cibil\CibilController@downloadPromoterCibil'
+        ]
+    );
 
      //////Voter DL Verification
 

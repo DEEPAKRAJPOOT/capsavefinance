@@ -34,6 +34,16 @@ class BizApi extends BaseModel
         'status',
         'created_by'
     ];
+
+ public static function getPromoterCibilData($biz_owner_id)
+  {
+     $arrData = self::select('biz_api_log.res_file')
+        ->join('biz_api_log', 'biz_api_log.biz_api_log_id', '=', 'biz_api.biz_api_log_id')
+        ->where('biz_api.biz_owner_id', $biz_owner_id)
+        ->orderBy('biz_api_log.biz_api_log_id', 'DESC')
+        ->first();
+        return $arrData;
+  }
    
 }
 
