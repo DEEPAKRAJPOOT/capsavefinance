@@ -197,6 +197,7 @@ class CamController extends Controller
             $final_res['api_type'] = "Initiate Txn";
         }
 
+        
         dd($final_res);
         $req_arr = array(
             'perfiosTransactionId' => 'WFD81574748279324',//$final_res['perfiosTransactionId'],
@@ -278,6 +279,7 @@ class CamController extends Controller
              $final_res['api_type'] = "Start New Txn";
          }
          dd($final_res);
+
         $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
