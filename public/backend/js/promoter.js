@@ -17,7 +17,7 @@ function uploadFile(uploadId, docId)
     datafile.append('doc_file', file);
     
     
-    console.log(datafile);
+    console.log(messages.promoter_document_save);
     $.ajax({
         headers: {'X-CSRF-TOKEN':  messages.token  },
         url : messages.promoter_document_save,

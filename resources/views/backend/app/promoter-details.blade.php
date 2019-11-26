@@ -425,6 +425,12 @@
         promoter_document_save: "{{ URL::route('promoter_document_save') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+        chk_user_voterid_karza: "{{ URL::route('chk_user_voterid_karza') }}",
+        chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
+        chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
+        chk_user_pan_status_karza: "{{ URL::route('chk_user_pan_status_karza') }}",
 
     };
 $(document).ready(function () {
@@ -733,16 +739,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
     });
 });
 
-var messages = {
-        data_not_found: "{{ trans('error_messages.data_not_found') }}",
-        token: "{{ csrf_token() }}",
-        chk_user_voterid_karza: "{{ URL::route('chk_user_voterid_karza') }}",
-        chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
-        chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
-        chk_user_pan_status_karza: "{{ URL::route('chk_user_pan_status_karza') }}",
-        
 
-    };
  /////////////////Karja Api pan status /////////////////////////////////////
       
        $(document).on('click','.veripan',function () {
