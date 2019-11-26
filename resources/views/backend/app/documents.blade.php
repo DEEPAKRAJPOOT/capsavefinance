@@ -14,37 +14,18 @@
 </style>
 @endsection
 @section('content')
-<ul class="main-menu">
-    <li>
-        <a href="#" class="active">Application details</a>
-    </li>
-    <li>
-        <a href="#">CAM</a>
-    </li>
-    <li>
-        <a href="#">FI/RCU</a>
-    </li>
-    <li>
-        <a href="#">Collateral</a>
-    </li>
-    <li>
-        <a href="#">Notes</a>
-    </li>
-    <li>
-        <a href="#">Submit Commercial</a>
-    </li>
-</ul>
+@include('layouts.backend.partials.admin-subnav')
 <!-- partial -->
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
         <li>
-            <a href="#" class="active">Company Details</a>
+            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Company Details</a>
         </li>
         <li>
-            <a href="#">Promoter Details</a>
+            <a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Promoter Details</a>
         </li>
         <li>
-            <a href="#">Documents</a>
+            <a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}"  class="active">Documents</a>
         </li>
         <!--<li>
                 <a href="buyers.php">Buyers </a>
@@ -69,7 +50,7 @@
             <div class="row ">
                 @if($requiredDocs->count() > 0)
                 <div id="accordion" class="accordion d-table col-sm-12">
-                    @foreach($requiredDocs as $data)
+                    @foreach($requiredDocs as $key=>$data)
                     <div class="card card-color mb-0">
                         <div class="card-header collapsed" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
                             <a class="card-title ">
@@ -164,7 +145,7 @@
                                         @if($data->doc_id == '4')
                                         <div class="form-group">
                                             <label for="email">Select Bank Name</label>
-                                            <select class="form-control" id="sel1" name="doc_name">
+                                            <select class="form-control" name="doc_name">
                                                 <option>Select Bank Name</option>
                                                 <option>HDFC Bank</option>
                                                 <option>ICICI Bank</option>
@@ -174,7 +155,7 @@
                                         @if($data->doc_id == '5')
                                         <div class="form-group">
                                             <label for="email">Select Financial  Year</label>
-                                            <select class="form-control" id="sel1" name="finc_year">
+                                            <select class="form-control" name="finc_year">
                                                <option value=''>Select Year</option>
                                                <option>2009</option>
                                                <option>2010</option>
@@ -196,7 +177,7 @@
                                             <div class="col-md-6">
                                                <div class="form-group">
                                                   <label for="email">Select GST Month</label>
-                                                  <select class="form-control" id="sel1" name="gst_month">
+                                                  <select class="form-control" name="gst_month">
                                                      <option selected value=''>Select Month</option>
                                                      <option  value='1'>Janaury</option>
                                                      <option value='2'>February</option>
@@ -216,7 +197,7 @@
                                             <div class="col-md-6">
                                                <div class="form-group">
                                                   <label for="email">Select GST Year</label>
-                                                  <select class="form-control" id="sel1" name="gst_year">
+                                                  <select class="form-control" name="gst_year">
                                                      <option value=''>Select Year</option>
                                                      <option>2009</option>
                                                      <option>2010</option>
@@ -236,10 +217,8 @@
                                          </div>
                                         @endif
                                         <div class="custom-file upload-btn-cls mb-3 mt-2">
-                                            <label for="email">Upload Document</label>
-                                            <input type="file" class="custom-file-input" id="customFile" name="doc_file[]" multiple="">
-                                            <label class="custom-file-label" for="customFile">Choose file</label>
-                                            <span class="fileUpload"></span>
+                                            <input type="file" class="custom-file-input" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="">
+                                            <label class="custom-file-label" for="customFile{{$data->doc_id}}">Choose file</label>
                                         </div>
                                         <button type="submit" class="btn btn-primary float-right">Submit</button>  
                                     </div>

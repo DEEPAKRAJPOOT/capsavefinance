@@ -2,6 +2,7 @@
 
 namespace App\Libraries\Ui;
 
+use Helpers;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
@@ -29,17 +30,25 @@ class KarzaApi {
 
        try {
             $api_url = '/v2/pan';
-
+            $baseUrl = config('proin.karza_auth_api_url');
+            $apiKey = config('proin.karza_auth_api_key');
+        
             $options = [
+                'base_uri' => $baseUrl,
                 'json' => [
                     'consent' => 'Y',
                     'pan' => $pancard],
+                'headers' => [
+                    'cache-control' => "no-cache",
+                    'Content-Type' => "application/json",
+                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                ]                
             ];
-            $response = $this->client->post($api_url, $options);
+            $response = $this->client->post($api_url, $options);              
              $response = $response->getBody()->getContents();
              return $response;
             
-        } catch (\Exception $e) {
+        } catch (\Exception $e) {              
             return [];
         }
     }
@@ -58,7 +67,7 @@ class KarzaApi {
                     'consent' => 'Y',
                     'pan' => $pancard['pan'],
                     'name' => $pancard['name'],
-                    'dob' => $pancard['dob']
+                    'dob' =>  date("d/m/Y", strtotime($pancard['dob']))
                     ],
             ];
               $response = $this->client->post($api_url, $options);
@@ -84,7 +93,7 @@ class KarzaApi {
             $options = [
                 'json' => [
                     'consent' => 'Y',
-                    'epic_no' => $voterid]
+                    'epic_no' => $voterid['epic_no']]
             ];
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
@@ -113,7 +122,7 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'dl_no' => $dlArr['dl_no'],
-                    'dob' => $dlArr['dob'] 
+                    'dob' => date("d-m-Y", strtotime($dlArr['dob']))
                     ]
             ];
             $response = $this->client->post($api_url, $options);
@@ -139,7 +148,7 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'fileNo' => $passportArr['fileNo'],
-                     'dob' => $passportArr['dob'] 
+                     'dob' => date("d/m/Y", strtotime($passportArr['dob']))
                     ]
             ];
              $response = $this->client->post($api_url, $options);
@@ -176,5 +185,30 @@ class KarzaApi {
 
         return [];
     }
+
+
+    public function getPromoterCibilRequest($arrData) {
+        echo "sdfsd";
+        dd($arrData);
+
+        try {
+            $api_url = '/v2/pan';
+
+            $options = [
+                'json' => [
+                    'consent' => 'Y',
+                    'pan' => $pancard],
+            ];
+            $response = $this->client->post($api_url, $options);
+             $response = $response->getBody()->getContents();
+             return $response;
+            
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+    
+
+    
 
 }

@@ -114,35 +114,39 @@ class BizOwner extends Model
           /* Get App id and biz id behalf of user id */
           $appData = self::getAppId($uid);
           $getRes =  self::savePanApiRes($attributes, $attributes['biz_id']); 
-          $owner = AppDocument::insert([
-            [
-            'rcu_status' => 0,
-            'user_id' => $uid,
-            'app_id' => (int) $attributes['app_id'],
-            'doc_id' => 4,
-            'is_upload' => 0,
-            'created_by' => $uid,
-            'updated_by' => $uid
-            ],
-            [
-            'rcu_status' => 0,
-            'user_id' => $uid,
-            'app_id' => (int) $attributes['app_id'],
-            'doc_id' => 5,
-            'is_upload' => 0,
-            'created_by' => $uid,
-            'updated_by' => $uid
-            ],
-            [
-            'rcu_status' => 0,
-            'user_id' => $uid,
-            'app_id' => (int) $attributes['app_id'],
-            'doc_id' => 6,
-            'is_upload' => 0,
-            'created_by' => $uid,
-            'updated_by' => $uid
-            ]
-            ]);
+          $appDocCheck = AppDocument::where('app_id', $attributes['app_id'])
+                    ->count();
+          if($appDocCheck == 0){
+            $owner = AppDocument::insert([
+              [
+              'rcu_status' => 0,
+              'user_id' => $uid,
+              'app_id' => (int) $attributes['app_id'],
+              'doc_id' => 4,
+              'is_upload' => 0,
+              'created_by' => $uid,
+              'updated_by' => $uid
+              ],
+              [
+              'rcu_status' => 0,
+              'user_id' => $uid,
+              'app_id' => (int) $attributes['app_id'],
+              'doc_id' => 5,
+              'is_upload' => 0,
+              'created_by' => $uid,
+              'updated_by' => $uid
+              ],
+              [
+              'rcu_status' => 0,
+              'user_id' => $uid,
+              'app_id' => (int) $attributes['app_id'],
+              'doc_id' => 6,
+              'is_upload' => 0,
+              'created_by' => $uid,
+              'updated_by' => $uid
+              ]
+              ]);
+          }
          
           return $owner;
 
@@ -233,11 +237,22 @@ class BizOwner extends Model
 
   public static function getCompanyOwnerByBizId($biz_id)
     {
-        $arrData = self::select('biz_owner.first_name','biz_owner.last_name','biz_pan_gst.pan_gst_hash')
+        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_pan_gst.pan_gst_hash')
         ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
         ->where('biz_owner.biz_id', $biz_id)
         ->get();
         return $arrData;
     }
+
+ 
+  public static function getBizOwnerDataByOwnerId($biz_owner_id)
+  {
+     $arrData = self::select('biz_owner.*','biz_pan_gst.pan_gst_hash')
+        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
+        ->where('biz_owner.biz_owner_id', $biz_owner_id)
+        ->first();
+        return $arrData;
+  }
+
    
 }

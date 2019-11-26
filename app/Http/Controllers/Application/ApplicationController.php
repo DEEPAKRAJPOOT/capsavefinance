@@ -91,7 +91,7 @@ class ApplicationController extends Controller
        $getCin = $this->userRepo->getCinByUserId($biz_id);
        if($getCin==false)
        {
-           return redirect()->route('business_information_open');
+           return  Redirect::back();
        }
        return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
            'cin_no' => $getCin->cin,
@@ -113,24 +113,22 @@ class ApplicationController extends Controller
             if ($owner_info) {
             
                 //Add application workflow stages
-                $appId = $arrFileData['app_id']; 
-
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
-                
-                $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->id);
-                if ($toUserId) {
-                    Helpers::assignAppToUser($toUserId, $appId);
-                }
+               /// $appId = $arrFileData['app_id']; 
+                 ////Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                /////  $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->id);
+              ///  if ($toUserId) {
+                ////    Helpers::assignAppToUser($toUserId, $appId);
+              ///  }
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             }
             else {
                //Add application workflow stages 
-               Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+              ///// Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+            /////Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
@@ -256,7 +254,6 @@ class ApplicationController extends Controller
             $appId  = $request->get('app_id');
             $userId = Auth::user()->user_id;
             $response = $this->docRepo->isUploadedCheck($userId, $appId);
-            
             if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);

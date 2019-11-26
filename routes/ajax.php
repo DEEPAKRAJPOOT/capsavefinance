@@ -7,7 +7,7 @@ Route::group(
     function () {
    //////////////////Pan card authontication//////////////////////////
     Route::post(
-        'chk-user-pan-karza',
+        'chk-user-cibil',
         [
         'as' => 'chk_user_pan_karza',
         'uses' => 'Karza\KarzaController@checkPanVerification'
@@ -31,9 +31,20 @@ Route::group(
         'uses' => 'Karza\KarzaController@checkVoterIdVerification'
         ]
     );
-    
+
+
+    Route::post(
+        'chk_user_cibil',
+        [
+        'as' => 'chk_user_cibil',
+        'uses' => 'Cibil\CibilController@getPromoterCibilRequest'
+        ]
+    );
+
+
+
      //////Voter DL Verification
-    
+
     Route::post(
         'chk-user-dl-karza',
         [

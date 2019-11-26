@@ -14,17 +14,22 @@ class KarzaServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $baseUrl = env('KARZA_AUTHENTICATION_API_URL');
-         $this->app->singleton('GuzzleHttp\Client', function($api) use ($baseUrl) {
+        /*
+        //$baseUrl = env('KARZA_AUTHENTICATION_API_URL');
+        $baseUrl = config('proin.karza_auth_api_url');
+        $apiKey = config('proin.karza_auth_api_key');
+         $this->app->singleton('GuzzleHttp\Client', function($api) use ($baseUrl, $apiKey) {
             return new Client([
                 'base_uri' => $baseUrl,
                 'headers' => [
                     'cache-control' => "no-cache",
                     'Content-Type' => "application/json",
-                    'x-karza-key' => env('KARZA_AUTHENTICATION_API_KEY')
+                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
                 ]
              ]);
         });
+         * 
+         */
     }
 
     /**

@@ -133,7 +133,7 @@
                                                    </div>
                                                 </div>
 
-  <div class="col-md-4">
+                                            <div class="col-md-4">
 
                                                     <div class="form-group password-input">
                                                         <label for="txtPassword">Shareholding (%)
@@ -412,7 +412,9 @@
             var dataStore = ({'consent': consent, 'entityId': CIN});
             var jsonData = JSON.stringify(dataStore);
              jQuery.ajax({
+
                ///url: "https://stub.kscan.in/v1/corp/profile",
+
                 url:"https://testapi.kscan.in/v1/corp/profile",
                  headers: {
                     'Content-Type': "application/json",
@@ -443,9 +445,9 @@
                             var newDate = dateAr[0] + '/' + dateAr[1] + '/' + dateAr[2]; 
                         }
                       
-                        $("#first_name" + count).val(v.name);
-                        $("#address" + count).val(v.address);
-                        $("#date_of_birth1").prop("type", "text").val(newDate);
+                        $("#first_name"+count).val(v.name);
+                        $("#address"+count).val(v.address);
+                        $("#date_of_birth"+count).prop("type", "text").val(newDate);
                         
                         if (k >= 0)
                         {  
@@ -461,11 +463,6 @@
                     });
                         var bizId = $('input[name=biz_id]').val();
                         var getRes = savePromoter(arr, bizId);
-                        
-                        ///$(".form-design").load(" .form-design");
-                      /// window.location.href = "{{ route('promoter-detail',[])}}";
-                       /// console.log( getRes);
-                        
                 }
             });
         });

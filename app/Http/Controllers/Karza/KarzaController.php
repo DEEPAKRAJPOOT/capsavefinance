@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Karza;
 use App\Http\Controllers\Controller;
 use App\Libraries\Ui\KarzaApi;
 use App\Inv\Repositories\Models\BizApiLog;
+use App\Inv\Repositories\Models\BizApi;
+use App\Inv\Repositories\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -40,7 +42,53 @@ class KarzaController extends Controller
     public function checkPanStatusVerification(KarzaApi $KarzaApi, Request $request)
     {
           $requestPan   = $request->all();
-          return $KarzaApi->checkPanStatusVerification($requestPan);
+          try{
+          $result =  $KarzaApi->checkPanStatusVerification($requestPan);
+          $get_dec = json_decode($result,1);
+          $status =  $get_dec['status-code'];
+          if($status==101) { 
+              $status =1; 
+              
+          } else { 
+              $status =0; 
+              
+          }
+          $req =   json_encode(array('name' => $requestPan['name'],'pan' => $requestPan['pan'],'dob' => $requestPan['dob']));
+          $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($get_dec['result']),'status' => $status]);
+          if ($createApiLog) {
+               if($status==1)
+               {
+                   $userData  =  User::getUserByAppId($requestPan['app_id']);
+                   $user_id    =  $userData->user_id;
+                   $createBizApi= BizApi::create(['user_id' =>$user_id, 
+                                            'biz_id' =>   $requestPan['biz_id'],
+                                            'biz_owner_id' => $requestPan['ownerid'],
+                                            'type' => 3,
+                                            'verify_doc_no' => 1,
+                                            'status' => 1,
+                                           'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                                           'created_by' => Auth::user()->user_id,
+                                          ]);
+                            if($createBizApi){
+
+                                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+                           } 
+                           else 
+                          {
+                                 return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+                           }
+                  }
+               return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 0, 'value' => $createApiLog['biz_api_log_id']]);
+          
+               } 
+            else {
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        }
+         catch (Exception $e) 
+        {
+             return false;
+        }
     }
     
     
@@ -51,14 +99,28 @@ class KarzaController extends Controller
      */
     public function checkVoterIdVerification(KarzaApi $KarzaApi, Request $request)
     {
-          $requestPan   = $request->all();
-          $result = $KarzaApi->checkVoterIdVerification($requestPan['epic_no']);
+          $requestvoterf   = $request->all();
+          $result = $KarzaApi->checkVoterIdVerification($requestvoterf);
+          dd( $result);
+          $get_dec = json_decode($result,1);
+          dd($get_dec);
+          $status =  $get_dec['status-code'];
+          dd($result);
+          if($status==101) { 
+              $status =1; 
+              
+          } else { 
+              $status =0; 
+              
+          }
+          $createApiLog = BizApiLog::create(['req_file' =>$requestvoterf['epic_no'], 'res_file' => json_encode($result['response']->result),'status' => 0]);
+          if ($createApiLog) {
+                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+            } else {
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
 
-
-          $createApiLog = BizApiLog::create(['req_file' => $result['request'], 'res_file' => $result['response']->result]);
-          dd($createApiLog);
-
-          return $result['response'];
+         
     }
     
        /**
@@ -69,7 +131,53 @@ class KarzaController extends Controller
     public function checkDlVerification(KarzaApi $KarzaApi, Request $request)
     {
           $requestDl   = $request->all();
-          return $KarzaApi->checkDlVerification($requestDl);
+         try{ 
+          $result =   $KarzaApi->checkDlVerification($requestDl);
+          $get_dec = json_decode($result,1);
+          $status =  $get_dec['status-code'];
+          if($status==101) { 
+              $status =1; 
+              
+          } else { 
+              $status =0; 
+              
+          }
+          
+          $req =   json_encode(array('dl' => $requestDl['dl_no'],'dob' => $requestDl['dob']));
+          $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($get_dec['result']),'status' => $status]);
+          if ($createApiLog) {
+               if($status==1)
+               {
+                   $userData  =  User::getUserByAppId($requestDl['app_id']);
+                   $user_id    =  $userData->user_id;
+                   $createBizApi= BizApi::create(['user_id' =>$user_id, 
+                                            'biz_id' =>   $requestDl['biz_id'],
+                                            'biz_owner_id' => $requestDl['ownerid'],
+                                            'type' => 5,
+                                            'verify_doc_no' => 1,
+                                            'status' => 1,
+                                           'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                                           'created_by' => Auth::user()->user_id,
+                                          ]);
+                            if($createBizApi){
+
+                                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+                           } 
+                           else 
+                          {
+                                 return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+                           }
+                  }
+               return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 0, 'value' => $createApiLog['biz_api_log_id']]);
+          
+               } 
+            else {
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+         }
+         catch (Exception $e) {
+                      return false;
+              }
     }
     
     /**
@@ -79,7 +187,54 @@ class KarzaController extends Controller
      */
     public function checkPassportVerification(KarzaApi $KarzaApi, Request $request)
     {
-          $requestPassport   = $request->all();
-          return $KarzaApi->checkPassportVerification($requestPassport);
+         $requestPassport   = $request->all();
+         try{
+         $result =  $KarzaApi->checkPassportVerification($requestPassport);
+         $get_dec = json_decode($result,1);
+          $status =  $get_dec['status-code'];
+          if($status==101) { 
+              $status =1; 
+              
+          } else { 
+              $status =0; 
+              
+          }
+          $req =   json_encode(array('fileNo' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
+          $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($get_dec['result']),'status' => $status]);
+          if ($createApiLog) {
+               if($status==1)
+               {
+                   $userData  =  User::getUserByAppId($requestPassport['app_id']);
+                   $user_id    =  $userData->user_id;
+                   $createBizApi= BizApi::create(['user_id' =>$user_id, 
+                                            'biz_id' =>   $requestPassport['biz_id'],
+                                            'biz_owner_id' => $requestPassport['ownerid'],
+                                            'type' => 6,
+                                            'verify_doc_no' => 1,
+                                            'status' => 1,
+                                           'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                                           'created_by' => Auth::user()->user_id,
+                                          ]);
+                            if($createBizApi){
+
+                                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+                           } 
+                           else 
+                          {
+                                 return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+                           }
+                  }
+               return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 0, 'value' => $createApiLog['biz_api_log_id']]);
+          
+               } 
+            else {
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        }
+         catch (Exception $e) 
+        {
+             return false;
+        }
+          
     }
 }
