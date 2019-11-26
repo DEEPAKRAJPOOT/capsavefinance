@@ -134,18 +134,11 @@ class CamController extends Controller
     }
 
     public function uploadBankStatement(){
-         $financeid =  [];
-         for ($i=0; $i < 1000; $i++) { 
-             $financeid[$this->_getFinanceId()] = $this->_getFinanceId();
-         }
-         echo "<pre>";
-         echo count($financeid);
-         print_r($financeid);die;
         $bsa = new Bsa_lib();
         $filepath = public_path('storage/916010062301973.pdf');
         $reportType = 'xml';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
-        /*$req_arr = array(
+        $req_arr = array(
             'txnId' => $prolitus_txn, //'bharatSTmt',
             'loanAmount' => '20000000',
             'loanDuration' => '6',
@@ -204,10 +197,7 @@ class CamController extends Controller
             $final_res['api_type'] = "Initiate Txn";
         }
 
-        dd($final_res);*/
-
-
-        
+        dd($final_res);
         $req_arr = array(
             'perfiosTransactionId' => 'WFD81574748279324',//$final_res['perfiosTransactionId'],
             'types' => $reportType,
@@ -226,7 +216,7 @@ class CamController extends Controller
         $apiVersion = '2.1';
         $vendorId = 'capsave';
 
-        /*$req_arr = array(
+        $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
             'txnId' => $prolitus_txn,
@@ -287,7 +277,7 @@ class CamController extends Controller
              $final_res = $start_txn;
              $final_res['api_type'] = "Start New Txn";
          }
-         dd($final_res);*/
+         dd($final_res);
 
 
 
