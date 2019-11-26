@@ -242,7 +242,7 @@
 								<div id="accordion" class="accordion">
 
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox"  class="mr-2"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne">
 											<a class="card-title">
@@ -300,7 +300,7 @@
 									</div>
 
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox"  class="mr-2"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne24">
 											<a class="card-title">
@@ -360,7 +360,7 @@
 									</div>
 
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox"  class="mr-2"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne2">
 											<a class="card-title">
@@ -418,7 +418,7 @@
 										</div>
 									</div>
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox" class="mr-2"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne3">
 											<a class="card-title">
