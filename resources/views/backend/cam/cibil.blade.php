@@ -475,17 +475,16 @@
                   
                  $(".isloader").hide();
                    var status =  data['status'];
+                   var html = '<div class="content-wrapper-msg"><div class="alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+data['message']+'</div></div>';
                      if(status==1)
                        {  
                             //alert(data['message']);
-                           var html = '<div class="content-wrapper-msg"><div class="alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+data['message']+'</div></div>';
+                           
                             $("#pullMsg").html(html);
-                            //setTimeout(function(){ $("#pullMsg").text('');}, 2000);
-                            setTimeOu
                             $("#cibilScore"+biz_owner_id).text(data['cibilScore']);
                             
                        }else{
-                           alert(data['message']);
+                            $("#pullMsg").html(html);
                       }                          
                        
                }
