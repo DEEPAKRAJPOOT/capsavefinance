@@ -152,3 +152,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         });
     });
 });
+
+            Route::get('bank_statement', [
+                'as' => 'bank_statement',
+                'uses' => 'Backend\CamController@uploadBankStatement'
+            ]);
+            
+            Route::get('financial_statement', [
+                'as' => 'financial_statement',
+                'uses' => 'Backend\CamController@uploadFinancialStatement'
+            ]);
+
+
