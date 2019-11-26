@@ -14,14 +14,14 @@
                 <div class="count-heading">Business Information </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{url('frontend/assets/images/business-document.png')}}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/business-document.png') }}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src=t"{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/tick-image.png') }}" width="36" height="36">
                     </div>
                 </div>
             </li>
-           <li>
+           <li class="count-active">
 				<div class="count-heading"> Promoter Details </div>
 				<div class="top-circle-bg">
 					<div class="count-top">
@@ -32,7 +32,7 @@
 					</div>
 				</div>
 			</li>
-            <li>
+            <li class="count-active">
                 <div class="count-heading">Documents</div>
                 <div class="top-circle-bg">
                     <div class="count-top">
@@ -221,7 +221,7 @@
                       -->
                             <div class="d-flex btn-section ">
                                 <div class="col-md-4 ml-auto text-right">
-                                    <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = '#'">
+                                    <!-- <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = '#'"> -->
                                     <input type="button" value="Save and Continue" id="submit" class="btn btn-primary">
                                     <input type="submit" value="Save" id="actual_submit" style="display: none;">
                                 </div>

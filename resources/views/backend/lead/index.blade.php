@@ -125,9 +125,9 @@
                 </div>
                 <button id="searchB" type="button" class="btn btn-success search">Search</button>
                 
-                <div class="col-12 dataTables_wrapper">
+                <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
-                        <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                        <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
                                     
