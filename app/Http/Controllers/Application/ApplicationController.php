@@ -254,7 +254,6 @@ class ApplicationController extends Controller
             $appId  = $request->get('app_id');
             $userId = Auth::user()->user_id;
             $response = $this->docRepo->isUploadedCheck($userId, $appId);
-            
             if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);

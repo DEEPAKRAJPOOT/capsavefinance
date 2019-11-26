@@ -114,35 +114,39 @@ class BizOwner extends Model
           /* Get App id and biz id behalf of user id */
           $appData = self::getAppId($uid);
           $getRes =  self::savePanApiRes($attributes, $attributes['biz_id']); 
-          $owner = AppDocument::insert([
-            [
-            'rcu_status' => 0,
-            'user_id' => $uid,
-            'app_id' => (int) $attributes['app_id'],
-            'doc_id' => 4,
-            'is_upload' => 0,
-            'created_by' => $uid,
-            'updated_by' => $uid
-            ],
-            [
-            'rcu_status' => 0,
-            'user_id' => $uid,
-            'app_id' => (int) $attributes['app_id'],
-            'doc_id' => 5,
-            'is_upload' => 0,
-            'created_by' => $uid,
-            'updated_by' => $uid
-            ],
-            [
-            'rcu_status' => 0,
-            'user_id' => $uid,
-            'app_id' => (int) $attributes['app_id'],
-            'doc_id' => 6,
-            'is_upload' => 0,
-            'created_by' => $uid,
-            'updated_by' => $uid
-            ]
-            ]);
+          $appDocCheck = AppDocument::where('app_id', $attributes['app_id'])
+                    ->count();
+          if($appDocCheck == 0){
+            $owner = AppDocument::insert([
+              [
+              'rcu_status' => 0,
+              'user_id' => $uid,
+              'app_id' => (int) $attributes['app_id'],
+              'doc_id' => 4,
+              'is_upload' => 0,
+              'created_by' => $uid,
+              'updated_by' => $uid
+              ],
+              [
+              'rcu_status' => 0,
+              'user_id' => $uid,
+              'app_id' => (int) $attributes['app_id'],
+              'doc_id' => 5,
+              'is_upload' => 0,
+              'created_by' => $uid,
+              'updated_by' => $uid
+              ],
+              [
+              'rcu_status' => 0,
+              'user_id' => $uid,
+              'app_id' => (int) $attributes['app_id'],
+              'doc_id' => 6,
+              'is_upload' => 0,
+              'created_by' => $uid,
+              'updated_by' => $uid
+              ]
+              ]);
+          }
          
           return $owner;
 

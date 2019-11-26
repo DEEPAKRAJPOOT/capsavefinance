@@ -89,7 +89,7 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
             
             Route::post('application-save',
                 [
-                'as' => 'application_save',
+                'as' => 'front_application_save',
                 'uses' => 'Application\ApplicationController@applicationSave'
             ]);
         });
