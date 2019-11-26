@@ -14,14 +14,14 @@
                 <div class="count-heading">Business Information </div>
                 <div class="top-circle-bg">
                     <div class="count-top">
-                        <img src="{{url('frontend/assets/images/business-document.png')}}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/business-document.png') }}" width="36" height="36">
                     </div>
                     <div class="count-bottom">
-                        <img src=t"{{url('frontend/assets/images/tick-image.png')}}" width="36" height="36">
+                        <img src="{{ url('frontend/assets/images/tick-image.png') }}" width="36" height="36">
                     </div>
                 </div>
             </li>
-           <li>
+           <li class="count-active">
 				<div class="count-heading"> Promoter Details </div>
 				<div class="top-circle-bg">
 					<div class="count-top">
@@ -32,7 +32,7 @@
 					</div>
 				</div>
 			</li>
-            <li>
+            <li class="count-active">
                 <div class="count-heading">Documents</div>
                 <div class="top-circle-bg">
                     <div class="count-top">
