@@ -14,7 +14,7 @@
         <ul class="navbar-nav ml-lg-auto">
             <li class="nav-item nav-profile">
                 <a class="nav-link" href="#">
-                <span style="color: #328964;">{{ucwords(Auth::user()->f_name.' '.Auth::user()->l_name)}}</span>
+                    <span style="color: #328964;">{{ucwords(Auth::user()->f_name.' '.Auth::user()->l_name)}}</span>
                     <img src="{{url('backend/assets/images/faces/face9.jpg')}}" />
                 </a>
             </li>
