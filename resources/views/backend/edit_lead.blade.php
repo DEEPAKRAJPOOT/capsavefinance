@@ -4,7 +4,7 @@
 
 <div class="modal-body text-left">
 			<div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtCreditPeriod">Full Name
                                  <span class="mandatory">*</span>
@@ -12,7 +12,7 @@
                                  <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Full Name" required="">
                               </div>
                            </div>
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtSupplierName">Business Name
                                  <span class="mandatory">*</span>
@@ -22,7 +22,7 @@
                            </div>
                         </div>
 						<div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
@@ -39,7 +39,7 @@
                      <input class="form-control" name="password" id="passwordRegistration" type="password" tabindex="5" placeholder="Password" oninput="removeSpace(this);">
                               </div>
                            </div>  -->
-                           <div class="col-md-6">
+                           <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Mobile
                                     <span class="mandatory">*</span>
@@ -56,7 +56,7 @@
                                  <input name="password" id="passwordRegistration" type="hidden" oninput="removeSpace(this);" value="nr40od5m">
                               </div>
                         </div>
-            <button type="submit" class="btn btn-primary float-right">Submit</button>  
+            <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
          </div>
      
 

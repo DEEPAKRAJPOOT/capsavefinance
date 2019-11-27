@@ -186,7 +186,7 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         ZanySoft\Zip\ZipServiceProvider::class,
         App\Providers\KarzaServiceProvider::class,
-
+        App\Providers\CibilServiceProvider::class,
 
     ],
 

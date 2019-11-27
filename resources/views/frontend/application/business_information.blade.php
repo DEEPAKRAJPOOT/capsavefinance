@@ -70,7 +70,7 @@
 													<span class="mandatory">*</span>
 												</label>
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-												<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" tabindex="1" placeholder="Enter Applied Loan Amount" required>
+												<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" tabindex="1" placeholder="Enter Applied Loan Amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="10" required>
 												@error('loan_amount')
 									                <span class="text-danger error">{{ $message }}</span>
 									            @enderror
@@ -80,7 +80,7 @@
 											<div class="form-group">
 												<label for="txtSupplierName">Tranche Tenor (Days)
 												</label>
-												<input type="number" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="2" placeholder="Enter Tranche Tenor (1 - 120)">
+												<input type="text" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="2" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
 												@error('tenor_days')
 									                <span class="text-danger error">{{ $message }}</span>
 									            @enderror
@@ -133,7 +133,7 @@
 												<label for="txtPassword">Business Turnover
 												</label>
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-												<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="6" placeholder="Enter Business Turnover">
+												<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="6" placeholder="Enter Business Turnover" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="15">
 												@error('biz_turnover')
 									                <span class="text-danger error">{{ $message }}</span>
 									            @enderror
@@ -277,7 +277,7 @@
 							                            <label for="txtPassword">Pin Code
 							                                <span class="mandatory">*</span>
 							                            </label>
-							                            <input type="text" name="biz_pin" value="{{old('biz_pin')}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" minlength="6" maxlength="6" required>
+							                            <input type="text" name="biz_pin" value="{{old('biz_pin')}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" minlength="6" maxlength="6" required>
 							                            @error('biz_pin')
                                                             <span class="text-danger error">{{ $message }}</span>
                                                         @enderror
@@ -292,7 +292,7 @@
 							        <div id="accordion" class="accordion mb-5">
 							            <div class="card card-color mb-0">
 							                <div class="sameas">
-							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address</span>
+							                    <input type="checkbox" name="address_same" class="mr-2" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address</span>
 							                 </div>
 							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
 							                    <a class="card-title">Communication Address</a>
@@ -334,7 +334,7 @@
 							                                    <label for="txtPassword">Pin Code
 							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
-							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0')}}" class="form-control" tabindex="19" placeholder="Enter Pin Code" maxlength="6">
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0')}}" class="form-control" tabindex="19" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 							                                </div>
 							                            </div>
 							                        </div>
@@ -343,7 +343,7 @@
 							            </div>
 							            <div class="card card-color mb-0">
 							                <div class="sameas">
-							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address</span>
+							                    <input type="checkbox" name="address_same" class="mr-2" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address</span>
 							                </div>
 							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
 							                    <a class="card-title">GST Address</a>
@@ -385,7 +385,7 @@
 							                                    <label for="txtPassword">Pin Code
 							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
-							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1')}}" class="form-control" tabindex="23" placeholder="Enter Pin Code" maxlength="6">
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1')}}" class="form-control" tabindex="23" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 							                                </div>
 							                            </div>
 							                        </div>
@@ -394,7 +394,7 @@
 							            </div>
 							            <div class="card card-color mb-0">
 							                <div class="sameas">
-							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address</span>
+							                    <input type="checkbox" name="address_same" class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address</span>
 							                </div>
 							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
 							                    <a class="card-title">Warehouse Address</a>
@@ -436,7 +436,7 @@
 							                                    <label for="txtPassword">Pin Code
 							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
-							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2')}}" class="form-control" tabindex="27" placeholder="Enter Pin Code" maxlength="6">
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2')}}" class="form-control" tabindex="27" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 							                                </div>
 							                            </div>
 							                        </div>
@@ -445,7 +445,7 @@
 							            </div>
 							            <div class="card card-color mb-0">
 							                <div class="sameas">
-							                    <input type="checkbox" name="address_same" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address</span>
+							                    <input type="checkbox" name="address_same" class="mr-2" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address</span>
 							                </div>
 							                <div class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
 							                    <a class="card-title">Factory Address</a>
@@ -487,7 +487,7 @@
 							                                    <label for="txtPassword">Pin Code
 							                                        <!-- <span class="mandatory">*</span> -->
 							                                    </label>
-							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3')}}" class="form-control" tabindex="31" placeholder="Enter Pin Code" maxlength="6">
+							                                    <input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3')}}" class="form-control" tabindex="31" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 							                                </div>
 							                            </div>
 							                        </div>

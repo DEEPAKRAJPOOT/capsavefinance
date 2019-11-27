@@ -18,15 +18,25 @@
                 !!}
                 
                         <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
-                                 <label for="txtCreditPeriod">Name
+                                 <label for="txtCreditPeriod">First Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="f_name" id="f_name" value="" class="form-control f_name" tabindex="1" placeholder="Name" >
+                                 <input type="text" name="f_name" id="f_name" value="" class="form-control f_name" tabindex="1" placeholder="First Name" >
                               </div>
                            </div>
-                           <div class="col-md-6">
+                            <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtCreditPeriod">Last Name
+                                 <span class="mandatory">*</span>
+                                 </label>
+                                 <input type="text" name="l_name" id="l_name" value="" class="form-control l_name" tabindex="1" placeholder="Last Name" >
+                              </div>
+                           </div>
+                            </div>
+                           <div class="row">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtSupplierName">Business Name
                                  <span class="mandatory">*</span>
@@ -34,9 +44,8 @@
                                  <input type="text" name="comp_name" id="comp_name" value="" class="form-control comp_name" tabindex="3" placeholder="Business Name" >
                               </div>
                            </div>
-                        </div>
-                           <div class="row">
-                           <div class="col-md-6">
+                        
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
@@ -44,8 +53,10 @@
                                  <input type="email" name="email" id="email" value="" class="form-control email" tabindex="4" placeholder="Email" >
                               </div>
                            </div>
-
-                           <div class="col-md-6">
+                         </div>
+                
+                       <div class="row">
+                           <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Mobile
                                     <span class="mandatory">*</span>
@@ -60,22 +71,39 @@
                                     </div>
                                  </div>
                               </div>
-                        </div>
-                
-                    <div class="row">
-                           <div class="col-md-6">
+                        
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">User Type
                                  <span class="mandatory">*</span>
                                  </label>
                                   <select class="form-control anchor_user_type" name="anchor_user_type" id="anchor_user_type">
-                                      <option value="">please select</option>
+                                      <option value="">Please Select</option>
                                       <option value="1">Supplier</option>
                                       <option value="2">Buyer</option>
                                   </select>
                               </div>
                            </div>
-                     </div>
+                     </div>             
+                @if ($is_superadmin == '1')
+                <div  class="row">                    
+                      <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtEmail">Anchor
+                                 <span class="mandatory">*</span>
+                                 </label>        
+                                     <select class="form-control assigned_anchor" name="assigned_anchor" id="assigned_anchor">
+                            <option value="">Please Select</option>
+                             @foreach($anchDropUserList as $key => $value)
+                             <option value="{{$value->anchor_id}}"> {{$value->comp_name}} </option>
+                             @endforeach
+                         </select>
+                                  
+                              </div>
+                           </div> 
+                       
+                </div>
+                @endif
 <!--                     <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
@@ -140,7 +168,7 @@
                               </div>
                         </div>-->
                 
-                <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
           {!!
         Form::close()
         !!}
@@ -168,6 +196,12 @@
         $(document).ready(function () {
             $('#saveAnch').on('click', function (event) {
                 $('input.f_name').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+                 $('input.l_name').each(function () {
                     $(this).rules("add",
                             {
                                 required: true
@@ -228,6 +262,14 @@
                                 number: true,
                             })
                 });
+                
+                $('select.assigned_anchor').each(function (){
+                    $(this).rules("add",
+                            {
+                                required: true,
+                            })
+                });                
+                
                 // test if form is valid                
             })
             //$("#btnAddMore").on('click', addInput);

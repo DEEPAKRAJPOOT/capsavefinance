@@ -30,7 +30,7 @@
                             <a href="{{route('get_role')}}" class="btn btn-primary btn-sm mr-3">Back</a>
                         </div>
                     </div>
-                </div>     
+                </div>
             </div>
 
 
@@ -38,62 +38,46 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
                     <div class="card">
                         <div class="card-body">
-                            <form autocomplete="off" method="POST" action="{{route('save_permission')}}" id="PermissionsForm" name="permissionform" enctype="multipart/form-data">                            
+                            <form autocomplete="off" method="POST" action="{{route('save_permission')}}" id="PermissionsForm" name="permissionform" enctype="multipart/form-data">
                                 <div class="row pull-right" style="margin: 10px;">
                                     <button type="button" class="btn btn-primary btn-sm mr-3">Check all</button>
-                                    <button type="button" class="btn btn-secondary btn-sm" >Uncheck all</button>
+                                    <button type="button" class="btn btn-secondary btn-sm">Uncheck all</button>
                                 </div>
                                 <div class="clearfix"></div>
 
-                                <ul id="tree" class="checktree-root">
-                                    <div>
-                                        
-                                        @foreach($getParentData as $key=> $ParentData)
-                                        @php $match  = 0 @endphp
-                                        @php $checked  = '' @endphp
-                                        @php $rr = Helpers::checkRole($ParentData['id'], $role_id) @endphp
-                                        @if($rr)
-                                        @if( $rr->permission_id == $ParentData['id'] && $rr->role_id == $role_id)
-                                          @php  $match  = 1 @endphp
-                                        @endif
-                                        @endif
-                                        <li class="show_div">
-                                            
+
+                                <div>
+
+                                    @foreach($getParentData as $key=> $ParentData)
+                                    @php $match = 0 @endphp
+                                    @php $checked = '' @endphp
+                                    @php $rr = Helpers::checkRole($ParentData['id'], $role_id) @endphp
+                                    @if($rr)
+                                    @if( $rr->permission_id == $ParentData['id'] && $rr->role_id == $role_id)
+                                    @php $match = 1 @endphp
+                                    @endif
+                                    @endif
+                                    <ul>
+                                        <li>
+
                                             @php $checked = ($match==1)?'checked':'' @endphp
-                                            <label>
-                                                <input class="p-chk-{{$ParentData['id']}}"  type="checkbox" {{$checked}} name="parent[{{$ParentData['id']}}]"  id="permission_id[{{$ParentData['id']}}]" value="{{$ParentData['id']}}">{{$ParentData['display_name']}}
-                                            </label>
-                                            @php $childDatas = Helpers::getByParent($ParentData['id'],'1')->toArray() @endphp
-                                            
-                                            <ul>
-                                                @if($childDatas)
-                                               
-                                                
-                                                @foreach($childDatas as $key1 => $childData)
-                                               @php $checked1  = '' @endphp
-                                                 @php $rr1 = Helpers::checkRole($childData['id'], $role_id) @endphp
-                                                @if($rr1)
-                                                 
-                                                @if( $rr1->permission_id == $childData['id'] && $rr1->role_id == $role_id)
-                                                    @php  $checked1  = 'checked' @endphp
-                                                @endif
-                                                @endif
-                                                
-                                                <li class="show_div"><label>
-                                                        <input class="c-chk-{{$ParentData['id']}} rere" {{$checked1}} type="checkbox"  name="child[{{$childData['id']}}]" id="permission_id[{{$ParentData['id']}}][{{$childData['id']}}]" value="{{$childData['id']}}">{{$childData['display_name']}}
-                                                    </label>
-                                                </li>
-                                                @endforeach
-                                                @endif
-                                            </ul>
+                                             <input class="p-chk-{{$ParentData['id']}}" type="checkbox" {{$checked}} name="parent[{{$ParentData['id']}}]" id="permission_id[{{$ParentData['id']}}]" value="{{$ParentData['id']}}">{{$ParentData['display_name']}}
+                                             @php $childDatas = Helpers::getByParent($ParentData['id'],'1')->toArray() @endphp
+
+                                            @if($childDatas)
+                                            @include('backend.acl.manageChild',['childs' => $childDatas])
+
+
+                                            @endif
                                         </li>
-                                        @endforeach
-                                    </div>
-                                </ul>
-                                        {!! Form::hidden('role_id', $role_id) !!}
-                                        {!! Form::hidden('_token', csrf_token()) !!}
-                                <div class="btn-block d-block mt-5" style="clear:both;">  
-                                    <a href="#" class="btn btn-danger btn-sm" style="clear: both;">Cancel</a>
+                                    </ul>
+                                    @endforeach
+                                </div>
+                                
+                                {!! Form::hidden('role_id', $role_id) !!}
+                                {!! Form::hidden('_token', csrf_token()) !!}
+                                <div class="btn-block d-block mt-5" style="clear:both;">
+                                    <a href="{{route('get_role')}}" class="btn btn-danger btn-sm" style="clear: both;">Cancel</a>
                                     <button type="submit" class="btn btn-success btn-sm ml-2">Save</button>
                                 </div>
                             </form>
@@ -113,7 +97,6 @@
 
 @section('jscript')
 <script>
-
     var messages = {
         get_role_list: "{{ URL::route('get_role_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",

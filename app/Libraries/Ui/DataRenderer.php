@@ -3,7 +3,9 @@
 namespace App\Libraries\Ui;
 
 use DataTables;
+use Helpers;
 use Illuminate\Http\Request;
+use App\Inv\Repositories\Models\User;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 
@@ -69,21 +71,39 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->editColumn(
                     'anchor',
-                    function ($user) {
-                    $achorId = $user->anchor_id; 
+                    function ($user) {                    
+                    if($user->UserAnchorId){
+                      $userInfo=User::getUserByAnchorId($user->UserAnchorId);
+                       $achorId= $userInfo->f_name.''.$userInfo->l_name;
+                    }else{
+                      $achorId='';  
+                    }
+                    //$achorId = $user->UserAnchorId; 
                     return $achorId;
                 })
                 ->editColumn(
                     'userType',
                     function ($user) {
-                    $achorId = $user->anchor_id; 
-                    return '';;
+                    if($user->AnchUserType==1){
+                        $achorUserTpe='Supplier';
+                    }else if($user->AnchUserType==2){
+                         $achorUserTpe='Buyer';
+                    }else{
+                        $achorUserTpe='';
+                    }
+                    //$achorUserTpe = $user->AnchUserType; 
+                    return $achorUserTpe;
                 })
                 ->editColumn(
                     'salesper',
                     function ($user) {
-                    $achorId = $user->anchor_id; 
-                    return '';
+                    if($user->to_id){
+                    $userInfo=Helpers::getUserInfo($user->to_id);                    
+                       $saleName=$userInfo->f_name. ''.$userInfo->l_name;  
+                    }else{
+                       $saleName=''; 
+                    } 
+                    return $saleName;
                 })
                 ->editColumn(
                     '',
@@ -115,7 +135,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"280px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
+                    return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -167,17 +187,37 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {
                         //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                        return '';
+                        
+                     if($app->anchor_id){
+                      $userInfo=User::getUserByAnchorId($app->anchor_id);
+                       $achorName= $userInfo->f_name.''.$userInfo->l_name;
+                    }else{
+                      $achorName='';  
+                    }                    
+                    return $achorName;
                 })
                 ->addColumn(
                     'user_type',
-                    function ($app) {                        
-                        return '';
+                    function ($app) {
+                    if($app->user_type && $app->user_type==1){
+                       $anchorUserType='Supplier'; 
+                    }else if($app->user_type && $app->user_type==2){
+                        $anchorUserType='Buyer';
+                    }else{
+                        $anchorUserType='';
+                    }
+                       return $anchorUserType;
                 })                
                 ->addColumn(
                     'assignee',
-                    function ($app) {
-                        return '';
+                    function ($app) {                    
+                    if($app->to_id){
+                    $userInfo=Helpers::getUserInfo($app->to_id);                    
+                       $assignName=$userInfo->f_name. ''.$userInfo->l_name;  
+                    }else{
+                       $assignName=''; 
+                    } 
+                        return $assignName;
                 })
                 ->addColumn(
                     'shared_detail',
@@ -195,11 +235,16 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($app) use ($request) {
-                        //return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>";
-                    return '<div class="d-flex inline-action-btn"><a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>
-									   <a href="#" data-toggle="modal" data-target="#appStatusFrame" title="Change Status" data-url="' . route('change_app_status', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id') ]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-outdent" aria-hidden="true"></i></a>
-									   <a href="#" title="Assign Case" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('assign_case', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> </div>
-                            <a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Send next stage</a> </div>';
+                        $act = '';
+                        if(Helpers::checkPermission('add_app_note')){
+                            $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
+                        }
+                        if(Helpers::checkPermission('send_case_confirmBox')){
+                            $act = $act . '&nbsp;<a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                           
+                        }
+                        return $act;
+                                      
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -274,9 +319,14 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($app) {
-                    return  "<div class=\"d-flex inline-action-btn\">
-            <a  data-toggle=\"modal\" data-target=\"#pickLead\" data-url =\"" . route('confirm_box', ['user_id' => $app->user_id , 'app_id' => $app->app_id] ) . "\" data-height=\"200px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\">Pickup Case</a>
-    <div>";
+                        $act = '';
+                     if(Helpers::checkPermission('confirm_box')){
+                        $act = "<div class=\"d-flex inline-action-btn\">
+                        <a  data-toggle=\"modal\" data-target=\"#pickLead\" data-url =\"" . route('confirm_box', ['user_id' => $app->user_id , 'app_id' => $app->app_id] ) . "\" data-height=\"200px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\">Pickup Case</a>
+                <div>";
+                    }
+                     return $act;
+                   
               }
                 )
                 ->filter(function ($query) use ($request) {
@@ -305,8 +355,8 @@ class DataRenderer implements DataProviderInterface
                     'anchor_id',
                     function ($user) {
                     $link = '000'.$user->anchor_id;
-                    //return $link;
-                       return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                    return $link;
+                      // return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                         
                     } )
                 ->editColumn(
@@ -344,8 +394,11 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    //$view="<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-eye\"></a>";
-                    return  "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></a>";
+                       $act = '';
+                     if(Helpers::checkPermission('edit_anchor_reg')){
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></a>";
+                     }
+                     return $act;
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -390,9 +443,16 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'name',
                         function ($user) {
-                    $full_name = $user->name;
+                    $full_name = $user->name.' '.$user->l_name;
                     return $full_name;
                     
+                })               
+                ->editColumn(
+                    'biz_name',
+                    function ($user) {
+                    $biz_name = $user->biz_name;
+                    return $biz_name;
+
                 })
                 ->editColumn(
                     'email',
@@ -405,12 +465,6 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     $achorId = $user->phone; 
                     return $achorId;
-                })               
-                ->editColumn(
-                    'biz_name',
-                    function ($user) {
-                    return ($user->biz_name)? $user->biz_name: '---';
-
                 })
                 ->editColumn(
                     'created_at',

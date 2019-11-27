@@ -33,4 +33,7 @@ return [
      * PremiumRetailer Per month subscription fee
      */
     'premium_retailer_fee' => env('PREMIUM_RETAILER_FEE', 96),
+    
+    'karza_auth_api_url' => env('KARZA_AUTHENTICATION_API_URL', ''),
+    'karza_auth_api_key' => env('KARZA_AUTHENTICATION_API_KEY', ''),
 ];

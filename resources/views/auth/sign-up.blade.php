@@ -42,7 +42,7 @@
                                         <label for="txtCreditPeriod">Last Name
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input type="text" name="l_name" value="{{old('l_name')}}" class="form-control" tabindex="3" placeholder="Last Name">
+                                        <input type="text" name="l_name" value="@if($anchorDetail){{$anchorDetail->l_name}}@else{{old('l_name')}}@endif" class="form-control" tabindex="3" placeholder="Last Name" @if($anchorDetail)readonly @else @endif >
                                         <span class="text-danger error">{{$errors->first('l_name')}} </span>
                                     </div>
                                 </div>
@@ -51,7 +51,7 @@
                                         <label for="txtSupplierName">Business Name
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input type="text" name="business_name" id="business_name" value="{{old('business_name')}}" class="form-control" tabindex="4" placeholder="Business Name">
+                                        <input type="text" name="business_name" id="business_name" value="@if($anchorDetail){{$anchorDetail->biz_name}}@else{{old('business_name')}}@endif" class="form-control" tabindex="4" placeholder="Business Name"  @if($anchorDetail)readonly @else @endif >
                                         <span class="text-danger error">{{$errors->first('business_name')}}</span>
                                     </div>
                                 </div>

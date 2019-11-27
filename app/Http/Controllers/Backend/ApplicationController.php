@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\User;
 use Session;
 use Helpers;
 
@@ -103,19 +104,84 @@ class ApplicationController extends Controller
      /* Show promoter details page  */
      public function showPromoterDetails(Request $request){
         $id = Auth::user()->user_id;
-        $appId = $request->get('app_id');
-        $bizId = $request->get('biz_id');
-        $userId = $request->get('user_id');
+        $appId = $request->get('app_id');  
+        $bizId = $request->get('biz_id'); 
         $attribute['biz_id'] = $bizId;
-        
+        $getCin = $this->userRepo->getCinByUserId($bizId);
+       if($getCin==false)
+       {
+          return redirect()->back();
+       }
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
-//            'appId' => $appId, 
-//            '$bizId' => $bizId
+              'cin_no' => $getCin->cin,
+             'appId' => $appId, 
+            'bizId' => $bizId
             ]);
     }
+     /**
+     * Save Promoter details form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    //////////////////Save Promoter Multiple Details///////////////////////// 
+    public function savePromoter(Request $request) {
+       try {
+          $arrFileData = json_decode($request->getContent(), true);
+          $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
+         
+          if ($owner_info) {    
+                return response()->json(['status' => 1, 'data' => $owner_info]);
+            } else {
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     
+     /**
+     * Save Promoter details form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    //////////////////Save Promoter Multiple Details///////////////////////// 
+    public function updatePromoterDetail(Request $request) {
+       try {
+            $arrFileData = $request->all();
+            $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
+//            dd($owner_info);
+            if ($owner_info > 0) {
+            
+                //Add application workflow stages
+               /// $appId = $arrFileData['app_id']; 
+                 ////Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                /////  $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->id);
+              ///  if ($toUserId) {
+                ////    Helpers::assignAppToUser($toUserId, $appId);
+              ///  }
+                return response()->json(['status' => 1]);
+            }
+            else {
+               //Add application workflow stages 
+              ///// Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        } catch (Exception $ex) {
+            //Add application workflow stages
+            /////Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    /** get karza api response     */
+     public function getPanVerifyApi(Request $request)
+      {
+           
+           dd($request);
+           
+           
+       }
     /**
      * Handle a Business documents for the application.
      *
@@ -150,6 +216,126 @@ class ApplicationController extends Controller
             return Helpers::getExceptionMessage($ex);
         }
     }
+    
+    
+    /**
+     * Render view for company detail page according to biz id
+     * 
+     * @param Request $request
+     * @return view
+     */
+    public function showDocuments(Request $request){
+        try {
+            $arrFileData = $request->all();
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $userData = User::getUserByAppId($appId);
+            if ($appId > 0) {
+                $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
+                if(!empty($requiredDocs)){
+                    $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
+                }
+            }
+            else {
+                return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
+            }
+            
+            if ($docData) {
+                return view('backend.app.documents', [
+                    'requiredDocs' => $requiredDocs,
+                    'documentData' => $docData,
+                    'user_id' => $userData->user_id,
+                    'app_id' => $appId,
+                    'biz_id' => $bizId
+                ]);
+            }
+            else {
+                return redirect()->back()->withErrors(trans('error_messages.document'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+     
+    /**
+     * Handle a Business documents for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function saveDocument(Request $request)
+    {
+        try {
+            $arrFileData = $request->all();
+            // dd($arrFileData);
+            $docId = (int)$request->doc_id; //  fetch document id
+            $appId = (int)$request->app_id; //  fetch document id
+            $userData = User::getUserByAppId($appId);
+            $userId = $userData->user_id;
+            $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
+            if ($document_info) {
+                //Add/Update application workflow stages    
+                $response = $this->docRepo->isUploadedCheck($userId, $appId);            
+                $wf_status = $response->count() < 1 ? 1 : 2;
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                
+                Session::flash('message',trans('success_messages.uploaded'));
+                return redirect()->back();
+            } else {
+                //Add application workflow stages
+                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+            
+                return redirect()->back();
+            }
+        } catch (Exception $ex) {
+            //Add application workflow stages
+            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+                
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    
+    
+    /**
+     * Handling deleting documents file for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function applicationSave(Request $request)
+    {
+        try {
+            $appId  = (int)$request->app_id;
+            $userData = User::getUserByAppId($appId);
+            $userId = $userData->user_id;
+            $response = $this->docRepo->isUploadedCheck($userId, $appId);
+            
+            if ($response->count() < 1) {
+                
+                $this->appRepo->updateAppData($appId, ['status' => 1]);
+                
+                //Add application workflow stages                
+                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                
+                return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
+            } else {
+                //Add application workflow stages                
+                Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+                
+                return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
+            }
+        } catch (Exception $ex) {
+            //Add application workflow stages                
+            Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+                
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
     /**
      * Render view for change application status
      * 
@@ -310,20 +496,62 @@ class ApplicationController extends Controller
             $app_id = $request->get('app_id');
             $assign_role = $request->get('assign_role');
            
-            if ($assign_role) {
+            if ($assign_role) {                
                 $currStage = Helpers::getCurrentWfStagebyRole($assign_role);
                 Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 0,$assign_role);
             } else {
-                $currStage = Helpers::getCurrentWfStage($app_id);
-                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1);
+                $currStage = Helpers::getCurrentWfStage($app_id);                
+                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign = true);
             }
 
 
             $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
-           Session::flash('is_accept', 1);
-            return redirect()->back();
-           
+        //    Session::flash('is_accept', 1);
+        //     return redirect()->back();
+           Session::flash('message',trans('backend_messages.update_assignee'));
+            //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
+            return redirect()->route('application_list');
         } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    /**
+     * Show the business information form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showBusinessInformation()
+    {
+        $states = State::getStateList()->get();
+        return view('backend.app.business_information',compact('states'));
+    }
+
+    public function saveBusinessInformation(BusinessInformationRequest $request)
+    {
+        try {
+            $arrFileData = $request->all();
+            $user_id = $request->user_id;
+            $business_info = $this->appRepo->saveBusinessInfo($arrFileData, $user_id);
+            //$appId  = Session::put('appId', $business_info['app_id']);
+            
+            //Add application workflow stages
+            Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
+            
+                        
+            if ($business_info) {
+                //Add application workflow stages
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1, $assign_role = false);
+                
+                //Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                return redirect()->route('promoter_details',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+            } else {
+                //Add application workflow stages
+                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2, $assign_role = false);
+                
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {                
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }

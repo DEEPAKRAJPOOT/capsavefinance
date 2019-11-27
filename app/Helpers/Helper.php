@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use App\Helpers\PaypalHelper;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Patent;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
@@ -131,7 +132,7 @@ class Helper extends PaypalHelper
      * @param integer $wf_status
      * @return boolean
      */
-    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = true)
+    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = false)
     {
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
@@ -149,7 +150,7 @@ class Helper extends PaypalHelper
                 $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
             } else {
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
-            }
+            }                        
             if ($wf_status == 1) {
                 $nextWfData = WfStage::getNextWfStage($wf_order_no);
                 $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
@@ -162,28 +163,30 @@ class Helper extends PaypalHelper
                         'is_complete' => 0
                     ];
                     $result = WfAppStage::saveWfDetail($insertData);
-                    
-                    if ($assign_role) {
-                        //get role id by wf_stage_id
-                        $data = WfStage::find($result->wf_stage_id);
-                        AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
-                        //update assign table
-                        $dataArr = []; 
-                        $dataArr['from_id'] = \Auth::user()->user_id;
-                        $dataArr['to_id'] = null;
-                        $dataArr['role_id'] = $data->role_id;
-                        $dataArr['assigned_user_id'] = $user_id;
-                        $dataArr['app_id'] = $app_id;
-                        $dataArr['assign_status'] = '0';
-                        $dataArr['sharing_comment'] = "comment";
-                        $dataArr['is_owner'] = 1;
+                } else {
+                    $result = $wfAppStageData;
+                }
+                                                
+                if ($assign_role) {
+                    //get role id by wf_stage_id
+                    $data = WfStage::find($result->wf_stage_id);                        
+                    AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+                    //update assign table
+                    $dataArr = []; 
+                    $dataArr['from_id'] = \Auth::user()->user_id;
+                    $dataArr['to_id'] = null;
+                    $dataArr['role_id'] = $data->role_id;
+                    $dataArr['assigned_user_id'] = $user_id;
+                    $dataArr['app_id'] = $app_id;
+                    $dataArr['assign_status'] = '0';
+                    $dataArr['sharing_comment'] = "comment";
+                    $dataArr['is_owner'] = 1;
 
-                        AppAssignment::saveData($dataArr);
+                    AppAssignment::saveData($dataArr);
 
-                        return $data;
-                    } else {
-                        return $result;
-                    }
+                    return $data;
+                } else {
+                    return $result;
                 }
             }
             return $result;
@@ -254,7 +257,8 @@ class Helper extends PaypalHelper
         
         return $inputArr;
     }
-         /**
+    
+    /**
      * uploading document data
      *
      * @param Exception $exception
@@ -430,5 +434,102 @@ class Helper extends PaypalHelper
         return PermissionRole::checkRole($parentId,$role_id);
     }
     
+    /**
+     * Redirect workflow stage next to completed stage
+     * 
+     * @param integer $app_id
+     * @return boolean
+     */
+    public static function getWfRedirectRoute($user_id)
+    {
+        $appData = Application::getLatestApp($user_id);
+        $app_id = $appData ? $appData->app_id : 0;
+        $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
+        $wf_order_no = $last_completed_wf_stage->order_no;
+        $wf_data = WfStage::getNextWfStage($wf_order_no);
+        return $wf_data ? $wf_data->route_name : false;
+    }
+    
+    /**
+     * Get Latest Application Data
+     * 
+     * @param integer $user_id
+     * @return mixed
+     */
+    public static function getLatestAppData($user_id)
+    {
+        $appData = Application::getLatestApp($user_id);        
+        return $appData ? $appData : null;
+    }
+    
+    /**
+     * Assign Application to User
+     * 
+     * @param integer $to_userid
+     * @param integer $app_id
+     */
+    public static function assignAppToUser($to_userid, $app_id)
+    {
+        AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+        //update assign table
+        $dataArr = []; 
+        $dataArr['from_id'] = \Auth::user()->user_id;
+        $dataArr['to_id'] = $to_userid;
+        $dataArr['role_id'] = null;
+        $dataArr['assigned_user_id'] = null;
+        $dataArr['app_id'] = $app_id;
+        $dataArr['assign_status'] = '0';
+        $dataArr['sharing_comment'] = "comment";
+        $dataArr['is_owner'] = 1;
+
+        AppAssignment::saveData($dataArr);        
+    }
+    
+    /**
+     * Get User Role
+     * 
+     * @param integer $user_id | default
+     */
+    public static function getUserRole($user_id = null) {
+        if (is_null($user_id)) {
+            $user_id = \Auth::user()->user_id;
+        }
+        $roleData = User::getBackendUser($user_id);
+        return $roleData;
+    }
+    /**
+     * Get User Role
+     * 
+     * @param integer $user_id | default
+     */
+    public static function getUserInfo($user_id = null) {        
+        $getUserInfo = User::getfullUserDetail($user_id);
+        return $getUserInfo;
+    }
+
+
+    /**
+     * Check permission  
+     *      * 
+     * @param integer $user_id | default
+     */
+    public static function checkPermission($routePerm) {
+       
+
+        $user_id = \Auth::user()->user_id;        
+        $roleData = User::getBackendUser($user_id);
+
+        if ($roleData[0]->is_superadmin == 1) {
+            return true;
+        }
+        $role_id = $roleData[0]->id;
+        $prData = PermissionRole::getPermissionByRoleID($role_id)->toArray();
+        $routes = Permission::getPermissionByArr($prData)->toArray();
+        $check = in_array($routePerm, $routes);
+        return $check;
+       
+    }
+
+
   
 }

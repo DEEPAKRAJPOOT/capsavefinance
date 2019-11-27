@@ -2,27 +2,26 @@
 /* global messages, message */
 
 try {
-        jQuery(document).ready(function ($) {
-            $('input:checkbox').click(function()
-            {
-                //$('#yourid').attr('name')   
-                var fname = $(this).attr('name');
-                var exist = fname.indexOf('child');
-                if(exist == 0){
-                    var clsName = (this.className).split(' ')['0'];//c-chk-10
-                     var prtClsName = clsName.replace("c-", "p-");
-                     let checks = $('.'+clsName).is(':checked');
-                     $('.'+prtClsName).prop('checked', checks);
-
-                }else{
-                    var clsName = (this.className).split(' ')['0'];//c-chk-10
-                     var prtClsName = clsName.replace("p-", "c-");
-                     let checks = $('.'+clsName).is(':checked');
-                     $('.'+prtClsName).prop('checked', checks);
-                }
-             }) 
+        jQuery(document).ready(function ($) { 
             
-        }) 
+                $("input[type='checkbox']").change(function () {
+                    $(this).siblings('ul')
+                        .find("input[type='checkbox']")
+                        .prop('checked', this.checked);
+                });
+            });
+        
+
+
+
+            // $('.nested input[type=checkbox]').click(function () {
+            //     $(this).parent().find('li input[type=checkbox]').prop('checked', $(this).is(':checked'));
+            //     var sibs = false;
+            //     $(this).closest('ul').children('li').each(function () {
+            //     if($('input[type=checkbox]', this).is(':checked')) sibs=true;
+            //     })
+            //     $(this).parents('ul').prev().prop('checked', sibs);
+            //     });
         
 } catch (e) {
     if (typeof console !== 'undefined') {

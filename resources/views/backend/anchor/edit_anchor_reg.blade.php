@@ -16,7 +16,7 @@
                 )
                 !!}
                         <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtCreditPeriod">Full Name
                                  <span class="mandatory">*</span>
@@ -24,7 +24,7 @@
                                   <input type="text" name="employee" id="employee" value="@if($anchorUserData){{$anchorUserData->f_name}}@else{}@endif" class="form-control employee" tabindex="1" placeholder="Full Name" >
                               </div>
                            </div>
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtSupplierName">Business Name
                                  <span class="mandatory">*</span>
@@ -34,7 +34,7 @@
                            </div>
                         </div>
                            <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
@@ -43,7 +43,7 @@
                               </div>
                            </div>
 
-                           <div class="col-md-6">
+                           <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Mobile
                                     <span class="mandatory">*</span>
@@ -62,21 +62,29 @@
                 
                 
                 <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">State
                                  <span class="mandatory">*</span>
                                  </label>
-                                  <select class="form-control state" name="state" id="state">
+<!--                                  <select class="form-control state" name="state" id="state">
                                       <option value="">please select</option>
                                       <option value="1" @if($anchorData->comp_state==1)selected @else @endif >state1</option>
                                       <option value="2" @if($anchorData->comp_state==2)selected @else @endif>state2</option>
                                       <option value="3" @if($anchorData->comp_state==3)selected @else @endif>state3</option>
-                                  </select>
+                                  </select>-->
+                                  
+                                    <select class="form-control state" name="state" id="state" tabindex="6">
+                                    <option value=""> Select State</option>
+                                    @foreach($states as $key => $state)
+                                    <option value="{{$state->id}}" @if($anchorData->comp_state==$state->id)selected @endif > {{$state->name}} </option>
+                                    @endforeach
+                                    </select> 
+                                  
                               </div>
                            </div>
 
-                           <div class="col-md-6">
+                           <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">City
                                     <span class="mandatory">*</span>
@@ -93,7 +101,7 @@
                               </div>
                         </div>
                 <div class="row">
-                           <div class="col-md-6">
+                           <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Pin Code
                                     <span class="mandatory">*</span>
@@ -108,7 +116,7 @@
                                     </div>
                                  </div>
                               </div>
-                        <div class="col-md-6">
+                        <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Address
                                     <span class="mandatory">*</span>
@@ -124,8 +132,26 @@
                                  </div>
                               </div>
                         </div>
+                
+                       <div class="row">
+                           <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtEmail">Assigned Sale Manager
+                                 <span class="mandatory">*</span>
+                                 </label>
+                                  <select class="form-control assigned_sale_mgr" name="assigned_sale_mgr" id="assigned_sale_mgr" tabindex="9">
+                                      <option value="">Please Select</option>
+                                      <option value="10" @if($anchorData->sales_user_id==10)selected  @endif>Sale Manager 1</option>
+                                      <option value="11" @if($anchorData->sales_user_id==11)selected  @endif>Sale Manager 2</option>
+                                      <option value="12" @if($anchorData->sales_user_id==12)selected  @endif>Sale Manager 3</option>
+                                  </select>
+                              </div>
+                           </div>                           
+                        </div>  
+                
+                
                 {!! Form::hidden('anchor_id', $anchor_id) !!}
-                <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
         {!!
         Form::close()
         !!}
@@ -200,6 +226,12 @@
                                 number: true,
                             })
                 });
+                $('input.assigned_sale_mgr').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true,
+                            })
+                }); 
                 // test if form is valid                
             })
             //$("#btnAddMore").on('click', addInput);

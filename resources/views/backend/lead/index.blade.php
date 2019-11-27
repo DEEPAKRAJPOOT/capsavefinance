@@ -123,11 +123,11 @@
                     'class'=>'form-control'))
                     !!}
                 </div>
-                <button id="searchB" type="button" class="btn btn-success search">Search</button>
+                <button id="searchB" type="button" class="btn  btn-success btn-sm float-right">Search</button>
                 
-                <div class="col-12 dataTables_wrapper">
+                <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
-                        <div id="supplier-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                        <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
                                     
@@ -140,7 +140,7 @@
                                                 <th>Mobile</th>
                                                 <th>Anchor</th>
                                                 <th>User Type</th>
-                                                <th>Assigned Sales Person</th>
+                                                <th>Assignee Detail</th>
                                                 <th>Status</th>
                                                 <th>Created At</th>
                                                 <th>Action</th>
@@ -160,7 +160,7 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('editLead','Manage Lead', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editLead','Edit Lead Detail', 'modal-md')!!}
 
 @endsection
 

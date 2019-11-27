@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use Auth;
-use Helper;
+use Helpers;
 use Session;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -32,7 +32,7 @@ class AclController extends Controller {
         //$business_info = $this->appRepo->getApplicationById($request->biz_id);
         //$OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
         //$userFile = $this->docRepo->saveFile($uploadData);
-
+        
         return view('backend.acl.index');
     }
     

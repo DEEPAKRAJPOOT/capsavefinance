@@ -82,6 +82,7 @@ use RegistersUsers,
         $arrData = [];
         $arrAnchUser=[];
         $arrDetailData = [];
+        $arrLeadAssingData =[];
         $arrData['f_name'] = $data['f_name'];
         $arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
@@ -111,6 +112,19 @@ use RegistersUsers,
                 //$anchId=$this->userRepo->getAnchorUsersByEmail($userDataArray->email);            
                 $this->userRepo->updateAnchorUser($data['anch_user_id'], $arrAnchUser);
             }
+            
+            $saleMngId=$this->userRepo->getLeadSalesManager($userDataArray->user_id);
+            
+              $arrLeadAssingData = [
+                'from_id' => $userDataArray->user_id,
+                'to_id' => $saleMngId,
+                  'is_owner'=>1,
+                'assigned_user_id' => $userDataArray->user_id,             
+                'created_by' => $userDataArray->user_id,
+                'created_at' => \Carbon\Carbon::now(),
+                ];
+                     $this->userRepo->createLeadAssign($arrLeadAssingData);
+            
             //Add application workflow stages
             Helpers::addWfAppStage('new_case', $userDataArray->user_id);
         }
@@ -191,6 +205,7 @@ use RegistersUsers,
             $anchorDetail = $anchorLeadInfo;
         }else{
             $anchorDetail = '';
+            return redirect(route('login_open'));
         }
            return view('auth.sign-up', compact('userArr','anchorDetail'));
            

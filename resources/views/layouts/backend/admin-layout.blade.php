@@ -4,7 +4,8 @@
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Rentalpha</title>
     <link rel="shortcut icon" href="{{url('backend/assets/images/favicon.png')}}" />
@@ -15,9 +16,9 @@
     <link rel="stylesheet" href="{{url('backend/assets/css/jsgrid-theme.min.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/uploadfile.css')}}" >
     <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
-    <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
     <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
     @yield('additional_css') 
     <style>
@@ -48,22 +49,27 @@
             <div class="row row-offcanvas row-offcanvas-right">
                 <!-- partial -->
                 @if(Session::has('message'))
-                <div class=" my-alert-success alert bg-success base-reverse alert-dismissible header-msg" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+                <div class="content-wrapper-msg">
+                <div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
                     {{ Session::get('message') }}
+                </div>
                 </div>
                 @endif
 
                  @if(Session::has('error'))
-                    <div class=" my-alert-danger alert alert-danger alert-dismissible" role="alert">
+                   <div class="content-wrapper-msg">
+                    <div class=" alert-danger alert" role="alert">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         {{ Session::get('error') }}
                     </div>
+                   </div>
                 @endif
 
                 @if (count($errors) > 0)
+                  <div class="content-wrapper-msg">
                 <div class="alertMsgBox">
-                    <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert alert-danger" role="alert">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <ul>
                             @foreach ($errors->all() as $error)
@@ -72,6 +78,7 @@
                         </ul>
                     </div>
                 </div>
+                  </div>
                 @endif
                 
                 @include('layouts.backend.partials.admin-sidebar')

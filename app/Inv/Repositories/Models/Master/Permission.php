@@ -217,5 +217,18 @@ class Permission extends BaseModel
                 ->where('is_display', $isDisplay)->get();
         return ($permission_name ? $permission_name : []);
     }
+
+    /**
+     * get permission name by Array
+     *
+     * @param type $role_id
+     *
+     * @return type
+     */
+    public static function getPermissionByArr($permission_id)
+    {
+        $permission_name = self::whereIn('id', $permission_id)->pluck('name');
+        return ($permission_name ? $permission_name : []);
+    }
     
 }

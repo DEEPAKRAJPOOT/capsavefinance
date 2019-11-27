@@ -36,7 +36,8 @@
             </div>-->
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
-                    <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_anchor_reg')}}" data-height="420px" data-width="100%" data-placement="top" >
+                    @can('add_anchor_reg')
+                    <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_anchor_reg')}}" data-height="475px" data-width="100%" data-placement="top" >
                         <button class="btn  btn-success btn-sm" type="button">
                             <span class="btn-label">
                                 <i class="fa fa-plus"></i>
@@ -45,6 +46,7 @@
                         </button>
 
                     </a>
+                    @endcan
                 </div>
             </div>
           </div>     
@@ -78,7 +80,7 @@
                 <div class="row">
                 <div class="col-sm-12">
                                      <div class="table-responsive">
-                                    <table id="anchUserList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="anchUserList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
                                                 <th>Anchor ID</th>
@@ -107,8 +109,8 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('addAnchorFrm','Manage Anchor', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor', 'modal-md')!!}
+{!!Helpers::makeIframePopup('editAnchorFrm','Edit Anchor Detail', 'modal-md')!!}
 @endsection
 
 @section('jscript')

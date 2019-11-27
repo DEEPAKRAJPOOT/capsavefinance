@@ -59,7 +59,7 @@ class PermissionRole extends BaseModel
      */
     public static function getPermissionByRoleID($role_id)
     {
-        $permissions = self::where('role_id', $role_id)->lists('permission_id');
+        $permissions = self::where('role_id', $role_id)->pluck('permission_id');
         return ($permissions ? $permissions : false);
     }
     
