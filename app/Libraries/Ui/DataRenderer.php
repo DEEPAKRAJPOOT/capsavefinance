@@ -260,7 +260,99 @@ class DataRenderer implements DataProviderInterface
                     
                 })
                 ->make(true);
-    } 
+    }
+
+    /*      
+     * Get user application list for frontend
+     */
+    public function getUserAppList(Request $request, $app)
+    {
+        return DataTables::of($app)
+                ->rawColumns(['app_id', 'action'])
+                ->addColumn(
+                    'app_id',
+                    function ($app) {
+                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        return $app->app_id;
+                        //return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                    }
+                )
+                ->addColumn(
+                    'biz_entity_name',
+                    function ($app) {                        
+                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                })
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($app) {
+                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
+                        
+                     if($app->anchor_id){
+                      $userInfo=User::getUserByAnchorId($app->anchor_id);
+                       $achorName= $userInfo->f_name.''.$userInfo->l_name;
+                    }else{
+                      $achorName='';  
+                    }                    
+                    return $achorName;
+                })
+                ->addColumn(
+                    'user_type',
+                    function ($app) {
+                    if($app->user_type && $app->user_type==1){
+                       $anchorUserType='Supplier'; 
+                    }else if($app->user_type && $app->user_type==2){
+                        $anchorUserType='Buyer';
+                    }else{
+                        $anchorUserType='';
+                    }
+                       return $anchorUserType;
+                })                
+                ->addColumn(
+                    'assignee',
+                    function ($app) {                    
+                    if($app->to_id){
+                    $userInfo=Helpers::getUserInfo($app->to_id);                    
+                       $assignName=$userInfo->f_name. ''.$userInfo->l_name;  
+                    }else{
+                       $assignName=''; 
+                    } 
+                        return $assignName;
+                })
+                ->addColumn(
+                    'status',
+                    function ($app) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($app) use ($request) {
+                        return '<div class="d-flex inline-action-btn">
+                                <a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Application</a>
+                                <a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Offered Limit</a>
+                            </div>';
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    if ($request->get('is_status') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_status');
+                            $query->where('app.status', $is_assigned);
+                        });
+                    }
+                    
+                })
+                ->make(true);
+    }  
     
     /*
      * get application pool

@@ -136,6 +136,14 @@ Route::group(
 //        'uses' => 'AjaxController@checkExistUser'
 //        ]
 //    );
+
+    Route::post(
+        'get-user-application',
+        [
+        'as' => 'ajax_user_app_list',
+        'uses' => 'AjaxController@getUserApplications'
+        ]
+    );
     
 });
 

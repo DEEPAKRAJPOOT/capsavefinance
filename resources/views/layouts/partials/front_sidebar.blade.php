@@ -17,19 +17,18 @@
       </li>             
         
     <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
-                <span class="menu-title">Manage Leads</span>
-               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-file-image-o"></i>
+                <span class="menu-title">Manage Application</span>
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenu1">
-                <ul class="nav flex-column sub-menu">
+            <div class="collapse" id="layoutsSubmenu">
+                <ul class="nav flex-column sub-menu">                    
                     <li class="nav-item">
-                        <a class="nav-link" href="#">My Leads</a>
-                    </li>
-                                                
+                        <a class="nav-link" href="{{ route('front_application_list') }}">Manage Application</a>
+                    </li>                                   
                 </ul>
             </div>
-     </li>      
+        </li>      
     </ul>
 </nav>

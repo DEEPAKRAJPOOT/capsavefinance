@@ -2670,5 +2670,16 @@ if ($err) {
         $email = $request->post('username');
         $anchUsersList = $this->userRepo->getUserByemail($email);
         return $anchUsersList;
-    } 
+    }
+
+    /**
+     * Get user specific Application list for frontend
+     *
+     * @return json user data
+     */
+    public function getUserApplications(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getUserApplications();
+        $applications = $dataProvider->getUserAppList($this->request, $appList);
+        return $applications;
+    }
 }

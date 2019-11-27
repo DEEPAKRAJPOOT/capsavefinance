@@ -290,5 +290,20 @@ class Application extends Model
                 ->first();
                        
         return ($appData ? $appData : null);        
-    }    
+    }
+
+    /**
+     * Get User Applications for Application list data tables
+     */
+    protected static function getUserApplications() 
+    {  
+        $appData = self::distinct()->select('app.user_id','app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status','app_assign.to_id', 'anchor_user.anchor_id', 'anchor_user.user_type')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
+                ->leftJoin('app_assign', 'app_assign.assigned_user_id', '=', 'app.user_id')
+                ->where('app.user_id', \Auth::user()->user_id);
+        //$appData->groupBy('app.app_id');
+        $appData = $appData->orderBy('app.app_id', 'DESC');
+        return $appData;
+    }   
 }

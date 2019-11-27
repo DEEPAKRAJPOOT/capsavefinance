@@ -92,6 +92,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'as' => 'front_application_save',
                 'uses' => 'Application\ApplicationController@applicationSave'
             ]);
+
+            Route::get('/', [
+                'as' => 'front_application_list',
+                'uses' => 'Application\ApplicationController@index'
+            ]);
         });
     });
      

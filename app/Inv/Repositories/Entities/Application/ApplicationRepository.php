@@ -294,4 +294,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppAssignment::saveData($dataArr);
     }
 
+    /**
+     * Get User Applications for Application list data tables for frontend
+     */
+    public function getUserApplications() 
+    {
+        return Application::getUserApplications();
+    }
+
 }
