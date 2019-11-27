@@ -37,6 +37,7 @@ class CibilController extends Controller
         $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($biz_owner_id);
         $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
         $responce =  $CibilApi->getPromoterCibilRequest($arrOwnerData);
+       // dd($responce);
       //  $file_name = 'cibil.txt';
        // File::put(storage_path('app/public/cibil').'/'.$file_name, $responce);
         //$jsonData = json_encode($responce); 
@@ -45,6 +46,7 @@ class CibilController extends Controller
         $con = json_encode($new); 
         // Convert into associative array 
         $newArr = json_decode($con, true); 
+        
         $cibilScore = '0';
         if(!empty($newArr['INDV-REPORTS']['INDV-REPORT']['SCORES']))
         {
@@ -98,4 +100,5 @@ class CibilController extends Controller
                 return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'cibilScoreData' => $newArr]);
        }
     }
+
 }
