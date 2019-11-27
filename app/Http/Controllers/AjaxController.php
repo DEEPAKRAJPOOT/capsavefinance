@@ -2673,8 +2673,19 @@ if ($err) {
     } 
     
     public function getBusinessList(DataProviderInterface $dataProvider){
-        $anchLeadList = $this->application->getAllBusiness();
-        $users = $dataProvider->getBusinessList($this->request, $anchLeadList);
-        return $users; 
+        //$anchLeadList = $this->application->getAllBusiness();
+        //$users = $dataProvider->getBusinessList($this->request, $anchLeadList);
+        //return $users; 
     }
+    /**
+     * get role list
+     * @param Request $request
+     */
+    
+    public function getRoleLists(DataProviderInterface $dataProvider) {
+     $anchRoleList = $this->userRepo->getRoleList();
+     $role = $dataProvider->getRoleList($this->request, $anchRoleList);
+     return $role;
+    }
+
 }

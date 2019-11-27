@@ -144,7 +144,13 @@ Route::group(
 //        'uses' => 'AjaxController@checkExistUser'
 //        ]
 //    );
-    
+    Route::post(
+        'get-role-list',
+        [
+        'as' => 'get_role_list',
+        'uses' => 'AjaxController@getRoleLists'
+        ]
+    );
 });
 
 

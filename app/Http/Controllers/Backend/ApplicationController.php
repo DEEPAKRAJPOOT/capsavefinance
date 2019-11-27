@@ -25,6 +25,7 @@ class ApplicationController extends Controller
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
+        $this->middleware('checkBackendLeadAccess');
     }
     
     /**
@@ -505,9 +506,11 @@ class ApplicationController extends Controller
 
 
             $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
-           Session::flash('is_accept', 1);
-            return redirect()->back();
-           
+        //    Session::flash('is_accept', 1);
+        //     return redirect()->back();
+           Session::flash('message',trans('backend_messages.update_assignee'));
+            //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
+            return redirect()->route('application_list');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

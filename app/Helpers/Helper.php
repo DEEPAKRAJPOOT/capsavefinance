@@ -14,7 +14,10 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Models\Master\PermissionRole;
 use DB;
+
 class Helper extends PaypalHelper
 {
 
@@ -414,6 +417,23 @@ class Helper extends PaypalHelper
         }
     }
     
+     /**
+     * Get permission by Role id
+     * 
+     * @param integer $app_id
+     */
+    public static function getByParent($parentId,$isDisplay){
+        return Permission::getByParent($parentId, $isDisplay);
+    }
+     /**
+     * Get permission by Role id
+     * 
+     * @param integer $app_id
+     */
+    public static function checkRole($parentId,$role_id){
+        return PermissionRole::checkRole($parentId,$role_id);
+    }
+    
     /**
      * Redirect workflow stage next to completed stage
      * 
@@ -486,5 +506,30 @@ class Helper extends PaypalHelper
         $getUserInfo = User::getfullUserDetail($user_id);
         return $getUserInfo;
     }
+
+
+    /**
+     * Check permission  
+     *      * 
+     * @param integer $user_id | default
+     */
+    public static function checkPermission($routePerm) {
+       
+
+        $user_id = \Auth::user()->user_id;        
+        $roleData = User::getBackendUser($user_id);
+
+        if ($roleData[0]->is_superadmin == 1) {
+            return true;
+        }
+        $role_id = $roleData[0]->id;
+        $prData = PermissionRole::getPermissionByRoleID($role_id)->toArray();
+        $routes = Permission::getPermissionByArr($prData)->toArray();
+        $check = in_array($routePerm, $routes);
+        return $check;
+       
+    }
+
+
   
 }
