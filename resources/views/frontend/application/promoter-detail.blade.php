@@ -242,6 +242,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('#submit').on('click', function (event) {
+                /*
                 $('input.first_name').each(function () {
                     $(this).rules("add",
                             {
@@ -303,6 +304,7 @@
                                 required: true
                             })
                 });
+        */
                /* $('.privacy_chk').each(function () {
                     $(this).rules("add",
                             {
@@ -312,6 +314,7 @@
                 // test if form is valid 
                 if ($('form#signupForm').validate().form()) {
                       var panCount = 0;
+                      /*
                       $(".pan_no").each(function(k,v){
                           panCount++;
                         var result =  $("#pan_verify"+panCount).text();
@@ -325,6 +328,7 @@
                         }
                         
                     });
+                    */
                     var form = $("#signupForm");
                     $('.isloader').show();
                     $.ajax({

@@ -113,12 +113,13 @@ class ApplicationController extends Controller
             if ($owner_info) {
             
                 //Add application workflow stages
-               /// $appId = $arrFileData['app_id']; 
-                 ////Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
-                /////  $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->id);
-              ///  if ($toUserId) {
-                ////    Helpers::assignAppToUser($toUserId, $appId);
-              ///  }
+                $appId = $arrFileData['app_id']; 
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+                $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->user_id);
+                dd('xxxxxxxx', $appId, $toUserId, Auth::user()->user_id);
+                if ($toUserId) {
+                   Helpers::assignAppToUser($toUserId, $appId);
+                }
                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             }
             else {
