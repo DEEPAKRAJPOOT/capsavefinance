@@ -1,4 +1,4 @@
-partial:partials/_navbar.html -->
+<!-- partial:partials/_navbar.html -->
 <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-left navbar-brand-wrapper">
         <a class="navbar-brand brand-logo" href="#"><img src="{{url('backend/assets/images/logo.svg')}}"/></a>
@@ -13,8 +13,8 @@ partial:partials/_navbar.html -->
         </form>
         <ul class="navbar-nav ml-lg-auto">
             <li class="nav-item nav-profile">
-                <a class="nav-link">
-                    <span style="color: #328964;">{{ucwords(Auth::user()->f_name.' '.Auth::user()->l_name)}}</span>
+                <a class="nav-link" href="#">
+                <span style="color: #328964;">{{ucwords(Auth::user()->f_name.' '.Auth::user()->l_name)}}</span>
                     <img src="{{url('backend/assets/images/faces/face9.jpg')}}" />
                 </a>
             </li>
@@ -118,4 +118,4 @@ partial:partials/_navbar.html -->
         </button>
     </div>
 </nav>
-<!-- partial
+<!-- partial -->
