@@ -511,13 +511,13 @@
        $(document).on('click','.promoter_pan_verify',function () {
       
             var count = $(this).attr('data-id');
+          
             var PAN = $("#pan_no"+count).val();
             var dataStore = {'pan': PAN,'_token': messages.token };
             var postData = dataStore;
             $('#pan_verify'+count).text('Waiting...');
              jQuery.ajax({
-            
-                url: messages.chk_user_pan_karza,
+              url: messages.chk_user_pan_karza,
                 method: 'post',
                 dataType: 'json',
                 data: postData,

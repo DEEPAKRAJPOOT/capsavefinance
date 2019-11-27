@@ -2671,4 +2671,10 @@ if ($err) {
         $anchUsersList = $this->userRepo->getUserByemail($email);
         return $anchUsersList;
     } 
+    
+    public function getBusinessList(DataProviderInterface $dataProvider){
+        $anchLeadList = $this->application->getAllBusiness();
+        $users = $dataProvider->getBusinessList($this->request, $anchLeadList);
+        return $users; 
+    }
 }

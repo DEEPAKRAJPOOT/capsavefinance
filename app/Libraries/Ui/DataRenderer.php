@@ -494,4 +494,85 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+    
+    public function getBusinessList(Request $request, $user)
+    {
+        
+        return DataTables::of($user)
+                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned', 'status'])
+                ->addColumn(
+                    'id',
+                    function ($user) {
+                    $link = '000'.$user->anchor_user_id;
+                        //return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        
+                    }
+                )
+                ->editColumn(
+                        'name',
+                        function ($user) {
+                    $full_name = $user->name.' '.$user->l_name;
+                    return $full_name;
+                    
+                })               
+                ->editColumn(
+                    'biz_name',
+                    function ($user) {
+                    $biz_name = $user->biz_name;
+                    return $biz_name;
+
+                })
+                ->editColumn(
+                    'email',
+                    function ($user) {
+                    return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
+
+                })
+                ->editColumn(
+                    'phone',
+                    function ($user) {
+                    $achorId = $user->phone; 
+                    return $achorId;
+                })
+                ->editColumn(
+                    'created_at',
+                    function ($user) {
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+
+                })
+                ->addColumn(
+                    'status',
+                    function ($users) {
+                    if($users->is_registered==1){
+                       return "<label class=\"badge badge-success current-status\">Registered</label>";
+                    } else {
+                        return "<label class=\"badge badge-warning current-status\">Unregistered</label>";
+                    }
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
+                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                
+                                $query->where('users.is_assigned', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }
+                })
+                ->make(true);
+    }
 }

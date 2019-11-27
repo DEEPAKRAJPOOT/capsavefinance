@@ -9,7 +9,7 @@
           <div class=" form-fields">
            <div class="col-md-12">
               <h5 class="card-title form-head-h5">Notes  
-              <a data-toggle="modal" data-target="#noteFrame" data-url ="{{route('backend_notes_from')}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls float-right"><i class="fa fa-plus"></i>Add Note</a>
+              <a data-toggle="modal" data-target="#noteFrame" data-url ="{{route('backend_notes_from',['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls float-right"><i class="fa fa-plus"></i>Add Note</a>
             </h5>
                     <div class="col-md-12-cls">
                             <div class="prtm-full-block">       

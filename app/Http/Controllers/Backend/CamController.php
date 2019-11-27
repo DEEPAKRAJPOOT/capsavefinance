@@ -33,7 +33,7 @@ class CamController extends Controller
     }
 
     public function camInformationSave(Request $request){
-    	$arrCamData = $request->all();
+    	  $arrCamData = $request->all();
         $arrCamData['biz_id'] = '12';
         $arrCamData['app_id'] = '12';
         $userId = Auth::user()->user_id;
@@ -138,7 +138,9 @@ class CamController extends Controller
     }
 
     public function showCibilForm(Request $request){
-        $biz_id=1;
+    //  dd($request->all());
+        $biz_id = $request->get('biz_id');
+        //$biz_id=1;
         $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
         $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
         return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData'));

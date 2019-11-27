@@ -421,25 +421,23 @@
 </div>
 
 <div class="modal fade" id="download_cibil_promoterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body" id="download_user_cibil">
-        
+      <div class="modal-body table-responsive" id="download_user_cibil" style="max-height: 500px;">
       </div>
       <div class="modal-footer">
-      
         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-        
       </div>
     </div>
   </div>
 </div>
+
+
 <div class="isloader" style="display:none;">  
         <img src="http://rent.local/backend/assets/images/loader.gif">
 </div>
@@ -519,7 +517,7 @@
                      if(status==1)
                        {  
                               $("#download_cibil_promoterModal").modal("show");
-                              $("#download_user_cibil").text(JSON.stringify(data['cibilScoreData']));
+                              $("#download_user_cibil").html(window.atob(data['cibilScoreData']));
                        }else{
                            $("#download_cibil_promoterModal").modal("show");
                               $("#download_user_cibil").text(data['cibilScoreData']);
