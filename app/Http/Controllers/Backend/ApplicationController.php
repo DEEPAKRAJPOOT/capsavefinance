@@ -173,6 +173,14 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    /** get karza api response     */
+     public function getPanVerifyApi(Request $request)
+      {
+           
+           dd($request);
+           
+           
+       }
     /**
      * Handle a Business documents for the application.
      *
