@@ -189,7 +189,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="3"> <i class="fa fa-eye"></i></button>
+                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -216,7 +216,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="5"> <i class="fa fa-eye"></i></button>
+                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="5"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -242,7 +242,7 @@
                                                                 </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="4"> <i class="fa fa-eye"></i></button>
+                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="4"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -269,7 +269,7 @@
                                                                 </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="6"> <i class="fa fa-eye"></i></button>
+                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="6"> <i class="fa fa-eye"></i></button>
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -288,7 +288,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="1" data-type="5"> <i class="fa fa-eye"></i></button>
+                                                                   
                                                                     <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                                     <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -439,6 +439,8 @@
         chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
         chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
         chk_user_pan_status_karza: "{{ URL::route('chk_user_pan_status_karza') }}",
+        get_user_pan_response_karza: "{{ URL::route('get_user_pan_response_karza') }}",
+        
     };
 $(document).ready(function () {
     $('#submit').on('click', function (event) {
@@ -889,7 +891,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
                                     $('#vvoter'+count).text('Verify');
                 },
                    success: function (data) {
-                     console.log(data.value);
+                    
                                           if(data.value > 0)
                                            {   
                                                  $('#verifyvoter'+count).attr('readonly',true);
@@ -964,10 +966,31 @@ $(document).on('click', '.promoter_pan_verify', function () {
                                     });
                                 });
  $(document).on('click','.viewDocument',function(){
-     let data_id = $(this).data('id');
-     let data_type = $(this).data('type');
-     $('#myModal1').modal('show');
- });
+     var data_id = $(this).data('id');
+     var data_type = $(this).data('type');
+     var ownerid  =  $("#ownerid"+data_id).val();
+     var postData  = ({'ownerid':ownerid,'type':data_type});
+     jQuery.ajax({
+                url: messages.get_user_pan_response_karza,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                error: function (xhr, status, errorThrown) {
+                                   alert(errorThrown);
+                                   
+                },
+                success: function (data) 
+                {
+                    console.log(data);
+                        // var ownerId  =  $("ownerid"+data_id);
+                        /// $('#myModal1').modal('show');
+                }
+             }); 
+    });
+ 
  </script>
  <style>
      .error
