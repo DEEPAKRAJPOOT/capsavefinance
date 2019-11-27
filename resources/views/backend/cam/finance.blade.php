@@ -12,7 +12,7 @@
 <div class="content-wrapper">
         <ul class="sub-menu-main pl-0 m-0">
             <li>
-                <a href="{{ route('cam_overview') }}" class="active">Overview</a>
+                <a href="{{ route('cam_overview') }}">Overview</a>
             </li>
             <li>
                 <a href="#">Anchor</a>
@@ -28,7 +28,7 @@
                 <a href="#">Banking</a>
             </li>
             <li>
-                <a href="{{ route('cam_finance') }}">Financial</a>
+                <a href="{{ route('cam_finance') }}" class="active">Financial</a>
             </li>
             <li>
                 <a href="#">GST/Ledger Detail</a>
@@ -49,7 +49,7 @@
                         <li><b class="bold">Case ID : 01256</b> </li>
                         <li><b class="bold">Credit Head Status :</b> Reject</li>
                     </ul>
-                    <button onclick="downloadCam(49)" class="btn btn-primary float-right btn-sm "> Download</button>
+                    <button type="button" class="btn btn-primary float-right btn-sm "> Download</button>
                     <ul class="float-right mr-5 mb-0">
                         <li><b class="bold">Requested Loan Amount :</b> 5Lac</li>
                         <li><b class="bold">Assigned Underwriter :</b> abc</li>

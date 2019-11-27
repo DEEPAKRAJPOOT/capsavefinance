@@ -260,4 +260,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@uploadFinancialStatement'
             ]);
 
+            Route::get('bank_report', [
+                'as' => 'bank_statement',
+                'uses' => 'Backend\CamController@getBankReport'
+            ]);
+            
+            Route::get('financial_report', [
+                'as' => 'financial_statement',
+                'uses' => 'Backend\CamController@getFinanceReport'
+            ]);
+
 
