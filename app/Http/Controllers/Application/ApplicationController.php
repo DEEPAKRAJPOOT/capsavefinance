@@ -65,7 +65,7 @@ class ApplicationController extends Controller
 
                 if ($business_info) {
                     Session::flash('message',trans('success_messages.update_company_detail_successfully'));
-                    return redirect()->route('promoter-detail',['app_id' =>  $request->app_id, 'biz_id' => $bizId]);
+                    return redirect()->route('promoter-detail',['app_id' =>  $request->app_id, 'biz_id' => $bizId, 'app_status'=>0]);
                 } else {
                     return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
                 }
