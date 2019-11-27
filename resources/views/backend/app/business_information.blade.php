@@ -72,7 +72,7 @@
 											<label for="txtEmail">Entity Name
 												<span class="mandatory">*</span>
 											</label>
-											<input type="text" name="biz_entity_name" value="{{old('biz_entity_name')}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" required>
+											<input type="text" name="biz_entity_name" value="{{old('biz_entity_name')}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" maxlength="100" required>
 											@error('biz_entity_name')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -128,7 +128,7 @@
 												<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 											</span>
 											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
-											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="7" placeholder="Enter Company Pan" required>
+											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="7" placeholder="Enter Company Pan" minlength="10" maxlength="10" required>
 											@error('biz_pan_number')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -217,7 +217,7 @@
 													<label for="txtCreditPeriod">Address
 														<span class="mandatory">*</span>
 													</label>
-													<input type="text" name="biz_address" value="{{old('biz_address')}}" class="form-control" tabindex="12" placeholder="Enter Your Address" required>
+													<input type="text" name="biz_address" value="{{old('biz_address')}}" class="form-control" tabindex="12" placeholder="Enter Your Address" maxlength="100" required>
 													@error('biz_address')
                                                         <span class="text-danger error">{{ $message }}</span>
                                                     @enderror
@@ -247,7 +247,7 @@
 													<label for="txtEmail">City
 														<span class="mandatory">*</span>
 													</label>
-													<input type="text" name="biz_city" value="{{old('biz_city')}}" class="form-control" tabindex="14" placeholder="Enter City Name" required>
+													<input type="text" name="biz_city" value="{{old('biz_city')}}" class="form-control" tabindex="14" placeholder="Enter City Name" maxlength="50" required>
 													@error('biz_city')
                                                         <span class="text-danger error">{{ $message }}</span>
                                                     @enderror
@@ -297,7 +297,7 @@
 															<label for="txtCreditPeriod">Address
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0')}}" class="form-control" tabindex="16" placeholder="Enter Your Address">
+															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0')}}" class="form-control" tabindex="16" placeholder="Enter Your Address" maxlength="100">
 														</div>
 													</div>
 
@@ -322,7 +322,7 @@
 															<label for="txtEmail">City
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.0')}}" class="form-control" tabindex="18" placeholder="Enter City Name">
+															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.0')}}" class="form-control" tabindex="18" placeholder="Enter City Name" maxlength="50">
 														</div>
 													</div>
 													<div class="col-md-4">
@@ -356,7 +356,7 @@
 															<label for="txtCreditPeriod">Address
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.1')}}" class="form-control" tabindex="20" placeholder="Enter Your Address">
+															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.1')}}" class="form-control" tabindex="20" placeholder="Enter Your Address" maxlength="100">
 														</div>
 													</div>
 
@@ -380,7 +380,7 @@
 															<label for="txtEmail">City
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.1')}}" class="form-control" tabindex="22" placeholder="Enter City Name">
+															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.1')}}" class="form-control" tabindex="22" placeholder="Enter City Name" maxlength="50">
 														</div>
 													</div>
 
@@ -415,7 +415,7 @@
 															<label for="txtCreditPeriod">Address
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.2')}}" class="form-control" tabindex="24" placeholder="Enter Your Address">
+															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.2')}}" class="form-control" tabindex="24" placeholder="Enter Your Address" maxlength="100">
 														</div>
 													</div>
 
@@ -439,7 +439,7 @@
 															<label for="txtEmail">City
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.2')}}" class="form-control" tabindex="26" placeholder="Enter City Name">
+															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.2')}}" class="form-control" tabindex="26" placeholder="Enter City Name" maxlength="50">
 														</div>
 													</div>
 
@@ -472,7 +472,7 @@
 															<label for="txtCreditPeriod">Address
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.3')}}" class="form-control" tabindex="28" placeholder="Enter Your Address">
+															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.3')}}" class="form-control" tabindex="28" placeholder="Enter Your Address" maxlength="100">
 														</div>
 													</div>
 													<div class="col-md-4">
@@ -493,7 +493,7 @@
 															<label for="txtEmail">City
 																<!-- <span class="mandatory">*</span> -->
 															</label>
-															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.3')}}" class="form-control" tabindex="30" placeholder="Enter City Name">
+															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.3')}}" class="form-control" tabindex="30" placeholder="Enter City Name" maxlength="50">
 														</div>
 													</div>
 													<div class="col-md-4">

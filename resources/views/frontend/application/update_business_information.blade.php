@@ -1,7 +1,6 @@
-@extends('layouts.backend.admin-layout')
+@extends('layouts.app')
 
 @section('content')
-@include('layouts.backend.partials.admin-subnav')
     <!-- partial -->
     <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
@@ -33,7 +32,7 @@
 						<h5 class="card-title form-head-h5">Business Details</h5>
 					</div>	
 				</div>	
-				<form id="business_information_form" method="POST" action="{{route('company_details_save')}}" onsubmit="return checkValidation();">
+				<form id="business_information_form" method="POST" action="{{route('business_information_save',['biz_id'=>request()->get('biz_id'), 'app_id'=>request()->get('app_id')])}}" onsubmit="return checkValidation();">
 				@csrf
 				<input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
 				<input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
@@ -517,11 +516,13 @@
 								</div>	
 							</div>
 						</div>
-						<div class="d-flex btn-section" style="/*display: none !important;*/">
+						@if($business_info->app->status != 1)
+						<div class="d-flex btn-section">
 							<div class="ml-auto text-right">
-								<input type="submit" value="Save and Continue" class="btn btn-primary">
+								<input type="submit" value="Update and Continue" class="btn btn-primary">
 							</div>
 						</div>
+						@endif
 					</div>
 					</form>
 				</div>

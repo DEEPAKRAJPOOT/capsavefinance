@@ -33,7 +33,7 @@ class ApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showBusinessInformationForm()
+    public function showBusinessInformationForm(Request $request)
     {
         $userId  = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
@@ -42,31 +42,52 @@ class ApplicationController extends Controller
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        return view('frontend.application.business_information', compact(['userArr','states']));
+        if($request->has('__signature') && $request->has('biz_id')){
+            $business_info = $this->appRepo->getApplicationById($request->biz_id);
+            return view('frontend.application.update_business_information')
+                        ->with(['business_info'=>$business_info, 'states'=>$states])
+                        ->with('user_id',$request->get('user_id'))
+                        ->with('app_id',$request->get('app_id'))
+                        ->with('biz_id',$request->get('biz_id'));
+        }else{
+            return view('frontend.application.business_information', compact(['userArr','states']));
+        }
     }
 
     public function saveBusinessInformation(BusinessInformationRequest $request)
     {
         try {
             $arrFileData = $request->all();
-            $business_info = $this->appRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
-            //$appId  = Session::put('appId', $business_info['app_id']);
-            
-            //Add application workflow stages
-            Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
-            
-                        
-            if ($business_info) {
-                //Add application workflow stages
-                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
+
+            if($request->has('__signature') && $request->has('biz_id')){
+                $bizId = $request->biz_id;
+                $business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
+
+                if ($business_info) {
+                    Session::flash('message',trans('success_messages.update_company_detail_successfully'));
+                    return redirect()->route('PROMOTER-ROUTE',['app_id' =>  $request->app_id, 'biz_id' => $bizId]);
+                } else {
+                    return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+                }
+            }else{
+                $business_info = $this->appRepo->saveBusinessInfo($arrFileData, Auth::user()->user_id);
                 
-                Session::flash('message',trans('success_messages.save_company_detail_successfully'));
-                return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
-            } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2);
+                Helpers::updateWfStage('new_case', $business_info['app_id'], $wf_status = 1);
                 
-                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+                            
+                if ($business_info) {
+                    //Add application workflow stages
+                    Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
+                    
+                    Session::flash('message',trans('success_messages.save_company_detail_successfully'));
+                    return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+                } else {
+                    //Add application workflow stages
+                    Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2);
+                    
+                    return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+                }
             }
         } catch (Exception $ex) {                
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

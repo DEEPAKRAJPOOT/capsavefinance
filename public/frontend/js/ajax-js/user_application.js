@@ -26,8 +26,8 @@ try {
                 {data: 'app_id'},
                 {data: 'biz_entity_name'},
                 {data: 'assoc_anchor'},
-                {data: 'user_type'},
-                {data: 'assignee'},
+                {data: 'applied_loan_amount'},
+                {data: 'created_at'},
                 {data: 'status'},
                 {data: 'action'}
             ],

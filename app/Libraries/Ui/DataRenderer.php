@@ -268,7 +268,7 @@ class DataRenderer implements DataProviderInterface
     public function getUserAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action'])
+                ->rawColumns(['app_id', 'action', 'status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -284,9 +284,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'assoc_anchor',
-                    function ($app) {
-                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                        
+                    function ($app) {                        
                      if($app->anchor_id){
                       $userInfo=User::getUserByAnchorId($app->anchor_id);
                        $achorName= $userInfo->f_name.''.$userInfo->l_name;
@@ -296,41 +294,28 @@ class DataRenderer implements DataProviderInterface
                     return $achorName;
                 })
                 ->addColumn(
-                    'user_type',
+                    'applied_loan_amount',
                     function ($app) {
-                    if($app->user_type && $app->user_type==1){
-                       $anchorUserType='Supplier'; 
-                    }else if($app->user_type && $app->user_type==2){
-                        $anchorUserType='Buyer';
-                    }else{
-                        $anchorUserType='';
-                    }
-                       return $anchorUserType;
+                    return $app->loan_amt ? number_format($app->loan_amt) : '';
                 })                
                 ->addColumn(
-                    'assignee',
+                    'created_at',
                     function ($app) {                    
-                    if($app->to_id){
-                    $userInfo=Helpers::getUserInfo($app->to_id);                    
-                       $assignName=$userInfo->f_name. ''.$userInfo->l_name;  
-                    }else{
-                       $assignName=''; 
-                    } 
-                        return $assignName;
+                    return $app->created_at ? date('d/m/Y', strtotime($app->created_at)) : '';
                 })
                 ->addColumn(
                     'status',
                     function ($app) {
                     //$app_status = config('inv_common.app_status');                    
-                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(($app->status == 1)? "Completed":"Incomplete").'</label>';
 
                 })
                 ->addColumn(
                     'action',
                     function ($app) use ($request) {
                         return '<div class="d-flex inline-action-btn">
-                                <a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Application</a>
-                                <a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Offered Limit</a>
+                                <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View Application</a>
+                                <a href="#" title="View Offered Limit" data-toggle="modal" data-target="#ViewOfferedLimit" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Offered Limit</a>
                             </div>';
                     }
                 )

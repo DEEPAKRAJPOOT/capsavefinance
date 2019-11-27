@@ -16,7 +16,6 @@
         </div>
     </section>
 
-
     <div class="card">
         <div class="card-body">
             <div class="row">
@@ -44,12 +43,9 @@
 
                 <div class="col-md-3 text-right">
                     <div class="btn-group btn-custom-group inline-action-btn">
-                       <a href="{{route('business_information_open')}}" class="btn btn-pickup btn-sm">Create Application</a>
+                       <a href="{{route('business_information_open')}}" class="btn btn-pickup btn-sm" target="_blank">Create Application</a>
                     </div>
                </div>
-
-
-
 
             </div>
             <div class="row">
@@ -61,14 +57,13 @@
                                     <table id="appList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-
-                                                <th>{{ trans('backend.app_list_head.app_id') }}</th>
-                                                <th>{{ trans('backend.app_list_head.name') }}</th>
-                                                <th>{{ trans('backend.app_list_head.anchor') }}</th>
-                                                <th>{{ trans('backend.app_list_head.user_type') }}</th>
-                                                <th>{{ trans('backend.app_list_head.assignee') }}</th>
-                                                <th>{{ trans('backend.app_list_head.status') }}</th>
-                                                <th>{{ trans('backend.app_list_head.action') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.app_id') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.name') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.anchor') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.applied_loan_amount') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.created_date') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.status') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.action') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
