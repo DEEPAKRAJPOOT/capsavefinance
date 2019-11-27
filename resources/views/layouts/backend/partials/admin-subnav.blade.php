@@ -6,7 +6,7 @@
         <a href="{{ route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/cam/*') ? 'active' : '' }}">CAM</a>
     </li>
     <li>
-        <a href="#" class="{{ request()->is('application/fircu/*') ? 'active' : '' }}">FI/RCU</a>
+        <a href="{{ route('fircu/index', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/fircu/*') ? 'active' : '' }}">FI/RCU</a>
     </li>
     <li>
         <a href="#" class="{{ request()->is('application/collateral/*') ? 'active' : '' }}">Collateral</a>
