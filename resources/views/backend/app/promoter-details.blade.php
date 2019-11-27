@@ -434,7 +434,6 @@
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
-        token: "{{ csrf_token() }}",
         chk_user_voterid_karza: "{{ URL::route('chk_user_voterid_karza') }}",
         chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
         chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
@@ -611,6 +610,7 @@ $(document).on('click', '.clsdiv', function () {
     $(this).parent().parent().remove();
 });
 
+
 jQuery(document).ready(function () {
     var countOwnerRow = $("#rowcount").val();
             if(countOwnerRow > 0) {
@@ -717,7 +717,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
     var jsonData = JSON.stringify(dataStore);
     $('#pan_verify' + count).text('Waiting...');
     jQuery.ajax({
-        url: "https://testapi.karza.in/v2/pan",
+        url: "https://stub.karza.in/v2/pan",
         headers: {
             'Content-Type': "application/json",
             'x-karza-key': key,
@@ -753,6 +753,12 @@ $(document).on('click', '.promoter_pan_verify', function () {
         }
     });
 });
+
+
+
+
+
+
 
 
  /////////////////Karja Api pan status /////////////////////////////////////
@@ -792,6 +798,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
                                            {   
                                                  $('#veripan'+count).attr('readonly',true);
                                                  $('#ppan'+count).text('Verified');
+                                                 $('#ppan'+count).css('pointer-events','none');
                                                  $('#v1successpanverify'+count).show();
                                                  $('#v1failurepanverify'+count).hide();
                                                  $("#submit").attr("disabled", false); 
@@ -844,7 +851,8 @@ $(document).on('click', '.promoter_pan_verify', function () {
                                            {   
                                                  $('#verifydl'+count).attr('readonly',true);
                                                  $('#ddriving'+count).text('Verified');
-                                                $('#v2successpanverify'+count).show();
+                                                 $('#ddriving'+count).css('pointer-events','none');
+                                                 $('#v2successpanverify'+count).show();
                                                  $('#v2failurepanverify'+count).hide();
                                                  $("#submit").attr("disabled", false); 
                                            }else{
@@ -896,6 +904,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
                                            {   
                                                  $('#verifyvoter'+count).attr('readonly',true);
                                                  $('#vvoter'+count).text('Verified');
+                                                 $('#vvoter'+count).css('pointer-events','none');
                                                  $('#v3successpanverify'+count).show();
                                                  $('#v3failurepanverify'+count).hide();
                                                  $("#submit").attr("disabled", false); 
@@ -951,6 +960,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
                                              
                                                  $('#verifypassport'+count).attr('readonly',true);
                                                  $('#ppassport'+count).text('Verified');
+                                                 $('#ppassport'+count).css('pointer-events','none');
                                                  $('#v4successpanverify'+count).show();
                                                  $('#v4failurepanverify'+count).hide();
                                                  $("#submit").attr("disabled", false); 

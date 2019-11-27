@@ -5,9 +5,11 @@
 Route::group(
     ['middleware' => 'auth'],
     function () {
+    
+    
    //////////////////Pan card authontication//////////////////////////
     Route::post(
-        'chk-user-cibil',
+        'chk_user_pan_karza',
         [
         'as' => 'chk_user_pan_karza',
         'uses' => 'Karza\KarzaController@checkPanVerification'
