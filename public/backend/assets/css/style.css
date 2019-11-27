@@ -9043,3 +9043,8 @@ body.avgrund-active {
 
 /*# sourceMappingURL=maps/style.css.map */
 .error{color:#ff0000;}
+.form-heading small {
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 1px;
+}

@@ -131,6 +131,12 @@ Route::group(
         'uses' => 'AjaxController@getAnchorLeadLists'
         ]
     ); 
+    
+    Route::post('get-business-list',
+        [
+        'as' => 'get_business_list',
+        'uses' => 'AjaxController@getBusinessList'
+        ]); 
 //    Route::get(
 //        'check-exist-user',
 //        [

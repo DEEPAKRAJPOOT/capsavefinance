@@ -103,7 +103,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@finance_store'
             ]);
             
-            
             Route::get('fircu/index', [
                 'as' => 'backend_fircu_index',
                 'uses' => 'Backend\FiRcuController@index'
