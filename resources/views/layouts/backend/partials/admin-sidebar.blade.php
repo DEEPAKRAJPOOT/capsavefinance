@@ -2,11 +2,9 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
         <!--main pages start-->
-        <li class="nav-item nav-category">
+        <!-- <li class="nav-item nav-category">
             <span class="nav-link">Main</span>
-        </li>
-
-        
+        </li> -->    
     <li class="nav-item active">
             <a class="nav-link"  href="#">
                 <i class="fa fa fa-home"></i>

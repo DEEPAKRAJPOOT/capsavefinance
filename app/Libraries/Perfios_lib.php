@@ -42,7 +42,7 @@ class Perfios_lib{
 			SELF::ADD_YEAR => 'success',
 			SELF::UPL_STMT => 'accepted',
 			SELF::CMPLT_TXN => 'accepted',
-			SELF::GET_STMT => 'needtocheck',
+			SELF::GET_STMT => 'financialstatement',
 			SELF::DEL_DATA => 'status',
 			SELF::TXN_RVU => 'status',
 			SELF::GET_INST => 'institutions',

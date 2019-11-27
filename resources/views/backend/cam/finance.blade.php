@@ -15,29 +15,29 @@
                 <a href="{{ route('cam_overview') }}" class="active">Overview</a>
             </li>
             <li>
-                <a href="anchor-view.php">Anchor</a>
+                <a href="#">Anchor</a>
             </li>
 
             <li>
-                <a href="promoter.php">Promoter</a>
+                <a href="#">Promoter</a>
             </li>
             <li>
-                <a href="cibil.php">Credit History &amp; Hygine Check</a>
+                <a href="#">Credit History &amp; Hygine Check</a>
             </li>
             <li>
-                <a href="banking.php">Banking</a>
+                <a href="#">Banking</a>
             </li>
             <li>
                 <a href="{{ route('cam_finance') }}">Financial</a>
             </li>
             <li>
-                <a href="gst-ledger.php">GST/Ledger Detail</a>
+                <a href="#">GST/Ledger Detail</a>
             </li>
             <li>
-                <a href="limit-assessment.php">Limit Assessment</a>
+                <a href="#">Limit Assessment</a>
             </li>
             <li>
-                <a href="limit-management.php">Limit Management</a>
+                <a href="#">Limit Management</a>
             </li>
         </ul>
     <div class="inner-container">

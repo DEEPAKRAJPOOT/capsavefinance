@@ -339,9 +339,11 @@ class LeadController extends Controller {
                 $anchorUserInfo = $this->userRepo->getUserByAnchorId($anchorId);
                 $anchorVal = $this->userRepo->getAnchorById($anchorId);
             }
+             $states = State::getStateList()->get();
             return view('backend.anchor.edit_anchor_reg')
                             ->with('anchor_id', $anchorId)
                             ->with('anchorUserData',$anchorUserInfo)
+                            ->with(['states'=>$states])
                             ->with('anchorData', $anchorVal);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -361,6 +363,7 @@ class LeadController extends Controller {
             $arrAnchorData = [
                 'comp_name' => $arrAnchorVal['comp_name'],
                 'comp_email' => $arrAnchorVal['email'],
+                'sales_user_id' => $arrAnchorVal['assigned_sale_mgr'],
                 'comp_phone' => $arrAnchorVal['phone'],
                 'comp_addr' => $arrAnchorVal['comp_addr'],
                 'comp_state' => $arrAnchorVal['state'],
