@@ -82,13 +82,14 @@ class CamController extends Controller
 
 
     private function _rand_str($length = 2){
-       $rand_num = '';
+       $random_string = '';
        $permitted_chars = str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-       $min_select_from = 36 - $length; 
-       for ($i = 0; $i < $length ; $i++) { 
-          $rand_num .= substr($permitted_chars, mt_rand(0, $min_select_from), 1);
+       $input_length = strlen($permitted_chars); 
+       for($i = 0; $i < $length; $i++) {
+          $random_character = $permitted_chars[mt_rand(0, $input_length - 1)];
+          $random_string .= $random_character;
        }
-       return $rand_num;
+       return $random_string;
     }
 
     private function _getFinanceId() {
@@ -206,11 +207,16 @@ class CamController extends Controller
             $final_res = $init_txn;
             $final_res['api_type'] = "Initiate Txn";
         }
-
-        
         dd($final_res);
+        
+    }
+
+
+    public function getBankReport() {
+        $bsa = new Bsa_lib();
+        $reportType = 'xml';
         $req_arr = array(
-            'perfiosTransactionId' => 'WFD81574748279324',//$final_res['perfiosTransactionId'],
+            'perfiosTransactionId' => '2TKX1574769478737',//$final_res['perfiosTransactionId'],
             'types' => $reportType,
          );
         $get_rep = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
@@ -288,12 +294,18 @@ class CamController extends Controller
              $final_res = $start_txn;
              $final_res['api_type'] = "Start New Txn";
          }
-         dd($final_res);
+         dd($final_res); 
+    }
 
+    public function getFinanceReport($value='') {
+        $perfios = new Perfios_lib();
+        $apiVersion = '2.1';
+        $vendorId = 'capsave';
+        $reportType = 'xml';
         $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
-            'perfiosTransactionId' => 'PK261574667829233',//'2JGT1574749448671',$final_res['perfiosTransactionId'],
+            'perfiosTransactionId' => 'PK261574667829233',// '2JGT1574749448671',$final_res['perfiosTransactionId'],
             'reportType' => $reportType,
             'txnId' => '2019112513134830813211',//'2019112611540788638030',//$final_res['prolitusTransactionId'],
          );
@@ -301,5 +313,6 @@ class CamController extends Controller
         $payload = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
         dd($payload);
     }
+
 
 }
