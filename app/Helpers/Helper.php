@@ -549,9 +549,8 @@ class Helper extends PaypalHelper
      */
     public static function getUserInfo($user_id = null) {        
         $getUserInfo = User::getfullUserDetail($user_id);
-        return $getUserInfo;
+        return $getUserInfo; 
     }
-<<<<<<< HEAD
 
 
     /**
@@ -577,7 +576,6 @@ class Helper extends PaypalHelper
     }
 
 
-=======
     
     /**
      * 
@@ -601,6 +599,5 @@ class Helper extends PaypalHelper
         }
         return $isWfStageCompleted;
     }
->>>>>>> 07f27195cce90e1dead4670ca50b9065521aa622
   
 }
