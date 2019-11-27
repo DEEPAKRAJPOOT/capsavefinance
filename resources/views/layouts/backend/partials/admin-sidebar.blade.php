@@ -58,10 +58,13 @@
             </a>
             <div class="collapse" id="layoutsSubmenu">
                 <ul class="nav flex-column sub-menu">
+                @can('get_anchor_list')
+                
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_anchor_list') }}">Manage Anchor</a>
 
                     </li>
+                    @endcan
                         <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_anchor_lead_list') }}">Manage Anchor Lead</a>
                     </li>                           

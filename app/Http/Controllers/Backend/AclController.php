@@ -112,32 +112,42 @@ class AclController extends Controller {
     
     public function saveRolePermission(Request $request) {
         try {
-          //$parent = $request->get('parent');
-            $permissions = $request->get('parent');
-            //dd($permissions);
-                 $role_id = $request->get('role_id');
-                 $perVal = array_values($permissions);
-                 //delete by role id
-                 $getParentData = $this->userRepo->deleteRecById($role_id);
-                 for($i=0;$i<count($perVal);$i++){
-                     $parentId = $perVal[$i];
-                      $perData = \Helpers::getByParent($parentId,'0')->toArray();
-                      array_push($perData , [ 'id'=> $parentId ]);
-                      foreach($perData as $val){
-                         $this->userRepo->addPermissionRole(
-                                 ['permission_id'=>$val['id'], 
-                                  'role_id'=>$role_id,
-                                  'updated_by' =>\Auth::user()->user_id,
-                                  'created_by' =>\Auth::user()->user_id,
-                                 ]);
-                     }
-                 }
-                
-                
-              
-                    
-                Session::flash('message', 'permission has been set!');
-                return redirect()->route('get_role');
+         
+             $parentPermission = $request->get('parent');
+             $Permission = $request->get('child')?$request->get('child'):[];
+             $role_id = $request->get('role_id')?$request->get('role_id'):[];
+             
+             
+             $permissionData = [];
+            if (count($Permission) > 0 || count($parentPermission) > 0) {
+                if (count($Permission) > 0) {
+                    foreach ($Permission as $permission_id) {
+                        $permissionRows = $this->userRepo->getChildByPermissionId($permission_id);
+                        foreach ($permissionRows as $perRow) {
+                            if ($perRow->count() > 0) {
+                                if ($perRow->is_display == 0) {
+                                    $permissionData[] = $perRow->id;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    $Permission = [];
+                }
+           $Permission_manul = [];
+                $permissionData = array_merge($parentPermission, $permissionData, $Permission, $Permission_manul);
+                // dd($permissionData);
+                //$collection->pluck('user_id')->all();
+                //Attach new permission
+                $result = $this->userRepo->givePermissionTo($role_id, $permissionData);
+                if ($result) {
+                    //Session::flash('message_growl', trans('backend_messages.permission.added.msg'));
+                    return redirect(route('get_role'));
+                }
+            } else {
+                return redirect()->back()->withErrors(trans('backend_messages.permission.one.msg'))->withInput();
+            }
+       
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

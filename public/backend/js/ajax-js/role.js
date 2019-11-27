@@ -12,7 +12,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: true,
+            searching: false,
             bSort: true,
             ajax: {
                "url": messages.get_role_list, // json datasource

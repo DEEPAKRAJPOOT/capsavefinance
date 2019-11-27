@@ -61,15 +61,26 @@
                                             
                                             @php $checked = ($match==1)?'checked':'' @endphp
                                             <label>
-                                                <input  type="checkbox" {{$checked}} name="parent[{{$ParentData['id']}}]"  id="permission_id[{{$ParentData['id']}}]" value="{{$ParentData['id']}}">{{$ParentData['display_name']}}
+                                                <input class="p-chk-{{$ParentData['id']}}"  type="checkbox" {{$checked}} name="parent[{{$ParentData['id']}}]"  id="permission_id[{{$ParentData['id']}}]" value="{{$ParentData['id']}}">{{$ParentData['display_name']}}
                                             </label>
                                             @php $childDatas = Helpers::getByParent($ParentData['id'],'1')->toArray() @endphp
                                             
                                             <ul>
                                                 @if($childDatas)
+                                               
+                                                
                                                 @foreach($childDatas as $key1 => $childData)
+                                               @php $checked1  = '' @endphp
+                                                 @php $rr1 = Helpers::checkRole($childData['id'], $role_id) @endphp
+                                                @if($rr1)
+                                                 
+                                                @if( $rr1->permission_id == $childData['id'] && $rr1->role_id == $role_id)
+                                                    @php  $checked1  = 'checked' @endphp
+                                                @endif
+                                                @endif
+                                                
                                                 <li class="show_div"><label>
-                                                        <input type="checkbox"  name="child[{{$childData['id']}}]" id="permission_id[{{$ParentData['id']}}][{{$childData['id']}}]" value="{{$childData['id']}}">{{$childData['display_name']}}
+                                                        <input class="c-chk-{{$ParentData['id']}} rere" {{$checked1}} type="checkbox"  name="child[{{$childData['id']}}]" id="permission_id[{{$ParentData['id']}}][{{$childData['id']}}]" value="{{$childData['id']}}">{{$childData['display_name']}}
                                                     </label>
                                                 </li>
                                                 @endforeach
@@ -112,5 +123,5 @@
 </script>
 
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/ajax-js/role.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/ajax-js/permission.js') }}" type="text/javascript"></script>
 @endsection

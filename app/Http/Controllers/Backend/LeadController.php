@@ -151,6 +151,8 @@ class LeadController extends Controller {
             $application = $this->appRepo->saveShaircase($dataArr); 
              
              Session::flash('is_accept', 1);
+             return redirect()->back();
+             
              } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

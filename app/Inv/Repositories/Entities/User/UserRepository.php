@@ -1167,7 +1167,32 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $role;
     }
     
-    
+    /**
+     * Give permission to role
+     *
+     * @param array $attributes
+     *
+     * @return object
+     */
+    public function givePermissionTo($roleid, $permission)
+    {
+
+        $role   = Role::where('id', $roleid)->first();
+        $result = $role->assignRolePermission($permission);
+
+        return $result ? : false;
+    }
     
    
+    /**
+     * Get all children of permmision
+     *
+     * @param type $permission_idgetChildByPermissionId
+     *
+     * @return permissions object
+     */
+    public function getChildByPermissionId($permission_id)
+    {
+        return PermissionModel::getChildByPermissionId($permission_id);
+    }
 }
