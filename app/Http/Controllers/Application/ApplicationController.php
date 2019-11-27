@@ -115,8 +115,7 @@ class ApplicationController extends Controller
                 //Add application workflow stages
                 $appId = $arrFileData['app_id']; 
                 Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
-                $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->user_id);
-                dd('xxxxxxxx', $appId, $toUserId, Auth::user()->user_id);
+                $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->user_id);                
                 if ($toUserId) {
                    Helpers::assignAppToUser($toUserId, $appId);
                 }
@@ -124,12 +123,12 @@ class ApplicationController extends Controller
             }
             else {
                //Add application workflow stages 
-              ///// Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+               Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            /////Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+            Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }

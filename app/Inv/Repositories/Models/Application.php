@@ -2,6 +2,7 @@
 
 namespace App\Inv\Repositories\Models;
 
+use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -290,5 +291,19 @@ class Application extends Model
                 ->first();
                        
         return ($appData ? $appData : null);        
-    }    
+    }
+
+    /**
+     * Count total numbers of applications
+     * 
+     * @param integer $user_id
+     * @return integer
+     */
+    public static function getAllAppsByUserId($user_id)
+    {
+        $appData = self::select('app.*')
+                ->where('app.user_id', $user_id)
+                ->get();
+        return $appData ? $appData : [];
+    }
 }

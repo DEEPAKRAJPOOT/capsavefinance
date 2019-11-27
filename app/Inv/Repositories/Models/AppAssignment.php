@@ -137,6 +137,18 @@ class AppAssignment extends BaseModel
 
         return ($rowUpdate ? $rowUpdate : false);
     }
+    
+    /**
+     * Get Application assign data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     */
+    public static function getAppAssignmentData ($whereCondition=[])
+    {
+        $assignData = self::where($whereCondition)->first();
+        return $assignData ? $assignData : false;
+    }
   
 }
   

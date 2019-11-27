@@ -127,6 +127,24 @@ class WfStage extends BaseModel
                 ->first();
         return $appData ? $appData : null;
     }
+    
+    
+    /**
+     * Get Workflow Detail By Order No
+     * 
+     * @param integer $wf_order_no
+     * @param integer $prgm_id
+     * @return mixed
+     */
+    public static function getWfDetailByOrderNo($wf_order_no, $prgm_id=1)
+    {
+        $arr = self::from('wf_stage as wf')
+            ->select('wf.*')
+            ->where('wf.prgm_id', $prgm_id)
+            ->where('wf.order_no', $wf_order_no)
+            ->first();
+        return ($arr ? $arr : null);
+    }    
 }
   
 
