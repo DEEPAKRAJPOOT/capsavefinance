@@ -31,28 +31,22 @@ class CibilController extends Controller
      */
     public function getPromoterCibilRequest(CibilApi $CibilApi, Request $request)
     {      
-        //$biz_owner_id = 1;
         $biz_owner_id = $request->get('biz_owner_id');
-
         $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($biz_owner_id);
         $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
         $responce =  $CibilApi->getPromoterCibilRequest($arrOwnerData);
-       // dd($responce);
-      //  $file_name = 'cibil.txt';
-       // File::put(storage_path('app/public/cibil').'/'.$file_name, $responce);
-        //$jsonData = json_encode($responce); 
-        $new = simplexml_load_string($responce); 
-        // Convert into json 
-        $con = json_encode($new); 
-        // Convert into associative array 
-        $newArr = json_decode($con, true); 
-        
-        $cibilScore = '0';
-        if(!empty($newArr['INDV-REPORTS']['INDV-REPORT']['SCORES']))
-        {
-            $cibilScore = $newArr['INDV-REPORTS']['INDV-REPORT']['SCORES']['SCORE'][0]['SCORE-VALUE'];
+        $p = xml_parser_create('utf-8');
+        xml_parse_into_struct($p, $responce, $resp);
+        xml_parser_free($p);
+        $result = [];
+        foreach ($resp as $key => $value) {
+            if ($value['type'] == 'complete') {
+                $result[strtolower($value['tag'])] = $value['value'] ?? '';
+            }
         }
-        $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => json_encode($responce),'status' => 0,'created_by' => Auth::user()->user_id]);
+        $result['content'] = base64_encode($result['content']);
+        $cibilScore =  $result['scores'];
+        $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => $result['content'],'status' => 0,'created_by' => Auth::user()->user_id]);
         if ($createApiLog) {
                 $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
                                             'biz_id' =>   $arrOwnerData['biz_id'],
@@ -78,26 +72,18 @@ class CibilController extends Controller
 
     }
 
+   
+
 
     function downloadPromoterCibil(Request $request)
     {
-
         $biz_owner_id = $request->get('biz_owner_id');
-        //$biz_owner_id = 1;
         $arrData  = BizApi::getPromoterCibilData($biz_owner_id);
-       
         if(empty($arrData)){
-                return response()->json(['message' =>'Please Pull the CIBIL Score to view the report.','status' => 0, 'cibilScoreData' => 'Please Pull the CIBIL Score to view the report.']);
+                return response()->json(['message' =>'Error','status' => 0, 'cibilScoreData' => 'Please Pull the CIBIL Score to view the report.']);
         }else{
-              
-                $arrCibilScoreData = json_decode($arrData['res_file'], true);
-
-                $new = simplexml_load_string($arrCibilScoreData); 
-                // Convert into json 
-                $con = json_encode($new); 
-                // Convert into associative array 
-                $newArr = json_decode($con, true); 
-                return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'cibilScoreData' => $newArr]);
+                $arrCibilScoreData = $arrData['res_file'];
+                return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'cibilScoreData' => $arrCibilScoreData]);
        }
     }
 

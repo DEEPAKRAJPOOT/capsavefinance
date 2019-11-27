@@ -17,27 +17,28 @@ class NotesController extends Controller
        
     }
   
-    public function index()
+    public function index(Request $request)
     {
-        $app_id = 1;
+        $app_id = $request->get('app_id');
         $arrData = AppNote::showData($app_id);
-        return view('backend.notes.notes',compact('arrData'));
+        return view('backend.notes.notes',compact('arrData', 'app_id'));
     }
 
 
     public  function store(Request $request)
     {
         $arrData['note_data'] = $request->get('notesData');
+        $arrData['app_id'] = $request->get('app_id');
         $arrData['created_by'] = Auth::user()->user_id;
-        $arrData['app_id']= 1;
         AppNote::create($arrData);
         return response()->json(['message'=>'Note inserted successfully','status'=>1]);
     }
 
 
-    public function showNoteForm()
+    public function showNoteForm(Request $request)
     {
-        return view('backend.notes.notesForm');
+        $app_id = $request->get('app_id');
+        return view('backend.notes.notesForm', compact('app_id'));
     }
 
 
