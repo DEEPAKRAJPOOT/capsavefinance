@@ -1005,6 +1005,10 @@ jQuery.ajax({
                         $("#dynamicTitle"+data_id).html(firstVerify);
                         
                      }
+                     else if(data.status==2)
+                     {
+                          alert('Verification not found due to some stuck response from Api');
+                     } 
                      else
                      {
                          alert('Please verify '+showalert);
