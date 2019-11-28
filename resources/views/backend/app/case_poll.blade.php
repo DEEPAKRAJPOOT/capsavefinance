@@ -19,8 +19,10 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="btn-group btn-custom-group inline-action-btn" "="">
+                                        <!--
 							       <a href="#" data-toggle="modal" data-target="#exampleModal-cls" class="btn btn-pickup btn-sm">Pick up Case</a>
                                    <a href="#" data-toggle="modal" data-target="#myModal2" class="btn btn-pickup btn-sm">Assign Case</a>
+                                        -->
 							  </div>
                                     <table id="apppollMaster" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
@@ -29,8 +31,9 @@
                                                 <th>{{ trans('backend.app_list_head.app_id') }}</th>
                                                 <th>{{ trans('backend.app_list_head.name') }}</th>
                                                 <th>{{ trans('backend.app_list_head.anchor') }}</th>
-                                                <th>{{ trans('backend.app_list_head.user_type') }}</th>
+                                                <th>{{ trans('backend.app_list_head.user_type') }}</th>                                                
                                                 <th>{{ trans('backend.app_list_head.assignee') }}</th>
+                                                <th>{{ trans('backend.app_list_head.assigned_by') }}</th>
                                                 <th>{{ trans('backend.app_list_head.shared_detail') }}</th>
                                                 <th>{{ trans('backend.app_list_head.status') }}</th>
                                                 <th>{{ trans('backend.app_list_head.action') }}</th>

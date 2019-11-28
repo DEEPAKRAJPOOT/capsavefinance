@@ -149,6 +149,26 @@ class AppAssignment extends BaseModel
         $assignData = self::where($whereCondition)->first();
         return $assignData ? $assignData : false;
     }
+    
+    /**
+     * Get Application from user
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function getOrgFromUser($app_id)
+    {
+        $assignData = self::select(DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"), 
+                'from_r.name as from_role')
+                ->leftJoin('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
+                ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')                   
+                ->where('app_id', $app_id)
+                ->where('is_owner', '0')
+                ->orderBy('lead_assign_id', 'DESC')
+                ->first();
+        return $assignData ? $assignData : false;
+    }    
   
 }
   

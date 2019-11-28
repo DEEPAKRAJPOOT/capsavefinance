@@ -75,6 +75,7 @@
                                                 <th>{{ trans('backend.app_list_head.anchor') }}</th>
                                                 <th>{{ trans('backend.app_list_head.user_type') }}</th>
                                                 <th>{{ trans('backend.app_list_head.assignee') }}</th>
+                                                <th>{{ trans('backend.app_list_head.assigned_by') }}</th>
                                                 <th>{{ trans('backend.app_list_head.shared_detail') }}</th>
                                                 <th>{{ trans('backend.app_list_head.status') }}</th>
                                                 <th>{{ trans('backend.app_list_head.action') }}</th>
