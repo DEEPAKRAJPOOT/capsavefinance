@@ -190,7 +190,7 @@ class Business extends BaseModel
     }
 
     public function address(){
-        return $this->hasMany('App\Inv\Repositories\Models\BusinessAddress','biz_id','biz_id');
+        return $this->hasMany('App\Inv\Repositories\Models\BusinessAddress','biz_id','biz_id')->where('biz_owner_id', null);
     }
 
     public function gsts(){
@@ -320,6 +320,31 @@ class Business extends BaseModel
         }
 
         return true;
+    }
+
+    public function registeredAddress(){
+        return $this->hasOne('App\Inv\Repositories\Models\BusinessAddress','biz_id','biz_id')->where(['biz_owner_id'=>null, 'address_type'=>0]);
+    }
+
+    public function communicationAddress(){
+        return $this->hasOne('App\Inv\Repositories\Models\BusinessAddress','biz_id','biz_id')->where(['biz_owner_id'=>null, 'address_type'=>1]);
+    }
+
+
+    public function factoryAddress(){
+        return $this->hasOne('App\Inv\Repositories\Models\BusinessAddress','biz_id','biz_id')->where(['biz_owner_id'=>null, 'address_type'=>4]);
+    }
+
+    
+
+    public static function getEntityByBizId($biz_id)
+    {
+        $arrData = self::select('mst_biz_entity.entity_name','mst_biz_constitution.name')
+        ->leftjoin('mst_biz_entity', 'mst_biz_entity.id', '=', 'biz.entity_type_id')
+        ->leftjoin('mst_biz_constitution', 'mst_biz_constitution.id', '=', 'biz.biz_constitution')
+        ->where('biz.biz_id', $biz_id)
+        ->first();
+        return $arrData;
     }
 
 }
