@@ -8,11 +8,11 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Anchor</h3>
-            <small>Anchor List</small>
+            <h3>Manage Roles</h3>
+            <small>Role List</small>
             <ol class="breadcrumb">
                 <li><a href="#"><i class="mdi mdi-home"></i> Home</a></li>
-                <li class="active">Manage Anchor</li>
+                <li class="active">Manage Role</li>
             </ol>
         </div>
     </section>
@@ -36,17 +36,15 @@
             </div>-->
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
-                    @can('add_anchor_reg')
-                    <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_anchor_reg')}}" data-height="475px" data-width="100%" data-placement="top" >
+                    <a  data-toggle="modal" data-target="#addRoleFrm" data-url ="{{route('add_role')}}" data-height="420px" data-width="100%" data-placement="top" >
                         <button class="btn  btn-success btn-sm" type="button">
                             <span class="btn-label">
                                 <i class="fa fa-plus"></i>
                             </span>
-                            Add Anchor
+                            Add New Role
                         </button>
 
                     </a>
-                    @endcan
                 </div>
             </div>
           </div>     
@@ -80,15 +78,14 @@
                 <div class="row">
                 <div class="col-sm-12">
                                      <div class="table-responsive">
-                                    <table id="anchUserList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="RoleList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                                <th>Anchor ID</th>
-                                                <th>Anchor Name</th>
-                                                <th>Business Name</th>
-                                                <th>Email ID</th>
-                                                <th>Mobile</th>
-                                                <th>Created At</th>
+                                                <th>Sr No</th>
+                                                <th>Name</th>
+                                                <th>Description</th>
+                                                 <th>Active</th>
+                                                <th>Created On</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -109,15 +106,14 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor', 'modal-md')!!}
-{!!Helpers::makeIframePopup('editAnchorFrm','Edit Anchor Detail', 'modal-md')!!}
+{!!Helpers::makeIframePopup('addRoleFrm','Manage Role', 'modal-lg')!!}
 @endsection
 
 @section('jscript')
 <script>
 
     var messages = {
-        get_anch_user_list: "{{ URL::route('get_anch_user_list') }}",       
+        get_role_list: "{{ URL::route('get_role_list') }}",       
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
@@ -125,5 +121,5 @@
 </script>
 
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/ajax-js/role.js') }}" type="text/javascript"></script>
 @endsection

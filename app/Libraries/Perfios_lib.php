@@ -133,6 +133,10 @@ class Perfios_lib{
     		$result['message'] = "Response is not valid xml";
     		return $result;
     	}
+    	if ($method == SELF::GET_STMT) {
+    		$result['data'] = base64_encode($xml);
+    		return $result;
+    	}
     	$p = xml_parser_create();
 	    xml_parse_into_struct($p, $xml, $resp);
 	    xml_parser_free($p);

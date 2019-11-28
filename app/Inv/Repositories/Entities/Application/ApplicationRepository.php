@@ -302,4 +302,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::getUserApplications();
     }
 
+    /**
+     * function for get all anchor register user detail
+     * @return type
+     */
+     
+    public function getAllBusiness()
+    {
+      $result = Business::all();
+      dd($result);
+      return $result ?: false;
+    }
 }

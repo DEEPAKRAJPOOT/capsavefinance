@@ -241,7 +241,7 @@
     @section('scripts')
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#submit').on('click', function (event) {
+            $('#submit').on('click', function (event) {                
                 $('input.first_name').each(function () {
                     $(this).rules("add",
                             {
@@ -271,7 +271,8 @@
                     $(this).rules("add",
                             {
                                 required: true,
-                                number: true
+                                number: true,
+                                range: [0, 100]
                             })
                 });
 
@@ -301,7 +302,7 @@
                             {
                                 required: true
                             })
-                });
+                });        
                /* $('.privacy_chk').each(function () {
                     $(this).rules("add",
                             {
@@ -310,7 +311,7 @@
                 }); */
                 // test if form is valid 
                 if ($('form#signupForm').validate().form()) {
-                      var panCount = 0;
+                      var panCount = 0;                      
                       $(".pan_no").each(function(k,v){
                           panCount++;
                         var result =  $("#pan_verify"+panCount).text();
@@ -323,15 +324,17 @@
                              return false;
                         }
                         
-                    });
+                    });                    
                     var form = $("#signupForm");
+                    $('.isloader').show();
                     $.ajax({
                         type: "POST",
-                        url: '{{Route('promoter_detail_save')}}',
+                        url: '{{Route('front_promoter_detail_save')}}',
                         data: form.serialize(), // serializes the form's elements.
                         cache: false,
                         success: function (res)
                         {
+                            $('.isloader').hide();
                             if (res.status == 1)
                             {
                                 window.location.href = "{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
@@ -462,17 +465,18 @@
                         count++;
                     });
                         var bizId = $('input[name=biz_id]').val();
-                        var getRes = savePromoter(arr, bizId);
+                        var appId = $('input[name=app_id]').val();
+                        var getRes = savePromoter(arr, bizId, appId);
                 }
             });
         });
       ///////////////Promotor web service for pan verified start here//////////////////////////
        
       /* save promoter details after cin number api hit */
-      function  savePromoter(data, bizId)
+      function  savePromoter(data, bizId, appId)
       {
           
-            var data = {'data' : data, 'biz_id' : bizId};
+            var data = {'data' : data, 'biz_id' : bizId, 'app_id' : appId};
             jQuery.ajax({
                 url: "/application/promoter-save",
                 headers: {
@@ -507,13 +511,13 @@
        $(document).on('click','.promoter_pan_verify',function () {
       
             var count = $(this).attr('data-id');
+          
             var PAN = $("#pan_no"+count).val();
             var dataStore = {'pan': PAN,'_token': messages.token };
             var postData = dataStore;
             $('#pan_verify'+count).text('Waiting...');
              jQuery.ajax({
-            
-                url: messages.chk_user_pan_karza,
+              url: messages.chk_user_pan_karza,
                 method: 'post',
                 dataType: 'json',
                 data: postData,

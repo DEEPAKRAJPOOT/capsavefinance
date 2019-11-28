@@ -14,7 +14,10 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Models\Master\PermissionRole;
 use DB;
+
 class Helper extends PaypalHelper
 {
 
@@ -414,6 +417,23 @@ class Helper extends PaypalHelper
         }
     }
     
+     /**
+     * Get permission by Role id
+     * 
+     * @param integer $app_id
+     */
+    public static function getByParent($parentId,$isDisplay){
+        return Permission::getByParent($parentId, $isDisplay);
+    }
+     /**
+     * Get permission by Role id
+     * 
+     * @param integer $app_id
+     */
+    public static function checkRole($parentId,$role_id){
+        return PermissionRole::checkRole($parentId,$role_id);
+    }
+    
     /**
      * Redirect workflow stage next to completed stage
      * 
@@ -422,12 +442,47 @@ class Helper extends PaypalHelper
      */
     public static function getWfRedirectRoute($user_id)
     {
-        $appData = Application::getLatestApp($user_id);
-        $app_id = $appData ? $appData->app_id : 0;
-        $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
-        $wf_order_no = $last_completed_wf_stage->order_no;
-        $wf_data = WfStage::getNextWfStage($wf_order_no);
-        return $wf_data ? $wf_data->route_name : false;
+        $user = \Auth::user();
+        
+        $apps = Application::getAllAppsByUserId($user_id);        
+        if (count($apps) > 1) {
+            $appData = Application::getLatestApp($user_id);
+        } else if (count($apps) == 1){
+            $appData = $apps[0];
+        } else {
+            $appData = null;
+        }
+        $wf_order_no = 0;
+        $app_id = 0;
+        $redirectUrl = '';
+        $wf_stages = ['new_case', 'biz_info', 'promo_detail', 'doc_upload', 'app_submitted'];
+        if ($appData) {
+            $app_id = $appData ? $appData->app_id : 0;
+            $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
+            $wf_order_no = $last_completed_wf_stage->order_no;
+            $wf_data = WfStage::getNextWfStage($wf_order_no);            
+            if ($user && $user->user_type == '1' && in_array($wf_data['stage_code'], $wf_stages)) {
+                $redirectUrl = route($wf_data['route_name'], ['app_id' =>  $appData->app_id, 'user_id' =>  $appData->user_id, 'biz_id' => $appData->biz_id]);
+            }
+            
+        } else {
+            if (count($apps) == 0) {
+                $wfAppStageData = WfAppStage::getAppWfStage('biz_info', $user_id, $app_id);                
+                if ( !$wfAppStageData ) {
+                    $wf_data = WfStage::getNextWfStage($wf_order_no);                
+                    if ($user && $user->user_type == '1' && in_array($wf_data['stage_code'], $wf_stages)) {
+                        $redirectUrl = route($wf_data['route_name'], ['user_id' => $user_id]);
+                    }
+                }
+            }
+        }
+        
+        $wfRedirectData = [
+            'wf_order_no' => $wf_order_no,
+            'redirect_url'  => $redirectUrl
+        ];
+                
+        return $wfRedirectData;
     }
     
     /**
@@ -448,21 +503,31 @@ class Helper extends PaypalHelper
      * @param integer $to_userid
      * @param integer $app_id
      */
-    public static function assignAppToUser($to_userid, $app_id)
+    public static function assignAppToUser($to_userid, $app_id, $app_user_id=null)
     {
-        AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+        if (is_null($app_user_id)) {
+            $appData = Application::getAppData((int)$app_id);
+            $app_user_id = $appData->user_id;
+        }
+        AppAssignment::updateAppAssignById((int)$app_id, ['is_owner'=>0]);
         //update assign table
-        $dataArr = []; 
+        $dataArr = [];
         $dataArr['from_id'] = \Auth::user()->user_id;
         $dataArr['to_id'] = $to_userid;
         $dataArr['role_id'] = null;
-        $dataArr['assigned_user_id'] = null;
+        $dataArr['assigned_user_id'] = $app_user_id;
         $dataArr['app_id'] = $app_id;
+        
+        $whereCondition = $dataArr;
+        
         $dataArr['assign_status'] = '0';
-        $dataArr['sharing_comment'] = "comment";
+        $dataArr['sharing_comment'] = "";
         $dataArr['is_owner'] = 1;
-
-        AppAssignment::saveData($dataArr);        
+                        
+        $assignData = AppAssignment::getAppAssignmentData ($whereCondition);
+        if (!$assignData) {
+            AppAssignment::saveData($dataArr);
+        }
     }
     
     /**
@@ -484,7 +549,55 @@ class Helper extends PaypalHelper
      */
     public static function getUserInfo($user_id = null) {        
         $getUserInfo = User::getfullUserDetail($user_id);
-        return $getUserInfo;
+        return $getUserInfo; 
+    }
+
+
+    /**
+     * Check permission  
+     *      * 
+     * @param integer $user_id | default
+     */
+    public static function checkPermission($routePerm) {
+       
+
+        $user_id = \Auth::user()->user_id;        
+        $roleData = User::getBackendUser($user_id);
+
+        if ($roleData[0]->is_superadmin == 1) {
+            return true;
+        }
+        $role_id = $roleData[0]->id;
+        $prData = PermissionRole::getPermissionByRoleID($role_id)->toArray();
+        $routes = Permission::getPermissionByArr($prData)->toArray();
+        $check = in_array($routePerm, $routes);
+        return $check;
+       
+    }
+
+
+    
+    /**
+     * 
+     * @param type $wf_stage_code
+     * @param type $app_id
+     * @return int
+     */
+    public static function isWfStageCompleted($wf_stage_code, $app_id) {
+        $isWfStageCompleted = 0;
+        $wfData = WfStage::getWfDetailById($wf_stage_code);
+        if ($wfData) {
+            //$wf_stage_id = $wfData->wf_stage_id;
+            $wf_order_no = $wfData->order_no;
+            //$assignedRoleId = $wfData->role_id;
+            
+            $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
+            $app_wf_order_no = $last_completed_wf_stage ? $last_completed_wf_stage->order_no : 0;
+            if ($app_wf_order_no >= $wf_order_no) {
+                $isWfStageCompleted = 1;
+            }
+        }
+        return $isWfStageCompleted;
     }
   
 }

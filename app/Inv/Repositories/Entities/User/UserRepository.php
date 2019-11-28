@@ -1056,8 +1056,144 @@ class UserRepository extends BaseRepositories implements UserInterface
         public function getStateList() {
         $all_state = State::getStateList();        
         return $all_state ?: false;
-        }        
-        
+    }
+      
+      /**
+     *
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRoleList()
+    {
+        $role = Role::getRoleLists();
+        return $role;
+    }
+      
+      /**
+     * add role
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function addRole($roleData, $role_id)
+    {
+        $role = Role::addRole($roleData, $role_id);
+        return $role;
+    }
+    
+      
+      /**
+     * Get a role  by id
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRole($role_id)
+    {
+        $role = Role::getRole($role_id);
+        return $role;
+    }
+    
+     
+      /**
+     * Get a all permition list
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRoute()
+    {
+        $role = PermissionModel::getRoute();
+        return $role;
+    }
+    
+    
+      /**
+     * Get a all parent Route list
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getParaentRoute()
+    {
+        $role = PermissionModel::getParentRoute();
+        return $role;
+    }
+    
+     /**
+     * Delete a role by id
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function deleteRecById($role_id)
+    {
+        $role = PermissionRole::deleteRecById($role_id);
+        return $role;
+    }
+    
+     /**
+     * Add role
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function addPermissionRole($arr)
+    {
+        $role = PermissionRole::addPermissionRole($arr);
+        return $role;
+    }
+    
+    /**
+     * Give permission to role
+     *
+     * @param array $attributes
+     *
+     * @return object
+     */
+    public function givePermissionTo($roleid, $permission)
+    {
+
+        $role   = Role::where('id', $roleid)->first();
+        $result = $role->assignRolePermission($permission);
+
+        return $result ? : false;
+    }
+    
+   
+    /**
+     * Get all children of permmision
+     *
+     * @param type $permission_idgetChildByPermissionId
+     *
+     * @return permissions object
+     */
+    public function getChildByPermissionId($permission_id)
+    {
+        return PermissionModel::getChildByPermissionId($permission_id);
+    }   
         /**
          * function for assign lead
          * @param type $arrLeadAssign

@@ -43,8 +43,10 @@
     </div>
 
     <div class="container">
-        <div class="mt-4">
-            <div class="col-md-12 form-design ">
+        <div class="mt-4 ">
+            <div class="form-design">
+                <div class="card-body">
+            <div class="col-md-12">
 
                 @if(session()->has('message'))
                 <p class="alert alert-info">{{ Session::get('message') }}</p>
@@ -65,7 +67,7 @@
                     <div id="accordion" class="accordion d-table col-sm-12">
                         @foreach($requiredDocs as $key=>$data)
                         <div class="card card-color mb-0">
-                            <div class="card-header collapsed" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
+                            <div class="card-header" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
                                 <a class="card-title ">
                                     <b>{{ $data->document->doc_name }}</b>
                                 </a>
@@ -78,7 +80,7 @@
                                 </div>
 
                             </div>
-                            <div id="collapse{{ $data->app_doc_id }}" class="card-body collapse p-0" data-parent="#accordion">
+                            <div id="collapse{{ $data->app_doc_id }}" class="card-body collapse p-0 show" data-parent="#accordion">
 
                                 <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
                                     <tbody>
@@ -257,6 +259,8 @@
                     @endif
                 </div>
             </div>
+                </div>
+            </div>
         </div>
     </div>    
         @endsection
@@ -264,7 +268,6 @@
         @section('scripts')
         <script src="{{ url('frontend/assets/js/jquery.min.js') }}"></script>
         <script src="{{ url('frontend/assets/js/popper.min.js') }}"></script>
-        <script src="{{ url('frontend/assets/js/bootstrap.min.js') }}"></script>
         <script src="{{ url('frontend/assets/js/perfect-scrollbar.jquery.min.js') }}"></script>
         <script src="{{ url('frontend/assets/js/jsgrid.min.js') }}"></script>
         <script src="{{ url('frontend/assets/js/hoverable-collapse.js') }}"></script>

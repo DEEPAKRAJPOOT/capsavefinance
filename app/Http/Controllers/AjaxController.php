@@ -2682,4 +2682,20 @@ if ($err) {
         $applications = $dataProvider->getUserAppList($this->request, $appList);
         return $applications;
     }
+
+    public function getBusinessList(DataProviderInterface $dataProvider){
+        //$anchLeadList = $this->application->getAllBusiness();
+        //$users = $dataProvider->getBusinessList($this->request, $anchLeadList);
+        //return $users; 
+    }
+
+    /**
+     * get role list
+     * @param Request $request
+     */ 
+    public function getRoleLists(DataProviderInterface $dataProvider) {
+       $anchRoleList = $this->userRepo->getRoleList();
+       $role = $dataProvider->getRoleList($this->request, $anchRoleList);
+       return $role;
+    }
 }

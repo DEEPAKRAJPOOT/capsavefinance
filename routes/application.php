@@ -12,7 +12,7 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         ['prefix' => 'dashboard'],
         function () {
         Route::group(
-            ['middleware' => ['auth','CheckWorkflow']],
+            ['middleware' => ['auth']],   //,'CheckWorkflow'
             function () {
             Route::get(
                 '/',
@@ -50,9 +50,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
             
             Route::post('promoter-detail-save',
                 [
-                    'as' => 'promoter_detail_save',
+                    'as' => 'front_promoter_detail_save',
                     'uses' => 'Application\ApplicationController@updatePromoterDetail'
-            ]); Route::post('promoter-save',
+            ]); 
+            
+            Route::post('promoter-save',
                 [
                     'as' => 'promoter_save',
                     'uses' => 'Application\ApplicationController@savePromoter'

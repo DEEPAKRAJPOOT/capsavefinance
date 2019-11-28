@@ -50,6 +50,7 @@ class Role extends BaseModel
         'display_name',
         'description',
         'is_editable',
+        'is_active',
         'redirect_path',
         'is_front_login_allowed',
         'is_admin_login_allowed',
@@ -124,7 +125,7 @@ class Role extends BaseModel
      */
     public static function getRoleLists()
     {
-        $arrRoles = Role::where('is_editable', config('Inv_common.YES'));
+        $arrRoles = Role::where('is_editable', 1);
         return ($arrRoles ? : false);
     }
     
@@ -137,7 +138,7 @@ class Role extends BaseModel
      */
     public static function addRole($roleData, $role_id)
     {
-        $roleObj = self::updateOrCreate($role_id, $roleData);
+        $roleObj = self::updateOrCreate(['id'=>$role_id], $roleData);
         
         return ($roleObj ? : false);
     }

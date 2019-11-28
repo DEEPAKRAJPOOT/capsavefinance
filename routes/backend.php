@@ -57,9 +57,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'promoter_detail_save',
                     'uses' => 'Backend\ApplicationController@updatePromoterDetail'
             ]); 
-            Route::post('promoter-document-save', [
-                'as' => 'promoter_document_save',
-                'uses' => 'Backend\ApplicationController@promoterDocumentSave'
+             Route::post('promoter-detail-save',
+                [
+                    'as' => 'promoter_detail_save',
+                    'uses' => 'Backend\ApplicationController@updatePromoterDetail'
+            ]); 
+            Route::post('get-user-pan-response-karza', [
+                'as' => 'get_user_pan_response_karza',
+                'uses' => 'Backend\ApplicationController@getPanVerifyApi'
             ]);
             
             Route::get('documents', [
@@ -72,6 +77,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@saveDocument'
             ]);
             
+            Route::post('promoter-document-save', [
+                'as' => 'promoter_document_save',
+                'uses' => 'Backend\ApplicationController@promoterDocumentSave'
+            ]); 
             
             Route::post('application-save',
                 [
@@ -94,6 +103,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@finance_store'
             ]);
             
+            Route::get('fircu/index', [
+                'as' => 'backend_fircu_index',
+                'uses' => 'Backend\FiRcuController@index'
+            ]);
+
             Route::get('notes-from', [
                 'as' => 'backend_notes_from',
                 'uses' => 'Backend\NotesController@showNoteForm'
@@ -258,6 +272,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('financial_statement', [
                 'as' => 'financial_statement',
                 'uses' => 'Backend\CamController@uploadFinancialStatement'
+            ]);
+
+            Route::get('bank_report', [
+                'as' => 'bank_statement',
+                'uses' => 'Backend\CamController@getBankReport'
+            ]);
+            
+            Route::get('financial_report', [
+                'as' => 'financial_statement',
+                'uses' => 'Backend\CamController@getFinanceReport'
             ]);
 
 

@@ -27,12 +27,6 @@
         <li>
             <a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}"  class="active">Documents</a>
         </li>
-        <!--<li>
-                <a href="buyers.php">Buyers </a>
-        </li>-->
-        <!-- <li>
-                <a href="third-party.php">Third party</a>
-        </li> -->
     </ul>
     <div class="card mt-4">
         <div class="card-body">
