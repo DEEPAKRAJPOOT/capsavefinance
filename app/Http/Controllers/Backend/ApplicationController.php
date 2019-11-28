@@ -220,11 +220,20 @@ class ApplicationController extends Controller
                 
                 $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
                 $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+                $fileId = $appDocResponse->file_id;
+                $response = $this->docRepo->getFileByFileId($fileId);
             }
-            if ($appDocResponse) {
-                return $appDocResponse;
+            if ($response) {
+                return response()->json([
+                    'result' => $response, 
+                    'status' => 1, 
+                    'file_path' => $response->file_path 
+                ]);
             } else {
-                return false;
+                return response()->json([
+                    'result' => '', 
+                    'status' => 0 
+                ]);
             }
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
