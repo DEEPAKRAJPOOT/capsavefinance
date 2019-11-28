@@ -179,7 +179,8 @@ class ApplicationController extends Controller
       {
             $request  = $request->all();
             $result   = $this->userRepo->getOwnerAppRes($request);
-           
+          if( $result!='')
+          {
             if($result->karza->res_file!='[]')
             {
                 return response()->json(['res'=>$result->karza->res_file,'status' =>1,'type' =>$request['type']]); 
@@ -187,8 +188,12 @@ class ApplicationController extends Controller
             else {
                return response()->json(['status' =>0]);
             }
-           
-         
+          }
+          else
+          {
+              return response()->json(['status' =>2]);
+              
+          }
            
        }
     /**
