@@ -4,21 +4,15 @@
     <!-- partial -->
     <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
-		<li>
-			<a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Company Details</a>
-		</li>
-		<li>
-			<a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Promoter Details</a>
-		</li>
-		<li>
-			<a href="{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
-		</li>
-		<!--<li>
-			<a href="buyers.php">Buyers </a>
-		</li>-->
-		<!-- <li>
-			<a href="third-party.php">Third party</a>
-		</li> -->
+            <li>
+                <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Company Details</a>
+            </li>
+            <li>
+                <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}">Promoter Details</a>
+            </li>
+            <li>
+                <a href="{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}"  class="active">Documents</a>
+            </li>
 	</ul>
 
 

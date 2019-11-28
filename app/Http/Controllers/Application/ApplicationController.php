@@ -102,6 +102,7 @@ class ApplicationController extends Controller
     public function showPromoterDetail(Request $request)
     {
         $biz_id = $request->get('biz_id');
+        $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
@@ -114,11 +115,20 @@ class ApplicationController extends Controller
        {
            return  redirect()->back();
        }
-       return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
-           'cin_no' => $getCin->cin,
-           'ownerDetails' => $ownerDetail,
-           'biz_id' => $biz_id
-        ]);
+        if($editFlag == 1) { 
+            return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
+                'cin_no' => $getCin->cin,
+                'ownerDetails' => $ownerDetail,
+                'biz_id' => $biz_id
+            ]);
+        }
+        else {
+            return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
+                'cin_no' => $getCin->cin,
+                'ownerDetails' => $ownerDetail,
+                'biz_id' => $biz_id
+            ]);
+        }
     } 
 
     /**
@@ -182,6 +192,7 @@ class ApplicationController extends Controller
     public function showDocument(Request $request)
     {
         $appId = $request->get('app_id');
+        $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
         $appData = $this->appRepo->getAppDataByAppId($appId);
         
@@ -197,11 +208,19 @@ class ApplicationController extends Controller
         else {
             return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
-
-        return view('frontend.application.document')->with([
-            'requiredDocs' => $requiredDocs,
-            'documentData' => $docData
-        ]);
+        if($editFlag == 1) {
+            return view('frontend.application.update_document')->with([
+                'requiredDocs' => $requiredDocs,
+                'documentData' => $docData
+            ]); 
+        }
+        else {
+            return view('frontend.application.document')->with([
+                'requiredDocs' => $requiredDocs,
+                'documentData' => $docData
+            ]); 
+            
+        }
     } 
     
     /**

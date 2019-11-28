@@ -1,20 +1,24 @@
-@extends('layouts.guest')
-@section('content')
+@extends('layouts.app')
 
+@section('content')
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
         <li>
-            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Company Details</a>
+            <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Company Details</a>
         </li>
         <li>
-            <a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Promoter Details</a>
+            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}">Promoter Details</a>
         </li>
         <li>
-            <a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}"  class="active">Documents</a>
+            <a href="{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}"  class="active">Documents</a>
         </li>
     </ul>
     <div class="card mt-4">
         <div class="card-body">
+            
+            @if(session()->has('message'))
+            <p class="alert alert-info">{{ Session::get('message') }}</p>
+            @endif
 
             @foreach($errors->all() as $error)
             <span class="text-danger error">{{ $error }}</span>
@@ -94,13 +98,14 @@
                                 <div class="modal-header">
                                     <button type="button" class="close close-btns" data-dismiss="modal">&times;</button>
                                 </div>
-                                <form id="bank-document" method="POST" action="{{ Route('document_save') }}" enctype="multipart/form-data">
+                                <form id="bank-document" method="POST" action="{{ Route('document-save') }}" enctype="multipart/form-data">
                                     <!-- Modal body -->
                                     @csrf
                                     <input type="hidden" name="dir" value="{{ $data->document->doc_name }}">
-                                    <input type="hidden" name="doc_id" value="{{ $data->doc_id }}">
-                                    <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
-                                    <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
+                                    <input type="hidden" name="docId" value="{{ $data->doc_id }}">
+                                    <input type="hidden" name="bizId" value="{{ request()->get('biz_id') }}">
+                                    <input type="hidden" name="appId" value="{{ request()->get('app_id') }}">
+                                    
                                     <div class="modal-body text-left">
                                         @if($data->doc_id == '4')
                                         <div class="form-group">
@@ -190,7 +195,7 @@
 
                     <div class="d-flex btn-section ">
                         <div class="col-md-4 ml-auto text-right">
-                            <form method="POST" action="{{ Route('application_save') }}">
+                            <form method="POST" action="{{ Route('front_application_save') }}">
                                 @csrf
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
