@@ -6,7 +6,22 @@ function uploadFile(uploadId, ownerId, docId)
     $('.isloader').show();
     var biz_id  = $('#biz_id').val();
     var app_id  = $('#app_id').val();
-    var file  = $("#panfile"+uploadId)[0].files[0];
+    if(docId == 2) { 
+          var file  = $("#panfile"+uploadId)[0].files[0];
+    }
+    else if(docId == 31) { 
+          var file  = $("#dlfile"+uploadId)[0].files[0];
+    }
+    else if(docId == 30) { 
+         var file  = $("#voterfile"+uploadId)[0].files[0];
+    }
+    else if(docId == 32) { 
+         var file  = $("#passportfile"+uploadId)[0].files[0];
+    }
+    else if(docId == 22) { 
+        var file  = $("#downloadphoto"+uploadId)[0].files[0];
+    }
+    
     var extension = file.name.split('.').pop().toLowerCase();
     var datafile = new FormData();
     
@@ -31,6 +46,38 @@ function uploadFile(uploadId, ownerId, docId)
  
         success: function(r){
            $(".isloader").hide();
+           
+           if(r.status==1)
+           {
+            if(docId == 2) { 
+                  $("#pandown"+uploadId).css({'display':'inline'});
+                  $("#pandown"+uploadId).attr('href',r.result.file_path);
+            }
+            else if(docId == 31) { 
+                 $("#dldown"+uploadId).css({'display':'inline'});
+                 $("#dldown"+uploadId).attr('href',r.result.file_path);
+            }
+            else if(docId == 30) { 
+                 $("#voterdown"+uploadId).css({'display':'inline'});
+                $("#voterdown"+uploadId).attr('href',r.result.file_path);
+            }
+            else if(docId == 32) { 
+                 $("#passdown"+uploadId).css({'display':'inline'});
+                $("#passdown"+uploadId).attr('href',r.result.file_path);
+            }
+            else if(docId == 22) { 
+                 $("#photodown"+uploadId).css({'display':'inline'});
+                $("#photodown"+uploadId).attr('href',r.result.file_path);
+            }
+
+             
+           }
+           else
+           {
+               
+               alert('Something wrong! Please try again');
+           }
+          
             //obj = result.result.directors;
             //var count = 0;
 //            alert(r);
