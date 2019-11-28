@@ -1,7 +1,7 @@
 /* check pan card verify before upload pan*/
 
 
-function uploadFile(uploadId, docId)
+function uploadFile(uploadId, ownerId, docId)
 {
     $('.isloader').show();
     var biz_id  = $('#biz_id').val();
@@ -11,6 +11,7 @@ function uploadFile(uploadId, docId)
     var datafile = new FormData();
     
     datafile.append('_token', messages.token );
+    datafile.append('owner_id', ownerId);
     datafile.append('biz_id', biz_id);
     datafile.append('app_id', app_id);
     datafile.append('doc_id', docId);
