@@ -23,17 +23,21 @@
                 <div class="col-sm-12">
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;">
-                            <a  data-toggle="modal" data-target="#uploadAnchLead" data-url ="{{route('add_anchor_lead')}}" data-height="250px"  data-width="100%" data-placement="top" >
+                        @can('add_anchor_lead')   
+                        <a  data-toggle="modal" data-target="#uploadAnchLead" data-url ="{{route('add_anchor_lead')}}" data-height="250px"  data-width="100%" data-placement="top" >
                                 <button class="btn  btn-success btn-sm" type="button"> <span class="btn-label">
                                         <i class="fa fa-plus"></i>
                                     </span>
                                     Upload Anchor User
-                            </a></button>
+                            </a>
+                        @endcan
+                        </button>
                         </div>
                     </div>
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
-                            <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_manual_anchor_lead')}}" data-height="400px" data-width="100%" data-placement="top" >
+                        @can('add_manual_anchor_lead')    
+                        <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_manual_anchor_lead')}}" data-height="400px" data-width="100%" data-placement="top" >
                                 <button class="btn  btn-success btn-sm" type="button">
                                     <span class="btn-label">
                                         <i class="fa fa-plus"></i>
@@ -41,6 +45,7 @@
                                     Add Anchor Lead
                                 </button>
                             </a>
+                        @endcan
                         </div>
                     </div>
                 </div>     

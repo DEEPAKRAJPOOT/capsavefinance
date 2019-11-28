@@ -132,19 +132,37 @@ Route::group(
         ]
     ); 
     
-    Route::post('get-business-list',
+    Route::post(
+        'get-business-list',
         [
         'as' => 'get_business_list',
         'uses' => 'AjaxController@getBusinessList'
-        ]); 
-//    Route::get(
-//        'check-exist-user',
-//        [
-//        'as' => 'check_exist_user',
-//        'uses' => 'AjaxController@checkExistUser'
-//        ]
-//    );
+        ]
+    ); 
+    /*Route::get(
+        'check-exist-user',
+        [
+        'as' => 'check_exist_user',
+        'uses' => 'AjaxController@checkExistUser'
+        ]
+    );*/
+
+    Route::post(
+        'get-user-application',
+        [
+        'as' => 'ajax_user_app_list',
+        'uses' => 'AjaxController@getUserApplications'
+        ]
+    );
     
+    Route::post(
+        'get-role-list',
+        [
+        'as' => 'get_role_list',
+        'uses' => 'AjaxController@getRoleLists'
+        ]
+    );
+
 });
 
 

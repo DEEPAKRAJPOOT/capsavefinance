@@ -295,6 +295,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /**
+     * Get User Applications for Application list data tables for frontend
+     */
+    public function getUserApplications() 
+    {
+        return Application::getUserApplications();
+    }
+
+    /**
      * function for get all anchor register user detail
      * @return type
      */
@@ -305,5 +313,4 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       dd($result);
       return $result ?: false;
     }
-    
 }

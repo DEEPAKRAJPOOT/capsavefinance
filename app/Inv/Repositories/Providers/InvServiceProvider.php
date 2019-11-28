@@ -38,5 +38,9 @@ class InvServiceProvider extends ServiceProvider
             'App\Inv\Repositories\Contracts\DocumentInterface',
             'App\Inv\Repositories\Entities\Document\DocumentRepository'
         );
+         $this->app->bind(
+            'App\Inv\Repositories\Contracts\AclInterface',
+            'App\Inv\Repositories\Entities\Acl\AclRepository'
+        );
     }
 }

@@ -25,6 +25,7 @@ class ApplicationController extends Controller
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
+        $this->middleware('checkBackendLeadAccess');
     }
     
     /**
@@ -196,6 +197,7 @@ class ApplicationController extends Controller
             $arrFileData = $request->all();
             $docId = $request->get('doc_id'); //  fetch document id
             $appId = $request->get('app_id'); //  fetch document id
+            $OwnerId = $request->get('owner_id'); //  fetch document id
             $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
             
             $userFile = $this->docRepo->saveFile($uploadData);
@@ -505,8 +507,10 @@ class ApplicationController extends Controller
 
 
             $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
-           Session::flash('is_accept', 1);
+            Session::flash('is_accept', 1);
             return redirect()->back();
+           
+            //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
            
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

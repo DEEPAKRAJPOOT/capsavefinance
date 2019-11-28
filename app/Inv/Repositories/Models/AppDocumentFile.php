@@ -37,6 +37,7 @@ class AppDocumentFile extends Authenticatable
      */
     protected $fillable = [
         'app_id',
+        'biz_owner_id',
         'doc_id',
         'doc_name',
         'finc_year',

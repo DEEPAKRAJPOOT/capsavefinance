@@ -235,11 +235,16 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($app) use ($request) {
-                        //return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"500px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\"><i class=\"fa fa-edit\"></a>
-                        //<a href="#" data-toggle="modal" data-target="#appStatusFrame" title="Change Status" data-url="' . route('change_app_status', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id') ]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-outdent" aria-hidden="true"></i></a>";
-                    return '<div class="d-flex inline-action-btn"><a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>
-									   <a href="#" title="Assign Case" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('assign_case', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> </div>
-                            <a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Send next stage</a> </div>';
+                        $act = '';
+                        if(Helpers::checkPermission('add_app_note')){
+                            $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
+                        }
+                        if(Helpers::checkPermission('send_case_confirmBox')){
+                            $act = $act . '&nbsp;<a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                           
+                        }
+                        return $act;
+                                      
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -260,7 +265,84 @@ class DataRenderer implements DataProviderInterface
                     
                 })
                 ->make(true);
-    } 
+    }
+
+    /*      
+     * Get user application list for frontend
+     */
+    public function getUserAppList(Request $request, $app)
+    {
+        return DataTables::of($app)
+                ->rawColumns(['app_id', 'action', 'status'])
+                ->addColumn(
+                    'app_id',
+                    function ($app) {
+                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        return $app->app_id;
+                        //return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                    }
+                )
+                ->addColumn(
+                    'biz_entity_name',
+                    function ($app) {                        
+                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                })
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($app) {                        
+                     if($app->anchor_id){
+                    $userInfo=User::getUserByAnchorId($app->anchor_id);
+                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                    }else{
+                      $achorName='';  
+                    }                    
+                    return $achorName;
+                })
+                ->addColumn(
+                    'applied_loan_amount',
+                    function ($app) {
+                    return $app->loan_amt ? number_format($app->loan_amt) : '';
+                })                
+                ->addColumn(
+                    'created_at',
+                    function ($app) {                    
+                    return $app->created_at ? date('d/m/Y', strtotime($app->created_at)) : '';
+                })
+                ->addColumn(
+                    'status',
+                    function ($app) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(($app->status == 1)? "Completed":"Incomplete").'</label>';
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($app) use ($request) {
+                        return '<div class="d-flex inline-action-btn">
+                                <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View Application</a>
+                                <a href="#" title="View Offered Limit" data-toggle="modal" data-target="#ViewOfferedLimit" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Offered Limit</a>
+                            </div>';
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    if ($request->get('is_status') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_status');
+                            $query->where('app.status', $is_assigned);
+                        });
+                    }
+                    
+                })
+                ->make(true);
+    }  
     
     /*
      * get application pool
@@ -314,9 +396,14 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($app) {
-                    return  "<div class=\"d-flex inline-action-btn\">
-            <a  data-toggle=\"modal\" data-target=\"#pickLead\" data-url =\"" . route('confirm_box', ['user_id' => $app->user_id , 'app_id' => $app->app_id] ) . "\" data-height=\"200px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\">Pickup Case</a>
-    <div>";
+                        $act = '';
+                     if(Helpers::checkPermission('confirm_box')){
+                        $act = "<div class=\"d-flex inline-action-btn\">
+                        <a  data-toggle=\"modal\" data-target=\"#pickLead\" data-url =\"" . route('confirm_box', ['user_id' => $app->user_id , 'app_id' => $app->app_id] ) . "\" data-height=\"200px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\">Pickup Case</a>
+                <div>";
+                    }
+                     return $act;
+                   
               }
                 )
                 ->filter(function ($query) use ($request) {
@@ -384,8 +471,11 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    //$view="<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-eye\"></a>";
-                    return  "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></a>";
+                       $act = '';
+                     if(Helpers::checkPermission('edit_anchor_reg')){
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></a>";
+                     }
+                     return $act;
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -495,84 +585,84 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
     
-    public function getBusinessList(Request $request, $user)
+   
+    
+    public function getRoleList(Request $request, $role)
     {
         
-        return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned', 'status'])
+        return DataTables::of($role)
+                ->rawColumns(['role_id', 'checkbox', 'action', 'active','assigned'])
+                
                 ->addColumn(
-                    'id',
-                    function ($user) {
-                    $link = '000'.$user->anchor_user_id;
-                        //return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
-                        
-                    }
-                )
+                    'role_id',
+                    function ($role) {
+                    $link = '000'.$role->id;
+                       return "<a id=\"" . $role->user_id . "\" href=\"#\" rel=\"tooltip\"   >$link</a> ";
+                    })
+                    
                 ->editColumn(
                         'name',
-                        function ($user) {
-                    $full_name = $user->name.' '.$user->l_name;
-                    return $full_name;
+                        function ($role) {
+                    $name = $role->name;
+                    return $name;
                     
-                })               
+                })              
                 ->editColumn(
-                    'biz_name',
-                    function ($user) {
-                    $biz_name = $user->biz_name;
-                    return $biz_name;
+                    'description',
+                    function ($role) {
+                    $disc = $role->description; 
+                    return $disc;
 
                 })
-                ->editColumn(
-                    'email',
-                    function ($user) {
-                    return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
+                 ->editColumn(
+                    'active',
+                    function ($role) {
+                    return ($role->is_active == '0')?'<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">In Active</label>
+                                             
+                                          </div></b>':'<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">Active</label>
+                                             
+                                          </div></b>';
 
                 })
-                ->editColumn(
-                    'phone',
-                    function ($user) {
-                    $achorId = $user->phone; 
-                    return $achorId;
-                })
+                
                 ->editColumn(
                     'created_at',
-                    function ($user) {
-                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+                    function ($role) {
+                    return ($role->created_at)? date('d-M-Y',strtotime($role->created_at)) : '---';
 
                 })
+                
                 ->addColumn(
-                    'status',
-                    function ($users) {
-                    if($users->is_registered==1){
-                       return "<label class=\"badge badge-success current-status\">Registered</label>";
-                    } else {
-                        return "<label class=\"badge badge-warning current-status\">Unregistered</label>";
-                    }
-                    }
-                )
-                ->filter(function ($query) use ($request) {
-                    if ($request->get('by_email') != '') {
-                        if ($request->has('by_email')) {
-                            $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
-                            });
+                    'action',
+                    function ($role) {
+                    return  "<a  data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
+                    })
+                    ->filter(function ($query) use ($request) {
+                        if ($request->get('by_email') != '') {
+                            if ($request->has('by_email')) {
+                                $query->where(function ($query) use ($request) {
+                                    $by_nameOrEmail = trim($request->get('by_email'));
+                                    $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                    ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
+                                    //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
+                                    ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                });
+                            }
                         }
-                    }
-                    if ($request->get('is_assign') != '') {
-                        if ($request->has('is_assign')) {
-                            $query->where(function ($query) use ($request) {
-                                $by_status = (int) trim($request->get('is_assign'));
-                                
-                                $query->where('users.is_assigned', 'like',
-                                        "%$by_status%");
-                            });
+                        if ($request->get('is_assign') != '') {
+                            if ($request->has('is_assign')) {
+                                $query->where(function ($query) use ($request) {
+                                    $by_status = (int) trim($request->get('is_assign'));
+                                    
+                                    $query->where('users.is_assigned', 'like',
+                                            "%$by_status%");
+                                });
+                            }
                         }
-                    }
-                })
-                ->make(true);
+                    })
+                    ->make(true);
+                
     }
 }

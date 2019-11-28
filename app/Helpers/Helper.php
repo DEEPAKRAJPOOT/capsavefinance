@@ -14,7 +14,10 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\WfStage;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Models\Master\PermissionRole;
 use DB;
+
 class Helper extends PaypalHelper
 {
 
@@ -331,6 +334,7 @@ class Helper extends PaypalHelper
 
         $inputArr['app_id']  = (isset($attributes['doc_id'])) ? $attributes['doc_id'] : 0;   
         $inputArr['doc_id']  = (isset($attributes['doc_id'])) ? $attributes['doc_id'] : 0   ;  
+        $inputArr['biz_owner_id']  = (isset($attributes['owner_id'])) ? $attributes['owner_id'] : 0   ;  
         $inputArr['doc_name']  = (isset($attributes['doc_name'])) ? $attributes['doc_name'] : ''; 
         $inputArr['finc_year']  = (isset($attributes['finc_year'])) ? $attributes['finc_year'] : ''; 
         $inputArr['gst_month']  = (isset($attributes['gst_month'])) ? $attributes['gst_month'] : ''; 
@@ -412,6 +416,23 @@ class Helper extends PaypalHelper
         } else {
             return false;
         }
+    }
+    
+     /**
+     * Get permission by Role id
+     * 
+     * @param integer $app_id
+     */
+    public static function getByParent($parentId,$isDisplay){
+        return Permission::getByParent($parentId, $isDisplay);
+    }
+     /**
+     * Get permission by Role id
+     * 
+     * @param integer $app_id
+     */
+    public static function checkRole($parentId,$role_id){
+        return PermissionRole::checkRole($parentId,$role_id);
     }
     
     /**
@@ -529,8 +550,33 @@ class Helper extends PaypalHelper
      */
     public static function getUserInfo($user_id = null) {        
         $getUserInfo = User::getfullUserDetail($user_id);
-        return $getUserInfo;
+        return $getUserInfo; 
     }
+
+
+    /**
+     * Check permission  
+     *      * 
+     * @param integer $user_id | default
+     */
+    public static function checkPermission($routePerm) {
+       
+
+        $user_id = \Auth::user()->user_id;        
+        $roleData = User::getBackendUser($user_id);
+
+        if ($roleData[0]->is_superadmin == 1) {
+            return true;
+        }
+        $role_id = $roleData[0]->id;
+        $prData = PermissionRole::getPermissionByRoleID($role_id)->toArray();
+        $routes = Permission::getPermissionByArr($prData)->toArray();
+        $check = in_array($routePerm, $routes);
+        return $check;
+       
+    }
+
+
     
     /**
      * 
