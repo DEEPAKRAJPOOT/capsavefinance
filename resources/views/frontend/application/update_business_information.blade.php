@@ -13,14 +13,7 @@
 		<li>
 			<a href="{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
 		</li>
-		<!--<li>
-			<a href="buyers.php">Buyers </a>
-		</li>-->
-		<!-- <li>
-			<a href="third-party.php">Third party</a>
-		</li> -->
 	</ul>
-
 
 
 <div class="row grid-margin mt-3">
@@ -28,9 +21,7 @@
 		<div class="card">
 			<div class="card-body">
 				<div class="form-fields">
-					<div class="col-md-12">
-						<h5 class="card-title form-head">Business Details</h5>
-					</div>	
+					<h5 class="card-title form-head mt-0">Business Details</h5>
 				</div>	
 				<form id="business_information_form" method="POST" action="{{route('business_information_save',['biz_id'=>request()->get('biz_id'), 'app_id'=>request()->get('app_id')])}}" onsubmit="return checkValidation();">
 				@csrf
@@ -40,7 +31,6 @@
 				<input type="hidden" name="pan_api_res" value="">
 				<div class=" form-fields">
 					<div class="form-sections">
-						<div class="col-md-12">
 							<div class="row">
 								<div class="col-md-4">
 									<div class="form-group">
@@ -203,314 +193,278 @@
 										</div>
 									</div>
 								</div>
-							</div>
 						</div>
-
 						<div class="form-sections">
 							<div class="row">
 								<div class="col-md-12">
-									<div class="col-md-12">
-										<h5 class="form-head">Registered Address</h5>
-									</div>
+									<h5 class="form-head">Registered Address</h5>
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-group">
+												<label for="txtCreditPeriod">Address
+													<span class="mandatory">*</span>
+												</label>
+												<input type="text" name="biz_address" value="{{old('biz_address', $business_info->address[0]->addr_1)}}" class="form-control" tabindex="12" placeholder="Enter Your Address" maxlength="100" required>
+												@error('biz_address')
+                                                    <span class="text-danger error">{{ $message }}</span>
+                                                @enderror
+											</div>
+										</div>
+										<div class="col-md-3">
+											<div class="form-group password-input">
+												<label for="txtPassword">State
+													<span class="mandatory">*</span>
+												</label>
+												<select class="form-control" name="biz_state" tabindex="13" required>
+                                                    <option value=""> Select State</option>
+                                                    @foreach($states as $key => $state)
+                                                    <option value="{{$state->id}}" {{(old('biz_state', $business_info->address[0]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('biz_state')
+                                                    <span class="text-danger error">{{ $message }}</span>
+                                                @enderror
+											</div>
+										</div>
+										<div class="col-md-3">
+											<div class="form-group">
+												<label for="txtEmail">City
+													<span class="mandatory">*</span>
+												</label>
+												<input type="text" name="biz_city" value="{{old('biz_city', $business_info->address[0]->city_name)}}" class="form-control" tabindex="14" placeholder="Enter City Name" maxlength="50" required>
+												@error('biz_city')
+                                                    <span class="text-danger error">{{ $message }}</span>
+                                                @enderror
+											</div>
+										</div>
+										<div class="col-md-2">
 
-									<div class="col-md-12">
-										<div class="row">
-											<div class="col-md-4">
-												<div class="form-group">
-													<label for="txtCreditPeriod">Address
-														<span class="mandatory">*</span>
-													</label>
-													<input type="text" name="biz_address" value="{{old('biz_address', $business_info->address[0]->addr_1)}}" class="form-control" tabindex="12" placeholder="Enter Your Address" maxlength="100" required>
-													@error('biz_address')
-                                                        <span class="text-danger error">{{ $message }}</span>
-                                                    @enderror
-												</div>
+											<div class="form-group password-input">
+												<label for="txtPassword">Pin Code
+													<span class="mandatory">*</span>
+												</label>
+												<input type="text" name="biz_pin" value="{{old('biz_pin', $business_info->address[0]->pin_code)}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" minlength="6" maxlength="6" required>
+												@error('biz_pin')
+                                                    <span class="text-danger error">{{ $message }}</span>
+                                                @enderror
 											</div>
-											<div class="col-md-3">
-												<div class="form-group password-input">
-													<label for="txtPassword">State
-														<span class="mandatory">*</span>
-													</label>
-													<select class="form-control" name="biz_state" tabindex="13" required>
-                                                        <option value=""> Select State</option>
-                                                        @foreach($states as $key => $state)
-                                                        <option value="{{$state->id}}" {{(old('biz_state', $business_info->address[0]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('biz_state')
-                                                        <span class="text-danger error">{{ $message }}</span>
-                                                    @enderror
-												</div>
-											</div>
-											<div class="col-md-3">
-												<div class="form-group">
-													<label for="txtEmail">City
-														<span class="mandatory">*</span>
-													</label>
-													<input type="text" name="biz_city" value="{{old('biz_city', $business_info->address[0]->city_name)}}" class="form-control" tabindex="14" placeholder="Enter City Name" maxlength="50" required>
-													@error('biz_city')
-                                                        <span class="text-danger error">{{ $message }}</span>
-                                                    @enderror
-												</div>
-											</div>
-											<div class="col-md-2">
-
-												<div class="form-group password-input">
-													<label for="txtPassword">Pin Code
-														<span class="mandatory">*</span>
-													</label>
-													<input type="text" name="biz_pin" value="{{old('biz_pin', $business_info->address[0]->pin_code)}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" minlength="6" maxlength="6" required>
-													@error('biz_pin')
-                                                        <span class="text-danger error">{{ $message }}</span>
-                                                    @enderror
-												</div>
-											</div>
-										</div>	
-									</div>
-
+										</div>
+									</div>	
 								</div>
-
 							</div>
 						</div>	
 						<div class="form-sections">	
-							<div class="col-md-12">
-								<h5 class="form-head">Other Addresses</h5>
-							</div>	
+							<h5 class="form-head">Other Addresses</h5>
 						</div>			
 						<div class="form-sections">
-							<div class="col-md-12">
-								<div id="accordion" class="accordion">
-
-									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"  class="mr-2" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address
-										</span></div>
-										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne">
-											<a class="card-title">
-												Communication Address
-											</a>
-										</div>
-										<div id="collapseOne" class="card-body collapse" data-parent="#accordion">
-											<div class="col-md-12">
-												<div class="row">
-													<div class="col-md-4">
-														<div class="form-group">
-															<label for="txtCreditPeriod">Address
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0', $business_info->address[1]->addr_1)}}" class="form-control" tabindex="16" placeholder="Enter Your Address" maxlength="100">
-														</div>
+							<div id="accordion" class="accordion">
+								<div class="card card-color mb-0">
+									<div class="sameas"><input type="checkbox"  class="mr-2" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address
+									</span></div>
+									<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne">
+										<a class="card-title">Communication Address</a>
+									</div>
+									<div id="collapseOne" class="card-body collapse" data-parent="#accordion">
+										<div class="col-md-12">
+											<div class="row">
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtCreditPeriod">Address
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0', $business_info->address[1]->addr_1)}}" class="form-control" tabindex="16" placeholder="Enter Your Address" maxlength="100">
 													</div>
-
-
-													<div class="col-md-3">
-														<div class="form-group password-input">
-															<label for="txtPassword">State
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<select class="form-control" name="biz_other_state[]" tabindex="17">
-		                                                        <option value=""> Select State</option>
-		                                                        @foreach($states as $key => $state)
-		                                                        <option value="{{$state->id}}" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
-		                                                        @endforeach
-		                                                    </select>
-														</div>
+												</div>
+												<div class="col-md-3">
+													<div class="form-group password-input">
+														<label for="txtPassword">State
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<select class="form-control" name="biz_other_state[]" tabindex="17">
+	                                                        <option value=""> Select State</option>
+	                                                        @foreach($states as $key => $state)
+	                                                        <option value="{{$state->id}}" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+	                                                        @endforeach
+	                                                    </select>
 													</div>
-
-
-													<div class="col-md-3">
-														<div class="form-group">
-															<label for="txtEmail">City
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.0',$business_info->address[1]->city_name)}}" class="form-control" tabindex="18" placeholder="Enter City Name" maxlength="50">
-														</div>
+												</div>
+												<div class="col-md-3">
+													<div class="form-group">
+														<label for="txtEmail">City
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.0',$business_info->address[1]->city_name)}}" class="form-control" tabindex="18" placeholder="Enter City Name" maxlength="50">
 													</div>
-													<div class="col-md-2">
-
-														<div class="form-group password-input">
-															<label for="txtPassword">Pin Code
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0', $business_info->address[1]->pin_code)}}" class="form-control" tabindex="19" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
-														</div>
+												</div>
+												<div class="col-md-2">
+													<div class="form-group password-input">
+														<label for="txtPassword">Pin Code
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0', $business_info->address[1]->pin_code)}}" class="form-control" tabindex="19" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 													</div>
 												</div>
 											</div>
 										</div>
 									</div>
+								</div>
 
-									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"  class="mr-2" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address
-										</span></div>
-										<div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
-											<a class="card-title">
-												GST   Address
-											</a>
-
-										</div>
-										<div id="collapseTwo" class="card-body collapse" data-parent="#accordion">
-											<div class="col-md-12">
-												<div class="row">
-													<div class="col-md-4">
-														<div class="form-group">
-															<label for="txtCreditPeriod">Address
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.1', $business_info->address[2]->addr_1)}}" class="form-control" tabindex="20" placeholder="Enter Your Address" maxlength="100">
-														</div>
-													</div>
-
-													<div class="col-md-3">
-														<div class="form-group password-input">
-															<label for="txtPassword">State
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-
-															<select class="form-control" name="biz_other_state[]" tabindex="21">
-		                                                        <option value=""> Select State</option>
-		                                                        @foreach($states as $key => $state)
-		                                                        <option value="{{$state->id}}" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
-		                                                        @endforeach
-		                                                    </select>
-														</div>
-													</div>
-
-
-													<div class="col-md-3">
-														<div class="form-group">
-															<label for="txtEmail">City
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.1',$business_info->address[2]->city_name)}}" class="form-control" tabindex="22" placeholder="Enter City Name" maxlength="50">
-														</div>
-													</div>
-
-													<div class="col-md-2">
-														<div class="form-group password-input">
-															<label for="txtPassword">Pin Code
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1', $business_info->address[2]->pin_code)}}" class="form-control" tabindex="23" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
-														</div>
+								<div class="card card-color mb-0">
+									<div class="sameas"><input type="checkbox"  class="mr-2" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address
+									</span></div>
+									<div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
+										<a class="card-title">GST   Address</a>
+									</div>
+									<div id="collapseTwo" class="card-body collapse" data-parent="#accordion">
+										<div class="col-md-12">
+											<div class="row">
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtCreditPeriod">Address
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.1', $business_info->address[2]->addr_1)}}" class="form-control" tabindex="20" placeholder="Enter Your Address" maxlength="100">
 													</div>
 												</div>
+												<div class="col-md-3">
+													<div class="form-group password-input">
+														<label for="txtPassword">State
+															<!-- <span class="mandatory">*</span> -->
+														</label>
 
-											</div>
-										</div>
-									</div>
-
-									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox"  class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address
-										</span></div>
-										<div class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
-											<a class="card-title">
-												Warehouse Address
-											</a>
-
-										</div>
-										<div id="collapseThree" class="card-body collapse" data-parent="#accordion">
-											<div class="col-md-12">
-												<div class="row">
-													<div class="col-md-4">
-														<div class="form-group">
-															<label for="txtCreditPeriod">Address
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.2', $business_info->address[3]->addr_1)}}" class="form-control" tabindex="24" placeholder="Enter Your Address" maxlength="100">
-														</div>
+														<select class="form-control" name="biz_other_state[]" tabindex="21">
+	                                                        <option value=""> Select State</option>
+	                                                        @foreach($states as $key => $state)
+	                                                        <option value="{{$state->id}}" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+	                                                        @endforeach
+	                                                    </select>
 													</div>
-
-
-													<div class="col-md-3">
-														<div class="form-group password-input">
-															<label for="txtPassword">State
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<select class="form-control" name="biz_other_state[]" tabindex="25">
-		                                                        <option value=""> Select State</option>
-		                                                        @foreach($states as $key => $state)
-		                                                        <option value="{{$state->id}}" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
-		                                                        @endforeach
-		                                                    </select>
-														</div>
+												</div>
+												<div class="col-md-3">
+													<div class="form-group">
+														<label for="txtEmail">City
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.1',$business_info->address[2]->city_name)}}" class="form-control" tabindex="22" placeholder="Enter City Name" maxlength="50">
 													</div>
-
-													<div class="col-md-3">
-														<div class="form-group">
-															<label for="txtEmail">City
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.2',$business_info->address[3]->city_name)}}" class="form-control" tabindex="26" placeholder="Enter City Name" maxlength="50">
-														</div>
-													</div>
-
-
-													<div class="col-md-2">
-														<div class="form-group password-input">
-															<label for="txtPassword">Pin Code
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2', $business_info->address[3]->pin_code)}}" class="form-control" tabindex="27" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
-														</div>
+												</div>
+												<div class="col-md-2">
+													<div class="form-group password-input">
+														<label for="txtPassword">Pin Code
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1', $business_info->address[2]->pin_code)}}" class="form-control" tabindex="23" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address
-										</span></div>
-										<div class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
-											<a class="card-title">
-												Factory Address
-											</a>
-										</div>
-										<div id="collapseFour" class="card-body collapse" data-parent="#accordion">
-											<div class="col-md-12">
-												<div class="row">
-													<div class="col-md-4">
-														<div class="form-group">
-															<label for="txtCreditPeriod">Address
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.3', $business_info->address[4]->addr_1)}}" class="form-control" tabindex="28" placeholder="Enter Your Address" maxlength="100">
-														</div>
+								</div>
+
+								<div class="card card-color mb-0">
+									<div class="sameas"><input type="checkbox"  class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address
+									</span></div>
+									<div class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
+										<a class="card-title">Warehouse Address</a>
+									</div>
+									<div id="collapseThree" class="card-body collapse" data-parent="#accordion">
+										<div class="col-md-12">
+											<div class="row">
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtCreditPeriod">Address
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.2', $business_info->address[3]->addr_1)}}" class="form-control" tabindex="24" placeholder="Enter Your Address" maxlength="100">
 													</div>
-													<div class="col-md-3">
-														<div class="form-group password-input">
-															<label for="txtPassword">State
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<select class="form-control" name="biz_other_state[]" tabindex="29">
-		                                                        <option value=""> Select State</option>
-		                                                        @foreach($states as $key => $state)
-		                                                        <option value="{{$state->id}}" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
-		                                                        @endforeach
-		                                                    </select>
-														</div>
+												</div>
+
+												<div class="col-md-3">
+													<div class="form-group password-input">
+														<label for="txtPassword">State
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<select class="form-control" name="biz_other_state[]" tabindex="25">
+	                                                        <option value=""> Select State</option>
+	                                                        @foreach($states as $key => $state)
+	                                                        <option value="{{$state->id}}" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+	                                                        @endforeach
+	                                                    </select>
 													</div>
-													<div class="col-md-3">
-														<div class="form-group">
-															<label for="txtEmail">City
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.3',$business_info->address[4]->city_name)}}" class="form-control" tabindex="30" placeholder="Enter City Name" maxlength="50">
-														</div>
+												</div>
+
+												<div class="col-md-3">
+													<div class="form-group">
+														<label for="txtEmail">City
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.2',$business_info->address[3]->city_name)}}" class="form-control" tabindex="26" placeholder="Enter City Name" maxlength="50">
 													</div>
-													<div class="col-md-2">
-														<div class="form-group password-input">
-															<label for="txtPassword">Pin Code
-																<!-- <span class="mandatory">*</span> -->
-															</label>
-															<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3', $business_info->address[4]->pin_code)}}" class="form-control" tabindex="31" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
-														</div>
+												</div>
+
+												<div class="col-md-2">
+													<div class="form-group password-input">
+														<label for="txtPassword">Pin Code
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2', $business_info->address[3]->pin_code)}}" class="form-control" tabindex="27" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-								</div>	
-							</div>
+								</div>
+								<div class="card card-color mb-0">
+									<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address
+									</span></div>
+									<div class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
+										<a class="card-title">Factory Address</a>
+									</div>
+									<div id="collapseFour" class="card-body collapse" data-parent="#accordion">
+										<div class="col-md-12">
+											<div class="row">
+												<div class="col-md-4">
+													<div class="form-group">
+														<label for="txtCreditPeriod">Address
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.3', $business_info->address[4]->addr_1)}}" class="form-control" tabindex="28" placeholder="Enter Your Address" maxlength="100">
+													</div>
+												</div>
+												<div class="col-md-3">
+													<div class="form-group password-input">
+														<label for="txtPassword">State
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<select class="form-control" name="biz_other_state[]" tabindex="29">
+	                                                        <option value=""> Select State</option>
+	                                                        @foreach($states as $key => $state)
+	                                                        <option value="{{$state->id}}" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+	                                                        @endforeach
+	                                                    </select>
+													</div>
+												</div>
+												<div class="col-md-3">
+													<div class="form-group">
+														<label for="txtEmail">City
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.3',$business_info->address[4]->city_name)}}" class="form-control" tabindex="30" placeholder="Enter City Name" maxlength="50">
+													</div>
+												</div>
+												<div class="col-md-2">
+													<div class="form-group password-input">
+														<label for="txtPassword">Pin Code
+															<!-- <span class="mandatory">*</span> -->
+														</label>
+														<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3', $business_info->address[4]->pin_code)}}" class="form-control" tabindex="31" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>	
 						</div>
 						@if($business_info->app->status != 1)
 						<div class="d-flex btn-section">
