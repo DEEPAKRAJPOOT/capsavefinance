@@ -130,11 +130,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     /**
      * Get business information according to app id
      */
-    public function getBusinessInfo($appId = null){
+    public function getAppDataByAppId($appId = null){
         if(is_null($appId)){
             throw new BlankDataExceptions('No Data Found');
         }
-        return Application::get($appId);
+        return Application::find($appId);
     }
 
     /**

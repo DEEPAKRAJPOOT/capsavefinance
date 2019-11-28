@@ -183,11 +183,15 @@ class ApplicationController extends Controller
     {
         $appId = $request->get('app_id');
         $userId = Auth::user()->user_id;
-
+        $appData = $this->appRepo->getAppDataByAppId($appId);
+        
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
             if(!empty($requiredDocs)){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
+            }
+            else {
+                return redirect()->back()->withErrors(trans('error_messages.document'));
             }
         }
         else {

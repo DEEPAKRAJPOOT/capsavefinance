@@ -238,7 +238,7 @@
     });
     
     $(document).ready(function () {
-        $('#anchorForm').validate({ // initialize the plugin
+        $('#bank-document').validate({ // initialize the plugin
             rules: {
                 getFileName: {
                 required: true,
