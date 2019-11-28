@@ -196,7 +196,7 @@
                                             <input type="file" class="custom-file-input getFileName" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="">
                                             <label class="custom-file-label" for="customFile{{$data->doc_id}}">Choose file</label>
                                         </div>
-                                        <button type="submit" class="btn btn-primary float-right">Submit</button>  
+                                        <button type="submit" class="btn btn-primary float-right" id="submitDocument">Submit</button>  
                                     </div>
                                 </form>
                             </div>
@@ -235,6 +235,35 @@
     $('.getFileName').change(function(e) {
         var fileName = e.target.files[0].name;
         $(this).parent('div').children('.custom-file-label').html(fileName);
+    });
+    
+    $(document).ready(function () {
+        $('#anchorForm').validate({ // initialize the plugin
+            rules: {
+                getFileName: {
+                required: true,
+                extension: "csv"
+                },
+                assigned_anchor: {
+                    required: true,
+                }
+            },
+            messages: {
+              anchor_lead: {
+              required: "Please select file",
+              extension:"Please select only csv format",
+              }
+            }
+          });
+
+        $('form#bank-document').validate();
+
+        $("#saveAnch").click(function(){
+            if($('form#bank-document').valid()){                
+                $("#submitDocument").attr("disabled","disabled");
+            }  
+        });            
+   
     });
 </script>
 @endsection
