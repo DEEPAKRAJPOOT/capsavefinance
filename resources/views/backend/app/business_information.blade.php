@@ -29,7 +29,7 @@
 			<div class="card-body">
 				<div class=" form-fields">
 					<div class="col-md-12">
-						<h5 class="card-title form-head-h5">Business Details</h5>
+						<h5 class="card-title form-head">Business Details</h5>
 					</div>	
 				</div>	
 				<form id="business_information_form" method="POST" action="{{route('save_new_application')}}" onsubmit="return checkValidation();">
@@ -207,7 +207,7 @@
 							<div class="row">
 								<div class="col-md-12">
 									<div class="col-md-12">
-										<h5 class="form-head-h5">Registered Address</h5>
+										<h5 class="form-head">Registered Address</h5>
 									</div>
 
 									<div class="col-md-12">
@@ -274,7 +274,7 @@
 						</div>	
 						<div class="form-sections">	
 							<div class="col-md-12">
-								<h5 class="form-head-h5">Other Addresses</h5>
+								<h5 class="form-head">Other Addresses</h5>
 							</div>	
 						</div>			
 						<div class="form-sections">
