@@ -66,8 +66,15 @@ class Application extends Model
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                  ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
                 ->leftJoin('users', 'users.anchor_id', '=', 'anchor_user.anchor_id')
-                ->leftJoin('app_assign', 'app_assign.app_id', '=', 'app.app_id')
-                ->leftJoin('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')
+                //->leftJoin('app_assign', 'app.app_id', '=', 'app_assign.app_id')
+                ->leftJoin('app_assign', function ($join) use($roleData) {
+                    $join->on('app.app_id', '=', 'app_assign.app_id');
+                    $join->on('app_assign.is_owner', '=', DB::raw("1"));
+                    //if ($roleData[0]->is_superadmin != 1) {
+                    //    $join->on('app_assign.to_id', \Auth::user()->user_id);
+                    //}
+                })
+                ->leftJoin('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')             
                 ->leftJoin('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
                 ->leftJoin('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
                 ->leftJoin('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
@@ -76,8 +83,9 @@ class Application extends Model
                 //->where('app_assign.to_id', \Auth::user()->user_id)
         if ($roleData[0]->is_superadmin != 1) {
                 $appData->where('app_assign.to_id', \Auth::user()->user_id);
-                $appData->where('app_assign.is_owner', 1);
-                //->where('app.is_assigned', 1)
+        //        $appData->where('app_assign.is_owner', 1);        
+        } else {
+           $appData->where('app.is_assigned', 1); 
         }
         //$appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC');
@@ -124,7 +132,14 @@ class Application extends Model
                     ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                  ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
                 ->leftJoin('users', 'users.anchor_id', '=', 'anchor_user.anchor_id')
-                ->leftJoin('app_assign', 'app_assign.app_id', '=', 'app.app_id')
+                //->leftJoin('app_assign', 'app_assign.app_id', '=', 'app.app_id')
+                ->leftJoin('app_assign', function ($join) use($roleData) {
+                    $join->on('app.app_id', '=', 'app_assign.app_id');
+                    $join->on('app_assign.is_owner', '=', DB::raw("1"));                    
+                    //if ($roleData[0]->is_superadmin != 1) {
+                    //    $join->on('app_assign.to_id', \Auth::user()->user_id);
+                    //}
+                })                
                 ->leftJoin('roles as assignee_r', 'app_assign.role_id', '=', 'assignee_r.id')
                 ->leftJoin('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id');
                  //->join('app_wf', 'app_wf.biz_app_id', '=', 'app.app_id')
@@ -132,9 +147,11 @@ class Application extends Model
                 //->where('app.is_assigned', 0)
         if ($roleData[0]->is_superadmin != 1) {
             $appData->where('app_assign.role_id', $roleData[0]->id);
-            $appData->where('app_assign.is_owner', 1);
-            $appData->whereNull('app_assign.to_id');
+            
+            //$appData->where('app_assign.is_owner', 1);
+            
         }
+        $appData->whereNull('app_assign.to_id');
         //$appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC');
         
