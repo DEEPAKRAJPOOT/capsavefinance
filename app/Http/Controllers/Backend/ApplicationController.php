@@ -289,7 +289,7 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     
-    public function saveDocument(Request $request)
+    public function saveDocument(DocumentRequest $request)
     {
         try {
             $arrFileData = $request->all();

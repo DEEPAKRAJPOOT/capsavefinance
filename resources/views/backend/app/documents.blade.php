@@ -31,9 +31,6 @@
     <div class="card mt-4">
         <div class="card-body">
 
-            @foreach($errors->all() as $error)
-            <span class="text-danger error">{{ $error }}</span>
-            @endforeach
             <div class="form-heading pb-3 d-flex pr-0">
                 <h2>Document
                     <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX )</small>
@@ -211,7 +208,7 @@
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
                                 <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
-                                <input type="submit" value="Submit" class="btn btn-primary">
+                                <input type="submit" value="Submit" class="btn btn-primary ">
                             </form>
                         </div>
                     </div>
@@ -242,7 +239,7 @@
             rules: {
                 getFileName: {
                 required: true,
-                extension: "csv"
+                extension: "jpg,png,PDF,DOC,DOCX"
                 },
                 assigned_anchor: {
                     required: true,
