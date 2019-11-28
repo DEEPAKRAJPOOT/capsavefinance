@@ -318,9 +318,9 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($app) use ($request) {
+                                /*<a href="#" title="View Offered Limit" data-toggle="modal" data-target="#ViewOfferedLimit" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Offered Limit</a>*/
                         return '<div class="d-flex inline-action-btn">
                                 <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View Application</a>
-                                <a href="#" title="View Offered Limit" data-toggle="modal" data-target="#ViewOfferedLimit" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Offered Limit</a>
                             </div>';
                     }
                 )
