@@ -64,7 +64,7 @@
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="txtCreditPeriod " class="opacity-0">lastname
+                                        <label for="txtCreditPeriod " class="opacity-0">Last Name
                                         </label>
                                          <input type="text" name="last_name[]" id="last_name{{isset($row->first_name) ? $i : '1'}}" value="{{$row->last_name}}" class="form-control last_name" placeholder="Enter Last Name" >
                                                      </div>
