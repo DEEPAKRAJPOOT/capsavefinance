@@ -27,22 +27,50 @@ class CamController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(){
-        return view('backend.cam.overview');
+    public function index(Request $request){
+        $arrRequest['biz_id'] = $request->get('biz_id');
+        $arrRequest['app_id'] = $request->get('app_id');
+        $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
+        $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
+       if(isset($arrOwnerData[0])){
+              $arrBizData['ownerName'] = $arrOwnerData[0]['first_name'].' '.$arrOwnerData[0]['last_name'];
+              $arrBizData['email']  = $arrOwnerData[0]['email'];
+              $arrBizData['mobile_no']  = $arrOwnerData[0]['mobile_no'];
+       }
+        $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
+        if(isset($arrEntityData['entity_name'])){
+              $arrBizData['entityName'] = $arrEntityData['entity_name'];
+        }
+        if(isset($arrEntityData['name'])){      
+              $arrBizData['legalConstitution'] = $arrEntityData['name'];
+        }
+        $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+        return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData]);
 
     }
 
     public function camInformationSave(Request $request){
     	  $arrCamData = $request->all();
-        $arrCamData['biz_id'] = '12';
-        $arrCamData['app_id'] = '12';
         $userId = Auth::user()->user_id;
         if(!isset($arrCamData['rating_no'])){
-            $arrCamData['rating_no'] = NULL;
+                $arrCamData['rating_no'] = NULL;
         }
-        Cam::creates($arrCamData, $userId);
-        Session::flash('message',trans('Cam Information Saved Successfully'));
-        return redirect()->route('cam_overview');
+        if($arrCamData['cam_report_id'] != ''){
+             $updateCamData = Cam::updateCamData($arrCamData, $userId);
+             if($updateCamData){
+                    Session::flash('message',trans('Cam Information Updated Successfully'));
+             }else{
+                   Session::flash('message',trans('Cam Information Not Updated Successfully'));
+             }
+        }else{
+            $saveCamData = Cam::creates($arrCamData, $userId);
+            if($saveCamData){
+                    Session::flash('message',trans('Cam Information Saved Successfully'));
+             }else{
+                   Session::flash('message',trans('Cam Information Not Saved Successfully'));
+             }
+        }    
+        return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
     }
 
     public function finance(){

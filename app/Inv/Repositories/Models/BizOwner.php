@@ -237,8 +237,8 @@ class BizOwner extends Model
 
   public static function getCompanyOwnerByBizId($biz_id)
     {
-        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_pan_gst.pan_gst_hash')
-        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
+        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_pan_gst.pan_gst_hash', 'biz_owner.email','biz_owner.mobile_no')
+        ->leftjoin('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
         ->where('biz_owner.biz_id', $biz_id)
         ->get();
         return $arrData;
