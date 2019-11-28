@@ -1,5 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 @section('content')
+
 
 <div class="step-form pt-5">
 
@@ -262,37 +263,31 @@
             </div>
         </div>
     </div>    
-        @endsection
+@endsection
 
-        @section('scripts')
-        <script src="{{ url('frontend/assets/js/jquery.min.js') }}"></script>
-        <script src="{{ url('frontend/assets/js/popper.min.js') }}"></script>
-        <script src="{{ url('frontend/assets/js/perfect-scrollbar.jquery.min.js') }}"></script>
-        <script src="{{ url('frontend/assets/js/jsgrid.min.js') }}"></script>
-        <script src="{{ url('frontend/assets/js/hoverable-collapse.js') }}"></script>
-        <script src="{{ url('frontend/assets/js/misc.js') }}"></script>
+@section('scripts')
 
-        <script>
-            
-            $(document).ready(function(){
-                $('[data-toggle="tooltip"]').tooltip();
-                $(".trigger").click(function(){
-                    if($(this).hasClass("minus")){
-                        $(this).removeClass("minus"); 
-                    }
-                    else {
-                        $(this).addClass("minus");   
-                    }
-                    $(this).parents("tr").next(".dpr").slideToggle();
-                });
+<script>
+    
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+        $(".trigger").click(function(){
+            if($(this).hasClass("minus")){
+                $(this).removeClass("minus"); 
+            }
+            else {
+                $(this).addClass("minus");   
+            }
+            $(this).parents("tr").next(".dpr").slideToggle();
+        });
 
+    });
+    $(document).ready(function(){
+            $('input[type="file"]').change(function(e){
+                var fileName = e.target.files[0].name;
+                            $(".fileUpload").text(fileName);
+                //alert('The file "' + fileName +  '" has been selected.');
             });
-            $(document).ready(function(){
-                    $('input[type="file"]').change(function(e){
-                        var fileName = e.target.files[0].name;
-                                    $(".fileUpload").text(fileName);
-                        //alert('The file "' + fileName +  '" has been selected.');
-                    });
-            });
-        </script>
-        @endsection
+    });
+</script>
+@endsection
