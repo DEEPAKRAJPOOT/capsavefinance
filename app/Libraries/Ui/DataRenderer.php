@@ -292,7 +292,7 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {                        
                      if($app->anchor_id){
                     $userInfo=User::getUserByAnchorId($app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): '';
+                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                     }else{
                       $achorName='';  
                     }                    
