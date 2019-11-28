@@ -93,6 +93,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@camInformationSave'
             ]);
 
+            Route::get('cam/bank', [
+                'as' => 'cam_bank',
+                'uses' => 'Backend\CamController@banking'
+            ]);
+
             Route::get('cam/finance', [
                 'as' => 'cam_finance',
                 'uses' => 'Backend\CamController@finance'

@@ -165,7 +165,19 @@ class FinanceInformationRequest extends FormRequest
            'capital_cycle' => "required|string|min:20|max:200",
            'average_collection_period' => "required|string|min:20|max:200",
 
-           'debtors' => "required|numeric",
+           'movement_year' => 'required|array',
+           'movement_year.*' => "required|numeric",
+           'movement_month' => 'required|array',
+           'movement_month.*' => "required|string",
+
+           'major_deb_year' => 'required|array',
+           'major_deb_year.*' => "required|numeric",
+           'major_deb_month' => 'required|array',
+           'major_deb_month.*' => "required|string",
+
+           'debtors' => 'required|array|min:3|max:3',
+           'debtors.*' => "required|numeric",
+           
            'financial_risk_comments' => "required|string|min:20|max:200",
            'inventory_payable_days' => "required|numeric",
            'inventory_projections' => "required|numeric",
@@ -311,6 +323,16 @@ class FinanceInformationRequest extends FormRequest
         		$messages['cash_negative_equity.'.$i.'.numeric']  = 'Equity must be number';
             $messages['debtors.'.$i.'.required'] = 'Debtors field is required';
             $messages['debtors.'.$i.'.numeric']  = 'Debtors field must be number';
+
+            $messages['movement_year.'.$i.'.required'] = 'This field is required';
+            $messages['movement_year.'.$i.'.numeric']  = 'This field must be number';
+            $messages['major_deb_year.'.$i.'.required'] = 'This field is required';
+            $messages['major_deb_year.'.$i.'.numeric']  = 'This field must be number';
+            $messages['movement_month.'.$i.'.required'] = 'This field is required';
+            $messages['movement_month.'.$i.'.string']  = 'This field must be string';
+            $messages['major_deb_month.'.$i.'.required'] = 'This field is required';
+            $messages['major_deb_month.'.$i.'.string']  = 'This field must be string';
+
         	}
         		$messages['sales_and_profit.required']  = 'Sales & Profit field is required';
         		$messages['sales_and_profit.string']  = 'Sales & Profit must be string only';
