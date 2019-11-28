@@ -60,7 +60,7 @@ class Application extends Model
         $appData = self::distinct()->select('app.user_id','app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status','app_assign.to_id', 'anchor_user.anchor_id', 'anchor_user.user_type')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                  ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
-                ->leftJoin('app_assign', 'app_assign.assigned_user_id', '=', 'app.user_id');
+                ->leftJoin('app_assign', 'app_assign.app_id', '=', 'app.app_id');
                 //->where('app_assign.to_id', \Auth::user()->user_id)
         if ($roleData[0]->is_superadmin != 1) {
                 $appData->where('app_assign.to_id', \Auth::user()->user_id);
