@@ -12,6 +12,7 @@ use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\Master\Permission as PermissionModel;
 use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
+use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AnchorUser;
@@ -1213,5 +1214,25 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getLeadSalesManager($userId)
     {
         return UserModel::getLeadSalesManager($userId);
+    }
+    
+     /**
+     * Get user role 
+     * 
+     * @return mixed
+     */    
+    public function getAllData()
+    {
+        return RoleUser::getAllData();
+    }
+    
+     /**
+     * set user role 
+     * 
+     * @return mixed
+     */    
+    public function addNewRoleUser($roleData)
+    {
+        return RoleUser::addNewRoleUser($roleData);
     }
 }

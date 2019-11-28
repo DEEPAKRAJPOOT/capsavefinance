@@ -167,6 +167,14 @@ Route::group(
         'uses' => 'AjaxController@getRoleLists'
         ]
     );
+    
+    Route::post(
+        'get_user_role',
+        [
+        'as' => 'get_user_role_list',
+        'uses' => 'AjaxController@getUserRoleLists'
+        ]
+    );
 
 });
 

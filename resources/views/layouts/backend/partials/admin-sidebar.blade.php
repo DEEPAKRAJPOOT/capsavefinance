@@ -94,7 +94,7 @@
                         <a class="nav-link" href="#">Manage Permissions</a>
                     </li> -->
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Manage Users</a>
+                        <a class="nav-link" href="{{ route('get_role_user') }}">Manage Users</a>
                     </li>                                   
                 </ul>
             </div>

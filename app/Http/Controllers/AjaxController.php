@@ -2698,4 +2698,14 @@ if ($err) {
        $role = $dataProvider->getRoleList($this->request, $anchRoleList);
        return $role;
     }
+    
+    /**
+     * get role list
+     * @param Request $request
+     */ 
+    public function getUserRoleLists(DataProviderInterface $dataProvider) {
+       $List = $this->userRepo->getAllData();
+       $role = $dataProvider->getUserRoleList($this->request, $List);
+       return $role;
+    }
 }
