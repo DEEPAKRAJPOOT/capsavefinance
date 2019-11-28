@@ -1,5 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 @section('content')
+
 
 <div class="step-form pt-5">
 
