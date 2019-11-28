@@ -38,14 +38,15 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
                     <div class="card">
                         <div class="card-body">
+                            
                             <form autocomplete="off" method="POST" action="{{route('save_permission')}}" id="PermissionsForm" name="permissionform" enctype="multipart/form-data">
                                 <div class="row pull-right" style="margin: 10px;">
-                                    <button type="button" class="btn btn-primary btn-sm mr-3">Check all</button>
-                                    <button type="button" class="btn btn-secondary btn-sm">Uncheck all</button>
+                                    <button type="button" id="checkAll" class="btn btn-primary btn-sm mr-3">Check all</button>
+                                    <button type="button" id="uncheckAll" class="btn btn-secondary btn-sm">Uncheck all</button>
                                 </div>
                                 <div class="clearfix"></div>
-
-
+                                
+                                <p class="error" id="myerr" style="color:red;display:none">Check at least one CheckBox</p>
                                 <div>
 
                                     @foreach($getParentData as $key=> $ParentData)
