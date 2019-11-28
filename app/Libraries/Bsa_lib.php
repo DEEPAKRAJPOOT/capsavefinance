@@ -200,7 +200,6 @@ class Bsa_lib{
     }
 
     private function _parseResult($xml, $method) {
-    	echo "<pre>";
     	$result = ['status' => 'success'];
     	$is_valid = true;//@$this->_is_valid_xml($xml);
     	if (!$is_valid) {

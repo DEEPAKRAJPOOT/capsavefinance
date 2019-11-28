@@ -43,6 +43,11 @@ Route::group(
         ]
     );
 
+    Route::post('bank_analysys', [
+        'as' => 'getAnalysis',
+        'uses' => 'Backend\CamController@analyse_bank'
+    ]);
+
     Route::post(
         'download_user_cibil',
         [

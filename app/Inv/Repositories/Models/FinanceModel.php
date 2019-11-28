@@ -106,4 +106,23 @@ class FinanceModel extends Model
              'inventory_payable_days',
              'inventory_projections'
     ];
+
+
+
+    /**
+     * Get Bank Statements
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public function getBankStatements($app_id) {        
+        $result = self::select('app_doc_file.doc_name','app_doc_file.file_id','file.file_type','file.file_name','file.file_size','file.file_path')
+              ->from('app_doc_file')
+              ->join('file', 'app_doc_file.file_id', '=', 'file.file_id')
+              ->where('app_doc_file.app_id', '=', $app_id)
+              ->where('app_doc_file.doc_id', '=', '4')
+              ->get();
+        return ($result ?? null);        
+    }
+    
 }
