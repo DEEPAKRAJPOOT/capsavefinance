@@ -24,7 +24,7 @@
     <style>
         .error
         {
-            color:red;
+            color:red !important;
         }
         .isloader{ 
             position: fixed;    

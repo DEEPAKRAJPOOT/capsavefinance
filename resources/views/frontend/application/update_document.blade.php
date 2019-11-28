@@ -1,5 +1,6 @@
-@extends('layouts.backend.admin-layout')
-@section('additional_css')
+@extends('layouts.guest')
+@section('content')
+
 <style>
 .upload-btn-wrapper input[type=file] {
     font-size: inherit;
@@ -46,7 +47,7 @@
                 <div id="accordion" class="accordion d-table col-sm-12">
                     @foreach($requiredDocs as $key=>$data)
                     <div class="card card-color mb-0">
-                        <div class="card-header" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
+                        <div class="card-header collapsed" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
                             <a class="card-title ">
                                 <b>{{ $data->document->doc_name }}</b>
                             </a>
@@ -54,12 +55,12 @@
                         </div>
                         <div class="action-btn">
                             <div class="upload-btn-wrapper setupload-btn pos">
-                                <button class="btn upload-btn" data-toggle="modal" data-target="#myModal{{ $data->app_doc_id }}">Upload</button>
+                                <button class="btn" data-toggle="modal" data-target="#myModal{{ $data->app_doc_id }}">Upload</button>
                                 <!--<input type="file" name="myfile">-->
                             </div>
 
                         </div>
-                        <div id="collapse{{ $data->app_doc_id }}" class="card-body collapse p-0 show" data-parent="#accordion">
+                        <div id="collapse{{ $data->app_doc_id }}" class="card-body collapse p-0" data-parent="#accordion">
 
                             <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
                                 <tbody>
@@ -91,7 +92,7 @@
                                         <td width="20%"> {{ date('d-m-Y', strtotime($value->created_at))}} </td>
                                         <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
                                         <td align="center" width="20%">
-                                            <a title="Delete Document" href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
+                                            <a title="Delete Document" href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o"></i></a>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -192,7 +193,7 @@
                                          </div>
                                         @endif
                                         <div class="custom-file upload-btn-cls mb-3 mt-2">
-                                            <input type="file" class="custom-file-input getFileName" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="">
+                                            <input type="file" class="custom-file-input" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="">
                                             <label class="custom-file-label" for="customFile{{$data->doc_id}}">Choose file</label>
                                         </div>
                                         <button type="submit" class="btn btn-primary float-right">Submit</button>  
@@ -209,7 +210,7 @@
                                 @csrf
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
-                                <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
+                                <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">
                                 <input type="submit" value="Submit" class="btn btn-primary">
                             </form>
                         </div>
@@ -222,18 +223,4 @@
     </div>
     
 </div>
-
-
-@endsection
-@section('jscript')
-<script type="text/javascript">
-    
-    $('.getFileName').change(function(){
-        $(this).parent('div').children('.custom-file-label').html('Choose file');
-    });
-    $('.getFileName').change(function(e) {
-        var fileName = e.target.files[0].name;
-        $(this).parent('div').children('.custom-file-label').html(fileName);
-    });
-</script>
 @endsection
