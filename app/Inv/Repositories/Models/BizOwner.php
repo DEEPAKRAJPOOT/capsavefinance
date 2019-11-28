@@ -7,6 +7,7 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Models\AppDocument;
+use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\BizPanGstApi;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\BizPanGst;
@@ -64,7 +65,7 @@ class BizOwner extends Model
    public static function getOwnerApiDetails($bizId)
    {
       $biz_id = $bizId['biz_id'];
-      return BizOwner::with('pan')->where('biz_id', $biz_id)->get();
+      return BizOwner::with('pan')->with('businessApi.karza')->where('biz_id', $biz_id)->get();
    }
     /* Relation of Owner and Gst Api relation*/
     /* created by gajendra chauhan   */
@@ -73,6 +74,15 @@ class BizOwner extends Model
       return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst', 'biz_pan_gst_id','biz_pan_gst_id')->where(['type' => 1]);  
        
    }
+   
+    /* Relation of Owner and Gst Api relation*/
+    /* created by gajendra chauhan   */
+   public function businessApi()
+   {
+      return $this->hasMany('App\Inv\Repositories\Models\BizApi', 'biz_owner_id','biz_owner_id');  
+       
+   }
+   
    
 /* save biz owner data*/
     /* By gajendra chauhan  */  

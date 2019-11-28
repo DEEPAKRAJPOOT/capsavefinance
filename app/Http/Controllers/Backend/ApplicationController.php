@@ -106,6 +106,7 @@ class ApplicationController extends Controller
         $appId = $request->get('app_id');  
         $bizId = $request->get('biz_id'); 
         $attribute['biz_id'] = $bizId;
+        $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
        if($getCin==false)
        {
@@ -174,11 +175,20 @@ class ApplicationController extends Controller
         }
     }
     /** get karza api response     */
-     public function getPanVerifyApi(Request $request)
+     public function getKarzaApiRes(Request $request)
       {
+            $request  = $request->all();
+            $result   = $this->userRepo->getOwnerAppRes($request);
            
-           dd($request);
+            if($result->karza->res_file!='[]')
+            {
+                return response()->json(['res'=>$result->karza->res_file,'status' =>1,'type' =>$request['type']]); 
+            }
+            else {
+               return response()->json(['status' =>0]);
+            }
            
+         
            
        }
     /**
@@ -204,10 +214,9 @@ class ApplicationController extends Controller
                 
                 $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
                 $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
-                dd($appDocResponse);
             }
-            if ($response) {
-                return $response;
+            if ($appDocResponse) {
+                return $appDocResponse;
             } else {
                 return false;
             }

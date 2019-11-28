@@ -64,7 +64,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]); 
             Route::post('get-user-pan-response-karza', [
                 'as' => 'get_user_pan_response_karza',
-                'uses' => 'Backend\ApplicationController@getPanVerifyApi'
+                'uses' => 'Backend\ApplicationController@getKarzaApiRes'
             ]);
             
             Route::get('documents', [
