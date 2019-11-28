@@ -496,6 +496,11 @@ class ApplicationController extends Controller
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
             $currentStage = Helpers::getCurrentWfStage($app_id);
+            
+            //$last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
+            $wf_order_no = $currentStage->order_no;
+            $currentStage = Helpers::getNextWfStage($wf_order_no);  
+            
             $e = explode(',', $currentStage->assign_role);
             $roleDropDown = $this->userRepo->getRoleByArray($e)->toArray();
             
@@ -519,13 +524,18 @@ class ApplicationController extends Controller
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
             $assign_role = $request->get('assign_role');
-           
+            $sharing_comment = $request->get('sharing_comment');
+            $addl_data = [];
+            $addl_data['sharing_comment'] = $sharing_comment;
+            
             if ($assign_role) {                
                 $currStage = Helpers::getCurrentWfStagebyRole($assign_role);
-                Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 0,$assign_role);
+                Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 0,$assign_role, $addl_data);
             } else {
-                $currStage = Helpers::getCurrentWfStage($app_id);        
-                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign = true);
+                $currStage = Helpers::getCurrentWfStage($app_id);      
+                $wf_order_no = $currStage->order_no;
+                $currStage = Helpers::getNextWfStage($wf_order_no);                  
+                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign = true, $addl_data);
             }
 
 

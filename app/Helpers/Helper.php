@@ -132,7 +132,7 @@ class Helper extends PaypalHelper
      * @param integer $wf_status
      * @return boolean
      */
-    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = false)
+    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = false, $addl_data=[])
     {
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
@@ -179,7 +179,7 @@ class Helper extends PaypalHelper
                     $dataArr['assigned_user_id'] = $user_id;
                     $dataArr['app_id'] = $app_id;
                     $dataArr['assign_status'] = '0';
-                    $dataArr['sharing_comment'] = "comment";
+                    $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';
                     $dataArr['is_owner'] = 1;
 
                     AppAssignment::saveData($dataArr);
@@ -364,7 +364,7 @@ class Helper extends PaypalHelper
      * @param integer $wf_status
      * @return boolean
      */
-    public static function updateWfStageManual($wf_stage_code, $app_id, $wf_status = 0, $assign_role)
+    public static function updateWfStageManual($wf_stage_code, $app_id, $wf_status = 0, $assign_role, $addl_data=[])
     {
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
@@ -407,7 +407,7 @@ class Helper extends PaypalHelper
              $dataArr['assigned_user_id'] = $user_id;
              $dataArr['app_id'] = $app_id;
              $dataArr['assign_status'] = '0';
-             $dataArr['sharing_comment'] = "comment";
+             $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';;
              $dataArr['is_owner'] = 1;
              
             AppAssignment::saveData($dataArr);
@@ -599,6 +599,16 @@ class Helper extends PaypalHelper
             }
         }
         return $isWfStageCompleted;
+    }
+    
+    /**
+     * Get Next Workflow stage by workflow order no
+     * 
+     * @param integer $wf_order_no
+     * @return mixed
+     */
+    public static function getNextWfStage ($wf_order_no) {
+        return WfStage::getNextWfStage($wf_order_no);        
     }
   
 }
