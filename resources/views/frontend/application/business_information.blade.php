@@ -59,10 +59,10 @@
 						<input type="hidden" name="pan_api_res" value="">
 						<div class=" form-fields">
 							<div class="form-sections">
-								<div class="col-md-12">
-									<h3>Business Details</h3>
-								</div>
-								<div class="col-md-12">
+								
+									<h3 class="mt-0">Business Details</h3>
+								
+								
 									<div class="row">
 										<div class="col-md-4">
 											<div class="form-group">
@@ -219,16 +219,16 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								
 							</div>
 							<hr>
 							<div class="form-sections">
 							    <div class="row">
 							        <div class="col-md-12">
-							            <div class="col-md-12">
+							          
 							                <h3 class="form-head-h5">Registered Address</h3>
-							            </div>
-							            <div class="col-md-12">
+							            
+							            
 							                <div class="row">
 							                    <div class="col-md-4">
 							                        <div class="form-group">
@@ -280,10 +280,10 @@
 							                        </div>
 							                    </div>
 							                </div>
-							            </div>
+							            
 							        </div>
 							    </div>
-							    <div class="col-md-12">
+							   
 							        <h3 class="form-head-h5">Other Addresses</h3>
 							        <div id="accordion" class="accordion mb-5">
 							            <div class="card card-color mb-0">
@@ -491,7 +491,7 @@
 							                </div>
 							            </div>
 							        </div>
-							    </div>
+							    
 							</div>
 							<div class="d-flex btn-section ">
 								<div class="ml-auto text-right">

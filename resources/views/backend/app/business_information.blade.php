@@ -27,9 +27,9 @@
 	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
 		<div class="card">
 			<div class="card-body">
-				<div class=" form-fields">
+				<div class=" form-fields row">
 					<div class="col-md-12">
-						<h5 class="card-title form-head">Business Details</h5>
+						<h5 class="card-title form-head mt-0">Business Details</h5>
 					</div>	
 				</div>	
 				<form id="business_information_form" method="POST" action="{{route('save_new_application')}}" onsubmit="return checkValidation();">
@@ -38,7 +38,7 @@
 				<input type="hidden" name="biz_cin" value="">
 				<input type="hidden" name="pan_api_res" value="">
 				<div class=" form-fields">
-					<div class="form-sections">
+					<div class="form-sections row">
 						<div class="col-md-12">
 							<div class="row">
 								<div class="col-md-4">
@@ -207,11 +207,11 @@
 						<div class="form-sections">
 							<div class="row">
 								<div class="col-md-12">
-									<div class="col-md-12">
+									
 										<h5 class="form-head">Registered Address</h5>
-									</div>
+								
 
-									<div class="col-md-12">
+									
 										<div class="row">
 											<div class="col-md-4">
 												<div class="form-group">
@@ -264,19 +264,19 @@
 												</div>
 											</div>
 										</div>	
-									</div>
+									
 
 								</div>
 
 							</div>
 						</div>	
-						<div class="form-sections">	
+						<div class="form-sections row">	
 							<div class="col-md-12">
 								<h5 class="form-head">Other Addresses</h5>
 							</div>	
 						</div>			
 						<div class="form-sections">
-							<div class="col-md-12">
+							
 								<div id="accordion" class="accordion">
 
 									<div class="card card-color mb-0">
@@ -506,7 +506,7 @@
 											</div>
 										</div>
 									</div>
-								</div>	
+								
 							</div>
 						</div>
 						<div class="d-flex btn-section">

@@ -29,9 +29,9 @@
 		<div class="card">
 			<div class="card-body">
 				<div class=" form-fields">
-					<div class="col-md-12">
-						<h5 class="card-title form-head">Business Details</h5>
-					</div>	
+					
+						<h5 class="card-title form-head mt-0">Business Details</h5>
+					
 				</div>	
 				<form id="business_information_form" method="POST" action="{{route('company_details_save')}}" onsubmit="return checkValidation();">
 				@csrf
@@ -41,7 +41,7 @@
 				<input type="hidden" name="pan_api_res" value="">
 				<div class=" form-fields">
 					<div class="form-sections">
-						<div class="col-md-12">
+						
 							<div class="row">
 								<div class="col-md-4">
 									<div class="form-group">
@@ -206,17 +206,17 @@
 									</div>
 								</div>
 							</div>
-						</div>
+						
 					</div>
 
 					<div class="form-sections">
 						<div class="row">
 							<div class="col-md-12">
-								<div class="col-md-12">
+								
 									<h5 class="form-head">Registered Address</h5>
-								</div>
+								
 
-								<div class="col-md-12">
+								
 									<div class="row">
 										<div class="col-md-4">
 											<div class="form-group">
@@ -269,19 +269,19 @@
 											</div>
 										</div>
 									</div>	
-								</div>
+								
 
 							</div>
 
 						</div>
 					</div>	
 					<div class="form-sections">	
-						<div class="col-md-12">
+						
 							<h5 class="form-head">Other Addresses</h5>
-						</div>	
+						
 					</div>			
 					<div class="form-sections">
-						<div class="col-md-12">
+						
 							<div id="accordion" class="accordion">
 
 								<div class="card card-color mb-0">
@@ -512,7 +512,7 @@
 										</div>
 									</div>
 								</div>
-							</div>	
+							
 						</div>
 					</div>
 					<div class="d-flex btn-section" style="/*display: none !important;*/">
