@@ -46,6 +46,7 @@
                 z-index: 9;
             }
         </style>
+        <script src="{{ url('frontend/assets/js/popper.min.js') }}"></script>
         <script src="{{url('frontend/assets/js/jquery-3.4.1.min.js')}}"></script>
         <script src="{{url('frontend/assets/js/bootstrap.min.js')}}"></script>
         <script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
