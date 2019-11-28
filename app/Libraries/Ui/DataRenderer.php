@@ -6,6 +6,7 @@ use DataTables;
 use Helpers;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\AppAssignment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 
@@ -170,7 +171,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -188,13 +189,14 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                         //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
                         
-                     if($app->anchor_id){
-                      $userInfo=User::getUserByAnchorId($app->anchor_id);
-                       $achorName= $userInfo->f_name.''.$userInfo->l_name;
-                    }else{
-                      $achorName='';  
-                    }                    
-                    return $achorName;
+                    //if($app->anchor_id){
+                    //  $userInfo=User::getUserByAnchorId($app->anchor_id);
+                    //   $achorName= $userInfo->f_name.''.$userInfo->l_name;
+                    //}else{
+                    //  $achorName='';  
+                    //}                    
+                    //return $achorName;
+                    return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
                 })
                 ->addColumn(
                     'user_type',
@@ -211,14 +213,22 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'assignee',
                     function ($app) {                    
-                    if($app->to_id){
-                    $userInfo=Helpers::getUserInfo($app->to_id);                    
-                       $assignName=$userInfo->f_name. ''.$userInfo->l_name;  
-                    }else{
-                       $assignName=''; 
-                    } 
-                        return $assignName;
+                    //if($app->to_id){
+                    //$userInfo=Helpers::getUserInfo($app->to_id);                    
+                    //   $assignName=$userInfo->f_name. ''.$userInfo->l_name;  
+                    //}else{
+                    //   $assignName=''; 
+                    //} 
+                    //    return $assignName;
+                    return $app->assignee ? $app->assignee . '<br><small>(' . $app->assignee_role . ')</small>' : '';
                 })
+                ->addColumn(
+                    'assigned_by',
+                    function ($app) {
+                        //return $app->assigned_by ? $app->assigned_by . '<br>(' . $app->from_role . ')' : '';
+                        $fromData = AppAssignment::getOrgFromUser($app->app_id);
+                        return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
+                })                
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
@@ -363,28 +373,39 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
-                        return $app->biz_entity_name ? $app->biz_entity_name : 'yyy';
+                        return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
                     'assoc_anchor',
-                    function ($app) {
-                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                        return 'yyy';
+                    function ($app) {                        
+                        return $app->assoc_anchor ? $app->assoc_anchor : '';
                 })
                 ->addColumn(
                     'user_type',
                     function ($app) {                        
-                        return 'yyy';
+                    if($app->user_type && $app->user_type==1){
+                       $anchorUserType='Supplier'; 
+                    }else if($app->user_type && $app->user_type==2){
+                        $anchorUserType='Buyer';
+                    }else{
+                        $anchorUserType='';
+                    }
+                       return $anchorUserType;
+                })
+                ->addColumn(
+                    'assigned_by',
+                    function ($app) {
+                        return isset($app->assigned_by) ? $app->assigned_by : '';
                 })                
                 ->addColumn(
                     'assignee',
                     function ($app) {
-                        return 'Not Assign';
+                        return isset($app->assignee) ? $app->assignee : '';
                 })
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
-                    return 'yyy';
+                    return isset($app->sharing_comment) ? $app->sharing_comment : '';
 
                 })
                 ->addColumn(
