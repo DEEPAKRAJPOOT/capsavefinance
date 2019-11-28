@@ -195,7 +195,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 2)">
+                                                                    <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 2)">
                                                                     <span class="fileUpload"></span>
                                                                 </div>
                                                             </td>
@@ -222,7 +222,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 31)">
+                                                                    <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 31)">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -248,7 +248,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 30)">
+                                                                    <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 30)">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -275,7 +275,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 32)">
+                                                                    <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 32)">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -294,7 +294,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" class="photofile"  name="photofile[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, 22)">
+                                                                    <input type="file" class="photofile"  name="photofile[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
                                                                 </div>
                                                             </td>
                                                         </tr>
