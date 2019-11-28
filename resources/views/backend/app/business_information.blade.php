@@ -13,15 +13,7 @@
 		<li>
 			<a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
 		</li>
-		<!--<li>
-			<a href="buyers.php">Buyers </a>
-		</li>-->
-		<!-- <li>
-			<a href="third-party.php">Third party</a>
-		</li> -->
 	</ul>
-
-
 
 <div class="row grid-margin mt-3">
 	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
@@ -164,7 +156,6 @@
 										</div>
 									</div>
 
-									
 									<div class="col-md-4">
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
@@ -207,11 +198,7 @@
 						<div class="form-sections">
 							<div class="row">
 								<div class="col-md-12">
-									
 										<h5 class="form-head">Registered Address</h5>
-								
-
-									
 										<div class="row">
 											<div class="col-md-4">
 												<div class="form-group">
@@ -264,10 +251,7 @@
 												</div>
 											</div>
 										</div>	
-									
-
 								</div>
-
 							</div>
 						</div>	
 						<div class="form-sections row">	
@@ -276,9 +260,7 @@
 							</div>	
 						</div>			
 						<div class="form-sections">
-							
 								<div id="accordion" class="accordion">
-
 									<div class="card card-color mb-0">
 										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address
 										</span></div>
@@ -298,8 +280,6 @@
 															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0')}}" class="form-control" tabindex="16" placeholder="Enter Your Address" maxlength="100">
 														</div>
 													</div>
-
-
 													<div class="col-md-3">
 														<div class="form-group password-input">
 															<label for="txtPassword">State
@@ -313,7 +293,6 @@
 		                                                    </select>
 														</div>
 													</div>
-
 
 													<div class="col-md-3">
 														<div class="form-group">
@@ -341,10 +320,7 @@
 										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
-											<a class="card-title">
-												GST Address
-											</a>
-
+											<a class="card-title">GST Address</a>
 										</div>
 										<div id="collapseTwo" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
@@ -400,10 +376,7 @@
 										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
-											<a class="card-title">
-												Warehouse Address
-											</a>
-
+											<a class="card-title">Warehouse Address</a>
 										</div>
 										<div id="collapseThree" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
@@ -416,7 +389,6 @@
 															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.2')}}" class="form-control" tabindex="24" placeholder="Enter Your Address" maxlength="100">
 														</div>
 													</div>
-
 
 													<div class="col-md-3">
 														<div class="form-group password-input">
@@ -441,7 +413,6 @@
 														</div>
 													</div>
 
-
 													<div class="col-md-2">
 														<div class="form-group password-input">
 															<label for="txtPassword">Pin Code
@@ -458,9 +429,7 @@
 										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
-											<a class="card-title">
-												Factory Address
-											</a>
+											<a class="card-title">Factory Address</a>
 										</div>
 										<div id="collapseFour" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
@@ -506,7 +475,6 @@
 											</div>
 										</div>
 									</div>
-								
 							</div>
 						</div>
 						<div class="d-flex btn-section">
