@@ -31,9 +31,6 @@
     <div class="card mt-4">
         <div class="card-body">
 
-            @foreach($errors->all() as $error)
-            <span class="text-danger error">{{ $error }}</span>
-            @endforeach
             <div class="form-heading pb-3 d-flex pr-0">
                 <h2>Document
                     <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX )</small>
@@ -196,7 +193,7 @@
                                             <input type="file" class="custom-file-input getFileName" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="">
                                             <label class="custom-file-label" for="customFile{{$data->doc_id}}">Choose file</label>
                                         </div>
-                                        <button type="submit" class="btn btn-primary float-right">Submit</button>  
+                                        <button type="submit" class="btn btn-primary float-right" id="submitDocument">Submit</button>  
                                     </div>
                                 </form>
                             </div>
@@ -211,7 +208,7 @@
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
                                 <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
-                                <input type="submit" value="Submit" class="btn btn-primary">
+                                <input type="submit" value="Submit" class="btn btn-primary ">
                             </form>
                         </div>
                     </div>
@@ -235,6 +232,35 @@
     $('.getFileName').change(function(e) {
         var fileName = e.target.files[0].name;
         $(this).parent('div').children('.custom-file-label').html(fileName);
+    });
+    
+    $(document).ready(function () {
+        $('#bank-document').validate({ // initialize the plugin
+            rules: {
+                getFileName: {
+                required: true,
+                extension: "jpg,png,PDF,DOC,DOCX"
+                },
+                assigned_anchor: {
+                    required: true,
+                }
+            },
+            messages: {
+              anchor_lead: {
+              required: "Please select file",
+              extension:"Please select only csv format",
+              }
+            }
+          });
+
+        $('form#bank-document').validate();
+
+        $("#saveAnch").click(function(){
+            if($('form#bank-document').valid()){                
+                $("#submitDocument").attr("disabled","disabled");
+            }  
+        });            
+   
     });
 </script>
 @endsection

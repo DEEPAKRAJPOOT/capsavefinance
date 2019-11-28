@@ -107,12 +107,14 @@ class ApplicationController extends Controller
         $appId = $request->get('app_id');  
         $bizId = $request->get('biz_id'); 
         $attribute['biz_id'] = $bizId;
+        $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
        if($getCin==false)
        {
           return redirect()->back();
        }
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
+       
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
               'cin_no' => $getCin->cin,
@@ -174,11 +176,25 @@ class ApplicationController extends Controller
         }
     }
     /** get karza api response     */
-     public function getPanVerifyApi(Request $request)
+     public function getKarzaApiRes(Request $request)
       {
-           
-           dd($request);
-           
+            $request  = $request->all();
+            $result   = $this->userRepo->getOwnerAppRes($request);
+          if( $result!='')
+          {
+            if($result->karza->res_file!='[]')
+            {
+                return response()->json(['res'=>$result->karza->res_file,'status' =>1,'type' =>$request['type']]); 
+            }
+            else {
+               return response()->json(['status' =>0]);
+            }
+          }
+          else
+          {
+              return response()->json(['status' =>2]);
+              
+          }
            
        }
     /**
@@ -205,12 +221,20 @@ class ApplicationController extends Controller
                 
                 $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
                 $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
-                dd($appDocResponse);
+                $fileId = $appDocResponse->file_id;
+                $response = $this->docRepo->getFileByFileId($fileId);
             }
             if ($response) {
-                return $response;
+                return response()->json([
+                    'result' => $response, 
+                    'status' => 1, 
+                    'file_path' => $response->file_path 
+                ]);
             } else {
-                return false;
+                return response()->json([
+                    'result' => '', 
+                    'status' => 0 
+                ]);
             }
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -265,7 +289,7 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     
-    public function saveDocument(Request $request)
+    public function saveDocument(DocumentRequest $request)
     {
         try {
             $arrFileData = $request->all();
@@ -472,6 +496,11 @@ class ApplicationController extends Controller
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
             $currentStage = Helpers::getCurrentWfStage($app_id);
+            
+            //$last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
+            $wf_order_no = $currentStage->order_no;
+            $currentStage = Helpers::getNextWfStage($wf_order_no);  
+            
             $e = explode(',', $currentStage->assign_role);
             $roleDropDown = $this->userRepo->getRoleByArray($e)->toArray();
             
@@ -495,13 +524,18 @@ class ApplicationController extends Controller
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
             $assign_role = $request->get('assign_role');
-           
+            $sharing_comment = $request->get('sharing_comment');
+            $addl_data = [];
+            $addl_data['sharing_comment'] = $sharing_comment;
+            
             if ($assign_role) {                
                 $currStage = Helpers::getCurrentWfStagebyRole($assign_role);
-                Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 0,$assign_role);
+                Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 0,$assign_role, $addl_data);
             } else {
-                $currStage = Helpers::getCurrentWfStage($app_id);        
-                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign = true);
+                $currStage = Helpers::getCurrentWfStage($app_id);      
+                $wf_order_no = $currStage->order_no;
+                $currStage = Helpers::getNextWfStage($wf_order_no);                  
+                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign = true, $addl_data);
             }
 
 

@@ -107,7 +107,6 @@ class Bsa_lib{
 	     if ($method == SELF::GET_REP) {
 	     	//dd($response['result']);
 	     }
-	     return $response['result'];
 	     $result = $this->_parseResult($response['result'], $method);
 	     return $result;
     }

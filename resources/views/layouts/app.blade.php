@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
+    <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
     @yield('additional_css')
 </head>
 
@@ -42,6 +43,7 @@
     <script src="{{url('backend/assets/js/hoverable-collapse.js')}}"></script>
     <script src="{{url('backend/assets/js/misc.js')}}"></script>
     <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
+    <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
     <script src="{{url('common/js/iframePopup.js')}}"></script>
    
     <script>
@@ -60,6 +62,23 @@
             //$(this).addClass("minus");
 
             $(this).parents("tr").next(".dpr").slideToggle();
+            });
+
+            $(".datepicker-dis-fdate").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+                endDate: new Date()
+            });
+
+            $('.number_format').keyup(function(event) {
+               // skip for arrow keys
+               if(event.which >= 37 && event.which <= 40) return;
+
+               // format number
+               $(this).val(function(index, value) {
+                   return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+               });
             });
         });
     </script>

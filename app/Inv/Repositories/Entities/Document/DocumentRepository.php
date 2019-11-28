@@ -205,4 +205,22 @@ class DocumentRepository implements DocumentInterface
         
         return (!empty($result)) ? $result : false;
     }
+    
+    /**
+     * application document
+     *
+     * @param mixed $ids
+     */
+    
+    public function getFileByFileId($FileId){
+        
+        /**
+         * Check Valid Array
+         */
+        if (!isset($FileId)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        return UserFile::find($FileId);;
+    }
 }

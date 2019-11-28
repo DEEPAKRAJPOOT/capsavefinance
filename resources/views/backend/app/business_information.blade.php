@@ -13,23 +13,15 @@
 		<li>
 			<a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
 		</li>
-		<!--<li>
-			<a href="buyers.php">Buyers </a>
-		</li>-->
-		<!-- <li>
-			<a href="third-party.php">Third party</a>
-		</li> -->
 	</ul>
-
-
 
 <div class="row grid-margin mt-3">
 	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
 		<div class="card">
 			<div class="card-body">
-				<div class=" form-fields">
+				<div class=" form-fields row">
 					<div class="col-md-12">
-						<h5 class="card-title form-head-h5">Business Details</h5>
+						<h5 class="card-title form-head mt-0">Business Details</h5>
 					</div>	
 				</div>	
 				<form id="business_information_form" method="POST" action="{{route('save_new_application')}}" onsubmit="return checkValidation();">
@@ -38,141 +30,58 @@
 				<input type="hidden" name="biz_cin" value="">
 				<input type="hidden" name="pan_api_res" value="">
 				<div class=" form-fields">
-					<div class="form-sections">
+					<div class="form-sections row">
 						<div class="col-md-12">
 							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group INR">
-										<label for="txtCreditPeriod">Applied Loan Amount
+								<div class="col-md-4">
+									<div class="form-group">
+										<label for="txtEmail">Company Pan
 											<span class="mandatory">*</span>
 										</label>
-										<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-										<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" tabindex="1" placeholder="Enter Applied Loan Amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="10" required>
-										<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
-										@error('loan_amount')
+										<span class="text-success" id="pan-msg" style="display: none;">
+											<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
+										</span>
+										<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
+										<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="1" placeholder="Enter Company Pan" minlength="10" maxlength="10" required>
+										@error('biz_pan_number')
 							                <span class="text-danger error">{{ $message }}</span>
 							            @enderror
 									</div>
-
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label for="txtSupplierName">Tranche Tenor (Days)
-											</label>
-											<input type="number" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="2" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
-											@error('tenor_days')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
 								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label for="txtEmail">Entity Name
-												<span class="mandatory">*</span>
-											</label>
-											<input type="text" name="biz_entity_name" value="{{old('biz_entity_name')}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" maxlength="100" required>
-											@error('biz_entity_name')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group password-input">
-											<label for="txtPassword">Date of Incorporation
-												<span class="mandatory">*</span>
-											</label>
-											<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="4" autocomplete="off" required readonly>
-											@error('incorporation_date')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label for="txtEmail">Business Constitution
-												<span class="mandatory">*</span>
-											</label>
-											<select class="form-control" name="biz_constitution" tabindex="5" required>
-													<option value=""> Select Business Constitution</option>
-													<option value="1" {{(old('biz_constitution') == 1)? 'selected':''}}> Business Constitution 1 </option>
-													<option value="2" {{(old('biz_constitution') == 2)? 'selected':''}}> Business Constitution 2 </option>
-													<option value="3" {{(old('biz_constitution') == 3)? 'selected':''}}> Business Constitution 3 </option>
-												</select>
-												@error('biz_constitution')
-									                <span class="text-danger error">{{ $message }}</span>
-									            @enderror
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group password-input INR">
-											<label for="txtPassword">Business Turnover
-											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="6" placeholder="Enter Business Turnover" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="15">
-											@error('biz_turnover')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label for="txtEmail">Company Pan
-												<span class="mandatory">*</span>
-											</label>
-											<span class="text-success" id="pan-msg" style="display: none;">
-												<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
-											</span>
-											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
-											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="7" placeholder="Enter Company Pan" minlength="10" maxlength="10" required>
-											@error('biz_pan_number')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group password-input">
-											<label for="txtPassword">GST Number
-												<span class="mandatory">*</span>
-											</label>
-											<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
-											<select class="form-control" name="biz_gst_number" tabindex="8" onchange="fillEntity(this.value)" required>
-												</select>
-												<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
-												@error('biz_gst_number')
-									                <span class="text-danger error">{{ $message }}</span>
-									            @enderror
+								<div class="col-md-4">
+									<div class="form-group password-input">
+										<label for="txtPassword">GST Number
+											<span class="mandatory">*</span>
+										</label>
+										<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
+										<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" required>
 											</select>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group password-input">
-											<label for="txtPassword">Nature of Business
-												<span class="mandatory">*</span>
-											</label>
-											<select class="form-control" name="entity_type_id" tabindex="9" required="">
-												<option value=""> Select Nature of Business</option>
-												<option value="1" {{(old('entity_type_id') == 1)? 'selected':''}}> Nature of Business 1 </option>
-												<option value="2" {{(old('entity_type_id') == 2)? 'selected':''}}> Nature of Business 2 </option>
-												<option value="3" {{(old('entity_type_id') == 3)? 'selected':''}}> Nature of Business 3 </option>
-											</select>
-											@error('entity_type_id')
+											<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
+											@error('biz_gst_number')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
-										</div>
+										</select>
 									</div>
-									<div class="col-md-6">
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label for="txtEmail">Entity Name
+											<span class="mandatory">*</span>
+										</label>
+										<input type="text" name="biz_entity_name" value="{{old('biz_entity_name')}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" maxlength="100" required>
+										@error('biz_entity_name')
+							                <span class="text-danger error">{{ $message }}</span>
+							            @enderror
+									</div>
+								</div>
+								</div>
+								<div class="row">
+									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Industry
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="biz_type_id" tabindex="10" required>
+											<select class="form-control" name="biz_type_id" tabindex="4" required>
 												<option value=""> Select Industry</option>
 												<option value="1" {{(old('biz_type_id') == 1)? 'selected':''}}> Industry 1 </option>
 												<option value="2" {{(old('biz_type_id') == 2)? 'selected':''}}> Industry 2 </option>
@@ -183,18 +92,101 @@
 								            @enderror
 										</div>
 									</div>
-									<div class="col-md-6">
+									
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Date of Incorporation
+												<span class="mandatory">*</span>
+											</label>
+											<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="5" autocomplete="off" required readonly>
+											@error('incorporation_date')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-group">
+											<label for="txtEmail">Business Constitution
+												<span class="mandatory">*</span>
+											</label>
+											<select class="form-control" name="biz_constitution" tabindex="6" required>
+													<option value=""> Select Business Constitution</option>
+													<option value="1" {{(old('biz_constitution') == 1)? 'selected':''}}> Business Constitution 1 </option>
+													<option value="2" {{(old('biz_constitution') == 2)? 'selected':''}}> Business Constitution 2 </option>
+													<option value="3" {{(old('biz_constitution') == 3)? 'selected':''}}> Business Constitution 3 </option>
+												</select>
+												@error('biz_constitution')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Nature of Business
+												<span class="mandatory">*</span>
+											</label>
+											<select class="form-control" name="entity_type_id" tabindex="7" required="">
+												<option value=""> Select Nature of Business</option>
+												<option value="1" {{(old('entity_type_id') == 1)? 'selected':''}}> Nature of Business 1 </option>
+												<option value="2" {{(old('entity_type_id') == 2)? 'selected':''}}> Nature of Business 2 </option>
+												<option value="3" {{(old('entity_type_id') == 3)? 'selected':''}}> Nature of Business 3 </option>
+											</select>
+											@error('entity_type_id')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+
+									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Segment
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="segment" tabindex="11" required>
+											<select class="form-control" name="segment" tabindex="8" required>
 												<option value=""> Select Segment</option>
 												<option value="1" {{(old('segment') == 1)? 'selected':''}}> Segment 1 </option>
 												<option value="2" {{(old('segment') == 2)? 'selected':''}}> Segment 2 </option>
 												<option value="3" {{(old('segment') == 3)? 'selected':''}}> Segment 3 </option>
 											</select>
 											@error('segment')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group password-input INR">
+											<label for="txtPassword">Business Turnover
+											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="9" placeholder="Enter Business Turnover" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="15">
+											@error('biz_turnover')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group INR">
+											<label for="txtCreditPeriod">Applied Loan Amount
+												<span class="mandatory">*</span>
+											</label>
+											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" tabindex="10" placeholder="Enter Applied Loan Amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="10" required>
+											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+											@error('loan_amount')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-group">
+											<label for="txtSupplierName">Tranche Tenor (Days)
+											</label>
+											<input type="number" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="11" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
+											@error('tenor_days')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
 										</div>
@@ -206,13 +198,9 @@
 						<div class="form-sections">
 							<div class="row">
 								<div class="col-md-12">
-									<div class="col-md-12">
-										<h5 class="form-head-h5">Registered Address</h5>
-									</div>
-
-									<div class="col-md-12">
+										<h5 class="form-head">Registered Address</h5>
 										<div class="row">
-											<div class="col-md-12">
+											<div class="col-md-4">
 												<div class="form-group">
 													<label for="txtCreditPeriod">Address
 														<span class="mandatory">*</span>
@@ -223,10 +211,7 @@
                                                     @enderror
 												</div>
 											</div>
-										</div>
-
-										<div class="row">
-											<div class="col-md-4">
+											<div class="col-md-3">
 												<div class="form-group password-input">
 													<label for="txtPassword">State
 														<span class="mandatory">*</span>
@@ -242,7 +227,7 @@
                                                     @enderror
 												</div>
 											</div>
-											<div class="col-md-4">
+											<div class="col-md-3">
 												<div class="form-group">
 													<label for="txtEmail">City
 														<span class="mandatory">*</span>
@@ -253,7 +238,7 @@
                                                     @enderror
 												</div>
 											</div>
-											<div class="col-md-4">
+											<div class="col-md-2">
 
 												<div class="form-group password-input">
 													<label for="txtPassword">Pin Code
@@ -264,23 +249,18 @@
                                                         <span class="text-danger error">{{ $message }}</span>
                                                     @enderror
 												</div>
-											</div>	
+											</div>
 										</div>	
-									</div>
-
 								</div>
-
 							</div>
 						</div>	
-						<div class="form-sections">	
+						<div class="form-sections row">	
 							<div class="col-md-12">
-								<h5 class="form-head-h5">Other Addresses</h5>
+								<h5 class="form-head">Other Addresses</h5>
 							</div>	
 						</div>			
 						<div class="form-sections">
-							<div class="col-md-12">
 								<div id="accordion" class="accordion">
-
 									<div class="card card-color mb-0">
 										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address
 										</span></div>
@@ -292,7 +272,7 @@
 										<div id="collapseOne" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
 												<div class="row">
-													<div class="col-md-12">
+													<div class="col-md-4">
 														<div class="form-group">
 															<label for="txtCreditPeriod">Address
 																<!-- <span class="mandatory">*</span> -->
@@ -300,9 +280,7 @@
 															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.0')}}" class="form-control" tabindex="16" placeholder="Enter Your Address" maxlength="100">
 														</div>
 													</div>
-
-
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<div class="form-group password-input">
 															<label for="txtPassword">State
 																<!-- <span class="mandatory">*</span> -->
@@ -316,8 +294,7 @@
 														</div>
 													</div>
 
-
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<div class="form-group">
 															<label for="txtEmail">City
 																<!-- <span class="mandatory">*</span> -->
@@ -325,7 +302,7 @@
 															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.0')}}" class="form-control" tabindex="18" placeholder="Enter City Name" maxlength="50">
 														</div>
 													</div>
-													<div class="col-md-4">
+													<div class="col-md-2">
 
 														<div class="form-group password-input">
 															<label for="txtPassword">Pin Code
@@ -343,15 +320,12 @@
 										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
-											<a class="card-title">
-												GST Address
-											</a>
-
+											<a class="card-title">GST Address</a>
 										</div>
 										<div id="collapseTwo" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
 												<div class="row">
-													<div class="col-md-12">
+													<div class="col-md-4">
 														<div class="form-group">
 															<label for="txtCreditPeriod">Address
 																<!-- <span class="mandatory">*</span> -->
@@ -360,7 +334,7 @@
 														</div>
 													</div>
 
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<div class="form-group password-input">
 															<label for="txtPassword">State
 																<!-- <span class="mandatory">*</span> -->
@@ -375,7 +349,7 @@
 														</div>
 													</div>
 
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<div class="form-group">
 															<label for="txtEmail">City
 																<!-- <span class="mandatory">*</span> -->
@@ -384,7 +358,7 @@
 														</div>
 													</div>
 
-													<div class="col-md-4">
+													<div class="col-md-2">
 														<div class="form-group password-input">
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
@@ -402,15 +376,12 @@
 										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
-											<a class="card-title">
-												Warehouse Address
-											</a>
-
+											<a class="card-title">Warehouse Address</a>
 										</div>
 										<div id="collapseThree" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
 												<div class="row">
-													<div class="col-md-12">
+													<div class="col-md-4">
 														<div class="form-group">
 															<label for="txtCreditPeriod">Address
 																<!-- <span class="mandatory">*</span> -->
@@ -419,8 +390,7 @@
 														</div>
 													</div>
 
-
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<div class="form-group password-input">
 															<label for="txtPassword">State
 																<!-- <span class="mandatory">*</span> -->
@@ -434,7 +404,7 @@
 														</div>
 													</div>
 
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<div class="form-group">
 															<label for="txtEmail">City
 																<!-- <span class="mandatory">*</span> -->
@@ -443,8 +413,7 @@
 														</div>
 													</div>
 
-
-													<div class="col-md-4">
+													<div class="col-md-2">
 														<div class="form-group password-input">
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
@@ -460,14 +429,12 @@
 										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
-											<a class="card-title">
-												Factory Address
-											</a>
+											<a class="card-title">Factory Address</a>
 										</div>
 										<div id="collapseFour" class="card-body collapse" data-parent="#accordion">
 											<div class="col-md-12">
 												<div class="row">
-													<div class="col-md-12">
+													<div class="col-md-4">
 														<div class="form-group">
 															<label for="txtCreditPeriod">Address
 																<!-- <span class="mandatory">*</span> -->
@@ -475,7 +442,7 @@
 															<input type="text" name="biz_other_address[]" value="{{old('biz_other_address.3')}}" class="form-control" tabindex="28" placeholder="Enter Your Address" maxlength="100">
 														</div>
 													</div>
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<div class="form-group password-input">
 															<label for="txtPassword">State
 																<!-- <span class="mandatory">*</span> -->
@@ -488,7 +455,7 @@
 		                                                    </select>
 														</div>
 													</div>
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<div class="form-group">
 															<label for="txtEmail">City
 																<!-- <span class="mandatory">*</span> -->
@@ -496,7 +463,7 @@
 															<input type="text" name="biz_other_city[]" value="{{old('biz_other_city.3')}}" class="form-control" tabindex="30" placeholder="Enter City Name" maxlength="50">
 														</div>
 													</div>
-													<div class="col-md-4">
+													<div class="col-md-2">
 														<div class="form-group password-input">
 															<label for="txtPassword">Pin Code
 																<!-- <span class="mandatory">*</span> -->
@@ -508,7 +475,6 @@
 											</div>
 										</div>
 									</div>
-								</div>	
 							</div>
 						</div>
 						<div class="d-flex btn-section">

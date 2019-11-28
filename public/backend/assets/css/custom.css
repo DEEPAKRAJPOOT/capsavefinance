@@ -225,17 +225,10 @@ table.remove-tr-bg tbody tr{
     margin-right: 5px;
 }
 
-
-
 /**end**/ 
  
  .form-head-h5{
-
-   
-    
     color: #000;
-  
-   
     /* margin: 20px 0; */
     font-size:18px;
     line-height: 28px;
@@ -250,7 +243,7 @@ table.remove-tr-bg tbody tr{
     border-top-right-radius: 2px;
     border-bottom-right-radius: 1px;
     border-bottom-left-radius: 0px;
-    line-height: 36px;
+    line-height: 34px;
     min-width: 65px;
     text-align: center;
     top:29px;
@@ -645,9 +638,15 @@ table.overview-table td .badge { margin-bottom:0px;}
 span.mandatory {
     color: red;
 } 
- 
 
- 
- 
- 
- 
+.form-head{
+    background: #e1f0eb;
+    padding-top: 4px;
+    padding-right: 3px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    border-left: solid #adbdb8;
+    margin: 20px 0;
+    font-size: 16px;
+    line-height: 28px;
+}

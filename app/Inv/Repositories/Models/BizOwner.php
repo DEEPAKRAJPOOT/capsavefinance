@@ -7,6 +7,7 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Models\AppDocument;
+use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\BizPanGstApi;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\BizPanGst;
@@ -64,13 +65,30 @@ class BizOwner extends Model
    public static function getOwnerApiDetails($bizId)
    {
       $biz_id = $bizId['biz_id'];
-      return BizOwner::with('pan')->where('biz_id', $biz_id)->get();
+      return BizOwner::with('pan')->with('businessApi.karza')->with('document.userFile')->where('biz_id', $biz_id)->get();
    }
     /* Relation of Owner and Gst Api relation*/
     /* created by gajendra chauhan   */
    public function pan()
    {
       return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst', 'biz_pan_gst_id','biz_pan_gst_id')->where(['type' => 1]);  
+       
+   }
+   
+    /* Relation of Owner and Gst Api relation*/
+    /* created by gajendra chauhan   */
+   public function businessApi()
+   {
+      return $this->hasMany('App\Inv\Repositories\Models\BizApi', 'biz_owner_id','biz_owner_id');  
+       
+   }
+   
+      
+    /* Relation of Owner and Gst Api relation*/
+    /* created by gajendra chauhan   */
+   public function document()
+   {
+      return $this->hasMany('App\Inv\Repositories\Models\AppDocumentFile', 'biz_owner_id','biz_owner_id');  
        
    }
    
@@ -237,8 +255,8 @@ class BizOwner extends Model
 
   public static function getCompanyOwnerByBizId($biz_id)
     {
-        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_pan_gst.pan_gst_hash')
-        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
+        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_pan_gst.pan_gst_hash', 'biz_owner.email','biz_owner.mobile_no')
+        ->leftjoin('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
         ->where('biz_owner.biz_id', $biz_id)
         ->get();
         return $arrData;

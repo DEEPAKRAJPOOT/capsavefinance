@@ -53,7 +53,7 @@ class KarzaController extends Controller
               $status =0; 
               
           }
-          $req =   json_encode(array('name' => $requestPan['name'],'pan' => $requestPan['pan'],'dob' => $requestPan['dob']));
+          $req =   json_encode(array('fileNo' => $requestPan['name'],'requestId' => $requestPan['pan'],'dob' => $requestPan['dob']));
           $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($get_dec['result']),'status' => $status]);
           if ($createApiLog) {
                if($status==1)
@@ -113,7 +113,7 @@ class KarzaController extends Controller
               
           }
         
-          $req =   json_encode(array('epic_no' => $requestvoterf['epic_no']));
+          $req =   json_encode(array('requestId' => $requestvoterf['epic_no']));
           $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($jsonDec['response']['result']),'status' => $status]);
           if ($createApiLog) {
                if($status==1)
@@ -170,7 +170,7 @@ class KarzaController extends Controller
               
           }
         
-          $req =   json_encode(array('dl' => $requestDl['dl_no'],'dob' => $requestDl['dob']));
+          $req =   json_encode(array('requestId' => $requestDl['dl_no'],'dob' => $requestDl['dob']));
           $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($get_dec['result']),'status' => $status]);
           if ($createApiLog) {
                if($status==1)
@@ -217,6 +217,7 @@ class KarzaController extends Controller
          $requestPassport   = $request->all();
          try{
          $result =  $KarzaApi->checkPassportVerification($requestPassport);
+        
          $get_dec = json_decode($result,1);
           $status =  $get_dec['status-code'];
           if($status==101) { 
@@ -226,7 +227,7 @@ class KarzaController extends Controller
               $status =0; 
               
           }
-          $req =   json_encode(array('fileNo' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
+          $req =   json_encode(array('requestId' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
           $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($get_dec['result']),'status' => $status]);
           if ($createApiLog) {
                if($status==1)

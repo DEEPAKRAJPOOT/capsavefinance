@@ -6,6 +6,7 @@ use DataTables;
 use Helpers;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\AppAssignment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 
@@ -170,7 +171,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -188,13 +189,14 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                         //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
                         
-                     if($app->anchor_id){
-                      $userInfo=User::getUserByAnchorId($app->anchor_id);
-                       $achorName= $userInfo->f_name.''.$userInfo->l_name;
-                    }else{
-                      $achorName='';  
-                    }                    
-                    return $achorName;
+                    //if($app->anchor_id){
+                    //  $userInfo=User::getUserByAnchorId($app->anchor_id);
+                    //   $achorName= $userInfo->f_name.''.$userInfo->l_name;
+                    //}else{
+                    //  $achorName='';  
+                    //}                    
+                    //return $achorName;
+                    return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
                 })
                 ->addColumn(
                     'user_type',
@@ -211,14 +213,22 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'assignee',
                     function ($app) {                    
-                    if($app->to_id){
-                    $userInfo=Helpers::getUserInfo($app->to_id);                    
-                       $assignName=$userInfo->f_name. ''.$userInfo->l_name;  
-                    }else{
-                       $assignName=''; 
-                    } 
-                        return $assignName;
+                    //if($app->to_id){
+                    //$userInfo=Helpers::getUserInfo($app->to_id);                    
+                    //   $assignName=$userInfo->f_name. ''.$userInfo->l_name;  
+                    //}else{
+                    //   $assignName=''; 
+                    //} 
+                    //    return $assignName;
+                    return $app->assignee ? $app->assignee . '<br><small>(' . $app->assignee_role . ')</small>' : '';
                 })
+                ->addColumn(
+                    'assigned_by',
+                    function ($app) {
+                        //return $app->assigned_by ? $app->assigned_by . '<br>(' . $app->from_role . ')' : '';
+                        $fromData = AppAssignment::getOrgFromUser($app->app_id);
+                        return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
+                })                
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
@@ -240,7 +250,7 @@ class DataRenderer implements DataProviderInterface
                             $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                         }
                         if(Helpers::checkPermission('send_case_confirmBox')){
-                            $act = $act . '&nbsp;<a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                            $act = $act . '&nbsp;<a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="300px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                            
                         }
                         return $act;
@@ -318,9 +328,9 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($app) use ($request) {
+                                /*<a href="#" title="View Offered Limit" data-toggle="modal" data-target="#ViewOfferedLimit" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Offered Limit</a>*/
                         return '<div class="d-flex inline-action-btn">
                                 <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View Application</a>
-                                <a href="#" title="View Offered Limit" data-toggle="modal" data-target="#ViewOfferedLimit" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">View Offered Limit</a>
                             </div>';
                     }
                 )
@@ -363,28 +373,39 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
-                        return $app->biz_entity_name ? $app->biz_entity_name : 'yyy';
+                        return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
                     'assoc_anchor',
-                    function ($app) {
-                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                        return 'yyy';
+                    function ($app) {                        
+                        return $app->assoc_anchor ? $app->assoc_anchor : '';
                 })
                 ->addColumn(
                     'user_type',
                     function ($app) {                        
-                        return 'yyy';
+                    if($app->user_type && $app->user_type==1){
+                       $anchorUserType='Supplier'; 
+                    }else if($app->user_type && $app->user_type==2){
+                        $anchorUserType='Buyer';
+                    }else{
+                        $anchorUserType='';
+                    }
+                       return $anchorUserType;
+                })
+                ->addColumn(
+                    'assigned_by',
+                    function ($app) {
+                        return isset($app->assigned_by) ? $app->assigned_by : '';
                 })                
                 ->addColumn(
                     'assignee',
                     function ($app) {
-                        return 'Not Assign';
+                        return isset($app->assignee) ? $app->assignee : '';
                 })
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
-                    return 'yyy';
+                    return isset($app->sharing_comment) ? $app->sharing_comment : '';
 
                 })
                 ->addColumn(

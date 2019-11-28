@@ -6,6 +6,7 @@ use App\Inv\Repositories\Models\Relationship;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\BizApi;
 use App\Inv\Repositories\Models\Otp;
 use App\Inv\Repositories\Contracts\UserInterface;
 use App\Inv\Repositories\Models\User as UserModel;
@@ -108,8 +109,36 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return is_null($userId) ? $this->create($attributes) : $this->update($attributes,$userId);
     }
+   /**
+     * Validating and parsing data passed thos this method
+     *
+     * @param array $attributes
+     * @param mixed $user_id
+     *
+     * @return New record ID that was added
+     *
+     * @since 0.1
+     */
+    public function getOwnerAppRes($attributes = [])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
 
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+          return BizApi::getKarzaRes($attributes);
+  
+       }
 
+     
     /**
      * Validating and parsing data passed though this method
      *
