@@ -183,8 +183,7 @@ class User extends Authenticatable
         return ($arrUser->user_id ?: false);
     }
 
-    
-
+  
    /**
      * Get User Details base of user Id
      *

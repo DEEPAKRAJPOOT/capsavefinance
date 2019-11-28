@@ -332,7 +332,7 @@ class Helper extends PaypalHelper
         
         $inputArr = [];
 
-        $inputArr['app_id']  = (isset($attributes['doc_id'])) ? $attributes['doc_id'] : 0;   
+        $inputArr['app_id']  = (isset($attributes['app_id'])) ? $attributes['app_id'] : 0;   
         $inputArr['doc_id']  = (isset($attributes['doc_id'])) ? $attributes['doc_id'] : 0   ;  
         $inputArr['biz_owner_id']  = (isset($attributes['owner_id'])) ? $attributes['owner_id'] : 0   ;  
         $inputArr['doc_name']  = (isset($attributes['doc_name'])) ? $attributes['doc_name'] : ''; 
