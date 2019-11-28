@@ -50,18 +50,18 @@
                           @csrf
                         <?php 
 //                        dd($row->businessApi);   
-                        foreach($row->businessApi as $row) {
-                            if($row->type == 3) { 
-                                $panNo = json_decode($row->karza->req_file);
+                        foreach($row->businessApi as $row1) {
+                            if($row1->type == 3) { 
+                                $panNo = json_decode($row1->karza->req_file);
                             }
-                            if($row->type == 4) { 
-                                $dlNo = json_decode($row->karza->req_file);
+                            if($row1->type == 4) { 
+                                $dlNo = json_decode($row1->karza->req_file);
                             }
-                            if($row->type == 5) { 
-                                $voterNo = json_decode($row->karza->req_file);
+                            if($row1->type == 5) { 
+                                $voterNo = json_decode($row1->karza->req_file);
                             }
-                            if($row->type == 6) { 
-                                $passNo = json_decode($row->karza->req_file);
+                            if($row1->type == 6) { 
+                                $passNo = json_decode($row1->karza->req_file);
                             }
                         } 
                         ?>
