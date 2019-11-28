@@ -65,7 +65,7 @@ class BizOwner extends Model
    public static function getOwnerApiDetails($bizId)
    {
       $biz_id = $bizId['biz_id'];
-      return BizOwner::with('pan')->with('businessApi.karza')->where('biz_id', $biz_id)->get();
+      return BizOwner::with('pan')->with('businessApi.karza')->with('document.userFile')->where('biz_id', $biz_id)->get();
    }
     /* Relation of Owner and Gst Api relation*/
     /* created by gajendra chauhan   */
@@ -83,6 +83,14 @@ class BizOwner extends Model
        
    }
    
+      
+    /* Relation of Owner and Gst Api relation*/
+    /* created by gajendra chauhan   */
+   public function document()
+   {
+      return $this->hasMany('App\Inv\Repositories\Models\AppDocumentFile', 'biz_owner_id','biz_owner_id');  
+       
+   }
    
 /* save biz owner data*/
     /* By gajendra chauhan  */  

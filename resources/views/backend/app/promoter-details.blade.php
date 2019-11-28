@@ -49,7 +49,8 @@
                     <div class=" form-fields">
                           @csrf
                         <?php 
-//                        dd($row->businessApi);   
+                        
+                     /* for get api response file data   */ 
                         foreach($row->businessApi as $row1) {
                             if($row1->type == 3) { 
                                 $panNo = json_decode($row1->karza->req_file);
@@ -63,6 +64,26 @@
                             if($row1->type == 6) { 
                                 $passNo = json_decode($row1->karza->req_file);
                             }
+                        } 
+                        /* for get document file data   */
+                         foreach($row->document as $row2) {
+                             if($row2->doc_id == 2) { 
+                                $panNoFile =   $row2->userFile->file_path;
+                            }
+                            if($row2->doc_id == 31) { 
+                                $dlNoFile = $row2->userFile->file_path;
+                            }
+                            if($row2->doc_id == 30) { 
+                                $voterNoFile = $row2->userFile->file_path;
+                            }
+                            if($row2->doc_id == 32) { 
+                                $passNoFile = $row2->userFile->file_path;
+                            }
+                             if($row2->doc_id == 22) { 
+                                $photoFile = $row2->userFile->file_path;
+                            }
+                          
+                            
                         } 
                         ?>
                        <div class="col-md-12">
@@ -209,8 +230,8 @@
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
-                                                                    <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
-                                                                    <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                      <a  href="{{ isset($panNoFile) ? Storage::disk('s3')->url($panNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($panNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                   <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
@@ -235,7 +256,7 @@
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="5"> <i class="fa fa-eye"></i></button>
-                                                                    <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
+                                                                     <a  href="{{ isset($dlNoFile) ? Storage::disk('s3')->url($dlNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($dlNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -261,7 +282,7 @@
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="4"> <i class="fa fa-eye"></i></button>
-                                                                    <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
+                                                                     <a  href="{{ isset($voterNoFile) ? Storage::disk('s3')->url($voterNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($voterNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -288,7 +309,7 @@
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="6"> <i class="fa fa-eye"></i></button>
-                                                                    <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
+                                                                     <a  href="{{ isset($passNoFile) ? Storage::disk('s3')->url($passNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($passNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -307,7 +328,7 @@
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                    
-                                                                    <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
+                                                                    <a  href="{{ isset($photoFile) ? Storage::disk('s3')->url($photoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($photoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
