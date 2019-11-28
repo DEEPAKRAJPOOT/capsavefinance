@@ -85,7 +85,7 @@ class Application extends Model
                 $appData->where('app_assign.to_id', \Auth::user()->user_id);
         //        $appData->where('app_assign.is_owner', 1);        
         } else {
-           $appData->where('app.is_assigned', 1); 
+           $appData->whereNotNull('app_assign.to_id'); 
         }
         //$appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC');
