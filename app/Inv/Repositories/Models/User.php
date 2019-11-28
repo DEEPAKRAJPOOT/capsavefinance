@@ -559,7 +559,6 @@ class User extends Authenticatable
      */
     public static function getUserByAppId($appId)
     {
-        
         //Check anchId is not blank
         if (empty($appId)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
