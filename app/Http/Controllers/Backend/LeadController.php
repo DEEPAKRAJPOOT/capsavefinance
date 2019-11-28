@@ -141,7 +141,7 @@ class LeadController extends Controller {
              $dataArr = []; 
              $dataArr['from_id'] = Auth::user()->user_id;
              $dataArr['to_id'] = Auth::user()->user_id;
-             $dataArr['role_id'] = $roleData->id;
+             $dataArr['role_id'] = null;  //$roleData->id;
              $dataArr['assigned_user_id'] = $user_id;
              $dataArr['app_id'] = $app_id;
              $dataArr['assign_status'] = '0';
