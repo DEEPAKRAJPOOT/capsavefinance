@@ -231,7 +231,7 @@
                                             @endif
                                             <div class="custom-file upload-btn-cls mb-3 mt-2">
                                                 <label for="email">Upload Document</label>
-                                                <input type="file" class="custom-file-input" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="">
+                                                <input type="file" class="custom-file-input" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="" required=">
                                                 <label class="custom-file-label" for="customFile{{$data->doc_id}}">Choose file</label>
                                                 <span class="fileUpload"></span>
                                             </div>
