@@ -18,41 +18,7 @@
 </style>
 @include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
-    <ul class="sub-menu-main pl-0 m-0">
-
-        <li>
-            <a href="{{route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="active">Overview</a>
-        </li>
-        <li>
-            <a href="#">Anchor</a>
-        </li>
-
-        <li>
-            <a href="#">Promoter</a>
-        </li>
-        <li>
-            <a href="{{route('cam_cibil', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}">Credit History &amp; Hygine Check</a>
-        </li>
-
-        <li>
-            <a href="#">Banking</a>
-        </li>
-
-        <li>
-            <a href="{{ route('cam_finance', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Financial</a>
-        </li>
-        <li>
-            <a href="#">GST/Ledger Detail</a>
-        </li>
-
-        <li>
-            <a href="#">Limit Assessment</a>
-        </li>
-        <li>
-            <a href="#">Limit Management</a>
-        </li>
-
-    </ul>
+ @include('layouts.backend.partials.cam_nav')
 <div class="inner-container">
   <div class="card mt-4">
    <div class="card-body ">

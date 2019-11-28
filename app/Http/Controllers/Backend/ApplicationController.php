@@ -130,8 +130,8 @@ class ApplicationController extends Controller
           $arrFileData = json_decode($request->getContent(), true);
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
          
-          if ($owner_info) {    
-                return response()->json(['status' => 1, 'data' => $owner_info]);
+          if ($owner_info) {
+                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
@@ -150,8 +150,7 @@ class ApplicationController extends Controller
        try {
             $arrFileData = $request->all();
             $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
-//            dd($owner_info);
-            if ($owner_info > 0) {
+            if ($owner_info) {
             
                 //Add application workflow stages
                /// $appId = $arrFileData['app_id']; 
@@ -160,7 +159,7 @@ class ApplicationController extends Controller
               ///  if ($toUserId) {
                 ////    Helpers::assignAppToUser($toUserId, $appId);
               ///  }
-                return response()->json(['status' => 1]);
+                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
             }
             else {
                //Add application workflow stages 
@@ -221,6 +220,7 @@ class ApplicationController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userData = User::getUserByAppId($appId);
+            
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
                 if(!empty($requiredDocs)){
@@ -239,9 +239,8 @@ class ApplicationController extends Controller
                     'app_id' => $appId,
                     'biz_id' => $bizId
                 ]);
-            }
-            else {
-                return redirect()->back()->withErrors(trans('error_messages.document'));
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -532,7 +531,7 @@ class ApplicationController extends Controller
                 //Add application workflow stages
                 Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1, $assign_role = false);
                 
-                //Session::flash('message',trans('success_messages.basic_saved_successfully'));
+                Session::flash('message',trans('success_messages.basic_saved_successfully'));
                 return redirect()->route('promoter_details',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
             } else {
                 //Add application workflow stages

@@ -107,6 +107,7 @@ class Bsa_lib{
 	     if ($method == SELF::GET_REP) {
 	     	//dd($response['result']);
 	     }
+	     return $response['result'];
 	     $result = $this->_parseResult($response['result'], $method);
 	     return $result;
     }
@@ -200,7 +201,6 @@ class Bsa_lib{
     }
 
     private function _parseResult($xml, $method) {
-    	echo "<pre>";
     	$result = ['status' => 'success'];
     	$is_valid = true;//@$this->_is_valid_xml($xml);
     	if (!$is_valid) {

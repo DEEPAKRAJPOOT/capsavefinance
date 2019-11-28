@@ -128,8 +128,9 @@
                                             <label for="email">Select Bank Name</label>
                                             <select class="form-control" name="doc_name">
                                                 <option>Select Bank Name</option>
-                                                <option>HDFC Bank</option>
+                                                <option>AXIS Bank</option>
                                                 <option>ICICI Bank</option>
+                                                <option>HDFC Bank</option>
                                             </select>
                                         </div>
                                         @endif
