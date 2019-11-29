@@ -43,7 +43,7 @@
 
                 <div class="col-md-3 text-right">
                     <div class="btn-group btn-custom-group inline-action-btn">
-                       <a href="{{route('business_information_open')}}" class="btn btn-pickup btn-sm" target="_blank">Create Application</a>
+                       <a href="{{route('business_information_open')}}" class="btn btn-pickup btn-sm">Create Application</a>
                     </div>
                </div>
 
