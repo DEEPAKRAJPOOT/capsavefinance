@@ -212,6 +212,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_pass_data',
                 'uses' => 'Backend\ApplicationController@showPassResponseData'
             ]);
+
+
+            Route::get('cam/promoter', [
+                'as' => 'cam_promoter',
+                'uses' => 'Backend\CamController@showPromoter'
+            ]);
+
         });
 
         Route::group(['prefix' => 'lead'], function () {
