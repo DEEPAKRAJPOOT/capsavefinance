@@ -122,14 +122,14 @@ class ApplicationController extends Controller
                 'ownerDetails' => $ownerDetail,
                 'biz_id' => $biz_id
             ]);
-        }
-        else {
-            return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
+        } 
+      
+           /* return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
                 'cin_no' => $getCin->cin,
                 'ownerDetails' => $ownerDetail,
                 'biz_id' => $biz_id
-            ]);
-        }
+            ]);  */
+        
     } 
 
     /**
