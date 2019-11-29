@@ -204,7 +204,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             Route::post('cam/save-limit-assessment', [
                 'as' => 'save_limit_assessment',
-                'uses' => 'Backend\ApplicationController@saveLimitAssessment'
+                'uses' => 'Backend\CamController@saveLimitAssessment'
             ]);            
         });
 

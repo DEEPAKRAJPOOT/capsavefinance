@@ -414,21 +414,24 @@
                                 {!! Form::hidden('app_id', $appId) !!}
                                 {!! Form::hidden('biz_id', $bizId) !!}
                                 {!! Form::hidden('offer_id', $offerId) !!}
+                                
+                                {!! 
+                                    Form::submit(
+                                        'Save', 
+                                        [
+                                            'name'=>'btn_save_offer', 
+                                            'class' => 'btn btn-success btn-sm float-right  mt-3 ml-3'
+                                        ]
+                                    )
+                                !!}
+                        
                                 {!!
                                 Form::close()
                                 !!}
                             </div>
                         </div>
 
-                        {!! 
-                            Form::submit(
-                                'Save', 
-                                [
-                                    'name'=>'btn_save_offer', 
-                                    'class' => 'btn btn-success btn-sm float-right  mt-3 ml-3'
-                                ]
-                            )
-                        !!}
+
                         <div class="clearfix"></div>
                     </div>
 

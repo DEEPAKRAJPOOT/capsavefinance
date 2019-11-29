@@ -520,7 +520,10 @@ class CamController extends Controller
             $bizId = $request->get('biz_id'); 
             $offerId = $request->get('offer_id') ? $request->get('offer_id') : null; 
             
-            $offerData = $this->prepareOfferData($request->all());
+            $addlData = [];
+            $addlData['app_id'] = $appId;
+            $offerData = $this->prepareOfferData($request->all(), $addlData);
+            
             $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
             
             if ($savedOfferData) {
@@ -541,9 +544,25 @@ class CamController extends Controller
      * @param array $requestData
      * @return array
      */
-    protected function prepareOfferData($requestData)
+    protected function prepareOfferData($requestData, $addlData=[])
     {
-        $offerData = [];
+        $offerData = [
+            'app_id' => $addlData['app_id'],
+            'prgm_id' => $requestData['prgm_id'],
+            'loan_amount' => $requestData['loan_amount'],
+            'loan_offer' => $requestData['loan_offer'],        
+            'interest_rate' => $requestData['interest_rate'],        
+            'tenor' => $requestData['tenor'],        
+            'tenor_old_invoice' => $requestData['tenor_old_invoice'],        
+            'margin' => $requestData['margin'],
+            'overdue_interest_rate'=> $requestData['overdue_interest_rate'],        
+            'adhoc_interest_rate'=> $requestData['adhoc_interest_rate'],        
+            'grace_period' => $requestData['grace_period'],        
+            'processing_fee' => $requestData['processing_fee'],
+            'check_bounce_fee' => $requestData['check_bounce_fee'],
+            'comment' => $requestData['comment'],
+            'is_active' => 1,
+        ];
         return $offerData;
     }
 }
