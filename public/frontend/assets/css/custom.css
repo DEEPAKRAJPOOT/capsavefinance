@@ -552,11 +552,7 @@ position: absolute;
   /*chandan*/
  
  .full-width{width:100%;}
- 
- 
- 
- 
- 
- 
- 
- 
+
+table.dataTable.no-footer {
+     border-bottom: 0; 
+}

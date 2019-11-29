@@ -108,9 +108,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@finance_store'
             ]);
             
-            Route::get('fircu/index', [
-                'as' => 'backend_fircu_index',
-                'uses' => 'Backend\FiRcuController@index'
+            Route::get('fircu/fi', [
+                'as' => 'backend_fi',
+                'uses' => 'Backend\FiRcuController@listFI'
+            ]);
+
+            Route::get('fircu/rcu', [
+                'as' => 'backend_rcu',
+                'uses' => 'Backend\FiRcuController@listRCU'
             ]);
 
             Route::get('notes-from', [

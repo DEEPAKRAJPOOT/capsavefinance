@@ -9048,3 +9048,7 @@ body.avgrund-active {
     color: #888;
     letter-spacing: 1px;
 }
+
+table.dataTable.no-footer {
+     border-bottom: 0; 
+}

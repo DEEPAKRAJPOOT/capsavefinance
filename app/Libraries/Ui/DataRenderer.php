@@ -791,4 +791,68 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
                 
     }
+
+    /*      
+     * Get address list for FI
+     */
+    public function getFiListsList(Request $request, $data)
+    {
+        $type = ['Registered Address', 'Communication Address', 'GST Address', 'Warehouse Address', 'Factory Address','Promoter Address'];
+        return DataTables::of($data)
+                ->rawColumns(['biz_addr_id', 'action', 'status'])
+                ->addColumn(
+                    'biz_addr_id',
+                    function ($data) {
+                        //$link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        return $data->biz_addr_id;
+                        //return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                    }
+                )
+                ->addColumn(
+                    'address_type',
+                    function ($data) use ($type) {                        
+                        return $type[$data->address_type];
+                })
+                ->addColumn(
+                    'name',
+                    function ($data) {                        
+                        return $data->business->biz_entity_name ? $data->business->biz_entity_name : '';
+                })
+                ->addColumn(
+                    'address',
+                    function ($data) {
+                    return $data->addr_1 ? $data->addr_1.' '.$data->city_name.' '.$data->state->name.' '.$data->pin_code : '';
+                }) 
+                ->addColumn(
+                    'status',
+                    function ($data) {
+                    return '<label class="badge badge-warning">Pending</label>';
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($data) use ($request) {
+                        return '<div class="d-flex inline-action-btn">
+                                <a href="'.route('business_information_open', ['app_id' => $request->app_id, 'biz_id' => $request->biz_id]).'" title="View FI" class="btn btn-action-btn btn-sm">View FI</a>
+                            </div>';
+                    }
+                )
+                ->filter(function ($query) use ($request) {            
+                    /*if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }*/
+                    /*if ($request->get('is_status') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_status');
+                            $query->where('app.status', $is_assigned);
+                        });
+                    }*/
+                    
+                })
+                ->make(true);
+    } 
 }
