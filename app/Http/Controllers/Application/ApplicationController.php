@@ -337,7 +337,10 @@ class ApplicationController extends Controller
 
 
     public function gstinForm(){
-     return view('frontend.application.gstin');   
+     $user_id = Auth::user()->user_id;
+     $gst_details = State::getGstbyUser($user_id);
+     $gst_no = $gst_details['pan_gst_hash'];
+     return view('frontend.application.gstin',compact('gst_no'));   
     }
 
     public function analyse_gst(Request $request){
@@ -365,7 +368,7 @@ class ApplicationController extends Controller
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
         return response()->json(['message' =>'GST data pulled successfully.','status' => 1,
-          'value' => $response]);
+          'value' => $response['result']]);
       }else{
         return response()->json(['message' =>'Something went wrong','status' => 0]);
       }
