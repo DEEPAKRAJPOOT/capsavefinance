@@ -208,12 +208,14 @@ class ApplicationController extends Controller
         else {
             return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
+//            dd($docData);
         if($editFlag == 1) {
             return view('frontend.application.update_document')->with([
                 'requiredDocs' => $requiredDocs,
                 'documentData' => $docData
             ]); 
         }
+        
         else {
             return view('frontend.application.document')->with([
                 'requiredDocs' => $requiredDocs,
