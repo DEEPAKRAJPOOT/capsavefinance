@@ -161,7 +161,7 @@
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
 											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover', $business_info->turnover_amt)}}" class="form-control" tabindex="9" placeholder="Enter Business Turnover" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="15">
+											<input type="text" name="biz_turnover" value="{{old('biz_turnover', number_format($business_info->turnover_amt))}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
 											@error('biz_turnover')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -175,7 +175,7 @@
 												<span class="mandatory">*</span>
 											</label>
 											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="loan_amount" value="{{old('loan_amount', $business_info->app->loan_amt)}}" class="form-control" tabindex="10" placeholder="Enter Applied Loan Amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="10" required>
+											<input type="text" name="loan_amount" value="{{old('loan_amount', number_format($business_info->app->loan_amt))}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" required>
 											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
 											@error('loan_amount')
 								                <span class="text-danger error">{{ $message }}</span>
@@ -186,7 +186,7 @@
 										<div class="form-group">
 											<label for="txtSupplierName">Tranche Tenor (Days)
 											</label>
-											<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control" tabindex="11" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
+											<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor (1 - 120)" maxlength="3">
 											@error('tenor_days')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror

@@ -185,7 +185,7 @@
 											<label for="txtPassword">Business Turnover
 											</label>
 											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="9" placeholder="Enter Business Turnover" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="15">
+											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
 											@error('biz_turnover')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -199,7 +199,7 @@
 												<span class="mandatory">*</span>
 											</label>
 											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" tabindex="10" placeholder="Enter Applied Loan Amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="10" required>
+											<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" required>
 											@error('loan_amount')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -209,7 +209,7 @@
 										<div class="form-group">
 											<label for="txtSupplierName">Tranche Tenor (Days)
 											</label>
-											<input type="text" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="11" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
+											<input type="text" name="tenor_days" value="{{old('tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor (1 - 120)" maxlength="3">
 											@error('tenor_days')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -645,10 +645,10 @@
 	function checkValidation(){
 		if($('.pan-verify').text() == 'Verify' || $('biz_cin').val() == ''){
 			alert('Please fill and verify Business PAN First');
-			return false;
+			return true;
 		}else if($('biz_cin').val()  == ''){
 			alert('Service unavailable!');
-			return false;
+			return true;
 		}else{
 			return true;
 		}
