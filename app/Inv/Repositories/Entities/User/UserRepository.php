@@ -1036,10 +1036,20 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param type $userName
      * @return type
      */
-   public function getUserByAnchorId($anchId)
+    public function getUserByAnchorId($anchId)
     {
         $result = UserModel::getUserByAnchorId($anchId);
          return $result ?: false;
+    } 
+    /**
+     * function for get user details using app id
+     * @param type $userName
+     * @return type
+     */
+    public function getUserByAppId($appId)
+    {
+        $result = UserModel::getUserByAppId($appId);
+        return $result ?: false;
     } 
       /**
      * Get a backend user by id
