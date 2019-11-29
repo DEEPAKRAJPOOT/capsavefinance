@@ -9,7 +9,7 @@
          <div class="card-body ">
             <div id="pullMsg"></div>
             <div class="data">
-               <h2 class="sub-title bg mb-4">Last 6 months Bank statement--gggg</h2>
+               <h2 class="sub-title bg mb-4">Last 6 months Bank statement-</h2>
                <div class="clearfix"></div>
                <div class="pl-4 pr-4 pb-4 pt-2">
                   @if($bankdocs->count() > 0)
