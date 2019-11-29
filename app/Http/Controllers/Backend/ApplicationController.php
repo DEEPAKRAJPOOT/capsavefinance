@@ -115,7 +115,7 @@ class ApplicationController extends Controller
           return redirect()->back();
        }
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-       
+      // dd($OwnerPanApi);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
               'cin_no' => $getCin->cin,

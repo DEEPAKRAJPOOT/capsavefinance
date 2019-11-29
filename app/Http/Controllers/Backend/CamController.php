@@ -483,8 +483,6 @@ class CamController extends Controller
         $attribute['biz_id'] = $request->get('biz_id'); 
         $attribute['app_id'] = $request->get('app_id');
         $arrPromoterData = $this->userRepo->getOwnerApiDetail($attribute);
-
-        	//dd($arrPromoterData);
     	return view('backend.cam.promoter')->with([
             'arrPromoterData' => $arrPromoterData 
             ]);;

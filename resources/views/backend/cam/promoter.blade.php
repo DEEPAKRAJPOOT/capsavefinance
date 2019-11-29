@@ -18,8 +18,39 @@
                         <div class="p-2 full-width">
                            <div id="accordion" class="accordion d-table col-sm-12">
                             @php ($count = 0)
+                         @php ($j = 0)
+                          @php ($i = 0)
                              @foreach($arrPromoterData as $row)
+                                        @php ($i++)
                                         @php ($count++)
+
+                                         <?php 
+                                         foreach($row->document as $row2) {
+                                             if($row2->doc_id == 2) { 
+                                                $panNoFilePath[] =   $row2->userFile->file_path;
+                                                $panNoFileName[] =   $row2->userFile->file_name;
+                                            }
+                                            if($row2->doc_id == 31) { 
+                                                $dlNoFilePath[] = $row2->userFile->file_path;
+                                                $dlNoFileName[] =   $row2->userFile->file_name;
+                                            }
+                                            if($row2->doc_id == 30) { 
+                                                $voterNoFilePath[] = $row2->userFile->file_path;
+                                                $voterNoFileName[] =   $row2->userFile->file_name;
+                                            }
+                                            if($row2->doc_id == 32) { 
+                                                $passNoFilePath[] = $row2->userFile->file_path;
+                                                $passNoFileName[] =   $row2->userFile->file_name;
+                                            }
+                                             if($row2->doc_id == 22) { 
+                                                $photoFilePath[] = $row2->userFile->file_path;
+                                                $photoFileName[] =   $row2->userFile->file_name;
+                                            }
+                           
+                                         } 
+                                        ?>
+
+
                               <div class="card card-color mb-0">
                                  <div class="card-header collapsed" data-toggle="collapse" href="#collapse{{$count}}">
                                     <a class="card-title">
@@ -81,23 +112,53 @@
                                              <tr>
                                                 <td>1</td>
                                                 <td>Pan Card</td>
-                                                <td>drop-box.jpg</td>
-                                                <td><div class="file-browse float-left ">
-                                        <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
-                                        <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                  </div></td>
+                                                <td>{{isset($panNoFileName[$j]) ? $panNoFileName[$j] : '' }}</td>
+                                                <td>
+                                                <a  href="{{ isset($panNoFilePath[$j]) ? Storage::disk('s3')->url($panNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                   
+                                                </td>
                                              </tr>
                                              
-                                             <tr>
+                                            <tr>
                                                 <td>2</td>
-                                                <td>Adhar Card</td>
-                                                <td>aadhar.jpg</td>
-                                                <td><div class="file-browse float-left ">
-                                        <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
-                                        <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                  </div></td>
-                                             </tr>
+                                                <td>Driving License</td>
+                                                <td>{{isset($dlNoFileName[$j]) ? $dlNoFileName[$j] : '' }}</td>
+                                                <td>
+                                                <a  href="{{ isset($dlNoFilePath[$j]) ? Storage::disk('s3')->url($dlNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($dlNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                   
+                                                </td>
+                                            </tr>
                                            
+
+                                            <tr>
+                                                <td>3</td>
+                                                <td>Voter ID</td>
+                                                <td>{{isset($voterNoFileName[$j]) ? $voterNoFileName[$j] : '' }}</td>
+                                                <td>
+                                                <a  href="{{ isset($voterNoFilePath[$j]) ? Storage::disk('s3')->url($voterNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($voterNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                   
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>4</td>
+                                                <td>Passport</td>
+                                                <td>{{isset($passNoFileName[$j]) ? $passNoFileName[$j] : '' }}</td>
+                                                <td>
+                                                <a  href="{{ isset($passNoFilePath[$j]) ? Storage::disk('s3')->url($passNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($passNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                   
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>5</td>
+                                                <td>Photo</td>
+                                                <td>{{isset($photoFileName[$j]) ? $photoFileName[$j] : '' }}</td>
+                                                <td>
+                                                <a  href="{{ isset($photoFilePath[$j]) ? Storage::disk('s3')->url($photoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($photoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                   
+                                                </td>
+                                            </tr>
                                           
                                            
                                           </tbody>
@@ -106,192 +167,20 @@
                                  </div>
                               </div>
                               
-                              
+                             @php ($j++) 
                             @endforeach  
 
 
 
                               
-                              <div class="card card-color mb-0">
-                                 <div class="card-header collapsed" data-toggle="collapse" href="#collapse2">
-                                    <a class="card-title">
-                                    Promoter2
-                                    </a>
-                                 </div>
-                                 <div id="collapse2" class="card-body collapse" data-parent="#accordion">
-                                    <div class="col-md-12">
-                                       <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0" border="1">
-                                          <tbody>
-                                             <tr>
-                                                <td width="25%"><b>Promoter Name</b></td>
-                                                <td width="25%">XYZ</td>
-                                                <td width="25%"><b>Lastname </b></td>
-                                                <td width="25%">XYZ</td>
-                                             </tr>
-                                             <tr>
-                                                <td><b>DOB </b></td>
-                                                <td>12/12/1992</td>
-                                                <td><b>Gender </b></td>
-                                                <td>Male</td>
-                                             </tr>
-                                             <tr>
-                                                <td><b>PAN Number</b></td>
-                                                <td>ABCPS9578A</td>
-                                                <td><b>Shareholding (%)</b></td>
-                                                <td>
-                                                   12
-                                                </td>
-                                             </tr>
-                                             <tr>
-                                                <td><b>Educational Qualification</b></td>
-                                                <td>Graduate</td>
-                                                <td><b>Other Ownerships</b></td>
-                                                <td>Demo</td>
-                                             </tr>
-                                             <tr>
-                                                <td><b>Networth</b></td>
-                                                <td>7868687678</td>
-                                                <td><b>Address</b></td>
-                                                <td>Your address here</td>
-                                             </tr> 
-                                             <tr>
-                                                <td><b>State </b></td>
-                                                <td>U.p.</td>
-                                                <td><b>City & pin code</b></td>
-                                                <td>Noida (201304)</td>
-                                             </tr>
-                                          </tbody>
-                                       </table>
-                                       
-                                       
-                                         <table class="table table-bordered overview-table mt-3" cellpadding="0" cellspacing="0" border="1">
-                                          <tbody>
-                                             <tr>
-                                                <td width="25%"><b>S.No.</b></td>
-                                                <td width="25%"><b>Document Name</b></td>
-                                                <td width="25%"><b>File Name</b></td>
-                                                <td width="25%"><b>Action</b></td>
-                                             </tr>
-                                             <tr>
-                                                <td>1</td>
-                                                <td>Pan Card</td>
-                                                <td>drop-box.jpg</td>
-                                                <td><div class="file-browse float-left ">
-                                        <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
-                                        <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                  </div></td>
-                                             </tr>
-                                             
-                                             <tr>
-                                                <td>2</td>
-                                                <td>Adhar Card</td>
-                                                <td>aadhar.jpg</td>
-                                                <td><div class="file-browse float-left ">
-                                        <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
-                                        <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                  </div></td>
-                                             </tr>
-                                           
-                                          
-                                           
-                                          </tbody>
-                                       </table>
-                                    </div>
-                                 </div>
-                              </div>
                               
                               
-                              <div class="card card-color mb-0">
-                                 <div class="card-header collapsed" data-toggle="collapse" href="#collapse3">
-                                    <a class="card-title">
-                                    Promoter3
-                                    </a>
-                                 </div>
-                                 <div id="collapse3" class="card-body collapse" data-parent="#accordion">
-                                    <div class="col-md-12">
-                                       <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0" border="1">
-                                          <tbody>
-                                             <tr>
-                                                <td width="25%"><b>Promoter Name</b></td>
-                                                <td width="25%">XYZ</td>
-                                                <td width="25%"><b>Lastname </b></td>
-                                                <td width="25%">XYZ</td>
-                                             </tr>
-                                             <tr>
-                                                <td><b>DOB </b></td>
-                                                <td>12/12/1992</td>
-                                                <td><b>Gender </b></td>
-                                                <td>Male</td>
-                                             </tr>
-                                             <tr>
-                                                <td><b>PAN Number</b></td>
-                                                <td>ABCPS9578A</td>
-                                                <td><b>Shareholding (%)</b></td>
-                                                <td>
-                                                   12
-                                                </td>
-                                             </tr>
-                                             <tr>
-                                                <td><b>Educational Qualification</b></td>
-                                                <td>Graduate</td>
-                                                <td><b>Other Ownerships</b></td>
-                                                <td>Demo</td>
-                                             </tr>
-                                             <tr>
-                                                <td><b>Networth</b></td>
-                                                <td>7868687678</td>
-                                                <td><b>Address</b></td>
-                                                <td>Your address here</td>
-                                             </tr> 
-                                             <tr>
-                                                <td><b>State </b></td>
-                                                <td>U.p.</td>
-                                                <td><b>City & pin code</b></td>
-                                                <td>Noida (201304)</td>
-                                             </tr>
-                                          </tbody>
-                                       </table>
-                                       
-                                       
-                                         <table class="table table-bordered overview-table mt-3" cellpadding="0" cellspacing="0" border="1">
-                                          <tbody>
-                                             <tr>
-                                                <td width="25%"><b>S.No.</b></td>
-                                                <td width="25%"><b>Document Name</b></td>
-                                                <td width="25%"><b>File Name</b></td>
-                                                <td width="25%"><b>Action</b></td>
-                                             </tr>
-                                             <tr>
-                                                <td>1</td>
-                                                <td>Pan Card</td>
-                                                <td>drop-box.jpg</td>
-                                                <td><div class="file-browse float-left ">
-                                        <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
-                                        <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                  </div></td>
-                                             </tr>
-                                             
-                                             <tr>
-                                                <td>2</td>
-                                                <td>Adhar Card</td>
-                                                <td>aadhar.jpg</td>
-                                                <td><div class="file-browse float-left ">
-                                        <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
-                                        <input type="file" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                  </div></td>
-                                             </tr>
-                                           
-                                          
-                                           
-                                          </tbody>
-                                       </table>
-                                    </div>
-                                 </div>
-                              </div>
+                              
+                              <d
                            </div>
                         </div>
                      </div>
-                     <div class="data mt-4">
+                    <!--  <div class="data mt-4">
                         <h2 class="sub-title bg">Brief Profile about the Promoters</h2>
                         <div class="pl-4 pr-4 pb-4 pt-2">
                            <textarea class="form-control" id="profile_of_company" name="profile_of_company" rows="3" spellcheck="false"></textarea>
@@ -302,7 +191,7 @@
                         <div class="pl-4 pr-4 pb-4 pt-2">
                            <textarea class="form-control" id="profile_of_company" name="profile_of_company" rows="3" spellcheck="false"></textarea>
                         </div>
-                     </div>
+                     </div> -->
                  
                </div>
             </div>
