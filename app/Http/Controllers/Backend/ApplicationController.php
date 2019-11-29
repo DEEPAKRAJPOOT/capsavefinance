@@ -257,8 +257,12 @@ class ApplicationController extends Controller
             
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
-                if(!empty($requiredDocs)){
+                if($requiredDocs->count() != 0){
                     $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
+                }
+                else {
+                    Session::flash('message',trans('error_messages.document'));
+                    return redirect()->back();
                 }
             }
             else {

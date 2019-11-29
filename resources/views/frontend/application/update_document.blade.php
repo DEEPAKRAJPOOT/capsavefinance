@@ -118,10 +118,9 @@
                 <div class="modal-header">
                     <button type="button" class="close close-btns" data-dismiss="modal">&times;</button>
                 </div>
-                <form id="bank-document" method="POST" action="{{ Route('document-save') }}" enctype="multipart/form-data">
+                <form id="documentForm" method="POST" action="{{ Route('document-save') }}" enctype="multipart/form-data">
                     <!-- Modal body -->
                     @csrf
-                    <input type="hidden" name="dir" value="{{ $data->document->doc_name }}">
                     <input type="hidden" name="docId" value="">
                     <input type="hidden" name="bizId" value="{{ request()->get('biz_id') }}">
                     <input type="hidden" name="appId" value="{{ request()->get('app_id') }}">
@@ -196,10 +195,10 @@
                             </div>
                          </div>
                         <div class="custom-file upload-btn-cls mb-3 mt-2">
-                            <input type="file" class="custom-file-input getFileName" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="" required="">
-                            <label class="custom-file-label" for="customFile{{$data->doc_id}}">Choose file</label>
+                            <input type="file" class="custom-file-input getFileName" id="customFile" name="doc_file[]" multiple="">
+                            <label class="custom-file-label" for="customFile">Choose file</label>
                         </div>
-                        <button type="submit" class="btn btn-primary float-right">Submit</button>  
+                        <button type="submit" class="btn btn-primary float-right" id="savedocument" >Submit</button>  
                     </div>
                 </form>
             </div>
@@ -210,40 +209,7 @@
 
 @endsection
 @section('jscript')
-<script type="text/javascript">
-    
-    $('.getFileName').change(function(){
-        $(this).parent('div').children('.custom-file-label').html('Choose file');
-    });
-    
-    $('.openModal').click(function(e) {
-        var docId = $(this).attr('data-id');
-        $('#myModal').modal('show');
-        if(docId == 4) {
-            $('input[name=docId]').val(docId);
-            $('select[name=doc_name]').parent('div').show();
-            $('select[name=finc_year]').parent('div').hide();
-            $('select[name=gst_month]').parent('div').hide();
-            $('select[name=gst_year]').parent('div').hide();
-        } else if (docId == 5) {
-            $('input[name=docId]').val(docId);
-            $('select[name=doc_name]').parent('div').hide();
-            $('select[name=finc_year]').parent('div').show();
-            $('select[name=gst_month]').parent('div').hide();
-            $('select[name=gst_year]').parent('div').hide();
-            
-        } else {
-            $('input[name=docId]').val(docId);
-            $('select[name=doc_name]').parent('div').hide();
-            $('select[name=finc_year]').parent('div').hide();
-            $('select[name=gst_month]').parent('div').show();
-            $('select[name=gst_year]').parent('div').show();
-        }
-        console.log(docId);
-    });
-    $('.getFileName').change(function(e) {
-        var fileName = e.target.files[0].name;
-        $(this).parent('div').children('.custom-file-label').html(fileName);
-    });
-</script>
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+ <script src="{{ url('frontend/js/document.js') }}"></script>
 @endsection
