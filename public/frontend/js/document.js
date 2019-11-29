@@ -35,6 +35,7 @@
     
     $('.openModal').click(function(e) {
         var docId = $(this).attr('data-id');
+        alert(docId);
         $('#myModal').modal('show');
         if(docId == 4) {
             $('input[name=docId]').val(docId);
@@ -45,6 +46,7 @@
             $('select[name=gst_year]').parent('div').hide();
         } else if (docId == 5) {
             $('input[name=docId]').val(docId);
+            $('input[name=doc_id]').val(docId);
             $('select[name=doc_name]').parent('div').hide();
             $('select[name=finc_year]').parent('div').show();
             $('select[name=gst_month]').parent('div').hide();
@@ -52,6 +54,7 @@
             
         } else {
             $('input[name=docId]').val(docId);
+            $('input[name=doc_id]').val(docId);
             $('select[name=doc_name]').parent('div').hide();
             $('select[name=finc_year]').parent('div').hide();
             $('select[name=gst_month]').parent('div').show();
