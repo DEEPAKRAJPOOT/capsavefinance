@@ -116,7 +116,7 @@ class ApplicationController extends Controller
           return redirect()->back();
        }
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-       
+      // dd($OwnerPanApi);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
             'cin_no' => $getCin->cin,
@@ -272,7 +272,6 @@ class ApplicationController extends Controller
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-            
             if ($docData) {
                 return view('backend.app.documents', [
                     'requiredDocs' => $requiredDocs,
@@ -302,10 +301,9 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-            // dd($arrFileData);
             $docId = (int)$request->doc_id; //  fetch document id
             $appId = (int)$request->app_id; //  fetch document id
-            $userData = User::getUserByAppId($appId);
+            $userData = $this->userRepo->getUserByAppId($appId);
             $userId = $userData->user_id;
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
@@ -570,6 +568,10 @@ class ApplicationController extends Controller
         return view('backend.app.business_information',compact('states'));
     }
 
+    /**
+     * 
+     */
+
     public function saveBusinessInformation(BusinessInformationRequest $request)
     {
         try {
@@ -598,6 +600,39 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-    
+
+/**
+ * 
+ */
+
+   /**
+     * Show the business information form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showPanResponseData(Request $request)
+    {
+        dd($request->all());
+        return view('backend.app.promoter_pan_data');
+        
+    } 
+    public function showDlResponseData(Request $request)
+    {
+        dd($request->all());
+        return view('backend.app.promoter_dl_data');
+        
+    } 
+    public function showVoterResponseData(Request $request)
+    {
+        dd($request->all());
+        return view('backend.app.promoter_voter_data');
+        
+    } 
+    public function showPassResponseData(Request $request)
+    {
+        dd($request->all());
+        return view('backend.app.promoter_pass_data');
+        
+    } 
     
 }

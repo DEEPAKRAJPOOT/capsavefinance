@@ -116,13 +116,12 @@ class ApplicationController extends Controller
        {
            return  redirect()->back();
        }
-        if($editFlag == 1) { 
-            return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
-                'cin_no' => $getCin->cin,
-                'ownerDetails' => $ownerDetail,
-                'biz_id' => $biz_id
-            ]);
-        } 
+        return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
+            'cin_no' => $getCin->cin,
+            'ownerDetails' => $ownerDetail,
+            'biz_id' => $biz_id
+        ]);
+        
       
            /* return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
                 'cin_no' => $getCin->cin,

@@ -66,9 +66,10 @@
             z-index: 9;
         }
     </style>
-    <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
+    <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
     <script src="{{url('backend/assets/js/perfect-scrollbar.jquery.min.js')}}"></script>
     <script src="{{url('backend/assets/js/jsgrid.min.js')}}"></script>
     <script src="{{url('backend/assets/js/hoverable-collapse.js')}}"></script>

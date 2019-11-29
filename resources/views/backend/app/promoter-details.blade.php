@@ -14,7 +14,7 @@
 </style>
 @endsection
 @section('content')
-@if($edit)
+@if(is_null($edit))
 @include('layouts.backend.partials.admin-subnav')
 @endif
 <!-- partial -->
@@ -52,6 +52,7 @@
                           @csrf
                        
                         <?php 
+                       
                      /* for get api response file data   */ 
                         foreach($row->businessApi as $row1) {
                            
@@ -70,7 +71,7 @@
                         } 
                         /* for get document file data   */
                     
-                         
+                        
                          foreach($row->document as $row2) {
                              if($row2->doc_id == 2) { 
                                 $panNoFile[] =   $row2->userFile->file_path;
@@ -218,8 +219,9 @@
                                       </div>
                                 </div> 
                             </div>
-                           
-                            <h5 class="card-title form-head-h5 mt-3">Document </h5>									
+
+                            <h5 class="card-title form-head-h5 mt-3">Document </h5>	
+
                             <div class="row mt-2 mb-4">
                                 <div class="col-md-12">
                                     <div class="prtm-full-block">       
@@ -241,8 +243,12 @@
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
 
-                                                      <span class="text-success" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($panNo->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-                                                      <span class="text-danger" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                
+
+
+                                              <span class="text-success" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($panNo->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                              <span class="text-danger" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                 
 
                                                
                                                                     <a href="javascript:void(0);" id='ppan{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripan" style="top:0px; pointer-events:{{ (isset($panNo->requestId)) ? 'none' : ''}}">{{ isset($panNo->requestId) ? 'Verified' : 'Verify' }}</a>
@@ -250,9 +256,14 @@
                                                                 </div>
                                                             </td>
                                                             <td width="28%">
-                                                                <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
-                                                                      <a  href="{{ isset($panNoFile[$j]) ? Storage::disk('s3')->url($panNoFile[$j]) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($panNoFile[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+
+                                                            <div class="file-browse float-left position-seta">
+                                                            <a data-toggle="modal" data-target="#modalPromoter" data-url ="{{route('show_pan_data',['id'=>3,'owner_id' => $row->biz_owner_id ])}}"> <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
+                    </a>
+                                                                       <a  href="{{ isset($panNoFile) ? Storage::disk('s3')->url($panNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($panNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+
+                                                           
+
                                                                    <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -459,7 +470,8 @@
             </div>
         </div>
     </div>
-    
+    {!!Helpers::makeIframePopup('modalPromoter','Upload User List', 'modal-md')!!}
+
 @endsection
 @section('jscript')
 

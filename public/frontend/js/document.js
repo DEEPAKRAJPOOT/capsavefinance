@@ -6,24 +6,24 @@
     $(document).ready(function () {
         $('#documentForm').validate({ // initialize the plugin
             rules: {
-                doc_file: {
+                'doc_file[]': {
                     required: true,
-                    extension: "csv"
+                    extension: "jpg,png,pdf,doc,dox"
                 }
             },
             messages: {
-                doc_file: {
+                'doc_file[]': {
                     required: "Please select file",
-                    extension:"Please select only csv format",
+                    extension:"Please select jpg,png,pdf,doc,dox type format only.",
                 }
             }
         });
 
-        $('form#documentForm').validate();
+        $('#documentForm').validate();
 
         $("#savedocument").click(function(){
-            if($('form#documentForm').valid()){                
-                $("#savedocument").attr("disabled","disabled");
+            if($('#documentForm').valid()){
+                $("#savedocument").disabled = true;
             }  
         });            
 
@@ -38,12 +38,14 @@
         $('#myModal').modal('show');
         if(docId == 4) {
             $('input[name=docId]').val(docId);
+            $('input[name=doc_id]').val(docId);
             $('select[name=doc_name]').parent('div').show();
             $('select[name=finc_year]').parent('div').hide();
             $('select[name=gst_month]').parent('div').hide();
             $('select[name=gst_year]').parent('div').hide();
         } else if (docId == 5) {
             $('input[name=docId]').val(docId);
+            $('input[name=doc_id]').val(docId);
             $('select[name=doc_name]').parent('div').hide();
             $('select[name=finc_year]').parent('div').show();
             $('select[name=gst_month]').parent('div').hide();
@@ -51,12 +53,13 @@
             
         } else {
             $('input[name=docId]').val(docId);
+            $('input[name=doc_id]').val(docId);
             $('select[name=doc_name]').parent('div').hide();
             $('select[name=finc_year]').parent('div').hide();
             $('select[name=gst_month]').parent('div').show();
             $('select[name=gst_year]').parent('div').show();
         }
-        console.log(docId);
+        
     });
     $('.getFileName').change(function(e) {
         var fileName = e.target.files[0].name;
