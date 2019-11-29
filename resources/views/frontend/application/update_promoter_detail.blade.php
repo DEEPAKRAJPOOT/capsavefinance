@@ -19,7 +19,7 @@
                 <div class="card-body">
                     <div class="form-fields">
                         <div class="col-md-12">
-                            <h5 class="card-title form-head">Business Details</h5>
+                            <h5 class="card-title form-head">Promoter Details</h5>
                         </div>	
                     </div>	
                     <form id="signupForm">
