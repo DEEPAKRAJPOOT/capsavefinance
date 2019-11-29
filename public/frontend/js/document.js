@@ -35,7 +35,6 @@
     
     $('.openModal').click(function(e) {
         var docId = $(this).attr('data-id');
-        alert(docId);
         $('#myModal').modal('show');
         if(docId == 4) {
             $('input[name=docId]').val(docId);
