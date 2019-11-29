@@ -14,13 +14,15 @@
 </style>
 @endsection
 @section('content')
+@if($edit)
 @include('layouts.backend.partials.admin-subnav')
+@endif
 <!-- partial -->
 <div class="content-wrapper">
    
     <ul class="sub-menu-main pl-0 m-0">
         <li>
-            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Company Details</a>
+            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Business Information</a>
         </li>
         <li>
             <a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}"  class="active">Promoter Details</a>

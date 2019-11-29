@@ -14,7 +14,9 @@
 </style>
 @endsection
 @section('content')
+@if($edit)
 @include('layouts.backend.partials.admin-subnav')
+@endif
 <!-- partial -->
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">

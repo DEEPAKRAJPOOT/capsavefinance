@@ -151,7 +151,7 @@ class ApplicationController extends Controller
                 if ($toUserId) {
                    Helpers::assignAppToUser($toUserId, $appId);
                 }
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
+                return response()->json(['message' =>trans('success_messages.save_company_detail_successfully'),'status' => 1]);
             }
             else {
                //Add application workflow stages 
@@ -177,7 +177,7 @@ class ApplicationController extends Controller
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
          
           if ($owner_info) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
+                return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }

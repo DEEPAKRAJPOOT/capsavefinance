@@ -4,7 +4,7 @@
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
         <li>
-                <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Company Details</a>
+                <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Business Information</a>
         </li>
         <li>
                 <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}"  class="active">Promoter Details</a>
