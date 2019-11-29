@@ -89,7 +89,7 @@
                                         <td width="20%"> {{ date('d-m-Y', strtotime($value->created_at))}} </td>
                                         <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
                                         <td align="center" width="20%">
-                                            <a title="Delete Document" href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
+                                            <a title="Delete Document" href="{{ Route('document_delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -108,7 +108,7 @@
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
                                 <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
-                                <input type="submit" value="Submit" class="btn btn-primary ">
+                                <input type="submit" value="Submit" class="btn btn-success btn-sm">
                             </form>
                         </div>
                     </div>
@@ -210,7 +210,7 @@
                             <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]" multiple="">
                             <label class="custom-file-label" for="customFile">Choose file</label>
                         </div>
-                        <button type="submit" class="btn btn-primary float-right" id="savedocument" >Submit</button>  
+                        <button type="submit" class="btn btn-success float-right btn-sm" id="savedocument" >Submit</button>  
                     </div>
                 </form>
             </div>

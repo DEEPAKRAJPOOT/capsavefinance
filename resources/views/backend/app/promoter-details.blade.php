@@ -432,7 +432,7 @@
            <div class="d-flex btn-section ">
             <div class="ml-auto text-right">
  
-           <button type="button" id="btnAddMore" class="btn btn-primary btn-add ml-auto">
+           <button type="button" id="btnAddMore" class="btn btn-success btn-add btn-sm ml-auto">
                     <i class="fa fa-plus"></i>
                     Add Promoter
                     </button>  </div>
@@ -447,7 +447,7 @@
             <div class="d-flex btn-section ">
             <div class="ml-auto text-right">
                <!-- <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href='company-details.php'">
-              --> <input type="button" value="Save and Continue" id="submit" class="btn btn-primary">
+              --> <input type="button" value="Save and Continue" id="submit" class="btn btn-success btn-sm">
                             
             </div>
                </div>	
