@@ -52,6 +52,7 @@
                           @csrf
                        
                         <?php 
+                       
                      /* for get api response file data   */ 
                         foreach($row->businessApi as $row1) {
                            
@@ -70,7 +71,7 @@
                         } 
                         /* for get document file data   */
                     
-                         
+                        
                          foreach($row->document as $row2) {
                              if($row2->doc_id == 2) { 
                                 $panNoFile[] =   $row2->userFile->file_path;
