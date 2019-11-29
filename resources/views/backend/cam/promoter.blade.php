@@ -169,14 +169,7 @@
                               
                              @php ($j++) 
                             @endforeach  
-
-
-
-                              
-                              
-                              
-                              
-                              <d
+  
                            </div>
                         </div>
                      </div>
