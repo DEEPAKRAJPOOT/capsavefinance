@@ -258,7 +258,6 @@ class ApplicationController extends Controller
             $bizId = $request->get('biz_id');
             $editFlag = $request->get('edit');
             $userData = User::getUserByAppId($appId);
-            
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
                 if($requiredDocs->count() != 0){
@@ -328,7 +327,28 @@ class ApplicationController extends Controller
         }
     }
     
+     /**
+     * Handling deleting documents file for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     
+    public function documentDelete($appDocFileId)
+    {
+        try {
+            $response = $this->docRepo->deleteDocument($appDocFileId);
+            
+            if ($response) {
+                Session::flash('message',trans('success_messages.deleted'));
+                return redirect()->back();
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     
     /**
      * Handling deleting documents file for the application.

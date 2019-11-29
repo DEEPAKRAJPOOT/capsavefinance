@@ -77,6 +77,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@saveDocument'
             ]);
             
+            
+            Route::get('document-delete/{appDocFileId}',
+                [
+                'as' => 'document_delete',
+                'uses' => 'Application\ApplicationController@documentDelete'
+            ]);
+            
             Route::post('promoter-document-save', [
                 'as' => 'promoter_document_save',
                 'uses' => 'Backend\ApplicationController@promoterDocumentSave'
