@@ -185,7 +185,7 @@
 										<div class="form-group">
 											<label for="txtSupplierName">Tranche Tenor (Days)
 											</label>
-											<input type="number" name="tenor_days" value="{{old('tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
+											<input type="text" name="tenor_days" value="{{old('tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
 											@error('tenor_days')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
