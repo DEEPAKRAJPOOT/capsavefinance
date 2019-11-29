@@ -339,9 +339,10 @@ class Business extends BaseModel
 
     public static function getEntityByBizId($biz_id)
     {
-        $arrData = self::select('mst_biz_entity.entity_name','mst_biz_constitution.name')
+        $arrData = self::select('mst_biz_entity.entity_name','mst_biz_constitution.name', 'users.email', 'users.mobile_no')
         ->leftjoin('mst_biz_entity', 'mst_biz_entity.id', '=', 'biz.entity_type_id')
         ->leftjoin('mst_biz_constitution', 'mst_biz_constitution.id', '=', 'biz.biz_constitution')
+        ->leftjoin('users', 'users.user_id', '=', 'biz.user_id')
         ->where('biz.biz_id', $biz_id)
         ->first();
         return $arrData;
