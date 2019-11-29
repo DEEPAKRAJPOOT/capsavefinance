@@ -28,5 +28,27 @@ return [
     
     //Roles Ids
     'anchor_role' => 11,
-    'YES'=>1
+    'YES'=>1,
+    'yes_no' => [
+        '0' => 'No',
+        '1' => 'Yes'
+    ],
+    'interest_borne_by' => [
+        '1' => 'Anchor',
+        '2' => 'Customer'
+    ],
+    'repayment_method' => [
+        '1' => 'By Nach',
+        '2' => 'By Cheque',
+        '3' => 'By NEFT/RTGS'
+    ],
+    'disburse_method' => [
+        '1' => 'To Anchor',
+        '2' => 'To Customer'
+    ],    
+    'prgm_status' => [
+        '0' => 'In Active',
+        '1' => 'Active',
+        '2' => 'Ended'
+    ]    
 ];

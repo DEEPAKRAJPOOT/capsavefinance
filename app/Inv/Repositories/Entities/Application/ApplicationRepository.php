@@ -14,7 +14,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
-
+use App\Inv\Repositories\Models\Program;
 
 
 /**
@@ -313,4 +313,31 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       dd($result);
       return $result ?: false;
     }
+    
+    /**
+     * Get Program Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getProgramData($whereCondition=[])
+    {
+        $prgmData = Program::getProgramData($whereCondition);
+        return $prgmData ? $prgmData : [];
+    }
+        
+    /**
+     * Get Anchor Data By Application Id
+     * 
+     * @param integer $app_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getAnchorDataByAppId($app_id)
+    {
+        $prgmData = Application::getAnchorDataByAppId($app_id);
+        return $prgmData ? $prgmData : [];
+    }    
 }

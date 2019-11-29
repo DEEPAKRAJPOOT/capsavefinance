@@ -343,4 +343,36 @@ class Application extends Model
         return $appData ? $appData : [];
     }
     
+    /**
+     * Get Anchor Data By Application Id
+     * 
+     * @param integer $app_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAnchorDataByAppId($app_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $appData = self::select('anchor_user.*', 'anchor.*')
+                ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
+                ->join('anchor', 'anchor.anchor_id', '=', 'anchor_user.anchor_id')
+                ->where('app.app_id', $app_id)                
+                ->first();
+                       
+        return ($appData ? $appData : null);             
+    }    
 }

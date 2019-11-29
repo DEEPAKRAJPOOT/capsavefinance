@@ -5,6 +5,8 @@ return [
     'update_assignee' => 'Application is assigned successfully.',
     'add_note' => 'Note is saved successfully.',
     'anchor_registration_success' => 'Anchor registration successfully.',
-    'anchor_registration_updated' => 'Anchor information successfully updated..'
+    'anchor_registration_updated' => 'Anchor information successfully updated..',
+    'limit_assessment_success' => 'Information saved successfully',
+    'limit_assessment_fail' => 'Something went wrong'
 ];
 

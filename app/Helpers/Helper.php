@@ -624,4 +624,24 @@ class Helper extends PaypalHelper
                 
     }
     
+    /**
+     * Format Currency
+     * 
+     * @param decimal $amount
+     * @param string $locale | optional
+     * @return string
+     */
+    public static function formatCurreny($amount, $locale='en_IN', $decimal=false, $prefixCurrency=true)
+    {        
+        //setlocale(LC_MONETARY, $locale);
+        //$formattedAmount = money_format('%!i', $amount);
+        $currency = '&#8377;';
+        $amount = !$decimal ? (int) $amount : $amount;        
+        $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
+        if ($prefixCurrency) {
+            $formattedAmount = $currency.$formattedAmount;
+        }
+        return $formattedAmount;
+    }
+    
 }
