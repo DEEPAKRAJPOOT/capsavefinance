@@ -90,7 +90,7 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        $whereCondition['prgm.status'] = 1;
+        $whereCondition['status'] = isset($whereCondition['status']) ? $whereCondition['status'] : 1;
         
         $appNote = self::select('prgm.prgm_name', 'prgm.product_name',
                 'prgm.anchor_limit', 'prgm.min_loan_size',

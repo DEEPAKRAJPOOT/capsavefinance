@@ -367,7 +367,7 @@ class Application extends Model
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        $appData = self::select('anchor_user.*', 'anchor.*')
+        $appData = self::select('app.*','anchor_user.*', 'anchor.*')
                 ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
                 ->join('anchor', 'anchor.anchor_id', '=', 'anchor_user.anchor_id')
                 ->where('app.app_id', $app_id)                

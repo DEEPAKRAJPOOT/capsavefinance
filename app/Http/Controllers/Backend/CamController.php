@@ -484,17 +484,27 @@ class CamController extends Controller
     {
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-        
+               
         $anchorData = $this->appRepo->getAnchorDataByAppId($appId);
         $anchorId = $anchorData ? $anchorData->anchor_id : 0;
-        
+        $loanAmount = $anchorData ? $anchorData->loan_amt : 0;
+                
         $whereCondition = [];
         $whereCondition['anchor_id'] = $anchorId;
         $prgmData = $this->appRepo->getProgramData($whereCondition);
+        
+        $offerWhereCond = [];
+        $offerWhereCond['app_id'] = $appId;        
+        $offerData = $this->appRepo->getOfferData($offerWhereCond);
+        $offerId = $offerData ? $offerData->offer_id : 0;
+        
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
-                ->with('prgmData', $prgmData);
+                ->with('offerId', $offerId)
+                ->with('loanAmount', $loanAmount)
+                ->with('prgmData', $prgmData)
+                ->with('offerData', $offerData);
     }
     
     /**
@@ -508,8 +518,12 @@ class CamController extends Controller
         try {
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id'); 
+            $offerId = $request->get('offer_id') ? $request->get('offer_id') : null; 
             
-            if (1) {
+            $offerData = $this->prepareOfferData($request->all());
+            $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
+            
+            if ($savedOfferData) {
                 Session::flash('message',trans('backend_messages.limit_assessment_success'));
                 return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             } else {
@@ -519,5 +533,17 @@ class CamController extends Controller
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }        
+    }
+    
+    /**
+     * Prepare Offer Data to save
+     * 
+     * @param array $requestData
+     * @return array
+     */
+    protected function prepareOfferData($requestData)
+    {
+        $offerData = [];
+        return $offerData;
     }
 }

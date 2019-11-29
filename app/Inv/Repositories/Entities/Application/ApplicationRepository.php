@@ -15,7 +15,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
-
+use App\Inv\Repositories\Models\Offer;
 
 /**
  * Application repository class
@@ -339,5 +339,34 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         $prgmData = Application::getAnchorDataByAppId($app_id);
         return $prgmData ? $prgmData : [];
-    }    
+    }  
+    
+    /**
+     * Get Offer Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getOfferData($whereCondition=[])
+    {
+        $offerData = Offer::getOfferData($whereCondition);
+        return $offerData ? $offerData : [];
+    }
+
+    /**
+     * Save Offer Data
+     * 
+     * @param array $offerData
+     * @param integer $offerId optional
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveOfferData($offerData=[], $offerId=null)
+    {
+        $offerData = Offer::saveOfferData($offerData, $offerId);
+        return $offerData ? $offerData : false;
+    }
 }

@@ -39,7 +39,7 @@
                                             <td>{{ \Helpers::customIsset($prgmData, 'is_fldg_applicable') }}</td>
                                         </tr>
 
-                                        @php 
+                                        @php                                                                                                                        
                                         $anchor_limit = \Helpers::customIsset($prgmData, 'anchor_limit'); 
                                         $anchor_limit_d = $anchor_limit ? \Helpers::formatCurreny($anchor_limit) : '';
                                         
@@ -168,91 +168,185 @@
                                     )
                                 )
                                 !!}
+                                
+                                @php
+                                $loan_offer = \Helpers::customIsset($offerData, 'loan_offer');
+                                $interest_rate = \Helpers::customIsset($offerData, 'interest_rate');
+                                $tenor = \Helpers::customIsset($offerData, 'tenor');
+                                $tenor_old_invoice = \Helpers::customIsset($offerData, 'tenor_old_invoice');
+                                $margin = \Helpers::customIsset($offerData, 'margin');
+                                $overdue_interest_rate = \Helpers::customIsset($offerData, 'overdue_interest_rate');
+                                $adhoc_interest_rate = \Helpers::customIsset($offerData, 'adhoc_interest_rate');                                
+                                $grace_period = \Helpers::customIsset($offerData, 'grace_period');
+                                $processing_fee = \Helpers::customIsset($offerData, 'processing_fee');
+                                $check_bounce_fee = \Helpers::customIsset($offerData, 'check_bounce_fee');
+                                $comment = \Helpers::customIsset($offerData, 'comment');
+                                @endphp
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group row">
-                                                <label for="txtPassword" class="col-md-4"><b>Apply Loan Amount :</b></label> 
+                                                <label for="loan_amount" class="col-md-4"><b>Apply Loan Amount :</b></label> 
                                                 <div class="col-md-8">
-                                                    <p><i class="fa fa-inr" aria-hidden="true"></i> 40,00,000</p>
+                                                    <p><i class="fa fa-inr" aria-hidden="true"></i> {!! $loanAmount ? \Helpers::formatCurreny($loanAmount) : '' !!}</p>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group row INR ">
-                                                <label for="txtPassword" class="col-md-4"><b>Loan Offer :</b></label> 
+                                                <label for="loan_offer" class="col-md-4"><b>Loan Offer :</b></label> 
                                                 <div class="col-md-8">
                                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                    <input type="text" name="employee" class="form-control" placeholder="Loan Offer " required="">
+                                                                                                        
+                                                    {!! 
+                                                        Form::text(
+                                                            'loan_offer', 
+                                                            $loan_offer ? \Helpers::formatCurreny($loan_offer) : '', 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Loan Offer'
+                                                            ]
+                                                        ) 
+                                                    !!}
+                                                     
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
-                                                <label for="txtPassword" class="col-md-4"><b>Interest Rate (%) :</b></label> 
+                                                <label for="interest_rate" class="col-md-4"><b>Interest Rate (%) :</b></label> 
                                                 <div class="col-md-8">
-
-                                                    <input type="text" name="employee" class="form-control" placeholder="Interest Rate " required="">
+                                                                                                        
+                                                    {!! 
+                                                        Form::text(
+                                                            'interest_rate', 
+                                                            $interest_rate, 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Interest Rate'
+                                                            ]
+                                                        ) 
+                                                    !!}
+                                                    
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
-                                                <label for="txtPassword" class="col-md-4"><b>Tenor (Days) :</b></label> 
+                                                <label for="tenor" class="col-md-4"><b>Tenor (Days) :</b></label> 
                                                 <div class="col-md-8">
-
-                                                    <input type="text" name="employee" class="form-control" placeholder="Tenor" required="">
+                                                                                                        
+                                                    {!! 
+                                                        Form::text(
+                                                            'tenor', 
+                                                            $tenor, 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Tenor'
+                                                            ]
+                                                        ) 
+                                                    !!}
+                                                    
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
-                                                <label for="txtPassword" class="col-md-4"><b>Tenor for old invoice (Days) :</b></label> 
-                                                <div class="col-md-8">
-
-                                                    <input type="text" name="employee" class="form-control" placeholder="Tenor for old invoice" required="">
+                                                <label for="tenor_old_invoice" class="col-md-4"><b>Tenor for old invoice (Days) :</b></label> 
+                                                <div class="col-md-8">                                                    
+                                                    
+                                                    {!! 
+                                                        Form::text(
+                                                            'tenor_old_invoice', 
+                                                            $tenor_old_invoice, 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Tenor for old invoice'
+                                                            ]
+                                                        ) 
+                                                    !!}
+                                                    
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
-                                                <label for="txtPassword" class="col-md-4"><b>Margin (%) :</b></label> 
+                                                <label for="margin" class="col-md-4"><b>Margin (%) :</b></label> 
                                                 <div class="col-md-8">
-
-                                                    <input type="text" name="employee" class="form-control" placeholder="Margin" required="">
+                                                                                                        
+                                                    {!!
+                                                        Form::text(
+                                                            'margin', 
+                                                            $margin, 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Margin'
+                                                            ]
+                                                        ) 
+                                                    !!}
+                                                    
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
-                                                <label for="txtPassword" class="col-md-4"><b>Overdue Interest Rate (%) :</b></label> 
+                                                <label for="overdue_interest_rate" class="col-md-4"><b>Overdue Interest Rate (%) :</b></label> 
                                                 <div class="col-md-8">
-
-                                                    <input type="text" name="employee" class="form-control" placeholder="Overdue Interest Rate" required="">
+                                                                                                        
+                                                    {!!
+                                                        Form::text(
+                                                            'overdue_interest_rate', 
+                                                            $overdue_interest_rate, 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Overdue Interest Rate'
+                                                            ]
+                                                        ) 
+                                                    !!}
+                                                    
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
-                                                <label for="txtPassword" class="col-md-4"><b>Adhoc Interest Rate (%) :</b></label> 
+                                                <label for="adhoc_interest_rate" class="col-md-4"><b>Adhoc Interest Rate (%) :</b></label> 
                                                 <div class="col-md-8">
-
-                                                    <input type="text" name="employee" class="form-control" placeholder="Adhoc Interest Rate" required="">
+                                                                                                        
+                                                    {!!
+                                                        Form::text(
+                                                            'adhoc_interest_rate', 
+                                                            $adhoc_interest_rate, 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Overdue Interest Rate'
+                                                            ]
+                                                        ) 
+                                                    !!}
+                                                    
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
-                                                <label for="txtPassword" class="col-md-4"><b>Grace Period  (Days) :</b></label> 
-                                                <div class="col-md-8">
-
-                                                    <input type="text" name="employee" class="form-control" placeholder="Grace Period" required="">
+                                                <label for="grace_period" class="col-md-4"><b>Grace Period  (Days) :</b></label> 
+                                                <div class="col-md-8">                                                                                                        
+                                                    {!!
+                                                        Form::text(
+                                                            'grace_period', 
+                                                            $grace_period, 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Grace Period'
+                                                            ]
+                                                        ) 
+                                                    !!}
+                                                    
                                                 </div>
                                             </div>
                                         </div>
@@ -262,7 +356,17 @@
                                                 <label for="txtPassword" class="col-md-4"><b>Processing Fee :</b></label> 
                                                 <div class="col-md-8">
                                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                    <input type="text" name="employee" class="form-control" placeholder="Processing Fee" required="">
+                                                    
+                                                    {!!
+                                                        Form::text(
+                                                            'processing_fee', 
+                                                            $processing_fee, 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Processing Fee'
+                                                            ]
+                                                        ) 
+                                                    !!}                                                    
                                                 </div>
                                             </div>
                                         </div>
@@ -271,53 +375,60 @@
                                             <div class="form-group row  INR">
                                                 <label for="txtPassword" class="col-md-4"><b>Check Bounce Fee :</b></label> 
                                                 <div class="col-md-8">
-                                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                    <input type="text" name="employee" class="form-control" placeholder="Check Bounce Fee" required="">
+                                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>                                                                                                        
+                                                    {!!
+                                                        Form::text(
+                                                            'check_bounce_fee', 
+                                                            $check_bounce_fee, 
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'placeholder' => 'Check Bounce Fee'
+                                                            ]
+                                                        ) 
+                                                    !!}                                                     
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
-                                                <label for="txtPassword" class="col-md-4"><b>Comment :</b></label> 
-                                                <div class="col-md-8">
-                                                    <textarea class="form-control" rows="5" col="5" placeholder="Comment"></textarea>
+                                                <label for="comment" class="col-md-4"><b>Comment :</b></label> 
+                                                <div class="col-md-8">                                                    
 
+                                                    {!! 
+                                                        Form::textarea(
+                                                            'comment', 
+                                                            $comment,
+                                                            [
+                                                            'class' => 'form-control', 
+                                                            'rows' => 5, 
+                                                            'col' => 5
+                                                            ]
+                                                        ) 
+                                                    !!}
                                                 </div>
                                             </div>
                                         </div>
-
-
-
-
-
-
-
-
                                     </div>
 
                                 {!! Form::hidden('app_id', $appId) !!}
                                 {!! Form::hidden('biz_id', $bizId) !!}
+                                {!! Form::hidden('offer_id', $offerId) !!}
                                 {!!
                                 Form::close()
                                 !!}
                             </div>
                         </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <button class="btn btn-success btn-sm float-right  mt-3 ml-3"> Save</button>	
+                        {!! 
+                            Form::submit(
+                                'Save', 
+                                [
+                                    'name'=>'btn_save_offer', 
+                                    'class' => 'btn btn-success btn-sm float-right  mt-3 ml-3'
+                                ]
+                            )
+                        !!}
                         <div class="clearfix"></div>
                     </div>
 
