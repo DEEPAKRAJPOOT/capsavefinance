@@ -44,7 +44,7 @@ class ApplicationController extends Controller
         }
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
-            return view('frontend.application.update_business_information')
+            return view('frontend.application.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states])
                         ->with('user_id',$request->get('user_id'))
                         ->with('app_id',$request->get('app_id'))
