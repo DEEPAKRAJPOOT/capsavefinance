@@ -9,7 +9,7 @@
             <a href="#" class="{{$route_name == 'cam_anchor' ? 'active' : '' }}">Anchor</a>
         </li>
         <li>
-            <a href="#" class="{{$route_name == 'cam_promoter' ? 'active' : '' }}">Promoter</a>
+            <a href="{{route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{$route_name == 'cam_promoter' ? 'active' : '' }}">Promoter</a>
         </li>
         <li>
             <a href="{{route('cam_cibil', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{$route_name == 'cam_cibil' ? 'active' : '' }}">Credit History &amp; Hygine Check</a>

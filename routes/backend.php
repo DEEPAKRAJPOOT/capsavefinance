@@ -196,6 +196,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_new_application',
                 'uses' => 'Backend\ApplicationController@saveBusinessInformation'
             ]);
+
+
+            Route::get('cam/promoter', [
+                'as' => 'cam_promoter',
+                'uses' => 'Backend\CamController@showPromoter'
+            ]);
+
+
         });
 
         Route::group(['prefix' => 'lead'], function () {
