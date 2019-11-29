@@ -20,6 +20,7 @@ date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
 {
+    protected $download_xlsx = TRUE;
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
@@ -140,8 +141,8 @@ class CamController extends Controller
       $post_data = $request->all();
       $appId = $request->get('appId');
       $filepath = $this->getBankFilePath($appId);
-      //$response = $this->_callBankApi($filepath);
-      $response = json_decode(base64_decode($this->dummy_resp),true);
+      $response = $this->_callBankApi($filepath, $appId);
+      //$response = json_decode(base64_decode($this->dummy_resp),true);
       if ($response['status'] == 'success') {
         return response()->json(['message' =>'Bank Statement analysed successfully.','status' => 1,
           'value' => $response]);
@@ -163,7 +164,7 @@ class CamController extends Controller
     }
 
     private function _getFinanceId() {
-        $rand_length = 4;
+        $rand_length = 3;
         $min_finance_id = $rand_length + 8;
         $temp =  $y = date('Y') - 2018;
         $append = '';
@@ -173,12 +174,7 @@ class CamController extends Controller
         }
         $fixed = $temp >= 26 ? floor($temp / 26) : 0;
         $y = $y % 26 == 0 ?  90 : ($y % 26) + 64;
-        if ($fixed) {
-           for ($i=0; $i < $fixed; $i++) { 
-            $append .= 'Z';   
-           }
-        }
-        $year = $append. chr($y);
+        $year = $fixed. chr($y);
         $m = date('m') + 64;
         $d = date('d');
         $d = (($d <= 25) ? ($d + 64) : ($d + 23));
@@ -190,12 +186,13 @@ class CamController extends Controller
     }
 
     private function _financeid_reverse($string = '') {
-        $min_finance_id = 12;
+        $min_finance_id = 11;
         $strlen = strlen($string);
-        $extra_year = ($strlen -  $min_finance_id) * 26;
+        $extra_year = substr($string, 0, 1) * 26;
         $value = substr($string, - $min_finance_id);
         $date = substr($value, 0, 4);
         $time = substr($value, 4, 4);
+        $random = substr($value, 8);
         list($y , $m, $d, $h) = str_split($date);
         $y = ord($y) + 2018 - 64 + $extra_year;
         $m = ord($m) - 64;
@@ -203,21 +200,19 @@ class CamController extends Controller
         $h = ord($h) - 65;
         $i = substr($time, 0, 2);
         $s = substr($time,-2);
-        $datetime = "$y-$m-$d $h:$i:$s";
+        $datetime = "$y-$m-$d $h:$i:$s-$random";
         return $datetime;
     }
 
     public function showCibilForm(Request $request){
-    //  dd($request->all());
         $biz_id = $request->get('biz_id');
-        //$biz_id=1;
         $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
         $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
         return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData'));
     }
 
 
-    private function _callBankApi($filespath){
+    private function _callBankApi($filespath, $appId){
         $bsa = new Bsa_lib();
         $reportType = 'xml';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
@@ -283,10 +278,24 @@ class CamController extends Controller
             return $final_res;
         }
 
+
+        if ($this->download_xlsx) {
+          $req_arr = array(
+            'perfiosTransactionId' => $final_res['perfiosTransactionId'],
+            'types' => 'xlsx',
+          );
+          $get_rep = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
+          $file_name = $appId.'_banking.xlsx';
+          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$file_name, $get_rep['result']); 
+
+           $file= url('storage/user/'. $file_name);
+    	   header('location:'.$file);
+        }
         $req_arr = array(
             'perfiosTransactionId' => $final_res['perfiosTransactionId'],
             'types' => $reportType,
-         );
+        );
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['prolitusTransactionId'] = $prolitus_txn;
         $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
@@ -356,24 +365,8 @@ class CamController extends Controller
             $final_res = $init_txn;
             $final_res['api_type'] = "Initiate Txn";
         }
-        dd($final_res);
-        
+        dd($final_res); 
     }
-
-
-    public function getBankReport() {
-        $bsa = new Bsa_lib();
-        $reportType = 'xml';
-        $req_arr = array(
-            'perfiosTransactionId' => 'XJHT1574920498779',//'2TKX1574769478737',//$final_res['perfiosTransactionId'],
-            'types' => $reportType,
-         );
-        $get_rep = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
-        print_r($get_rep);die;
-        dd($get_rep);
-    }
-
-
     public function uploadFinancialStatement() {
         $perfios = new Perfios_lib();
         $reportType = 'xml';
@@ -447,11 +440,27 @@ class CamController extends Controller
          dd($final_res); 
     }
 
+
+
+    public function getBankReport() {
+        $bsa = new Bsa_lib();
+        $reportType = 'xml';
+        $req_arr = array(
+            'perfiosTransactionId' => 'XJHT1574920498779',//'2TKX1574769478737',//$final_res['perfiosTransactionId'],
+            'types' => $reportType,
+         );
+        $get_rep = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
+        echo "<pre>";
+        print_r($get_rep);
+        die;
+
+    }
+
     public function getFinanceReport($value='') {
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $reportType = 'xml';
+        $reportType = 'xlsx';
         $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
@@ -461,6 +470,9 @@ class CamController extends Controller
          );
         
         $payload = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
+        $file_name = 'finance.xlsx';
+        $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+        \File::put(storage_path('app/public/user').'/'.$file_name, $payload['result']);
         dd($payload);
     }
 

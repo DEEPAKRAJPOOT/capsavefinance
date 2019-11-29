@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
 use App\Http\Requests\DocumentRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
@@ -228,7 +229,7 @@ class ApplicationController extends Controller
                 return response()->json([
                     'result' => $response, 
                     'status' => 1, 
-                    'file_path' => $response->file_path 
+                    'file_path' => Storage::disk('s3')->url($response->file_path)  
                 ]);
             } else {
                 return response()->json([
@@ -257,8 +258,12 @@ class ApplicationController extends Controller
             
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
-                if(!empty($requiredDocs)){
+                if($requiredDocs->count() != 0){
                     $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
+                }
+                else {
+                    Session::flash('message',trans('error_messages.document'));
+                    return redirect()->back();
                 }
             }
             else {

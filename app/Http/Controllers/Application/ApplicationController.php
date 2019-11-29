@@ -15,6 +15,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
+use App\Libraries\KarzaTxn_lib;
 
 class ApplicationController extends Controller
 {
@@ -44,7 +45,7 @@ class ApplicationController extends Controller
         }
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
-            return view('frontend.application.update_business_information')
+            return view('frontend.application.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states])
                         ->with('user_id',$request->get('user_id'))
                         ->with('app_id',$request->get('app_id'))
@@ -81,7 +82,7 @@ class ApplicationController extends Controller
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
                     
                     Session::flash('message',trans('success_messages.save_company_detail_successfully'));
-                    return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+                    return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id'], 'edit' => 1]);
                 } else {
                     //Add application workflow stages
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2);
@@ -102,6 +103,7 @@ class ApplicationController extends Controller
     public function showPromoterDetail(Request $request)
     {
         $biz_id = $request->get('biz_id');
+        $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
@@ -114,11 +116,20 @@ class ApplicationController extends Controller
        {
            return  redirect()->back();
        }
-       return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
-           'cin_no' => $getCin->cin,
-           'ownerDetails' => $ownerDetail,
-           'biz_id' => $biz_id
-        ]);
+        if($editFlag == 1) { 
+            return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
+                'cin_no' => $getCin->cin,
+                'ownerDetails' => $ownerDetail,
+                'biz_id' => $biz_id
+            ]);
+        } 
+      
+           /* return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
+                'cin_no' => $getCin->cin,
+                'ownerDetails' => $ownerDetail,
+                'biz_id' => $biz_id
+            ]);  */
+        
     } 
 
     /**
@@ -182,26 +193,38 @@ class ApplicationController extends Controller
     public function showDocument(Request $request)
     {
         $appId = $request->get('app_id');
+        $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
         $appData = $this->appRepo->getAppDataByAppId($appId);
         
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
-            if(!empty($requiredDocs)){
+            if($requiredDocs->count() != 0){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
             }
             else {
-                return redirect()->back()->withErrors(trans('error_messages.document'));
+                Session::flash('message',trans('error_messages.document'));
+                return redirect()->back();
             }
         }
         else {
             return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
-
-        return view('frontend.application.document')->with([
-            'requiredDocs' => $requiredDocs,
-            'documentData' => $docData
-        ]);
+//            dd($docData);
+        if($editFlag == 1) {
+            return view('frontend.application.update_document')->with([
+                'requiredDocs' => $requiredDocs,
+                'documentData' => $docData
+            ]); 
+        }
+        
+        else {
+            return view('frontend.application.document')->with([
+                'requiredDocs' => $requiredDocs,
+                'documentData' => $docData
+            ]); 
+            
+        }
     } 
     
     /**
@@ -311,5 +334,43 @@ class ApplicationController extends Controller
        return view('frontend.application.index');   
               
     }
-    
+
+
+    public function gstinForm(){
+     $user_id = Auth::user()->user_id;
+     $gst_details = State::getGstbyUser($user_id);
+     $gst_no = $gst_details['pan_gst_hash'];
+     return view('frontend.application.gstin',compact('gst_no'));   
+    }
+
+    public function analyse_gst(Request $request){
+      $post_data = $request->all();
+      $gst_no = trim($request->get('gst_no'));
+      $gst_usr = trim($request->get('gst_usr'));
+      $gst_pass = trim($request->get('gst_pass'));
+
+      if (empty($gst_no)) {
+        return response()->json(['message' =>'GST Number can\'t be empty.','status' => 0]);
+      }
+      if (empty($gst_usr)) {
+        return response()->json(['message' =>'GST Username can\'t be empty.','status' => 0]);
+      }
+      if (empty($gst_pass)) {
+        return response()->json(['message' =>'GST Password can\'t be empty.','status' => 0]);
+      }
+
+      $karza = new KarzaTxn_lib();
+        $req_arr = array(
+            'gstin' => $gst_no,//'09AALCS4138B1ZE',
+            'username' => $gst_usr,//'prolitus27',
+            'password' => $gst_pass,//'Prolitus@1234',
+        );
+      $response = $karza->api_call($req_arr);
+      if ($response['status'] == 'success') {
+        return response()->json(['message' =>'GST data pulled successfully.','status' => 1,
+          'value' => $response['result']]);
+      }else{
+        return response()->json(['message' =>'Something went wrong','status' => 0]);
+      }
+    }
 }

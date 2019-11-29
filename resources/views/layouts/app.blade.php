@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Rentalpha</title>
+    <title>Capsave</title>
     <link rel="shortcut icon" href="{{url('backend/assets/images/favicon.png')}}" />
     <!--<link rel="stylesheet" href="fonts/font-awesome/font-awesome.min.css" />-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -29,12 +29,43 @@
             <div class="row row-offcanvas row-offcanvas-right">
                 @include('layouts.partials.front_sidebar')
                 <!-- partial -->
+                @if(Session::has('message'))
+                <div class="content-wrapper-msg">
+                <div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+                    {{ Session::get('message') }}
+                </div>
+                </div>
+                @endif
+                
                 @yield('content')
                 
                 @include('layouts.front_footer')
             </div>
         </div>
     </div>
+
+     <div class="isloader" style="display:none;">  
+            <img src="{{asset('backend/assets/images/loader.gif')}}">
+    </div>
+    <style>
+        .error{
+            color:red !important;
+        }
+        .isloader{ 
+            position: fixed;    
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,.6);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            z-index: 9;
+        }
+    </style>
     <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
@@ -71,7 +102,7 @@
                 endDate: new Date()
             });
 
-            $('.number_format').keyup(function(event) {
+            $('.number_format').on('input', function(event) {
                // skip for arrow keys
                if(event.which >= 37 && event.which <= 40) return;
 

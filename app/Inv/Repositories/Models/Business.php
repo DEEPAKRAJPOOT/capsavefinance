@@ -68,7 +68,7 @@ class Business extends BaseModel
         'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
-        'turnover_amt'=>$attributes['biz_turnover'],
+        'turnover_amt'=>str_replace(',', '', $attributes['biz_turnover']),
         'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
@@ -126,7 +126,7 @@ class Business extends BaseModel
         $app = Application::create([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
-                'loan_amt'=>$attributes['loan_amount'],
+                'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
                 'created_by'=>$userId
             ]);
 
@@ -224,7 +224,7 @@ class Business extends BaseModel
         'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
-        'turnover_amt'=>$attributes['biz_turnover'],
+        'turnover_amt'=>str_replace(',', '', $attributes['biz_turnover']),
         'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
@@ -302,7 +302,7 @@ class Business extends BaseModel
 
         // update into rta_app table
         $app_id = Application::where('biz_id',$bizId)->update([
-                'loan_amt'=>$attributes['loan_amount'],
+                'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
                 'updated_by'=>$userId
             ]);
 

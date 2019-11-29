@@ -190,7 +190,7 @@
                                          </div>
                                         @endif
                                         <div class="custom-file upload-btn-cls mb-3 mt-2">
-                                            <input type="file" class="custom-file-input getFileName" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="">
+                                            <input type="file" class="custom-file-input getFileName" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="" required="">
                                             <label class="custom-file-label" for="customFile{{$data->doc_id}}">Choose file</label>
                                         </div>
                                         <button type="submit" class="btn btn-primary float-right" id="submitDocument">Submit</button>  

@@ -5,13 +5,13 @@
     <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
 		<li>
-			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Company Details</a>
+			<a href="javascript:void(0);" class="active">Business Information</a>
 		</li>
 		<li>
-			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Promoter Details</a>
+			<a href="javascript:void(0);">Promoter Details</a>
 		</li>
 		<li>
-			<a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
+			<a href="javascript:void(0);">Documents</a>
 		</li>
 	</ul>
 
@@ -35,7 +35,7 @@
 							<div class="row">
 								<div class="col-md-4">
 									<div class="form-group">
-										<label for="txtEmail">Company Pan
+										<label for="txtEmail">Company PAN
 											<span class="mandatory">*</span>
 										</label>
 										<span class="text-success" id="pan-msg" style="display: none;">
@@ -160,7 +160,7 @@
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
 											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control" tabindex="9" placeholder="Enter Business Turnover" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="15">
+											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
 											@error('biz_turnover')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -174,7 +174,7 @@
 												<span class="mandatory">*</span>
 											</label>
 											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control" tabindex="10" placeholder="Enter Applied Loan Amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="10" required>
+											<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" required>
 											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
 											@error('loan_amount')
 								                <span class="text-danger error">{{ $message }}</span>
@@ -185,7 +185,7 @@
 										<div class="form-group">
 											<label for="txtSupplierName">Tranche Tenor (Days)
 											</label>
-											<input type="number" name="tenor_days" value="{{old('tenor_days')}}" class="form-control" tabindex="11" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
+											<input type="text" name="tenor_days" value="{{old('tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
 											@error('tenor_days')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
