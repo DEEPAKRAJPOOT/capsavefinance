@@ -612,26 +612,34 @@ class ApplicationController extends Controller
      */
     public function showPanResponseData(Request $request)
     {
-        dd($request->all());
-        return view('backend.app.promoter_pan_data');
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_pan_data')->with('res', $res);
         
     } 
     public function showDlResponseData(Request $request)
     {
-        dd($request->all());
-        return view('backend.app.promoter_dl_data');
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_dl_data')->with('res', $res);
         
     } 
     public function showVoterResponseData(Request $request)
     {
-        dd($request->all());
-        return view('backend.app.promoter_voter_data');
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_voter_data')->with('res', $res);
         
     } 
     public function showPassResponseData(Request $request)
     {
-        dd($request->all());
-        return view('backend.app.promoter_pass_data');
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_pass_data')->with('res', $res);
         
     } 
     

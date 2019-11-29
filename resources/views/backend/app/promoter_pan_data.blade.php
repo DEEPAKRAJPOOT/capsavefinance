@@ -3,7 +3,6 @@
 @section('content')
 
 
-
  <table class="table  table-striped table-hover overview-table">
         <thead class="thead-primary">
             <tr>
@@ -13,23 +12,24 @@
         <tbody>
             <tr>
                 <th>Status of the PAN</th>
-                <td>Active</td>
+                <td>{{isset($res->status) ? $res->status : '' }}</td>
             </tr>
 
             <tr>
                 <th>PAN has been tagged as duplicate by Income Tax Department(ITD)</th>
-                <td>No</td>
+                <td>{{ ($res->duplicate==false) ? 'false' : 'true' }}</td>
             </tr>
             <tr>
                 <th>Given Name matches with the ITD Records</th>
-                <td>Yes</td>
+                <td>{{isset($res->nameMatch) ? $res->nameMatch : '' }}</td>
             </tr>
             <tr>
                 <th>Given DOB matches with the ITD Records</th>
-                <td>Yes</td>
+                <td>{{isset($res->dobMatch) ? $res->dobMatch : '' }}</td>
             </tr>
         </tbody>
     </table>
+ 
  
  
  

@@ -101,7 +101,7 @@
 
                             <div class="row">
                                 <div class="col-md-4">
-                                    <div class="form-group">
+                                    p<div class="form-group">
                                         <label for="txtCreditPeriod">Promoter Name
 
                                             <span class="mandatory">*</span>
@@ -258,9 +258,9 @@
                                                             <td width="28%">
 
                                                             <div class="file-browse float-left position-seta">
-                                                            <a data-toggle="modal" data-target="#modalPromoter" data-url ="{{route('show_pan_data',['id'=>3,'owner_id' => $row->biz_owner_id ])}}"> <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
+                                                                <a data-toggle="modal" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}"> <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
                     </a>
-                                                                       <a  href="{{ isset($panNoFile) ? Storage::disk('s3')->url($panNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($panNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                       <a  href="{{ isset($panNoFile[$j]) ? Storage::disk('s3')->url($panNoFile[$j]) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($panNoFile[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
 
                                                            
 
@@ -288,7 +288,7 @@
                                                             </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="5"> <i class="fa fa-eye"></i></button>
+                                                                    <a data-toggle="modal" data-target="#modalPromoter1" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_dl_data',['type'=>5,'ownerid' => $row->biz_owner_id ])}}">  <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="5"> <i class="fa fa-eye"></i></button></a>
                                                                      <a  href="{{ isset($dlNoFile[$j]) ? Storage::disk('s3')->url($dlNoFile[$j]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($dlNoFile[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -314,7 +314,7 @@
                                                                 </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="4"> <i class="fa fa-eye"></i></button>
+                                                                    <a data-toggle="modal" data-target="#modalPromoter2" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_voter_data',['type'=>4,'ownerid' => $row->biz_owner_id ])}}">   <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="4"> <i class="fa fa-eye"></i></button></a>
                                                                      <a  href="{{ isset($voterNoFile) ? Storage::disk('s3')->url($voterNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($voterNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -341,7 +341,7 @@
                                                                 </td>
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="6"> <i class="fa fa-eye"></i></button>
+                                                                    <a data-toggle="modal" data-target="#modalPromoter3" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pass_data',['type'=>6,'ownerid' => $row->biz_owner_id ])}}">     <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="6"> <i class="fa fa-eye"></i></button></a>
                                                                      <a  href="{{ isset($passNoFile) ? Storage::disk('s3')->url($passNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($passNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -470,8 +470,10 @@
             </div>
         </div>
     </div>
-    {!!Helpers::makeIframePopup('modalPromoter','Upload User List', 'modal-md')!!}
-
+    {!!Helpers::makeIframePopup('modalPromoter','View PAN Card Detail', 'modal-lg')!!}
+     {!!Helpers::makeIframePopup('modalPromoter1','View Driving License Detail', 'modal-lg')!!}
+      {!!Helpers::makeIframePopup('modalPromoter2','View Voter ID  Detail', 'modal-lg')!!}
+       {!!Helpers::makeIframePopup('modalPromoter3','View Passport Detail', 'modal-lg')!!}
 @endsection
 @section('jscript')
 
