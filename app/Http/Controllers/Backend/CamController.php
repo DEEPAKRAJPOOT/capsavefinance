@@ -11,7 +11,6 @@ use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\Cam;
 use App\Libraries\Perfios_lib;
 use App\Libraries\Bsa_lib;
-use App\Libraries\KarzaTxn_lib;
 use Auth;
 use Session;
 date_default_timezone_set('Asia/Kolkata');
@@ -432,30 +431,13 @@ class CamController extends Controller
 
 
     public function getBankReport() {
-        $karza = new KarzaTxn_lib();
+        $bsa = new Bsa_lib();
+        $reportType = 'xml';
         $req_arr = array(
-            'username' => 'prolitus27',
-            'gstin' => '09AALCS4138B1ZE',
-            'password' => 'Prolitus@1234',
+            'perfiosTransactionId' => 'XJHT1574920498779',//'2TKX1574769478737',//$final_res['perfiosTransactionId'],
+            'types' => $reportType,
          );
-        $get_rep = $karza->api_call($req_arr);
-        echo "<pre>";
-        print_r($get_rep);die;
-
-
-
-        // $bsa = new Bsa_lib();
-        // $reportType = 'xml';
-        // $req_arr = array(
-        //     'perfiosTransactionId' => 'XJHT1574920498779',//'2TKX1574769478737',//$final_res['perfiosTransactionId'],
-        //     'types' => $reportType,
-        //  );
-        // $get_rep = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
-
-        // $file_name = 'banking.xlsx';
-        // $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-        // \File::put(storage_path('app/public/user').'/'.$file_name, $get_rep['result']);
-
+        $get_rep = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         echo "<pre>";
         print_r($get_rep);
         die;

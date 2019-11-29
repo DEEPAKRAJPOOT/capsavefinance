@@ -48,6 +48,11 @@ Route::group(
         'uses' => 'Backend\CamController@analyse_bank'
     ]);
 
+    Route::post('gst_analysys', [
+        'as' => 'gstAnalysis',
+        'uses' => 'Application\ApplicationController@analyse_gst'
+    ]);
+
     Route::post(
         'download_user_cibil',
         [

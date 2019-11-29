@@ -99,6 +99,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'as' => 'front_application_list',
                 'uses' => 'Application\ApplicationController@index'
             ]);
+
+            Route::get('/gstin', [
+                'as' => 'front_gstin',
+                'uses' => 'Application\ApplicationController@gstinForm'
+            ]);
         });
     });
      

@@ -15,6 +15,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
+use App\Libraries\KarzaTxn_lib;
 
 class ApplicationController extends Controller
 {
@@ -330,5 +331,40 @@ class ApplicationController extends Controller
        return view('frontend.application.index');   
               
     }
-    
+
+
+    public function gstinForm(){
+     return view('frontend.application.gstin');   
+    }
+
+    public function analyse_gst(Request $request){
+      $post_data = $request->all();
+      $gst_no = trim($request->get('gst_no'));
+      $gst_usr = trim($request->get('gst_usr'));
+      $gst_pass = trim($request->get('gst_pass'));
+
+      if (empty($gst_no)) {
+        return response()->json(['message' =>'GST no can\'t be empty.','status' => 0]);
+      }
+      if (empty($gst_usr)) {
+        return response()->json(['message' =>'GST Username can\'t be empty.','status' => 0]);
+      }
+      if (empty($gst_pass)) {
+        return response()->json(['message' =>'GST Password can\'t be empty.','status' => 0]);
+      }
+
+      $karza = new KarzaTxn_lib();
+        $req_arr = array(
+            'gstin' => $gst_no,//'09AALCS4138B1ZE',
+            'username' => $gst_usr,//'prolitus27',
+            'password' => $gst_pass,//'Prolitus@1234',
+        );
+      $response = $karza->api_call($req_arr);
+      if ($response['status'] == 'success') {
+        return response()->json(['message' =>'GST data pulled successfully.','status' => 1,
+          'value' => $response]);
+      }else{
+        return response()->json(['message' =>'Something went wrong','status' => 0]);
+      }
+    }
 }
