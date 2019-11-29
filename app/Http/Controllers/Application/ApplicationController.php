@@ -344,7 +344,7 @@ class ApplicationController extends Controller
       $gst_pass = trim($request->get('gst_pass'));
 
       if (empty($gst_no)) {
-        return response()->json(['message' =>'GST no can\'t be empty.','status' => 0]);
+        return response()->json(['message' =>'GST Number can\'t be empty.','status' => 0]);
       }
       if (empty($gst_usr)) {
         return response()->json(['message' =>'GST Username can\'t be empty.','status' => 0]);

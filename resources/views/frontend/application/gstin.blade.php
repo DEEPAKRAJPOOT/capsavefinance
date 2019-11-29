@@ -30,7 +30,7 @@
                                             <label for="txtPassword">GST Number
                                                 <span class="mandatory">*</span>
                                             </label>
-                                            <input type="text" name="biz_gst_number" value="09AALCS4138B1ZE" id="biz_gst_number" class="form-control" tabindex="1" placeholder="Enter GST Number">
+                                            <input type="text" name="biz_gst_number" value="" id="biz_gst_number" class="form-control" tabindex="1" placeholder="Enter GST Number">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -38,7 +38,7 @@
                                             <label for="txtEmail">GST USERNAME
                                                 <span class="mandatory">*</span>
                                             </label>
-                                            <input type="text" name="biz_gst_username" value="prolitus27" id="biz_gst_username" value="" class="form-control" tabindex="1" placeholder="Enter GST Username">
+                                            <input type="text" name="biz_gst_username" value="" id="biz_gst_username" value="" class="form-control" tabindex="1" placeholder="Enter GST Username">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -46,7 +46,7 @@
                                             <label for="txtEmail">GST PASSWORD
                                                 <span class="mandatory">*</span>
                                             </label>
-                                            <input type="text" name="biz_gst_password" value="Prolitus@1234" id="biz_gst_password" value="" class="form-control" tabindex="3" placeholder="Enter GST Password">
+                                            <input type="password" name="biz_gst_password" value="" id="biz_gst_password" value="" class="form-control" tabindex="3" placeholder="Enter GST Password">
                                         </div>
                                     </div>
                                 </div>
