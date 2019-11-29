@@ -180,13 +180,26 @@
                                 <div class="col-md-4">
                                     <div class="form-group INR">
                                         <label for="txtEmail">Networth
-
-
                                         </label><a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                         <input type="text" name="networth[]" maxlength='15' id="networth{{isset($row->first_name) ? $i : '1'}}" value="{{$row->networth}}" class="form-control networth" tabindex="1" placeholder="Enter Networth">
-                                             </div>
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="txtEmail">Mobile <span class="mandatory">*</span></label>
+                                        <input type="text" name="mobile_no" maxlength='10' id="mobile_no" value="{{$row->mobile_no}}" class="form-control" tabindex="1" placeholder="Enter Mobile no">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input type="button" class="btn-upload btn-sm" style="margin-top: 30px;" name="verify_mobile_no" id="verify_mobile_no" value="Verify" class="form-control" tabindex="1">
+                                    </div>
+                                </div>
+                            </div>
 
+                            <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="txtCreditPeriod">Address
@@ -194,9 +207,9 @@
                                         </label>
                                          <textarea class="form-control textarea address" placeholder="Enter Address" name="owner_addr[]" id="address{{isset($row->first_name) ? $i : '1'}}">{{$row->owner_addr}}</textarea>
                                       </div>
-                                </div>
-
+                                </div> 
                             </div>
+                           
                             <h5 class="card-title form-head-h5 mt-3">Document </h5>									
                             <div class="row mt-2 mb-4">
                                 <div class="col-md-12">
@@ -219,8 +232,8 @@
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
 
-                                              <span class="text-success" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($panNo->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-                                              <span class="text-danger" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                      <span class="text-success" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($panNo->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                      <span class="text-danger" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
 
                                                
                                                                     <a href="javascript:void(0);" id='ppan{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripan" style="top:0px; pointer-events:{{ (isset($panNo->requestId)) ? 'none' : ''}}">{{ isset($panNo->requestId) ? 'Verified' : 'Verify' }}</a>
