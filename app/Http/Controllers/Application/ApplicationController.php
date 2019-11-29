@@ -16,6 +16,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Libraries\KarzaTxn_lib;
+use PDF;
 
 class ApplicationController extends Controller
 {
@@ -367,8 +368,14 @@ class ApplicationController extends Controller
         );
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
+          $myhtml = view('frontend.application.report');
+          $file_name = $gst_no. '.pdf';
+          $file = storage_path('app/public/user').'/'.$file_name;
+          $pdf = PDF::loadView('frontend.application.report');
+          $pdf->save($file);
+          $response['file_url'] = url('storage/user/'. $file_name);
         return response()->json(['message' =>'GST data pulled successfully.','status' => 1,
-          'value' => $response['result']]);
+          'value' => $response]);
       }else{
         return response()->json(['message' =>'Something went wrong','status' => 0]);
       }

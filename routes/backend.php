@@ -196,6 +196,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_new_application',
                 'uses' => 'Backend\ApplicationController@saveBusinessInformation'
             ]);
+
+
+
         });
 
         Route::group(['prefix' => 'lead'], function () {
@@ -287,6 +290,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('financial_report', [
                 'as' => 'financial_statement',
                 'uses' => 'Backend\CamController@getFinanceReport'
+            ]);
+
+            Route::get('ww', [
+                'as' => 'pdfview',
+                'uses' => 'Application\ApplicationController@pdfview'
             ]);
 
 

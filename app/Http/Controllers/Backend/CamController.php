@@ -280,15 +280,14 @@ class CamController extends Controller
           $file_name = $appId.'_banking.xlsx';
           $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
           \File::put(storage_path('app/public/user').'/'.$file_name, $get_rep['result']); 
-
-           $file= url('storage/user/'. $file_name);
-    	   header('location:'.$file);
+          $file= url('storage/user/'. $file_name);
         }
         $req_arr = array(
             'perfiosTransactionId' => $final_res['perfiosTransactionId'],
             'types' => $reportType,
         );
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
+        $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
         $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
         return $final_res;
