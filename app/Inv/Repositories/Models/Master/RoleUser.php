@@ -118,9 +118,37 @@ class RoleUser extends BaseModel
      */
     public static function getAllData()
     {
-         $arr = self::select('users.*','roles.*')
+         $arr = self::select('users.*','users.is_active as u_active','roles.*')
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
                 ->join('roles', 'roles.id', '=', 'role_user.role_id');
                 return $arr;
     }
+    
+     /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function getRoleDataById($user_id)
+    {
+        $arrRoles = self::where('user_id', $user_id)->first();
+        return ($arrRoles ? : false);
+    }
+    
+     /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function updateUserRole($userId, $role)
+    {
+        $arrRoles = self::where('user_id', $userId)->update($role);
+        return ($arrRoles ? : false);
+    }
+    
+    
 }

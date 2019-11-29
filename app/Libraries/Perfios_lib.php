@@ -95,8 +95,20 @@ class Perfios_lib{
 	     }
 
 	     $url = SELF::METHOD[$method]. $concat;
-	     $result = $this->_curl_call($method, $url, $postdata, $header);
-	     return $result;
+	     $response = $this->_curl_call($method, $url, $postdata, $header);
+	     if (!empty($response['error_no'])  || !empty($response['error'])) {
+	     	$resp['code'] 	 = "CurlError";
+	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
+			return $resp;
+	     }
+	     if ($method == SELF::GET_STMT && !in_array($params['reportType'], ['xml','json'])) {
+	     	$resp['status'] = "success";
+		 	$resp['result'] = $response['result'];
+		 	return $resp;
+	     }
+
+	     $result = $this->_parseResult($response['result'], $method);
+		 return $result;
     }
 
     private function _curl_call($method, $url, $postdata, $header ,$timeout= 300){
@@ -114,14 +126,7 @@ class Perfios_lib{
 		$resp['error_no'] = curl_errno($curl);
 		$resp['result'] = $output;
 		curl_close($curl);
-		if (!empty($resp['error_no']) || !empty($resp['error'])) {
-			$response['status'] = 'fail';
-	     	$response['code'] 	 = "CurlError";
-	     	$response['message'] = $resp['error'] ?? "Unable to get response. Please retry.";
-			return $response;
-	     }
-	     $result = $this->_parseResult($resp['result'], $method);
-		 return $result;
+		return $resp;
     }
 
     private function _parseResult($xml, $method) {

@@ -21,7 +21,7 @@
                 <label for="txtCreditPeriod">First Name
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="f_name" id="f_name" value="" class="form-control" tabindex="1" placeholder="First Name" required="">
+                <input type="text" name="f_name" id="f_name" value="{{$userData->f_name}}" class="form-control" tabindex="1" placeholder="First Name" required="">
             </div>
         </div>
         <div class="col-md-6">
@@ -29,7 +29,7 @@
                 <label for="txtAnchorName">Last Name
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="l_name" id="l_name" value="" class="form-control" tabindex="3" placeholder="Last Name" required="">
+                <input type="text" name="l_name" id="l_name" value="{{$userData->l_name}}" class="form-control" tabindex="3" placeholder="Last Name" required="">
             </div>
         </div>
     </div>
@@ -39,7 +39,7 @@
                 <label for="txtCreditPeriod">Mobile
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="mobile_no" id="mobile_no" value="" class="form-control" tabindex="1" placeholder="Mobile no" required="">
+                <input type="text" name="mobile_no" maxlength="10" id="mobile_no" value="{{$userData->mobile_no}}" class="form-control" tabindex="1" placeholder="Mobile no" required="">
             </div>
         </div>
         <div class="col-md-6">
@@ -47,14 +47,14 @@
                 <label for="txtAnchorName">E-mail
                     <span class="mandatory">*</span>
                 </label>
-                <input type="email" name="email" id="email" value="" class="form-control" tabindex="3" placeholder="Enter E-mail" required="">
+                <input type="email" name="email" id="email" value="{{$userData->email}}" class="form-control" tabindex="3" placeholder="Enter E-mail" required="">
             </div>
         </div>
     </div>
     <div class="row">
 
 
-        <div class="col-md-6">
+<!--        <div class="col-md-6">
             <div class="form-group">
                 <label for="txtMobile">Password
                     <span class="mandatory">*</span>
@@ -74,7 +74,7 @@
 
                 </div>
             </div>                      
-        </div>	
+        </div>	-->
     </div>
     <div class="row">
         <div class="col-md-6">
@@ -85,7 +85,7 @@
                 {!!
                 Form::select('is_active',
                 [''=>'Please select','0'=> 'In Active','1'=>'Active'],
-                null,
+                $userData->is_active,
                 array('id' => 'is_active',
                 'class'=>'form-control'))
                 !!}
@@ -99,7 +99,7 @@
                 {!!
                 Form::select('role_id',
                 [''=>'Select Role']+Helpers::getAllRole()->toArray(),
-                null,
+                $roleData->role_id,
                 array('id' => 'role',
                 'class'=>'form-control'))
                 !!}
@@ -111,6 +111,8 @@
 
 
     {!! Form::hidden('_token',csrf_token()) !!}
+    {!! Form::hidden('user_id',$userData->user_id) !!}
+   
 
     {!!
     Form::close()

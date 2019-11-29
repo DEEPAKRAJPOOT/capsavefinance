@@ -267,6 +267,28 @@ class UserEventsListener extends BaseEvent
         }
     }  
 
+    public function onCreateUserRoleSuccess($userData) {
+        $user = unserialize($userData);
+
+        //Send mail to User
+        $email_content = EmailTemplate::getEmailTemplate("CREATE_BACKEND_USER_MAIL");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name', '%email','%password'],
+                [ucwords($user['name']),$user['email'],$user['password']],
+                $email_content->message
+            );
+
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content) {
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+            });
+        }
+    } 
+    
 
     /**
      * Event subscribers
@@ -329,6 +351,10 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'ANCHOR_CSV_LEAD_UPLOAD',
             'App\Inv\Repositories\Events\UserEventsListener@onAnchorLeadUpload'
+        );
+        $events->listen(
+            'CREATE_BACKEND_USER_MAIL',
+            'App\Inv\Repositories\Events\UserEventsListener@onCreateUserRoleSuccess'
         );
         
         
