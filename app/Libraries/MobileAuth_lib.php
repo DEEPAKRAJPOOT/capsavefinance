@@ -5,85 +5,94 @@ class MobileAuth_lib
 {
 	private $request_type;
 	private $httpMethod = 'POST';
-	const BASE_URL    = "https://testapi.karza.in/v2/mobile/";
+	const BASE_URL    = "https://testapi.karza.in/";
 	const KARZA_KEY   = "h3JOdjfOvay7J8SF";
 
-	const SEND_OTP    = '1001';   #SEND OTP
-	const VERF_OTP    = '1002';   #VERIFY OTP
+	const SEND_OTP   = '1001';   #SEND OTP
+	const VERF_OTP   = '1002';   #VERIFY OTP
 	const GET_DTL    = '1003';	  #GET MOBILE DETAIL
+	const MOB_VLD    = '1004';	  #GET MOBILE DETAIL
 
-	const SEND_OTP_URL  = SELF::BASE_URL . 'otp';
-	const VERF_OTP_URL  = SELF::BASE_URL . 'status';
-	const GET_DTL_URL  = SELF::BASE_URL . 'details';
+	const SEND_OTP_URL  = SELF::BASE_URL . 'v2/mobile/otp';
+	const VERF_OTP_URL  = SELF::BASE_URL . 'v2/mobile/status';
+	const GET_DTL_URL  = SELF::BASE_URL . 'v2/mobile/details';
+	const MOB_VLD_URL  = SELF::BASE_URL . 'v3/mobile-auth';
 
 
 	const METHOD = array(    #Comment if any method is not available
-			SELF::STRT_TXN => SELF::STRT_TXN_URL,
-			SELF::ADD_YEAR => SELF::ADD_YEAR_URL,
-			SELF::UPL_STMT => SELF::UPL_STMT_URL,
+			SELF::SEND_OTP => SELF::SEND_OTP_URL,
+			SELF::VERF_OTP => SELF::VERF_OTP_URL,
+			SELF::GET_DTL => SELF::GET_DTL_URL,
+			SELF::MOB_VLD => SELF::MOB_VLD_URL,
 
 	);
 
-
 	const STATUS = array(
-			SELF::STRT_TXN => 'success',
-			SELF::ADD_YEAR => 'success',
-			SELF::UPL_STMT => 'accepted',
+			SELF::SEND_OTP => 'success',
+			SELF::VERF_OTP => 'success',
+			SELF::GET_DTL => 'accepted',
+			SELF::MOB_VLD => 'accepted',
 	);
 	
 
-	public function api_call($params, $validate_otp = false){
+	public function api_call($method , $params){
 		$resp = array(
 			'status' => 'fail',
 			'message'=> 'Some error occured. Please try again',
 		 );
-		if (!empty($params['password'])) {
-			 $this->request_type = 'login';
-			 $url = SELF::BASE_URL . 'trrn';
-		}else{
-			$this->request_type = 'otp';
-			$url = SELF::BASE_URL . 'gst-return-auth';
-		}
 
-		if (!$validate_otp && (empty($params['username'] || empty($params['gstin'])))) {
-			$resp['message'] = "Mandate Fields are required";
+		if (!isset(SELF::METHOD[$method])) {
+			$resp['code'] = "UnknownMethod";
+			$resp['message'] = "Method not available";
+			return $resp;
+		}
+		
+		$validate = $this->validate_req($method, $params);
+		if ($validate['status'] != 'success') {
+			$resp['message'] = $validate['message'];
 			return $resp;
 		}
 
-		if ($validate_otp && (empty($params['requestId'] || empty($params['otp'])))) {
-			$resp['message'] = "Mandate Fields are required";
-			return $resp;
-		}
-
-		if ($validate_otp) {
-			$req_arr = array(
-				'requestId' => $params['requestId'],
-				'otp' => $params['otp'],
-			);
-		}else{
-			$req_arr = array(
-				'username' => $params['username'],
-				'gstin' => $params['gstin'],
+		if ($method == SELF::SEND_OTP) {
+			$payload = array(
+				'mobile' => $params['mobile'],
 				'consent' => 'y',
 			);
-			if (!empty($params['password'])) {
-				$req_arr['password'] = $params['password'];
-			}	
 		}
-		$payload = json_encode($req_arr);
+
+		if ($method == SELF::MOB_VLD) {
+			$payload = array(
+				'mobile' => $params['mobile'],
+				'consent' => 'y',
+			);
+		}
+
+		if ($method == SELF::VERF_OTP) {
+			$payload = array(
+				'request_id' => $params['request_id'],
+				'otp' => $params['otp'],
+			);
+		}
+		if ($method == SELF::GET_DTL) {
+			$payload = array(
+				'request_id' => $params['request_id'],
+			);
+		}
+
+		$payload = json_encode($payload);
 		$headers = array(
 			"content-type: application/json",
 		    "x-karza-key: " . SELF::KARZA_KEY,
 		);
-
+		$url = SELF::METHOD[$method];
 		$response = $this->_curl_call($url, $payload, $headers);
 	    if (!empty($response['error_no'])) {
 	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
 	    }
 	    $result = json_decode($response['result'], TRUE);
-	    if (!empty($result['statusCode']) && $result['statusCode'] != '101') {
-	    	$resp['message'] = $this->request_type == 'login' ? $this->error_desc($result['statusCode']) : "Unable to send OTP. Please try again later.";
+	    if (!empty($result['status-code']) && $result['status-code'] != '101') {
+	    	$resp['message'] = $this->error_desc($result['status-code']) ?? "Unable to get response. Please retry.";
 			return $resp;
 	    }
 	    if (!empty($result['status'])) {
@@ -92,8 +101,43 @@ class MobileAuth_lib
 	    }
 	    $resp['status'] =  "success";
 	    $resp['message'] =  "success";
-	    $resp['requestId'] = $result['requestId'];
-	    $resp['result'] =  json_encode($result['result']);
+	    $resp['request_id'] = $result['request_id'] ?? '';
+	    $resp['result'] =  $result['result'];
+		return $resp;
+	}
+
+	public function validate_req($method, $req){
+		$resp = array(
+			'status' => 'fail',
+			'message'=> 'Some error occured. Please try again',
+		);
+		if ($method == SELF::SEND_OTP && (empty($req['mobile']) || !ctype_digit($req['mobile']))) {
+			$resp['message'] = "Mobile no is not valid";
+			return $resp;
+		}
+
+		if ($method == SELF::MOB_VLD && (empty($req['mobile']) || !ctype_digit($req['mobile']))) {
+			$resp['message'] = "Mobile no is not valid";
+			return $resp;
+		}
+
+		if ($method == SELF::VERF_OTP) {
+			if (empty($req['request_id'])) {
+				$resp['message'] = "Request Id is not valid";
+				return $resp;
+			}elseif (empty($req['otp']) || !ctype_digit($req['otp'])) {
+				$resp['message'] = "Shared OTP is not valid";
+				return $resp;
+			}
+			
+		}
+
+		if ($method == SELF::GET_DTL && empty($req['request_id'])) {
+			$resp['message'] = "Request Id is not valid";
+			return $resp;
+		}
+		$resp['status'] = "success";
+		$resp['message'] = "success";
 		return $resp;
 	}
 

@@ -13,6 +13,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\User;
+use App\Libraries\MobileAuth_lib;
 use Session;
 use Helpers;
 
@@ -593,6 +594,27 @@ class ApplicationController extends Controller
         } catch (Exception $ex) {                
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+
+     public function verify_mobile(Request $request){
+      $post_data = $request->all();
+      $mobile_no = trim($request->get('mobile_no'));
+      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
+        return response()->json(['message' =>'Mobile Number is not valid.','status' => 0]);
+      }
+
+      $mob = new MobileAuth_lib();
+        $req_arr = array(
+            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+        );
+      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      if ($response['status'] == 'success') {
+        return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
+          'value' => $response['result']]);
+      }else{
+        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
+      }
     }
     
     

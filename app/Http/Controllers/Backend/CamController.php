@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\Cam;
 use App\Libraries\Perfios_lib;
 use App\Libraries\Bsa_lib;
+use App\Libraries\MobileAuth_lib;
 use Auth;
 use Session;
 date_default_timezone_set('Asia/Kolkata');
@@ -434,6 +435,23 @@ class CamController extends Controller
 
 
     public function getBankReport() {
+    	$mob = new MobileAuth_lib();
+    	$req_arr = array(
+    		'mobile' => '8827562250',
+    	);
+
+
+    	// $req_arr = array(
+    	// 	'request_id' => 'bd29fb4c-8753-4576-b09b-a46e821ccb80',
+    	// 	'otp' => '1866',
+    	// );
+    	$resp = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+
+    	echo "<pre>";
+    	print_r($resp);
+    	die;
+
+
         $bsa = new Bsa_lib();
         $reportType = 'xml';
         $req_arr = array(

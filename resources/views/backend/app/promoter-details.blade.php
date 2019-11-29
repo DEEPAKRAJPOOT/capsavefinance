@@ -191,6 +191,7 @@
                                     <div class="form-group">
                                         <label for="txtEmail">Mobile <span class="mandatory">*</span></label>
                                         <input type="text" name="mobile_no" maxlength='10' id="mobile_no" value="{{$row->mobile_no}}" class="form-control" tabindex="1" placeholder="Enter Mobile no">
+                                        <span id="pullMsg_mob"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -1055,11 +1056,45 @@ jQuery.ajax({
  
  </script>
  <style>
-     .error
-     {
-         
+     .error{ 
          color:red;
      }
  </style>
  <script src="{{ url('backend/js/promoter.js') }}"></script>
+ <script type="text/javascript">
+   appurl = '{{URL::route("verify_mobile") }}';
+   _token = "{{ csrf_token() }}";
+</script>
+<script>
+    $(document).on('click', '#verify_mobile_no',function () {
+        let mobile_no   = $('#mobile_no').val();
+        data = {_token, mobile_no};
+        $.ajax({
+             url  : appurl,
+             type :'POST',
+             data : data,
+             beforeSend: function() {
+               $(".isloader").show();
+             },
+             dataType : 'json',
+             success:function(result) {
+                $(".isloader").css('display','none');
+                let mclass = result['status'] ? 'success' : 'danger';
+                var html = result['message'];
+                $("#pullMsg_mob").html('<span class="alert-'+ mclass +' alert" role="alert">'+html+'</span>');
+                if (result['status']) {
+                   $('#mobile_no').attr('readonly','readonly');
+                   $('#verify_mobile_no').val('verified');
+                }
+             },
+             error:function(error) {
+                var html = 'Some error occured.';
+                $("#pullMsg_mob").html('<span class="alert-'+ mclass +' alert" role="alert">'+html+'</span>');
+             },
+             complete: function() {
+                $(".isloader").hide();
+             },
+        })
+    })
+</script>
 @endsection

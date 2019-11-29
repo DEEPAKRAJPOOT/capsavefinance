@@ -53,6 +53,11 @@ Route::group(
         'uses' => 'Application\ApplicationController@analyse_gst'
     ]);
 
+    Route::post('verify_mobile', [
+        'as' => 'verify_mobile',
+        'uses' => 'Backend\ApplicationController@verify_mobile'
+    ]);
+
     Route::post(
         'download_user_cibil',
         [
