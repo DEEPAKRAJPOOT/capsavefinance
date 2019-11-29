@@ -197,4 +197,17 @@ class Role extends BaseModel
         $arrRoles = Role::whereIn('id', $arr)->get();
         return ($arrRoles ? $arrRoles: []);
     }
+    
+    /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function getAllRole()
+    {
+        $arrRoles = Role::where('is_active', 1)->pluck('name','id');
+        return ($arrRoles ? $arrRoles: []);
+    }
 }

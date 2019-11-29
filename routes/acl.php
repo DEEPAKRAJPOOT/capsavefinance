@@ -44,6 +44,43 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\AclController@saveRolePermission'
                     ]
             );
+             
+             
+            Route::get(
+                    'role-user', [
+                'as' => 'get_role_user',
+                'uses' => 'Backend\AclController@getUserRole'
+                    ]
+            );
+            
+            Route::get(
+                    'add-user-role', [
+                'as' => 'add_user_role',
+                'uses' => 'Backend\AclController@addUserRole'
+                    ]
+            );
+            
+            Route::post(
+                    'save-user-role', [
+                'as' => 'save_user_role',
+                'uses' => 'Backend\AclController@saveUserRole'
+                    ]
+            );
+            
+            Route::get(
+                    'edit_user_role', [
+                'as' => 'edit_user_role',
+                'uses' => 'Backend\AclController@editUserRole'
+                    ]
+            );
+            
+            Route::post(
+                    'update_user_role', [
+                'as' => 'update_user_role',
+                'uses' => 'Backend\AclController@updateUserRole'
+                    ]
+            );
+            
             
             
             

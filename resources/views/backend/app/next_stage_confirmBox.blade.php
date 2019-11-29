@@ -6,7 +6,16 @@
 <div class="content-wrapper">
     <div class="card">
         <div class="card-body">
-            <div class="row">
+                   {!!
+                    Form::open(
+                    array(
+                    'method' => 'post',
+                    'route' => 'accept_next_stage',
+                    'id' => 'frmMoveStage',
+                    )
+                    ) 
+                    !!}            
+            <div class="row">                
                <div class="col-md-12">
                     
                    @php $data = [];@endphp
@@ -17,14 +26,7 @@
                   
                    
                Are you sure to move the next stage?<br>
-                   {!!
-                    Form::open(
-                    array(
-                    'method' => 'post',
-                    'route' => 'accept_next_stage',
-                    )
-                    ) 
-                    !!}
+
                     
                     @if ($data)
                     {!!
@@ -37,17 +39,27 @@
                     !!}
                     @endif
                     
+              </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                       <label for="txtCreditPeriod">Comment
+                       <span class="mandatory">*</span>
+                       </label>
+                       <textarea type="text" name="sharing_comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
+                    </div>
+                 </div>
+                
                     {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}
                    
                     <br>
                 <button type="submit" class="btn btn-success">Yes</button>
-                <button id="close_btn" type="button" class="btn btn-secondary">No</button>
+                <button id="close_btn" type="button" class="btn btn-secondary">No</button>              
+                
+            </div>
                 {!!
                 Form::close()
-                !!}
-              </div>
-            </div>
+                !!}                      
         </div>
     </div>
 
@@ -57,7 +69,7 @@
 @endsection
 
 @section('jscript')
-
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script>
    
 var messages = {
@@ -74,6 +86,16 @@ var messages = {
     parent.$('#sendNextstage').modal('hide');
 });
         
+        $('#frmMoveStage').validate({
+            rules: {
+                sharing_comment: {
+                   required: true
+                }
+            },
+            messages: {
+            }
+        });
+            
     })
     
     

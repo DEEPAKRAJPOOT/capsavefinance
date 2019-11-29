@@ -153,6 +153,87 @@ class AclController extends Controller {
         }
         
     }
-    
+
+    /*
+     * get role wise user
+     */
+
+    public function getUserRole() {
+        return view('backend.acl.user_role');
+    }
+
+    /*
+     * add role user popup
+     */
+
+    public function addUserRole(Request $request) {
+        try {
+            return view('backend.acl.add_user_role');
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    /*
+     * add role user
+     */
+
+    public function saveUserRole(Request $request) {
+        try {
+
+            $data = $request->all();
+            $arrData = [];
+            $arrAnchUser = [];
+            $arrDetailData = [];
+            $arrLeadAssingData = [];
+            $arrData['f_name'] = $data['f_name'];
+            $arrData['m_name'] = '';
+            $arrData['l_name'] = $data['l_name'];
+            $arrData['biz_name'] = 'xyz';
+            $arrData['email'] = $data['email'];
+            $arrData['password'] = bcrypt($data['password']);
+            $arrData['mobile_no'] = $data['mobile_no'];
+            $arrData['user_type'] = 2;
+            $arrData['is_email_verified'] = 1;
+            $arrData['is_pwd_changed'] = 1;
+            $arrData['is_email_verified'] = 1;
+            $arrData['is_otp_verified'] = 1;
+            $arrData['parent_id'] = 0;
+            $arrData['is_active'] = $data['is_active'];
+            $userId = null;
+            $userDataArray = $this->userRepo->save($arrData, $userId);
+            if ($userDataArray) {
+                $role = [];
+                $role['user_id'] = $userDataArray->user_id;
+                $role['role_id'] = (int) $data['role_id'];
+                $rr = $this->userRepo->addNewRoleUser($role);
+                Session::flash('message', 'User added successfully!');
+                return redirect()->route('get_role_user');
+            } else {
+                Session::flash('message', 'SomeThings went wrong!!!!');
+                return redirect()->route('get_role_user');
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    /*
+     * edit role user popup
+     */
+
+    public function editUserRole(Request $request) {
+        $data = $request->all();
+       // dd($data);
+        return view('backend.acl.edit_user_role');
+    }
+
+    /*
+     * update role user
+     */
+
+    public function updateUserRole(Request $request) {
+        dd(222222222222);//on working mode
+    }
 
 }
