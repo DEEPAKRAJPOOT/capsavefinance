@@ -211,5 +211,11 @@
 @section('jscript')
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
- <script src="{{ url('frontend/js/document.js') }}"></script>
+<script src="{{ url('frontend/js/document.js') }}"></script>
+<script>
+
+    var messages = {
+        
+    };
+</script> 
 @endsection
