@@ -561,6 +561,10 @@ class ApplicationController extends Controller
         return view('backend.app.business_information',compact('states'));
     }
 
+    /**
+     * 
+     */
+
     public function saveBusinessInformation(BusinessInformationRequest $request)
     {
         try {
@@ -589,6 +593,39 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-    
+
+/**
+ * 
+ */
+
+   /**
+     * Show the business information form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showPanResponseData(Request $request)
+    {
+        dd($request->all());
+        return view('backend.app.promoter_pan_data');
+        
+    } 
+    public function showDlResponseData(Request $request)
+    {
+        dd($request->all());
+        return view('backend.app.promoter_dl_data');
+        
+    } 
+    public function showVoterResponseData(Request $request)
+    {
+        dd($request->all());
+        return view('backend.app.promoter_voter_data');
+        
+    } 
+    public function showPassResponseData(Request $request)
+    {
+        dd($request->all());
+        return view('backend.app.promoter_pass_data');
+        
+    } 
     
 }
