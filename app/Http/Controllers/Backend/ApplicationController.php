@@ -272,7 +272,6 @@ class ApplicationController extends Controller
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-            
             if ($docData) {
                 return view('backend.app.documents', [
                     'requiredDocs' => $requiredDocs,

@@ -14,7 +14,7 @@
 </style>
 @endsection
 @section('content')
-@if($edit)
+@if(is_null($edit))
 @include('layouts.backend.partials.admin-subnav')
 @endif
 <!-- partial -->
