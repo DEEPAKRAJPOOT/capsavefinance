@@ -832,8 +832,9 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($data) use ($request) {
+                        //$link = route('business_information_open', ['app_id' => $request->app_id, 'biz_id' => $request->biz_id]);
                         return '<div class="d-flex inline-action-btn">
-                                <a href="'.route('business_information_open', ['app_id' => $request->app_id, 'biz_id' => $request->biz_id]).'" title="View FI" class="btn btn-action-btn btn-sm">View FI</a>
+                                <a href="#" title="View FI" class="btn btn-action-btn btn-sm">View FI</a>
                             </div>';
                     }
                 )
