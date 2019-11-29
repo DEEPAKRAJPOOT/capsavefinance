@@ -100,7 +100,7 @@
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
                                 <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
-                                <input type="submit" value="Submit" class="btn btn-primary">
+                                <input type="submit" value="Submit" class="btn btn-success btn-sm">
                             </form>
                         </div>
                     </div>
@@ -198,7 +198,7 @@
                             <input type="file" class="custom-file-input getFileName" id="customFile" name="doc_file[]" multiple="">
                             <label class="custom-file-label" for="customFile">Choose file</label>
                         </div>
-                        <button type="submit" class="btn btn-primary float-right" id="savedocument" >Submit</button>  
+                        <button type="submit" class="btn btn-success float-right  btn-sm" id="savedocument" >Submit</button>  
                     </div>
                 </form>
             </div>
