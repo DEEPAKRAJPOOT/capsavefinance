@@ -4,7 +4,7 @@
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
         <li>
-            <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Company Details</a>
+            <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Business Information</a>
         </li>
         <li>
             <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}">Promoter Details</a>
@@ -100,7 +100,7 @@
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
                                 <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
-                                <input type="submit" value="Submit" class="btn btn-primary">
+                                <input type="submit" value="Submit" class="btn btn-success btn-sm">
                             </form>
                         </div>
                     </div>
@@ -198,7 +198,7 @@
                             <input type="file" class="custom-file-input getFileName" id="customFile" name="doc_file[]" multiple="">
                             <label class="custom-file-label" for="customFile">Choose file</label>
                         </div>
-                        <button type="submit" class="btn btn-primary float-right" id="savedocument" >Submit</button>  
+                        <button type="submit" class="btn btn-success float-right  btn-sm" id="savedocument" >Submit</button>  
                     </div>
                 </form>
             </div>
@@ -211,5 +211,11 @@
 @section('jscript')
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
- <script src="{{ url('frontend/js/document.js') }}"></script>
+<script src="{{ url('frontend/js/document.js') }}"></script>
+<script>
+
+    var messages = {
+        
+    };
+</script> 
 @endsection

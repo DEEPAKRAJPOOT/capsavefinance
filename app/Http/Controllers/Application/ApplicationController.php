@@ -83,7 +83,7 @@ class ApplicationController extends Controller
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
                     
                     Session::flash('message',trans('success_messages.save_company_detail_successfully'));
-                    return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+                    return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id'], 'edit' => 1]);
                 } else {
                     //Add application workflow stages
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2);
@@ -117,20 +117,19 @@ class ApplicationController extends Controller
        {
            return  redirect()->back();
        }
-        if($editFlag == 1) { 
-            return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
+        return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
+            'cin_no' => $getCin->cin,
+            'ownerDetails' => $ownerDetail,
+            'biz_id' => $biz_id
+        ]);
+        
+      
+           /* return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
                 'cin_no' => $getCin->cin,
                 'ownerDetails' => $ownerDetail,
                 'biz_id' => $biz_id
-            ]);
-        }
-        else {
-            return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
-                'cin_no' => $getCin->cin,
-                'ownerDetails' => $ownerDetail,
-                'biz_id' => $biz_id
-            ]);
-        }
+            ]);  */
+        
     } 
 
     /**
@@ -152,7 +151,7 @@ class ApplicationController extends Controller
                 if ($toUserId) {
                    Helpers::assignAppToUser($toUserId, $appId);
                 }
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
+                return response()->json(['message' =>trans('success_messages.save_company_detail_successfully'),'status' => 1]);
             }
             else {
                //Add application workflow stages 
@@ -178,7 +177,7 @@ class ApplicationController extends Controller
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
          
           if ($owner_info) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
+                return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }

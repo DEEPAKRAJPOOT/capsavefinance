@@ -77,6 +77,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@saveDocument'
             ]);
             
+            
+            Route::get('document-delete/{appDocFileId}',
+                [
+                'as' => 'document_delete',
+                'uses' => 'Application\ApplicationController@documentDelete'
+            ]);
+            
             Route::post('promoter-document-save', [
                 'as' => 'promoter_document_save',
                 'uses' => 'Backend\ApplicationController@promoterDocumentSave'
@@ -108,9 +115,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@finance_store'
             ]);
             
-            Route::get('fircu/index', [
-                'as' => 'backend_fircu_index',
-                'uses' => 'Backend\FiRcuController@index'
+            Route::get('fircu/fi', [
+                'as' => 'backend_fi',
+                'uses' => 'Backend\FiRcuController@listFI'
+            ]);
+
+            Route::get('fircu/rcu', [
+                'as' => 'backend_rcu',
+                'uses' => 'Backend\FiRcuController@listRCU'
             ]);
 
             Route::get('notes-from', [
@@ -197,7 +209,29 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@saveBusinessInformation'
             ]);
 
+            Route::get('show-pan-data', [
+                'as' => 'show_pan_data',
+                'uses' => 'Backend\ApplicationController@showPanResponseData'
+            ]);
 
+            Route::get('show-dl-data', [
+                'as' => 'show_dl_data',
+                'uses' => 'Backend\ApplicationController@showDlResponseData'
+            ]);
+            Route::get('show-voter-data', [
+                'as' => 'show_voter_data',
+                'uses' => 'Backend\ApplicationController@showVoterResponseData'
+            ]);
+            Route::get('show-pass-data', [
+                'as' => 'show_pass_data',
+                'uses' => 'Backend\ApplicationController@showPassResponseData'
+            ]);
+
+
+            Route::get('cam/promoter', [
+                'as' => 'cam_promoter',
+                'uses' => 'Backend\CamController@showPromoter'
+            ]);
 
         });
 
@@ -291,10 +325,4 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'financial_statement',
                 'uses' => 'Backend\CamController@getFinanceReport'
             ]);
-
-            Route::get('ww', [
-                'as' => 'pdfview',
-                'uses' => 'Application\ApplicationController@pdfview'
-            ]);
-
 

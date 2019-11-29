@@ -6,7 +6,7 @@
     <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
 		<li>
-			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Company Details</a>
+			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Business Information</a>
 		</li>
 		<li>
 			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Promoter Details</a>
@@ -36,7 +36,7 @@
 						<div class="row">
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="txtEmail">Company Pan
+									<label for="txtEmail">Company PAN
 										<span class="mandatory">*</span>
 									</label>
 									<span class="text-success" id="pan-msg" style="">
@@ -190,7 +190,7 @@
 								<div class="form-group">
 									<label for="txtSupplierName">Tranche Tenor (Days)
 									</label>
-									<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor (1 - 120)" maxlength="3">
+									<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
 									@error('tenor_days')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
@@ -473,7 +473,7 @@
 					</div>
 					<div class="d-flex btn-section" style="/*display: none !important;*/">
 						<div class="ml-auto text-right">
-							<input type="submit" value="Save and Continue" class="btn btn-primary">
+							<input type="submit" value="Save and Continue" class="btn btn-success btn-sm">
 						</div>
 					</div>
 				</div>

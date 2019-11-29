@@ -14,13 +14,15 @@
 </style>
 @endsection
 @section('content')
+@if(is_null($edit))
 @include('layouts.backend.partials.admin-subnav')
+@endif
 <!-- partial -->
 <div class="content-wrapper">
    
     <ul class="sub-menu-main pl-0 m-0">
         <li>
-            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Company Details</a>
+            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Business Information</a>
         </li>
         <li>
             <a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}"  class="active">Promoter Details</a>
@@ -48,10 +50,10 @@
                  @foreach($ownerDetails as $row)    @php ($i++)
                     <div class=" form-fields">
                           @csrf
-                        <?php 
-                        
-                     /* for get api response file data   */ 
                        
+                        <?php 
+                       
+                     /* for get api response file data   */ 
                         foreach($row->businessApi as $row1) {
                            
                             if($row1->type == 3) { 
@@ -68,24 +70,31 @@
                             }
                         } 
                         /* for get document file data   */
-                     ///  dd($row->document);
+                    
+                        
                          foreach($row->document as $row2) {
                              if($row2->doc_id == 2) { 
-                                $panNoFile =   $row2->userFile->file_path;
+                                $panNoFile[] =   $row2->userFile->file_path;
+                              
                             }
                             if($row2->doc_id == 31) { 
-                                $dlNoFile = $row2->userFile->file_path;
+                                $dlNoFile[] = $row2->userFile->file_path;
+                              
                             }
                             if($row2->doc_id == 30) { 
                                 $voterNoFile = $row2->userFile->file_path;
+                               
                             }
                             if($row2->doc_id == 32) { 
                                 $passNoFile = $row2->userFile->file_path;
                             }
                              if($row2->doc_id == 22) { 
                                 $photoFile = $row2->userFile->file_path;
+                               
                             }
+                           
                         } 
+                        
                         ?>
                        <div class="col-md-12">
                             <h5 class="card-title form-head-h5">Promoter Details  </h5>
@@ -208,8 +217,9 @@
                                       </div>
                                 </div> 
                             </div>
-                           
-                            <h5 class="card-title form-head-h5 mt-3">Document </h5>									
+
+                            <h5 class="card-title form-head-h5 mt-3">Document </h5>	
+
                             <div class="row mt-2 mb-4">
                                 <div class="col-md-12">
                                     <div class="prtm-full-block">       
@@ -231,8 +241,12 @@
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
 
-                                                      <span class="text-success" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($panNo->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-                                                      <span class="text-danger" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                
+
+
+                                              <span class="text-success" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($panNo->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                              <span class="text-danger" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                 
 
                                                
                                                                     <a href="javascript:void(0);" id='ppan{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripan" style="top:0px; pointer-events:{{ (isset($panNo->requestId)) ? 'none' : ''}}">{{ isset($panNo->requestId) ? 'Verified' : 'Verify' }}</a>
@@ -240,9 +254,14 @@
                                                                 </div>
                                                             </td>
                                                             <td width="28%">
-                                                                <div class="file-browse float-left position-seta">
-                                                                    <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
-                                                                      <a  href="{{ isset($panNoFile) ? Storage::disk('s3')->url($panNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($panNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+
+                                                            <div class="file-browse float-left position-seta">
+                                                            <a data-toggle="modal" data-target="#modalPromoter" data-url ="{{route('show_pan_data',['id'=>3,'owner_id' => $row->biz_owner_id ])}}"> <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
+                    </a>
+                                                                       <a  href="{{ isset($panNoFile) ? Storage::disk('s3')->url($panNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($panNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+
+                                                           
+
                                                                    <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -268,7 +287,7 @@
                                                             <td width="28%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <button class="btn-upload btn-sm viewDocument" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="5"> <i class="fa fa-eye"></i></button>
-                                                                     <a  href="{{ isset($dlNoFile) ? Storage::disk('s3')->url($dlNoFile) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($dlNoFile) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                     <a  href="{{ isset($dlNoFile[$j]) ? Storage::disk('s3')->url($dlNoFile[$j]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($dlNoFile[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -422,7 +441,7 @@
            <div class="d-flex btn-section ">
             <div class="ml-auto text-right">
  
-           <button type="button" id="btnAddMore" class="btn btn-primary btn-add ml-auto">
+           <button type="button" id="btnAddMore" class="btn btn-success btn-add btn-sm ml-auto">
                     <i class="fa fa-plus"></i>
                     Add Promoter
                     </button>  </div>
@@ -437,7 +456,7 @@
             <div class="d-flex btn-section ">
             <div class="ml-auto text-right">
                <!-- <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href='company-details.php'">
-              --> <input type="button" value="Save and Continue" id="submit" class="btn btn-primary">
+              --> <input type="button" value="Save and Continue" id="submit" class="btn btn-success btn-sm">
                             
             </div>
                </div>	
@@ -449,7 +468,8 @@
             </div>
         </div>
     </div>
-    
+    {!!Helpers::makeIframePopup('modalPromoter','Upload User List', 'modal-md')!!}
+
 @endsection
 @section('jscript')
 

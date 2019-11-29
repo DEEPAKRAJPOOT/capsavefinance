@@ -49,4 +49,17 @@ class BusinessAddress extends BaseModel
         'updated_at',
         'updated_by'
     ];
+
+    public static function getFiLists($dataArr){
+        $address = BusinessAddress::where(['biz_id'=>$dataArr->biz_id])->get();
+        return $address;
+    }
+
+    public function state(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\State','state_name','id');
+    }
+
+    public function business(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Business','biz_id','biz_id');
+    }
 }
