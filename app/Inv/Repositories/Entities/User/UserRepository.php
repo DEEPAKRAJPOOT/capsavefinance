@@ -1264,4 +1264,28 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         return RoleUser::addNewRoleUser($roleData);
     }
+    
+      /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function getRoleDataById($user_id)
+    {
+       return RoleUser::getRoleDataById($user_id);
+    }
+    
+     /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function updateUserRole($userId, $role)
+    {
+       return RoleUser::updateUserRole($userId, $role);
+    }
 }

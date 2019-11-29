@@ -7,9 +7,10 @@ use Auth;
 use Helpers;
 use Session;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\AclInterface as AclRepoInterface;
-
+use Event;
 
 class AclController extends Controller {
 
@@ -182,6 +183,7 @@ class AclController extends Controller {
         try {
 
             $data = $request->all();
+
             $arrData = [];
             $arrAnchUser = [];
             $arrDetailData = [];
@@ -199,19 +201,31 @@ class AclController extends Controller {
             $arrData['is_email_verified'] = 1;
             $arrData['is_otp_verified'] = 1;
             $arrData['parent_id'] = 0;
-            $arrData['is_active'] = $data['is_active'];
+            $arrData['is_active'] = (int)$data['is_active'];
             $userId = null;
-            $userDataArray = $this->userRepo->save($arrData, $userId);
-            if ($userDataArray) {
-                $role = [];
-                $role['user_id'] = $userDataArray->user_id;
-                $role['role_id'] = (int) $data['role_id'];
-                $rr = $this->userRepo->addNewRoleUser($role);
-                Session::flash('message', 'User added successfully!');
+            $existData = $this->userRepo->getUserByemail($data['email']);
+            if ($existData) {
+                Session::flash('error', 'Email has been allredy Exist!');
                 return redirect()->route('get_role_user');
             } else {
-                Session::flash('message', 'SomeThings went wrong!!!!');
-                return redirect()->route('get_role_user');
+                $userDataArray = $this->userRepo->save($arrData, $userId);
+                if ($userDataArray) {
+                    $role = [];
+                    $role['user_id'] = $userDataArray->user_id;
+                    $role['role_id'] = (int) $data['role_id'];
+                    $rr = $this->userRepo->addNewRoleUser($role);
+                    //send mail to user
+                    $anchUserMailArr = [];
+                    $anchUserMailArr['email'] = $data['email'];
+                    $anchUserMailArr['name'] = $data['f_name'];
+                    $anchUserMailArr['password'] = $data['password'];
+                    Event::dispatch("CREATE_BACKEND_USER_MAIL", serialize($anchUserMailArr));
+                    Session::flash('message', 'User added successfully!');
+                    return redirect()->route('get_role_user');
+                } else {
+                    Session::flash('message', 'SomeThings went wrong!!!!');
+                    return redirect()->route('get_role_user');
+                }
             }
         } catch (Exception $ex) {
             
@@ -224,8 +238,11 @@ class AclController extends Controller {
 
     public function editUserRole(Request $request) {
         $data = $request->all();
-       // dd($data);
-        return view('backend.acl.edit_user_role');
+        $userDataArray = $this->userRepo->find($data['user_id']);
+        $roleData = $this->userRepo->getRoleDataById($data['user_id']);
+        return view('backend.acl.edit_user_role')
+                ->with('userData', $userDataArray)
+                ->with('roleData', $roleData);
     }
 
     /*
@@ -233,7 +250,58 @@ class AclController extends Controller {
      */
 
     public function updateUserRole(Request $request) {
-        dd(222222222222);//on working mode
+        try {
+
+            $data = $request->all();
+            
+            $arrData = [];
+            $arrAnchUser = [];
+            $arrDetailData = [];
+            $arrLeadAssingData = [];
+            $arrData['f_name'] = $data['f_name'];
+            $arrData['m_name'] = '';
+            $arrData['l_name'] = $data['l_name'];
+            $arrData['biz_name'] = 'xyz';
+            $arrData['email'] = $data['email'];
+            //$arrData['password'] = bcrypt($data['password']);
+            $arrData['mobile_no'] = $data['mobile_no'];
+//            $arrData['user_type'] = 2;
+//            $arrData['is_email_verified'] = 1;
+//            $arrData['is_pwd_changed'] = 1;
+//            $arrData['is_email_verified'] = 1;
+//            $arrData['is_otp_verified'] = 1;
+//            $arrData['parent_id'] = 0;
+            $arrData['is_active'] = (int)$data['is_active'];
+            
+            $userId = $data['user_id'];
+            $existData = $this->userRepo->getUserByemail($data['email']);
+            
+            if ($existData && $existData->user_id != $data['user_id']) {
+                
+                Session::flash('error', 'Email has been allredy Exist!');
+                return redirect()->route('get_role_user');
+            } else {
+                $userDataArray = $this->userRepo->save($arrData, $userId);
+                if ($userDataArray) {
+                    $role = [];
+                    $role['role_id'] = (int) $data['role_id'];
+                    $rr = $this->userRepo->updateUserRole( $userId, $role);
+//                    //send mail to user
+//                    $anchUserMailArr = [];
+//                    $anchUserMailArr['email'] = $data['email'];
+//                    $anchUserMailArr['name'] = $data['f_name'];
+//                    $anchUserMailArr['password'] = $data['password'];
+                   // Event::dispatch("CREATE_BACKEND_USER_MAIL", serialize($anchUserMailArr));
+                    Session::flash('message', 'User update successfully!');
+                    return redirect()->route('get_role_user');
+                } else {
+                    Session::flash('message', 'SomeThings went wrong!!!!');
+                    return redirect()->route('get_role_user');
+                }
+            }
+        } catch (Exception $ex) {
+            
+        }
     }
 
 }
