@@ -51,14 +51,16 @@
                         <?php 
                         
                      /* for get api response file data   */ 
+                       
                         foreach($row->businessApi as $row1) {
+                           
                             if($row1->type == 3) { 
                                 $panNo = json_decode($row1->karza->req_file);
                             }
-                            if($row1->type == 4) { 
+                            if($row1->type == 5) { 
                                 $dlNo = json_decode($row1->karza->req_file);
                             }
-                            if($row1->type == 5) { 
+                            if($row1->type == 4) { 
                                 $voterNo = json_decode($row1->karza->req_file);
                             }
                             if($row1->type == 6) { 
@@ -66,6 +68,7 @@
                             }
                         } 
                         /* for get document file data   */
+                     ///  dd($row->document);
                          foreach($row->document as $row2) {
                              if($row2->doc_id == 2) { 
                                 $panNoFile =   $row2->userFile->file_path;
@@ -82,8 +85,6 @@
                              if($row2->doc_id == 22) { 
                                 $photoFile = $row2->userFile->file_path;
                             }
-                          
-                            
                         } 
                         ?>
                        <div class="col-md-12">
@@ -333,7 +334,7 @@
                                                                 </div>
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" class="photofile"  name="photofile[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
+                                                                    <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="photofile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -1024,7 +1025,7 @@ jQuery.ajax({
                         $('#myModal'+data_id).modal('show');
                         $("#getBizApiRes"+data_id).html(data.res);
                         $("#dynamicTitle"+data_id).html(firstVerify);
-                        
+                       
                      }
                      else if(data.status==2)
                      {

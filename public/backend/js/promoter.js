@@ -19,9 +19,9 @@ function uploadFile(uploadId, ownerId, docId)
          var file  = $("#passportfile"+uploadId)[0].files[0];
     }
     else if(docId == 22) { 
-        var file  = $("#downloadphoto"+uploadId)[0].files[0];
+        var file  = $("#photofile"+uploadId)[0].files[0];
     }
-    
+   
     var extension = file.name.split('.').pop().toLowerCase();
     var datafile = new FormData();
     
