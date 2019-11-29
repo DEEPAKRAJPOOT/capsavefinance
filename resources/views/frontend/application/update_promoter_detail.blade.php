@@ -1,6 +1,6 @@
 @extends('layouts.app')
-
 @section('content')
+
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
         <li>
@@ -207,311 +207,321 @@
 @endsection
 
 @section('scripts')
-<script type="text/javascript">
-    $(document).ready(function () {
-    $('#submit').on('click', function (event) {
-    $('input.first_name').each(function () {
-    $(this).rules("add",
-    {
-    required: true
-    })
-    });
-    $('input.date_of_birth').each(function () {
-    $(this).rules("add",
-    {
-    required: true
-    })
-    });
-    $('select.gender').each(function () {
-    $(this).rules("add",
-    {
-    required: true
-    })
-    });
-    $('input.pan_no').each(function () {
-    $(this).rules("add",
-    {
-    required: true
-    })
-    });
-    $('input.share_per').each(function () {
-    $(this).rules("add",
-    {
-    required: true,
-            number: true,
-            range: [0, 100]
-    })
-    });
-    $('input.edu_qualification').each(function () {
-    $(this).rules("add",
-    {
-    required: true
-    })
-    });
-    $('input.other_ownership').each(function () {
-    $(this).rules("add",
-    {
-    required: true
-    })
-    });
-    $('input.networth').each(function () {
-    $(this).rules("add",
-    {
-    required: true,
-            number: true
-    })
-    });
-    $('textarea.address').each(function () {
-    $(this).rules("add",
-    {
-    required: true
-    })
-    });
-    /* $('.privacy_chk').each(function () {
-     $(this).rules("add",
-     {
-     required: true
-     })
-     }); */
-    // test if form is valid 
-    if ($('form#signupForm').validate().form()) {
-    var panCount = 0;
-    $(".pan_no").each(function(k, v){
-    panCount++;
-    var result = $("#pan_verify" + panCount).text();
-    if (result == "Verify")
-    {
-    $('#failurepanverify' + panCount).show();
-    $('#failurepanverify' + panCount).focus();
-    e.preventDefault();
-    return false;
-    }
+ <script type="text/javascript">
+        $(document).ready(function () {
+            $('#submit').on('click', function (event) {                
+                $('input.first_name').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+                $('input.date_of_birth').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+                $('select.gender').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+                $('input.pan_no').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
 
-    });
-    var form = $("#signupForm");
-    $('.isloader').show();
-    $.ajax({
-    type: "POST",
-            url: '{{Route('front_promoter_detail_save')}}',
-            data: form.serialize(), // serializes the form's elements.
-            cache: false,
-            success: function (res)
-            {
-            $('.isloader').hide();
-            if (res.status == 1)
-            {
-            window.location.href = "{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
-            }
-            },
-            error: function (error)
-            {
-            console.log(error);
-            }
+                $('input.share_per').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true,
+                                number: true,
+                                range: [0, 100]
+                            })
+                });
 
-    });
-    } else {
-    console.log("does not validate");
-    }
-    })
 
+                $('input.edu_qualification').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+
+                $('input.other_ownership').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+                $('input.networth').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true,
+                                number: true
+                            })
+                });
+                $('textarea.address').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });        
+               /* $('.privacy_chk').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                }); */
+                // test if form is valid 
+                if ($('form#signupForm').validate().form()) {
+                      var panCount = 0;                      
+                      $(".pan_no").each(function(k,v){
+                          panCount++;
+                        var result =  $("#pan_verify"+panCount).text();
+                       
+                        if(result=="Verify")
+                        {
+                             $('#failurepanverify'+panCount).show();
+                             $('#failurepanverify'+panCount).focus();
+                             e.preventDefault(); 
+                             return false;
+                        }
+                        
+                    });                    
+                    var form = $("#signupForm");
+                    $('.isloader').show();
+                    $.ajax({
+                        type: "POST",
+                        url: '{{Route('front_promoter_detail_save')}}',
+                        data: form.serialize(), // serializes the form's elements.
+                        cache: false,
+                        success: function (res)
+                        {
+                            $('.isloader').hide();
+                            if (res.status == 1)
+                            {
+                                window.location.href = "{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
+                            }
+                        },
+                        error: function (error)
+                        {
+                            console.log(error);
+                        }
+
+                    });
+                } else {
+                    console.log("does not validate");
+                }
+            })
+          
             $('form#signupForm').validate();
-    });
-    function FileDetails(clicked_id) {
-    // GET THE FILE INPUT.
-    var fi = document.getElementById('file_' + clicked_id);
-    // VALIDATE OR CHECK IF ANY FILE IS SELECTED.
-    if (fi.files.length > 0) {
-
-    // THE TOTAL FILE COUNT.
-    var x = 'filePath_' + clicked_id;
-    //var x = document.getElementById(id);alert(id);
-    document.getElementById(x).innerHTML = '';
-    // RUN A LOOP TO CHECK EACH SELECTED FILE.
-    for (var i = 0; i <= fi.files.length - 1; i++) {
-
-    var fname = fi.files.item(i).name; // THE NAME OF THE FILE.
-    var fsize = fi.files.item(i).size; // THE SIZE OF THE FILE.
-    // SHOW THE EXTRACTED DETAILS OF THE FILE.
-    document.getElementById(x).innerHTML =
-            '<div class="file-name" id="fileId"> ' +
-            fname + '' + '<button type="button"  class="close-file" onclick="myDelete()" > x' + '</button>' + '</div>';
-    }
-    } else {
-            alert('Please select a file.');
-    }
-    }
-
-            function myDelete() {
-            document.getElementById("fileId").remove();
-            }
-
-
-
-            $(document).on('click', '#btnAddMore', function () {
-            var rowcount = parseInt($("#rowcount").val());
-    if (rowcount > 0)
-    {
-    var x = rowcount + 1;
-    } else
-    {
-    var x = 2;
-    }
-    $("#rowcount").val(x);
-    $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' >Last Name</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' value='' class='form-control date_of_birth datepicker-dis-fdate' tabindex='1' placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </opt i o n ></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span><span class='text-success' id='su c c e sspanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class='   t e xt-danger' id='fai l u r epanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span></label><a href='javascript:void(0);' data-id='" + x + "' id='pan_verify" + x + "' class='verify-ow n e r -no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[] id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-gro up p assword-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address" +  x +  "'></textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
-        x++;
         });
+     function FileDetails(clicked_id) {
+            // GET THE FILE INPUT.
+            var fi = document.getElementById('file_' + clicked_id);
+            // VALIDATE OR CHECK IF ANY FILE IS SELECTED.
+            if (fi.files.length > 0) {
+
+                // THE TOTAL FILE COUNT.
+                var x = 'filePath_' + clicked_id;
+                //var x = document.getElementById(id);alert(id);
+                document.getElementById(x).innerHTML = '';
+
+                // RUN A LOOP TO CHECK EACH SELECTED FILE.
+                for (var i = 0; i <= fi.files.length - 1; i++) {
+
+                    var fname = fi.files.item(i).name; // THE NAME OF THE FILE.
+                    var fsize = fi.files.item(i).size; // THE SIZE OF THE FILE.
+                    // SHOW THE EXTRACTED DETAILS OF THE FILE.
+                    document.getElementById(x).innerHTML =
+                            '<div class="file-name" id="fileId"> ' +
+                            fname + '' + '<button type="button"  class="close-file" onclick="myDelete()" > x' + '</button>' + '</div>';
+                }
+            } else {
+                alert('Please select a file.');
+            }
+        }
+
+        function myDelete() {
+            document.getElementById("fileId").remove();
+        }
+
+
+       
+    $(document).on('click', '#btnAddMore', function () {
+        var rowcount = parseInt($("#rowcount").val());
+        if (rowcount > 0)
+        {
+            var x = rowcount + 1;
+        } else
+        {
+            var x = 2;
+        }
+             $("#rowcount").val(x);
+         $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' >Last Name</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' value='' class='form-control date_of_birth datepicker-dis-fdate' tabindex='1' placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span><span class='text-success' id='successpanverify"+x+"' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='failurepanverify"+x+"' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span></label><a href='javascript:void(0);' data-id='"+x+"' id='pan_verify"+x+"' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[] id='response"+x+"' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address" + x + "'></textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
+                    x++;
+         });
         //////////CIN webservice for get promoter details start here//////////////////////////////////////        
         $(document).on('click', '.clsdiv', function () {
-        $(this).parent().parent().remove();
-        });
+                    $(this).parent().parent().remove();
+                });
+          
         jQuery(document).ready(function () {
-        var countOwnerRow = $("#rowcount").val();
-        if (countOwnerRow > 0) {
-        return false;
-        }
-        $('.isloader').show();
-        var CIN = '{{ (isset($cin_no)) ? $cin_no : "" }}';
-        var consent = "Y";
-        var key = "h3JOdjfOvay7J8SF";
-        var dataStore = ({'consent': consent, 'entityId': CIN});
-        var jsonData = JSON.stringify(dataStore);
-        jQuery.ajax({
+            var countOwnerRow = $("#rowcount").val();
+            if(countOwnerRow > 0) {
+                return false;
+            } 
+            $('.isloader').show();
+            var CIN = '{{ (isset($cin_no)) ? $cin_no : "" }}';
+            var consent = "Y";
+            var key = "h3JOdjfOvay7J8SF";
+            var dataStore = ({'consent': consent, 'entityId': CIN});
+            var jsonData = JSON.stringify(dataStore);
+             jQuery.ajax({
 
-        ///url: "https://stub.kscan.in/v1/corp/profile",
+               ///url: "https://stub.kscan.in/v1/corp/profile",
 
-        url:"https://testapi.kscan.in/v1/corp/profile",
-                headers: {
-                'Content-Type': "application/json",
-                        'x-karza-key': key
+                url:"https://testapi.kscan.in/v1/corp/profile",
+                 headers: {
+                    'Content-Type': "application/json",
+                    'x-karza-key': key
                 },
                 method: 'post',
                 dataType: 'json',
                 data: jsonData,
                 error:function (xhr, status, errorThrown) {
-                alert(errorThrown);
-                $('.isloader').hide();
-                },
+                                alert(errorThrown);
+                                $('.isloader').hide();
+        		
+    			},
                 success: function (result) {
-                $(".isloader").hide();
-                obj = result.result.directors;
-                var count = 0;
-                var arr = new Array();
-                var x = 0;
-                $(obj).each(function (k, v) {
-                var temp = {};
-                var dob = v.dob;
-                var dateAr = dob.split('-');
-                var newDate = '';
-                if (dateAr != '')
-                {
-
-                var newDate = dateAr[0] + '/' + dateAr[1] + '/' + dateAr[2];
+                    $(".isloader").hide();
+                    obj = result.result.directors;
+                    var count = 0;
+                    var arr = new Array();
+                    var x  = 0;
+                    $(obj).each(function (k, v) { 
+                        var temp = {};
+                        var dob = v.dob;
+                        var dateAr = dob.split('-');
+                        var newDate =  '';
+                        if(dateAr!='')
+                        {
+                         
+                            var newDate = dateAr[0] + '/' + dateAr[1] + '/' + dateAr[2]; 
+                        }
+                      
+                        $("#first_name"+count).val(v.name);
+                        $("#address"+count).val(v.address);
+                        $("#date_of_birth"+count).prop("type", "text").val(newDate);
+                        
+                        if (k >= 0)
+                        {  
+                           temp['first_name'] = v.name;
+                           temp['address'] = v.address;
+                           temp['dob'] = newDate;
+                           arr.push(temp);
+                         
+                             $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><!--<button class='close clsdiv' type='button'>x</button>--><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label> <input type='hidden' id='ownerid"+x+"' name='ownerid[]' value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='" + v.name + "' class='form-control first_name'  placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' >Last Name</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' value='" + newDate + "' class='form-control date_of_birth datepicker-dis-fdate' tabindex='1'  placeholder='Enter Date Of Birth'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span><span class='text-success' id='successpanverify"+ x +"' style='display:none'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='failurepanverify"+ x +"' style='display:none'><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span></label><a href='javascript:void(0);' data-id='"+ x +"' id='pan_verify"+ x +"' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[]' id='response"+ x +"' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]'  id='address" + x + "'>" + v.address + "</textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
+                             x++;
+                        }
+                        count++;
+                    });
+                        var bizId = $('input[name=biz_id]').val();
+                        var appId = $('input[name=app_id]').val();
+                        var getRes = savePromoter(arr, bizId, appId);
                 }
-
-                $("#first_name" + count).val(v.name);
-                $("#address" + count).val(v.address);
-                $("#date_of_birth" + count).prop("type", "text").val(newDate);
-                if (k >= 0)
-                {
-                temp['first_name'] = v.name;
-                temp['address'] = v.address;
-                temp['dob'] = newDate;
-                arr.push(temp);
-                $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><!--<button class='close clsdiv' type='button'>x</button>--><div class='col-md-12'><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label> <input type='hidden' id='ownerid"+x+"' name='ownerid[]' value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='" + v.name + "' class='form-control first_name'  placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' >Last Name</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' value='" + newDate + "' class='form-control date_of_birth datepicker-dis-fdate' tabindex='1'  placeholder='Enter Date Of Birth'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span><span class='text-success' id='successpanverify"+ x +"' style='display:none'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='failurepanverify"+ x +"' style='display:none'><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span></label><a href='javascript:void(0);' data-id='"+ x +"' id='pan_verify"+ x +"' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[]' id='response"+ x +"' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per' tabindex='1' placeholder='Enter Shareholder' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification' tabindex='1' placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership' tabindex='1' placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' name='networth[]' id='networth" + x + "' value='' class='form-control networth' tabindex='1' placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]'  id='address" + x + "'>" + v.address + "</textarea></div></div></div><!--<div class='col-md-4'><div class='col-md-12 '><h3 class='full-width'>Documents</h3><p><small>Maximum file upload size : 5MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX</small></p></div><div class='col-md-12'><div id='uploadsection3' class='fil-uploaddiv' style='display: block;'><div class='row '><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> PAN Card * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Address Proof * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i> </button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div><hr></div><div class='col-md-12'><div class='justify-content-center d-flex'><label class='mb-0'><span class='file-icon'><img src='assets/images/contractdocs.svg'> </span> Partner's Photo * </label><div class='ml-auto'><div class='file-browse'><button class='btn btn-upload btn-sm'> <i class='fa fa-upload'></i></button><input type='file' id='file_1' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''></div></div></div><div id='filePath_1' class='filePath'></div></div></div></div></div></div>--></div></div> ");
-                         x++;
-                    }
-                    count++;
-                });
-                    var bizId = $('input[name=biz_id]').val();
-                    var appId = $('input[name=app_id]').val();
-                    var getRes = savePromoter(arr, bizId, appId);
-            }
+            });
         });
-    });
-  ///////////////Promotor web service for pan verified start here//////////////////////////
+      ///////////////Promotor web service for pan verified start here//////////////////////////
        
-  /* save promoter details after cin number api hit */
-  function  savePromoter(data, bizId, appId)
-  {
+      /* save promoter details after cin number api hit */
+      function  savePromoter(data, bizId, appId)
+      {
           
-        var data = {'data' : data, 'biz_id' : bizId, 'app_id' : appId};
-        jQuery.ajax({
-            url: "/application/promoter-save",
-            headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            method: 'post',
-            contentType: "json",
-            processData: false,
-            data: JSON.stringify(data),
-            success: function (data) {
-                var promoId = 0;
-                $(data.data).each(function(k,v){
-                    console.log(v);
-                    $("#ownerid"+promoId).val(v);
-                    promoId++;
-                });
-                $("#rowcount").val(k);
-                return data;
-                }
-        });
-  }
+            var data = {'data' : data, 'biz_id' : bizId, 'app_id' : appId};
+            jQuery.ajax({
+                url: "/application/promoter-save",
+                headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                method: 'post',
+                contentType: "json",
+                processData: false,
+                data: JSON.stringify(data),
+                success: function (data) {
+                    var promoId = 0;
+                    $(data.data).each(function(k,v){
+                        console.log(v);
+                        $("#ownerid"+promoId).val(v);
+                        promoId++;
+                    });
+                    $("#rowcount").val(k);
+                    return data;
+                    }
+            });
+      }
               
       
-  /////////////////Karja Api/////////////////////////////////////
+      /////////////////Karja Api/////////////////////////////////////
       
-  var messages = {
-    chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
-    data_not_found: "{{ trans('error_messages.data_not_found') }}",
-    token: "{{ csrf_token() }}",
+      var messages = {
+        chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
 
-};
-   $(document).on('click','.promoter_pan_verify',function () {
+    };
+       $(document).on('click','.promoter_pan_verify',function () {
       
-        var count = $(this).attr('data-id');
+            var count = $(this).attr('data-id');
           
-        var PAN = $("#pan_no"+count).val();
-        var dataStore = {'pan': PAN,'_token': messages.token };
-        var postData = dataStore;
-        $('#pan_verify'+count).text('Waiting...');
-         jQuery.ajax({
-          url: messages.chk_user_pan_karza,
-            method: 'post',
-            dataType: 'json',
-            data: postData,
-            error: function (xhr, status, errorThrown) {
-                               alert(errorThrown);
+            var PAN = $("#pan_no"+count).val();
+            var dataStore = {'pan': PAN,'_token': messages.token };
+            var postData = dataStore;
+            $('#pan_verify'+count).text('Waiting...');
+             jQuery.ajax({
+              url: messages.chk_user_pan_karza,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                   alert(errorThrown);
                                    
-            },
-            success: function (data) {
-                var status =  data['status-code'];
-                if(status==101)
-                {   
-                     var name = data['result']['name'];
-                     var request_id = data['request_id'];
-                     var MergeResonse = name.concat(request_id, status);       
-                      $('#response'+count).val(MergeResonse);
-                      $('#pan_no'+count).attr('readonly',true);
-                      $('#pan_verify'+count).text('Verified');
-                      $('#successpanverify'+count).show();
-                      $('#failurepanverify'+count).hide();
-                      $('#pan_verify'+count).css('pointer-events','none');
-                      $("#submit").attr("disabled", false); 
+                },
+                success: function (data) {
+                                  var status =  data['status-code'];
+                                  if(status==101)
+                                            {   
+                                                 var name = data['result']['name'];
+                                                 var request_id = data['request_id'];
+                                                 var MergeResonse = name.concat(request_id, status);       
+                                                  $('#response'+count).val(MergeResonse);
+                                                  $('#pan_no'+count).attr('readonly',true);
+                                                  $('#pan_verify'+count).text('Verified');
+                                                  $('#successpanverify'+count).show();
+                                                  $('#failurepanverify'+count).hide();
+                                                  $('#pan_verify'+count).css('pointer-events','none');
+                                                  $("#submit").attr("disabled", false); 
+                                                  
+                                            }else{
+                                                $('#pan_verify'+count).text('Verify');
+                                                 $('#successpanverify'+count).hide();
+                                                $('#failurepanverify'+count).show();
+                                                $("#submit").attr("disabled", true);
+                                           }                           
+                                    
+                                        }
 
-                }else{
-                    $('#pan_verify'+count).text('Verify');
-                     $('#successpanverify'+count).hide();
-                    $('#failurepanverify'+count).show();
-                    $("#submit").attr("disabled", true);
-               }                           
-
-            }
-
-        });
-    });
-
+                                    });
+                                });
       
       
       
-</script>
+      
+  </script>
 @endsection
