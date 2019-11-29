@@ -21,4 +21,5 @@ return [
     'UpdateShareHolderSuccessfully' => 'ShareHolding Structure Updated successfully!',
     'update_company_detail_successfully' => 'Company details updated successfully!',
     'save_company_detail_successfully' => 'Company details saved successfully!',
+    'promoter_saved_successfully' => 'Promoter details saved successfully!',
 ];

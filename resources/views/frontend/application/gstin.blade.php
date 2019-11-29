@@ -30,7 +30,7 @@
                                             <label for="txtPassword">GST Number
                                                 <span class="mandatory">*</span>
                                             </label>
-                                            <input type="text" name="biz_gst_number" value="09AALCS4138B1ZE" id="biz_gst_number" class="form-control" tabindex="1" placeholder="Enter GST Number">
+                                            <input type="text" name="biz_gst_number" value="{{$gst_no}}" id="biz_gst_number" readonly class="form-control" tabindex="1" placeholder="Enter GST Number">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -38,7 +38,7 @@
                                             <label for="txtEmail">GST USERNAME
                                                 <span class="mandatory">*</span>
                                             </label>
-                                            <input type="text" name="biz_gst_username" value="prolitus27" id="biz_gst_username" value="" class="form-control" tabindex="1" placeholder="Enter GST Username">
+                                            <input type="text" name="biz_gst_username" value="" id="biz_gst_username" value="" class="form-control" tabindex="1" placeholder="Enter GST Username">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -46,7 +46,7 @@
                                             <label for="txtEmail">GST PASSWORD
                                                 <span class="mandatory">*</span>
                                             </label>
-                                            <input type="text" name="biz_gst_password" value="Prolitus@1234" id="biz_gst_password" value="" class="form-control" tabindex="3" placeholder="Enter GST Password">
+                                            <input type="password" name="biz_gst_password" value="" id="biz_gst_password" value="" class="form-control" tabindex="3" placeholder="Enter GST Password">
                                         </div>
                                     </div>
                                 </div>
@@ -55,6 +55,10 @@
                                         <input type="submit" id="fetchdetails" value="Fetch Detail" class="btn btn-primary">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row-md-12 mt-4" id="gstin_detail_div" style="display: none">
+                                <h3 class="mt-0 pullout">GSTIN Detail</h3>
+                                <div id="gstin_detail"></div>
                             </div>
                         </div>
                     </div>
@@ -88,6 +92,10 @@
                 let mclass = result['status'] ? 'success' : 'danger';
                 var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
                 $("#pullMsg").html(html);
+                if (result['status']) {
+                    $('#gstin_detail_div').show();
+                    $('#gstin_detail').html(result['value']);
+                }
              },
              error:function(error) {
                 var html = '<div class="alert-danger alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>Some error occured. Please try again later.</div>';

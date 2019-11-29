@@ -736,7 +736,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'active',
                     function ($role) {
-                    $disc = ($role->is_active == 1)?'Active':'Not Active'; 
+                    $disc = ($role->u_active == 1)?'Active':'Not Active'; 
                     return $disc;
 
                 })

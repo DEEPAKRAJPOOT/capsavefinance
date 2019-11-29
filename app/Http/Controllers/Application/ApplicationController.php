@@ -82,7 +82,7 @@ class ApplicationController extends Controller
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
                     
                     Session::flash('message',trans('success_messages.save_company_detail_successfully'));
-                    return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+                    return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id'], 'edit' => 1]);
                 } else {
                     //Add application workflow stages
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2);
@@ -116,20 +116,19 @@ class ApplicationController extends Controller
        {
            return  redirect()->back();
        }
-        if($editFlag == 1) { 
-            return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
+        return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
+            'cin_no' => $getCin->cin,
+            'ownerDetails' => $ownerDetail,
+            'biz_id' => $biz_id
+        ]);
+        
+      
+           /* return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
                 'cin_no' => $getCin->cin,
                 'ownerDetails' => $ownerDetail,
                 'biz_id' => $biz_id
-            ]);
-        }
-        else {
-            return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
-                'cin_no' => $getCin->cin,
-                'ownerDetails' => $ownerDetail,
-                'biz_id' => $biz_id
-            ]);
-        }
+            ]);  */
+        
     } 
 
     /**
@@ -151,7 +150,7 @@ class ApplicationController extends Controller
                 if ($toUserId) {
                    Helpers::assignAppToUser($toUserId, $appId);
                 }
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
+                return response()->json(['message' =>trans('success_messages.save_company_detail_successfully'),'status' => 1]);
             }
             else {
                //Add application workflow stages 
@@ -177,7 +176,7 @@ class ApplicationController extends Controller
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
          
           if ($owner_info) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
+                return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
@@ -199,22 +198,25 @@ class ApplicationController extends Controller
         
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
-            if(!empty($requiredDocs)){
+            if($requiredDocs->count() != 0){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
             }
             else {
-                return redirect()->back()->withErrors(trans('error_messages.document'));
+                Session::flash('message',trans('error_messages.document'));
+                return redirect()->back();
             }
         }
         else {
             return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
+//            dd($docData);
         if($editFlag == 1) {
             return view('frontend.application.update_document')->with([
                 'requiredDocs' => $requiredDocs,
                 'documentData' => $docData
             ]); 
         }
+        
         else {
             return view('frontend.application.document')->with([
                 'requiredDocs' => $requiredDocs,
@@ -334,7 +336,10 @@ class ApplicationController extends Controller
 
 
     public function gstinForm(){
-     return view('frontend.application.gstin');   
+     $user_id = Auth::user()->user_id;
+     $gst_details = State::getGstbyUser($user_id);
+     $gst_no = $gst_details['pan_gst_hash'];
+     return view('frontend.application.gstin',compact('gst_no'));   
     }
 
     public function analyse_gst(Request $request){
@@ -344,7 +349,7 @@ class ApplicationController extends Controller
       $gst_pass = trim($request->get('gst_pass'));
 
       if (empty($gst_no)) {
-        return response()->json(['message' =>'GST no can\'t be empty.','status' => 0]);
+        return response()->json(['message' =>'GST Number can\'t be empty.','status' => 0]);
       }
       if (empty($gst_usr)) {
         return response()->json(['message' =>'GST Username can\'t be empty.','status' => 0]);
@@ -362,7 +367,7 @@ class ApplicationController extends Controller
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
         return response()->json(['message' =>'GST data pulled successfully.','status' => 1,
-          'value' => $response]);
+          'value' => $response['result']]);
       }else{
         return response()->json(['message' =>'Something went wrong','status' => 0]);
       }
