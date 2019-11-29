@@ -29,12 +29,39 @@
             <div class="row row-offcanvas row-offcanvas-right">
                 @include('layouts.partials.front_sidebar')
                 <!-- partial -->
+                @if(Session::has('message'))
+                <div class="content-wrapper-msg">
+                <div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+                    {{ Session::get('message') }}
+                </div>
+                </div>
+                @endif
+                
                 @yield('content')
                 
                 @include('layouts.front_footer')
             </div>
         </div>
     </div>
+    <style>
+            .error{
+                color:red !important;
+            }
+            .isloader{ 
+                position: fixed;    
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,.6);
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-content: center;
+                z-index: 9;
+            }
+        </style>
     <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
