@@ -5,7 +5,7 @@
     <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
 		<li>
-			<a class="javascript:void(0);">Company Details</a>
+                    <a href="javascript:void(0);"  class="active">Company Details</a>
 		</li>
 		<li>
 			<a href="javascript:void(0);">Promoter Details</a>
