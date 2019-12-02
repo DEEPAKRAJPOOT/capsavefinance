@@ -76,4 +76,9 @@ class BusinessAddress extends BaseModel
     public function business(){
         return $this->belongsTo('App\Inv\Repositories\Models\Business','biz_id','biz_id');
     }
+
+    public static function getAddressforFI($biz_id){
+        $address = BusinessAddress::where(['biz_id'=>$biz_id])->get();
+        return $address;
+    }
 }

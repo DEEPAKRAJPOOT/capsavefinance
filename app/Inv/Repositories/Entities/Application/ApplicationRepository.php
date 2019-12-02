@@ -313,4 +313,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       $result = BusinessAddress::getFiLists($dataArr);
       return $result ?: false;
     }
+
+    public function getAddressforFI($biz_id){
+        $result = BusinessAddress::getAddressforFI($biz_id);
+        return $result ?: false;
+    }
 }
