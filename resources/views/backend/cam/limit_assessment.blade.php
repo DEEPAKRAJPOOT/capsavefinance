@@ -61,10 +61,10 @@
                                         $max_tenor_old_invoice = \Helpers::customIsset($prgmData, 'max_tenor_old_invoice');                                          
                                        
                                         $is_adhoc_facility = \Helpers::customIsset($prgmData, 'is_adhoc_facility');
-                                        $adhoc_interest_rate = \Helpers::customIsset($prgmData, 'adhoc_interest_rate');
+                                        $prgm_adhoc_interest_rate = \Helpers::customIsset($prgmData, 'adhoc_interest_rate');
                                         
                                         $is_grace_period = \Helpers::customIsset($prgmData, 'is_grace_period');
-                                        $grace_period = \Helpers::customIsset($prgmData, 'grace_period');
+                                        $prgm_grace_period = \Helpers::customIsset($prgmData, 'grace_period');
                                         
                                         $interest_borne_by = \Helpers::customIsset($prgmData, 'interest_borne_by');
                                         $disburse_method = \Helpers::customIsset($prgmData, 'disburse_method');
@@ -74,7 +74,9 @@
                                         $processing_fee_d = $processing_fee ? \Helpers::formatCurreny($processing_fee) : '';                                         
                                         
                                         $check_bounce_fee = \Helpers::customIsset($prgmData, 'check_bounce_fee');
-                                        $check_bounce_fee_d = $processing_fee ? \Helpers::formatCurreny($check_bounce_fee) : '';                                          
+                                        $check_bounce_fee_d = $processing_fee ? \Helpers::formatCurreny($check_bounce_fee) : '';
+                                        
+                                        $prgm_overdue_interest_rate = \Helpers::customIsset($prgmData, 'overdue_interest_rate');
                                         
                                         @endphp
                                         <tr>
@@ -106,7 +108,7 @@
                                         </tr>
                                         <tr>
                                             <td><b>Overdue Interest Rate (%) :</b></td>
-                                            <td>{{ \Helpers::customIsset($prgmData, 'overdue_interest_rate') }}%</td>
+                                            <td>{{ $prgm_overdue_interest_rate }}%</td>
                                         </tr>
                                         <tr>
                                             <td><b>Interest Linkage :</b></td>
@@ -117,7 +119,7 @@
                                             <td><b>Adhoc Facility :</b></td>
                                             <td>{{ config('common.yes_no.'.$is_adhoc_facility) }} 
                                                 @if($is_adhoc_facility)
-                                                (Max Interest Rate : {{ $adhoc_interest_rate }}%)
+                                                (Max Interest Rate : {{ $prgm_adhoc_interest_rate }}%)
                                                 @endif
                                             </td>
                                         </tr>
@@ -126,7 +128,7 @@
                                             <td><b>Grace Period :</b></td>
                                             <td>{{ config('common.yes_no.'.$is_grace_period) }} 
                                                 @if($is_grace_period)
-                                                (Grace Period  : {{ $grace_period }}Days)
+                                                (Grace Period  : {{ $prgm_grace_period }}Days)
                                                 @endif
                                             </td>
                                         </tr>
@@ -314,6 +316,7 @@
                                             </div>
                                         </div>
 
+                                        @if ($is_adhoc_facility)
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
                                                 <label for="adhoc_interest_rate" class="col-md-4"><b>Adhoc Interest Rate (%) :</b></label> 
@@ -333,7 +336,9 @@
                                                 </div>
                                             </div>
                                         </div>
-
+                                        @endif
+                                        
+                                        @if ($is_grace_period)
                                         <div class="col-md-12">
                                             <div class="form-group row  ">
                                                 <label for="grace_period" class="col-md-4"><b>Grace Period  (Days) :</b></label> 
@@ -352,7 +357,7 @@
                                                 </div>
                                             </div>
                                         </div>
-
+                                        @endif
                                         <div class="col-md-12">
                                             <div class="form-group row  INR">
                                                 <label for="txtPassword" class="col-md-4"><b>Processing Fee :</b></label> 
@@ -449,5 +454,26 @@
 </div>
 @endsection
 @section('jscript')
-
+<script>
+var messages = {
+    min_loan_offer : "{{ $min_loan_size > $loanAmount ? $loanAmount : $min_loan_size }}",
+    max_loan_offer : "{{ $max_loan_size }}",
+    min_interest_rate : "{{ $min_interest_rate }}",
+    max_interest_rate : "{{ $max_interest_rate }}",
+    min_tenor : "{{ $min_tenor }}",
+    max_tenor : "{{ $max_tenor }}",
+    min_tenor_old_invoice : "{{ $min_tenor_old_invoice }}",
+    max_tenor_old_invoice : "{{ $max_tenor_old_invoice }}",     
+    min_overdue_interest_rate : "{{ $prgm_overdue_interest_rate }}",
+    max_overdue_interest_rate : "{{ $prgm_overdue_interest_rate }}",     
+    required_adhoc_interest_rate : "{{ $is_adhoc_facility }}",
+    min_adhoc_interest_rate : "0",
+    max_adhoc_interest_rate : "{{ $prgm_adhoc_interest_rate }}",    
+    required_grace_period : "{{ $is_grace_period }}",
+    min_grace_period : "0",
+    max_grace_period : "{{ $prgm_grace_period }}",
+};
+</script>
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script src="{{ asset('backend/assets/js/application.js') }}" type="text/javascript"></script>
 @endsection
