@@ -207,7 +207,7 @@ class Business extends BaseModel
 
     public static function getCompanyDataByBizId($biz_id)
     {
-        $arrData = self::select('biz.biz_entity_name','biz_pan_gst.pan_gst_hash')
+        $arrData = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash')
         ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
         ->where('biz.biz_id', $biz_id)
         ->get();
