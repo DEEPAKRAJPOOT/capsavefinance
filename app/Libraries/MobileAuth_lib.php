@@ -10,8 +10,8 @@ class MobileAuth_lib
 
 	const SEND_OTP   = '1001';   #SEND OTP
 	const VERF_OTP   = '1002';   #VERIFY OTP
-	const GET_DTL    = '1003';	  #GET MOBILE DETAIL
-	const MOB_VLD    = '1004';	  #GET MOBILE DETAIL
+	const GET_DTL    = '1003';	 #GET MOBILE DETAIL
+	const MOB_VLD    = '1004';	 #GET MOBILE DETAIL
 
 	const SEND_OTP_URL  = SELF::BASE_URL . 'v2/mobile/otp';
 	const VERF_OTP_URL  = SELF::BASE_URL . 'v2/mobile/status';

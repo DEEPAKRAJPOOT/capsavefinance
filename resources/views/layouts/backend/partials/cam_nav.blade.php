@@ -21,7 +21,7 @@
             <a href="{{ route('cam_finance', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{$route_name == 'cam_finance' ? 'active' : '' }}">Financial</a>
         </li>
         <li>
-            <a href="#" class="{{$route_name == 'cam_gst' ? 'active' : '' }}">GST/Ledger Detail</a>
+            <a href="{{ route('cam_gstin', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{$route_name == 'cam_gstin' ? 'active' : '' }}">GST/Ledger Detail</a>
         </li>
         <li>
             <a href="#" class="{{$route_name == 'cam_gst' ? 'active' : '' }}">Limit Assessment</a>
