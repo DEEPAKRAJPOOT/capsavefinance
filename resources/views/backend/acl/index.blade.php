@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="content-wrapper">
-    <section class="content-header">
+     <section class="content-header">
         <div class="header-icon">
             <i class="fa  fa-list"></i>
         </div>
@@ -11,8 +11,9 @@
             <h3>Manage Roles</h3>
             <small>Role List</small>
             <ol class="breadcrumb">
-                <li><a href="#"><i class="mdi mdi-home"></i> Home</a></li>
-                <li class="active">Manage Role</li>
+                <li style="color:#374767;"> Home </li>
+                <li style="color:#374767;">Access Management</li>
+                <li class="active">Manage Roles</li>
             </ol>
         </div>
     </section>

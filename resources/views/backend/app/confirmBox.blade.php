@@ -23,8 +23,8 @@
                       <input type="hidden" name="user_id" value="{{$user_id}}">
                    <input type="hidden" name="_token" value="{{csrf_token()}}">
 
-                Do you want to accept it.
-                <button type="submit" class="btn btn-success">Yes</button>
+                Are You sure to accept it ?.<br>
+                <button type="submit" class="btn btn-success btn-sm float-right">Yes</button>
                 {!!
                 Form::close()
                 !!}

@@ -3,16 +3,17 @@
 @section('content')
 
 <div class="content-wrapper">
-    <section class="content-header">
+     <section class="content-header">
         <div class="header-icon">
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage User</h3>
-            <small>user List</small>
+            <h3>Manage User (Role Wise)</h3>
+            <small>User List</small>
             <ol class="breadcrumb">
-                <li><a href="#"><i class="mdi mdi-home"></i> Home</a></li>
-                <li class="active">Manage user</li>
+                <li style="color:#374767;"> Home </li>
+                <li style="color:#374767;">Access Management</li>
+                <li class="active">Manage User</li>
             </ol>
         </div>
     </section>
@@ -21,19 +22,6 @@
            
             <div class="row">
                 <div class="col-sm-12">
-<!--                      <div class="head-sec">
-                <div class="pull-right" style="margin-bottom: 10px;">
-                    <a   href="{{route('get_anchor_lead_list')}}" >
-                <button class="btn  btn-success btn-sm" type="button">
-                        <span class="btn-label">
-                        <i class="fa fa-plus"></i>
-                        </span>
-                        Manage Anchor Lead
-                        </button>
-                        
-                    </a>
-                </div>
-            </div>-->
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
                     <a  data-toggle="modal" data-target="#addmanageUserRole" data-url ="{{route('add_user_role')}}" data-height="420px" data-width="100%" data-placement="top" >

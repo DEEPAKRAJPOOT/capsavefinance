@@ -27,11 +27,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\SupplierController@index'
             ]);
 
-            Route::get('cam/overview', [
-                'as' => 'cam_overview',
-                'uses' => 'Backend\CamController@index'
-            ]);
-
+          
             Route::get('company-details', [
                 'as' => 'company_details',
                 'uses' => 'Backend\ApplicationController@showCompanyDetails'
@@ -94,32 +90,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'application_save',
                 'uses' => 'Backend\ApplicationController@applicationSave'
             ]);
-            
-            Route::post('cam/cam-information-save', [
-                'as' => 'cam/cam-information-save',
-                'uses' => 'Backend\CamController@camInformationSave'
-            ]);
 
-            Route::get('cam/bank', [
-                'as' => 'cam_bank',
-                'uses' => 'Backend\CamController@banking'
-            ]);
-
-            Route::get('cam/finance', [
-                'as' => 'cam_finance',
-                'uses' => 'Backend\CamController@finance'
-            ]);
-
-            Route::post('cam/finance_store', [
-                'as' => 'cam_finance_store',
-                'uses' => 'Backend\CamController@finance_store'
-            ]);
-
-            Route::get('cam/gstin', [
-                'as' => 'cam_gstin',
-                'uses' => 'Backend\CamController@gstin'
-            ]);
-            
             Route::get('fircu/fi', [
                 'as' => 'backend_fi',
                 'uses' => 'Backend\FiRcuController@listFI'
@@ -185,10 +156,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@AcceptNextStage'
             ]); 
 
-            Route::get('cam/cibil', [
-                'as' => 'cam_cibil',
-                'uses' => 'Backend\CamController@showCibilForm'
-            ]);
             Route::get('application-pool', [
                 'as' => 'application_pool',
                 'uses' => 'Backend\LeadController@showApplicationPool'
@@ -231,14 +198,42 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_pass_data',
                 'uses' => 'Backend\ApplicationController@showPassResponseData'
             ]);
+            //start section cam
+             Route::group(['prefix' => 'cam'], function () {
 
+                Route::get('promoter', [
+                    'as' => 'cam_promoter',
+                    'uses' => 'Backend\CamController@showPromoter'
+                ]);
+                Route::get('overview', [
+                    'as' => 'cam_overview',
+                    'uses' => 'Backend\CamController@index'
+                ]);
+                Route::get('cibil', [
+                    'as' => 'cam_cibil',
+                    'uses' => 'Backend\CamController@showCibilForm'
+                ]);
+                Route::post('cam-information-save', [
+                    'as' => 'cam_information_save',
+                    'uses' => 'Backend\CamController@camInformationSave'
+                ]);
 
-            Route::get('cam/promoter', [
-                'as' => 'cam_promoter',
-                'uses' => 'Backend\CamController@showPromoter'
-            ]);
+                Route::get('bank', [
+                    'as' => 'cam_bank',
+                    'uses' => 'Backend\CamController@banking'
+                ]);
 
-        });
+                Route::get('finance', [
+                    'as' => 'cam_finance',
+                    'uses' => 'Backend\CamController@finance'
+                ]);
+
+                Route::post('finance_store', [
+                    'as' => 'cam_finance_store',
+                    'uses' => 'Backend\CamController@finance_store'
+                ]);
+            }); //end of cam
+        });//end of application
 
         Route::group(['prefix' => 'lead'], function () {
             Route::get('/', [

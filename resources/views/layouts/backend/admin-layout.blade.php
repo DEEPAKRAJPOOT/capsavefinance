@@ -90,6 +90,7 @@
     <div class="isloader" style="display:none;">  
         <img src="{{asset('backend/assets/images/loader.gif')}}">
     </div>
+</body>
 
     <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
@@ -139,5 +140,4 @@
         });
     </script>
     @yield('jscript')
-</body>
 </html>

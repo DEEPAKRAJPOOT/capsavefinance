@@ -9,9 +9,10 @@
         </div>
         <div class="header-title">
             <h3>Manage Anchor Lead</h3>
-            <small>Anchor Lead List</small>
+            <small>Anchor List</small>
             <ol class="breadcrumb">
-                <li><a href="#"><i class="mdi mdi-home"></i> Home</a></li>
+                <li style="color:#374767;"> Home </li>
+                <li style="color:#374767;">Manage Anchor</li>
                 <li class="active">Manage Anchor Lead</li>
             </ol>
         </div>

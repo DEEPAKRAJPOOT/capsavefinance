@@ -11,7 +11,7 @@
             <h3>Manage Permission</h3>
             <small>Role Permission</small>
             <ol class="breadcrumb">
-                <li><a href="#"><i class="mdi mdi-home"></i> Home</a></li>/ <li>Manage Role</li>
+                <li><a href="#"><i class="mdi mdi-home"></i> Home</a></li> <li>Manage Role</li>
                 <li class="active">Manage Permission</li>
             </ol>
         </div>
