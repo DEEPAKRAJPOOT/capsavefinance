@@ -447,19 +447,10 @@ class CamController extends Controller
     	$req_arr = array(
     		'mobile' => '8827562250',
     	);
-
-
-    	// $req_arr = array(
-    	// 	'request_id' => 'bd29fb4c-8753-4576-b09b-a46e821ccb80',
-    	// 	'otp' => '1866',
-    	// );
     	$resp = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-
     	echo "<pre>";
     	print_r($resp);
     	die;
-
-
         $bsa = new Bsa_lib();
         $reportType = 'xml';
         $req_arr = array(
@@ -491,6 +482,16 @@ class CamController extends Controller
         $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
         \File::put(storage_path('app/public/user').'/'.$file_name, $payload['result']);
         dd($payload);
+    }
+
+    public function gstin(Request $request, FinanceModel $fin){
+    	$appId = $request->get('app_id');
+        $gstdocs = $fin->getGSTStatements($appId);
+    	$user = $fin->getUserByAPP($appId);
+    	$user_id = $user['user_id'];
+	    $gst_details = $fin->getGstbyUser($user_id);
+	    $gst_no = $gst_details['pan_gst_hash'];
+        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no]);
     }
 
 

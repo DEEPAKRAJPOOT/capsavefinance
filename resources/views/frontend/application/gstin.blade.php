@@ -56,10 +56,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row-md-12 mt-4" id="gstin_detail_div" style="display: none">
+                            <!-- <div class="row-md-12 mt-4" id="gstin_detail_div" style="display: none">
                                 <h3 class="mt-0 pullout">GSTIN Detail</h3>
                                 <div id="gstin_detail"></div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -93,9 +93,7 @@
                 var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
                 $("#pullMsg").html(html);
                 if (result['status']) {
-                    window.open(result['value']['file_url'], '_blank');
                     $('#gstin_detail_div').show();
-                    $('#gstin_detail').html(result['value']['result']);
                 }
              },
              error:function(error) {

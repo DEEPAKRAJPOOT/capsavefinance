@@ -365,18 +365,66 @@ class ApplicationController extends Controller
             'username' => $gst_usr,//'prolitus27',
             'password' => $gst_pass,//'Prolitus@1234',
         );
+
+
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
-          $myhtml = view('frontend.application.report');
-          $file_name = $gst_no. '.pdf';
-          $file = storage_path('app/public/user').'/'.$file_name;
-          $pdf = PDF::loadView('frontend.application.report');
-          $pdf->save($file);
-          $response['file_url'] = url('storage/user/'. $file_name);
-        return response()->json(['message' =>'GST data pulled successfully.','status' => 1,
-          'value' => $response]);
+          $this->logdata($response, 'F', $gst_no.'_'.date('ymdH').'.txt');
+          $json_decoded = json_decode($response['result'], TRUE);
+          $file_name = $gst_no.'.pdf';
+          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$file_name, file_get_contents($json_decoded['pdfDownloadLink'])); 
+          $file= url('storage/user/'. $file_name);
+        return response()->json(['message' =>'GST data pulled successfully.','status' => 1]);
       }else{
-        return response()->json(['message' =>'Something went wrong','status' => 0]);
+        return response()->json(['message' => $response['message'] ?? 'Something went wrong','status' => 0]);
       }
     }
+
+
+  public function logdata($data, $w_mode = 'D', $w_filename = '', $w_folder = '') {
+    list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
+    $main_dir = base_path('apilogs/');
+    $year_dir = $main_dir . "$year/";
+    $month_dir = $year_dir . "$month/";
+    $date_dir = $month_dir . "$date/";
+    $hour_dir = $date_dir . "$hour/";
+
+    if (!file_exists($year_dir)) {
+      mkdir($year_dir, 0777, true);
+    }
+    if (!file_exists($month_dir)) {
+      mkdir($month_dir, 0777, true);
+    }
+    if (!file_exists($date_dir)) {
+      mkdir($date_dir, 0777, true);
+    }
+    if (!file_exists($hour_dir)) {
+      mkdir($hour_dir, 0777, true);
+    }
+
+    $data = is_array($data) ? json_encode($data) : $data;
+
+    $data = base64_encode($data);
+    if (strtolower($w_mode) == 'f') {
+      $final_dir = $hour_dir;
+      $filepath = explode('/', $w_folder);
+      foreach ($filepath as $value) {
+        $final_dir .= "$value/";
+        if (!file_exists($final_dir)) {
+          mkdir($final_dir, 0777, true);
+        }
+      }
+      $my_file = $final_dir . $w_filename;
+      $handle = fopen($my_file, 'w');
+      return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+    } else {
+      $my_file = $hour_dir . date('ymd') . '.log';
+      $handle = fopen($my_file, 'a');
+      $time = date('H:i:s');
+      fwrite($handle, PHP_EOL . 'Log ' . $time);
+      return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+    }
+    return FALSE;
+  }
 }

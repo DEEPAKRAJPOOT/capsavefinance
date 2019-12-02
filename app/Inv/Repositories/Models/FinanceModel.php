@@ -121,8 +121,41 @@ class FinanceModel extends Model
               ->join('file', 'app_doc_file.file_id', '=', 'file.file_id')
               ->where('app_doc_file.app_id', '=', $app_id)
               ->where('app_doc_file.doc_id', '=', '4')
+              ->where('app_doc_file.is_active', '=', '1')
               ->get();
         return ($result ?? null);        
+    }
+
+     public function getGSTStatements($app_id) {        
+        $result = self::select('app_doc_file.gst_month','app_doc_file.gst_year','app_doc_file.file_id','file.file_type','file.file_name','file.file_size','file.file_path')
+              ->from('app_doc_file')
+              ->join('file', 'app_doc_file.file_id', '=', 'file.file_id')
+              ->where('app_doc_file.app_id', '=', $app_id)
+              ->where('app_doc_file.doc_id', '=', '6')
+              ->where('app_doc_file.is_active', '=', '1')
+              ->get();
+        return ($result ?? null);        
+    }
+
+    public static function getGstbyUser($user_id)
+    {
+        $result = self::select('*')
+                ->from('biz_pan_gst')
+                ->where('user_id', $user_id)
+                ->where('parent_pan_gst_id', '0')
+                ->where('type', '2')
+                ->first();
+        return ($result ?? null);
+    }
+
+
+    public static function getUserByAPP($app_id)
+    {
+        $result = self::select('*')
+                ->from('app')
+                ->where('app_id', $app_id)
+                ->first();
+        return ($result ?? null);
     }
     
 }

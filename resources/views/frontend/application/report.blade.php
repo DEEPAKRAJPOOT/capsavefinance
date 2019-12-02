@@ -11,7 +11,7 @@
 </style>
 </head>
 <body>
-<table width="900" border="0" align="center" cellspacing="0" cellpadding="0" style="font-size:13px;padding:20px;background-color:#efefef;font-family:Montserrat,Arial,sans-serif;table-layout:fixed">
+<table width="100%" border="0" align="center" cellspacing="0" cellpadding="0" style="font-size:13px;padding:20px;background-color:#efefef;font-family:Montserrat,Arial,sans-serif;table-layout:fixed">
     <tbody>
          <tr>
             <td align="center" style="">
@@ -19,7 +19,7 @@
                 <tbody>
                      <tr>
                        <td>
-                           <a style="display: block;text-align: center;border-bottom: 1px solid #e8e8e8;padding-top: 20px;padding-bottom: 20px;" target="_blank" href="#"><img style="width: 300px; height: auto;" src="logo.jpg" alt="Logo"></a> 
+                             <a style="display: block;text-align: center;border-bottom: 1px solid #e8e8e8;padding-top: 20px;padding-bottom: 20px;" target="_blank" href="#"><img src="{{url('backend/assets/images/logo_mini.svg')}}" width="50px" height="100px" alt="Logo"></a>
                         </td>
                     </tr>
                 </tbody>

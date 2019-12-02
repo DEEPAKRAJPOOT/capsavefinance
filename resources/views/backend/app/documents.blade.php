@@ -141,7 +141,7 @@
                         <div class="form-group">
                             <label for="email">Select Bank Name</label>
                             <select class="form-control" name="doc_name">
-                                <option>Select Bank Name</option>
+                                <option disabled value="" selected>Select Bank Name</option>
                                 <option>HDFC Bank</option>
                                 <option>ICICI Bank</option>
                             </select>
