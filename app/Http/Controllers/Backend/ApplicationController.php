@@ -157,6 +157,7 @@ class ApplicationController extends Controller
        try {
             $arrFileData = $request->all();
             $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
+           
             if ($owner_info) {
             
                 //Add application workflow stages
@@ -218,6 +219,7 @@ class ApplicationController extends Controller
             $appId = $request->get('app_id'); //  fetch document id
             $OwnerId = $request->get('owner_id'); //  fetch document id
             $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
+           
             
             $userFile = $this->docRepo->saveFile($uploadData);
             
