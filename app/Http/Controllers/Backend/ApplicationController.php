@@ -216,17 +216,24 @@ class ApplicationController extends Controller
             $arrFileData = $request->all();
             $docId = $request->get('doc_id'); //  fetch document id
             $appId = $request->get('app_id'); //  fetch document id
-            $OwnerId = $request->get('owner_id'); //  fetch document id
+            $ownerId = $request->get('owner_id'); //  fetch document id
             $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
             
             $userFile = $this->docRepo->saveFile($uploadData);
-            
             if(!empty($userFile->file_id)) {
+                $ownerDocCheck = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
+                if(!empty($ownerDocCheck)) {
+                    $appDocResponse = $this->docRepo->updateAppDocFile($ownerDocCheck, $userFile->file_id);
+                    $fileId = $appDocResponse->file_id;
+                    $response = $this->docRepo->getFileByFileId($fileId);
+                    
+                } else {
+                    $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+                    $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+                    $fileId = $appDocResponse->file_id;
+                    $response = $this->docRepo->getFileByFileId($fileId);
+                }   
                 
-                $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
-                $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
-                $fileId = $appDocResponse->file_id;
-                $response = $this->docRepo->getFileByFileId($fileId);
             }
             if ($response) {
                 return response()->json([
