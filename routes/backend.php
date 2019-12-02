@@ -326,3 +326,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@getFinanceReport'
             ]);
 
+            Route::get('mobile_verify', [
+                'as' => 'mobile_verify',
+                'uses' => 'Backend\ApplicationController@mobileModel'
+            ]);
+
+
