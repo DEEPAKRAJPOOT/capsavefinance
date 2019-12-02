@@ -43,6 +43,20 @@ Route::group(
         ]
     );
 
+
+    Route::post(
+        'chk_commerical_cibil',
+        [
+        'as' => 'chk_commerical_cibil',
+        'uses' => 'Cibil\CibilController@getCommercialCibilRequest'
+        ]
+    );
+
+
+
+
+
+
     Route::post('bank_analysys', [
         'as' => 'getAnalysis',
         'uses' => 'Backend\CamController@analyse_bank'
@@ -63,6 +77,16 @@ Route::group(
         [
         'as' => 'download_user_cibil',
         'uses' => 'Cibil\CibilController@downloadPromoterCibil'
+        ]
+    );
+
+
+
+    Route::post(
+        'download_commerial_cibil',
+        [
+        'as' => 'download_commerial_cibil',
+        'uses' => 'Cibil\CibilController@downloadCommercialCibil'
         ]
     );
 

@@ -48,6 +48,19 @@ class BizApi extends BaseModel
         return $arrData;
   }
   
+
+ public static function getCommercialCibilData($biz_id)
+  {
+     $arrData = self::select('biz_api_log.res_file')
+        ->join('biz_api_log', 'biz_api_log.biz_api_log_id', '=', 'biz_api.biz_api_log_id')
+        ->where('biz_api.biz_owner_id', NULL)
+        ->where('biz_api.biz_id', $biz_id)
+        ->orderBy('biz_api_log.biz_api_log_id', 'DESC')
+        ->first();
+        return $arrData;
+  }
+
+
     /* GET karaza api response   */
      public static function getKarzaRes($attribute)
      {
