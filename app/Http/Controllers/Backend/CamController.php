@@ -519,14 +519,21 @@ class CamController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id'); 
             $offerId = $request->get('offer_id') ? $request->get('offer_id') : null; 
-            
+            $loanAmount = $request->get('loan_amount') ? $request->get('loan_amount') : null; 
+                                  
+            $this->appRepo->updateOfferByAppId($appId, ['is_active' => 0]);
+                        
             $addlData = [];
             $addlData['app_id'] = $appId;
+            $addlData['loan_amount'] = $loanAmount;
             $offerData = $this->prepareOfferData($request->all(), $addlData);
             
             $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
             
             if ($savedOfferData) {
+                //Update workflow stage
+                //Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1);
+            
                 Session::flash('message',trans('backend_messages.limit_assessment_success'));
                 return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             } else {
@@ -535,7 +542,7 @@ class CamController extends Controller
             
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }        
+        }
     }
     
     /**
@@ -549,7 +556,7 @@ class CamController extends Controller
         $offerData = [
             'app_id' => $addlData['app_id'],
             'prgm_id' => $requestData['prgm_id'],
-            'loan_amount' => $requestData['loan_amount'],
+            'loan_amount' => $addlData['loan_amount'],
             'loan_offer' => $requestData['loan_offer'],        
             'interest_rate' => $requestData['interest_rate'],        
             'tenor' => $requestData['tenor'],        

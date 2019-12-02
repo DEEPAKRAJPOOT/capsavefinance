@@ -39,7 +39,9 @@
                                             <td>{{ \Helpers::customIsset($prgmData, 'is_fldg_applicable') }}</td>
                                         </tr>
 
-                                        @php                                                                                                                        
+                                        @php
+                                        $prgm_id = \Helpers::customIsset($prgmData, 'prgm_id'); 
+                                        
                                         $anchor_limit = \Helpers::customIsset($prgmData, 'anchor_limit'); 
                                         $anchor_limit_d = $anchor_limit ? \Helpers::formatCurreny($anchor_limit) : '';
                                         
@@ -414,6 +416,9 @@
                                 {!! Form::hidden('app_id', $appId) !!}
                                 {!! Form::hidden('biz_id', $bizId) !!}
                                 {!! Form::hidden('offer_id', $offerId) !!}
+                                {!! Form::hidden('prgm_id', $prgm_id) !!}
+                                {!! Form::hidden('loan_amount', $loanAmount) !!}
+                                
                                 
                                 {!! 
                                     Form::submit(

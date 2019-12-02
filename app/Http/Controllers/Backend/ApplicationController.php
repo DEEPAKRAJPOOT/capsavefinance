@@ -14,6 +14,7 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\User;
 use Session;
 use Helpers;
+use App\Libraries\Pdf;
 
 class ApplicationController extends Controller
 {
@@ -21,10 +22,18 @@ class ApplicationController extends Controller
     protected $userRepo;
     protected $docRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
+    /**
+     * The pdf instance.
+     *
+     * @var App\Libraries\Pdf
+     */
+    protected $pdf;
+    
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
+        $this->pdf = $pdf;
         $this->middleware('checkBackendLeadAccess');
     }
     
@@ -590,5 +599,113 @@ class ApplicationController extends Controller
         }
     }
     
+    /**
+     * Show the offer
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showOffer(Request $request)
+    {
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        
+        //$appData = $this->appRepo->getAppDataByAppId($appId);        
+        //$loanAmount = $appData ? $appData->loan_amt : 0;
+        
+        $offerWhereCond = [];
+        $offerWhereCond['app_id'] = $appId;        
+        $offerData = $this->appRepo->getOfferData($offerWhereCond);
+        $offerId = $offerData ? $offerData->offer_id : 0;
+        $prgmId = $offerData ? $offerData->prgm_id : 0;
+        $loanAmount = $offerData ? $offerData->loan_amount : 0;
+        
+        return view('backend.app.offer')
+                ->with('appId', $appId)
+                ->with('bizId', $bizId)
+                ->with('loanAmount', $loanAmount)
+                ->with('prgm_id', $prgmId)
+                ->with('offerId', $offerId)                
+                ->with('offerData', $offerData);        
+    }
+
+    /**
+     * Accept Offer
+     * 
+     * @param Request $request
+     */
+    public function acceptOffer(Request $request)
+    {
+        $appId = $request->get('app_id');        
+        $offerId = $request->get('offer_id');
+        
+        try {
+            $offerData = [];
+            $offerData['status'] = 1;           
+            
+            $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
+            if ($savedOfferData) {
+                //Update workflow stage
+                //Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1);                
+                
+                return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId ]);
+            }
+            
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }        
+    }
     
+    /**
+     * Generate sanction letter
+     * 
+     * @param Request $request
+     * @return View
+     */
+    public function genSanctionLetter(Request $request)
+    {
+        $appId = $request->get('app_id');
+        $offerId = $request->get('offer_id');
+        
+        $offerWhereCond = [];
+        $offerWhereCond['offer_id'] = $offerId;        
+        $offerData = $this->appRepo->getOfferData($offerWhereCond);
+        
+        return view('backend.app.sanction_letter')
+                ->with('appId', $appId)
+                ->with('offerId', $offerId)               
+                ->with('offerData', $offerData);          
+    }
+    
+    /**
+     * Download sanction letter
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadSanctionLetter(Request $request)
+    {
+        
+        $appId = $request->get('app_id');
+        $offerId = $request->get('offer_id');
+        
+        try {
+            $offerWhereCond = [];
+            $offerWhereCond['offer_id'] = $offerId;
+            $offerData = $this->appRepo->getOfferData($offerWhereCond);
+
+            $fileName = time() . '.pdf';
+            $htmlContent = \View::make('backend.app.download_sanction_letter', 
+                    compact('offerData')+['appId' => $appId, 'offerId' => $offerId]
+                    )->render();
+
+            //Update workflow stage
+            //Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1);
+            
+            return response($this->pdf->render($htmlContent), 200)->withHeaders([
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => ($request->has('download') ? 'attachment' : 'inline') . "; filename=" . $fileName,
+            ]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

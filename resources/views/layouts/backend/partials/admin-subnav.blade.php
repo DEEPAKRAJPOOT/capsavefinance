@@ -17,4 +17,7 @@
     <li>
         <a href="#">Submit Commercial</a>
     </li>
+    <li>
+        <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/notes') ? 'active' : '' }}">View Offer</a>
+    </li>    
 </ul>

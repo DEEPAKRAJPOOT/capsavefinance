@@ -25,14 +25,14 @@ class Offer extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -55,6 +55,7 @@ class Offer extends BaseModel {
         'processing_fee',
         'check_bounce_fee',
         'comment',
+        'status',
         'is_active',
         'created_by',
         'created_at',
@@ -108,4 +109,47 @@ class Offer extends BaseModel {
         }
     }    
 
+    /**
+     * Update Offer Data By Application Id
+     * 
+     * @param integer $app_id
+     * @param array $arr
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function updateOfferByAppId($app_id, $arr = [])
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($arr)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($arr)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        $rowUpdate = self::where('app_id',(int) $app_id)->where('is_owner',1)->update($arr);
+
+        return ($rowUpdate ? $rowUpdate : false);
+    }    
 }

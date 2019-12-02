@@ -369,4 +369,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $offerData = Offer::saveOfferData($offerData, $offerId);
         return $offerData ? $offerData : false;
     }
+    
+    /**
+     * Update Offer Data By Application Id
+     * 
+     * @param integer $app_id
+     * @param array $arr
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateOfferByAppId($app_id, $arr = [])
+    {        
+        return Offer::updateOfferByAppId($app_id, $arr);
+    }    
 }

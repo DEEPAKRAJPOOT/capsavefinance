@@ -205,7 +205,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('cam/save-limit-assessment', [
                 'as' => 'save_limit_assessment',
                 'uses' => 'Backend\CamController@saveLimitAssessment'
-            ]);            
+            ]);  
+            
+            Route::get('view-offer', [
+                'as' => 'view_offer',
+                'uses' => 'Backend\ApplicationController@showOffer'
+            ]);
+            
+            Route::post('accept-offer', [
+                'as' => 'accept_offer',
+                'uses' => 'Backend\ApplicationController@acceptOffer'
+            ]); 
+            
+            Route::get('sanction-letter', [
+                'as' => 'gen_sanction_letter',
+                'uses' => 'Backend\ApplicationController@genSanctionLetter'
+            ]);
+            
+            Route::get('download-sanction-letter', [
+                'as' => 'download_sanction_letter',
+                'uses' => 'Backend\ApplicationController@downloadSanctionLetter'
+            ]);             
         });
 
         Route::group(['prefix' => 'lead'], function () {
