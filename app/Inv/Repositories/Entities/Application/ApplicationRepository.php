@@ -324,4 +324,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       $result = AppDocumentFile::getRcuLists($appId);
       return $result ?: false;
     }
+    
+    public function getAddressforFI($biz_id){
+        $result = BusinessAddress::getAddressforFI($biz_id);
+        return $result ?: false;
+    }
 }
