@@ -602,7 +602,7 @@ $(document).ready(function () {
                             } 
                      
                     }); 
-                 alert(ownerNull);
+                
                   if(ownerNull==true)
                   {
                      window.location.href = "{{ route('promoter_details', []) }}";

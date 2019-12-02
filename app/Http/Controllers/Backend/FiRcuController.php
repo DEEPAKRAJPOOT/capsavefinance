@@ -32,9 +32,15 @@ class FiRcuController extends Controller
     /**
      * Display a listing of RCU
      */
-    public function listRCU()
+    public function listRCU(Request $request)
     {
-       return view('backend.fircu.rcu');   
+        $appId = $request->get('app_id');
+        $rcuResult = $this->appRepo->getRcuLists($appId);
+        dd($rcuResult);
+        return view('backend.fircu.rcu', [
+                    'data' => $rcuResult
+                ]);   
     }
+
 
 }
