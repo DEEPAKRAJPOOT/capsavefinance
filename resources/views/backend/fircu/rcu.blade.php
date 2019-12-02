@@ -21,7 +21,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="table-responsive">
-                            <table id="RcuList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                            <table id="rcuList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                 <thead>
                                     <tr role="row">
                                         <th>RCU ID</th>
@@ -34,12 +34,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td  colspan="7">No data available</td>
-                                    </tr>
+                                    
                                 </tbody>
                             </table>
-                            <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                            <div id="rcuList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                         </div>
                     </div>
                 </div>
@@ -53,5 +51,17 @@
 @endsection
 
 @section('jscript')
+
+<script>
+
+    var messages = {
+        get_rcu_list: "{{ URL::route('get_rcu_list',['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}",
+        data_not_found: "{{ trans('error_messages.no_data_found') }}",
+        token: "{{ csrf_token() }}",
+
+    };
+</script>
+
+<script src="{{ asset('backend/js/ajax-js/rcu.js') }}"></script>
 
 @endsection
