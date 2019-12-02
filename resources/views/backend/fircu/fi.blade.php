@@ -34,11 +34,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                @forelse($fiLists as $key=>$fiList)
+                                    <?php
+                                     $addrType = ['Company (Registered Address)', 'Company (Communication Address)', 'Company (GST Address)', 'Company (Warehouse Address)', 'Company (Factory Address)','Promoter Address'];
+                                     ?>
                                     <tr role="row" class="odd">
-                                        <td class="sorting_1"><input type="checkbox">1.</td>
-                                        <td>PAN</td>
-                                        <td>abc company</td>                                      
-                                        <td>abc company</td>                                      
+                                        <td><input type="checkbox" value="{{$fiList->biz_addr_id}}">{{$fiList->biz_addr_id}}</td>
+                                        <td>{{$addrType[$fiList->address_type]}}</td>
+                                        <td>{{$fiList->addr_1}}</td>                                      
+                                        <td>{{$fiList->addr_1}}</td>                                      
                                         <td>
                                           <div class="btn-group"><label class="badge badge-warning">Pending&nbsp; &nbsp;</label></div>
                                         </td>
@@ -88,9 +92,11 @@
                                            </table>
                                         </td>
                                     </tr>
+                                @empty
+                                <tr><td colspan="7">No data found.</td></tr>
+                                @endforelse
                                 </tbody>
                             </table>
-                            <div id="fiList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                         </div>
                     </div>
                 </div>
