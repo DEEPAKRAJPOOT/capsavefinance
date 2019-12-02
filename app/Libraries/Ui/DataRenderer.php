@@ -797,14 +797,14 @@ class DataRenderer implements DataProviderInterface
      */
     public function getFiListsList(Request $request, $data)
     {
-        $type = ['Registered Address', 'Communication Address', 'GST Address', 'Warehouse Address', 'Factory Address','Promoter Address'];
+        $type = ['Company (Registered Address)', 'Company (Communication Address)', 'Company (GST Address)', 'Company (Warehouse Address)', 'Company (Factory Address)','Promoter Address'];
         return DataTables::of($data)
-                ->rawColumns(['biz_addr_id', 'action', 'status'])
+                ->rawColumns(['id', 'action', 'status'])
                 ->addColumn(
-                    'biz_addr_id',
+                    'id',
                     function ($data) {
                         //$link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return $data->biz_addr_id;
+                        return '<input type="checkbox" value="'.$data->id.'#'.$data->address_type.'">'.$data->id;
                         //return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
                     }
                 )
@@ -816,12 +816,12 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'name',
                     function ($data) {                        
-                        return $data->business->biz_entity_name ? $data->business->biz_entity_name : '';
+                        return $data->name ? $data->name : '';
                 })
                 ->addColumn(
                     'address',
                     function ($data) {
-                    return $data->addr_1 ? $data->addr_1.' '.$data->city_name.' '.$data->state->name.' '.$data->pin_code : '';
+                    return $data->address ? $data->address: '';
                 }) 
                 ->addColumn(
                     'status',

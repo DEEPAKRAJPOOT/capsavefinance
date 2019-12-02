@@ -40,6 +40,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12 mt-3">
+                            <div class="form-group text-right">
+                               <button class="btn btn-success btn-sm " data-toggle="modal" data-target="#myModal">Trigger for FI</button>
+                                <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
+                            </div>
+                         </div>
+                </div>
             </div>
         </div>
     </div>

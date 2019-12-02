@@ -22,7 +22,7 @@ try {
                 }
             },
            columns: [
-                {data: 'biz_addr_id'},
+                {data: 'id'},
                 {data: 'address_type'},
                 {data: 'name'},
                 {data: 'address'},
