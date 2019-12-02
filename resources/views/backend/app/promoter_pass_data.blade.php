@@ -39,7 +39,7 @@
     </tbody>
 </table>   
  @else
-<h5>       Verification not found due to some stuck response from Api......
+<h5>       Verification has been done,But result return blank from Api in case of status is true.....
                    </h5>
 @endif
 
