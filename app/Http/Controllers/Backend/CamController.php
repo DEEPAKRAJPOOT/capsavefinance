@@ -31,7 +31,7 @@ class CamController extends Controller
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
         $this->middleware('auth');
-       
+       $this->middleware('checkBackendLeadAccess');
         }
     /**
      * Display a listing of the resource.

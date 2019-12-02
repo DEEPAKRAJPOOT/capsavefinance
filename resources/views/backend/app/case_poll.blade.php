@@ -7,7 +7,13 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Application</h3>            
+            <h3>Application Pool</h3>
+            <small>Pool List</small>
+            <ol class="breadcrumb">
+                <li style="color:#374767;"> Home </li>
+                <li style="color:#374767;">Manage Application</li>
+                <li class="active">Application Pool</li>
+            </ol>
         </div>
     </section>
     <div class="card">
@@ -54,7 +60,7 @@
     </div>
 </div>
 
-{!!Helpers::makeIframePopup('pickLead','Pick Lead','modal-sm')!!}
+{!!Helpers::makeIframePopup('pickLead','Pick Lead','modal-md')!!}
 
 @endsection
 

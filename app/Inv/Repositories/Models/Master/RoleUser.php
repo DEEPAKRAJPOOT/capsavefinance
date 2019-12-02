@@ -120,7 +120,8 @@ class RoleUser extends BaseModel
     {
          $arr = self::select('users.*','users.is_active as u_active','roles.*')
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
-                ->join('roles', 'roles.id', '=', 'role_user.role_id');
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                 ->where('roles.is_editable','!=',0);
                 return $arr;
     }
     
