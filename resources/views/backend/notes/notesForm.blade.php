@@ -3,7 +3,7 @@
 <div class="row">
 	<div class="col-md-12">
 		<div class="form-group">
-                  <input type="hidden" id="app_id" value="{{$app_id}}">
+                  <input class="form-control" type="hidden" id="app_id" value="{{$app_id}}">
 	                <label class="">Comment</label>                                          
 	                <textarea class="form-control" id='notesData'></textarea>
 	                <span id='msg'></span>
@@ -30,6 +30,9 @@
                success:function(data){
                   $('#msg').html(data.message);
                 	console.log(data);
+                        window.parent.location.reload();
+                        //p.$("#noteFrame").modal("hide");
+                        p.reload();
                }
            });
        }

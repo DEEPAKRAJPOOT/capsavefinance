@@ -21,22 +21,22 @@
 <div class="content-wrapper">
    
     <ul class="sub-menu-main pl-0 m-0">
-        <li>
-            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Business Information</a>
-        </li>
-        <li>
-            <a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}"  class="active">Promoter Details</a>
-        </li>
-        <li>
-            <a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
-        </li>
-        <!--<li>
-                <a href="buyers.php">Buyers </a>
-        </li>-->
-        <!-- <li>
-                <a href="third-party.php">Third party</a>
-        </li> -->
-    </ul>
+        @can('company_details')
+		<li>
+			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" >Business Information</a>
+		</li>
+        @endcan 
+        @can('promoter_details')
+		<li>
+			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Promoter Details</a>
+		</li>
+        @endcan 
+        @can('documents')
+		<li>
+			<a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
+		</li>
+        @endcan        
+	</ul>
     <div class="row grid-margin mt-3 mb-2">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">

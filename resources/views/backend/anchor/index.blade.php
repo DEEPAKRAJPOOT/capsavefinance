@@ -11,8 +11,9 @@
             <h3>Manage Anchor</h3>
             <small>Anchor List</small>
             <ol class="breadcrumb">
-                <li><a href="#"><i class="mdi mdi-home"></i> Home</a></li>
-                <li class="active">Manage Anchor</li>
+                <li style="color:#374767;"> Home </li>
+                <li style="color:#374767;">Manage Anchor</li>
+                <li class="active">Anchor List</li>
             </ol>
         </div>
     </section>
@@ -21,19 +22,7 @@
            
             <div class="row">
                 <div class="col-sm-12">
-<!--                      <div class="head-sec">
-                <div class="pull-right" style="margin-bottom: 10px;">
-                    <a   href="{{route('get_anchor_lead_list')}}" >
-                <button class="btn  btn-success btn-sm" type="button">
-                        <span class="btn-label">
-                        <i class="fa fa-plus"></i>
-                        </span>
-                        Manage Anchor Lead
-                        </button>
-                        
-                    </a>
-                </div>
-            </div>-->
+
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
                     @can('add_anchor_reg')
@@ -51,32 +40,6 @@
             </div>
           </div>     
             </div>
-<!--            <div class="row">
-                <div class="col-md-4">
-                    {!!
-                    Form::text('by_email',
-                    null,
-                    [
-                    'class' => 'form-control',
-                    'placeholder' => 'Search by First name, Last name and Email',
-                    'id'=>'by_name'
-                    ])
-                    !!}
-                </div>
-                <div class="col-md-4">
-
-                    {!!
-                    Form::select('is_assign',
-                    [''=>'Status', '1'=>'Assigned','0'=> 'Pending'],
-                    null,
-                    array('id' => 'is_active',
-                    'class'=>'form-control'))
-                    !!}
-                     
-                </div>
-               <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
-            
-                </div>        -->
                 <div class="row">
                 <div class="col-sm-12">
                                      <div class="table-responsive">

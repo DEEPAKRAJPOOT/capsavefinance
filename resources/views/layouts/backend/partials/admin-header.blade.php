@@ -8,9 +8,9 @@
         <button class="navbar-toggler navbar-toggler align-self-center mr-2" type="button" data-toggle="minimize">
           <i class="fa fa-bars" aria-hidden="true"></i>
         </button>
-        <form class="form-inline mt-2 mt-md-0 d-none d-lg-block">
+<!--        <form class="form-inline mt-2 mt-md-0 d-none d-lg-block">
             <input class="form-control mr-sm-2 search" type="text" placeholder="Search">
-        </form>
+        </form>-->
         <ul class="navbar-nav ml-lg-auto">
             <li class="nav-item nav-profile">
                 <a class="nav-link" href="#">
