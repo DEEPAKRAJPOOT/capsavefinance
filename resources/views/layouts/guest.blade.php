@@ -50,7 +50,7 @@
         <script src="{{url('frontend/assets/js/jquery-3.4.1.min.js')}}"></script>
         <script src="{{url('frontend/assets/js/bootstrap.min.js')}}"></script>
         <script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
-        <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
+        <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
         <script>
             $(".sign-UP .btn").click(function () {
                 $(".otp-section").fadeIn();
