@@ -187,12 +187,5 @@ Route::group(
         ]
     );
 
-    Route::post(
-        'get_rcu_list',
-        [
-        'as' => 'get_rcu_list',
-        'uses' => 'AjaxController@getRcuLists'
-        ]
-    );
 
 });
