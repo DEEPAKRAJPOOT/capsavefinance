@@ -17,6 +17,7 @@ date_default_timezone_set('Asia/Kolkata');
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use Helpers;
 
 class CamController extends Controller
 {
@@ -497,7 +498,11 @@ class CamController extends Controller
         $offerWhereCond['app_id'] = $appId;        
         $offerData = $this->appRepo->getOfferData($offerWhereCond);
         $offerId = $offerData ? $offerData->offer_id : 0;
+        $offerStatus = $offerData ? $offerData->status : 0;
         
+        if ($offerStatus == 2) {
+            $offerId = 0;
+        }
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
@@ -532,7 +537,7 @@ class CamController extends Controller
             
             if ($savedOfferData) {
                 //Update workflow stage
-                //Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1);
+                Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);
             
                 Session::flash('message',trans('backend_messages.limit_assessment_success'));
                 return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);

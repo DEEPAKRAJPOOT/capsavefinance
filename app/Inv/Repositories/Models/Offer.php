@@ -4,6 +4,8 @@ namespace App\Inv\Repositories\Models;
 
 use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
 class Offer extends BaseModel {
     /* The database table used by the model.
@@ -148,7 +150,7 @@ class Offer extends BaseModel {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
 
-        $rowUpdate = self::where('app_id',(int) $app_id)->where('is_owner',1)->update($arr);
+        $rowUpdate = self::where('app_id',(int) $app_id)->update($arr);
 
         return ($rowUpdate ? $rowUpdate : false);
     }    

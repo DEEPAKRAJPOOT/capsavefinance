@@ -8,8 +8,10 @@
                 <div class="card-body">
                     <div class=" form-fields">
                         <div class="col-md-12">
-                            <h5 class="card-title form-head-h5">Sanction Letter</h5>
-                            <a href="{{ route('download_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'download'=>1 ]) }}">Download</a>
+                            <h5 class="card-title form-head-h5">Sanction Letter
+                            <a data-toggle="modal" data-target="#uploadSanctionLetter" data-height="200px" data-width="100%" data-placement="top" href="#" data-url="{{ route('show_upload_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'upload'=>1 ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Upload</a>    
+                            <a href="{{ route('download_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'download'=>1 ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Download</a>                            
+                            </h5>
                             <div class="col-md-12">
 
                                 @php
@@ -99,4 +101,6 @@
         </div>
     </div>
 </div>
+
+{!!Helpers::makeIframePopup('uploadSanctionLetter','Upload Sanction Letter', 'modal-md')!!}
 @endsection

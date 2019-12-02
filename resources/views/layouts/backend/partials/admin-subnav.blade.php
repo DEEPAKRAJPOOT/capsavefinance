@@ -17,7 +17,15 @@
     <li>
         <a href="#">Submit Commercial</a>
     </li>
+    @php
+    $wfStageData = \Helpers::getWfStageToProcess(request()->get('app_id'));
+    $wfStageToProcess = $wfStageData ? $wfStageData->stage_code : '';
+    $isWfStageCompleted = \Helpers::isWfStageCompleted('sales_queue', request()->get('app_id'));    
+    @endphp
+    
+    @if($wfStageToProcess == 'sales_queue' || $isWfStageCompleted)
     <li>
         <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/notes') ? 'active' : '' }}">View Offer</a>
-    </li>    
+    </li>
+    @endif
 </ul>

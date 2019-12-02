@@ -33,7 +33,7 @@ try {
                     }, 
                     margin: {
                        required: true,
-                       range:[messages.min_tenor_old_invoice,messages.max_tenor_old_invoice]
+                       range:[messages.min_margin,messages.max_margin]
                     },
                     overdue_interest_rate: {
                        required: true,
@@ -60,7 +60,7 @@ try {
                 messages: {
                 }
             });            
-                     
+                             
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

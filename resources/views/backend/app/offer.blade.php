@@ -36,6 +36,7 @@
                                 $processing_fee = \Helpers::customIsset($offerData, 'processing_fee');
                                 $check_bounce_fee = \Helpers::customIsset($offerData, 'check_bounce_fee');
                                 $comment = \Helpers::customIsset($offerData, 'comment');
+                                $offer_status = \Helpers::customIsset($offerData, 'status');
                                 @endphp
 
 
@@ -110,7 +111,17 @@
                                 {!! Form::hidden('prgm_id', $prgm_id) !!}
                                 {!! Form::hidden('loan_amount', $loanAmount) !!}
 
-
+                                @if(!in_array($offer_status, [1,2]))
+                                {!! 
+                                Form::submit(
+                                'Reject', 
+                                [
+                                'name'=>'btn_reject_offer', 
+                                'class' => 'btn btn-success btn-sm float-right  mt-3 ml-3'
+                                ]
+                                )
+                                !!} 
+                                
                                 {!! 
                                 Form::submit(
                                 'Accept', 
@@ -119,11 +130,16 @@
                                 'class' => 'btn btn-success btn-sm float-right  mt-3 ml-3'
                                 ]
                                 )
-                                !!}
-
+                                !!}                                                               
+                                @endif
+                                
                                 {!!
                                 Form::close()
                                 !!}
+                                
+                                @if($offer_status == 1)
+                                <a href="{{ route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId ]) }}" class="btn btn-success btn-sm float-right  mt-3 ml-3">View & Download Sanction Letter</a>
+                                @endif
                             </div>
                         </div>	
                     </div>	 

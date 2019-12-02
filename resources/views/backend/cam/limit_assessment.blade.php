@@ -77,6 +77,7 @@
                                         $check_bounce_fee_d = $processing_fee ? \Helpers::formatCurreny($check_bounce_fee) : '';
                                         
                                         $prgm_overdue_interest_rate = \Helpers::customIsset($prgmData, 'overdue_interest_rate');
+                                        $prgm_margin = \Helpers::customIsset($prgmData, 'margin');
                                         
                                         @endphp
                                         <tr>
@@ -104,7 +105,7 @@
                                         </tr>
                                         <tr>
                                             <td><b>Margin (%) :</b></td>
-                                            <td>{{ \Helpers::customIsset($prgmData, 'margin') }}%</td>
+                                            <td>{{ $prgm_margin }}%</td>
                                         </tr>
                                         <tr>
                                             <td><b>Overdue Interest Rate (%) :</b></td>
@@ -185,6 +186,8 @@
                                 $processing_fee = \Helpers::customIsset($offerData, 'processing_fee');
                                 $check_bounce_fee = \Helpers::customIsset($offerData, 'check_bounce_fee');
                                 $comment = \Helpers::customIsset($offerData, 'comment');
+                                $offer_status = \Helpers::customIsset($offerData, 'status');
+                                
                                 @endphp
                                     <div class="row">
                                         <div class="col-md-12">
@@ -204,7 +207,7 @@
                                                     {!! 
                                                         Form::text(
                                                             'loan_offer', 
-                                                            $loan_offer ? \Helpers::formatCurreny($loan_offer) : '', 
+                                                            $loan_offer ? $loan_offer : '', 
                                                             [
                                                             'class' => 'form-control', 
                                                             'placeholder' => 'Loan Offer'
@@ -424,17 +427,32 @@
                                 {!! Form::hidden('prgm_id', $prgm_id) !!}
                                 {!! Form::hidden('loan_amount', $loanAmount) !!}
                                 
-                                
+                                @php  
+                                if ($offer_status == 1) {                                    
+                                    $btnAttr = ['disabled'=>'disabled'];
+                                    $noteStr = 'Offer has been already accepted by user.';
+                                    $btnLabel = 'Save';
+                                } else if ($offer_status == 2) {                                    
+                                    $btnAttr = [];
+                                    $noteStr = 'Offer has been rejected by user.';
+                                    $btnLabel = 'Save';
+                                } else {
+                                    $btnAttr = [];
+                                    $noteStr = '';
+                                    $btnLabel = 'Save';
+                                }
+                                @endphp
                                 {!! 
                                     Form::submit(
-                                        'Save', 
+                                        $btnLabel, 
                                         [
                                             'name'=>'btn_save_offer', 
                                             'class' => 'btn btn-success btn-sm float-right  mt-3 ml-3'
-                                        ]
+                                        ] + $btnAttr
                                     )
                                 !!}
-                        
+                                <small class="float-right  mt-3 ml-3">{{ $noteStr }}</small>
+                                
                                 {!!
                                 Form::close()
                                 !!}
@@ -464,8 +482,10 @@ var messages = {
     max_tenor : "{{ $max_tenor }}",
     min_tenor_old_invoice : "{{ $min_tenor_old_invoice }}",
     max_tenor_old_invoice : "{{ $max_tenor_old_invoice }}",     
-    min_overdue_interest_rate : "{{ $prgm_overdue_interest_rate }}",
+    min_overdue_interest_rate : "0",
     max_overdue_interest_rate : "{{ $prgm_overdue_interest_rate }}",     
+    min_margin : "0",
+    max_margin : "{{ $prgm_margin }}",
     required_adhoc_interest_rate : "{{ $is_adhoc_facility }}",
     min_adhoc_interest_rate : "0",
     max_adhoc_interest_rate : "{{ $prgm_adhoc_interest_rate }}",    

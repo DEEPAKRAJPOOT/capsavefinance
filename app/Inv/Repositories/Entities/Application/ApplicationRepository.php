@@ -381,6 +381,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function updateOfferByAppId($app_id, $arr = [])
     {        
-        return Offer::updateOfferByAppId($app_id, $arr);
+        return Offer::updateOfferByAppId((int) $app_id, $arr);
     }    
 }

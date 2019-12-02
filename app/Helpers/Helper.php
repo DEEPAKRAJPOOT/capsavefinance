@@ -644,4 +644,17 @@ class Helper extends PaypalHelper
         return $formattedAmount;
     }
     
+    /**
+     * Workflow stage to process
+     * 
+     * @param integer $app_id
+     */
+    public static function getWfStageToProcess($app_id)
+    {
+        $currStage = self::getCurrentWfStage($app_id);
+        $wf_order_no = $currStage->order_no;
+        $currStage = self::getNextWfStage($wf_order_no);
+        return $currStage;
+    }
+    
 }
