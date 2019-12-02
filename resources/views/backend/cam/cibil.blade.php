@@ -416,7 +416,7 @@
         </button>
       </div>
       <div class="modal-body">
-         <input type="text"  id="biz_id">
+         <input type="hidden"  id="biz_id">
         <p>Are you sure you want to pull the cibil score for this Company?</p>
         <p id="pullMsg"></p>
       </div>
