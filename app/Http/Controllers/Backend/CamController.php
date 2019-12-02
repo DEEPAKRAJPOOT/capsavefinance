@@ -148,7 +148,7 @@ class CamController extends Controller
         return response()->json(['message' =>'Bank Statement analysed successfully.','status' => 1,
           'value' => $response]);
       }else{
-        return response()->json(['message' =>'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
+        return response()->json(['message' =>$response['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
       }
     }
 
