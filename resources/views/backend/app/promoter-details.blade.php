@@ -108,7 +108,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="txtCreditPeriod">Promoter Name111
+                                        <label for="txtCreditPeriod">Promoter Name
 
                                             <span class="mandatory">*</span>
                                         </label>
