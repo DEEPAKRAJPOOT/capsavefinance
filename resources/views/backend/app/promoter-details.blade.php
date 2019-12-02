@@ -470,6 +470,8 @@
     </div>
     {!!Helpers::makeIframePopup('modalPromoter','Upload User List', 'modal-md')!!}
 
+    {!!Helpers::makeIframePopup('modalMobile','Mobile Verification', 'modal-md')!!}
+
 @endsection
 @section('jscript')
 
@@ -1107,6 +1109,8 @@ jQuery.ajax({
                 if (result['status']) {
                    $('#mobile_no').attr('readonly','readonly');
                    $('#verify_mobile_no').text('verified');
+                   $('#modalMobile').show();
+                   $('#modalMobile iframe').attr({'src':'{{URL::route("mobile_verify") }}?mobile='+mobile_no,'width':'100%'});
                 }
              },
              error:function(error) {
@@ -1117,6 +1121,10 @@ jQuery.ajax({
                 $(".isloader").hide();
              },
         })
-    })
+    });
+
+    $(document).on('click','#modalMobile .close', function() {
+        $('#modalMobile').hide();
+    });
 </script>
 @endsection
