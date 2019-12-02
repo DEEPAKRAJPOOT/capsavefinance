@@ -116,9 +116,33 @@ class AppDocumentFile extends Authenticatable
     }
     
     
+    /**
+     * Managing inputs as required Array
+     *
+     * @param Array $attributes
+     *
+     * @return Array
+     */
+    
+    public static function getRcuLists($appId)
+    {
+        return AppDocumentFile::with('rcuDocument')->with('userFile')->where('app_id', $appId)->get();
+   
+    }
+    
     public function userFile()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id');
+    }
+    
+    public function rcuDocument()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'id', 'doc_id')->where('is_rcu', 1);
+    }
+    
+    public function rcu()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\Rcu', 'doc_id', 'app_doc_file_id');
     }
 }
   

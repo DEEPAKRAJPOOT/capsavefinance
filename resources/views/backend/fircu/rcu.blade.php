@@ -49,19 +49,3 @@
 
 
 @endsection
-
-@section('jscript')
-
-<script>
-
-    var messages = {
-        get_rcu_list: "{{ URL::route('get_rcu_list',['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}",
-        data_not_found: "{{ trans('error_messages.no_data_found') }}",
-        token: "{{ csrf_token() }}",
-
-    };
-</script>
-
-<script src="{{ asset('backend/js/ajax-js/rcu.js') }}"></script>
-
-@endsection
