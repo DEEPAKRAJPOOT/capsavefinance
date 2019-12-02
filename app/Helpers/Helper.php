@@ -530,6 +530,8 @@ class Helper extends PaypalHelper
         if (!$assignData) {
             AppAssignment::saveData($dataArr);
         }
+        
+        $application = Application::updateAppDetails($app_id, ['is_assigned'=>1]); 
     }
     
     /**
