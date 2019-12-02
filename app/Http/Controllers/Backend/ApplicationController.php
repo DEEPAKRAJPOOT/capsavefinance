@@ -216,17 +216,24 @@ class ApplicationController extends Controller
             $arrFileData = $request->all();
             $docId = $request->get('doc_id'); //  fetch document id
             $appId = $request->get('app_id'); //  fetch document id
-            $OwnerId = $request->get('owner_id'); //  fetch document id
+            $ownerId = $request->get('owner_id'); //  fetch document id
             $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
             
             $userFile = $this->docRepo->saveFile($uploadData);
-            
             if(!empty($userFile->file_id)) {
+                $ownerDocCheck = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
+                if(!empty($ownerDocCheck)) {
+                    $appDocResponse = $this->docRepo->updateAppDocFile($ownerDocCheck, $userFile->file_id);
+                    $fileId = $appDocResponse->file_id;
+                    $response = $this->docRepo->getFileByFileId($fileId);
+                    
+                } else {
+                    $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+                    $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+                    $fileId = $appDocResponse->file_id;
+                    $response = $this->docRepo->getFileByFileId($fileId);
+                }   
                 
-                $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
-                $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
-                $fileId = $appDocResponse->file_id;
-                $response = $this->docRepo->getFileByFileId($fileId);
             }
             if ($response) {
                 return response()->json([
@@ -622,27 +629,6 @@ class ApplicationController extends Controller
         }
     }
 
-
-     public function verify_mobile(Request $request){
-      $post_data = $request->all();
-      $mobile_no = trim($request->get('mobile_no'));
-      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
-        return response()->json(['message' =>'Mobile Number is not valid.','status' => 0]);
-      }
-
-      $mob = new MobileAuth_lib();
-        $req_arr = array(
-            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
-        );
-      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      if ($response['status'] == 'success') {
-        return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
-          'value' => $response['result']]);
-      }else{
-        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
-      }
-    }
-
 /**
  * 
  */
@@ -684,5 +670,47 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_pass_data')->with('res', $res);
         
     } 
+
+
+
+     public function verify_mobile(Request $request){
+      $post_data = $request->all();
+      $mobile_no = trim($request->get('mobile_no'));
+      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
+        return response()->json(['message' =>'Mobile Number is not valid.','status' => 0]);
+      }
+
+      $mob = new MobileAuth_lib();
+        $req_arr = array(
+            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+        );
+      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      if ($response['status'] == 'success') {
+        return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
+          'value' => $response['result']]);
+      }else{
+        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
+      }
+    }
+
+
+
+    public function mobileModel(Request $request){
+      $post_data = $request->all();
+      $mobile_no = trim($request->get('mobile'));
+      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
+        return '<div>Mobile Number is not valid.</div>';
+      }
+      $mob = new MobileAuth_lib();
+      $req_arr = array(
+            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+      );
+      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      if ($response['status'] == 'success') {
+       return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
+      }else{
+         return "<div>Unable to verify the mobile.</div>";
+      }
+    }
     
 }
