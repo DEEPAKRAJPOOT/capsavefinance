@@ -47,7 +47,7 @@ class AppDocument extends Authenticatable
     {
         return $this->belongsTo('App\Inv\Repositories\Models\DocumentMaster', 'doc_id');
     }
-  
+    
 }
   
 
