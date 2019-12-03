@@ -214,7 +214,7 @@ CREATE TABLE `rta_biz_addr` (
   `addr_1` varchar(100) DEFAULT NULL,
   `addr_2` varchar(100) DEFAULT NULL,
   `city_name` varchar(50) DEFAULT NULL,
-  `state_name` varchar(50) DEFAULT NULL,
+  `state_id` int(10) DEFAULT NULL,
   `pin_code` varchar(10) DEFAULT NULL,
   `address_type` tinyint(1) NOT NULL COMMENT '0=>permanent, 1=>correspondence',
   `created_by` int(10) UNSIGNED NOT NULL,

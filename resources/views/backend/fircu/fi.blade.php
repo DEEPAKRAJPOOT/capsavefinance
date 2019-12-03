@@ -24,7 +24,7 @@
                             <table id="fiList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                 <thead>
                                     <tr role="row">
-                                        <th>FI Residence ID</th>
+                                        <th>Residence ID</th>
                                         <th>Address Type</th>
                                         <th>Name</th>
                                         <th>Address</th>
@@ -41,8 +41,8 @@
                                     <tr role="row" class="odd">
                                         <td><input type="checkbox" value="{{$fiList->biz_addr_id}}">{{$fiList->biz_addr_id}}</td>
                                         <td>{{$addrType[$fiList->address_type]}}</td>
-                                        <td>{{$fiList->addr_1}}</td>                                      
-                                        <td>{{$fiList->addr_1}}</td>                                      
+                                        <td>{{($fiList->biz_owner_id)? $fiList->owner->first_name: $fiList->business->biz_entity_name}}</td>                                      
+                                        <td>{{$fiList->addr_1.' '.$fiList->city_name.' '.$fiList->state->name.' '.$fiList->pin_code}}</td>                                      
                                         <td>
                                           <div class="btn-group"><label class="badge badge-warning">Pending&nbsp; &nbsp;</label></div>
                                         </td>
