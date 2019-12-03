@@ -52,10 +52,12 @@
                                                 Action
                                                 </button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                                    <a class="dropdown-item" href="#">Action</a>
-                                                    <a class="dropdown-item" href="#">Positive</a>
-                                                    <a class="dropdown-item" href="#">Negative</a>                                            
-                                                    <a class="dropdown-item" href="#">Refer to Credit</a>
+                                                    <a class="dropdown-item" href="#" value="0">Pending</a>
+                                                    <a class="dropdown-item" href="#" value="1">Inprogress</a>
+                                                    <a class="dropdown-item" href="#" value="2">Positive</a>
+                                                    <a class="dropdown-item" href="#" value="3">Negative</a>
+                                                    <a class="dropdown-item" href="#" value="4">Cancelled</a>
+                                                    <a class="dropdown-item" href="#" value="5">Refer to Credit</a>
                                                 </div>
                                                 <div class="d-flex file-upload-cls">
                                                     <div class="file-browse float-left mr-3 ml-4">
@@ -76,17 +78,18 @@
                                            <table class="overview-table remove-tr-bg" cellpadding="0" cellspacing="0" border="0" width="100%">
                                               <tbody>
                                                  <tr>
-                                                    <td width="25%"><b>Document Name</b></td>
-                                                    <td width="25%"><b>Upload On </b></td>
-                                                    <td width="25%">Download</td>
-                                                    <td align="center" width="25%">Action</td>
+                                                    <td width="30%"><b>Agency Name</b></td>
+                                                    <td width="25%"><b>User Name</b></td>
+                                                    <td width="20%"><b>Updated On</b></td>
+                                                    <td width="10%"><b>Download</b></td>
+                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;"><b>Status</b></td>
                                                  </tr>
                                                  <tr>
-                                                  <td width="25%">Pan Card</td>
-                                                  <td width="25%">Tue, Nov 12, 2019, 2:56 AM</td>
-                                                  <td width="25%"><a href="#"><i class="fa fa-download"></i></a></td>
-                                                  <td align="center" width="25%"><a class="mr-2" href="#"><i class="fa fa-eye"></i></a>
-                                                  </td>
+                                                    <td width="30%">Agency Name</td>
+                                                    <td width="25%">User Name</td>
+                                                    <td width="20%">Updated On</td>
+                                                    <td width="10%"><a href="#"><i class="fa fa-download"></i></a></td>
+                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">Pending</td>
                                                  </tr>
                                               </tbody>
                                            </table>
