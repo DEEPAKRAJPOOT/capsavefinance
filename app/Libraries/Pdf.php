@@ -21,7 +21,7 @@ class Pdf
      * 
      * @var string
      */
-    protected $binary = 'google-chrome';
+    protected $binary = 'google-chrome-stable';
 
     /**
      * Render the PDF.
