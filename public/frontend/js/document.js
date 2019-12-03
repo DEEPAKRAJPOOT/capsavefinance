@@ -65,4 +65,9 @@
         var fileName = e.target.files[0].name;
         $(this).parent('div').children('.custom-file-label').html(fileName);
     });
+
+    $(document).on('click','#pullgst_rep', function () {
+        var gst_no = $(this).data('id');
+        $('#modal_pullgst').modal('show');
+    })
     
