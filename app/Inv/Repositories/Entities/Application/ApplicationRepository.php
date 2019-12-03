@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Entities\Application;
 use DB;
 use Session;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\AppDocument;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Business;
@@ -314,8 +315,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       return $result ?: false;
     }
 
-    /**
-     * function for get all FI lists
+     /**
+     * function for get all RCU documents list
      * @return type
      */
      

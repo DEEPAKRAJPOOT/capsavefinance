@@ -115,6 +115,11 @@ class AppDocumentFile extends Authenticatable
         return $inputArr;
     }
     
+    public function userFile()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id');
+    }
+    
     
     /**
      * Managing inputs as required Array
@@ -126,18 +131,17 @@ class AppDocumentFile extends Authenticatable
     
     public static function getRcuLists($appId)
     {
-        return AppDocumentFile::with('rcuDocument')->with('userFile')->where('app_id', $appId)->get();
-   
+        return AppDocumentFile::with('userFile')
+                ->with('mstDocument')
+                ->with('rcu')
+                ->whereHas('mstDocument')
+                ->where('app_id', $appId)
+                ->get();
     }
     
-    public function userFile()
+    public function mstDocument()
     {
-        return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id');
-    }
-    
-    public function rcuDocument()
-    {
-        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'id', 'doc_id')->where('is_rcu', 1);
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')->where('is_rcu', 1);
     }
     
     public function rcu()
