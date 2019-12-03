@@ -82,7 +82,7 @@ class BusinessAddress extends BaseModel
     }
 
     public static function getAddressforFI($biz_id){
-        $address = BusinessAddress::where(['biz_id'=>$biz_id])->get();
+        $address = BusinessAddress::where('biz_id', $biz_id)->where('addr_1', '<>', null)->get();
         return $address;
     }
 }
