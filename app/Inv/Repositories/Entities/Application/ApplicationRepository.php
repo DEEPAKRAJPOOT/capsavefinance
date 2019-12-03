@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Entities\Application;
 use DB;
 use Session;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\AppDocument;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Business;
@@ -15,8 +16,8 @@ use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
-
-
+use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\Offer;
 
 /**
  * Application repository class
@@ -314,8 +315,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       return $result ?: false;
     }
 
-    /**
-     * function for get all FI lists
+     /**
+     * function for get all RCU documents list
      * @return type
      */
      
@@ -324,4 +325,86 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       $result = AppDocumentFile::getRcuLists($appId);
       return $result ?: false;
     }
+    
+    /**
+     * Get Program Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getProgramData($whereCondition=[])
+    {
+        $prgmData = Program::getProgramData($whereCondition);
+        return $prgmData ? $prgmData : [];
+    }
+        
+    /**
+     * Get Anchor Data By Application Id
+     * 
+     * @param integer $app_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getAnchorDataByAppId($app_id)
+    {
+        $prgmData = Application::getAnchorDataByAppId($app_id);
+        return $prgmData ? $prgmData : [];
+    }  
+    
+    /**
+     * Get Offer Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getOfferData($whereCondition=[])
+    {
+        $offerData = Offer::getOfferData($whereCondition);
+        return $offerData ? $offerData : [];
+    }
+
+    /**
+     * Save Offer Data
+     * 
+     * @param array $offerData
+     * @param integer $offerId optional
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveOfferData($offerData=[], $offerId=null)
+    {
+        $offerData = Offer::saveOfferData($offerData, $offerId);
+        return $offerData ? $offerData : false;
+    }
+    
+    /**
+     * Update Offer Data By Application Id
+     * 
+     * @param integer $app_id
+     * @param array $arr
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateOfferByAppId($app_id, $arr = [])
+    {        
+        return Offer::updateOfferByAppId((int) $app_id, $arr);
+    }    
+
+    /**
+     * get address for FI
+     * 
+     * @param integer $biz_id
+     * @return all address result
+     */
+    public function getAddressforFI($biz_id){
+        $result = BusinessAddress::getAddressforFI($biz_id);
+        return $result ?: false;
+    }
+
 }

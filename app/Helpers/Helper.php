@@ -530,6 +530,8 @@ class Helper extends PaypalHelper
         if (!$assignData) {
             AppAssignment::saveData($dataArr);
         }
+        
+        $application = Application::updateAppDetails($app_id, ['is_assigned'=>1]); 
     }
     
     /**
@@ -622,6 +624,39 @@ class Helper extends PaypalHelper
         $data = Role::getAllRole();
                 return $data;
                 
+    }
+    
+    /**
+     * Format Currency
+     * 
+     * @param decimal $amount
+     * @param string $locale | optional
+     * @return string
+     */
+    public static function formatCurreny($amount, $locale='en_IN', $decimal=false, $prefixCurrency=true)
+    {        
+        //setlocale(LC_MONETARY, $locale);
+        //$formattedAmount = money_format('%!i', $amount);
+        $currency = '&#8377;';
+        $amount = !$decimal ? (int) $amount : $amount;        
+        $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
+        if ($prefixCurrency) {
+            $formattedAmount = $currency.$formattedAmount;
+        }
+        return $formattedAmount;
+    }
+    
+    /**
+     * Workflow stage to process
+     * 
+     * @param integer $app_id
+     */
+    public static function getWfStageToProcess($app_id)
+    {
+        $currStage = self::getCurrentWfStage($app_id);
+        $wf_order_no = $currStage->order_no;
+        $currStage = self::getNextWfStage($wf_order_no);
+        return $currStage;
     }
     
 }

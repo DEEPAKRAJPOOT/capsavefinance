@@ -181,6 +181,43 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@saveBusinessInformation'
             ]);
 
+            
+//            
+            
+            Route::get('view-offer', [
+                'as' => 'view_offer',
+                'uses' => 'Backend\ApplicationController@showOffer'
+            ]);
+            
+            Route::post('accept-offer', [
+                'as' => 'accept_offer',
+                'uses' => 'Backend\ApplicationController@acceptOffer'
+            ]); 
+            
+            Route::get('sanction-letter', [
+                'as' => 'gen_sanction_letter',
+                'uses' => 'Backend\ApplicationController@genSanctionLetter'
+            ]);
+            
+            Route::get('download-sanction-letter', [
+                'as' => 'download_sanction_letter',
+                'uses' => 'Backend\ApplicationController@downloadSanctionLetter'
+            ]);
+
+            Route::get('show-upload-sanction-letter', [
+                'as' => 'show_upload_sanction_letter',
+                'uses' => 'Backend\ApplicationController@showUploadSanctionLetter'
+            ]);
+            
+            Route::post('upload-sanction-letter', [
+                'as' => 'upload_sanction_letter',
+                'uses' => 'Backend\ApplicationController@uploadSanctionLetter'
+            ]);             
+        });
+
+
+//////////////// For Promoter Iframe////////////////////////
+
             Route::get('show-pan-data', [
                 'as' => 'show_pan_data',
                 'uses' => 'Backend\ApplicationController@showPanResponseData'
@@ -197,6 +234,19 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('show-pass-data', [
                 'as' => 'show_pass_data',
                 'uses' => 'Backend\ApplicationController@showPassResponseData'
+            ]);
+         //////////////for cibil Iframe//////////////////////// 
+             Route::get('pull-cibil-commercial', [
+                'as' => 'pull_cibil_commercial',
+                'uses' => 'Backend\CamController@pullCibilCommercial'
+            ]);
+              Route::get('pull-cibil-promoter', [
+                'as' => 'pull_cibil_promoter',
+                'uses' => 'Backend\CamController@pullCibilPromoter'
+            ]);
+               Route::get('view-cibil-report', [
+                'as' => 'view_cibil_report',
+                'uses' => 'Backend\CamController@viewCibilReport'
             ]);
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
@@ -237,6 +287,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'cam_finance_store',
                     'uses' => 'Backend\CamController@finance_store'
                 ]);
+                Route::get('cam/limit-assessment', [
+                'as' => 'limit_assessment',
+                'uses' => 'Backend\CamController@showLimitAssessment'
+            ]);  
+            
+            Route::post('cam/save-limit-assessment', [
+                'as' => 'save_limit_assessment',
+                'uses' => 'Backend\CamController@saveLimitAssessment'
+            ]); 
             }); //end of cam
         });//end of application
 
@@ -309,7 +368,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);  
         });
     });
-});
+
 
             Route::get('bank_statement', [
                 'as' => 'bank_statement',

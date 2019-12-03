@@ -36,4 +36,11 @@ return [
     
     'karza_auth_api_url' => env('KARZA_AUTHENTICATION_API_URL', ''),
     'karza_auth_api_key' => env('KARZA_AUTHENTICATION_API_KEY', ''),
+    
+    'BSA_LIB_URL' => env('BSA_LIB_URL', ''),
+    'KARZA_TXN_LIB_URL' => env('KARZA_TXN_LIB_URL', ''),
+    'KARZA_TXN_LIB_KEY' => env('KARZA_TXN_LIB_KEY', ''),
+    'FSA_LIB_URL' => env('FSA_LIB_URL', ''),    
+    'MOBILE_AUTH_LIB_URL' => env('MOBILE_AUTH_LIB_URL', ''),
+    'MOBILE_AUTH_LIB_KEY' => env('MOBILE_AUTH_LIB_KEY', ''),    
 ];

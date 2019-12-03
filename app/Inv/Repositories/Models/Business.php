@@ -139,9 +139,9 @@ class Business extends BaseModel
 
         //insert address into rta_biz_addr
         $address_data=[];
-        array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId,'rcu_status'=>0));
+        array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId,'rcu_status'=>0));
         for($i=0; $i <=3 ; $i++) { 
-            $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_name'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'address_type'=>($i+1),'created_by'=>$userId,'rcu_status'=>0);
+            $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'address_type'=>($i+1),'created_by'=>$userId,'rcu_status'=>0);
             array_push($address_data, $temp);
         }
         BusinessAddress::insert($address_data);
@@ -207,7 +207,7 @@ class Business extends BaseModel
 
     public static function getCompanyDataByBizId($biz_id)
     {
-        $arrData = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash')
+        $arrData = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibilScore')
         ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
         ->where('biz.biz_id', $biz_id)
         ->get();
@@ -311,11 +311,11 @@ class Business extends BaseModel
         $biz_addr_ids = BusinessAddress::where('biz_id',$bizId)->pluck('biz_addr_id');
         $address_data=[];
         BusinessAddress::where('biz_addr_id',$biz_addr_ids[0])->update(
-            array('addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_name'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'updated_by'=>$userId)
+            array('addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'updated_by'=>$userId)
             );
         
         for ($i=0; $i <=3 ; $i++) { 
-            $temp = array('addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_name'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'created_by'=>$userId);
+            $temp = array('addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'created_by'=>$userId);
             BusinessAddress::where('biz_addr_id',$biz_addr_ids[$i+1])->update($temp);
         }
 

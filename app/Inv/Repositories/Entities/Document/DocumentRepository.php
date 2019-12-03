@@ -9,7 +9,8 @@ use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\AppDocument;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\UserFile;
- use App\Inv\Repositories\Contracts\Traits\AuthTrait;
+use App\Inv\Repositories\Contracts\Traits\AuthTrait;
+use App\Inv\Repositories\Models\ProgramDoc;
 
 class DocumentRepository implements DocumentInterface
 {
@@ -257,4 +258,16 @@ class DocumentRepository implements DocumentInterface
         
         return UserFile::find($FileId);;
     }
+    
+    /**
+     * Get Program Documents
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getProgramDocs($whereCondition=[])
+    {
+        return ProgramDoc::getProgramDocs($whereCondition);
+    }    
 }

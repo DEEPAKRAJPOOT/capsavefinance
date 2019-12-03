@@ -24,9 +24,12 @@ class FiRcuController extends Controller
     /**
      * Display a listing of FI
      */
-    public function listFI()
+    public function listFI(Request $request)
     {
-       return view('backend.fircu.fi');   
+        $biz_id = $request->get('biz_id');
+        $fiLists = $this->appRepo->getAddressforFI($biz_id);
+        //dd($fiLists);
+        return view('backend.fircu.fi')->with('fiLists', $fiLists);   
     }
 
     /**
@@ -36,7 +39,16 @@ class FiRcuController extends Controller
     {
         $appId = $request->get('app_id');
         $rcuResult = $this->appRepo->getRcuLists($appId);
-        dd($rcuResult);
+//        $temp = [];
+//        foreach ($rcuResult as $key => $value) { 
+//            if(in_array($value->doc_id, $temp)){
+//                $temp[] = $value->doc_id;
+//                continue;
+//            } else {
+//                $temp[] = $value->doc_id;
+//            }
+//        }
+//        dd($rcuResult);
         return view('backend.fircu.rcu', [
                     'data' => $rcuResult
                 ]);   

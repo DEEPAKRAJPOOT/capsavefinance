@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\User;
 use App\Libraries\MobileAuth_lib;
 use Session;
 use Helpers;
+use App\Libraries\Pdf;
 
 class ApplicationController extends Controller
 {
@@ -23,10 +24,18 @@ class ApplicationController extends Controller
     protected $userRepo;
     protected $docRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
+    /**
+     * The pdf instance.
+     *
+     * @var App\Libraries\Pdf
+     */
+    protected $pdf;
+    
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
+        $this->pdf = $pdf;
         $this->middleware('checkBackendLeadAccess');
     }
     
@@ -630,16 +639,104 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-
-/**
- * 
- */
-
-   /**
-     * Show the business information form.
+    
+    /**
+     * Show the offer
      *
      * @return \Illuminate\Http\Response
      */
+    public function showOffer(Request $request)
+    {
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        
+        //$appData = $this->appRepo->getAppDataByAppId($appId);        
+        //$loanAmount = $appData ? $appData->loan_amt : 0;
+        
+        $offerWhereCond = [];
+        $offerWhereCond['app_id'] = $appId;        
+        $offerData = $this->appRepo->getOfferData($offerWhereCond);
+        $offerId = $offerData ? $offerData->offer_id : 0;
+        $prgmId = $offerData ? $offerData->prgm_id : 0;
+        $loanAmount = $offerData ? $offerData->loan_amount : 0;
+        
+        return view('backend.app.offer')
+                ->with('appId', $appId)
+                ->with('bizId', $bizId)
+                ->with('loanAmount', $loanAmount)
+                ->with('prgm_id', $prgmId)
+                ->with('offerId', $offerId)                
+                ->with('offerData', $offerData);        
+    }
+
+    /**
+     * Accept Offer
+     * 
+     * @param Request $request
+     */
+    public function acceptOffer(Request $request)
+    {
+        $appId = $request->get('app_id');        
+        $offerId = $request->get('offer_id');
+        $bizId = $request->get('biz_id');        
+        
+        try {
+            $offerData = [];
+            if ($request->has('btn_accept_offer') && $request->get('btn_accept_offer') == 'Accept') {
+                $offerData['status'] = 1;           
+                $message = trans('backend_messages.accept_offer_success');
+                
+                //Update workflow stage
+                Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1);                
+                
+            } else if($request->has('btn_reject_offer') && $request->get('btn_reject_offer') == 'Reject') {
+                $offerData['status'] = 2; 
+                $message = trans('backend_messages.reject_offer_success');
+                
+                //Update workflow stage
+                Helpers::updateWfStage('approver', $appId, $wf_status = 2);
+                Helpers::updateWfStage('sales_queue', $appId, $wf_status = 2);
+                //Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 2);
+                //Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
+            }
+            
+            $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
+            if ($savedOfferData) {
+                Session::flash('message', $message);
+                //return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);
+                return redirect()->route('view_offer', ['app_id' => $appId, 'biz_id' => $bizId ]);
+            }
+            
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }        
+    }
+    
+    /**
+     * Generate sanction letter
+     * 
+     * @param Request $request
+     * @return View
+     */
+    public function genSanctionLetter(Request $request)
+    {
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        $offerId = $request->get('offer_id');
+        
+        $offerWhereCond = [];
+        $offerWhereCond['offer_id'] = $offerId;        
+        $offerData = $this->appRepo->getOfferData($offerWhereCond);
+        
+        return view('backend.app.sanction_letter')
+                ->with('appId', $appId)
+                ->with('bizId', $bizId)
+                ->with('offerId', $offerId)
+                ->with('offerData', $offerData);          
+    }
+
+   /* For Promoter iframe model    */
+    
     public function showPanResponseData(Request $request)
     {
         $request =  $request->all();
@@ -648,6 +745,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_pan_data')->with('res', $res);
         
     } 
+    /* For Promoter iframe model    */
     public function showDlResponseData(Request $request)
     {
          $request =  $request->all();
@@ -656,6 +754,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_dl_data')->with('res', $res);
         
     } 
+    /* For Promoter iframe model    */
     public function showVoterResponseData(Request $request)
     {
          $request =  $request->all();
@@ -664,6 +763,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_voter_data')->with('res', $res);
         
     } 
+    /* For Promoter iframe model    */
     public function showPassResponseData(Request $request)
     {
          $request =  $request->all();
@@ -715,4 +815,100 @@ class ApplicationController extends Controller
       }
     }
     
+    /**
+     * Download sanction letter
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadSanctionLetter(Request $request)
+    {
+        
+        $appId = $request->get('app_id');
+        $offerId = $request->get('offer_id');
+        
+        try {
+            $offerWhereCond = [];
+            $offerWhereCond['offer_id'] = $offerId;
+            $offerData = $this->appRepo->getOfferData($offerWhereCond);
+
+            $fileName = 'sanction_letter_'. time() . '.pdf';
+            $htmlContent = \View::make('backend.app.download_sanction_letter', 
+                    compact('offerData')+['appId' => $appId, 'offerId' => $offerId]
+                    )->render();
+
+            //Update workflow stage
+            Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 1);
+            
+            return response($this->pdf->render($htmlContent), 200)->withHeaders([
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => ($request->has('download') ? 'attachment' : 'inline') . "; filename=" . $fileName,
+            ]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    /**
+     * Show upload sanction letter
+     * 
+     * @param Request $request
+     * @return View
+     */
+    public function showUploadSanctionLetter(Request $request)
+    {
+        $appId = $request->get('app_id');
+        $offerId = $request->get('offer_id');
+        $bizId = $request->get('biz_id');
+        $prgmDocsWhere = [];        
+        $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
+        $prgmDocs = $this->docRepo->getProgramDocs($prgmDocsWhere);    //33;
+        
+        $docId = $prgmDocs ? $prgmDocs->doc_id : null;
+       
+        return view('backend.app.upload_sanction_letter')
+                ->with('appId', $appId)
+                ->with('bizId', $bizId)
+                ->with('offerId', $offerId)               
+                ->with('docId', $docId);
+    }
+    
+    /**
+     * Upload signed sanction letter
+     * 
+     * @param Request $request
+     * @return Response
+     */
+    public function uploadSanctionLetter(Request $request)
+    {
+        
+        $arrFileData = $request->all();
+                
+        $docId = $request->get('doc_id');
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        $offerId = $request->get('offer_id');
+        
+        try {
+            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
+
+            $userFile = $this->docRepo->saveFile($uploadData);
+
+            if(!empty($userFile->file_id)) {
+                
+                $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+                $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+                
+                //Update workflow stage
+                Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 1);
+                
+                Session::flash('message',trans('backend_messages.upload_sanction_letter_success'));
+            } else {
+                Session::flash('message',trans('backend_messages.upload_sanction_letter_fail'));
+            }            
+            return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);
+            
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }       
+    }    
 }
