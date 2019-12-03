@@ -12,14 +12,14 @@
                 'doc_file[]': {
                     required: true,
                     extension: "jpg,png,pdf,doc,dox",
-                    filesize : 200000,
+                    filesize : 200000000,
                 }
             },
             messages: {
                 'doc_file[]': {
                     required: "Please select file",
                     extension:"Please select jpg,png,pdf,doc,dox type format only.",
-                    filesize:"maximum size for upload 2 MB.",
+                    filesize:"maximum size for upload 20 MB.",
                 }
             }
         });
