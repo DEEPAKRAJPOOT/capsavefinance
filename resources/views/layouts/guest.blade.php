@@ -64,12 +64,7 @@
 
 
             $(document).ready(function(){
-                $(".datepicker-dis-fdate").datetimepicker({
-                    format: 'dd/mm/yyyy',
-                    autoclose: true,
-                    minView : 2,
-                    endDate: new Date()
-                });
+                datepickerDisFdate();
 
                 $('.number_format').on('input', function(event) {
                    // skip for arrow keys
@@ -80,7 +75,16 @@
                        return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                    });
                 });   
-            })
+            });
+
+            function datepickerDisFdate(){
+                $(".datepicker-dis-fdate").datetimepicker({
+                    format: 'dd/mm/yyyy',
+                    autoclose: true,
+                    minView : 2,
+                    endDate: new Date()
+                });
+            }
         </script>
         @yield('scripts')
     </body>

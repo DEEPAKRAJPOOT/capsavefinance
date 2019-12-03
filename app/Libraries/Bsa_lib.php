@@ -69,7 +69,6 @@ class Bsa_lib{
 		 $date = FIXED["time"];
 		 $url = SELF::METHOD[$method]. $concat;
 		 $parsed_url = array_values(parse_url($url));
-
 		 list($scheme, $host, $path) = $parsed_url;
 		 if (strtoupper($httpMethod) == 'GET') {
 		 	list($scheme, $host, $path, $query_string) = $parsed_url;

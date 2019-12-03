@@ -25,7 +25,7 @@
 
         <div class="card mt-4">
             <div class="card-body ">
-             <form method="POST" action="{{url('application/cam/cam-information-save')}}"> 
+             <form method="POST" action="{{url('cam/cam-information-save')}}"> 
              @csrf
 
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
