@@ -635,11 +635,8 @@ class ApplicationController extends Controller
  * 
  */
 
-   /**
-     * Show the business information form.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   /* For Promoter iframe model    */
+    
     public function showPanResponseData(Request $request)
     {
         $request =  $request->all();
@@ -648,6 +645,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_pan_data')->with('res', $res);
         
     } 
+    /* For Promoter iframe model    */
     public function showDlResponseData(Request $request)
     {
          $request =  $request->all();
@@ -656,6 +654,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_dl_data')->with('res', $res);
         
     } 
+    /* For Promoter iframe model    */
     public function showVoterResponseData(Request $request)
     {
          $request =  $request->all();
@@ -664,6 +663,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_voter_data')->with('res', $res);
         
     } 
+    /* For Promoter iframe model    */
     public function showPassResponseData(Request $request)
     {
          $request =  $request->all();

@@ -505,6 +505,21 @@ class CamController extends Controller
             'arrPromoterData' => $arrPromoterData 
             ]);;
     }
+    
+    /*  for iframe model  */
+     public function pullCibilCommercial(Request $request){
+       $request =  $request->all();
+    }
+     /*  for iframe model  */
+     public function pullCibilPromoter(Request $request){
+       $request =  $request->all();
+    }
+     /*  for iframe model  */
+     public function viewCibilReport(Request $request){
+       $request =  $request->all();
+    }
+    
+    
 
 
 }
