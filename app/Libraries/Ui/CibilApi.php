@@ -176,23 +176,22 @@ class CibilApi {
                              </HEADER-SEGMENT>
                              <INQUIRY>
                                 <COMM-APPLICANT-SEGMENT>
-                                   <BORROWER-NAME>ANKUR DRUGS AND PHARMA LTD</BORROWER-NAME>
-                                   <BORROWER-SHORT-NAME>ADARSH</BORROWER-SHORT-NAME>
+                                   <BORROWER-NAME>'.$arrOwnerData->first_name.' '.$arrOwnerData->last_name.'</BORROWER-NAME>
                                    <LEGAL-CONSTITUTION>20</LEGAL-CONSTITUTION>
                                    <IDS>
                                       <ID>
                                          <TYPE>ID07</TYPE>
-                                         <VALUE>AACCA2062M</VALUE>
+                                         <VALUE>'.$arrOwnerData->pan_gst_hash.'</VALUE>
                                       </ID>
                                       <ID>
                                          <TYPE>ID08</TYPE>
-                                         <VALUE>CIN111111</VALUE>
+                                         <VALUE>'.$arrOwnerData->biz_cin.'</VALUE>
                                       </ID>
                                    </IDS>
                                    <CLASS-OF-ACTIVITY-1>OTHER COMMUNITY, SOCIAL AND PERSONAL SERVICE ACTIVITIES</CLASS-OF-ACTIVITY-1>
                                    <PHONES>
                                       <PHONE>
-                                         <TELE-NO>9875987468</TELE-NO>
+                                         <TELE-NO>'.$arrOwnerData->mobile_no.'</TELE-NO>
                                          <TELE-NO-TYPE>P01</TELE-NO-TYPE>
                                       </PHONE>
                                    </PHONES>
@@ -200,7 +199,7 @@ class CibilApi {
                                 <COMM-ADDRESS-SEGMENT>
                                    <ADDRESS>
                                       <TYPE>D01</TYPE>
-                                      <ADDRESS-LINE><![CDATA[C-306, CRYSTAL PLAZA,ANDHERI LINK ROAD]]></ADDRESS-LINE>
+                                      <ADDRESS-LINE>'.$arrOwnerData->owner_addr.'</ADDRESS-LINE>
                                       
                                       <CITY>Mumbai</CITY>
                                       <STATE>MH</STATE>
