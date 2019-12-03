@@ -206,7 +206,7 @@ height: 31px;
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="txtEmail">Mobile <span class="mandatory">*</span></label>
-                                        <span id="pullMsg_mob"></span>
+                                        <span class="pullMsg_mob"></span>
                                         <a class="verify-owner-no verify-show verify_mobile_no" name="verify_mobile_no" id="verify_mobile_no" tabindex="1">Verify</a>
                                         <input type="text" name="mobile_no" maxlength='10' id="mobile_no" value="{{$row->mobile_no}}" class="form-control" tabindex="1" placeholder="Enter Mobile no">
                                     </div>
@@ -1166,10 +1166,11 @@ jQuery.ajax({
     $(document).on('click', '.verify_mobile_no',function () {
         button_target = $(this);
         mobile_target = $(this).closest('div').find('input');
-        span_target = $(this).closest('div').find('span');
+        span_target = $(this).closest('div').find('.pullMsg_mob');
+        span_target.html('');
         let mobile_no   = mobile_target.val();
         if (!mobile_no) {
-            span_target.html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i> <i>Please enter the mobile no.</i> </span>');
+            span_target.html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i><i>Please enter the mobile no.</i> </span>');
             return false;
         }
         data = {_token, mobile_no};
