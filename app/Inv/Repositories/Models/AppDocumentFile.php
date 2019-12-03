@@ -129,19 +129,37 @@ class AppDocumentFile extends Authenticatable
      * @return Array
      */
     
-    public static function getRcuLists($appId)
+//    public static function getRcuLists($appId)
+//    {
+//         DB::enableQueryLog(); // Enable query log
+//         $results = DB::select('SELECT a.*,b.* FROM `rta_app_doc_file` a INNER JOIN rta_mst_doc b ON a.doc_id=b.id WHERE a.app_id=10 AND b.is_rcu=1 ORDER BY b.id');
+//            dd(DB::getQueryLog());
+//           
+//        dd(DB::getQueryLog()); // Show results of log
+//        return $results;
+//             
+//    }
+    
+    
+    /**
+     * Managing inputs as required Array
+     *
+     * @param Array $attributes
+     *
+     * @return Array
+     */
+    
+    public static function getRcuDocuments($appId, $docId)
     {
         return AppDocumentFile::with('userFile')
-                ->with('mstDocument')
                 ->with('rcu')
-                ->whereHas('mstDocument')
+                ->whereHas('userFile')
                 ->where('app_id', $appId)
+                ->where('doc_id', $docId)
+                ->where('is_active', 1)
                 ->get();
-    }
-    
-    public function mstDocument()
-    {
-        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')->where('is_rcu', 1);
+        return $results;
+             
     }
     
     public function rcu()

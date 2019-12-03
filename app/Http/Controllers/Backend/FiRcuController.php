@@ -39,16 +39,11 @@ class FiRcuController extends Controller
     {
         $appId = $request->get('app_id');
         $rcuResult = $this->appRepo->getRcuLists($appId);
-//        $temp = [];
-//        foreach ($rcuResult as $key => $value) { 
-//            if(in_array($value->doc_id, $temp)){
-//                $temp[] = $value->doc_id;
-//                continue;
-//            } else {
-//                $temp[] = $value->doc_id;
-//            }
-//        }
-//        dd($rcuResult);
+        
+        foreach ($rcuResult as $key => $value) {
+            $rcuResult[$key]['documents'] = $this->appRepo->getRcuDocuments($value->app_id, $value->doc_id);
+        }
+        
         return view('backend.fircu.rcu', [
                     'data' => $rcuResult
                 ]);   
