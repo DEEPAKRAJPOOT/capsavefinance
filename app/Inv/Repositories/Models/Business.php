@@ -68,7 +68,7 @@ class Business extends BaseModel
         'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
-        'turnover_amt'=>str_replace(',', '', $attributes['biz_turnover']),
+        'turnover_amt'=>($attributes['biz_turnover'])? str_replace(',', '', $attributes['biz_turnover']): 0,
         'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
@@ -207,7 +207,7 @@ class Business extends BaseModel
 
     public static function getCompanyDataByBizId($biz_id)
     {
-        $arrData = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibilScore')
+        $arrData = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibilScore','biz_pan_gst.cin')
         ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
         ->where('biz.biz_id', $biz_id)
         ->get();
@@ -224,7 +224,7 @@ class Business extends BaseModel
         'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
-        'turnover_amt'=>str_replace(',', '', $attributes['biz_turnover']),
+        'turnover_amt'=>($attributes['biz_turnover'])? str_replace(',', '', $attributes['biz_turnover']): 0,
         'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],

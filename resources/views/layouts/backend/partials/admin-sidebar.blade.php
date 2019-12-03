@@ -78,7 +78,9 @@
                 </ul>
             </div>
         </li>   
-
+        
+        @php $roleData = \Helpers::getUserRole() @endphp
+        @if($roleData[0]->is_superadmin == 1)
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-bandcamp" aria-hidden="true"></i>
@@ -98,6 +100,7 @@
                     </li>                                   
                 </ul>
             </div>
-        </li>      
+        </li>
+              @endif
     </ul>
 </nav>
