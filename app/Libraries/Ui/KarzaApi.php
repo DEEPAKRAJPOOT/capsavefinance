@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Libraries\Ui;
-
 use Helpers;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Carbon\Carbon;
 
 class KarzaApi {
 
@@ -28,7 +28,7 @@ class KarzaApi {
     public function panVerificationRequest($pancard = null) {
 
         try {
-            $api_url = '/v2/pan';
+            $api_url = '/v2/pan-authentication';
             $baseUrl = config('proin.karza_auth_api_url');
             $apiKey = config('proin.karza_auth_api_key');
 
@@ -36,13 +36,16 @@ class KarzaApi {
                 'base_uri' => $baseUrl,
                 'json' => [
                     'consent' => 'Y',
-                    'pan' => $pancard],
+                    'pan' => $pancard['pan'],
+                    'name' => $pancard['name'],
+                    'dob'  => $pancard['dob'] ],
                 'headers' => [
                     'cache-control' => "no-cache",
                     'Content-Type' => "application/json",
                     'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
                 ]
             ];
+           
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
             return $response;
@@ -57,18 +60,17 @@ class KarzaApi {
      * @return \Illuminate\Http\Response
      */
     public function checkPanStatusVerification($pancard) {
-
+         
         try {
-            $api_url = '/v2/pan-authentication';
+            $api_url = '/v2/pan';
              $baseUrl = config('proin.karza_auth_api_url');
              $apiKey = config('proin.karza_auth_api_key');
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
                     'consent' => 'Y',
-                    'pan' => $pancard['pan'],
-                    'name' => $pancard['name'],
-                    'dob' => date("d/m/Y", strtotime($pancard['dob']))],
+                    'pan' => $pancard['pan']
+                   ],
                 'headers' => [
                     'cache-control' => "no-cache",
                     'Content-Type' => "application/json",
@@ -90,6 +92,7 @@ class KarzaApi {
      * @return \Illuminate\Http\Response
      */
     public function checkVoterIdVerification($voterid) {
+        
         try {
             $api_url = '/v2/voter';
             $baseUrl = config('proin.karza_auth_api_url');
@@ -121,7 +124,8 @@ class KarzaApi {
      * @return \Illuminate\Http\Response
      */
     public function checkDlVerification($dlArr) {
-
+     $newDateFormat3 = Carbon::parse($dlArr['dob'])->format('m-d-Y');
+    
         try {
             $api_url = '/v2/dl';
             $baseUrl = config('proin.karza_auth_api_url');
@@ -131,7 +135,7 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'dl_no' => $dlArr['dl_no'],
-                    'dob' => date("d-m-Y", strtotime($dlArr['dob']))
+                    'dob' => $newDateFormat3
                 ],
                 'headers' => [
                     'cache-control' => "no-cache",
@@ -139,6 +143,7 @@ class KarzaApi {
                     'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
                 ]
             ];
+          
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
             return $response;
@@ -153,8 +158,9 @@ class KarzaApi {
      * @return \Illuminate\Http\Response
      */
     public function checkPassportVerification($passportArr) {
+      
         try {
-            $api_url = '/v2/passport-verification';
+            $api_url = '/v3/passport-verification';
             $baseUrl = config('proin.karza_auth_api_url');
             $apiKey = config('proin.karza_auth_api_key');
             $options = [
@@ -162,7 +168,7 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'fileNo' => $passportArr['fileNo'],
-                    'dob' => date("d/m/Y", strtotime($passportArr['dob']))
+                    'dob' => $passportArr['dob']
                 ],
                 'headers' => [
                     'cache-control' => "no-cache",
@@ -170,11 +176,12 @@ class KarzaApi {
                     'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
                 ]
             ];
+           
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
             return $response;
         } catch (\Exception $e) {
-            return [];
+            return $e;
         }
     }
 
