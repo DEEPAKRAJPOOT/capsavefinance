@@ -229,7 +229,7 @@
 											<select class="form-control" name="biz_state" tabindex="13" required>
                                                 <option value=""> Select State</option>
                                                 @foreach($states as $key => $state)
-                                                <option value="{{$state->id}}" {{(old('biz_state', $business_info->address[0]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+                                                <option value="{{$state->id}}" {{(old('biz_state', $business_info->address[0]->state_id) == $state->id)? 'selected':''}}> {{$state->name}} </option>
                                                 @endforeach
                                             </select>
                                             @error('biz_state')
@@ -296,7 +296,7 @@
 													<select class="form-control" name="biz_other_state[]" tabindex="17">
                                                         <option value=""> Select State</option>
                                                         @foreach($states as $key => $state)
-                                                        <option value="{{$state->id}}" {{(old('biz_other_state.0', $business_info->address[1]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+                                                        <option value="{{$state->id}}" {{(old('biz_other_state.0', $business_info->address[1]->state_id) == $state->id)? 'selected':''}}> {{$state->name}} </option>
                                                         @endforeach
                                                     </select>
 												</div>
@@ -349,7 +349,7 @@
 													<select class="form-control" name="biz_other_state[]" tabindex="21">
                                                         <option value=""> Select State</option>
                                                         @foreach($states as $key => $state)
-                                                        <option value="{{$state->id}}" {{(old('biz_other_state.1', $business_info->address[2]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+                                                        <option value="{{$state->id}}" {{(old('biz_other_state.1', $business_info->address[2]->state_id) == $state->id)? 'selected':''}}> {{$state->name}} </option>
                                                         @endforeach
                                                     </select>
 												</div>
@@ -400,7 +400,7 @@
 													<select class="form-control" name="biz_other_state[]" tabindex="25">
                                                         <option value=""> Select State</option>
                                                         @foreach($states as $key => $state)
-                                                        <option value="{{$state->id}}" {{(old('biz_other_state.2', $business_info->address[3]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+                                                        <option value="{{$state->id}}" {{(old('biz_other_state.2', $business_info->address[3]->state_id) == $state->id)? 'selected':''}}> {{$state->name}} </option>
                                                         @endforeach
                                                     </select>
 												</div>
@@ -450,7 +450,7 @@
 													<select class="form-control" name="biz_other_state[]" tabindex="29">
                                                         <option value=""> Select State</option>
                                                         @foreach($states as $key => $state)
-                                                        <option value="{{$state->id}}" {{(old('biz_other_state.3', $business_info->address[4]->state_name) == $state->id)? 'selected':''}}> {{$state->name}} </option>
+                                                        <option value="{{$state->id}}" {{(old('biz_other_state.3', $business_info->address[4]->state_id) == $state->id)? 'selected':''}}> {{$state->name}} </option>
                                                         @endforeach
                                                     </select>
 												</div>
