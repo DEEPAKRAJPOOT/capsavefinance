@@ -45,7 +45,30 @@ class AppDocument extends Authenticatable
     
     public function document()
     {
-        return $this->belongsTo('App\Inv\Repositories\Models\DocumentMaster', 'doc_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id');
+    }
+    
+    /**
+     * Managing inputs as required Array
+     *
+     * @param Array $attributes
+     *
+     * @return Array
+     */
+    
+    public static function getRcuLists($appId)
+    {  
+        return AppDocument::with('rcuDoc')
+                ->whereHas('rcuDoc')
+                ->where('app_id', $appId)
+                ->where('is_upload', 1)
+                ->get();
+        
+    }
+    
+    public function rcuDoc()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')->where('is_rcu', 1);
     }
     
 }

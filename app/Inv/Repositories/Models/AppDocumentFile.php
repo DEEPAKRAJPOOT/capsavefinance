@@ -36,6 +36,7 @@ class AppDocumentFile extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'rcu_status',
         'app_id',
         'biz_owner_id',
         'doc_id',
@@ -129,19 +130,48 @@ class AppDocumentFile extends Authenticatable
      * @return Array
      */
     
+//    public static function getRcuLists($appId)
+//    {
+//         DB::enableQueryLog(); // Enable query log
+//         $results = DB::select('SELECT a.*,b.* FROM `rta_app_doc_file` a INNER JOIN rta_mst_doc b ON a.doc_id=b.id WHERE a.app_id=10 AND b.is_rcu=1 ORDER BY b.id');
+//            dd(DB::getQueryLog());
+//           
+//        dd(DB::getQueryLog()); // Show results of log
+//        return $results;
+//             
+//    }
+    
+     /**
+     * fetching Rcu documents and files
+     *
+     * @return Array
+     */
     public static function getRcuLists($appId)
-    {
-        return AppDocumentFile::with('userFile')
-                ->with('mstDocument')
-                ->with('rcu')
-                ->whereHas('mstDocument')
+    {  
+       return AppDocumentFile::select(['doc_id'])
+                ->with('rcuDoc')
+                ->whereHas('rcuDoc')
                 ->where('app_id', $appId)
+                ->groupBy('doc_id')
                 ->get();
     }
     
-    public function mstDocument()
+    public function rcuDoc()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')->where('is_rcu', 1);
+    }
+    
+    public static function getRcuDocuments($appId, $docId)
+    {
+        return AppDocumentFile::with('userFile')
+                ->with('rcu')
+                ->whereHas('userFile')
+                ->where('app_id', $appId)
+                ->where('doc_id', $docId)
+                ->where('is_active', 1)
+                ->get();
+        return $results;
+             
     }
     
     public function rcu()
