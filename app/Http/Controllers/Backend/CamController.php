@@ -12,7 +12,6 @@ use App\Inv\Repositories\Models\Cam;
 use App\Libraries\Perfios_lib;
 use App\Libraries\Bsa_lib;
 use App\Libraries\MobileAuth_lib;
-use App\Libraries\Gupshup_lib;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
@@ -95,15 +94,6 @@ class CamController extends Controller
     }
 
     public function banking(Request $request, FinanceModel $fin){
-
-    	$gupshup = new Gupshup_lib();
-    	$Otpstring = '546378';
-    	$name = "Ravi";
-                    $mobile_no = '9667305959';
-                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on rentalpha.\r\n Regards";
-                    // Send OTP mobile to User
-                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
-                    print_r($otp_resp);die;
         $appId = $request->get('app_id');
         $bankdocs = $fin->getBankStatements($appId);
         return view('backend.cam.bank', ['bankdocs' => $bankdocs, 'appId'=> $appId]);

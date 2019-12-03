@@ -42,5 +42,11 @@ return [
     'KARZA_TXN_LIB_KEY' => env('KARZA_TXN_LIB_KEY', ''),
     'FSA_LIB_URL' => env('FSA_LIB_URL', ''),    
     'MOBILE_AUTH_LIB_URL' => env('MOBILE_AUTH_LIB_URL', ''),
-    'MOBILE_AUTH_LIB_KEY' => env('MOBILE_AUTH_LIB_KEY', ''),    
+    'MOBILE_AUTH_LIB_KEY' => env('MOBILE_AUTH_LIB_KEY', ''),   
+    
+    'GUPSHUP_BASE_URL' => env('GUPSHUP_BASE_URL', ''),   
+    'GUPSHUP_KEY' => env('GUPSHUP_KEY', ''),   
+    'GUPSHUP_USR' => env('GUPSHUP_USR', ''),   
+    'GUPSHUP_PASS' => env('GUPSHUP_PASS', ''),   
+      
 ];
