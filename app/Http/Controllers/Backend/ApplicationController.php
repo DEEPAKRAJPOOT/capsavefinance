@@ -227,7 +227,8 @@ class ApplicationController extends Controller
             $docId = $request->get('doc_id'); //  fetch document id
             $appId = $request->get('app_id'); //  fetch document id
             $ownerId = $request->get('owner_id'); //  fetch document id
-            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
+//            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
+            $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
            
             
             $userFile = $this->docRepo->saveFile($uploadData);
@@ -250,7 +251,8 @@ class ApplicationController extends Controller
                 return response()->json([
                     'result' => $response, 
                     'status' => 1, 
-                    'file_path' => Storage::disk('s3')->url($response->file_path)  
+                    'file_path' => Storage::url($response->file_path)  
+//                    'file_path' => Storage::disk('s3')->url($response->file_path)  
                 ]);
             } else {
                 return response()->json([
