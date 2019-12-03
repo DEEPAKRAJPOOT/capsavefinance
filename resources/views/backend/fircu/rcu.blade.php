@@ -78,14 +78,14 @@
                                                <table class="overview-table remove-tr-bg" cellpadding="0" cellspacing="0" border="0" width="100%">
                                                   <tbody>
                                                      <tr>
-                                                        <td width="25%"><b>Document Name</b></td>
+                                                        <td width="25%"><b>File Name</b></td>
                                                         <td width="25%"><b>Upload On </b></td>
                                                         <td width="25%">Download</td>
                                                         <td align="center" width="25%">Action</td>
                                                      </tr>
                                                     @foreach ($value->documents as $key1 => $document) 
                                                      <tr>
-                                                      <td width="25%">{{ $document->doc_name }}</td>
+                                                      <td width="25%">{{ $document->userFile->file_name }}</td>
                                                       <td width="25%">Tue, Nov 12, 2019, 2:56 AM</td>
                                                       <td width="25%"><a href="#"><i class="fa fa-download"></i></a></td>
                                                       <td align="center" width="25%"><a class="mr-2" href="#"><i class="fa fa-eye"></i></a>

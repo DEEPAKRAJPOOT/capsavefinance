@@ -20,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
         //Specified key was too long error's solution to run migrate
         Schema::defaultStringLength(191);
         Validator::extend('recaptcha', 'App\\Validators\\ReCaptcha@validate');
+        ini_set("memory_limit", "100M");
+        ini_set('post_max_size', '50M');
+        ini_set('upload_max_filesize', '50M');
     }
 
     /**
