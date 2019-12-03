@@ -228,7 +228,6 @@ class CamController extends Controller
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
             'transactionCompleteCallbackUrl' => 'http://122.170.7.185:8080/CallbackTest/CallbackStatus',
-            'acceptancePolicy' => 'atLeastOneTransactionInRange',
             'uploadingScannedStatements' => 'false',
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
@@ -280,6 +279,10 @@ class CamController extends Controller
         }
         if ($final_res['status'] != 'success') {
             return $final_res;
+        }
+
+        if (!empty($is_scanned) && strtolower($is_scanned) == 'yes') {
+        	 return $final_res;
         }
 
 
@@ -468,6 +471,24 @@ class CamController extends Controller
     }
 
     public function getFinanceReport($value='') {
+
+    	$perfios = new Perfios_lib();
+        $apiVersion = '2.1';
+        $vendorId = 'capsave';
+        $reportType = 'xlsx';
+        $req_arr = array(
+            'apiVersion' => $apiVersion,
+            'vendorId' => $vendorId,
+            'destination' => 'statement'
+         );
+        
+        $payload = $perfios->api_call(Perfios_lib::GET_INST, $req_arr);
+
+        echo "<pre>";
+        print_r($payload);
+        die;
+
+
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
@@ -611,4 +632,23 @@ class CamController extends Controller
             'arrPromoterData' => $arrPromoterData 
             ]);;
     }
+
+    
+    /*  for iframe model  */
+     public function pullCibilCommercial(Request $request){
+       $request =  $request->all();
+    }
+     /*  for iframe model  */
+     public function pullCibilPromoter(Request $request){
+       $request =  $request->all();
+    }
+     /*  for iframe model  */
+     public function viewCibilReport(Request $request){
+       $request =  $request->all();
+    }
+    
+    
+
+
+
 }

@@ -32,8 +32,10 @@
                                 <div class="col-sm-6">
                                   <div class="head-sec">
                                      <div class="pull-right" style="margin-bottom: 10px;">
+                                         @can('create_application')
                                         <a href="{{route('create_application',['user_id' => request()->get('user_id')])}}">
-                                        <button class="btn  btn-success btn-sm" type="button">+ Create Application</button>
+                                        @endcan
+                                            <button class="btn  btn-success btn-sm" type="button">+ Create Application</button>
                                         </a>
                                      </div>
                                   </div>
@@ -127,7 +129,10 @@
                                                 <button type="button" class="btn btn-info btn-sm">Not Complete</button>
                                                 @endif 
                                             </td>
-                                            <td><div class="d-flex inline-action-btn justify-content-center"><a title="Edit Application" href="{{route('company_details',['user_id'=>$app['user_id'], 'app_id'=>$app['app_id'], 'biz_id'=>$app['biz_id']])}}" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                            <td><div class="d-flex inline-action-btn justify-content-center">
+                                             @can('company_details')
+                                                    <a title="Edit Application" href="{{route('company_details',['user_id'=>$app['user_id'], 'app_id'=>$app['app_id'], 'biz_id'=>$app['biz_id']])}}" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                              @endcan  
                                                 </div>	           
                                             </td>  
                                         </tr>	

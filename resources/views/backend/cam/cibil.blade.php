@@ -26,6 +26,7 @@
        <!--
          <h2 class="sub-title bg mb-4"><span class=" mt-2">Company CIBIL</span> <button  class="btn btn-primary  btn-sm float-right"> Upload Document</button></h2>
          -->
+          <h2 class="sub-title bg mb-3">Company</h2>
          <div id="pullMsgCommercial"></div>
          <div class="pl-4 pr-4 pb-4 pt-2">
             <div class="row mt-3">
@@ -53,7 +54,7 @@
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->biz_entity_name}}</td>
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
-                                 <td width="20%" id="cibilScore{{$arr->biz_id}}"></td>
+                                 <td width="20%" id="cibilScore{{$arr->biz_id}}">{{$arr->cibilScore}}</td>
                                  <td class=" numericCol" width="25%">
 
                                    <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_commercialModal({{$arr->biz_id}})">PULL</button>
@@ -96,7 +97,7 @@
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->first_name." ".$arr->last_name}}</td>
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
-                                 <td width="20%" id="cibilScore{{$arr->biz_owner_id}}"></td>
+                                 <td width="20%" id="cibilScore{{$arr->biz_owner_id}}">{{$arr->cibilScore}}</td>
                                  <td class=" numericCol" width="25%">
                                     <button class="btn btn-success btn-sm" id="cibilScoreBtn{{$arr->biz_owner_id}}" supplier="49" onclick="pull_cibil_promoterModal({{$arr->biz_owner_id}})">PULL</button>
                                     <button class="btn btn-warning btn-sm" supplier="49" onclick="downloadPromoterCibil({{$arr->biz_owner_id}})" >View Report</button>
@@ -386,7 +387,8 @@
       </div>
     </div>
   </div>
-</div>
+</div
+>
 
 <div class="modal fade" id="download_cibil_promoterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
