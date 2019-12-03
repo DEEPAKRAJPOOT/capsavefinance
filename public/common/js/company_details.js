@@ -23,11 +23,11 @@ $(document).ready(function(){
 		}
 		$('.isloader').show();
 		$.ajax({
-			url: "https://gst.karza.in/uat/v1/search",
+			url: "https://gst.karza.in/prod/v1/search",//https://gst.karza.in/uat/v1/search
 			type: "POST",
 			data: JSON.stringify({"consent": "Y","pan": pan_no}),
 			dataType:'json',
-			headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+			headers:{"Content-Type": "application/json", "x-karza-key": "NX1nBICr7TNEisJ"},
 			error:function (xhr, status, errorThrown) {
 				$('.isloader').hide();
     			alert(errorThrown);
@@ -47,35 +47,6 @@ $(document).ready(function(){
 			  }
 		});
 	})
-
-	/*$('.gst-verify').on('click',function(){
-		let gst_no = $('input[name=biz_gst_number]').val().trim();
-			$('input[name=biz_gst_number] +span').remove()
-		if(gst_no.length != 15){
-			$('input[name=biz_gst_number]').after('<span class="text-danger error">Enter valid GST Number</span>');
-			return false;
-		}
-		$.ajax({
-			url: "https://gst.karza.in/uat/v1/gstdetailed",
-			type: "POST",
-			data: JSON.stringify({"consent": "Y","gstin": gst_no}),
-			dataType:'json',
-			headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
-			error:function (xhr, status, errorThrown) {
-    			alert(errorThrown);
-			},
-			success: function(res){
-			    if(res['status-code'] == 101){
-			    	$('.gst-verify').text('Verified');
-			    	$('.gst-verify').css('pointer-events','none');
-			    	$('input[name=biz_gst_number]').attr('readonly',true);
-			    	$('input[name=biz_gst_number] +span').remove();
-			    }else{
-			    	alert('Something went wrong, Try again later');
-			    }
-			}
-		});
-	})*/
 })
 
 function fillGSTinput(datas){
@@ -98,11 +69,11 @@ function fillEntity(gstinId){
 	}
 	$('.isloader').show();
 	$.ajax({
-			url: "https://gst.karza.in/uat/v1/gst-verification",
+			url: "https://gst.karza.in/prod/v1/gst-verification",//https://gst.karza.in/uat/v1/gst-verification
 			type: "POST",
 			data: JSON.stringify({"consent": "Y","gstin": gstinId}),
 			dataType:'json',
-			headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+			headers:{"Content-Type": "application/json", "x-karza-key": "NX1nBICr7TNEisJ"},
 			error:function (xhr, status, errorThrown) {
 				$('.isloader').hide();
     			alert(errorThrown);
@@ -122,11 +93,11 @@ function fillEntity(gstinId){
 
 function getCIN(entityName){
 	$.ajax({
-		url: "https://testapi.karza.in/v2/compsearch-lite",
+		url: "https://api.karza.in/v2/compsearch-lite",//https://testapi.karza.in/v2/compsearch-lite
 		type: "POST",
 		data: JSON.stringify({"consent": "Y","companyName": entityName}),
 		dataType:'json',
-		headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+		headers:{"Content-Type": "application/json", "x-karza-key": "NX1nBICr7TNEisJ"},
 		error:function (xhr, status, errorThrown) {
 			alert(errorThrown);
 		},
