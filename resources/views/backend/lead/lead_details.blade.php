@@ -25,9 +25,20 @@
                     <div class="row">
 
                         <div class=" form-fields w-100">
-                            <div class="col-md-12">
-                                <h5 class="card-title form-head-h5">Manage Leads Details</h5>
-                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5 class="card-title form-head-h5">Manage Leads Details</h5>
+                                </div>
+                                <div class="col-sm-6">
+                                  <div class="head-sec">
+                                     <div class="pull-right" style="margin-bottom: 10px;">
+                                        <a href="{{route('create_application',['user_id' => request()->get('user_id')])}}">
+                                        <button class="btn  btn-success btn-sm" type="button">+ Create Application</button>
+                                        </a>
+                                     </div>
+                                  </div>
+                               </div>
+                           </div>
                         </div>
 
 
@@ -116,7 +127,7 @@
                                                 <button type="button" class="btn btn-info btn-sm">Not Complete</button>
                                                 @endif 
                                             </td>
-                                            <td><div class="d-flex inline-action-btn justify-content-center"><a title="Add App Note" href="{{route('cam_overview',['user_id'=>$app['user_id'], 'app_id'=>$app['app_id']])}}" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                            <td><div class="d-flex inline-action-btn justify-content-center"><a title="Edit Application" href="{{route('company_details',['user_id'=>$app['user_id'], 'app_id'=>$app['app_id'], 'biz_id'=>$app['biz_id']])}}" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
                                                 </div>	           
                                             </td>  
                                         </tr>	

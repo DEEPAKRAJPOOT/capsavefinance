@@ -82,6 +82,33 @@ class Cam extends Model
             'created_by'=>$userId
         );
         $cam = Cam::create($inputArr);
+        return  $cam ? true : false;
 
+    }
+
+    public static function updateCamData($attributes, $userId){
+        $cam = Cam::where('app_id', $attributes['app_id'])->first();
+
+        //update Cam table
+        $updateCamData = $cam->update([
+                    'operational_person'=>$attributes['operational_person'],
+                    'program'=>$attributes['program'],
+                    'rating_no'=>$attributes['rating_no'],
+                    'rating_comment'=>$attributes['rating_comment'],
+                    'existing_exposure'=>$attributes['existing_exposure'],
+                    'proposed_exposure'=>$attributes['proposed_exposure'],
+                    't_o_f_limit'=>$attributes['t_o_f_limit'],
+                    't_o_f_purpose'=>$attributes['t_o_f_purpose'],
+                    't_o_f_takeout'=>$attributes['t_o_f_takeout'],
+                    't_o_f_recourse'=>$attributes['t_o_f_recourse'],
+                    't_o_f_security'=>$attributes['t_o_f_security'],
+                    't_o_f_adhoc_limit'=>$attributes['t_o_f_adhoc_limit'],
+                    't_o_f_covenants'=>$attributes['rating_comment'],
+                    't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
+                    'risk_comments'=>$attributes['risk_comments'],
+                    'cm_comment'=>$attributes['cm_comment'],
+                    'updated_by'=>$userId,
+        ]);
+        return $updateCamData ? true : false;
     }
 }

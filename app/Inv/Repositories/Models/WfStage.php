@@ -62,11 +62,12 @@ class WfStage extends BaseModel
      * Get Wf stage Details 
      *
     */
-    public static function getWfDetail()
+    public static function getWfDetail($prgm_id=1)
     {
         $arr = self::from('wf_stage as wf')
             ->select('wf.*')
-           ->get();
+            ->where('wf.prgm_id', $prgm_id)
+            ->get();
         return ($arr ? $arr : []);
     }
     
@@ -77,7 +78,7 @@ class WfStage extends BaseModel
      * @return mixed
      * @throws BlankDataExceptions
      */
-    public static function getWfDetailById($wf_stage_code)
+    public static function getWfDetailById($wf_stage_code, $prgm_id=1)
     {
         if (empty($wf_stage_code)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
@@ -85,6 +86,7 @@ class WfStage extends BaseModel
         
         $arr = self::from('wf_stage as wf')
             ->select('wf.*')
+            ->where('wf.prgm_id', $prgm_id)
             ->where('wf.stage_code', $wf_stage_code)
             ->first();
 
@@ -98,13 +100,49 @@ class WfStage extends BaseModel
      * @return mixed
      * @throws BlankDataExceptions
      */
-    public static function getNextWfStage($wf_order_no)
+    public static function getNextWfStage($wf_order_no, $prgm_id=1)
     {
 
         $next_wf_order_no = (int) $wf_order_no + 1;
         $arr = self::from('wf_stage as wf')
             ->select('wf.*') 
+            ->where('wf.prgm_id', $prgm_id)    
             ->skip($next_wf_order_no)->take(1)->first();
+        return ($arr ? $arr : null);
+    } 
+    
+    
+/**
+     * Get Current WfStage by Role id
+     * 
+     * @param type $app_id
+     * @return type
+     */    
+    protected static function getCurrentWfStagebyRole($roleId)
+    {
+        $appData = self::select('wf_stage.*')
+                ->where('wf_stage.role_id', $roleId)
+                ->orderBy('wf_stage.order_no')
+                ->limit(1)
+                ->first();
+        return $appData ? $appData : null;
+    }
+    
+    
+    /**
+     * Get Workflow Detail By Order No
+     * 
+     * @param integer $wf_order_no
+     * @param integer $prgm_id
+     * @return mixed
+     */
+    public static function getWfDetailByOrderNo($wf_order_no, $prgm_id=1)
+    {
+        $arr = self::from('wf_stage as wf')
+            ->select('wf.*')
+            ->where('wf.prgm_id', $prgm_id)
+            ->where('wf.order_no', $wf_order_no)
+            ->first();
         return ($arr ? $arr : null);
     }    
 }

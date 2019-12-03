@@ -184,7 +184,7 @@ background: #ddfbf2;
     line-height: 36px;
     min-width: 65px;
     text-align: center;
-    top: 31px;
+    top: 30px;
     text-decoration: none !important;
     color: #ffffff !important;
     font-size: 14px;
@@ -552,11 +552,7 @@ position: absolute;
   /*chandan*/
  
  .full-width{width:100%;}
- 
- 
- 
- 
- 
- 
- 
- 
+
+table.dataTable.no-footer {
+     border-bottom: 0; 
+}

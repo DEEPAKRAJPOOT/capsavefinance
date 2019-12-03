@@ -80,7 +80,9 @@ use RegistersUsers,
 
 
         $arrData = [];
+        $arrAnchUser=[];
         $arrDetailData = [];
+        $arrLeadAssingData =[];
         $arrData['f_name'] = $data['f_name'];
         $arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
@@ -103,9 +105,28 @@ use RegistersUsers,
             $detailArr['access_token'] = bcrypt($userDataArray->email);
             $detailArr['created_by'] = $userDataArray->user_id;
             $this->userRepo->saveUserDetails($detailArr);
+            if (isset($data['anch_user_id']) && !empty($data['anch_user_id'])) {
+                $arrAnchUser['is_registered']=1;
+                $arrAnchUser['token']='';
+                $arrAnchUser['user_id']=$detailArr['user_id'];            
+                //$anchId=$this->userRepo->getAnchorUsersByEmail($userDataArray->email);            
+                $this->userRepo->updateAnchorUser($data['anch_user_id'], $arrAnchUser);
+            }
+            
+            $saleMngId=$this->userRepo->getLeadSalesManager($userDataArray->user_id);
+            
+              $arrLeadAssingData = [
+                'from_id' => $userDataArray->user_id,
+                'to_id' => $saleMngId,
+                  'is_owner'=>1,
+                'assigned_user_id' => $userDataArray->user_id,             
+                'created_by' => $userDataArray->user_id,
+                'created_at' => \Carbon\Carbon::now(),
+                ];
+                     $this->userRepo->createLeadAssign($arrLeadAssingData);
             
             //Add application workflow stages
-            Helpers::addWfAppStage('new_case');
+            Helpers::addWfAppStage('new_case', $userDataArray->user_id);
         }
         return $userDataArray;
     }
@@ -168,15 +189,29 @@ use RegistersUsers,
      *
      * @return \Illuminate\Http\Response
      */
-    public function showRegistrationForm() {
-
-
+    public function showRegistrationForm(Request $request) {
+           try{
+         $anchortoken = $request->get('token');
+         //dd($anchorEmail);
         $userId = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
+        $anchorDetail = [];
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
-        return view('auth.sign-up', compact('userArr'));
+        $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
+        //dd($anchorLeadInfo);
+        if(isset($anchortoken) && $anchorLeadInfo){
+            $anchorDetail = $anchorLeadInfo;
+        }else{
+            $anchorDetail = '';
+            return redirect(route('login_open'));
+        }
+           return view('auth.sign-up', compact('userArr','anchorDetail'));
+           
+           }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+         }
     }
 
     /**

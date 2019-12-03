@@ -165,6 +165,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -185,6 +186,8 @@ return [
         \Url\ProtectUrl\ProtectUrlServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         ZanySoft\Zip\ZipServiceProvider::class,
+        App\Providers\KarzaServiceProvider::class,
+        App\Providers\CibilServiceProvider::class,
 
     ],
 
@@ -240,6 +243,7 @@ return [
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Zip' => ZanySoft\Zip\ZipFacade::class,
-    ],
+        'PDF' => Barryvdh\DomPDF\Facade::class,
+     ],
 
 ];

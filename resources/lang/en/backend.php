@@ -9,6 +9,7 @@ return [
         'anchor'        => 'Associate Anchor',
         'user_type'     => 'User Type',
         'assignee'      => 'Assignee',
+        'assigned_by'   => 'Assigned By',
         'shared_detail' => 'Shared Details',
         'status'        => 'Status',
         'action'        => 'Action',

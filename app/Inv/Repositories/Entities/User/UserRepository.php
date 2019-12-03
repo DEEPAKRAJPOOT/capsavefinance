@@ -5,12 +5,19 @@ use Carbon\Carbon;
 use App\Inv\Repositories\Models\Relationship;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\BizApi;
 use App\Inv\Repositories\Models\Otp;
 use App\Inv\Repositories\Contracts\UserInterface;
 use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\Master\Permission as PermissionModel;
 use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
+use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -102,8 +109,36 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return is_null($userId) ? $this->create($attributes) : $this->update($attributes,$userId);
     }
+   /**
+     * Validating and parsing data passed thos this method
+     *
+     * @param array $attributes
+     * @param mixed $user_id
+     *
+     * @return New record ID that was added
+     *
+     * @since 0.1
+     */
+    public function getOwnerAppRes($attributes = [])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
 
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+          return BizApi::getKarzaRes($attributes);
+  
+       }
 
+     
     /**
      * Validating and parsing data passed though this method
      *
@@ -786,7 +821,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param array $columns
      */
 
-    public function saveOwnerInfo($attributes = []){
+    public function updateOwnerInfo($attributes = []){
         /**
          * Check Data is Array
          */
@@ -806,19 +841,41 @@ class UserRepository extends BaseRepositories implements UserInterface
         return BizOwner::creates($attributes);
     }
     
+     public function saveOwner($attributes = []){
+        /**
+         * Check Data is Array
+         */
+       
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       
+        return BizOwner::createsOwner($attributes);
+    }
+    
      /**
      * Find CIN Number By user id
      *
      * @param mixed $id
      * @param array $columns
      */
-    public function getCinByUserId($uid)
+    public function getCinByUserId($biz_id)
     {
-            $table =  DB::table('biz_pan_gst as bg')
-           ->select('bg.cin','bg.biz_id','bg.user_id')
-           ->where('bg.user_id',$uid)
-           ->first();
-           return $table;
+          $owner =  BizPanGst::where('biz_id',$biz_id)->first();
+             if (empty($owner)) {
+            return false;
+        }
+
+        return $owner;
+           
     }
    
      /**
@@ -841,6 +898,38 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $user[0];
     }
     
+
+/**
+ * function for save anchor company detail
+ * @param type $attributes
+ * @return type
+ */
+    public function saveAnchor($attributes){
+         return Anchor::saveAnchor($attributes);
+     }
+    
+   /**
+    *  function for add anchor company information 
+    * @param type $arrAnchorUser
+    * @return type
+    */  
+     public function saveAnchorUser($arrAnchorUser){
+         return AnchorUser::saveAnchorUser($arrAnchorUser);
+     }
+    
+     /**
+      * function for get all anchor register user detail
+      * @return type
+      */
+     
+        public function getAllAnchorUsers()
+        {
+          $result = AnchorUser::getAllAnchorUsers();
+        
+          return $result ?: false;
+        }
+    
+
      /**
      * Validating and parsing data passed thos this method
      *
@@ -869,6 +958,344 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return BizOwner::getOwnerApiDetails($attributes); 
     }
+    
+    /* get owner details behalf of biz id    */
+    /* Created by gajendra chauhan  */
+    public function getOwnerDetail($attributes = [])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
 
- 
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return BizOwner::where('biz_id',$attributes['biz_id'])->get(); 
+    }
+    
+    /**
+      * function for get all anchor register user detail
+      * @return type
+      */
+     
+        public function getAnchorUsersByToken($token)
+        {
+          $result = AnchorUser::getAnchorUsersByToken($token);
+        
+          return $result ?: false;
+        }
+    
+            
+    /**
+    * function for get all anchor register user detail
+    * @return type
+    */
+     
+        public function getAllAnchor()
+        {
+          $result = Anchor::getAllAnchor();
+        
+          return $result ?: false;
+        }
+        
+        
+         /**
+      * function for get all anchor register user detail
+      * @return type
+      */
+        public function getAnchorById($anch_id)
+        {
+            
+          $result = Anchor::getAnchorById($anch_id);
+        
+          return $result ?: false;
+        }
+        
+     /**
+      * 
+      * @param type $appId
+      * @param type $attributes
+      * @return boolean
+      * @throws InvalidDataTypeExceptions
+      * @throws BlankDataExceptions
+      */  
+   
+     public function updateAnchor($anchoId, $attributes = []){
+        $result = Anchor::updateAnchor((int) $anchoId, $attributes);
+        return $result ?: false;
+    }    
+    /**
+     * function for get user details using anchor id
+     * @param type $userName
+     * @return type
+     */
+    public function getUserByAnchorId($anchId)
+    {
+        $result = UserModel::getUserByAnchorId($anchId);
+         return $result ?: false;
+    } 
+    /**
+     * function for get user details using app id
+     * @param type $userName
+     * @return type
+     */
+    public function getUserByAppId($appId)
+    {
+        $result = UserModel::getUserByAppId($appId);
+        return $result ?: false;
+    } 
+      /**
+     * Get a backend user by id
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRoleByArray($arr)
+    {
+        $user = Role::getRoleByArray($arr);
+        return $user;
+    }
+
+   /**
+     * 
+     * @param type $anchoId
+     * @param type $attributes
+     * @return type
+     */
+    public function updateAnchorUser($anchUId, $attributes = []) {
+        $result = AnchorUser::updateAnchorUser((int) $anchUId, $attributes);
+        return $result ?: false;
+    }
+
+    /**
+     * 
+     * @param type $email
+     * @return type
+     */
+     public function getAnchorUsersByEmail($email)
+        {
+          $result = AnchorUser::getAnchorUsersByEmail($email);
+        
+          return $result ?: false;
+        } 
+        
+        /**
+         * function for get state list
+         * @return type
+         */
+        public function getStateList() {
+        $all_state = State::getStateList();        
+        return $all_state ?: false;
+    }
+      
+      /**
+     *
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRoleList()
+    {
+        $role = Role::getRoleLists();
+        return $role;
+    }
+      
+      /**
+     * add role
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function addRole($roleData, $role_id)
+    {
+        $role = Role::addRole($roleData, $role_id);
+        return $role;
+    }
+    
+      
+      /**
+     * Get a role  by id
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRole($role_id)
+    {
+        $role = Role::getRole($role_id);
+        return $role;
+    }
+    
+     
+      /**
+     * Get a all permition list
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getRoute()
+    {
+        $role = PermissionModel::getRoute();
+        return $role;
+    }
+    
+    
+      /**
+     * Get a all parent Route list
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getParaentRoute()
+    {
+        $role = PermissionModel::getParentRoute();
+        return $role;
+    }
+    
+     /**
+     * Delete a role by id
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function deleteRecById($role_id)
+    {
+        $role = PermissionRole::deleteRecById($role_id);
+        return $role;
+    }
+    
+     /**
+     * Add role
+     *
+     * @param integer $user_id
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function addPermissionRole($arr)
+    {
+        $role = PermissionRole::addPermissionRole($arr);
+        return $role;
+    }
+    
+    /**
+     * Give permission to role
+     *
+     * @param array $attributes
+     *
+     * @return object
+     */
+    public function givePermissionTo($roleid, $permission)
+    {
+
+        $role   = Role::where('id', $roleid)->first();
+        $result = $role->assignRolePermission($permission);
+
+        return $result ? : false;
+    }
+    
+   
+    /**
+     * Get all children of permmision
+     *
+     * @param type $permission_idgetChildByPermissionId
+     *
+     * @return permissions object
+     */
+    public function getChildByPermissionId($permission_id)
+    {
+        return PermissionModel::getChildByPermissionId($permission_id);
+    }   
+        /**
+         * function for assign lead
+         * @param type $arrLeadAssign
+         * @return type
+         */
+        public function createLeadAssign($arrLeadAssign){
+          $result = LeadAssign::createLeadAssign($arrLeadAssign);        
+          return $result ?: false;
+        } 
+        
+    /**
+     * Get Lead Sales Manager
+     * 
+     * @param integer $userId
+     * @return mixed
+     */    
+    public function getLeadSalesManager($userId)
+    {
+        return UserModel::getLeadSalesManager($userId);
+    }
+    
+     /**
+     * Get user role 
+     * 
+     * @return mixed
+     */    
+    public function getAllData()
+    {
+        return RoleUser::getAllData();
+    }
+    
+     /**
+     * set user role 
+     * 
+     * @return mixed
+     */    
+    public function addNewRoleUser($roleData)
+    {
+        return RoleUser::addNewRoleUser($roleData);
+    }
+    
+      /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function getRoleDataById($user_id)
+    {
+       return RoleUser::getRoleDataById($user_id);
+    }
+    
+     /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function updateUserRole($userId, $role)
+    {
+       return RoleUser::updateUserRole($userId, $role);
+    }
 }

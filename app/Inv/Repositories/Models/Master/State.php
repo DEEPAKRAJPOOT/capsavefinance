@@ -61,7 +61,7 @@ class State extends BaseModel
     {
         $state = self::select('mst_state.*','mst_country.country_name')
                 ->join('mst_country', 'mst_state.country_id', '=', 'mst_country.id')
-                ->where('mst_state.is_active','!=',config('inv_common.IS_DELETED'));
+                ->where('mst_state.is_active',1);
         return $state ? : false;
     }
     /*
@@ -102,6 +102,18 @@ class State extends BaseModel
     {     
         $res = self::whereIn('id', $state_id)->update(['is_active' => config('inv_common.IS_DELETED')]);
         return $res ? $res : false;
+    }
+
+
+    public static function getGstbyUser($user_id)
+    {
+        $data = self::select('*')
+                ->from('biz_pan_gst')
+                ->where('user_id', $user_id)
+                ->where('parent_pan_gst_id', '0')
+                ->where('type', '2')
+                ->first();
+        return ($data ? $data : false);
     }
 
 }

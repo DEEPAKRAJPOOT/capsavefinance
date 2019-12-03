@@ -12,7 +12,7 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         ['prefix' => 'dashboard'],
         function () {
         Route::group(
-            ['middleware' => 'auth'],
+            ['middleware' => ['auth']],   //,'CheckWorkflow'
             function () {
             Route::get(
                 '/',
@@ -50,10 +50,15 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
             
             Route::post('promoter-detail-save',
                 [
-                    'as' => 'promoter_detail_save',
-                    'uses' => 'Application\ApplicationController@savePromoterDetail'
-            ]);
+                    'as' => 'front_promoter_detail_save',
+                    'uses' => 'Application\ApplicationController@updatePromoterDetail'
+            ]); 
             
+            Route::post('promoter-save',
+                [
+                    'as' => 'promoter_save',
+                    'uses' => 'Application\ApplicationController@savePromoter'
+            ]);
             Route::get('document',
                 [
                 'as' => 'document',
@@ -86,8 +91,18 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
             
             Route::post('application-save',
                 [
-                'as' => 'application_save',
+                'as' => 'front_application_save',
                 'uses' => 'Application\ApplicationController@applicationSave'
+            ]);
+
+            Route::get('/', [
+                'as' => 'front_application_list',
+                'uses' => 'Application\ApplicationController@index'
+            ]);
+
+            Route::get('/gstin', [
+                'as' => 'front_gstin',
+                'uses' => 'Application\ApplicationController@gstinForm'
             ]);
         });
     });

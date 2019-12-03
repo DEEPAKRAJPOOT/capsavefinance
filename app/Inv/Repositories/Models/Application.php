@@ -2,6 +2,7 @@
 
 namespace App\Inv\Repositories\Models;
 
+use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -54,12 +55,34 @@ class Application extends Model
      */
     protected static function getApplications() 
     {
-        $appData = self::select('app.user_id','app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 'app.status')
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        
+        $appData = self::distinct()->select('app.user_id','app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 
+                'app.status','app_assign.to_id', 'anchor_user.anchor_id', 'anchor_user.user_type',
+                DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
+                DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
+                DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),
+                'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                 ->join('app_assign', 'app_assign.assigned_user_id', '=', 'app.user_id')
-                ->where('app_assign.to_id', \Auth::user()->user_id)
-                ->groupBy('app.app_id')
-                ->orderBy('app.app_id');        
+                 ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
+                ->leftJoin('users', 'users.anchor_id', '=', 'anchor_user.anchor_id')                
+                ->leftJoin('app_assign', function ($join) use($roleData) {
+                    $join->on('app.app_id', '=', 'app_assign.app_id');
+                    $join->on('app_assign.is_owner', '=', DB::raw("1"));
+                })
+                ->leftJoin('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')             
+                ->leftJoin('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
+                ->leftJoin('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
+                ->leftJoin('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
+                ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');                
+        if ($roleData[0]->is_superadmin != 1) {
+                $appData->where('app_assign.to_id', \Auth::user()->user_id);            
+        } else {
+           $appData->whereNotNull('app_assign.to_id'); 
+        }
+        //$appData->groupBy('app.app_id');
+        $appData = $appData->orderBy('app.app_id', 'DESC');
         return $appData;
     }
    
@@ -94,13 +117,28 @@ class Application extends Model
     public static function getApplicationPoolData() 
     {
         
-       $roleData = User::getBackendUser(\Auth::user()->user_id);
-        $appData = self::select('app.*')
-                 ->join('app_wf', 'app_wf.biz_app_id', '=', 'app.app_id')
-                 ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')
-                ->where('app.is_assigned', 0)
-                ->where('wf_stage.role_id', $roleData[0]->id)
-                ->orderBy('app.app_id');        
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        $appData = self::distinct()->select('app.app_id','app.biz_id','app.user_id','biz.biz_entity_name',
+                'anchor_user.user_type', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
+                'assignee_r.name AS assignee', 
+                DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),
+                'app_assign.sharing_comment')                 
+                    ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                 ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
+                ->leftJoin('users', 'users.anchor_id', '=', 'anchor_user.anchor_id')                
+                ->leftJoin('app_assign', function ($join) {
+                    $join->on('app.app_id', '=', 'app_assign.app_id');
+                    $join->on('app_assign.is_owner', '=', DB::raw("1"));                    
+                })                
+                ->leftJoin('roles as assignee_r', 'app_assign.role_id', '=', 'assignee_r.id')
+                ->leftJoin('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id');
+        if ($roleData[0]->is_superadmin != 1) {
+            $appData->where('app_assign.role_id', $roleData[0]->id);
+        }
+        $appData->whereNull('app_assign.to_id');
+        //$appData->groupBy('app.app_id');
+        $appData = $appData->orderBy('app.app_id', 'DESC');
+        
         return $appData;
     } 
     /**
@@ -212,4 +250,129 @@ class Application extends Model
         return ($appData ? $appData : false);
     }    
     
+    /**
+     * Get Application Data By App Id
+     * 
+     * @param integer $app_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAppData($app_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+               
+        
+        $appData = self::select('app.*')
+                ->where('app.app_id', $app_id)->first();
+                       
+        return ($appData ? $appData : null);        
+    }    
+    
+    /**
+     * Get Latest application
+     * 
+     * @param integer $user_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getLatestApp($user_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($user_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($user_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+               
+        
+        $appData = self::select('app.*')
+                ->where('app.user_id', $user_id)
+                ->where('app.status', '0')
+                ->orderBy('app.app_id', 'DESC')
+                ->first();
+                       
+        return ($appData ? $appData : null);        
+    }
+
+    /**
+     * Get User Applications for Application list data tables
+     */
+    protected static function getUserApplications() 
+    {  
+        $appData = self::distinct()->select('app.user_id','app.app_id','app.loan_amt', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'anchor_user.anchor_id', 'anchor_user.user_type', 'app.created_at')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
+                ->where('app.user_id', \Auth::user()->user_id);
+        //$appData->groupBy('app.app_id');
+        $appData = $appData->orderBy('app.app_id', 'DESC');
+        return $appData;
+    }
+
+    /**
+     * Count total numbers of applications
+     * 
+     * @param integer $user_id
+     * @return integer
+     */
+    public static function getAllAppsByUserId($user_id)
+    {
+        $appData = self::select('app.*')
+                ->where('app.user_id', $user_id)
+                ->get();
+        return $appData ? $appData : [];
+    }
+    
+    /**
+     * Get Anchor Data By Application Id
+     * 
+     * @param integer $app_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAnchorDataByAppId($app_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $appData = self::select('app.*','anchor_user.*', 'anchor.*')
+                ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
+                ->join('anchor', 'anchor.anchor_id', '=', 'anchor_user.anchor_id')
+                ->where('app.app_id', $app_id)                
+                ->first();
+                       
+        return ($appData ? $appData : null);             
+    }    
 }

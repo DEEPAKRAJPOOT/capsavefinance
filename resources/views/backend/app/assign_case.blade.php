@@ -1,6 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 
 @section('content')
+<div class="modal-body text-left">
 {!!
 Form::open(
     array(
@@ -31,10 +32,11 @@ Form::open(
 </div>
 {!! Form::hidden('app_id', $app_id) !!}
 {!! Form::hidden('biz_id', $biz_id) !!}
-<button type="submit" class="btn btn-primary float-right">Submit</button>  
+<button type="submit" class="btn btn-success btn-sm float-right">Submit</button>  
 {!!
 Form::close()
 !!}
+</div>
 @endsection
 
 @section('jscript')

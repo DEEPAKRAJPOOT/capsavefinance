@@ -59,8 +59,8 @@
                         </div>
                         <div class="d-flex btn-section sign-UP col-md-12">
                             <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
-                            <span class=" mt-2 ml-2">or</span>
-                            <a class=" mt-2 ml-2" href="{{ url('/sign-up') }}">Sign up</a>
+<!--                            <span class=" mt-2 ml-2">or</span>
+                            <a class=" mt-2 ml-2" href="{{ url('/sign-up') }}">Sign up</a>-->
                         </div>
                     </div>
                 </form>

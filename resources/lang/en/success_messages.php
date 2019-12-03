@@ -3,6 +3,7 @@ return [
     'uploaded' => 'File uploaded successfully.',
     'deleted' => 'File deleted successfully.',
     'app.completed' => 'Your application is submitted successfully.',
+    'app.saved' => 'Application updated.',
     'education_saved_successfully' => 'Education details have been saved successfully.',
     'skill_saved_successfully' => 'Skills have been saved successfully',
     'research_saved_successfully' => 'Research and publications details have been saved successfully',
@@ -19,4 +20,6 @@ return [
     'PasswordResetSuccessfully' => 'Password reset successfully. Please login',
     'UpdateShareHolderSuccessfully' => 'ShareHolding Structure Updated successfully!',
     'update_company_detail_successfully' => 'Company details updated successfully!',
+    'save_company_detail_successfully' => 'Company details saved successfully!',
+    'promoter_saved_successfully' => 'Promoter details saved successfully!',
 ];

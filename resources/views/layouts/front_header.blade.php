@@ -14,10 +14,11 @@
         <ul class="navbar-nav ml-lg-auto">
             <li class="nav-item nav-profile">
                 <a class="nav-link" href="#">
+                    <span style="color: #328964;">{{ucwords(Auth::user()->f_name.' '.Auth::user()->l_name)}}</span>
                     <img src="{{url('backend/assets/images/faces/face9.jpg')}}" />
                 </a>
             </li>
-            <li class="nav-item dropdown">
+            <!-- <li class="nav-item dropdown">
                 <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-toggle="dropdown">
                     <i class="fa fa-bell-o" aria-hidden="true"></i>
                     <span class="count">7</span>
@@ -44,8 +45,8 @@
                         <span class="notification-text">Payment Due</span>
                     </a>
                 </div>
-            </li>
-            <li class="nav-item dropdown">
+            </li> -->
+            <!-- <li class="nav-item dropdown">
                 <a class="nav-link count-indicator" id="MailDropdown" href="#" data-toggle="dropdown">
                     <i class="fa fa-envelope-o" aria-hidden="true"></i>
                     <span class="count">4</span>
@@ -93,7 +94,7 @@
                     </a>
                     <a href="#" class="dropdown-item view-all">View all</a>
                 </div>
-            </li>
+            </li> -->
             <li class="nav-item dropdown">
                 <a class="nav-link count-indicator" id="settingDropdown" href="#" data-toggle="dropdown">
                     <i class="fa fa-cog" aria-hidden="true"></i>

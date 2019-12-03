@@ -61,6 +61,7 @@ class Kernel extends HttpKernel
         'checkAjax' => \App\Http\Middleware\CheckAjaxRequest::class,
         //'adminauth' => \App\Http\Middleware\AdminAuthenticate::class,
         'checkBackendLeadAccess' => \App\Http\Middleware\Authorization\CheckBackendLeadAccess::class,
+        'CheckWorkflow' => \App\Http\Middleware\CheckWorkflow::class,
 
     ];
 

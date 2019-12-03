@@ -28,7 +28,7 @@ class DocumentRequest extends Request
     public function messages()
     {
         return [
-            'doc_file.required' => 'Input files Required. '
+            'doc_file.required' => 'Input file Required. '
         ];
     }
 }

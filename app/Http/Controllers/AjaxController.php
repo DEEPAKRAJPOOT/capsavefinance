@@ -2651,4 +2651,61 @@ if ($err) {
         $applications = $dataProvider->getAppList($this->request, $appList);
         return $applications;
     }
+    
+    
+    public function getAnchorLists(DataProviderInterface $dataProvider) { 
+     $anchUsersList = $this->userRepo->getAllAnchor();
+     $users = $dataProvider->getAnchorList($this->request, $anchUsersList);
+     return $users;
+    }
+    
+    public function getAnchorLeadLists(DataProviderInterface $dataProvider){
+      $anchLeadList = $this->userRepo->getAllAnchorUsers();
+        $users = $dataProvider->getAnchorLeadList($this->request, $anchLeadList);
+        return $users; 
+    }
+
+    public function checkExistUser(Request $request) {
+        dd($request);
+        $email = $request->post('username');
+        $anchUsersList = $this->userRepo->getUserByemail($email);
+        return $anchUsersList;
+    }
+
+    /**
+     * Get user specific Application list for frontend
+     *
+     * @return json user data
+     */
+    public function getUserApplications(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getUserApplications();
+        $applications = $dataProvider->getUserAppList($this->request, $appList);
+        return $applications;
+    }
+
+    public function getFiLists(DataProviderInterface $dataProvider, Request $request){
+        $fiLists = $this->application->getFiLists($request);
+        $fis = $dataProvider->getFiListsList($this->request, $fiLists);
+        return $fis; 
+    }
+
+    /**
+     * get role list
+     * @param Request $request
+     */ 
+    public function getRoleLists(DataProviderInterface $dataProvider) {
+       $anchRoleList = $this->userRepo->getRoleList();
+       $role = $dataProvider->getRoleList($this->request, $anchRoleList);
+       return $role;
+    }
+    
+    /**
+     * get role list
+     * @param Request $request
+     */ 
+    public function getUserRoleLists(DataProviderInterface $dataProvider) {
+       $List = $this->userRepo->getAllData();
+       $role = $dataProvider->getUserRoleList($this->request, $List);
+       return $role;
+    }
 }

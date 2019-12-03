@@ -29,6 +29,7 @@ try {
                 {data: 'assoc_anchor'},
                 {data: 'user_type'},
                 {data: 'assignee'},
+                {data: 'assigned_by'},
                 {data: 'shared_detail'},
                 {data: 'status'},
                 {data: 'action'}

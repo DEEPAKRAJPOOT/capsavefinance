@@ -8,14 +8,15 @@ use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
-
-
+use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\Offer;
 
 /**
  * Application repository class
@@ -130,11 +131,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     /**
      * Get business information according to app id
      */
-    public function getBusinessInfo($appId = null){
+    public function getAppDataByAppId($appId = null){
         if(is_null($appId)){
             throw new BlankDataExceptions('No Data Found');
         }
-        return Application::get($appId);
+        return Application::find($appId);
     }
 
     /**
@@ -249,6 +250,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::updateAppDetails((int)$app_id, $arrUserData);
     }
  
+    
+     /**
+     * update Applications for Application list data tables
+     */
+    public function updateAppAssignById($app_id, $arrUserData = []) 
+    {
+        return AppAssignment::updateAppAssignById((int)$app_id, $arrUserData);
+    }
+
     /**
      * Get Application Data By Biz Id
      * 
@@ -273,5 +283,115 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function updateAppData($app_id, $arrData)
     {
        return Application::updateAppData((int)$app_id, $arrData);  
+    }
+
+    /**
+     * Assign application
+     * 
+     * @param type $dataArr
+     */
+    public function assignApp($dataArr)
+    {
+        return AppAssignment::saveData($dataArr);
+    }
+
+    /**
+     * Get User Applications for Application list data tables for frontend
+     */
+    public function getUserApplications() 
+    {
+        return Application::getUserApplications();
+    }
+
+    /**
+     * function for get all FI lists
+     * @return type
+     */
+     
+    public function getFiLists($dataArr)
+    {
+      $result = BusinessAddress::getFiLists($dataArr);
+      return $result ?: false;
+    }
+
+    /**
+     * function for get all FI lists
+     * @return type
+     */
+     
+    public function getRcuLists($appId)
+    {
+      $result = AppDocumentFile::getRcuLists($appId);
+      return $result ?: false;
+    }
+    
+    /**
+     * Get Program Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getProgramData($whereCondition=[])
+    {
+        $prgmData = Program::getProgramData($whereCondition);
+        return $prgmData ? $prgmData : [];
+    }
+        
+    /**
+     * Get Anchor Data By Application Id
+     * 
+     * @param integer $app_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getAnchorDataByAppId($app_id)
+    {
+        $prgmData = Application::getAnchorDataByAppId($app_id);
+        return $prgmData ? $prgmData : [];
+    }  
+    
+    /**
+     * Get Offer Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getOfferData($whereCondition=[])
+    {
+        $offerData = Offer::getOfferData($whereCondition);
+        return $offerData ? $offerData : [];
+    }
+
+    /**
+     * Save Offer Data
+     * 
+     * @param array $offerData
+     * @param integer $offerId optional
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveOfferData($offerData=[], $offerId=null)
+    {
+        $offerData = Offer::saveOfferData($offerData, $offerId);
+        return $offerData ? $offerData : false;
+    }
+    
+    /**
+     * Update Offer Data By Application Id
+     * 
+     * @param integer $app_id
+     * @param array $arr
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateOfferByAppId($app_id, $arr = [])
+    {        
+        return Offer::updateOfferByAppId((int) $app_id, $arr);
     }    
 }
