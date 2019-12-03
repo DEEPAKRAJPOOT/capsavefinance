@@ -492,5 +492,5 @@
 @endsection
 
 @section('jscript')
-<script src="{{url('common/company_details.js')}}"></script>
+<script src="{{url('common/js/company_details.js')}}"></script>
 @endsection
