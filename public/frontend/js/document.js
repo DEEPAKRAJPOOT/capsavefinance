@@ -36,26 +36,20 @@
     $('.openModal').click(function(e) {
         var docId = $(this).attr('data-id');
         $('#myModal').modal('show');
+        $('#password_file_div').hide();
+        $('#is_not_for_gst').show();
+        $('input[name=docId]').val(docId);
+        $('input[name=doc_id]').val(docId);
+        $('select[name=doc_name]').parent('div').hide();
+        $('select[name=finc_year]').parent('div').hide();
+        $('select[name=gst_month]').parent('div').hide();
+        $('select[name=gst_year]').parent('div').hide();
         if(docId == 4) {
-            $('input[name=docId]').val(docId);
-            $('input[name=doc_id]').val(docId);
             $('select[name=doc_name]').parent('div').show();
-            $('select[name=finc_year]').parent('div').hide();
-            $('select[name=gst_month]').parent('div').hide();
-            $('select[name=gst_year]').parent('div').hide();
         } else if (docId == 5) {
-            $('input[name=docId]').val(docId);
-            $('input[name=doc_id]').val(docId);
-            $('select[name=doc_name]').parent('div').hide();
             $('select[name=finc_year]').parent('div').show();
-            $('select[name=gst_month]').parent('div').hide();
-            $('select[name=gst_year]').parent('div').hide();
-            
         } else {
-            $('input[name=docId]').val(docId);
-            $('input[name=doc_id]').val(docId);
-            $('select[name=doc_name]').parent('div').hide();
-            $('select[name=finc_year]').parent('div').hide();
+            $('#is_not_for_gst').hide();
             $('select[name=gst_month]').parent('div').show();
             $('select[name=gst_year]').parent('div').show();
         }
@@ -69,5 +63,12 @@
     $(document).on('click','#pullgst_rep', function () {
         var gst_no = $(this).data('id');
         $('#modal_pullgst').modal('show');
+    })
+
+    $(document).on('click','input[name="is_password"]', function() {
+        $('#password_file_div').hide();
+       if ($(this).is(':checked') && $(this).val() == 'yes') {
+        $('#password_file_div').show();
+       }
     })
     

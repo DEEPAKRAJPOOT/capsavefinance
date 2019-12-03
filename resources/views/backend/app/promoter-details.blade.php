@@ -207,9 +207,8 @@ height: 31px;
                                     <div class="form-group">
                                         <label for="txtEmail">Mobile <span class="mandatory">*</span></label>
                                         <span id="pullMsg_mob"></span>
-                                        <a class="verify-owner-no verify-show" name="verify_mobile_no" id="verify_mobile_no" class="form-control" tabindex="1">Verify</a>
+                                        <a class="verify-owner-no verify-show verify_mobile_no" name="verify_mobile_no" id="verify_mobile_no" tabindex="1">Verify</a>
                                         <input type="text" name="mobile_no" maxlength='10' id="mobile_no" value="{{$row->mobile_no}}" class="form-control" tabindex="1" placeholder="Enter Mobile no">
-                                        <span id="pullMsg_mob"></span>
                                     </div>
                                 </div>
                             </div>
@@ -1161,10 +1160,13 @@ jQuery.ajax({
    _token = "{{ csrf_token() }}";
 </script>
 <script>
-    $(document).on('click', '#verify_mobile_no',function () {
-        let mobile_no   = $('#mobile_no').val();
+    $(document).on('click', '.verify_mobile_no',function () {
+        button_target = $(this);
+        mobile_target = $(this).closest('div').find('input');
+        span_target = $(this).closest('div').find('span');
+        let mobile_no   = mobile_target.val();
         if (!mobile_no) {
-            $("#pullMsg_mob").html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i> <i>Please enter the mobile no.</i> </span>');
+            span_target.html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i> <i>Please enter the mobile no.</i> </span>');
             return false;
         }
         data = {_token, mobile_no};
@@ -1181,17 +1183,17 @@ jQuery.ajax({
                 let mclass = result['status'] ? 'success' : 'danger';
                 let micon = result['status'] ? 'circle' : 'close';
                 var html = result['message'];
-                $("#pullMsg_mob").html('<span class="text-'+mclass+'"><i class="fa fa-check-'+micon+'" aria-hidden="true"></i> <i>'+ html +'</i> </span>');
+                span_target.html('<span class="text-'+mclass+'"><i class="fa fa-check-'+micon+'" aria-hidden="true"></i> <i>'+ html +'</i> </span>');
                 if (result['status']) {
-                   $('#mobile_no').attr('readonly','readonly');
-                   $('#verify_mobile_no').text('verified');
+                   mobile_target.attr('readonly','readonly');
+                   button_target.text('verified');
                    $('#modalMobile').show();
                    $('#modalMobile iframe').attr({'src':'{{URL::route("mobile_verify") }}?mobile='+mobile_no,'width':'100%'});
                 }
              },
              error:function(error) {
                 var html = 'Some error occured.';
-                $("#pullMsg_mob").html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i> <i>'+ html +'</i> </span>');
+                span_target.html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i> <i>'+ html +'</i> </span>');
              },
              complete: function() {
                 $(".isloader").hide();

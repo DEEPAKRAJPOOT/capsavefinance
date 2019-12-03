@@ -156,18 +156,9 @@
                             <label for="email">Select Financial  Year</label>
                             <select class="form-control" name="finc_year">
                                <option value=''>Select Year</option>
-                               <option>2009</option>
-                               <option>2010</option>
-                               <option>2011</option>
-                               <option>2012</option>
-                               <option>2013</option>
-                               <option>2014</option>
-                               <option>2015</option>
-                               <option>2016</option>
-                               <option>2017</option>
-                               <option>2018</option>
-                               <option>2019</option>
-                               <option>2020</option>
+                               @for($i=-10;$i<=0;$i++)
+                                    <option>{{date('Y')+$i}}</option>
+                               @endfor;
                             </select>
                          </div>
                         <div class="row">
@@ -175,19 +166,10 @@
                                <div class="form-group">
                                   <label for="email">Select GST Month</label>
                                   <select class="form-control" name="gst_month">
-                                     <option selected value=''>Select Month</option>
-                                     <option  value='1'>Janaury</option>
-                                     <option value='2'>February</option>
-                                     <option value='3'>March</option>
-                                     <option value='4'>April</option>
-                                     <option value='5'>May</option>
-                                     <option value='6'>June</option>
-                                     <option value='7'>July</option>
-                                     <option value='8'>August</option>
-                                     <option value='9'>September</option>
-                                     <option value='10'>October</option>
-                                     <option value='11'>November</option>
-                                     <option value='12'>December</option>
+                                     <option selected diabled>Select Month</option>
+                                     @for($i=1;$i<=12;$i++)
+                                          <option value="{{$i}}">{{date('F', strtotime("2019-$i-01"))}}</option>
+                                     @endfor
                                   </select>
                                </div>
                             </div>
@@ -196,18 +178,9 @@
                                   <label for="email">Select GST Year</label>
                                   <select class="form-control" name="gst_year">
                                      <option value=''>Select Year</option>
-                                     <option>2009</option>
-                                     <option>2010</option>
-                                     <option>2011</option>
-                                     <option>2012</option>
-                                     <option>2013</option>
-                                     <option>2014</option>
-                                     <option>2015</option>
-                                     <option>2016</option>
-                                     <option>2017</option>
-                                     <option>2018</option>
-                                     <option>2019</option>
-                                     <option>2020</option>
+                                    @for($i=-10;$i<=0;$i++)
+                                        <option>{{date('Y')+$i}}</option>
+                                   @endfor;
                                   </select>
                                </div>
                             </div>
@@ -215,6 +188,38 @@
                         <div class="custom-file upload-btn-cls mb-3 mt-2">
                             <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]" multiple="">
                             <label class="custom-file-label" for="customFile">Choose file</label>
+                        </div>
+                        <div class="row" id="is_not_for_gst">
+                          <div class="col-md-6">
+                             <label>Is Password Protected</label>
+                             <div class="form-group">
+                                <label for="is_password_y">
+                                  <input type="radio" name="is_password" id="is_password_y" value="yes"> Yes
+                                </label>
+                                <label for="is_password_n">
+                                  <input type="radio" name="is_password" checked id="is_password_n" value="no"> No
+                                </label>
+                             </div>
+                          </div>
+                          <div class="col-md-6">
+                             <label>Is Scanned</label>
+                             <div class="form-group">
+                                <label for="is_scanned_y">
+                                  <input type="radio" name="is_scanned" id="is_scanned_y" value="yes"> Yes
+                                </label>
+                                <label for="is_scanned_n">
+                                  <input type="radio" name="is_scanned" checked id="is_scanned_n" value="no"> No
+                                </label>
+                             </div>
+                          </div>
+                        </div>
+                        <div class="row" id="password_file_div">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="file_password">Enter File Password</label>
+                                    <input type="password" placeholder="Enter File Password" class="form-control" name="file_password" id="file_password">
+                                 </div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-success float-right btn-sm" id="savedocument" >Submit</button>  
                     </div>
