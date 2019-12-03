@@ -195,8 +195,10 @@ class ApplicationController extends Controller
         $appId = $request->get('app_id');
         $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
+        $gstdata = State::getGstbyUser($userId);
+        $gst_no = $gstdata['pan_gst_hash'] ?? '';
         $appData = $this->appRepo->getAppDataByAppId($appId);
-        
+    
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
             if($requiredDocs->count() != 0){
@@ -213,7 +215,8 @@ class ApplicationController extends Controller
         
         return view('frontend.application.update_document')->with([
             'requiredDocs' => $requiredDocs,
-            'documentData' => $docData
+            'documentData' => $docData,
+            'gst_no' => $gst_no,
         ]); 
 
 //        return view('frontend.application.document')->with([
@@ -364,7 +367,7 @@ class ApplicationController extends Controller
 
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
-          $this->logdata($response, 'F', $gst_no.'_'.date('ymdH').'.txt');
+          //$this->logdata($response, 'F', $gst_no.'_'.date('ymdH').'.txt');
           $json_decoded = json_decode($response['result'], TRUE);
           $file_name = $gst_no.'.pdf';
           $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
