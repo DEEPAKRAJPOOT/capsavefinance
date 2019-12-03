@@ -228,6 +228,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@finance'
                 ]);
 
+                Route::get('gstin', [
+                    'as' => 'cam_gstin',
+                    'uses' => 'Backend\CamController@gstin'
+                ]);
+                
                 Route::post('finance_store', [
                     'as' => 'cam_finance_store',
                     'uses' => 'Backend\CamController@finance_store'
