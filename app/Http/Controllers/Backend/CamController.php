@@ -12,6 +12,7 @@ use App\Inv\Repositories\Models\Cam;
 use App\Libraries\Perfios_lib;
 use App\Libraries\Bsa_lib;
 use App\Libraries\MobileAuth_lib;
+use App\Libraries\Gupshup_lib;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
@@ -91,6 +92,15 @@ class CamController extends Controller
     }
 
     public function banking(Request $request, FinanceModel $fin){
+
+    	$gupshup = new Gupshup_lib();
+    	$Otpstring = '546378';
+    	$name = "Ravi";
+                    $mobile_no = '9667305959';
+                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on rentalpha.\r\n Regards";
+                    // Send OTP mobile to User
+                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
+                    print_r($otp_resp);die;
         $appId = $request->get('app_id');
         $bankdocs = $fin->getBankStatements($appId);
         return view('backend.cam.bank', ['bankdocs' => $bankdocs, 'appId'=> $appId]);
@@ -225,7 +235,6 @@ class CamController extends Controller
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
             'transactionCompleteCallbackUrl' => 'http://122.170.7.185:8080/CallbackTest/CallbackStatus',
-            'acceptancePolicy' => 'atLeastOneTransactionInRange',
             'uploadingScannedStatements' => 'false',
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
@@ -277,6 +286,10 @@ class CamController extends Controller
         }
         if ($final_res['status'] != 'success') {
             return $final_res;
+        }
+
+        if (!empty($is_scanned) && strtolower($is_scanned) == 'yes') {
+        	 return $final_res;
         }
 
 
@@ -465,6 +478,24 @@ class CamController extends Controller
     }
 
     public function getFinanceReport($value='') {
+
+    	$perfios = new Perfios_lib();
+        $apiVersion = '2.1';
+        $vendorId = 'capsave';
+        $reportType = 'xlsx';
+        $req_arr = array(
+            'apiVersion' => $apiVersion,
+            'vendorId' => $vendorId,
+            'destination' => 'statement'
+         );
+        
+        $payload = $perfios->api_call(Perfios_lib::GET_INST, $req_arr);
+
+        echo "<pre>";
+        print_r($payload);
+        die;
+
+
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';

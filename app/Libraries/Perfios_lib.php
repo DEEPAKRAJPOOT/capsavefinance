@@ -146,14 +146,29 @@ class Perfios_lib{
 	    xml_parse_into_struct($p, $xml, $resp);
 	    xml_parser_free($p);
 	    $status = strtolower($resp[0]['tag']);
+
+	    if (SELF::STATUS[$method] != strtolower($status)) {
+	    	$result['status'] = "fail";
+	    }
+
+	    if ($method == SELF::GET_INST && strtolower($result['status']) == 'success') {
+    		$xml_obj = simplexml_load_string($xml);
+    		$xml_arr = json_decode(json_encode($xml_obj), TRUE);
+    		$institutions = [];
+    		foreach ($xml_arr['Institution'] as $key => $value) {
+    			$bankname = "'".explode(',', $value['name'])[0]."'";
+    			$institutions[$key] = $bankname;
+    		}
+    		$result['institutions'] = $institutions;
+    		return $result;
+    	}
+
 	    foreach ($resp as $key => $value) {
 	    	if ($value['type'] == 'complete' && !empty($value['value'])) {
 	    		$result[strtolower($value['tag'])] = $value['value'];
 	    	}
 	    }
-	    if (SELF::STATUS[$method] != strtolower($status)) {
-	    	$result['status'] = "fail";
-	    }
+	    
 	    return $result;
     }
 
