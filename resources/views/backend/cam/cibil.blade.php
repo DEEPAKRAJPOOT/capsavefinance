@@ -560,9 +560,6 @@
                    var html = '<div class="alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+data['message']+'</div>';
                      if(status==1)
                        {  
-                            //alert(data['message']);
-                            var html = '';
-                           
                             $("#pullMsgCommercial").html(html);
                             $("#cibilScore"+biz_id).text(data['cibilScore']);
                             
