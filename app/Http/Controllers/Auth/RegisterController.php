@@ -430,7 +430,7 @@ use RegistersUsers,
                     $mobile_no = $userCheckArr->mobile_no;
                     $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on rentalpha.\r\n Regards";
                     // Send OTP mobile to User
-                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $message]);
+                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
                     if ($otp_resp['status'] != 'success') {
                        // Send OTP mail to User
                        Event::dispatch("user.sendotp", serialize($userMailArr));
