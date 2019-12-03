@@ -38,12 +38,15 @@ class FiRcuController extends Controller
     public function listRCU(Request $request)
     {
         $appId = $request->get('app_id');
-        $rcuResult = $this->appRepo->getRcuLists($appId);
+        $promoterDocId = [2, 22, 30, 31, 32];
         
+        $rcuResult = $this->appRepo->getRcuLists($appId);
+//        $promoterDoc = $this->appRepo->getPromoterRcuLists($appId);
         foreach ($rcuResult as $key => $value) {
-            $rcuResult[$key]['documents'] = $this->appRepo->getRcuDocuments($value->app_id, $value->doc_id);
+            $rcuResult[$key]['documents'] = $this->appRepo->getRcuDocuments($appId, $value->doc_id);
         }
         
+//        dd($rcuResult);
         return view('backend.fircu.rcu', [
                     'data' => $rcuResult
                 ]);   

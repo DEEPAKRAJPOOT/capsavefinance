@@ -322,7 +322,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      
     public function getRcuLists($appId)
     {
-      $result = AppDocument::getRcuLists($appId);
+      $result = AppDocumentFile::getRcuLists($appId);
+//      dd($result);
       return $result ?: false;
     }
     

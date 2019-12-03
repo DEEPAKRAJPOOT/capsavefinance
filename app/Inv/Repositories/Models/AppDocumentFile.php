@@ -36,6 +36,7 @@ class AppDocumentFile extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'rcu_status',
         'app_id',
         'biz_owner_id',
         'doc_id',
@@ -140,14 +141,25 @@ class AppDocumentFile extends Authenticatable
 //             
 //    }
     
-    
-    /**
-     * Managing inputs as required Array
-     *
-     * @param Array $attributes
+     /**
+     * fetching Rcu documents and files
      *
      * @return Array
      */
+    public static function getRcuLists($appId)
+    {  
+       return AppDocumentFile::select(['doc_id'])
+                ->with('rcuDoc')
+                ->whereHas('rcuDoc')
+                ->where('app_id', $appId)
+                ->groupBy('doc_id')
+                ->get();
+    }
+    
+    public function rcuDoc()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')->where('is_rcu', 1);
+    }
     
     public static function getRcuDocuments($appId, $docId)
     {

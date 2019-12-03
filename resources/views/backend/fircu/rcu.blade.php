@@ -40,7 +40,7 @@
                                     
                                         <tr role="row" class="odd">
                                             <td class="sorting_1"><input type="checkbox">{{ $i }}.</td>
-                                            <td>{{ $value->rcuDocCheck->doc_name }}</td>                                 
+                                            <td>{{ $value->rcuDoc->doc_name }}</td>                                 
                                             <td>abc company</td>                                      
                                             <td>
                                                 <div class="btn-group"><label class="badge badge-warning">Pending&nbsp; &nbsp;</label></div>
@@ -105,6 +105,14 @@
                             <div id="rcuList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                         </div>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mt-3">
+                        <div class="form-group text-right">
+                           <button class="btn btn-success btn-sm " data-toggle="modal" data-target="#myModal">Trigger for FI</button>
+                            <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
+                        </div>
+                     </div>
                 </div>
             </div>
         </div>
