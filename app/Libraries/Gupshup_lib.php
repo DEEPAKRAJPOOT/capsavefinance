@@ -1,15 +1,20 @@
 <?php 
 namespace App\Libraries;
 
+define('GUPSHUP_BASE_URL', config('proin.GUPSHUP_BASE_URL'));
+define('GUPSHUP_KEY', config('proin.GUPSHUP_KEY'));
+define('GUPSHUP_USR', config('proin.GUPSHUP_USR'));
+define('GUPSHUP_PASS', config('proin.GUPSHUP_PASS'));
+
 class Gupshup_lib
 {
 	private $httpMethod = 'POST';
 
-	const BASE_URL    = " https://enterprise.smsgupshup.com/GatewayAPI/rest";
-	const GUPSHUP_KEY   = "h3JOdjfOvay7J8SF";
+	const BASE_URL    = GUPSHUP_BASE_URL;
+	const GUPSHUP_KEY   = GUPSHUP_KEY;
 	const ENCRYPTED   = FALSE;
-	const GUPSHUP_USR   = '2000189713';
-	const GUPSHUP_PASS   = 'vTOU5oimJ';
+	const GUPSHUP_USR   = GUPSHUP_USR;
+	const GUPSHUP_PASS   = GUPSHUP_PASS;
 	
 
 	public function api_call($params){
@@ -125,8 +130,8 @@ class Gupshup_lib
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 2);
 		curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
 		curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
