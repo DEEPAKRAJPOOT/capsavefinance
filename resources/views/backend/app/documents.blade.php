@@ -166,7 +166,7 @@
                                <div class="form-group">
                                   <label for="email">Select GST Month</label>
                                   <select class="form-control" name="gst_month">
-                                     <option selected diabled>Select Month</option>
+                                     <option selected diabled value=''>Select Month</option>
                                      @for($i=1;$i<=12;$i++)
                                           <option value="{{$i}}">{{date('F', strtotime("2019-$i-01"))}}</option>
                                      @endfor
