@@ -5,7 +5,7 @@ class Gupshup_lib
 {
 	private $httpMethod = 'POST';
 
-	const BASE_URL    = " https://enterprise.smsgupshup.com/GatewayAPI/rest";
+	const BASE_URL    = " http://enterprise.smsgupshup.com/GatewayAPI/rest";
 	const GUPSHUP_KEY   = "h3JOdjfOvay7J8SF";
 	const ENCRYPTED   = FALSE;
 	const GUPSHUP_USR   = '2000189713';
