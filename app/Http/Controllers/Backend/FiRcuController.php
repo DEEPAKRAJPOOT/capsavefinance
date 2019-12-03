@@ -24,9 +24,12 @@ class FiRcuController extends Controller
     /**
      * Display a listing of FI
      */
-    public function listFI()
+    public function listFI(Request $request)
     {
-       return view('backend.fircu.fi');   
+        $biz_id = $request->get('biz_id');
+        $fiLists = $this->appRepo->getAddressforFI($biz_id);
+        //dd($fiLists);
+        return view('backend.fircu.fi')->with('fiLists', $fiLists);   
     }
 
     /**

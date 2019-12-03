@@ -394,4 +394,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {        
         return Offer::updateOfferByAppId((int) $app_id, $arr);
     }    
+
+    /**
+     * get address for FI
+     * 
+     * @param integer $biz_id
+     * @return all address result
+     */
+    public function getAddressforFI($biz_id){
+        $result = BusinessAddress::getAddressforFI($biz_id);
+        return $result ?: false;
+    }
+
 }
