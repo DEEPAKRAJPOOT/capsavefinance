@@ -31,7 +31,7 @@ class KarzaController extends Controller
     public function checkPanVerification(KarzaApi $KarzaApi, Request $request)
     {
           $requestPan   = $request->all();
-          return $KarzaApi->panVerificationRequest($requestPan['pan']);
+          return $KarzaApi->panVerificationRequest($requestPan);
     }
 
     /**
@@ -219,7 +219,7 @@ class KarzaController extends Controller
          $result =  $KarzaApi->checkPassportVerification($requestPassport);
         
          $get_dec = json_decode($result,1);
-          $status =  $get_dec['status-code'];
+         $status =  $get_dec['statusCode'];
           if($status==101) { 
               $status =1; 
               

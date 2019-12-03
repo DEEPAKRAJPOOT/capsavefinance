@@ -2,7 +2,7 @@
 
 @section('content')
 
-@if(count($res) > 0)
+
 <table class="table  table-striped table-hover overview-table">
     <thead class="thead-primary">
         <tr>
@@ -12,36 +12,33 @@
     <tbody>
         <tr>
             <th>Given Name</th>
-            <td>Suresh</td>
+            <td>{{$res->name->nameFromPassport}}</td>
             <th>Name Match</th>
-            <td>-</td>
+            <td>{{$res->name->nameScore}}</td>
         </tr> <tr>
             <th>Surname</th>
-            <td>Kumar</td>
+            <td>{{$res->name->surnameFromPassport}}</td>
             <th>Name Match Score</th>
-            <td>-</td>
+            <td>{{$res->name->nameMatch}}</td>
         </tr> <tr>
             <th>Passport Number (from source)</th>
-            <td>L7259111</td>
+            <td>{{$res->passportNumber->passportNumberFromSource}}</td>
             <th>Match</th>
-            <td>-</td>
+            <td>{{$res->passportNumber->passportNumberMatch}}</td>
         </tr> <tr>
             <th>Dispatched On (from Source)</th>
-            <td>6/3/2014</td>
+            <td>{{$res->dateOfIssue->dispatchedOnFromSource}}</td>
             <th>Match</th>
-            <td>-</td>
+            <td>{{$res->dateOfIssue->dateOfIssueMatch}}</td>
         </tr> <tr>
             <th>Type of Application</th>
-            <td>Normal</td>
+            <td>{{$res->typeOfApplication}}</td>
             <th>Passport Application Date</th>
-            <td>1/1/2014</td>
+            <td>{{$res->applicationDate}}</td>
         </tr>                                          
     </tbody>
 </table>   
- @else
-<h5>       Verification has been done,But result return blank from Api in case of status is true.....
-                   </h5>
-@endif
+
 
 @endsection
 

@@ -11,22 +11,11 @@
         </thead>
         <tbody>
             <tr>
-                <th>Status of the PAN</th>
-                <td>{{isset($res->status) ? $res->status : '' }}</td>
+                <th>Name of the PAN</th>
+                <td>{{isset($res->name) ? $res->name : '' }}</td>
             </tr>
 
-            <tr>
-                <th>PAN has been tagged as duplicate by Income Tax Department(ITD)</th>
-                <td>{{ ($res->duplicate==false) ? 'false' : 'true' }}</td>
-            </tr>
-            <tr>
-                <th>Given Name matches with the ITD Records</th>
-                <td>{{isset($res->nameMatch) ? $res->nameMatch : '' }}</td>
-            </tr>
-            <tr>
-                <th>Given DOB matches with the ITD Records</th>
-                <td>{{isset($res->dobMatch) ? $res->dobMatch : '' }}</td>
-            </tr>
+          
         </tbody>
     </table>
  
