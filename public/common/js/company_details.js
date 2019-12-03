@@ -69,11 +69,11 @@ function fillEntity(gstinId){
 	}
 	$('.isloader').show();
 	$.ajax({
-			url: "https://gst.karza.in/uat/v1/gst-verification",//https://gst.karza.in/prod/v1/gst-verification
+			url: "https://gst.karza.in/prod/v1/gst-verification",//https://gst.karza.in/prod/v1/gst-verification
 			type: "POST",
 			data: JSON.stringify({"consent": "Y","gstin": gstinId}),
 			dataType:'json',
-			headers:{"Content-Type": "application/json", "x-karza-key": "h3JOdjfOvay7J8SF"},
+			headers:{"Content-Type": "application/json", "x-karza-key": "NX1nBICr7TNEisJ"},
 			error:function (xhr, status, errorThrown) {
 				$('.isloader').hide();
     			alert(errorThrown);
