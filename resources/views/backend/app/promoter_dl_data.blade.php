@@ -65,12 +65,14 @@
                                 <tbody>
                                     <tr>
                                         <th>Transport</th>
-                                        <td>-</td>													
+                                        <td>--</td>													
                                     </tr>
+                                    
                                     <tr>
                                         <th>Non-Transport</th>
-                                        <td></td>				
-                                    </tr>                          
+                                        <td>--</td>				
+                                    </tr>   
+                                     
                                 </tbody>
                             </table>
                         </div>

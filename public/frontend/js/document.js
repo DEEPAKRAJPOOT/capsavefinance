@@ -2,19 +2,24 @@
  * documents working all kind of jquery
  * To change validation and form data
  */
+    $.validator.addMethod('filesize', function (value, element, param) {
+        return this.optional(element) || (element.files[0].size <= param)
+    }, 'File size must be less than {0}');
 
     $(document).ready(function () {
         $('#documentForm').validate({ // initialize the plugin
             rules: {
                 'doc_file[]': {
                     required: true,
-                    extension: "jpg,png,pdf,doc,dox"
+                    extension: "jpg,png,pdf,doc,dox",
+                    filesize : 200000,
                 }
             },
             messages: {
                 'doc_file[]': {
                     required: "Please select file",
                     extension:"Please select jpg,png,pdf,doc,dox type format only.",
+                    filesize:"maximum size for upload 2 MB.",
                 }
             }
         });
@@ -22,7 +27,7 @@
         $('#documentForm').validate();
 
         $("#savedocument").click(function(){
-            if($('#documentForm').valid()){
+            if($('#documentForm').validate()){
                 $("#savedocument").disabled = true;
             }  
         });            

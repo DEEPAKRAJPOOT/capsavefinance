@@ -98,6 +98,7 @@ class CibilController extends Controller
         $arrData = BizOwner::where('biz_id','=',$biz_id)->first();
         $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($arrData['biz_owner_id']);
         $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
+        $arrOwnerData->biz_cin = $arrBizData['0']['cin'];
         $responce =  $CibilApi->getCommercialCibilAcknowledgement($arrOwnerData);
         $p = xml_parser_create('utf-8');
         xml_parse_into_struct($p, $responce, $resp);
@@ -108,7 +109,7 @@ class CibilController extends Controller
                 $acknowledgementResult[strtolower($value['tag'])] = $value['value'] ?? '';
             }
         }
-        //dd($acknowledgementResult);
+     
         if($acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
             sleep(30);
             $arrOwnerData['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
@@ -173,7 +174,7 @@ class CibilController extends Controller
         if(empty($arrData)){
                 return response()->json(['message' =>'Error','status' => 0, 'cibilScoreData' => 'Please Pull the CIBIL Score to view the report.']);
         }else{
-                $arrCibilScoreData = $arrData['res_file'];
+                $arrCibilScoreData = json_decode($arrData['res_file']);
                 return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'cibilScoreData' => $arrCibilScoreData]);
        }
     }

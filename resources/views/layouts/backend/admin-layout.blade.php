@@ -121,12 +121,7 @@
             $(this).parents("tr").next(".dpr").slideToggle();
             });
 
-            $(".datepicker-dis-fdate").datetimepicker({
-                format: 'dd/mm/yyyy',
-                autoclose: true,
-                minView : 2,
-                endDate: new Date()
-            });
+            datepickerDisFdate();
 
             $('.number_format').on('input', function(event) {
                // skip for arrow keys
@@ -138,6 +133,15 @@
                });
             });
         });
+
+        function datepickerDisFdate(){
+            $(".datepicker-dis-fdate").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+                endDate: new Date()
+            });
+        }
     </script>
     @yield('jscript')
 </html>

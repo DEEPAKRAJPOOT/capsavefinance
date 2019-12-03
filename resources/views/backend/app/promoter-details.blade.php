@@ -808,7 +808,7 @@ jQuery(document).ready(function () {
                 processData: false,
                 data: JSON.stringify(data),
                 success: function (data) {
-                   
+//                   
                      window.location.href = "{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}";
                         
                     var promoId = 0;
@@ -829,13 +829,17 @@ jQuery(document).ready(function () {
 $(document).on('click', '.promoter_pan_verify', function () {
     var count = $(this).attr('data-id');
     var PAN = $("#pan_no" + count).val();
+    var name = $("#first_name"+count).val();
+    var dob = $("#date_of_birth"+count).val();
     var consent = "Y";
-    var key = "h3JOdjfOvay7J8SF";
-    var dataStore = ({'consent': consent, 'pan': PAN});
+    var key = "NX1nBICr7TNEisJ";
+    var dataStore = ({'consent': consent, 'pan': PAN,'name':name,'dob':dob});
     var jsonData = JSON.stringify(dataStore);
     $('#pan_verify' + count).text('Waiting...');
     jQuery.ajax({
-        url: "https://stub.karza.in/v2/pan",
+        url: "https://api.karza.in/v2/pan-authentication",
+         /// var dataStore = {'pan': 'BVZPS1846R','name':'Omkar Milind Shirhatti','dob':'17/08/1987','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
+          
         headers: {
             'Content-Type': "application/json",
             'x-karza-key': key,
@@ -848,13 +852,13 @@ $(document).on('click', '.promoter_pan_verify', function () {
              $('#pan_verify'+count).text('Verify');
         },
         success: function (data) {
-            var name = data['result']['name'];
+            var name_status = data['result']['status'];
             var request_id = data['request_id'];
             var status = data['status-code'];
-
+             
             if (data['status-code'] == 101)
             {
-                var MergeResonse = name.concat(request_id, status);
+                var MergeResonse = name_status.concat(request_id, status);
                 $('#response' + count).val(MergeResonse);
                 $('#pan_no' + count).attr('readonly', true);
                 $('#pan_verify' + count).text('Verified')
@@ -898,8 +902,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
          var name = $("#first_name"+count).val();
          var dob = $("#date_of_birth"+count).val();
          var dataStore = {'pan': PAN,'name':name,'dob':dob,'_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id};
-        /// var dataStore = {'pan': 'BVZPS1846R','name':'Omkar Milind Shirhatti','dob':'17/08/1987','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
-            var postData = dataStore;
+         var postData = dataStore;
             $('#ppan'+count).text('Waiting...');
              jQuery.ajax({
             

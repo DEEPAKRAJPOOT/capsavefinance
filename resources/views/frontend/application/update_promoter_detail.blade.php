@@ -488,7 +488,9 @@
             var count = $(this).attr('data-id');
           
             var PAN = $("#pan_no"+count).val();
-            var dataStore = {'pan': PAN,'_token': messages.token };
+            var name = $("#first_name"+count).val();
+            var dob = $("#date_of_birth"+count).val();
+            var dataStore = {'pan': PAN,'name':name,'dob':dob,'_token': messages.token };
             var postData = dataStore;
             $('#pan_verify'+count).text('Waiting...');
              jQuery.ajax({
@@ -504,7 +506,7 @@
                                   var status =  data['status-code'];
                                   if(status==101)
                                             {   
-                                                 var name = data['result']['name'];
+                                                 var name = data['result']['status'];
                                                  var request_id = data['request_id'];
                                                  var MergeResonse = name.concat(request_id, status);       
                                                   $('#response'+count).val(MergeResonse);

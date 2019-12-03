@@ -654,7 +654,10 @@ class Helper extends PaypalHelper
     public static function getWfStageToProcess($app_id)
     {
         $currStage = self::getCurrentWfStage($app_id);
-        $wf_order_no = $currStage->order_no ?? '';
+        if (!$currStage) {
+            return false;
+        }
+        $wf_order_no = $currStage->order_no;
         $currStage = self::getNextWfStage($wf_order_no);
         return $currStage;
     }

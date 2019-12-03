@@ -3,7 +3,7 @@
 <div class="row">
 	<div class="col-md-12">
 		<div class="form-group">
-                  <input class="form-control" type="hidden" id="app_id" value="{{$app_id}}">
+                  <input  type="hidden" id="app_id" class="form-control" value="{{$app_id}}">
 	                <label class="">Comment</label>                                          
 	                <textarea class="form-control" id='notesData'></textarea>
 	                <span id='msg'></span>
