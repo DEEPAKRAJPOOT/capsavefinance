@@ -1,12 +1,15 @@
 <?php 
 namespace App\Libraries;
 
+define('MOBILE_AUTH_LIB_URL', config('proin.MOBILE_AUTH_LIB_URL'));
+define('MOBILE_AUTH_LIB_KEY', config('proin.MOBILE_AUTH_LIB_KEY'));
+
 class MobileAuth_lib
 {
 	private $request_type;
 	private $httpMethod = 'POST';
-	const BASE_URL    = "https://testapi.karza.in/";
-	const KARZA_KEY   = "h3JOdjfOvay7J8SF";
+	const BASE_URL    = MOBILE_AUTH_LIB_URL;
+	const KARZA_KEY   = MOBILE_AUTH_LIB_KEY;
 
 	const SEND_OTP   = '1001';   #SEND OTP
 	const VERF_OTP   = '1002';   #VERIFY OTP
