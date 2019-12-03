@@ -126,7 +126,7 @@ class CibilController extends Controller
                     $resultData[strtolower($value['tag'])] = $value['value'] ?? '';
                 }
             }
-            if($resultData['response-type'] != 'ERROR' ){
+            if(isset($resultData['status'])){
                     if($resultData['score'] > 0){
                         $cibilScore =  $resultData['score'];
                     }else{
