@@ -131,7 +131,7 @@ height: 31px;
                                         <label for="txtPassword">DOB
                                             <span class="mandatory">*</span>
                                         </label>
-                                       <input type="text" name="date_of_birth[]" id="date_of_birth{{isset($row->first_name) ? $i : '1'}}" value="{{ date('d/m/Y', strtotime($row->date_of_birth)) }}" class="form-control date_of_birth datepicker-dis-fdate" tabindex="1" placeholder="Enter Date Of Birth" >
+                                       <input type="text" name="date_of_birth[]" id="date_of_birth{{isset($row->first_name) ? $i : '1'}}" value="{{ ($row->date_of_birth) ? date('d/m/Y', strtotime($row->date_of_birth)) : '' }}" class="form-control date_of_birth datepicker-dis-fdate" tabindex="1" placeholder="Enter Date Of Birth" >
                                                      </div>
                                 </div>
 
@@ -809,7 +809,7 @@ jQuery(document).ready(function () {
                 processData: false,
                 data: JSON.stringify(data),
                 success: function (data) {
-//                   
+                    
                      window.location.href = "{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}";
                         
                     var promoId = 0;
