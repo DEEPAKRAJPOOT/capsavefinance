@@ -90,6 +90,7 @@
     <div class="isloader" style="display:none;">  
         <img src="{{asset('backend/assets/images/loader.gif')}}">
     </div>
+</body>
 
     <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
@@ -100,7 +101,7 @@
     <script src="{{url('backend/assets/js/misc.js')}}"></script>
     <script src="{{url('backend/assets/js/jquery.validate.js')}}"></script>
     <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
-    <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
+    <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
     <script src="{{url('common/js/iframePopup.js')}}"></script> 
     <script>
         $(document).ready(function(){
@@ -127,7 +128,7 @@
                 endDate: new Date()
             });
 
-            $('.number_format').keyup(function(event) {
+            $('.number_format').on('input', function(event) {
                // skip for arrow keys
                if(event.which >= 37 && event.which <= 40) return;
 
@@ -139,5 +140,4 @@
         });
     </script>
     @yield('jscript')
-</body>
 </html>

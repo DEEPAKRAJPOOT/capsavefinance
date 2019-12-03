@@ -8,6 +8,7 @@ use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
@@ -303,14 +304,24 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /**
-     * function for get all anchor register user detail
+     * function for get all FI lists
      * @return type
      */
      
-    public function getAllBusiness()
+    public function getFiLists($dataArr)
     {
-      $result = Business::all();
-      dd($result);
+      $result = BusinessAddress::getFiLists($dataArr);
+      return $result ?: false;
+    }
+
+    /**
+     * function for get all FI lists
+     * @return type
+     */
+     
+    public function getRcuLists($appId)
+    {
+      $result = AppDocumentFile::getRcuLists($appId);
       return $result ?: false;
     }
     

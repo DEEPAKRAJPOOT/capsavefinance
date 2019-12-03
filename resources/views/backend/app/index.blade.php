@@ -23,9 +23,11 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Application</h3>            
+            <h3>Manage Application</h3>
+            <small>Application List</small>
             <ol class="breadcrumb">
-                <li><a href="https://admin.zuron.in/admin/dashboard"><i class="mdi mdi-home"></i> Home</a></li>
+                <li style="color:#374767;"> Home </li>
+                <li style="color:#374767;">Manage Application</li>
                 <li class="active">Manage Application</li>
             </ol>
         </div>

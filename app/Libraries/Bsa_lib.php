@@ -104,9 +104,13 @@ class Bsa_lib{
 	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
 	     }
-	     if ($method == SELF::GET_REP) {
-	     	//dd($response['result']);
+
+	     if ($method == SELF::GET_REP && !in_array($params['types'], ['xml','json'])) {
+	     	$resp['status'] = "success";
+		 	$resp['result'] = $response['result'];
+		 	return $resp;
 	     }
+	     
 	     $result = $this->_parseResult($response['result'], $method);
 	     return $result;
     }

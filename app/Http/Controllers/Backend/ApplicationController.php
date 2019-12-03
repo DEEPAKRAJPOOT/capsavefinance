@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
 use App\Http\Requests\DocumentRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\User;
+use App\Libraries\MobileAuth_lib;
 use Session;
 use Helpers;
 use App\Libraries\Pdf;
@@ -115,6 +117,7 @@ class ApplicationController extends Controller
         $id = Auth::user()->user_id;
         $appId = $request->get('app_id');  
         $bizId = $request->get('biz_id'); 
+        $editFlag = $request->get('edit'); 
         $attribute['biz_id'] = $bizId;
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
@@ -123,12 +126,13 @@ class ApplicationController extends Controller
           return redirect()->back();
        }
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-       
+      // dd($OwnerPanApi);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
-              'cin_no' => $getCin->cin,
-             'appId' => $appId, 
-            'bizId' => $bizId
+            'cin_no' => $getCin->cin,
+            'appId' => $appId, 
+            'bizId' => $bizId,
+            'edit' => $editFlag
             ]);
     }
      /**
@@ -143,7 +147,7 @@ class ApplicationController extends Controller
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
          
           if ($owner_info) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
+                return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
@@ -162,6 +166,7 @@ class ApplicationController extends Controller
        try {
             $arrFileData = $request->all();
             $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
+           
             if ($owner_info) {
             
                 //Add application workflow stages
@@ -171,7 +176,7 @@ class ApplicationController extends Controller
               ///  if ($toUserId) {
                 ////    Helpers::assignAppToUser($toUserId, $appId);
               ///  }
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
+                return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1]);
             }
             else {
                //Add application workflow stages 
@@ -221,23 +226,31 @@ class ApplicationController extends Controller
             $arrFileData = $request->all();
             $docId = $request->get('doc_id'); //  fetch document id
             $appId = $request->get('app_id'); //  fetch document id
-            $OwnerId = $request->get('owner_id'); //  fetch document id
+            $ownerId = $request->get('owner_id'); //  fetch document id
             $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
+           
             
             $userFile = $this->docRepo->saveFile($uploadData);
-            
             if(!empty($userFile->file_id)) {
+                $ownerDocCheck = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
+                if(!empty($ownerDocCheck)) {
+                    $appDocResponse = $this->docRepo->updateAppDocFile($ownerDocCheck, $userFile->file_id);
+                    $fileId = $appDocResponse->file_id;
+                    $response = $this->docRepo->getFileByFileId($fileId);
+                    
+                } else {
+                    $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+                    $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+                    $fileId = $appDocResponse->file_id;
+                    $response = $this->docRepo->getFileByFileId($fileId);
+                }   
                 
-                $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
-                $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
-                $fileId = $appDocResponse->file_id;
-                $response = $this->docRepo->getFileByFileId($fileId);
             }
             if ($response) {
                 return response()->json([
                     'result' => $response, 
                     'status' => 1, 
-                    'file_path' => $response->file_path 
+                    'file_path' => Storage::disk('s3')->url($response->file_path)  
                 ]);
             } else {
                 return response()->json([
@@ -262,25 +275,29 @@ class ApplicationController extends Controller
             $arrFileData = $request->all();
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
+            $editFlag = $request->get('edit');
             $userData = User::getUserByAppId($appId);
-            
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
-                if(!empty($requiredDocs)){
+                if($requiredDocs->count() != 0){
                     $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
+                }
+                else {
+                    Session::flash('message',trans('error_messages.document'));
+                    return redirect()->back();
                 }
             }
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-            
             if ($docData) {
                 return view('backend.app.documents', [
                     'requiredDocs' => $requiredDocs,
                     'documentData' => $docData,
                     'user_id' => $userData->user_id,
                     'app_id' => $appId,
-                    'biz_id' => $bizId
+                    'biz_id' => $bizId,
+                    'edit' => $editFlag
                 ]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
@@ -302,10 +319,9 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-            // dd($arrFileData);
             $docId = (int)$request->doc_id; //  fetch document id
             $appId = (int)$request->app_id; //  fetch document id
-            $userData = User::getUserByAppId($appId);
+            $userData = $this->userRepo->getUserByAppId($appId);
             $userId = $userData->user_id;
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
@@ -330,7 +346,28 @@ class ApplicationController extends Controller
         }
     }
     
+     /**
+     * Handling deleting documents file for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     
+    public function documentDelete($appDocFileId)
+    {
+        try {
+            $response = $this->docRepo->deleteDocument($appDocFileId);
+            
+            if ($response) {
+                Session::flash('message',trans('success_messages.deleted'));
+                return redirect()->back();
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     
     /**
      * Handling deleting documents file for the application.
@@ -570,6 +607,10 @@ class ApplicationController extends Controller
         return view('backend.app.business_information',compact('states'));
     }
 
+    /**
+     * 
+     */
+
     public function saveBusinessInformation(BusinessInformationRequest $request)
     {
         try {
@@ -587,7 +628,7 @@ class ApplicationController extends Controller
                 Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1, $assign_role = false);
                 
                 Session::flash('message',trans('success_messages.basic_saved_successfully'));
-                return redirect()->route('promoter_details',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+                return redirect()->route('promoter_details',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id'], 'edit' => 0]);
             } else {
                 //Add application workflow stages
                 Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2, $assign_role = false);
@@ -692,6 +733,86 @@ class ApplicationController extends Controller
                 ->with('bizId', $bizId)
                 ->with('offerId', $offerId)
                 ->with('offerData', $offerData);          
+    }
+
+   /**
+     * Show the business information form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showPanResponseData(Request $request)
+    {
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_pan_data')->with('res', $res);
+        
+    } 
+    public function showDlResponseData(Request $request)
+    {
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_dl_data')->with('res', $res);
+        
+    } 
+    public function showVoterResponseData(Request $request)
+    {
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_voter_data')->with('res', $res);
+        
+    } 
+    public function showPassResponseData(Request $request)
+    {
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_pass_data')->with('res', $res);
+        
+    } 
+
+
+
+     public function verify_mobile(Request $request){
+      $post_data = $request->all();
+      $mobile_no = trim($request->get('mobile_no'));
+      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
+        return response()->json(['message' =>'Mobile Number is not valid.','status' => 0]);
+      }
+
+      $mob = new MobileAuth_lib();
+        $req_arr = array(
+            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+        );
+      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      if ($response['status'] == 'success') {
+        return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
+          'value' => $response['result']]);
+      }else{
+        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
+      }
+    }
+
+
+
+    public function mobileModel(Request $request){
+      $post_data = $request->all();
+      $mobile_no = trim($request->get('mobile'));
+      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
+        return '<div>Mobile Number is not valid.</div>';
+      }
+      $mob = new MobileAuth_lib();
+      $req_arr = array(
+            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+      );
+      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      if ($response['status'] == 'success') {
+       return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
+      }else{
+         return "<div>Unable to verify the mobile.</div>";
+      }
     }
     
     /**

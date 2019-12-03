@@ -50,7 +50,7 @@
         <script src="{{url('frontend/assets/js/jquery-3.4.1.min.js')}}"></script>
         <script src="{{url('frontend/assets/js/bootstrap.min.js')}}"></script>
         <script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
-        <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
+        <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
         <script>
             $(".sign-UP .btn").click(function () {
                 $(".otp-section").fadeIn();
@@ -71,7 +71,7 @@
                     endDate: new Date()
                 });
 
-                $('.number_format').keyup(function(event) {
+                $('.number_format').on('input', function(event) {
                    // skip for arrow keys
                    if(event.which >= 37 && event.which <= 40) return;
 

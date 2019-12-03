@@ -29,21 +29,53 @@
             <div class="row row-offcanvas row-offcanvas-right">
                 @include('layouts.partials.front_sidebar')
                 <!-- partial -->
+                @if(Session::has('message'))
+                <div class="content-wrapper-msg">
+                <div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+                    {{ Session::get('message') }}
+                </div>
+                </div>
+                @endif
+                
                 @yield('content')
                 
                 @include('layouts.front_footer')
             </div>
         </div>
     </div>
-    <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
+
+     <div class="isloader" style="display:none;">  
+            <img src="{{asset('backend/assets/images/loader.gif')}}">
+    </div>
+    <style>
+        .error{
+            color:red !important;
+        }
+        .isloader{ 
+            position: fixed;    
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,.6);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            z-index: 9;
+        }
+    </style>
+    <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{url('frontend/assets/js/jquery.validate.js')}}"></script>
     <script src="{{url('backend/assets/js/perfect-scrollbar.jquery.min.js')}}"></script>
     <script src="{{url('backend/assets/js/jsgrid.min.js')}}"></script>
     <script src="{{url('backend/assets/js/hoverable-collapse.js')}}"></script>
     <script src="{{url('backend/assets/js/misc.js')}}"></script>
     <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
-    <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
+    <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
     <script src="{{url('common/js/iframePopup.js')}}"></script>
    
     <script>
@@ -71,7 +103,7 @@
                 endDate: new Date()
             });
 
-            $('.number_format').keyup(function(event) {
+            $('.number_format').on('input', function(event) {
                // skip for arrow keys
                if(event.which >= 37 && event.which <= 40) return;
 

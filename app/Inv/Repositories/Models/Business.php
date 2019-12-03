@@ -68,7 +68,7 @@ class Business extends BaseModel
         'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
-        'turnover_amt'=>$attributes['biz_turnover'],
+        'turnover_amt'=>str_replace(',', '', $attributes['biz_turnover']),
         'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
@@ -126,7 +126,7 @@ class Business extends BaseModel
         $app = Application::create([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
-                'loan_amt'=>$attributes['loan_amount'],
+                'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
                 'created_by'=>$userId
             ]);
 
@@ -207,7 +207,7 @@ class Business extends BaseModel
 
     public static function getCompanyDataByBizId($biz_id)
     {
-        $arrData = self::select('biz.biz_entity_name','biz_pan_gst.pan_gst_hash')
+        $arrData = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash')
         ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
         ->where('biz.biz_id', $biz_id)
         ->get();
@@ -224,7 +224,7 @@ class Business extends BaseModel
         'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
-        'turnover_amt'=>$attributes['biz_turnover'],
+        'turnover_amt'=>str_replace(',', '', $attributes['biz_turnover']),
         'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
@@ -302,7 +302,7 @@ class Business extends BaseModel
 
         // update into rta_app table
         $app_id = Application::where('biz_id',$bizId)->update([
-                'loan_amt'=>$attributes['loan_amount'],
+                'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
                 'updated_by'=>$userId
             ]);
 
@@ -339,9 +339,10 @@ class Business extends BaseModel
 
     public static function getEntityByBizId($biz_id)
     {
-        $arrData = self::select('mst_biz_entity.entity_name','mst_biz_constitution.name')
+        $arrData = self::select('mst_biz_entity.entity_name','mst_biz_constitution.name', 'users.email', 'users.mobile_no')
         ->leftjoin('mst_biz_entity', 'mst_biz_entity.id', '=', 'biz.entity_type_id')
         ->leftjoin('mst_biz_constitution', 'mst_biz_constitution.id', '=', 'biz.biz_constitution')
+        ->leftjoin('users', 'users.user_id', '=', 'biz.user_id')
         ->where('biz.biz_id', $biz_id)
         ->first();
         return $arrData;

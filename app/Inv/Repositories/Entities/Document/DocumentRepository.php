@@ -107,6 +107,22 @@ class DocumentRepository implements DocumentInterface
         return $result ?: false;
     }
     
+    
+    /**
+     * find application required documents
+     *
+     * @param mixed $ids
+     */
+    
+    public function appOwnerDocCheck($appId, $docId, $ownerId){
+        $result = AppDocumentFile::where('app_id', $appId)
+                ->where('doc_id', $docId)
+                ->where('biz_owner_id', $ownerId)
+                ->first();
+        
+        return $result ?: false;
+    }
+    
     /**
      * save document method
      *
@@ -167,6 +183,24 @@ class DocumentRepository implements DocumentInterface
         }
         
         return AppDocumentFile::create($attributes);
+    }
+    
+    
+    /**
+     * save app document method
+     *
+     * @param mixed $requests
+     */
+    
+    public function updateAppDocFile($ownerDocFile = [], $fileId){
+        $doc = AppDocumentFile::find($ownerDocFile->app_doc_file_id);
+        if($doc)
+        {
+            $doc->file_id = $fileId;
+            $doc->save();
+        }
+        
+        return $doc;
     }
     
     /**

@@ -2,21 +2,21 @@
 
 @section('content')
     <!-- partial -->
-    <div class="content-wrapper">
+<div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
-		<li>
-			<a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Company Details</a>
-		</li>
-		<li>
-			<a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Promoter Details</a>
-		</li>
-		<li>
-			<a href="{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
-		</li>
-	</ul>
+        <li>
+            <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Business Information</a>
+        </li>
+        <li>
+            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}">Promoter Details</a>
+        </li>
+        <li>
+            <a href="{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}">Documents</a>
+        </li>
+    </ul>
 
 
-<div class="row grid-margin mt-3">
+    <div class="row grid-margin mt-3">
 	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
 		<div class="card">
 			<div class="card-body">
@@ -34,7 +34,7 @@
 							<div class="row">
 								<div class="col-md-4">
 									<div class="form-group">
-										<label for="txtEmail">Company Pan
+										<label for="txtEmail">Company PAN
 											<span class="mandatory">*</span>
 										</label>
 										<span class="text-success" id="pan-msg" style="">
@@ -161,7 +161,7 @@
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
 											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover', $business_info->turnover_amt)}}" class="form-control" tabindex="9" placeholder="Enter Business Turnover" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="15">
+											<input type="text" name="biz_turnover" value="{{old('biz_turnover', number_format($business_info->turnover_amt))}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
 											@error('biz_turnover')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -175,7 +175,7 @@
 												<span class="mandatory">*</span>
 											</label>
 											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="loan_amount" value="{{old('loan_amount', $business_info->app->loan_amt)}}" class="form-control" tabindex="10" placeholder="Enter Applied Loan Amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="10" required>
+											<input type="text" name="loan_amount" value="{{old('loan_amount', number_format($business_info->app->loan_amt))}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" required>
 											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
 											@error('loan_amount')
 								                <span class="text-danger error">{{ $message }}</span>
@@ -186,7 +186,7 @@
 										<div class="form-group">
 											<label for="txtSupplierName">Tranche Tenor (Days)
 											</label>
-											<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control" tabindex="11" placeholder="Enter Tranche Tenor (1 - 120)" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3">
+											<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
 											@error('tenor_days')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -469,7 +469,7 @@
 						@if($business_info->app->status != 1)
 						<div class="d-flex btn-section">
 							<div class="ml-auto text-right">
-								<input type="submit" value="Update and Continue" class="btn btn-primary">
+								<input type="submit" value="Update and Continue" class="btn btn-success btn-sm">
 							</div>
 						</div>
 						@endif
@@ -479,7 +479,7 @@
 			</div>
 		</div>
 	</div>
-	</div>
+</div>
 @endsection
 
 @section('jscript')

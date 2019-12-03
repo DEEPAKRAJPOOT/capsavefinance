@@ -27,11 +27,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\SupplierController@index'
             ]);
 
-            Route::get('cam/overview', [
-                'as' => 'cam_overview',
-                'uses' => 'Backend\CamController@index'
-            ]);
-
+          
             Route::get('company-details', [
                 'as' => 'company_details',
                 'uses' => 'Backend\ApplicationController@showCompanyDetails'
@@ -77,6 +73,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@saveDocument'
             ]);
             
+            
+            Route::get('document-delete/{appDocFileId}',
+                [
+                'as' => 'document_delete',
+                'uses' => 'Application\ApplicationController@documentDelete'
+            ]);
+            
             Route::post('promoter-document-save', [
                 'as' => 'promoter_document_save',
                 'uses' => 'Backend\ApplicationController@promoterDocumentSave'
@@ -87,30 +90,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'application_save',
                 'uses' => 'Backend\ApplicationController@applicationSave'
             ]);
-            
-            Route::post('cam/cam-information-save', [
-                'as' => 'cam/cam-information-save',
-                'uses' => 'Backend\CamController@camInformationSave'
+
+            Route::get('fircu/fi', [
+                'as' => 'backend_fi',
+                'uses' => 'Backend\FiRcuController@listFI'
             ]);
 
-            Route::get('cam/bank', [
-                'as' => 'cam_bank',
-                'uses' => 'Backend\CamController@banking'
-            ]);
-
-            Route::get('cam/finance', [
-                'as' => 'cam_finance',
-                'uses' => 'Backend\CamController@finance'
-            ]);
-
-            Route::post('cam/finance_store', [
-                'as' => 'cam_finance_store',
-                'uses' => 'Backend\CamController@finance_store'
-            ]);
-            
-            Route::get('fircu/index', [
-                'as' => 'backend_fircu_index',
-                'uses' => 'Backend\FiRcuController@index'
+            Route::get('fircu/rcu', [
+                'as' => 'backend_rcu',
+                'uses' => 'Backend\FiRcuController@listRCU'
             ]);
 
             Route::get('notes-from', [
@@ -168,10 +156,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@AcceptNextStage'
             ]); 
 
-            Route::get('cam/cibil', [
-                'as' => 'cam_cibil',
-                'uses' => 'Backend\CamController@showCibilForm'
-            ]);
             Route::get('application-pool', [
                 'as' => 'application_pool',
                 'uses' => 'Backend\LeadController@showApplicationPool'
@@ -197,15 +181,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@saveBusinessInformation'
             ]);
             
-            Route::get('cam/limit-assessment', [
-                'as' => 'limit_assessment',
-                'uses' => 'Backend\CamController@showLimitAssessment'
-            ]);  
-            
-            Route::post('cam/save-limit-assessment', [
-                'as' => 'save_limit_assessment',
-                'uses' => 'Backend\CamController@saveLimitAssessment'
-            ]);  
+//            
             
             Route::get('view-offer', [
                 'as' => 'view_offer',
@@ -237,6 +213,74 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@uploadSanctionLetter'
             ]);             
         });
+
+            Route::get('show-pan-data', [
+                'as' => 'show_pan_data',
+                'uses' => 'Backend\ApplicationController@showPanResponseData'
+            ]);
+
+            Route::get('show-dl-data', [
+                'as' => 'show_dl_data',
+                'uses' => 'Backend\ApplicationController@showDlResponseData'
+            ]);
+            Route::get('show-voter-data', [
+                'as' => 'show_voter_data',
+                'uses' => 'Backend\ApplicationController@showVoterResponseData'
+            ]);
+            Route::get('show-pass-data', [
+                'as' => 'show_pass_data',
+                'uses' => 'Backend\ApplicationController@showPassResponseData'
+            ]);
+            //start section cam
+             Route::group(['prefix' => 'cam'], function () {
+
+                Route::get('promoter', [
+                    'as' => 'cam_promoter',
+                    'uses' => 'Backend\CamController@showPromoter'
+                ]);
+                Route::get('overview', [
+                    'as' => 'cam_overview',
+                    'uses' => 'Backend\CamController@index'
+                ]);
+                Route::get('cibil', [
+                    'as' => 'cam_cibil',
+                    'uses' => 'Backend\CamController@showCibilForm'
+                ]);
+                Route::post('cam-information-save', [
+                    'as' => 'cam_information_save',
+                    'uses' => 'Backend\CamController@camInformationSave'
+                ]);
+
+                Route::get('bank', [
+                    'as' => 'cam_bank',
+                    'uses' => 'Backend\CamController@banking'
+                ]);
+
+                Route::get('finance', [
+                    'as' => 'cam_finance',
+                    'uses' => 'Backend\CamController@finance'
+                ]);
+
+                Route::get('gstin', [
+                    'as' => 'cam_gstin',
+                    'uses' => 'Backend\CamController@gstin'
+                ]);
+                
+                Route::post('finance_store', [
+                    'as' => 'cam_finance_store',
+                    'uses' => 'Backend\CamController@finance_store'
+                ]);
+                Route::get('cam/limit-assessment', [
+                'as' => 'limit_assessment',
+                'uses' => 'Backend\CamController@showLimitAssessment'
+            ]);  
+            
+            Route::post('cam/save-limit-assessment', [
+                'as' => 'save_limit_assessment',
+                'uses' => 'Backend\CamController@saveLimitAssessment'
+            ]); 
+            }); //end of cam
+        });//end of application
 
         Route::group(['prefix' => 'lead'], function () {
             Route::get('/', [
@@ -307,7 +351,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);  
         });
     });
-});
+
 
             Route::get('bank_statement', [
                 'as' => 'bank_statement',
@@ -327,6 +371,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('financial_report', [
                 'as' => 'financial_statement',
                 'uses' => 'Backend\CamController@getFinanceReport'
+            ]);
+
+            Route::get('mobile_verify', [
+                'as' => 'mobile_verify',
+                'uses' => 'Backend\ApplicationController@mobileModel'
             ]);
 
 

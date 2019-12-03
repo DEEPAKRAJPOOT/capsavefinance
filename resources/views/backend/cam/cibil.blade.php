@@ -26,8 +26,10 @@
        <!--
          <h2 class="sub-title bg mb-4"><span class=" mt-2">Company CIBIL</span> <button  class="btn btn-primary  btn-sm float-right"> Upload Document</button></h2>
          -->
+         <div id="pullMsgCommercial"></div>
          <div class="pl-4 pr-4 pb-4 pt-2">
             <div class="row mt-3">
+
                <div class="col-sm-12">
                   <table id="cibil-table" class="table table-striped  no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="cibil-table_info" style="width: 100%;">
                      <thead>
@@ -51,12 +53,12 @@
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->biz_entity_name}}</td>
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
-                                 <td width="20%"></td>
+                                 <td width="20%" id="cibilScore{{$arr->biz_id}}"></td>
                                  <td class=" numericCol" width="25%">
 
-                                   <!-- <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_org(this)">PULL</button>
-                                    <button class="btn btn-warning btn-sm" supplier="49" onclick="pull_cibil_org(this)">DOWNLOAD</button>
-                                    <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)">UPLOAD</button> -->
+                                   <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_commercialModal({{$arr->biz_id}})">PULL</button>
+                                    <button class="btn btn-warning btn-sm" supplier="49" onclick="downloadCommercialCibil({{$arr->biz_id}})">View Report</button>
+                                   <!--  <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)">UPLOAD</button> -->
                                  </td>
                               </tr>
                         @endforeach
@@ -404,6 +406,30 @@
 </div>
 
 
+<div class="modal fade" id="pull_cibil_commercialModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <input type="hidden"  id="biz_id">
+        <p>Are you sure you want to pull the cibil score for this Company?</p>
+        <p id="pullMsg"></p>
+      </div>
+      <div class="modal-footer">
+      
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">No</button>
+       <button type="button" class="btn btn-success btn-sm" id="cibilScoreBtn" onclick="pull_cibil_commercial()">Yes</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="isloader" style="display:none;">  
         <img src="http://rent.local/backend/assets/images/loader.gif">
 </div>
@@ -419,7 +445,9 @@
         
       }
 
-      function pull_cibil_promoter(biz_owner_id){
+
+
+      function pull_cibil_promoter(){
             var biz_owner_id = $("#biz_owner_id").val();
           // $("#cibilScoreBtn").text("Waiting...");
           $("#pull_cibil_promoterModal").modal("hide");
@@ -492,6 +520,88 @@
                }
          });
       }
+
+
+
+
+      function pull_cibil_commercialModal(biz_id) {
+         $("#pull_cibil_commercialModal").modal("show");
+         $("#biz_id").val(biz_id);
+        
+      }
+
+
+      function pull_cibil_commercial(){
+            var biz_id = $("#biz_id").val();
+            $("#pull_cibil_commercialModal").modal("hide");
+               $(".isloader").show();
+            var messages = {
+                 chk_commerical_cibil: "{{ URL::route('chk_commerical_cibil') }}",
+                 data_not_found: "{{ trans('error_messages.data_not_found') }}",
+                 token: "{{ csrf_token() }}",
+            };
+            var dataStore = {'biz_id': biz_id,'_token': messages.token };
+            var postData = dataStore;
+             jQuery.ajax({
+                url: messages.chk_commerical_cibil,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                  // alert(errorThrown);
+                },
+                success: function (data) {
+                 // $("#cibilScoreBtn").text("Yes");
+                  
+                 $(".isloader").hide();
+                   var status =  data['status'];
+                   var html = '<div class="alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+data['message']+'</div>';
+                     if(status==1)
+                       {  
+                            //alert(data['message']);
+                           
+                            $("#pullMsgCommercial").html(html);
+                            $("#cibilScore"+biz_id).text(data['cibilScore']);
+                            
+                       }else{
+                            $("#pullMsgCommercial").html(html);
+                      }                          
+                       
+               }
+
+          });
+      }   
+
+   function downloadCommercialCibil(biz_id){
+      var messages = {
+                 download_commerial_cibil: "{{ URL::route('download_commerial_cibil') }}",
+                 data_not_found: "{{ trans('error_messages.data_not_found') }}",
+                 token: "{{ csrf_token() }}",
+            };
+            var dataStore = {'biz_id': biz_id,'_token': messages.token };
+            var postData = dataStore;
+         jQuery.ajax({
+                url: messages.download_commerial_cibil,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                                  // alert(errorThrown);
+                },
+                success: function (data) {
+                   var status =  data['status'];
+                     if(status==1)
+                       {  
+                              $("#download_cibil_promoterModal").modal("show");
+                              $("#download_user_cibil").text(data['cibilScoreData']);
+                       }else{
+                           $("#download_cibil_promoterModal").modal("show");
+                              $("#download_user_cibil").text(data['cibilScoreData']);
+                      }                          
+                       
+               }
+         });
+   }
 
 </script>
    

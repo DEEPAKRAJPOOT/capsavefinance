@@ -222,7 +222,7 @@
                             <div class="d-flex btn-section ">
                                 <div class="col-md-4 ml-auto text-right">
                                     <!-- <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = '#'"> -->
-                                    <input type="button" value="Save and Continue" id="submit" class="btn btn-primary">
+                                    <input type="button" value="Save and Continue" id="submit" class="btn btn-success  btn-sm">
                                     <input type="submit" value="Save" id="actual_submit" style="display: none;">
                                 </div>
                             </div>

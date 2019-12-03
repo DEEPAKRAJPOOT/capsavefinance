@@ -24,6 +24,9 @@
                 <ul class="nav flex-column sub-menu">                    
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('front_application_list') }}">Manage Application</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('front_gstin') }}">Pull GSTIN Details</a>
                     </li>                                   
                 </ul>
             </div>

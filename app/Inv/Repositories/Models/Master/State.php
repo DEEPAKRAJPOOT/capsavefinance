@@ -104,4 +104,16 @@ class State extends BaseModel
         return $res ? $res : false;
     }
 
+
+    public static function getGstbyUser($user_id)
+    {
+        $data = self::select('*')
+                ->from('biz_pan_gst')
+                ->where('user_id', $user_id)
+                ->where('parent_pan_gst_id', '0')
+                ->where('type', '2')
+                ->first();
+        return ($data ? $data : false);
+    }
+
 }

@@ -136,7 +136,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    return  "<a  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                    return  "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -175,8 +175,15 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'app_id',
                     function ($app) {
+                    
+                    if(Helpers::checkPermission('company_details')){
                         $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                    }else{
+                        return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                    }
+                    
+                        
                     }
                 )
                 ->addColumn(
@@ -366,8 +373,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'app_id',
                     function ($app) {
-                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                        //$link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]);
+                        return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\">" . 'CAPS000'.$app->app_id . "</a> ";
                     }
                 )
                 ->addColumn(
@@ -420,7 +427,7 @@ class DataRenderer implements DataProviderInterface
                         $act = '';
                      if(Helpers::checkPermission('confirm_box')){
                         $act = "<div class=\"d-flex inline-action-btn\">
-                        <a  data-toggle=\"modal\" data-target=\"#pickLead\" data-url =\"" . route('confirm_box', ['user_id' => $app->user_id , 'app_id' => $app->app_id] ) . "\" data-height=\"200px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\">Pickup Case</a>
+                        <a title=\"Pick Lead\"  data-toggle=\"modal\" data-target=\"#pickLead\" data-url =\"" . route('confirm_box', ['user_id' => $app->user_id , 'app_id' => $app->app_id] ) . "\" data-height=\"150px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\">Pickup Case</a>
                 <div>";
                     }
                      return $act;
@@ -658,7 +665,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($role) {
-                    return  "<a  data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
+                    return  "<a title=\"Edit Role\" data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a title=\"Manage Permission\" id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
                     })
                     ->filter(function ($query) use ($request) {
                         if ($request->get('by_email') != '') {
@@ -736,7 +743,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'active',
                     function ($role) {
-                    $disc = ($role->is_active == 1)?'Active':'Not Active'; 
+                    $disc = ($role->u_active == 1)?'Active':'Not Active'; 
                     return $disc;
 
                 })
@@ -763,7 +770,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($role) {
-                    return  "<a  data-toggle=\"modal\" data-target=\"#manageUserRole\" data-url =\"" . route('edit_user_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> ";
+                    return  "<a title=\"Edit User\"  data-toggle=\"modal\" data-target=\"#manageUserRole\" data-url =\"" . route('edit_user_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> ";
                     })
                     ->filter(function ($query) use ($request) {
                         if ($request->get('by_email') != '') {
@@ -791,4 +798,69 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
                 
     }
+
+    /*      
+     * Get address list for FI
+     */
+    public function getFiListsList(Request $request, $data)
+    {
+        $type = ['Company (Registered Address)', 'Company (Communication Address)', 'Company (GST Address)', 'Company (Warehouse Address)', 'Company (Factory Address)','Promoter Address'];
+        return DataTables::of($data)
+                ->rawColumns(['id', 'action', 'status'])
+                ->addColumn(
+                    'id',
+                    function ($data) {
+                        //$link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        return '<input type="checkbox" value="'.$data->id.'#'.$data->address_type.'">'.$data->id;
+                        //return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                    }
+                )
+                ->addColumn(
+                    'address_type',
+                    function ($data) use ($type) {                        
+                        return $type[$data->address_type];
+                })
+                ->addColumn(
+                    'name',
+                    function ($data) {                        
+                        return $data->name ? $data->name : '';
+                })
+                ->addColumn(
+                    'address',
+                    function ($data) {
+                    return $data->address ? $data->address: '';
+                }) 
+                ->addColumn(
+                    'status',
+                    function ($data) {
+                    return '<label class="badge badge-warning">Pending</label>';
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($data) use ($request) {
+                        //$link = route('business_information_open', ['app_id' => $request->app_id, 'biz_id' => $request->biz_id]);
+                        return '<div class="d-flex inline-action-btn">
+                                <a href="#" title="View FI" class="btn btn-action-btn btn-sm">View FI</a>
+                            </div>';
+                    }
+                )
+                ->filter(function ($query) use ($request) {            
+                    /*if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }*/
+                    /*if ($request->get('is_status') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_status');
+                            $query->where('app.status', $is_assigned);
+                        });
+                    }*/
+                    
+                })
+                ->make(true);
+    } 
 }

@@ -15,6 +15,8 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
+use App\Libraries\KarzaTxn_lib;
+use PDF;
 
 class ApplicationController extends Controller
 {
@@ -44,7 +46,7 @@ class ApplicationController extends Controller
         }
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
-            return view('frontend.application.update_business_information')
+            return view('frontend.application.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states])
                         ->with('user_id',$request->get('user_id'))
                         ->with('app_id',$request->get('app_id'))
@@ -81,7 +83,7 @@ class ApplicationController extends Controller
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
                     
                     Session::flash('message',trans('success_messages.save_company_detail_successfully'));
-                    return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id']]);
+                    return redirect()->route('promoter-detail',['app_id'=>$business_info['app_id'], 'biz_id'=>$business_info['biz_id'], 'edit' => 1]);
                 } else {
                     //Add application workflow stages
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 2);
@@ -102,6 +104,7 @@ class ApplicationController extends Controller
     public function showPromoterDetail(Request $request)
     {
         $biz_id = $request->get('biz_id');
+        $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
         $userArr = [];
         if ($userId > 0) {
@@ -114,11 +117,19 @@ class ApplicationController extends Controller
        {
            return  redirect()->back();
        }
-       return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
-           'cin_no' => $getCin->cin,
-           'ownerDetails' => $ownerDetail,
-           'biz_id' => $biz_id
+        return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
+            'cin_no' => $getCin->cin,
+            'ownerDetails' => $ownerDetail,
+            'biz_id' => $biz_id
         ]);
+        
+      
+           /* return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
+                'cin_no' => $getCin->cin,
+                'ownerDetails' => $ownerDetail,
+                'biz_id' => $biz_id
+            ]);  */
+        
     } 
 
     /**
@@ -140,7 +151,7 @@ class ApplicationController extends Controller
                 if ($toUserId) {
                    Helpers::assignAppToUser($toUserId, $appId);
                 }
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1]);
+                return response()->json(['message' =>trans('success_messages.save_company_detail_successfully'),'status' => 1]);
             }
             else {
                //Add application workflow stages 
@@ -166,7 +177,7 @@ class ApplicationController extends Controller
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
          
           if ($owner_info) {
-                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'data' => $owner_info]);
+                return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
@@ -182,26 +193,33 @@ class ApplicationController extends Controller
     public function showDocument(Request $request)
     {
         $appId = $request->get('app_id');
+        $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
         $appData = $this->appRepo->getAppDataByAppId($appId);
         
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
-            if(!empty($requiredDocs)){
+            if($requiredDocs->count() != 0){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
             }
             else {
-                return redirect()->back()->withErrors(trans('error_messages.document'));
+                Session::flash('message',trans('error_messages.document'));
+                return redirect()->back();
             }
         }
         else {
             return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
         }
-
-        return view('frontend.application.document')->with([
+        
+        return view('frontend.application.update_document')->with([
             'requiredDocs' => $requiredDocs,
             'documentData' => $docData
-        ]);
+        ]); 
+
+//        return view('frontend.application.document')->with([
+//            'requiredDocs' => $requiredDocs,
+//            'documentData' => $docData
+//        ]); 
     } 
     
     /**
@@ -311,5 +329,97 @@ class ApplicationController extends Controller
        return view('frontend.application.index');   
               
     }
-    
+
+
+    public function gstinForm(){
+     $user_id = Auth::user()->user_id;
+     $gst_details = State::getGstbyUser($user_id);
+     $gst_no = $gst_details['pan_gst_hash'];
+     return view('frontend.application.gstin',compact('gst_no'));   
+    }
+
+    public function analyse_gst(Request $request){
+      $post_data = $request->all();
+      $gst_no = trim($request->get('gst_no'));
+      $gst_usr = trim($request->get('gst_usr'));
+      $gst_pass = trim($request->get('gst_pass'));
+
+      if (empty($gst_no)) {
+        return response()->json(['message' =>'GST Number can\'t be empty.','status' => 0]);
+      }
+      if (empty($gst_usr)) {
+        return response()->json(['message' =>'GST Username can\'t be empty.','status' => 0]);
+      }
+      if (empty($gst_pass)) {
+        return response()->json(['message' =>'GST Password can\'t be empty.','status' => 0]);
+      }
+
+      $karza = new KarzaTxn_lib();
+        $req_arr = array(
+            'gstin' => $gst_no,//'09AALCS4138B1ZE',
+            'username' => $gst_usr,//'prolitus27',
+            'password' => $gst_pass,//'Prolitus@1234',
+        );
+
+
+      $response = $karza->api_call($req_arr);
+      if ($response['status'] == 'success') {
+          $this->logdata($response, 'F', $gst_no.'_'.date('ymdH').'.txt');
+          $json_decoded = json_decode($response['result'], TRUE);
+          $file_name = $gst_no.'.pdf';
+          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$file_name, file_get_contents($json_decoded['pdfDownloadLink'])); 
+          $file= url('storage/user/'. $file_name);
+        return response()->json(['message' =>'GST data pulled successfully.','status' => 1]);
+      }else{
+        return response()->json(['message' => $response['message'] ?? 'Something went wrong','status' => 0]);
+      }
+    }
+
+
+  public function logdata($data, $w_mode = 'D', $w_filename = '', $w_folder = '') {
+    list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
+    $main_dir = base_path('apilogs/');
+    $year_dir = $main_dir . "$year/";
+    $month_dir = $year_dir . "$month/";
+    $date_dir = $month_dir . "$date/";
+    $hour_dir = $date_dir . "$hour/";
+
+    if (!file_exists($year_dir)) {
+      mkdir($year_dir, 0777, true);
+    }
+    if (!file_exists($month_dir)) {
+      mkdir($month_dir, 0777, true);
+    }
+    if (!file_exists($date_dir)) {
+      mkdir($date_dir, 0777, true);
+    }
+    if (!file_exists($hour_dir)) {
+      mkdir($hour_dir, 0777, true);
+    }
+
+    $data = is_array($data) ? json_encode($data) : $data;
+
+    $data = base64_encode($data);
+    if (strtolower($w_mode) == 'f') {
+      $final_dir = $hour_dir;
+      $filepath = explode('/', $w_folder);
+      foreach ($filepath as $value) {
+        $final_dir .= "$value/";
+        if (!file_exists($final_dir)) {
+          mkdir($final_dir, 0777, true);
+        }
+      }
+      $my_file = $final_dir . $w_filename;
+      $handle = fopen($my_file, 'w');
+      return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+    } else {
+      $my_file = $hour_dir . date('ymd') . '.log';
+      $handle = fopen($my_file, 'a');
+      $time = date('H:i:s');
+      fwrite($handle, PHP_EOL . 'Log ' . $time);
+      return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+    }
+    return FALSE;
+  }
 }

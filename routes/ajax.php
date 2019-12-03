@@ -43,9 +43,33 @@ Route::group(
         ]
     );
 
+
+    Route::post(
+        'chk_commerical_cibil',
+        [
+        'as' => 'chk_commerical_cibil',
+        'uses' => 'Cibil\CibilController@getCommercialCibilRequest'
+        ]
+    );
+
+
+
+
+
+
     Route::post('bank_analysys', [
         'as' => 'getAnalysis',
         'uses' => 'Backend\CamController@analyse_bank'
+    ]);
+
+    Route::post('gst_analysys', [
+        'as' => 'gstAnalysis',
+        'uses' => 'Application\ApplicationController@analyse_gst'
+    ]);
+
+    Route::post('verify_mobile', [
+        'as' => 'verify_mobile',
+        'uses' => 'Backend\ApplicationController@verify_mobile'
     ]);
 
     Route::post(
@@ -53,6 +77,16 @@ Route::group(
         [
         'as' => 'download_user_cibil',
         'uses' => 'Cibil\CibilController@downloadPromoterCibil'
+        ]
+    );
+
+
+
+    Route::post(
+        'download_commerial_cibil',
+        [
+        'as' => 'download_commerial_cibil',
+        'uses' => 'Cibil\CibilController@downloadCommercialCibil'
         ]
     );
 
@@ -136,14 +170,7 @@ Route::group(
         'uses' => 'AjaxController@getAnchorLeadLists'
         ]
     ); 
-    
-    Route::post(
-        'get-business-list',
-        [
-        'as' => 'get_business_list',
-        'uses' => 'AjaxController@getBusinessList'
-        ]
-    ); 
+     
     /*Route::get(
         'check-exist-user',
         [
@@ -176,7 +203,13 @@ Route::group(
         ]
     );
 
+    Route::post(
+        'get_fi_list',
+        [
+        'as' => 'get_fi_list',
+        'uses' => 'AjaxController@getFiLists'
+        ]
+    );
+
+
 });
-
-
-
