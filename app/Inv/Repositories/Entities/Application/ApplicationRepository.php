@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Entities\Application;
 use DB;
 use Session;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\AppDocument;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Business;
@@ -313,9 +314,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       $result = BusinessAddress::getFiLists($dataArr);
       return $result ?: false;
     }
-
+     
     /**
      * function for get all FI lists
+     * @return type
+     */
+    public function getAddressforFI($biz_id){
+        $result = BusinessAddress::getAddressforFI($biz_id);
+        return $result ?: false;
+    }
+
+     /**
+     * function for get all RCU documents list
      * @return type
      */
      
@@ -323,10 +333,5 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
       $result = AppDocumentFile::getRcuLists($appId);
       return $result ?: false;
-    }
-    
-    public function getAddressforFI($biz_id){
-        $result = BusinessAddress::getAddressforFI($biz_id);
-        return $result ?: false;
     }
 }
