@@ -1,12 +1,15 @@
 <?php 
 namespace App\Libraries;
 
+define('KARZA_TXN_LIB_URL', config('proin.KARZA_TXN_LIB_URL'));
+define('KARZA_TXN_LIB_KEY', config('proin.KARZA_TXN_LIB_KEY'));
+
 class KarzaTxn_lib
 {
 	private $request_type;
 	private $httpMethod = 'POST';
-	const BASE_URL    = "https://gst.karza.in/uat/v1/";
-	const KARZA_KEY   = "h3JOdjfOvay7J8SF";
+	const BASE_URL    = KARZA_TXN_LIB_URL;
+	const KARZA_KEY   = KARZA_TXN_LIB_KEY;
 	
 
 	public function api_call($params, $validate_otp = false){

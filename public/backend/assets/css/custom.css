@@ -399,9 +399,7 @@ table.remove-tr-bg tbody tr{
     font-size: 14px;
     text-transform: capitalize;
 }
-.table tr td i{
-	    color: #138864;
-}
+
 .upload-btn-wrapper input[type=file] {
     font-size: 100px;
     position: absolute;
@@ -422,6 +420,13 @@ table.remove-tr-bg tbody tr{
 }
 .document-list li a {
     color: #227B82;
+}
+
+.custom-promoter {
+    border-bottom: 
+    #cecece solid 1px;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
 }
 
 .document-list {

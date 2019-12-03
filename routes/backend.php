@@ -180,6 +180,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_new_application',
                 'uses' => 'Backend\ApplicationController@saveBusinessInformation'
             ]);
+
             
 //            
             
@@ -214,6 +215,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);             
         });
 
+
+//////////////// For Promoter Iframe////////////////////////
+
             Route::get('show-pan-data', [
                 'as' => 'show_pan_data',
                 'uses' => 'Backend\ApplicationController@showPanResponseData'
@@ -230,6 +234,19 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('show-pass-data', [
                 'as' => 'show_pass_data',
                 'uses' => 'Backend\ApplicationController@showPassResponseData'
+            ]);
+         //////////////for cibil Iframe//////////////////////// 
+             Route::get('pull-cibil-commercial', [
+                'as' => 'pull_cibil_commercial',
+                'uses' => 'Backend\CamController@pullCibilCommercial'
+            ]);
+              Route::get('pull-cibil-promoter', [
+                'as' => 'pull_cibil_promoter',
+                'uses' => 'Backend\CamController@pullCibilPromoter'
+            ]);
+               Route::get('view-cibil-report', [
+                'as' => 'view_cibil_report',
+                'uses' => 'Backend\CamController@viewCibilReport'
             ]);
             //start section cam
              Route::group(['prefix' => 'cam'], function () {

@@ -60,7 +60,7 @@ class CibilController extends Controller
                                           ]);
 
                            if($createBizApi){
-
+                                BizOwner::where('biz_owner_id', $biz_owner_id)->update(['cibilScore'=>$cibilScore ? $cibilScore : NULL]);
                                  return response()->json(['message' =>'CIBIL score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
                            } 
                            else 
@@ -108,7 +108,9 @@ class CibilController extends Controller
                 $acknowledgementResult[strtolower($value['tag'])] = $value['value'] ?? '';
             }
         }
+        //dd($acknowledgementResult);
         if($acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
+            sleep(30);
             $arrOwnerData['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrOwnerData['report_id'] = $acknowledgementResult['report-id'];
             $responseData =  $CibilApi->getCommercialCibilData($arrOwnerData);
@@ -122,31 +124,40 @@ class CibilController extends Controller
                     $resultData[strtolower($value['tag'])] = $value['value'] ?? '';
                 }
             }
-            $cibilScore =  $resultData['score'];
-            $cibilData = json_encode($resultData);
-            $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => $cibilData,'status' => 0,'created_by' => Auth::user()->user_id]);
-                    if ($createApiLog) {
-                            $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
-                                                        'biz_id' =>   $arrOwnerData['biz_id'],
-                                                        'biz_owner_id' => NULL,
-                                                        'type' => 1,
-                                                        'verify_doc_no' => 1,
-                                                        'status' => 1,
-                                                       'biz_api_log_id' => $createApiLog['biz_api_log_id'],
-                                                       'created_by' => Auth::user()->user_id,
-                                                      ]);
-
-                                       if($createBizApi){
-
-                                             return response()->json(['message' =>'CIBIL score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
-                                       } 
-                                       else 
-                                       {
-                                             return response()->json(['message' =>'Something went wrong','status' => 0]);
-                                       }
+            if($resultData['status'] == 'SUCCESS' ){
+                    
+                    if($resultData['score'] > 0){
+                        $cibilScore =  $resultData['score'];
                     }else{
-                         return response()->json(['message' =>'Something went wrong','status' => 0]);
-                    } 
+                        $cibilScore = '';
+                    }
+                    $cibilData = json_encode($resultData);
+                    $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => $cibilData,'status' => 0,'created_by' => Auth::user()->user_id]);
+                            if ($createApiLog) {
+                                    $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
+                                                                'biz_id' =>   $arrOwnerData['biz_id'],
+                                                                'biz_owner_id' => NULL,
+                                                                'type' => 1,
+                                                                'verify_doc_no' => 1,
+                                                                'status' => 1,
+                                                               'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                                                               'created_by' => Auth::user()->user_id,
+                                                              ]);
+
+                                               if($createBizApi){
+                                                     Business::where('biz_id', $biz_id)->update(['cibilScore'=>$cibilScore ? $cibilScore : NULL]);
+                                                     return response()->json(['message' =>'CIBIL score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
+                                               } 
+                                               else 
+                                               {
+                                                     return response()->json(['message' =>'Something went wrong','status' => 0]);
+                                               }
+                            }else{
+                                 return response()->json(['message' =>'Something went wrong','status' => 0]);
+                            } 
+            }else{
+                  return response()->json(['message' =>'Something went wrong','status' => 0]); 
+            }               
         }
         else{
             

@@ -18,9 +18,6 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use Auth;
 use Session;
 date_default_timezone_set('Asia/Kolkata');
-use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
-use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Helpers;
 
 class CamController extends Controller
@@ -614,4 +611,23 @@ class CamController extends Controller
             'arrPromoterData' => $arrPromoterData 
             ]);;
     }
+
+    
+    /*  for iframe model  */
+     public function pullCibilCommercial(Request $request){
+       $request =  $request->all();
+    }
+     /*  for iframe model  */
+     public function pullCibilPromoter(Request $request){
+       $request =  $request->all();
+    }
+     /*  for iframe model  */
+     public function viewCibilReport(Request $request){
+       $request =  $request->all();
+    }
+    
+    
+
+
+
 }
