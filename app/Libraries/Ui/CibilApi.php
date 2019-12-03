@@ -191,7 +191,7 @@ class CibilApi {
                                    <CLASS-OF-ACTIVITY-1>OTHER COMMUNITY, SOCIAL AND PERSONAL SERVICE ACTIVITIES</CLASS-OF-ACTIVITY-1>
                                    <PHONES>
                                       <PHONE>
-                                         <TELE-NO>'.$arrOwnerData->mobile_no.'</TELE-NO>
+                                         <TELE-NO>9875987468</TELE-NO>
                                          <TELE-NO-TYPE>P01</TELE-NO-TYPE>
                                       </PHONE>
                                    </PHONES>
