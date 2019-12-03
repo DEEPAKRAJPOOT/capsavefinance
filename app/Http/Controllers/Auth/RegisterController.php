@@ -27,6 +27,7 @@ use App\Inv\Repositories\Models\UserReqDoc;
 use App\Inv\Repositories\Models\Userkyc;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\UserDetail;
+use App\Libraries\Gupshup_lib;
 
 class RegisterController extends Controller {
     /*
@@ -191,23 +192,23 @@ use RegistersUsers,
      */
     public function showRegistrationForm(Request $request) {
            try{
-         $anchortoken = $request->get('token');
-         //dd($anchorEmail);
-        $userId = Session::has('userId') ? Session::get('userId') : 0;
-        $userArr = [];
-        $anchorDetail = [];
-        if ($userId > 0) {
-            $userArr = $this->userRepo->find($userId);
-        }
-        $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
-        //dd($anchorLeadInfo);
-        if(isset($anchortoken) && $anchorLeadInfo){
-            $anchorDetail = $anchorLeadInfo;
-        }else{
-            $anchorDetail = '';
-            return redirect(route('login_open'));
-        }
-           return view('auth.sign-up', compact('userArr','anchorDetail'));
+                $anchortoken = $request->get('token');
+                 //dd($anchorEmail);
+                $userId = Session::has('userId') ? Session::get('userId') : 0;
+                $userArr = [];
+                $anchorDetail = [];
+                if ($userId > 0) {
+                    $userArr = $this->userRepo->find($userId);
+                }
+                $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
+                //dd($anchorLeadInfo);
+                if(isset($anchortoken) && $anchorLeadInfo){
+                    $anchorDetail = $anchorLeadInfo;
+                }else{
+                    $anchorDetail = '';
+                    return redirect(route('login_open'));
+                }
+                return view('auth.sign-up', compact('userArr','anchorDetail'));
            
            }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -422,13 +423,18 @@ use RegistersUsers,
                     $otpArr['otp_exp_time'] = $formatted_date;
                     $otpArr['is_verified'] = 1;
                     $this->userRepo->saveOtp($otpArr);
-                    $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
+                    $userMailArr['name'] = $name = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
-                    //$userMailArr['password']   = $string;
                     $userMailArr['otp'] = $Otpstring;
-                    //$userMailArr['password'] = Session::pull('password');
-                    // Send OTP mail to User
-                    Event::dispatch("user.sendotp", serialize($userMailArr));
+                    $gupshup = new Gupshup_lib();
+                    $mobile_no = $userCheckArr->mobile_no;
+                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on rentalpha.\r\n Regards";
+                    // Send OTP mobile to User
+                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $message]);
+                    if ($otp_resp['status'] != 'success') {
+                       // Send OTP mail to User
+                       Event::dispatch("user.sendotp", serialize($userMailArr));
+                    }
                     Session::flash('message_div', trans('success_messages.email_verified_please_login'));
 
                     $alluserData = $this->userRepo->getUserDetail((int) $userId);

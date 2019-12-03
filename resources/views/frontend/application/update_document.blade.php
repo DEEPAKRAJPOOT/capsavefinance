@@ -43,8 +43,10 @@
                         </div>
                         <div class="action-btn">
                             <div class="upload-btn-wrapper setupload-btn pos">
+                                @if($data->doc_id == '6')
+                                    <button class="btn upload-btn pullGST" id="pullgst_rep" data-id="{{ $gst_no }}">PULL GST</button>
+                                @endif
                                 <button class="btn upload-btn openModal" data-id="{{ $data->doc_id }}">Upload</button>
-                                <!--<input type="file" name="myfile">-->
                             </div>
 
                         </div>
@@ -137,19 +139,10 @@
                         <div class="form-group">
                             <label for="email">Select Financial  Year</label>
                             <select class="form-control" name="finc_year">
-                               <option value=''>Select Year</option>
-                               <option>2009</option>
-                               <option>2010</option>
-                               <option>2011</option>
-                               <option>2012</option>
-                               <option>2013</option>
-                               <option>2014</option>
-                               <option>2015</option>
-                               <option>2016</option>
-                               <option>2017</option>
-                               <option>2018</option>
-                               <option>2019</option>
-                               <option>2020</option>
+                               <option value='' selected disabled>Select Year</option>
+                               @for($i=-10;$i<=0;$i++)
+                                 <option>{{date('Y')+$i}}</option>
+                               @endfor
                             </select>
                          </div>
                         <div class="row">
@@ -157,19 +150,10 @@
                                <div class="form-group">
                                   <label for="email">Select GST Month</label>
                                   <select class="form-control" name="gst_month">
-                                     <option selected value=''>Select Month</option>
-                                     <option  value='1'>Janaury</option>
-                                     <option value='2'>February</option>
-                                     <option value='3'>March</option>
-                                     <option value='4'>April</option>
-                                     <option value='5'>May</option>
-                                     <option value='6'>June</option>
-                                     <option value='7'>July</option>
-                                     <option value='8'>August</option>
-                                     <option value='9'>September</option>
-                                     <option value='10'>October</option>
-                                     <option value='11'>November</option>
-                                     <option value='12'>December</option>
+                                     <option selected value='' disabled>Select Month</option>
+                                     @for($i=1;$i<=12;$i++)
+                                        <option value="{{$i}}">{{date('F', strtotime("2019-$i-01"))}}</option>
+                                    @endfor
                                   </select>
                                </div>
                             </div>
@@ -178,18 +162,9 @@
                                   <label for="email">Select GST Year</label>
                                   <select class="form-control" name="gst_year">
                                      <option value=''>Select Year</option>
-                                     <option>2009</option>
-                                     <option>2010</option>
-                                     <option>2011</option>
-                                     <option>2012</option>
-                                     <option>2013</option>
-                                     <option>2014</option>
-                                     <option>2015</option>
-                                     <option>2016</option>
-                                     <option>2017</option>
-                                     <option>2018</option>
-                                     <option>2019</option>
-                                     <option>2020</option>
+                                     @for($i=-10;$i<=0;$i++)
+                                        <option>{{date('Y')+$i}}</option>
+                                     @endfor
                                   </select>
                                </div>
                             </div>
@@ -207,15 +182,81 @@
 </div>
 
 
+<div class="modal show" id="modal_pullgst" style="display: none;">
+   <div class="modal-dialog">
+      <div class="modal-content pb-3">
+      <div id="pullMsg"></div>
+         <!-- Modal Header -->
+         <div class="modal-header">
+           GST Report(<strong> {{$gst_no}}</strong>)
+            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
+         </div>
+         <form id="gstform" method="POST" enctype="multipart/form-data" novalidate="novalidate">
+            @csrf
+            <input type="hidden" id="biz_gst_number" value="{{$gst_no}}">
+            <div class="modal-body text-left">
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group">
+                        <label for="email">GST Username</label>
+                         <input type="text" id="biz_gst_username" class="form-control" placeholder="Enter GST Username">
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group">
+                        <label for="email">GST Password</label>
+                         <input type="text" id="biz_gst_password" class="form-control" placeholder="Enter GST Password">
+                     </div>
+                  </div>
+               </div>
+               <button type="button" class="btn btn-success float-right  btn-sm" id="fetchdetails">Pull Report</button>  
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+
+
 @endsection
 @section('jscript')
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script src="{{ url('frontend/js/document.js') }}"></script>
+<script type="text/javascript">
+   appurl = '{{URL::route("gstAnalysis") }}';
+   _token = "{{ csrf_token() }}";
+</script>
 <script>
-
-    var messages = {
-        
-    };
+    $(document).on('click', '#fetchdetails',function () {
+        let gst_no   = $('#biz_gst_number').val();
+        let gst_usr  = $('#biz_gst_username').val();
+        let gst_pass = $('#biz_gst_password').val();
+        data = {_token,gst_no,gst_usr,gst_pass};
+        $.ajax({
+             url  : appurl,
+             type :'POST',
+             data : data,
+             beforeSend: function() {
+               $(".isloader").show();
+             },
+             dataType : 'json',
+             success:function(result) {
+                console.log(result);
+                let mclass = result['status'] ? 'success' : 'danger';
+                var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
+                $("#pullMsg").html(html);
+                if (result['status']) {
+                    $('#gstin_detail_div').show();
+                }
+             },
+             error:function(error) {
+                var html = '<div class="alert-danger alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>Some error occured. Please try again later.</div>';
+                $("#pullMsg").html(html);
+             },
+             complete: function() {
+                $(".isloader").hide();
+             },
+        })
+    })
 </script> 
 @endsection
