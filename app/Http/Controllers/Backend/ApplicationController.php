@@ -544,18 +544,22 @@ class ApplicationController extends Controller
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
             $currentStage = Helpers::getCurrentWfStage($app_id);
+            $curr_role_id = $currentStage ? $currentStage->role_id : null;
             
             //$last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
             $wf_order_no = $currentStage->order_no;
-            $currentStage = Helpers::getNextWfStage($wf_order_no);  
-            
+            $nextStage = Helpers::getNextWfStage($wf_order_no);  
+            $next_role_id = $nextStage ? $nextStage->role_id : null;
+                        
             $e = explode(',', $currentStage->assign_role);
             $roleDropDown = $this->userRepo->getRoleByArray($e)->toArray();
             
             return view('backend.app.next_stage_confirmBox')
                 ->with('app_id', $app_id)
                 ->with('roles', $roleDropDown)
-                ->with('user_id', $user_id);
+                ->with('user_id', $user_id)
+                ->with('curr_role_id', $curr_role_id)
+                ->with('next_role_id', $next_role_id);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -573,13 +577,18 @@ class ApplicationController extends Controller
             $app_id = $request->get('app_id');
             $assign_role = $request->get('assign_role');
             $sharing_comment = $request->get('sharing_comment');
+            $curr_role_id = $request->get('curr_role_id');
+            
+            
             $addl_data = [];
             $addl_data['sharing_comment'] = $sharing_comment;
             
-            if ($assign_role) {                
-                $currStage = Helpers::getCurrentWfStagebyRole($assign_role);
-                Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 0,$assign_role, $addl_data);
-            } else {
+            if ($curr_role_id && $assign_role) {                
+                //$currStage = Helpers::getCurrentWfStagebyRole($curr_role_id);  
+                $currStage = Helpers::getCurrentWfStage($app_id);
+                //dd('pppppppppppppppp', $curr_role_id, $assign_role, $currStage->stage_code);
+                Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 1,$assign_role, $addl_data);
+            } else {                
                 $currStage = Helpers::getCurrentWfStage($app_id);      
                 $wf_order_no = $currStage->order_no;
                 $currStage = Helpers::getNextWfStage($wf_order_no);                  
