@@ -90,7 +90,7 @@
                                         <td width="20%">{{ $value->finc_year }}</td>
                                         @endif
                                         @if($data->doc_id == '6')
-                                        <td width="20%">{{ (isset($value->gst_month)) ? date('M',$value->gst_month) : '' }}-{{ (isset($value->gst_year)) ? $value->gst_year : '' }}</td>
+                                        <td width="20%">{{ ($value->gst_month != '') ? date('M',$value->gst_month) : '' }}-{{ ($value->gst_year != '') ? $value->gst_year : '' }}</td>
                                         @endif
                                         <td width="20%"> {{ (isset($value->created_at)) ? date('d-m-Y', strtotime($value->created_at)) : ''}} </td>
                                         <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
