@@ -114,7 +114,7 @@
                                                 <td>Pan Card</td>
                                                 <td>{{isset($panNoFileName[$j]) ? $panNoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($panNoFilePath[$j]) ? Storage::disk('s3')->url($panNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($panNoFilePath[$j]) ? Storage::url($panNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                    
                                                 </td>
                                              </tr>
@@ -124,7 +124,7 @@
                                                 <td>Driving License</td>
                                                 <td>{{isset($dlNoFileName[$j]) ? $dlNoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($dlNoFilePath[$j]) ? Storage::disk('s3')->url($dlNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($dlNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($dlNoFilePath[$j]) ? Storage::url($dlNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($dlNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                    
                                                 </td>
                                             </tr>
@@ -135,7 +135,7 @@
                                                 <td>Voter ID</td>
                                                 <td>{{isset($voterNoFileName[$j]) ? $voterNoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($voterNoFilePath[$j]) ? Storage::disk('s3')->url($voterNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($voterNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($voterNoFilePath[$j]) ? Storage::url($voterNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($voterNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                    
                                                 </td>
                                             </tr>
@@ -145,7 +145,7 @@
                                                 <td>Passport</td>
                                                 <td>{{isset($passNoFileName[$j]) ? $passNoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($passNoFilePath[$j]) ? Storage::disk('s3')->url($passNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($passNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($passNoFilePath[$j]) ? Storage::url($passNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($passNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                    
                                                 </td>
                                             </tr>
@@ -155,7 +155,7 @@
                                                 <td>Photo</td>
                                                 <td>{{isset($photoFileName[$j]) ? $photoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($photoFilePath[$j]) ? Storage::disk('s3')->url($photoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($photoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($photoFilePath[$j]) ? Storage::url($photoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($photoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                    
                                                 </td>
                                             </tr>

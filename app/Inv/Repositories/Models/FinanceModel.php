@@ -137,8 +137,7 @@ class FinanceModel extends Model
         return ($result ?? null);        
     }
 
-    public static function getGstbyUser($user_id)
-    {
+    public static function getGstbyUser($user_id){
         $result = self::select('*')
                 ->from('biz_pan_gst')
                 ->where('user_id', $user_id)
@@ -149,8 +148,7 @@ class FinanceModel extends Model
     }
 
 
-    public static function getUserByAPP($app_id)
-    {
+    public static function getUserByAPP($app_id){
         $result = self::select('*')
                 ->from('app')
                 ->where('app_id', $app_id)

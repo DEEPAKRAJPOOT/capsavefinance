@@ -81,6 +81,10 @@ class BusinessAddress extends BaseModel
         return $this->belongsTo('App\Inv\Repositories\Models\BizOwner','biz_owner_id','biz_owner_id');
     }
 
+    public function fiAddress(){
+        return $this->hasMany('App\Inv\Repositories\Models\FiAddress','biz_addr_id','biz_addr_id');
+    }
+
     public static function getAddressforFI($biz_id){
         $address = BusinessAddress::where('biz_id', $biz_id)->where('addr_1', '<>', null)->get();
         return $address;
