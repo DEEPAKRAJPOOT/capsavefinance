@@ -899,13 +899,6 @@ $(document).on('click', '.promoter_pan_verify', function () {
       
        $(document).on('click','.veripan',function () {
          var count = $(this).attr('data-id');
-          var result = $(this).text();
-        if (result == "Verify")
-        {
-            $('#v1failurepanverify'+count).show();
-            $('#veripan'+count).focus();
-           return false;
-        }
          var bizId = $('input[name=biz_id]').val();
          var app_id = $('#app_id').val();
          var ownerid = $('#ownerid'+count).val();
@@ -958,13 +951,6 @@ $(document).on('click', '.promoter_pan_verify', function () {
       ///////////////////////DL api ///////////////
        $(document).on('click','.veridl',function () {
          var count = $(this).attr('data-id');
-          var result = $(this).text();
-        if (result == "Verify")
-        {
-            $('#v2failurepanverify'+count).show();
-            $('#verifydl'+count).focus();
-           return false;
-        }
          var bizId = $('input[name=biz_id]').val();
          var app_id = $('#app_id').val();
          var ownerid = $('#ownerid'+count).val();
@@ -1022,13 +1008,6 @@ $(document).on('click', '.promoter_pan_verify', function () {
        
        $(document).on('click','.verivoter',function () {
              var count = $(this).attr('data-id');
-              var result = $(this).text();
-              if (result == "Verify")
-            {
-              $('#v3failurepanverify'+count).show();
-              $('#verifyvoter'+count).focus();
-              return false;
-           }
              var voterId = $("#verifyvoter"+count).val();
              var bizId = $('input[name=biz_id]').val();
              var app_id = $('#app_id').val();
@@ -1083,13 +1062,6 @@ $(document).on('click', '.promoter_pan_verify', function () {
       
        $(document).on('click','.veripass',function ()  {
              var count = $(this).attr('data-id');
-              var result = $(this).text();
-               if (result == "Verify")
-            {
-              $('#v4failurepanverify'+count).show();
-              $('#verifypassport'+count).focus();
-              return false;
-           }
              var voterId = $("#verifypassport"+count).val();
              var bizId = $('input[name=biz_id]').val();
              var app_id = $('#app_id').val();
