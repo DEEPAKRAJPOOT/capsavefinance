@@ -463,7 +463,7 @@
                 processData: false,
                 data: JSON.stringify(data),
                 success: function (data) {
-                     window.location.href = "{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}";
+                     window.location.href = "{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}";
                       
                    /// var promoId = 0;
                    /// $(data.data).each(function(k,v){
