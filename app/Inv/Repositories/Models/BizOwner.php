@@ -91,6 +91,17 @@ class BizOwner extends Model
       return $this->hasMany('App\Inv\Repositories\Models\AppDocumentFile', 'biz_owner_id','biz_owner_id');  
        
    }
+   /* Relation of Owner and  Aplication relation*/
+    /* created by gajendra chauhan   */
+    public static  function getOwnerByBizId($bizId){
+        
+        return BizOwner::with('app')->where('biz_owner.biz_id', $bizId)->get();
+      
+    }
+
+    public function app(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','biz_id','biz_id');
+    }
    
 /* save biz owner data*/
     /* By gajendra chauhan  */  
