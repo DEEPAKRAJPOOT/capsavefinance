@@ -108,6 +108,7 @@ class Bsa_lib{
 
 	     if ($method == SELF::GET_REP && !in_array($params['types'], ['xml','json'])) {
 	     	$resp['status'] = "success";
+	     	$resp['message'] = "success";
 		 	$resp['result'] = $response['result'];
 		 	return $resp;
 	     }
