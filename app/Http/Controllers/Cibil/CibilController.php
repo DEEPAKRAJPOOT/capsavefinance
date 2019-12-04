@@ -60,7 +60,7 @@ class CibilController extends Controller
                                           ]);
 
                            if($createBizApi){
-                                BizOwner::where('biz_owner_id', $biz_owner_id)->update(['cibilScore'=>$cibilScore ? $cibilScore : NULL]);
+                                BizOwner::where('biz_owner_id', $biz_owner_id)->update(['cibil_score'=>$cibilScore ? $cibilScore : NULL, 'is_cibil_pulled' =>1]);
                                  return response()->json(['message' =>'CIBIL score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
                            } 
                            else 
@@ -146,7 +146,7 @@ class CibilController extends Controller
                                                               ]);
 
                                                if($createBizApi){
-                                                     Business::where('biz_id', $biz_id)->update(['cibilScore'=>$cibilScore ? $cibilScore : NULL]);
+                                                     Business::where('biz_id', $biz_id)->update(['cibil_score'=>$cibilScore ? $cibilScore : NULL, 'is_cibil_pulled' =>1]);
                                                      return response()->json(['message' =>'CIBIL score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
                                                } 
                                                else 
