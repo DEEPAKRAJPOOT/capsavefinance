@@ -527,7 +527,7 @@ class CamController extends Controller
         $loanAmount = $anchorData ? $anchorData->loan_amt : 0;
                 
         $whereCondition = [];
-        $whereCondition['anchor_id'] = $anchorId;
+        //$whereCondition['anchor_id'] = $anchorId;
         $prgmData = $this->appRepo->getProgramData($whereCondition);
         
         $offerWhereCond = [];
