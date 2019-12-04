@@ -146,6 +146,7 @@ class CamController extends Controller
       $appId = $request->get('appId');
       $filepath = $this->getBankFilePath($appId);
       $response = $this->_callBankApi($filepath, $appId);
+      $response['result'] = base64_encode($response['result']);
       //$response = json_decode(base64_decode($this->dummy_resp),true);
       if ($response['status'] == 'success') {
         return response()->json(['message' =>'Bank Statement analysed successfully.','status' => 1,
@@ -217,18 +218,22 @@ class CamController extends Controller
 
 
     private function _callBankApi($filespath, $appId){
+    	$user = FinanceModel::getUserByAPP($appId);
+    	$loanAmount = (int)$user['loan_amt'];
         $bsa = new Bsa_lib();
         $reportType = 'xml';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
         $process_txn_cnt = 0;
         $req_arr = array(
             'txnId' => $prolitus_txn, //'bharatSTmt',
-            'loanAmount' => '20000000',
+            'loanAmount' => $loanAmount,
             'loanDuration' => '6',
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
             'transactionCompleteCallbackUrl' => 'http://122.170.7.185:8080/CallbackTest/CallbackStatus',
             'uploadingScannedStatements' => 'false',
+            'yearMonthFrom' => '2019-10',
+            'yearMonthTo' => '2019-10',
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
         if ($init_txn['status'] == 'success') {
@@ -285,95 +290,29 @@ class CamController extends Controller
         	 return $final_res;
         }
 
-
+        $file_name = $appId.'_banking.xlsx';
         if ($this->download_xlsx) {
           $req_arr = array(
             'perfiosTransactionId' => $final_res['perfiosTransactionId'],
             'types' => 'xlsx',
           );
-          $get_rep = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
-          $file_name = $appId.'_banking.xlsx';
+          $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$file_name, $get_rep['result']); 
-          $file= url('storage/user/'. $file_name);
+          \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']); 
         }
-        $req_arr = array(
+        $file= url('storage/user/'. $file_name);
+        /*$req_arr = array(
             'perfiosTransactionId' => $final_res['perfiosTransactionId'],
             'types' => $reportType,
         );
-        $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
+        $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);*/
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
         $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
         return $final_res;
     }
 
-    public function uploadBankStatement(){
-        $bsa = new Bsa_lib();
-        $reportType = 'xml';
-        $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
-        $filepath = public_path('storage/916010062301973.pdf');
-        $req_arr = array(
-            'txnId' => $prolitus_txn, //'bharatSTmt',
-            'loanAmount' => '20000000',
-            'loanDuration' => '6',
-            'loanType' => 'SME Loan',
-            'processingType' => 'STATEMENT',
-            'transactionCompleteCallbackUrl' => 'http://122.170.7.185:8080/CallbackTest/CallbackStatus',
-            #optional params
-            'acceptancePolicy' => 'atLeastOneTransactionInRange',
-            'uploadingScannedStatements' => 'false',
-         );
-        $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
-        if ($init_txn['status'] == 'success') {
-              $req_arr = array(
-                'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-                'file_content' => $filepath,
-                 );
-              $upl_file = $bsa->api_call(Bsa_lib::UPL_FILE, $req_arr);
-              if ($upl_file['status'] == 'success') {
-                  $req_arr = array(
-                    'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-                    'fileId' => $upl_file['fileid'],
-                    'institutionId' => '',
-                    'password' => '',
-                  );
-                  $proc_txn = $bsa->api_call(Bsa_lib::PRC_STMT, $req_arr);
-                  if ($proc_txn['status'] == 'success') {
-                     $req_arr = array(
-                        'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-                     );
-                     $rep_gen = $bsa->api_call(Bsa_lib::REP_GEN, $req_arr);
-                     if ($rep_gen['status'] == 'success') {
-                        $rep_gen['prolitusTransactionId'] = $prolitus_txn;
-                        $rep_gen['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
-                        $final_res = $rep_gen;
-                        $final_res['api_type'] = "Report Generation";
-                     }else{
-                        $final_res = $rep_gen;
-                        $final_res['prolitusTransactionId'] = $prolitus_txn;
-                        $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
-                        $final_res['api_type'] = "Report Generation";
-                     }
-                  }else{
-                        $final_res = $proc_txn;
-                        $final_res['prolitusTransactionId'] = $prolitus_txn;
-                        $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
-                        $final_res['api_type'] = "Process Statement";
-                  }
-              }else{
-                    $final_res = $upl_file;
-                    $final_res['prolitusTransactionId'] = $prolitus_txn;
-                    $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
-                    $final_res['api_type'] = "Upload File";
-              }
-        }else{
-            $final_res = $init_txn;
-            $final_res['api_type'] = "Initiate Txn";
-        }
-        dd($final_res); 
-    }
-    public function uploadFinancialStatement() {
+    public function uploadFinancialStatement($appId = 5) {
         $perfios = new Perfios_lib();
         $reportType = 'xml';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
@@ -443,6 +382,40 @@ class CamController extends Controller
              $final_res = $start_txn;
              $final_res['api_type'] = "Start New Txn";
          }
+
+         if ($final_res['status'] != 'success') {
+            return $final_res;
+        }
+
+        if (!empty($is_scanned) && strtolower($is_scanned) == 'yes') {
+        	 return $final_res;
+        }
+
+        $file_name = $appId.'_finanace.xlsx';
+        if ($this->download_xlsx) {
+	         $req_arr = array(
+	            'apiVersion' => $apiVersion,
+	            'vendorId' => $vendorId,
+	            'perfiosTransactionId' => $start_txn['perfiosTransactionId'],
+	            'reportType' => $reportType,
+	            'txnId' => $prolitus_txn,
+	         );
+            $get_rep = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
+	        $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+	        \File::put(storage_path('app/public/user').'/'.$file_name, $get_rep['result']);
+        }
+        $file= url('storage/user/'. $file_name);
+        $req_arr = array(
+            'apiVersion' => $apiVersion,
+            'vendorId' => $vendorId,
+            'perfiosTransactionId' => $start_txn['perfiosTransactionId'],
+            'reportType' => $reportType,
+            'txnId' => $prolitus_txn,
+         );
+        $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
+        $final_res['file_url'] = $file;
+        $final_res['prolitusTransactionId'] = $prolitus_txn;
+        $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
          dd($final_res); 
     }
 
