@@ -224,6 +224,11 @@ class LeadController extends Controller {
                 $anchUserMailArr['password'] = $string;
                 Event::dispatch("ANCHOR_REGISTER_USER_MAIL", serialize($anchUserMailArr));
                 if ($anchor_info && $anchor_user_info) {
+                    
+                    $role = [];
+                    $role['role_id'] = 11;
+                    $role['user_id'] = $anchor_user_info->user_id;
+                    $rr = $this->userRepo->addNewRoleUser($role);
                     Session::flash('message', trans('backend_messages.anchor_registration_success'));
                     return redirect()->route('get_anchor_list');
                 }        

@@ -125,13 +125,15 @@
                                  <label for="txtEmail">Assigned Sale Manager
                                  <span class="mandatory">*</span>
                                  </label>
-                                  <select class="form-control assigned_sale_mgr" name="assigned_sale_mgr" id="assigned_sale_mgr" tabindex="9">
-                                      <option value="">Please Select</option>
-                                      <option value="10">Sale Manager 1</option>
-                                      <option value="11">Sale Manager 2</option>
-                                      <option value="12">Sale Manager 3</option>
-                                  </select>
-                              </div>
+                                  
+                                  {!!
+                                Form::select('assigned_sale_mgr',
+                                [''=>'Please Select']+Helpers::getAllUsersByRoleId(4)->toArray(),
+                                '',
+                                array('id' => 'assigned_sale_mgr',
+                                'class'=>'form-control'))
+                                !!}
+                    </div>
                            </div>                           
                         </div>  
                 

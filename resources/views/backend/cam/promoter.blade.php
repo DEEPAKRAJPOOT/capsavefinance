@@ -69,7 +69,7 @@
                                              </tr>
                                              <tr>
                                                 <td><b>DOB </b></td>
-                                                <td>{{$row->date_of_birth}}</td>
+                                                <td>{{ ($row->date_of_birth) ? date('d/m/Y', strtotime($row->date_of_birth)) : '' }}</td>
                                                 <td><b>Gender </b></td>
                                                 <td>@if($row->gender==1) Male @elseif($row->gender==2) Female @endif</td>
                                              </tr>

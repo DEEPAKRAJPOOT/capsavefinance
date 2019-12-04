@@ -119,6 +119,7 @@
                         <div class="d-flex btn-section sign-UP">
                             <div class="col-md-4 mt-3">
                                 <input type="hidden" name="anch_user_id" id="anchor_user_id" value="@if($anchorDetail){{$anchorDetail->anchor_user_id}}@endif">
+                                <input type="hidden" name="h_anchor_id" id="h_anchor_id" value="@if($anchorDetail){{$anchorDetail->anchor_id}}@endif">
                                 <input type="submit" value="Submit" tabindex="9"  class="btn btn-primary"> </div>
                         </div>
                     </div>

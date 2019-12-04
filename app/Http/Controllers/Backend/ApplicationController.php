@@ -792,7 +792,7 @@ class ApplicationController extends Controller
         return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
           'value' => $response['result']]);
       }else{
-        return response()->json(['message' =>  $response['message'] ?? 'Something went wrong. Please try again','status' => 0]);
+        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
       }
     }
 

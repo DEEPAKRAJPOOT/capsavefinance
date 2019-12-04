@@ -49,7 +49,7 @@
 										<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 									</span>
 									<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="pointer-events: none;">Verified</a>
-									<input type="text" name="biz_pan_number" value="{{old('biz_pan_number', $business_info->pan->pan_gst_hash)}}" class="form-control" tabindex="1" placeholder="Enter Company Pan" minlength="10" maxlength="10" required readonly>
+									<input type="text" name="biz_pan_number" value="{{old('biz_pan_number', $business_info->pan->pan_gst_hash)}}" class="form-control" tabindex="1" placeholder="Enter Company Pan" minlength="10" maxlength="10" readonly>
 									@error('biz_pan_number')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
@@ -61,7 +61,7 @@
 										<span class="mandatory">*</span>
 									</label>
 									<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
-									<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" required>
+									<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
 										<option value="">Select GST Number</option>
 										@forelse($business_info->gsts as $gst_key => $gst_value)
 											<option value="{{$gst_value->pan_gst_hash}}" {{(old('biz_gst_number', Helpers::customIsset($business_info->gst, 'pan_gst_hash')) == $gst_value->pan_gst_hash)? 'selected':''}}>{{$gst_value->pan_gst_hash}}</option>
@@ -78,7 +78,7 @@
 									<label for="txtEmail">Entity Name
 										<span class="mandatory">*</span>
 									</label>
-									<input type="text" name="biz_entity_name" value="{{old('biz_entity_name', $business_info->biz_entity_name)}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" maxlength="100" required>
+									<input type="text" name="biz_entity_name" value="{{old('biz_entity_name', $business_info->biz_entity_name)}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" maxlength="100" >
 									@error('biz_entity_name')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
@@ -91,7 +91,7 @@
 									<label for="txtPassword">Industry
 										<span class="mandatory">*</span>
 									</label>
-									<select class="form-control" name="biz_type_id" tabindex="4" required>
+									<select class="form-control" name="biz_type_id" tabindex="4" >
 										<option value=""> Select Industry</option>
 										<option value="1" {{(old('biz_type_id', $business_info->nature_of_biz) == 1)? 'selected':''}}> Industry 1 </option>
 										<option value="2" {{(old('biz_type_id', $business_info->nature_of_biz) == 2)? 'selected':''}}> Industry 2 </option>
@@ -108,7 +108,7 @@
 									<label for="txtPassword">Date of Incorporation
 										<span class="mandatory">*</span>
 									</label>
-									<input type="text" name="incorporation_date" value="{{old('incorporation_date', \Carbon\Carbon::parse($business_info->date_of_in_corp)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Entity Name" autocomplete="off" readonly required>
+									<input type="text" name="incorporation_date" value="{{old('incorporation_date', \Carbon\Carbon::parse($business_info->date_of_in_corp)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Entity Name" autocomplete="off" readonly >
 									@error('incorporation_date')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
@@ -119,7 +119,7 @@
 									<label for="txtEmail">Business Constitution
 										<span class="mandatory">*</span>
 									</label>
-									<select class="form-control" name="biz_constitution" tabindex="6" required>
+									<select class="form-control" name="biz_constitution" tabindex="6" >
 											<option value=""> Select Business Constitution</option>
 											<option value="1" {{(old('biz_constitution', $business_info->biz_constitution) == 1)? 'selected':''}}> Business Constitution 1 </option>
 											<option value="2" {{(old('biz_constitution', $business_info->biz_constitution) == 2)? 'selected':''}}> Business Constitution 2 </option>
@@ -137,7 +137,7 @@
 									<label for="txtPassword">Nature of Business
 										<span class="mandatory">*</span>
 									</label>
-									<select class="form-control" name="entity_type_id" tabindex="7" required="">
+									<select class="form-control" name="entity_type_id" tabindex="7" >
 										<option value=""> Select Nature of Business</option>
 										<option value="1" {{(old('entity_type_id', $business_info->entity_type_id) == 1)? 'selected':''}}> Nature of Business 1 </option>
 										<option value="2" {{(old('entity_type_id', $business_info->entity_type_id) == 2)? 'selected':''}}> Nature of Business 2 </option>
@@ -154,7 +154,7 @@
 									<label for="txtPassword">Segment
 										<span class="mandatory">*</span>
 									</label>
-									<select class="form-control" name="segment" tabindex="8" required>
+									<select class="form-control" name="segment" tabindex="8" >
 										<option value=""> Select Segment</option>
 										<option value="1" {{(old('segment', $business_info->biz_segment) == 1)? 'selected':''}}> Segment 1 </option>
 										<option value="2" {{(old('segment', $business_info->biz_segment) == 2)? 'selected':''}}> Segment 2 </option>
@@ -184,7 +184,7 @@
 										<span class="mandatory">*</span>
 									</label>
 									<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-									<input type="text" name="loan_amount" value="{{old('loan_amount', number_format($business_info->app->loan_amt))}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" required>
+									<input type="text" name="loan_amount" value="{{old('loan_amount', number_format($business_info->app->loan_amt))}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" >
 									<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
 									@error('loan_amount')
 						                <span class="text-danger error">{{ $message }}</span>
@@ -215,7 +215,7 @@
 											<label for="txtCreditPeriod">Address
 												<span class="mandatory">*</span>
 											</label>
-											<input type="text" name="biz_address" value="{{old('biz_address', $business_info->address[0]->addr_1)}}" class="form-control" tabindex="12" placeholder="Enter Your Address" maxlength="100" required>
+											<input type="text" name="biz_address" value="{{old('biz_address', $business_info->address[0]->addr_1)}}" class="form-control" tabindex="12" placeholder="Enter Your Address" maxlength="100" >
 											@error('biz_address')
                                                 <span class="text-danger error">{{ $message }}</span>
                                             @enderror
@@ -226,7 +226,7 @@
 											<label for="txtPassword">State
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="biz_state" tabindex="13" required>
+											<select class="form-control" name="biz_state" tabindex="13" >
                                                 <option value=""> Select State</option>
                                                 @foreach($states as $key => $state)
                                                 <option value="{{$state->id}}" {{(old('biz_state', $business_info->address[0]->state_id) == $state->id)? 'selected':''}}> {{$state->name}} </option>
@@ -242,7 +242,7 @@
 											<label for="txtEmail">City
 												<span class="mandatory">*</span>
 											</label>
-											<input type="text" name="biz_city" value="{{old('biz_city', $business_info->address[0]->city_name)}}" class="form-control" tabindex="14" placeholder="Enter City Name" maxlength="50" required>
+											<input type="text" name="biz_city" value="{{old('biz_city', $business_info->address[0]->city_name)}}" class="form-control" tabindex="14" placeholder="Enter City Name" maxlength="50" >
 											@error('biz_city')
                                                 <span class="text-danger error">{{ $message }}</span>
                                             @enderror
@@ -254,7 +254,7 @@
 											<label for="txtPassword">Pin Code
 												<span class="mandatory">*</span>
 											</label>
-											<input type="text" name="biz_pin" value="{{old('biz_pin', $business_info->address[0]->pin_code)}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" minlength="6" maxlength="6" required>
+											<input type="text" name="biz_pin" value="{{old('biz_pin', $business_info->address[0]->pin_code)}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" minlength="6" maxlength="6" >
 											@error('biz_pin')
                                                 <span class="text-danger error">{{ $message }}</span>
                                             @enderror

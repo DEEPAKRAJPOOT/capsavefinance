@@ -84,6 +84,8 @@ use RegistersUsers,
         $arrAnchUser=[];
         $arrDetailData = [];
         $arrLeadAssingData =[];
+        $userDataArray = $this->userRepo->getUserByAnchorId($data['h_anchor_id']);
+        $arrData['anchor_user_id'] = $userDataArray->user_id;
         $arrData['f_name'] = $data['f_name'];
         $arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
