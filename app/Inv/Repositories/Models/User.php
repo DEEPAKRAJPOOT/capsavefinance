@@ -44,6 +44,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'anchor_id',
+        'anchor_user_id',
         'f_name',
         'm_name',
         'l_name',

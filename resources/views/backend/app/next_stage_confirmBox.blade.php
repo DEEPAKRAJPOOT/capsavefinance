@@ -33,7 +33,7 @@
                     Form::select('assign_role',
                     [
                     ''=>'Status']+$data,
-                    null,
+                    $next_role_id,
                     array('id' => 'is_active',
                     'class'=>'form-control'))
                     !!}
@@ -51,6 +51,8 @@
                 
                     {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}
+                    {!! Form::hidden('curr_role_id', $curr_role_id) !!}
+
                    
                     <br>
                 <button type="submit" class="btn btn-success">Yes</button>

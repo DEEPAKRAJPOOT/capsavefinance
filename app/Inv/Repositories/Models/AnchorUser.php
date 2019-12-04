@@ -84,6 +84,8 @@ class AnchorUser extends BaseModel {
      */
     public static function getAllAnchorUsers() {
         $result = self::select('anchor_user.*')
+             //->join('users', 'users.user_id', '=', 'anchor_user.user_id')
+             ->where('anchor_user.anchor_id', \Auth::user()->anchor_id) 
             ->orderByRaw('anchor_user_id DESC');
                 //->where('user_type', 1);
         return ($result ? $result : '');

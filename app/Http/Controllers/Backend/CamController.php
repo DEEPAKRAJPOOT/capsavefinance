@@ -169,12 +169,12 @@ class CamController extends Controller
       $response = $this->_callFinanceApi($filepath, $appId);
       $response['result'] = base64_encode($response['result']);
       $log_data = array(
-        'user_id' => Auth::user()->user_id,
+        'app_id' =>  $appId,
         'status' => $response['status'],
         'type' => '2',
         'prolitus_txn_id' => $response['prolitusTransactionId'],
         'perfios_log_id' => $response['perfiosTransactionId'] ?? $response['perfiostransactionid'],
-        'created_by' => '98',
+        'created_by' => Auth::user()->user_id,
       );
       FinanceModel::insertPerfios($log_data);
       if ($response['status'] == 'success') {

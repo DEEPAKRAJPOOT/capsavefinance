@@ -976,8 +976,8 @@ class UserRepository extends BaseRepositories implements UserInterface
         if (empty($attributes)) {
             throw new BlankDataExceptions('No Data Found');
         }
-
-        return BizOwner::where('biz_id',$attributes['biz_id'])->get(); 
+       
+        return BizOwner::getOwnerByBizId($attributes['biz_id']); 
     }
     
     /**
@@ -1038,7 +1038,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function getUserByAnchorId($anchId)
     {
-        $result = UserModel::getUserByAnchorId($anchId);
+        $result = UserModel::getUserByAnchorId((int)$anchId);
          return $result ?: false;
     } 
     /**

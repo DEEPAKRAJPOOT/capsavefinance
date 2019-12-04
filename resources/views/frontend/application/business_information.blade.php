@@ -41,7 +41,7 @@
 											<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 										</span>
 										<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
-										<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="1" placeholder="Enter Company Pan" minlength="10" maxlength="10" required>
+										<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control" tabindex="1" placeholder="Enter Company Pan" minlength="10" maxlength="10" >
 										@error('biz_pan_number')
 							                <span class="text-danger error">{{ $message }}</span>
 							            @enderror
@@ -53,7 +53,7 @@
 											<span class="mandatory">*</span>
 										</label>
 										<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
-										<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" required>
+										<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
 											</select>
 											<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
 											@error('biz_gst_number')
@@ -67,7 +67,7 @@
 										<label for="txtEmail">Entity Name
 											<span class="mandatory">*</span>
 										</label>
-										<input type="text" name="biz_entity_name" value="{{old('biz_entity_name')}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" maxlength="100" required>
+										<input type="text" name="biz_entity_name" value="{{old('biz_entity_name')}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" maxlength="100" >
 										@error('biz_entity_name')
 							                <span class="text-danger error">{{ $message }}</span>
 							            @enderror
@@ -80,7 +80,7 @@
 											<label for="txtPassword">Industry
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="biz_type_id" tabindex="4" required>
+											<select class="form-control" name="biz_type_id" tabindex="4" >
 												<option value=""> Select Industry</option>
 												<option value="1" {{(old('biz_type_id') == 1)? 'selected':''}}> Industry 1 </option>
 												<option value="2" {{(old('biz_type_id') == 2)? 'selected':''}}> Industry 2 </option>
@@ -97,7 +97,7 @@
 											<label for="txtPassword">Date of Incorporation
 												<span class="mandatory">*</span>
 											</label>
-											<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="5" autocomplete="off" required readonly>
+											<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="5" autocomplete="off" readonly>
 											@error('incorporation_date')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -108,7 +108,7 @@
 											<label for="txtEmail">Business Constitution
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="biz_constitution" tabindex="6" required>
+											<select class="form-control" name="biz_constitution" tabindex="6" >
 													<option value=""> Select Business Constitution</option>
 													<option value="1" {{(old('biz_constitution') == 1)? 'selected':''}}> Business Constitution 1 </option>
 													<option value="2" {{(old('biz_constitution') == 2)? 'selected':''}}> Business Constitution 2 </option>
@@ -126,7 +126,7 @@
 											<label for="txtPassword">Nature of Business
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="entity_type_id" tabindex="7" required="">
+											<select class="form-control" name="entity_type_id" tabindex="7" >
 												<option value=""> Select Nature of Business</option>
 												<option value="1" {{(old('entity_type_id') == 1)? 'selected':''}}> Nature of Business 1 </option>
 												<option value="2" {{(old('entity_type_id') == 2)? 'selected':''}}> Nature of Business 2 </option>
@@ -143,7 +143,7 @@
 											<label for="txtPassword">Segment
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="segment" tabindex="8" required>
+											<select class="form-control" name="segment" tabindex="8" >
 												<option value=""> Select Segment</option>
 												<option value="1" {{(old('segment') == 1)? 'selected':''}}> Segment 1 </option>
 												<option value="2" {{(old('segment') == 2)? 'selected':''}}> Segment 2 </option>
@@ -173,7 +173,7 @@
 												<span class="mandatory">*</span>
 											</label>
 											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" required>
+											<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" >
 											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
 											@error('loan_amount')
 								                <span class="text-danger error">{{ $message }}</span>
@@ -204,7 +204,7 @@
 													<label for="txtCreditPeriod">Address
 														<span class="mandatory">*</span>
 													</label>
-													<input type="text" name="biz_address" value="{{old('biz_address')}}" class="form-control" tabindex="12" placeholder="Enter Your Address" maxlength="100" required>
+													<input type="text" name="biz_address" value="{{old('biz_address')}}" class="form-control" tabindex="12" placeholder="Enter Your Address" maxlength="100" >
 													@error('biz_address')
                                                         <span class="text-danger error">{{ $message }}</span>
                                                     @enderror
@@ -215,7 +215,7 @@
 													<label for="txtPassword">State
 														<span class="mandatory">*</span>
 													</label>
-													<select class="form-control" name="biz_state" tabindex="13" required>
+													<select class="form-control" name="biz_state" tabindex="13" >
                                                         <option value=""> Select State</option>
                                                         @foreach($states as $key => $state)
                                                         <option value="{{$state->id}}" {{(old('biz_state') == $state->id)? 'selected':''}}> {{$state->name}} </option>
@@ -231,7 +231,7 @@
 													<label for="txtEmail">City
 														<span class="mandatory">*</span>
 													</label>
-													<input type="text" name="biz_city" value="{{old('biz_city')}}" class="form-control" tabindex="14" placeholder="Enter City Name" maxlength="50" required>
+													<input type="text" name="biz_city" value="{{old('biz_city')}}" class="form-control" tabindex="14" placeholder="Enter City Name" maxlength="50" >
 													@error('biz_city')
                                                         <span class="text-danger error">{{ $message }}</span>
                                                     @enderror
@@ -243,7 +243,7 @@
 													<label for="txtPassword">Pin Code
 														<span class="mandatory">*</span>
 													</label>
-													<input type="text" name="biz_pin" value="{{old('biz_pin')}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" minlength="6" maxlength="6" required>
+													<input type="text" name="biz_pin" value="{{old('biz_pin')}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" minlength="6" maxlength="6" >
 						                            @error('biz_pin')
                                                         <span class="text-danger error">{{ $message }}</span>
                                                     @enderror
@@ -491,5 +491,5 @@
 @endsection
 
 @section('jscript')
-<script src="{{url('common/js/business_information.js')}}"></script>
+<script src="{{url('common/js/business_information.js?v=1')}}"></script>
 @endsection

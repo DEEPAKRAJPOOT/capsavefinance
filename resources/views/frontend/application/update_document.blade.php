@@ -77,7 +77,7 @@
                                         <td width="20%">{{ $value->finc_year }}</td>
                                         @endif
                                         @if($data->doc_id == '6')
-                                        <td width="20%">{{ (isset($value->gst_month)) ? date('M',$value->gst_month) : '' }}-{{ (isset($value->gst_year)) ? $value->gst_year : '' }}</td>
+                                        <td width="20%">{{ ($value->gst_month != '') ? date('M',$value->gst_month) : '' }}-{{ ($value->gst_year != '') ? $value->gst_year : '' }}</td>
                                         @endif
                                         <td width="20%"> {{ (isset($value->created_at)) ? date('d-m-Y', strtotime($value->created_at)) : ''}} </td>
                                         <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
@@ -123,7 +123,7 @@
                 <form id="documentForm" method="POST" action="{{ Route('document-save') }}" enctype="multipart/form-data">
                     <!-- Modal body -->
                     @csrf
-                    <input type="hidden" name="docId" value="">
+                    <input type="hidden" name="docId" id="docId" value="">
                     <input type="hidden" name="bizId" value="{{ request()->get('biz_id') }}">
                     <input type="hidden" name="appId" value="{{ request()->get('app_id') }}">
 
@@ -254,42 +254,6 @@
 @section('jscript')
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
-<script src="{{ url('frontend/js/document.js') }}"></script>
-<script type="text/javascript">
-   appurl = '{{URL::route("gstAnalysis") }}';
-   _token = "{{ csrf_token() }}";
-</script>
-<script>
-    $(document).on('click', '#fetchdetails',function () {
-        let gst_no   = $('#biz_gst_number').val();
-        let gst_usr  = $('#biz_gst_username').val();
-        let gst_pass = $('#biz_gst_password').val();
-        data = {_token,gst_no,gst_usr,gst_pass};
-        $.ajax({
-             url  : appurl,
-             type :'POST',
-             data : data,
-             beforeSend: function() {
-               $(".isloader").show();
-             },
-             dataType : 'json',
-             success:function(result) {
-                console.log(result);
-                let mclass = result['status'] ? 'success' : 'danger';
-                var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
-                $("#pullMsg").html(html);
-                if (result['status']) {
-                    $('#gstin_detail_div').show();
-                }
-             },
-             error:function(error) {
-                var html = '<div class="alert-danger alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>Some error occured. Please try again later.</div>';
-                $("#pullMsg").html(html);
-             },
-             complete: function() {
-                $(".isloader").hide();
-             },
-        })
-    })
-</script> 
+<script src="{{ url('frontend/js/document.js?v=1') }}"></script>
+
 @endsection

@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\Master\Permission;
 use App\Inv\Repositories\Models\Master\PermissionRole;
+use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\Role;
 use DB;
 
@@ -376,6 +377,7 @@ class Helper extends PaypalHelper
                 'app_wf_status' => $wf_status,
                 'is_complete' => $wf_status
             ];
+            
             $appData = Application::getAppData((int)$app_id);
             $user_id = $appData->user_id;
             if ($wf_stage_code == 'new_case') {
@@ -384,19 +386,22 @@ class Helper extends PaypalHelper
             } else {
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
-//            if ($wf_status == 1) {
-                //$nextWfData = WfStage::getNextWfStage($wf_order_no);dd($nextWfData);
-//                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
-//                if ( !$wfAppStageData ) {
+            //dd($wf_stage_code, $app_id, $wf_status, $assign_role, $nextWfData->stage_code);
+            if ($wf_status == 1) {
+                $nextWfData = WfStage::getNextWfStage($wf_order_no);
+                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
+                //dd('hhhhhhhhhhhhhhh', $nextWfData, $wfAppStageData);
+                if ( !$wfAppStageData ) {
                     $insertData = [
-                        'wf_stage_id' => $wf_stage_id,
+                        'wf_stage_id' => $nextWfData->wf_stage_id,
                         'biz_app_id' => $app_id,
                         'user_id' => $user_id,
                         'app_wf_status' => 0,
                         'is_complete' => 0
                     ];
                     $result = WfAppStage::saveWfDetail($insertData);
-//             }
+                }
+            }
                 //get role id by wf_stage_id
                 //$data = WfStage::find($result->wf_stage_id);
                  AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
@@ -662,4 +667,14 @@ class Helper extends PaypalHelper
         return $currStage;
     }
     
+    /**
+     * Get aal role
+     *      * 
+     * @param integer $user_id | default
+     */
+    public static function getAllUsersByRoleId($role_id) {
+        $data = RoleUser::getAllUsersByRoleId($role_id);
+                return $data;
+                
+    }
 }

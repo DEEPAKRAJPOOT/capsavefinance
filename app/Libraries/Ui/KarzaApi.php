@@ -124,7 +124,7 @@ class KarzaApi {
      * @return \Illuminate\Http\Response
      */
     public function checkDlVerification($dlArr) {
-     $newDateFormat3 = Carbon::parse($dlArr['dob'])->format('m-d-Y');
+    
     
         try {
             $api_url = '/v2/dl';
@@ -135,7 +135,7 @@ class KarzaApi {
                 'json' => [
                     'consent' => 'Y',
                     'dl_no' => $dlArr['dl_no'],
-                    'dob' => $newDateFormat3
+                    'dob' => ($dlArr['dob'])? Carbon::createFromFormat('d/m/Y', $dlArr['dob'])->format('d-m-Y'): NULL,
                 ],
                 'headers' => [
                     'cache-control' => "no-cache",
