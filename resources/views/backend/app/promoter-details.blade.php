@@ -513,15 +513,15 @@ height: 31px;
     };
     
 $(document).ready(function () {
-  ///  $(document).on('keyup','.verifydl',function(){
-     /// $('input.verifydl').each(function () {
-                  ///  $(this).rules("add",
-                       ///     {
-                         ///       required: true,
-                          //      range: [0, 10]
-                          ///  })
-              ///  });
-  ////   })          
+    $(document).on('keyup change','.verifydl',function(){
+      $('input.verifydl').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true,
+                               range: [0, 10]
+                           })
+                });
+     })          
                 
     $('#submit').on('click', function (event) {
         $('input.first_name').each(function () {
