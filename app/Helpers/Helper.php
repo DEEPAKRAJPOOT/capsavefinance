@@ -176,8 +176,14 @@ class Helper extends PaypalHelper
                     //update assign table
                     $dataArr = []; 
                     $dataArr['from_id'] = \Auth::user()->user_id;
-                    $dataArr['to_id'] = null;
-                    $dataArr['role_id'] = $data->role_id;
+                    if ($data->role_id == 4) {
+                        $toUserId = User::getLeadSalesManager($user_id);
+                        $dataArr['to_id'] = $toUserId;
+                        $dataArr['role_id'] = null;                        
+                    } else {
+                        $dataArr['to_id'] = null;
+                        $dataArr['role_id'] = $data->role_id;
+                    }
                     $dataArr['assigned_user_id'] = $user_id;
                     $dataArr['app_id'] = $app_id;
                     $dataArr['assign_status'] = '0';
