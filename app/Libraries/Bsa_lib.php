@@ -206,7 +206,7 @@ class Bsa_lib{
     }
 
     private function _parseResult($xml, $method) {
-    	$result = ['status' => 'success'];
+    	$result = ['status' => 'success','result' => ''];
     	$is_valid = true;//@$this->_is_valid_xml($xml);
     	if (!$is_valid) {
     		$result['status'] = "fail";

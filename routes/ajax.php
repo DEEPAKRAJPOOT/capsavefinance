@@ -62,6 +62,12 @@ Route::group(
         'uses' => 'Backend\CamController@analyse_bank'
     ]);
 
+    Route::post('finance_analysis', [
+        'as' => 'financeAnalysis',
+        'uses' => 'Backend\CamController@analyse_finance'
+    ]);
+
+
     Route::post('gst_analysys', [
         'as' => 'gstAnalysis',
         'uses' => 'Application\ApplicationController@analyse_gst'

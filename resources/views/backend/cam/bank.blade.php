@@ -17,7 +17,7 @@
                   <div class="doc">
                      <small>{{ $bankdoc->doc_name }}</small>
                      <ul>
-                        <li><span class="icon"><i class="fa fa-file-excel-o"></i></span></li>
+                        <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
                         <li><a href="{{ Storage::url($bankdoc->file_path) }}" download target="_blank">Download Bank Statement</a></li>
                         <li><a href="javascript:void(0)" class="getAnalysis">Get Analysis</a></li>
                      </ul>
@@ -417,7 +417,10 @@
             let mclass = result['status'] ? 'success' : 'danger';
             var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
             $("#pullMsg").html(html);
-            window.open(result['value']['file_url'], '_blank');
+            if (result['status']) {
+               window.open(result['value']['file_url'], '_blank');
+            }
+            
          },
          error:function(error) {
             // body...

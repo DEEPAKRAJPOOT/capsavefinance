@@ -556,18 +556,24 @@ class User extends Authenticatable
      * @throws InvalidDataTypeExceptions
      * Since 0.1
      */
-    public static function getUserByAppId($appId)
-    {
+    public static function getUserByAppId($appId){
         //Check anchId is not blank
         if (empty($appId)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-       
         $arrUser = self::select('users.*')
               ->join('app', 'app.user_id', '=', 'users.user_id')
               ->where('app.app_id', '=', $appId)
               ->first();
 
         return ($arrUser ?: false);
+    }
+
+        public static function getBankData(){
+        $result = self::select('*')
+                ->from('mst_bank')
+                ->where('is_active', '1')
+                ->get();
+        return ($result ?? null);
     }
 }

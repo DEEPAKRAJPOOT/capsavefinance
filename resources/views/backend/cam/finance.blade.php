@@ -15,7 +15,25 @@
          <div class="row mt-4">
             <div class="col-lg-12 col-12 mb-4">
                <div class="card">
-                  <div class="card-body ">
+                  <div class="card-body">
+                     <div id="pullMsg"></div>
+                     <h2 class="sub-title bg mb-4">Uploaded Finance statement-</h2>
+                     <div class="clearfix"></div>
+                     @if($financedocs->count() > 0)
+                     @foreach($financedocs as $financedoc)
+                     <div class="doc" style="text-align: center;">
+                        <small>{{ $financedoc->finc_year }}</small>
+                        <ul>
+                           <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
+                           <li><a href="{{ Storage::url($financedoc->file_path) }}" download target="_blank">Download Finance Statement</a></li>
+                           <li><a href="javascript:void(0)" class="getAnalysis">Get Analysis</a></li>
+                        </ul>
+                     </div>
+                     @endforeach
+                     @endif
+                     <div class="clearfix"></div>
+                     <br/>
+                     <hr>
                      <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
                         <div class="card">
                            <div class="card-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" role="tab" id="headingOne">
@@ -2476,5 +2494,39 @@
 </div>   
 @endsection
 @section('jscript')
+<script type="text/javascript">
+   appId = '{{$appId}}';
+   appurl = '{{URL::route("financeAnalysis") }}';
+   _token = "{{ csrf_token() }}";
+</script>
 
+<script type="text/javascript">
+   $(document).on('click', '.getAnalysis', function() {
+      data = {appId, _token};
+      $.ajax({
+         url  : appurl,
+         type :'POST',
+         data : data,
+         beforeSend: function() {
+           $(".isloader").show();
+         },
+         dataType : 'json',
+         success:function(result) {
+            console.log(result);
+            let mclass = result['status'] ? 'success' : 'danger';
+            var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
+            $("#pullMsg").html(html);
+            if (result['status']) {
+            window.open(result['value']['file_url'], '_blank');
+            }
+         },
+         error:function(error) {
+            // body...
+         },
+         complete: function() {
+            $(".isloader").hide();
+         },
+      })
+   })
+</script>
 @endsection

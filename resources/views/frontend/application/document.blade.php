@@ -160,8 +160,9 @@
                                                 <label for="email">Select Bank Name</label>
                                                 <select class="form-control" name="doc_name">
                                                     <option>Select Bank Name</option>
-                                                    <option>HDFC Bank</option>
-                                                    <option>ICICI Bank</option>
+                                                   @foreach($bankdata as $bank)
+                                                        <option value="{{$bank['id']}}">{{$bank['bank_name']}}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                             @endif

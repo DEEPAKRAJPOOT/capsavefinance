@@ -104,11 +104,13 @@ class Perfios_lib{
 			return $resp;
 	     }
 	     if ($method == SELF::GET_STMT && !in_array($params['reportType'], ['xml','json'])) {
-	     	$resp['status'] = "success";
-		 	$resp['result'] = $response['result'];
-		 	return $resp;
+	     	$xml = @simplexml_load_string($response['result']);
+	     	if(!$xml){
+	     		$resp['status'] = "success";
+			 	$resp['result'] = $response['result'];
+			 	return $resp;
+	     	}
 	     }
-
 	     $result = $this->_parseResult($response['result'], $method);
 		 return $result;
     }
@@ -132,7 +134,7 @@ class Perfios_lib{
     }
 
     private function _parseResult($xml, $method) {
-    	$result = ['status' => 'success'];
+    	$result = ['status' => 'success', 'result' => ''];
     	$is_valid = true;//@$this->_is_valid_xml($xml);
     	if (!$is_valid) {
     		$result['status'] = "fail";
@@ -140,10 +142,7 @@ class Perfios_lib{
     		$result['message'] = "Response is not valid xml";
     		return $result;
     	}
-    	if ($method == SELF::GET_STMT) {
-    		$result['data'] = base64_encode($xml);
-    		return $result;
-    	}
+
     	$p = xml_parser_create();
 	    xml_parse_into_struct($p, $xml, $resp);
 	    xml_parser_free($p);

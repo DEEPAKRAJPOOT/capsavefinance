@@ -131,9 +131,10 @@
                         <div class="form-group">
                             <label for="email">Select Bank Name</label>
                             <select class="form-control" name="doc_name">
-                                <option>Select Bank Name</option>
-                                <option>HDFC Bank</option>
-                                <option>ICICI Bank</option>
+                                <option value="" selected disabled>Select Bank Name</option>
+                                 @foreach($bankdata as $bank)
+                                    <option value="{{$bank['id']}}">{{$bank['bank_name']}}</option>
+                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">

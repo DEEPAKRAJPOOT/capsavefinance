@@ -278,6 +278,7 @@ class ApplicationController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $editFlag = $request->get('edit');
+            $bankdata = User::getBankData();
             $userData = User::getUserByAppId($appId);
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
@@ -299,7 +300,8 @@ class ApplicationController extends Controller
                     'user_id' => $userData->user_id,
                     'app_id' => $appId,
                     'biz_id' => $bizId,
-                    'edit' => $editFlag
+                    'edit' => $editFlag,
+                    'bankdata' => $bankdata,
                 ]);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
