@@ -95,7 +95,7 @@ class BizOwner extends Model
     /* created by gajendra chauhan   */
     public static  function getOwnerByBizId($bizId){
         
-        return BizOwner::with('app')->where('biz_owner.biz_id', $bizId)->get();
+        return BizOwner::where('biz_id', $bizId)->get();
       
     }
 

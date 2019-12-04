@@ -163,7 +163,7 @@
                             </div>
                             @endforeach
                             
-                          @if($ownerDetails[0]->app->status!=1)
+                       
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="text-right mt-3">
@@ -175,7 +175,7 @@
                                     </div>
                                 </div>						
                             </div>
-                         @endif    
+                         
                              <div class="row mt-3">
                                 <div class="col-md-12">
                                     
@@ -194,7 +194,7 @@
                                   </div>
                               </div>
                             -->
-                            @if($ownerDetails[0]->app->status!=1)
+                         
                             <div class="d-flex btn-section">
                                 <div class="col-md-4 ml-auto text-right">
                                     <!-- <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = '#'"> -->
@@ -202,7 +202,7 @@
                                     <input type="submit" value="Save" id="actual_submit" style="display: none;">
                                 </div>
                             </div>
-                         @endif
+                       
 
                         </div>
                     </form>
