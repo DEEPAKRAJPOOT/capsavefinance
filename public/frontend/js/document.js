@@ -8,11 +8,24 @@
 
     $(document).ready(function () {
         $('#documentForm').validate({ // initialize the plugin
+            
             rules: {
                 'doc_file[]': {
                     required: true,
                     extension: "jpg,png,pdf,doc,dox",
                     filesize : 200000000,
+                },
+                'doc_name' : {
+                    required : true,
+                },
+                'finc_year' : {
+                    required : true,
+                },
+                'gst_month' : {
+                    required : true,
+                },
+                'gst_year' : {
+                    required : true,
                 }
             },
             messages: {
@@ -20,6 +33,18 @@
                     required: "Please select file",
                     extension:"Please select jpg,png,pdf,doc,dox type format only.",
                     filesize:"maximum size for upload 20 MB.",
+                },
+                'doc_name': {
+                    required: "Please select bank name.",
+                },
+                'finc_year': {
+                    required: "Please select finance year.",
+                },
+                'gst_month': {
+                    required: "Please select gst month.",
+                },
+                'gst_year': {
+                    required: "Please select gst year.",
                 }
             }
         });
@@ -28,7 +53,8 @@
 
         $("#savedocument").click(function(){
             if($('#documentForm').validate()){
-                $("#savedocument").disabled = true;
+                $('form#documentForm').submit();
+                $("#savedocument").attr("disabled","disabled");
             }  
         });            
 

@@ -139,7 +139,7 @@
                 <form id="documentForm" method="POST" action="{{ Route('document_save') }}" enctype="multipart/form-data">
                     <!-- Modal body -->
                     @csrf
-                    <input type="hidden" name="doc_id" value="">
+                    <input type="hidden" name="doc_id" id="doc_id" value="">
                     <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                     <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
 
