@@ -4,6 +4,7 @@ use App\Inv\Repositories\Models\Master\Permission;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use DB;
 
 class RoleUser extends BaseModel
 {
@@ -21,14 +22,14 @@ class RoleUser extends BaseModel
      *
      * @var boolean
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = true;
+    public $userstamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -151,5 +152,20 @@ class RoleUser extends BaseModel
         return ($arrRoles ? : false);
     }
     
+     /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function getAllUsersByRoleId($role_id)
+    {
+         $arr = self::select('users.*')
+                 ->join('users', 'role_user.user_id', '=', 'users.user_id')
+                 ->where('role_user.role_id',$role_id)
+                 ->where('users.is_active', 1)->pluck('f_name','user_id');  //DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS full_name")
+                return $arr;
+    }
     
 }

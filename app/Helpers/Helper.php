@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\Master\Permission;
 use App\Inv\Repositories\Models\Master\PermissionRole;
+use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\Role;
 use DB;
 
@@ -662,4 +663,14 @@ class Helper extends PaypalHelper
         return $currStage;
     }
     
+    /**
+     * Get aal role
+     *      * 
+     * @param integer $user_id | default
+     */
+    public static function getAllUsersByRoleId($role_id) {
+        $data = RoleUser::getAllUsersByRoleId($role_id);
+                return $data;
+                
+    }
 }
