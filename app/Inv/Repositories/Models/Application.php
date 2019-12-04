@@ -63,9 +63,10 @@ class Application extends Model
                 DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
                 DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role')
+                ->join('users', 'users.user_id', '=', 'app.user_id')  
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                  ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
-                ->leftJoin('users', 'users.anchor_id', '=', 'anchor_user.anchor_id')                
+                              
                 ->leftJoin('app_assign', function ($join) use($roleData) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
                     $join->on('app_assign.is_owner', '=', DB::raw("1"));
@@ -75,8 +76,10 @@ class Application extends Model
                 ->leftJoin('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
                 ->leftJoin('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
-                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');                
-        if ($roleData[0]->is_superadmin != 1) {
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
+        if ($roleData[0]->id == 11) {            
+                $appData->where('users.anchor_user_id', \Auth::user()->user_id);            
+        } else if ($roleData[0]->is_superadmin != 1) {
                 $appData->where('app_assign.to_id', \Auth::user()->user_id);            
         } else {
            $appData->whereNotNull('app_assign.to_id'); 
@@ -153,6 +156,7 @@ class Application extends Model
     
      public static function updateAppDetails($app_id, $arrUserData = [])
     {
+         $app_id = (int)$app_id;
         /**
          * Check id is not blank
          */
