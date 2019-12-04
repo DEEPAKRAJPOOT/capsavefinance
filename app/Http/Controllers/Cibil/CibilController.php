@@ -100,18 +100,19 @@ class CibilController extends Controller
         $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
         $arrOwnerData->biz_cin = $arrBizData['0']['cin'];
         $responce =  $CibilApi->getCommercialCibilAcknowledgement($arrOwnerData);
+
         $p = xml_parser_create('utf-8');
         xml_parse_into_struct($p, $responce, $resp);
         xml_parser_free($p);
+
         $acknowledgementResult = [];
         foreach ($resp as $key => $value) {
             if ($value['type'] == 'complete') {
                 $acknowledgementResult[strtolower($value['tag'])] = $value['value'] ?? '';
             }
         }
-     
         if($acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
-            sleep(30);
+            sleep(20);
             $arrOwnerData['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrOwnerData['report_id'] = $acknowledgementResult['report-id'];
             $responseData =  $CibilApi->getCommercialCibilData($arrOwnerData);
@@ -125,8 +126,7 @@ class CibilController extends Controller
                     $resultData[strtolower($value['tag'])] = $value['value'] ?? '';
                 }
             }
-            if($resultData['status'] == 'SUCCESS' ){
-                    
+            if(isset($resultData['status'])){
                     if($resultData['score'] > 0){
                         $cibilScore =  $resultData['score'];
                     }else{
@@ -157,12 +157,12 @@ class CibilController extends Controller
                                  return response()->json(['message' =>'Something went wrong','status' => 0]);
                             } 
             }else{
-                  return response()->json(['message' =>'Something went wrong','status' => 0]); 
+                  return response()->json(['message' =>$resultData['description'],'status' => 0]); 
             }               
         }
         else{
             
-            return response()->json(['message' =>'Something went wrong','status' => 0]);
+            return response()->json(['message' =>$acknowledgementResult['description'],'status' => 0]);
         }
     }
 

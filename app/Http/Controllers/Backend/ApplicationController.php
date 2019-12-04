@@ -145,7 +145,7 @@ class ApplicationController extends Controller
        try {
           $arrFileData = json_decode($request->getContent(), true);
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
-         
+         dd($owner_info);
           if ($owner_info) {
                 return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
@@ -227,7 +227,8 @@ class ApplicationController extends Controller
             $docId = $request->get('doc_id'); //  fetch document id
             $appId = $request->get('app_id'); //  fetch document id
             $ownerId = $request->get('owner_id'); //  fetch document id
-            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
+//            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
+            $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
            
             
             $userFile = $this->docRepo->saveFile($uploadData);
@@ -250,7 +251,8 @@ class ApplicationController extends Controller
                 return response()->json([
                     'result' => $response, 
                     'status' => 1, 
-                    'file_path' => Storage::disk('s3')->url($response->file_path)  
+                    'file_path' => Storage::url($response->file_path)  
+//                    'file_path' => Storage::disk('s3')->url($response->file_path)  
                 ]);
             } else {
                 return response()->json([

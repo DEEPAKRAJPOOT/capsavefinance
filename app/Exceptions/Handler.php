@@ -67,6 +67,17 @@ class Handler extends ExceptionHandler
 
       // dd($maintenanceMode);
 
+
+    if ($exception instanceof \Symfony\Component\HttpFoundation\File\Exception\FileException) {
+        // create a validator and validate to throw a new ValidationException
+        return Validator::make($request->all(), [
+            'doc_file' => 'required|file|size:5000000',
+        ])->validate();
+    }
+
+    return parent::render($request, $exception);
+
+        
         if (!config('app.debug')) {
             if ($maintenanceMode) {
                 return Response::view('errors.503', [], 503);
