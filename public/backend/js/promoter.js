@@ -51,23 +51,23 @@ function uploadFile(uploadId, ownerId, docId)
            {
             if(docId == 2) { 
                   $("#pandown"+uploadId).css({'display':'inline'});
-                  $("#pandown"+uploadId).attr('href',r.result.file_path);
+                  $("#pandown"+uploadId).attr('href',r.file_path);
             }
             else if(docId == 31) { 
                  $("#dldown"+uploadId).css({'display':'inline'});
-                 $("#dldown"+uploadId).attr('href',r.result.file_path);
+                 $("#dldown"+uploadId).attr('href',r.file_path);
             }
             else if(docId == 30) { 
                  $("#voterdown"+uploadId).css({'display':'inline'});
-                $("#voterdown"+uploadId).attr('href',r.result.file_path);
+                $("#voterdown"+uploadId).attr('href',r.file_path);
             }
             else if(docId == 32) { 
                  $("#passdown"+uploadId).css({'display':'inline'});
-                $("#passdown"+uploadId).attr('href',r.result.file_path);
+                $("#passdown"+uploadId).attr('href',r.file_path);
             }
             else if(docId == 22) { 
                  $("#photodown"+uploadId).css({'display':'inline'});
-                $("#photodown"+uploadId).attr('href',r.result.file_path);
+                $("#photodown"+uploadId).attr('href',r.file_path);
             }
 
              

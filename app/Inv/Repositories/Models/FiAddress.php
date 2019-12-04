@@ -42,4 +42,12 @@ class FiAddress extends BaseModel {
         'updated_by'
     ];
 
+    public function agency(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Agency','agency_id','agency_id');
+    }
+
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','to_id','user_id');
+    }
+
 }
