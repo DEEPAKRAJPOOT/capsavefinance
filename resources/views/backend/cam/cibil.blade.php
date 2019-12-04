@@ -54,11 +54,17 @@
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->biz_entity_name}}</td>
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
-                                 <td width="20%" id="cibilScore{{$arr->biz_id}}">{{$arr->cibilScore}}</td>
+                                 <td width="20%" id="cibilScore{{$arr->biz_id}}">{{$arr->cibil_score}}</td>
                                  <td class=" numericCol" width="25%">
 
-                                   <button class="btn btn-success btn-sm" supplier="49" onclick="pull_cibil_commercialModal({{$arr->biz_id}})">PULL</button>
-                                    <button class="btn btn-warning btn-sm" supplier="49" onclick="downloadCommercialCibil({{$arr->biz_id}})">View Report</button>
+                                   <button class="btn btn-success btn-sm" supplier="49" id="cibilScoreBtn{{$arr->biz_id}}" onclick="pull_cibil_commercialModal({{$arr->biz_id}})">@if ($arr->is_cibil_pulled == 1) Re-Pull @else Pull @endif</button>
+                                      
+                                          @if ($arr->is_cibil_pulled == 1)
+                                      
+                                          <button class="btn btn-warning btn-sm" supplier="49" onclick="downloadCommercialCibil({{$arr->biz_id}})">View Report</button>
+                                       
+                                          @endif
+                                      
                                    <!--  <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)">UPLOAD</button> -->
                                  </td>
                               </tr>
@@ -97,10 +103,13 @@
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->first_name." ".$arr->last_name}}</td>
                                  <td width="20%">{{$arr->pan_gst_hash}}</td>
-                                 <td width="20%" id="cibilScore{{$arr->biz_owner_id}}">{{$arr->cibilScore}}</td>
+                                 <td width="20%" id="cibilScore{{$arr->biz_owner_id}}">{{$arr->cibil_score}}</td>
                                  <td class=" numericCol" width="25%">
-                                    <button class="btn btn-success btn-sm" id="cibilScoreBtn{{$arr->biz_owner_id}}" supplier="49" onclick="pull_cibil_promoterModal({{$arr->biz_owner_id}})">PULL</button>
+                                    <button class="btn btn-success btn-sm" id="cibilScoreBtn{{$arr->biz_owner_id}}" supplier="49" onclick="pull_cibil_promoterModal({{$arr->biz_owner_id}})">@if ($arr->is_cibil_pulled == 1) Re-Pull @else Pull @endif</button>
+
+                                    @if ($arr->is_cibil_pulled == 1)
                                     <button class="btn btn-warning btn-sm" supplier="49" onclick="downloadPromoterCibil({{$arr->biz_owner_id}})" >View Report</button>
+                                    @endif
                                      <!--
                                     <button class="btn btn-info btn-sm" supplier="49" onclick="">UPLOAD</button>
                                     -->
@@ -451,7 +460,6 @@
 
       function pull_cibil_promoter(){
             var biz_owner_id = $("#biz_owner_id").val();
-          // $("#cibilScoreBtn").text("Waiting...");
           $("#pull_cibil_promoterModal").modal("hide");
                $(".isloader").show();
             var messages = {
@@ -470,24 +478,19 @@
                                   // alert(errorThrown);
                 },
                 success: function (data) {
-                 // $("#cibilScoreBtn").text("Yes");
-                  
                  $(".isloader").hide();
                    var status =  data['status'];
                    var html = '<div class="alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+data['message']+'</div>';
                      if(status==1)
                        {  
-                            //alert(data['message']);
-                           
                             $("#pullMsg").html(html);
                             $("#cibilScore"+biz_owner_id).text(data['cibilScore']);
-                            
+                            $("#cibilScoreBtn"+biz_owner_id).text("Re-Pull");
+                            $("#cibilScoreBtn"+biz_owner_id).after("   <button class='btn btn-warning btn-sm' onclick='downloadPromoterCibil("+biz_owner_id+")' >View Report</button>");                        
                        }else{
                             $("#pullMsg").html(html);
                       }                          
-                       
                }
-
           });
       }   
 
@@ -529,7 +532,6 @@
       function pull_cibil_commercialModal(biz_id) {
          $("#pull_cibil_commercialModal").modal("show");
          $("#biz_id").val(biz_id);
-        
       }
 
 
@@ -553,8 +555,6 @@
                                   // alert(errorThrown);
                 },
                 success: function (data) {
-                 // $("#cibilScoreBtn").text("Yes");
-                  
                  $(".isloader").hide();
                    var status =  data['status'];
                    var html = '<div class="alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+data['message']+'</div>';
@@ -562,6 +562,8 @@
                        {  
                             $("#pullMsgCommercial").html(html);
                             $("#cibilScore"+biz_id).text(data['cibilScore']);
+                            $("#cibilScoreBtn"+biz_id).text("Re-Pull");
+                            $("#cibilScoreBtn"+biz_id).after("   <button class='btn btn-warning btn-sm' onclick='downloadCommercialCibil("+biz_id+")' >View Report</button>");
                             
                        }else{
                             $("#pullMsgCommercial").html(html);
