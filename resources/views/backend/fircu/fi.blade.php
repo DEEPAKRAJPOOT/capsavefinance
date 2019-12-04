@@ -88,13 +88,19 @@
                                                     <td width="10%"><b>Download</b></td>
                                                     <td align="center" width="15%" style="border-right: 1px solid #e9ecef;"><b>Status</b></td>
                                                  </tr>
+                                                 @forelse($fiList->fiAddress as $fiAdd)
                                                  <tr>
-                                                    <td width="30%">Agency Name</td>
-                                                    <td width="25%">User Name</td>
-                                                    <td width="20%">Updated On</td>
+                                                    <td width="30%">{{$fiAdd->agency->comp_name}}</td>
+                                                    <td width="25%">{{ucwords($fiAdd->user->f_name.' '.$fiAdd->user->l_name)}}</td>
+                                                    <td width="20%">{{\Carbon\Carbon::parse($fiAdd->fi_status_updatetime)->format('d/m/Y H:m A')}}</td>
                                                     <td width="10%"><a href="#"><i class="fa fa-download"></i></a></td>
-                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">Pending</td>
+                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$fiAdd->fi_status}}</td>
                                                  </tr>
+                                                 @empty
+                                                 <tr>
+                                                    <td width="100%" colspan="5">No data found</td>
+                                                 </tr>
+                                                 @endforelse
                                               </tbody>
                                            </table>
                                         </td>
