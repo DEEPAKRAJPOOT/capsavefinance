@@ -43,6 +43,7 @@ class BizApi extends BaseModel
      $arrData = self::select('biz_api_log.res_file')
         ->join('biz_api_log', 'biz_api_log.biz_api_log_id', '=', 'biz_api.biz_api_log_id')
         ->where('biz_api.biz_owner_id', $biz_owner_id)
+        ->where('biz_api.type', '1')
         ->orderBy('biz_api_log.biz_api_log_id', 'DESC')
         ->first();
         return $arrData;
@@ -55,6 +56,7 @@ class BizApi extends BaseModel
         ->join('biz_api_log', 'biz_api_log.biz_api_log_id', '=', 'biz_api.biz_api_log_id')
         ->where('biz_api.biz_owner_id', NULL)
         ->where('biz_api.biz_id', $biz_id)
+        ->where('biz_api.type', '1')
         ->orderBy('biz_api_log.biz_api_log_id', 'DESC')
         ->first();
         return $arrData;
