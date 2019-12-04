@@ -52,7 +52,7 @@
         $('#documentForm').validate();
 
         $("#savedocument").click(function(){
-            if($('#documentForm').validate()){
+            if($('#documentForm').valid()){
                 $('form#documentForm').submit();
                 $("#savedocument").attr("disabled","disabled");
             }  

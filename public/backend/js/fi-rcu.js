@@ -4,8 +4,11 @@
  */
 
 function triggerRCU()
-{
-    var ids = $('input[name=documentIds]').val();
-    alert(ids);
+{   
+    var docIds = [];
+    $. each($("input[name='documentIds']:checked"), function(){
+        docIds. push($(this). val());
+    });
+    
     
 }
