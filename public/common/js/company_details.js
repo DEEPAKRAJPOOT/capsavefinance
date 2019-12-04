@@ -191,7 +191,9 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if(biz_turnover.length != 0 && parseInt(biz_turnover.replace(/,/g, '')) == 0){
+	if(biz_turnover == 0){
+		// OK
+	}else if(biz_turnover.length != 0 && parseInt(biz_turnover.replace(/,/g, '')) == 0){
 		setError('input[name=biz_turnover]', 'Business Turnover amount is not valid');
 		flag = false;
 	}
@@ -201,7 +203,9 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if(tenor_days.length != 0 && parseInt(tenor_days) == 0){
+	if(tenor_days == 0){
+		// OK
+	}else if(tenor_days.length != 0 && parseInt(tenor_days) == 0){
 		setError('input[name=tenor_days]', 'Enter valid Tranche Tenor');
 		flag = false;
 	}
