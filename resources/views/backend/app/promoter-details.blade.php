@@ -1035,7 +1035,7 @@ $(document).on('click', '.promoter_pan_verify', function () {
                 },
                    success: function (data) {
                     
-                                          if(data.value > 0)
+                                          if(data['status'] > 0)
                                            {   
                                                  $('#verifyvoter'+count).attr('readonly',true);
                                                  $('#vvoter'+count).text('Verified');
