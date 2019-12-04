@@ -112,14 +112,128 @@ function getCIN(entityName){
 }
 
 function checkValidation(){
-	if($('.pan-verify').text() == 'Verify' || $('biz_cin').val() == ''){
-		alert('Please fill and verify Business PAN First');
-		return false;
+	unsetError('input[name=biz_pan_number]');
+	unsetError('select[name=biz_gst_number]');
+	unsetError('input[name=biz_entity_name]');
+	unsetError('select[name=biz_type_id]');
+	unsetError('input[name=incorporation_date]');
+	unsetError('select[name=biz_constitution]');
+	unsetError('select[name=entity_type_id]');
+	unsetError('select[name=segment]');
+	unsetError('input[name=biz_turnover]');
+	unsetError('input[name=loan_amount]');
+	unsetError('input[name=tenor_days]');
+	unsetError('input[name=biz_address]');
+	unsetError('select[name=biz_state]');
+	unsetError('input[name=biz_city]');
+	unsetError('input[name=biz_pin]');
+	
+	let flag = true;
+	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
+	let biz_gst_number = $('select[name=biz_gst_number]').val();
+	let biz_entity_name = $('input[name=biz_entity_name]').val().trim();
+	let biz_type_id = $('select[name=biz_type_id]').val();
+	let incorporation_date = $('input[name=incorporation_date]').val();
+	let biz_constitution = $('select[name=biz_constitution]').val();
+	let entity_type_id = $('select[name=entity_type_id]').val();
+	let segment = $('select[name=segment]').val();
+	let biz_turnover = $('input[name=biz_turnover]').val().trim();
+	let loan_amount = $('input[name=loan_amount]').val().trim();
+	let tenor_days = $('input[name=tenor_days]').val().trim();
+	let biz_address = $('input[name=biz_address]').val().trim();
+	let biz_state = $('select[name=biz_state]').val();
+	let biz_city = $('input[name=biz_city]').val().trim();
+	let biz_pin = $('input[name=biz_pin]').val().trim();
+
+	if(biz_pan_number.length != 10){
+		setError('input[name=biz_pan_number]', 'Enter valid PAN Number');
+		flag = false;
+	}else if($('.pan-verify').text() == 'Verify' || $('biz_cin').val() == ''){
+		setError('input[name=biz_pan_number]', 'Please fill and verify Business PAN First');
+		flag = false;
+	}
+
+	if(biz_gst_number == ''){
+		setError('select[name=biz_gst_number]', 'Please select GST Number');
+		flag = false;
 	}else if($('biz_cin').val()  == ''){
-		alert('Service unavailable!');
-		return false;
-	}else{
+		setError('select[name=biz_gst_number]', 'Service unavailable!');
+		flag = false;	
+	}
+
+	if(biz_entity_name.length == ''){
+		setError('input[name=biz_entity_name]', 'Enter valid Entity Name');
+		flag = false;
+	}
+
+	if(biz_type_id == ''){
+		setError('select[name=biz_type_id]', 'Plese select Industry');
+		flag = false;
+	}
+
+	if(incorporation_date == ''){
+		setError('input[name=incorporation_date]', 'Incorporation date is required');
+		flag = false;
+	}
+
+	if(biz_constitution == ''){
+		setError('select[name=biz_constitution]', 'Business constitution is required');
+		flag = false;
+	}
+
+	if(entity_type_id == ''){
+		setError('select[name=entity_type_id]', 'Nature of Business is required');
+		flag = false;
+	}
+
+	if(segment== ''){
+		setError('select[name=segment]', 'Segment is required');
+		flag = false;
+	}
+
+	if(biz_turnover == 0){
+		// OK
+	}else if(biz_turnover.length != 0 && parseInt(biz_turnover.replace(/,/g, '')) == 0){
+		setError('input[name=biz_turnover]', 'Business Turnover amount is not valid');
+		flag = false;
+	}
+
+	if(loan_amount.length == 0 || parseInt(loan_amount.replace(/,/g, '')) == 0){
+		setError('input[name=loan_amount]', 'Applied Loan Amount is required');
+		flag = false;
+	}
+
+	if(tenor_days == 0){
+		// OK
+	}else if(tenor_days.length != 0 && parseInt(tenor_days) == 0){
+		setError('input[name=tenor_days]', 'Enter valid Tranche Tenor');
+		flag = false;
+	}
+
+	if(biz_address.length == ''){
+		setError('input[name=biz_address]', 'Registered address is required');
+		flag = false;
+	}
+
+	if(biz_state == ''){
+		setError('select[name=biz_state]', 'Registered State is required');
+		flag = false;
+	}
+
+	if(biz_city.length == '' || parseInt(biz_city) == 0){
+		setError('input[name=biz_city]', 'Registered City is required');
+		flag = false;
+	}
+
+	if(biz_pin.length != 6){
+		setError('input[name=biz_pin]', 'Registered Pin is required');
+		flag = false;
+	}
+
+	if(flag){
 		return true;
+	}else{
+		return false;
 	}
 }
 
