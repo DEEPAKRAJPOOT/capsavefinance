@@ -58,14 +58,14 @@ class Application extends Model
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         
         $appData = self::distinct()->select('app.user_id','app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 
-                'app.status','app_assign.to_id', 'anchor_user.anchor_id', 'anchor_user.user_type',
+                'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type',
                 DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
                 DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role')
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                 ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
+                 //->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
                               
                 ->leftJoin('app_assign', function ($join) use($roleData) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
@@ -78,7 +78,8 @@ class Application extends Model
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
         if ($roleData[0]->id == 11) {            
-                $appData->where('users.anchor_user_id', \Auth::user()->user_id);            
+                //$appData->where('users.anchor_user_id', \Auth::user()->user_id);            
+                $appData->where('users.anchor_id', \Auth::user()->anchor_id);            
         } else if ($roleData[0]->is_superadmin != 1) {
                 $appData->where('app_assign.to_id', \Auth::user()->user_id);            
         } else {
@@ -122,13 +123,14 @@ class Application extends Model
         
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $appData = self::distinct()->select('app.app_id','app.biz_id','app.user_id','biz.biz_entity_name',
-                'anchor_user.user_type', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
+                'users.is_buyer as user_type', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 'assignee_r.name AS assignee', 
                 DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),
                 'app_assign.sharing_comment')                 
+                ->join('users', 'users.user_id', '=', 'app.user_id')  
                     ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                 ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
-                ->leftJoin('users', 'users.anchor_id', '=', 'anchor_user.anchor_id')                
+                //->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
+                
                 ->leftJoin('app_assign', function ($join) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
                     $join->on('app_assign.is_owner', '=', DB::raw("1"));                    
@@ -324,9 +326,9 @@ class Application extends Model
      */
     protected static function getUserApplications() 
     {  
-        $appData = self::distinct()->select('app.user_id','app.app_id','app.loan_amt', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'anchor_user.anchor_id', 'anchor_user.user_type', 'app.created_at')
+        $appData = self::distinct()->select('app.user_id','app.app_id','app.loan_amt', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                ->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
+                ->join('users', 'app.user_id', '=', 'users.user_id')
                 ->where('app.user_id', \Auth::user()->user_id);
         //$appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC');
@@ -371,9 +373,10 @@ class Application extends Model
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        $appData = self::select('app.*','anchor_user.*', 'anchor.*')
-                ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
-                ->join('anchor', 'anchor.anchor_id', '=', 'anchor_user.anchor_id')
+        $appData = self::select('app.*','users.*')  //,'anchor_user.*', 'anchor.*'
+                //->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
+                //->join('anchor', 'anchor.anchor_id', '=', 'anchor_user.anchor_id')
+                ->join('users', 'users.user_id', '=', 'app.user_id')
                 ->where('app.app_id', $app_id)                
                 ->first();
                        
