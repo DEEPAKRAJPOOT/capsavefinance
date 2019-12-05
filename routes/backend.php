@@ -53,11 +53,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'promoter_detail_save',
                     'uses' => 'Backend\ApplicationController@updatePromoterDetail'
             ]); 
-             Route::post('promoter-detail-save',
-                [
-                    'as' => 'promoter_detail_save',
-                    'uses' => 'Backend\ApplicationController@updatePromoterDetail'
-            ]); 
+             
             Route::post('get-user-pan-response-karza', [
                 'as' => 'get_user_pan_response_karza',
                 'uses' => 'Backend\ApplicationController@getKarzaApiRes'
