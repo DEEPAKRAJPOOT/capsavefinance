@@ -217,6 +217,41 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'mobile_verify',
                 'uses' => 'Backend\ApplicationController@mobileModel'
             ]);
+            
+            
+
+//////////////// For Promoter Iframe////////////////////////
+
+            Route::get('show-pan-data', [
+                'as' => 'show_pan_data',
+                'uses' => 'Backend\ApplicationController@showPanResponseData'
+            ]);
+
+            Route::get('show-dl-data', [
+                'as' => 'show_dl_data',
+                'uses' => 'Backend\ApplicationController@showDlResponseData'
+            ]);
+            Route::get('show-voter-data', [
+                'as' => 'show_voter_data',
+                'uses' => 'Backend\ApplicationController@showVoterResponseData'
+            ]);
+            Route::get('show-pass-data', [
+                'as' => 'show_pass_data',
+                'uses' => 'Backend\ApplicationController@showPassResponseData'
+            ]);
+         //////////////for cibil Iframe//////////////////////// 
+             Route::get('pull-cibil-commercial', [
+                'as' => 'pull_cibil_commercial',
+                'uses' => 'Backend\CamController@pullCibilCommercial'
+            ]);
+              Route::get('pull-cibil-promoter', [
+                'as' => 'pull_cibil_promoter',
+                'uses' => 'Backend\CamController@pullCibilPromoter'
+            ]);
+               Route::get('view-cibil-report', [
+                'as' => 'view_cibil_report',
+                'uses' => 'Backend\CamController@viewCibilReport'
+            ]);
 
         });
 
