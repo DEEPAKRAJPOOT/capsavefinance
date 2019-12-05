@@ -1,4 +1,4 @@
-<ul class="main-menu">
+<ul class="main-menu">    
     @can('company_details')
     <li>
         <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ (request()->is('application/company-details') || request()->is('application/promoter-details') || request()->is('application/documents')) ? 'active' : '' }}">Application details</a>
