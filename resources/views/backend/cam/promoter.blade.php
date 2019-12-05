@@ -134,7 +134,6 @@
                                                     <div class="col-md-12">
                                                         <input type="text" readonly='readonly' value="{{ isset($arrPan[$j]->requestId) ? $arrPan[$j]->requestId : '' }}"  class="form-control verifydl"  >
                                                         <span class="text-success float-left" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified </i> </span>
-                                                        <span class="text-danger float-left" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                                     </div>
 
                                                 </td>
@@ -155,7 +154,7 @@
                                                     <div class="col-md-12">
                                                         <input type="text" readonly='readonly'  value="{{ isset($arrDl[$j]->requestId) ? $arrDl[$j]->requestId : '' }}"  class="form-control verifydl"  >
                                                         <span class="text-success float-left" style="display:{{isset($arrDl[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified </i> </span>
-                                                        <span class="text-danger float-left"  style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                        
                                                     </div>
 
                                                 </td>
@@ -176,8 +175,8 @@
                                                 <td>
                                                     <div class="col-md-12">
                                                         <input type="text" readonly='readonly'  value="{{ isset($arrVoterNo[$j]->requestId) ? $arrVoterNo[$j]->requestId : '' }}" name="verifyvoter[]" id="verifyvoter{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifyvoter" >
-                                                       <span class="text-success float-left" id="v3successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($arrVoterNo[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-                                                        <span class="text-danger float-left" id="v3failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                       <span class="text-success float-left" id="v3successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($arrVoterNo[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified</i> </span>
+                                                        
                                                     </div>
 
                                                 </td>
@@ -196,13 +195,9 @@
                                                 <td>Passport</td>
                                                 <td>
                                                     <div class="col-md-12">
-                                                         
                                                          <input type="text" readonly='readonly'  value="{{ isset($arrPassNo[$j]->requestId) ? $arrPassNo[$j]->requestId : '' }}" name="verifypassport[]" id="verifypassport{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifypassport" >
                                                     
-                                                          <span class="text-success float-left" id="v4successpanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:{{isset($arrPassNo[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-
-                                                         <span class="text-danger float-left" id="v4failurepanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
-                                                     
+                                                          <span class="text-success float-left" id="v4successpanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:{{isset($arrPassNo[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified</i> </span>
                                                     </div>
 
 
