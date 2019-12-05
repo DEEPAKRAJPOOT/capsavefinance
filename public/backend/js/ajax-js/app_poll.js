@@ -5,11 +5,18 @@ var oTable;
         $(document).ready(function () {
             oTable1 = $('#apppollMaster').DataTable({
                 "order" : [[0, "asc"]],
-                "sDom": "<'row'<'col-md-2'l><'col-md-7'a><'col-md-2'f>r>t<'row'<'col-md-6'i><'col-md-6'p>>",
+                //"sDom": "<'row'<'col-md-2'l><'col-md-7'a><'col-md-2'f>r>t<'row'<'col-md-6'i><'col-md-6'p>>",
                 //"sPaginationType": "bootstrap",
                 "processing": true,
                 "serverSide": true,
                 searching: false,
+                "scrollY": 400,
+                "scrollX": true,
+                scrollCollapse: true,
+//                 fixedColumns:   {
+//            leftColumns: 1,
+//            rightColumns: 1
+//        },
             bSort: true,
                 ajax: {
                 "url": messages.get_case_pool, // json datasource
@@ -27,7 +34,10 @@ var oTable;
             },
                 columns: [
                     {data: 'app_id'},
-                    {data: 'biz_entity_name'},
+                   {data: 'biz_entity_name'},
+                    {data: 'name'},
+                    {data: 'email'},
+                    {data: 'mobile_no'},
                     {data: 'assoc_anchor'},
                     {data: 'user_type'},
                     {data: 'assignee'},
