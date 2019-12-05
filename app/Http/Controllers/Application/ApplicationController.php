@@ -197,6 +197,7 @@ class ApplicationController extends Controller
         $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
         $gstdata = State::getGstbyUser($userId);
+        $bankdata = State::getBankData();
         $gst_no = $gstdata['pan_gst_hash'] ?? '';
         $appData = $this->appRepo->getAppDataByAppId($appId);
     
@@ -218,12 +219,8 @@ class ApplicationController extends Controller
             'requiredDocs' => $requiredDocs,
             'documentData' => $docData,
             'gst_no' => $gst_no,
+            'bankdata' => $bankdata,
         ]); 
-
-//        return view('frontend.application.document')->with([
-//            'requiredDocs' => $requiredDocs,
-//            'documentData' => $docData
-//        ]); 
     } 
     
     /**

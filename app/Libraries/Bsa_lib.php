@@ -3,6 +3,8 @@ namespace App\Libraries;
 
 use phpseclib\Crypt\RSA;
 use Illuminate\Support\Facades\Config;
+use Auth;
+use App\Inv\Repositories\Models\FinanceModel;
 
 define('FIXED', array('vendorId' => 'capsave','time' => date('Ymd\THis\Z')));
 define('BSA_LIB_URL', config('proin.BSA_LIB_URL'));
@@ -99,14 +101,27 @@ class Bsa_lib{
 					"X-Perfios-Signed-Headers: host;x-perfios-content-sha256;x-perfios-date",
 		 );
 		 $headers[0] = $content_type;
+		 $log_req = array(
+	     	'perfios_log_id' => $params['perfiosTransactionId'] ?? NULL,
+	     	'req_file' => is_array($payload) || is_object($payload) ? base64_encode(json_encode($payload)) : base64_encode($payload),
+	     	'url' => base64_encode($url),
+	     	'status' => 'pending',
+	     	'created_by' => Auth::user()->user_id,
+	     );
+	     $inserted_id = FinanceModel::insertPerfios($log_req, 'biz_perfios_log');
 	     $response = $this->_curl_call($url, $payload, $headers);
 	     if (!empty($response['error_no'])) {
 	     	$resp['code'] 	 = "CurlError";
 	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
 	     }
+	     $update_log = array(
+	     	"res_file" => is_array($response['result']) || is_object($response['result']) ? base64_encode(json_encode($response['result'])) : base64_encode($response['result']),
+	     );
 
 	     if ($method == SELF::GET_REP && !in_array($params['types'], ['xml','json'])) {
+	     	$update_log['status'] = "success";
+	     	FinanceModel::updatePerfios($update_log,'biz_perfios_log', $inserted_id);
 	     	$resp['status'] = "success";
 	     	$resp['message'] = "success";
 		 	$resp['result'] = $response['result'];
@@ -114,6 +129,8 @@ class Bsa_lib{
 	     }
 	     
 	     $result = $this->_parseResult($response['result'], $method);
+	     $update_log['status'] = $result['status'];
+	     FinanceModel::updatePerfios($update_log, 'biz_perfios_log', $inserted_id);
 	     return $result;
     }
 
@@ -206,7 +223,7 @@ class Bsa_lib{
     }
 
     private function _parseResult($xml, $method) {
-    	$result = ['status' => 'success'];
+    	$result = ['status' => 'success','result' => ''];
     	$is_valid = true;//@$this->_is_valid_xml($xml);
     	if (!$is_valid) {
     		$result['status'] = "fail";

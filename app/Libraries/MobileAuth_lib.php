@@ -1,5 +1,8 @@
 <?php 
 namespace App\Libraries;
+use Illuminate\Support\Facades\Config;
+use App\Inv\Repositories\Models\BizApiLog;
+use Auth;
 
 define('MOBILE_AUTH_LIB_URL', config('proin.MOBILE_AUTH_LIB_URL'));
 define('MOBILE_AUTH_LIB_KEY', config('proin.MOBILE_AUTH_LIB_KEY'));
@@ -88,7 +91,13 @@ class MobileAuth_lib
 		    "x-karza-key: " . SELF::KARZA_KEY,
 		);
 		$url = SELF::METHOD[$method];
+
+
 		$response = $this->_curl_call($url, $payload, $headers);
+
+
+		$createApiLog = @BizApiLog::create(['req_file' =>$payload, 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => 0,'created_by' => Auth::user()->user_id]);
+		$resp['createApiLog'] = $createApiLog;
 	    if (!empty($response['error_no'])) {
 	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;

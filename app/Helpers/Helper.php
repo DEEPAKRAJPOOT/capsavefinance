@@ -176,8 +176,14 @@ class Helper extends PaypalHelper
                     //update assign table
                     $dataArr = []; 
                     $dataArr['from_id'] = \Auth::user()->user_id;
-                    $dataArr['to_id'] = null;
-                    $dataArr['role_id'] = $data->role_id;
+                    if ($data->role_id == 4) {
+                        $toUserId = User::getLeadSalesManager($user_id);
+                        $dataArr['to_id'] = $toUserId;
+                        $dataArr['role_id'] = null;                        
+                    } else {
+                        $dataArr['to_id'] = null;
+                        $dataArr['role_id'] = $data->role_id;
+                    }
                     $dataArr['assigned_user_id'] = $user_id;
                     $dataArr['app_id'] = $app_id;
                     $dataArr['assign_status'] = '0';
@@ -377,6 +383,7 @@ class Helper extends PaypalHelper
                 'app_wf_status' => $wf_status,
                 'is_complete' => $wf_status
             ];
+            
             $appData = Application::getAppData((int)$app_id);
             $user_id = $appData->user_id;
             if ($wf_stage_code == 'new_case') {
@@ -385,19 +392,22 @@ class Helper extends PaypalHelper
             } else {
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
-//            if ($wf_status == 1) {
-                //$nextWfData = WfStage::getNextWfStage($wf_order_no);dd($nextWfData);
-//                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
-//                if ( !$wfAppStageData ) {
+            //dd($wf_stage_code, $app_id, $wf_status, $assign_role, $nextWfData->stage_code);
+            if ($wf_status == 1) {
+                $nextWfData = WfStage::getNextWfStage($wf_order_no);
+                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
+                //dd('hhhhhhhhhhhhhhh', $nextWfData, $wfAppStageData);
+                if ( !$wfAppStageData ) {
                     $insertData = [
-                        'wf_stage_id' => $wf_stage_id,
+                        'wf_stage_id' => $nextWfData->wf_stage_id,
                         'biz_app_id' => $app_id,
                         'user_id' => $user_id,
                         'app_wf_status' => 0,
                         'is_complete' => 0
                     ];
                     $result = WfAppStage::saveWfDetail($insertData);
-//             }
+                }
+            }
                 //get role id by wf_stage_id
                 //$data = WfStage::find($result->wf_stage_id);
                  AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);

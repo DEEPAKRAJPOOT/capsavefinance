@@ -162,7 +162,7 @@
                             <tbody>
                                 <tr>
                                     <td width="30%"><b>Proposed Limit</b> </td>
-                                    <td id="limits" name="limits">₹ </td>
+                                    <td id="limits" name="limits">{{$arrBizData->app->loan_amt}} </td>
                                     <td><b>Exiting Limits ( If any ) </b></td>
                                     <td>
                                         <input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr" value="{{isset($arrCamData->t_o_f_limit) ? $arrCamData->t_o_f_limit : '0'}}">

@@ -24,6 +24,18 @@
                   </div>
                      @endforeach
                   @endif
+                  @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
+                  <div class="clearfix"></div>
+                  <div style="text-align: end;">
+                     <a class="btn btn-success" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download analysed Statement</a>
+                  </div>
+                  @endif 
+                  @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
+                  <div class="clearfix"></div>
+                  <div style="text-align: end;">
+                     <a class="btn btn-success process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process Statement</a>
+                  </div>
+                  @endif 
                   <div class="clearfix"></div>
                   <br/>
                   <hr>
@@ -398,6 +410,7 @@
 <script type="text/javascript">
    appId = '{{$appId}}';
    appurl = '{{URL::route("getAnalysis") }}';
+   process_url = '{{URL::route("process_banking_statement") }}';
    _token = "{{ csrf_token() }}";
 </script>
 
@@ -417,10 +430,43 @@
             let mclass = result['status'] ? 'success' : 'danger';
             var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
             $("#pullMsg").html(html);
-            window.open(result['value']['file_url'], '_blank');
+            if (result['status']) {
+               window.open(result['value']['file_url'], '_blank');
+            }
+            
          },
          error:function(error) {
             // body...
+         },
+         complete: function() {
+            $(".isloader").hide();
+         },
+      })
+   })
+
+
+    $(document).on('click', '.process_stmt', function() {
+      biz_perfios_id = $(this).attr('pending');
+      data = {appId, _token, biz_perfios_id};
+      $.ajax({
+         url  : process_url,
+         type :'POST',
+         data : data,
+         beforeSend: function() {
+           $(".isloader").show();
+         },
+         dataType : 'json',
+         success:function(result) {
+            console.log(result);
+            let mclass = result['status'] ? 'success' : 'danger';
+            var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
+            $("#pullMsg").html(html);
+            if (result['status']) {
+            window.open(result['value']['file_url'], '_blank');
+            }
+         },
+         error:function(error) {
+
          },
          complete: function() {
             $(".isloader").hide();

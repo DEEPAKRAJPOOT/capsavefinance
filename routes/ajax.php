@@ -62,6 +62,12 @@ Route::group(
         'uses' => 'Backend\CamController@analyse_bank'
     ]);
 
+    Route::post('finance_analysis', [
+        'as' => 'financeAnalysis',
+        'uses' => 'Backend\CamController@analyse_finance'
+    ]);
+
+
     Route::post('gst_analysys', [
         'as' => 'gstAnalysis',
         'uses' => 'Application\ApplicationController@analyse_gst'
@@ -77,6 +83,16 @@ Route::group(
         'uses' => 'Cibil\CibilController@downloadPromoterCibil'
         ]
     );
+
+    Route::post('process_finance', [
+        'as' => 'process_financial_statement',
+        'uses' => 'Backend\CamController@getFinanceReport'
+    ]);
+
+    Route::get('process_banking', [
+        'as' => 'process_banking_statement',
+        'uses' => 'Backend\CamController@getBankReport'
+    ]);
 
 
 

@@ -53,6 +53,7 @@ class User extends Authenticatable
         'password',
         'mobile_no',
         'user_type',
+        'is_buyer',
         'is_email_verified',
         'email_verified_updatetime',
         'is_otp_verified',
@@ -226,17 +227,24 @@ class User extends Authenticatable
     public static function getAllUsers()
     {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
-        $result = self::distinct()->select('users.user_id','users.f_name','users.l_name','users.email','users.mobile_no','users.created_at', 'anchor_user.anchor_id as UserAnchorId','anchor_user.user_type as AnchUserType','lead_assign.to_id')
-                 ->leftJoin('lead_assign',  'lead_assign.assigned_user_id','users.user_id')
-                 ->leftJoin('anchor_user',  'anchor_user.user_id','users.user_id') 
+        $result = self::distinct()->select('users.user_id','users.f_name','users.l_name','users.email','users.mobile_no','users.created_at', 'users.anchor_id as UserAnchorId','users.is_buyer as AnchUserType','lead_assign.to_id')
+                 //->leftJoin('lead_assign',  'lead_assign.assigned_user_id','users.user_id')
+                ->leftJoin('lead_assign', function ($join) {
+                    $join->on('lead_assign.assigned_user_id', '=', 'users.user_id');
+                    $join->on('lead_assign.is_owner', '=', DB::raw("1"));                    
+                })                 
+                 //->leftJoin('anchor_user',  'anchor_user.user_id','users.user_id') 
                  ->where('users.user_type', 1);
-        if ($roleData[0]->is_superadmin != 1) {
+        if ($roleData[0]->id == 11) {
+            $result->where('users.anchor_id', \Auth::user()->anchor_id);            
+            //$result->where('users.anchor_user_id', \Auth::user()->user_id);
+        } else if ($roleData[0]->is_superadmin != 1) {
             $result->where('lead_assign.to_id', \Auth::user()->user_id);
-            $result->where('lead_assign.is_owner', 1);
+            //$result->where('lead_assign.is_owner', 1);
         }
         //$result->groupBy('users.user_id');
         $result = $result->orderBy('users.user_id', 'desc');
-                 
+              
         return ($result ? $result : '');
     }
     
@@ -541,8 +549,7 @@ class User extends Authenticatable
     public static function getLeadSalesManager($userId) {        
         
         $result = self::select('anchor.sales_user_id')
-              ->join('anchor_user', 'users.user_id', '=', 'anchor_user.user_id')
-              ->join('anchor', 'anchor.anchor_id', '=', 'anchor_user.anchor_id')
+              ->join('anchor', 'anchor.anchor_id', '=', 'users.anchor_id')                       
               ->where('users.user_id', '=', $userId)
               ->first();
         return ($result ? $result->sales_user_id : null);        
@@ -557,18 +564,24 @@ class User extends Authenticatable
      * @throws InvalidDataTypeExceptions
      * Since 0.1
      */
-    public static function getUserByAppId($appId)
-    {
+    public static function getUserByAppId($appId){
         //Check anchId is not blank
         if (empty($appId)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-       
         $arrUser = self::select('users.*')
               ->join('app', 'app.user_id', '=', 'users.user_id')
               ->where('app.app_id', '=', $appId)
               ->first();
 
         return ($arrUser ?: false);
+    }
+
+        public static function getBankData(){
+        $result = self::select('*')
+                ->from('mst_bank')
+                ->where('is_active', '1')
+                ->get();
+        return ($result ?? null);
     }
 }

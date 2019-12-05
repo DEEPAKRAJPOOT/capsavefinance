@@ -245,7 +245,7 @@ function fillRegisteredAddress(addr_str){
 		let city = addr_array.pop().trim();
 		let address = addr_array.toString().trim();
 		$('input[name=biz_address]').val(address);
-		$('select[name=biz_state] option:contains('+state+')').attr('selected', true);
+		$('select[name=biz_state] option:contains('+state+')').prop('selected', true);
 		$('input[name=biz_city]').val(city);
 		$('input[name=biz_pin]').val(pin);
 		//return {'address': address, 'city': city, 'state': state, 'pin': pin};

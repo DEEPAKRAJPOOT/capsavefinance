@@ -104,9 +104,15 @@ class State extends BaseModel
         return $res ? $res : false;
     }
 
+    public static function getUserByAPP($app_id){
+        $result = self::select('*')
+                ->from('app')
+                ->where('app_id', $app_id)
+                ->first();
+        return ($result ?? null);
+    }
 
-    public static function getGstbyUser($user_id)
-    {
+    public static function getGstbyUser($user_id){
         $data = self::select('*')
                 ->from('biz_pan_gst')
                 ->where('user_id', $user_id)
@@ -114,6 +120,14 @@ class State extends BaseModel
                 ->where('type', '2')
                 ->first();
         return ($data ? $data : false);
+    }
+
+     public static function getBankData(){
+        $result = self::select('*')
+                ->from('mst_bank')
+                ->where('is_active', '1')
+                ->get();
+        return ($result ?? null);
     }
 
 }
