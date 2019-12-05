@@ -212,7 +212,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('upload-sanction-letter', [
                 'as' => 'upload_sanction_letter',
                 'uses' => 'Backend\ApplicationController@uploadSanctionLetter'
-            ]);             
+            ]); 
+            Route::get('mobile_verify', [
+                'as' => 'mobile_verify',
+                'uses' => 'Backend\ApplicationController@mobileModel'
+            ]);
+
         });
 
 
@@ -390,9 +395,5 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@getFinanceReport'
             ]);
 
-            Route::get('mobile_verify', [
-                'as' => 'mobile_verify',
-                'uses' => 'Backend\ApplicationController@mobileModel'
-            ]);
-
+            
 
