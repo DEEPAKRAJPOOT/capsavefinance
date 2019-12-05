@@ -549,8 +549,7 @@ class User extends Authenticatable
     public static function getLeadSalesManager($userId) {        
         
         $result = self::select('anchor.sales_user_id')
-              ->join('anchor', 'anchor.anchor_id', '=', 'anchor_user.anchor_id')
-              ->join('users', 'users.anchor_id', '=', 'anchor.anchor_id')              
+              ->join('anchor', 'anchor.anchor_id', '=', 'users.anchor_id')                       
               ->where('users.user_id', '=', $userId)
               ->first();
         return ($result ? $result->sales_user_id : null);        
