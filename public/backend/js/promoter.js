@@ -21,6 +21,9 @@ function uploadFile(uploadId, ownerId, docId)
     else if(docId == 22) { 
         var file  = $("#photofile"+uploadId)[0].files[0];
     }
+     else if(docId == 34) { 
+        var file  = $("#aadharfile"+uploadId)[0].files[0];
+    }
    
     var extension = file.name.split('.').pop().toLowerCase();
     var datafile = new FormData();
@@ -69,7 +72,10 @@ function uploadFile(uploadId, ownerId, docId)
                  $("#photodown"+uploadId).css({'display':'inline'});
                 $("#photodown"+uploadId).attr('href',r.file_path);
             }
-
+            else if(docId == 34) { 
+                 $("#aadhardown"+uploadId).css({'display':'inline'});
+                $("#aadhardown"+uploadId).attr('href',r.file_path);
+            }
              
            }
            else

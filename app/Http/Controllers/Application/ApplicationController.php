@@ -139,9 +139,10 @@ class ApplicationController extends Controller
      */
     //////////////////Save Promoter Multiple Details///////////////////////// 
     public function updatePromoterDetail(Request $request) {
+        
        try {
             $arrFileData = $request->all();
-            $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
+            $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); 
             if ($owner_info) {
             
                 //Add application workflow stages
