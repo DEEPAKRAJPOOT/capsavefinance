@@ -334,6 +334,9 @@ class ApplicationController extends Controller
 
             switch ($docId) {
                 case '4':
+                    $file_bank_id = $arrFileData['file_bank_id'];
+                    $bankData = State::getBankName($file_bank_id);
+                    $arrFileData['doc_name'] = $bankData['bank_name'] ?? NULL;
                     $arrFileData['finc_year'] = NULL;
                     $arrFileData['gst_month'] = NULL;
                     $arrFileData['gst_year'] = NULL;

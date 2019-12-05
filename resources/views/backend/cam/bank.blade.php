@@ -461,8 +461,9 @@
             let mclass = result['status'] ? 'success' : 'danger';
             var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
             $("#pullMsg").html(html);
+            $(".isloader").show();
             if (result['status']) {
-            window.open(result['value']['file_url'], '_blank');
+             window.open(result['value']['file_url'], '_blank');
             }
          },
          error:function(error) {
