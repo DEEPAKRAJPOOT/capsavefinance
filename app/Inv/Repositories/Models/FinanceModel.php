@@ -191,7 +191,7 @@ class FinanceModel extends Model
                 ->from('biz_perfios')
                 ->where('app_id', $app_id)
                 ->where('api_name', '1005')
-                ->first();
+                ->latest()->first();
         return ($result ?? null);
     }
 
@@ -200,7 +200,7 @@ class FinanceModel extends Model
                 ->from('biz_perfios')
                 ->where('app_id', $app_id)
                 ->where('api_name', '1007')
-                ->first();
+                ->latest()->first();
         return ($result ?? null);
     }
 
