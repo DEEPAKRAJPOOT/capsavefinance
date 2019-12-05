@@ -1,5 +1,6 @@
 <?php 
 namespace App\Libraries;
+use Illuminate\Support\Facades\Config;
 
 define('MOBILE_AUTH_LIB_URL', config('proin.MOBILE_AUTH_LIB_URL'));
 define('MOBILE_AUTH_LIB_KEY', config('proin.MOBILE_AUTH_LIB_KEY'));

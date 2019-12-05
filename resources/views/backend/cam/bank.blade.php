@@ -17,13 +17,25 @@
                   <div class="doc">
                      <small>{{ $bankdoc->doc_name }}</small>
                      <ul>
-                        <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
+                        <li><span class="icon"><i class="fa fa-file-excel-o"></i></span></li>
                         <li><a href="{{ Storage::url($bankdoc->file_path) }}" download target="_blank">Download Bank Statement</a></li>
                         <li><a href="javascript:void(0)" class="getAnalysis">Get Analysis</a></li>
                      </ul>
                   </div>
                      @endforeach
                   @endif
+                  @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
+                  <div class="clearfix"></div>
+                  <div style="text-align: end;">
+                     <a class="btn btn-success" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download analysed Statement</a>
+                  </div>
+                  @endif 
+                  @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
+                  <div class="clearfix"></div>
+                  <div style="text-align: end;">
+                     <a class="btn btn-success" href="javascript:void(0)" download>Process Statement</a>
+                  </div>
+                  @endif 
                   <div class="clearfix"></div>
                   <br/>
                   <hr>

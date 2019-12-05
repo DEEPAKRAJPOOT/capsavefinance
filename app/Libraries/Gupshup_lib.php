@@ -1,5 +1,6 @@
 <?php 
 namespace App\Libraries;
+use Illuminate\Support\Facades\Config;
 
 define('GUPSHUP_BASE_URL', config('proin.GUPSHUP_BASE_URL'));
 define('GUPSHUP_KEY', config('proin.GUPSHUP_KEY'));
