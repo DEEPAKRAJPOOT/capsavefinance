@@ -84,8 +84,10 @@ use RegistersUsers,
         $arrAnchUser=[];
         $arrDetailData = [];
         $arrLeadAssingData =[];
-        $userDataArray = $this->userRepo->getUserByAnchorId($data['h_anchor_id']);
-        $arrData['anchor_user_id'] = $userDataArray->user_id;
+        //$userDataArray = $this->userRepo->getUserByAnchorId($data['h_anchor_id']);        
+        //$arrData['anchor_user_id'] = $userDataArray->user_id;        
+        $lead_type = $data['lead_type'];
+        $arrData['anchor_id'] = $data['h_anchor_id'];
         $arrData['f_name'] = $data['f_name'];
         $arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
@@ -98,6 +100,7 @@ use RegistersUsers,
         $arrData['is_pwd_changed'] = 0;
         $arrData['is_email_verified'] = 0;
         $arrData['is_otp_verified'] = 0;
+        $arrData['is_buyer'] = $lead_type;
         $arrData['parent_id'] = 0;
         $arrData['is_active'] = 0;
         $arrData['is_active'] = 0;
