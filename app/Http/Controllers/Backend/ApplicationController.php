@@ -14,6 +14,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\User;
 use App\Libraries\MobileAuth_lib;
+use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
 use App\Libraries\Pdf;
@@ -821,6 +822,7 @@ class ApplicationController extends Controller
      public function verify_mobile(Request $request){
       $post_data = $request->all();
       $mobile_no = trim($request->get('mobile_no'));
+      $appId = trim($request->get('appId'));
       if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
         return response()->json(['message' =>'Mobile Number is not valid.','status' => 0]);
       }
@@ -829,7 +831,20 @@ class ApplicationController extends Controller
         $req_arr = array(
             'mobile' => $mobile_no,//'09AALCS4138B1ZE',
         );
+
+      $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      $createApiLog = $response['createApiLog'];
+      $createBizApi= @BizApi::create([
+          'user_id' =>$userData['user_id'], 
+          'biz_id' =>   $userData['biz_id'],
+          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
+          'type' => 1,
+          'verify_doc_no' => 1,
+          'status' => 1,
+          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+          'created_by' => Auth::user()->user_id
+       ]);
       if ($response['status'] == 'success') {
         return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
           'value' => $response['result']]);

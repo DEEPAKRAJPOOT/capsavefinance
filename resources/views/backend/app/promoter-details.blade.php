@@ -46,7 +46,9 @@ height: 31px;
                    @csrf
                   <input type="hidden" name="app_id" id="app_id"  value="{{ (!empty($appId)) ? $appId : '' }}" >
                   <input type="hidden" name="biz_id" id="biz_id"  value="{{ (!empty($bizId)) ? $bizId : '' }}" >   
-                 @php ($i = 0)
+                    <input type="hidden" id="rowcount" value="{{count($ownerDetails)}}">
+                                         
+                  @php ($i = 0)
                @php ($j = 0)
               @php ($main = [])
               @php ($main1 = [])
@@ -57,7 +59,7 @@ height: 31px;
                        
                         <?php
                         array_push($main, array('panNo'=>null, 'dlNo'=>null,'voterNo' => null,'passNo' =>null));
-                        array_push($main1, array('panNoFile'=>null, 'dlNoFile'=>null,'voterNoFile' => null,'passNoFile' =>null));
+                        array_push($main1, array('panNoFile'=>null, 'dlNoFile'=>null,'voterNoFile' => null,'passNoFile' =>null,'aadharFile' =>null));
                  
                         // dd($row->businessApi);
                      /* for get api response file data   */ 
@@ -78,7 +80,7 @@ height: 31px;
                         } 
                         /* for get document file data   */
                        //dd($panNo);
-                      
+                       
                          foreach($row->document as $row2) {
                              if($row2->doc_id == 2) { 
                                  $main1[$key]['panNoFile'] = $row2->userFile->file_path;
@@ -99,6 +101,10 @@ height: 31px;
                                 
                                $main1[$key]['photoFile'] = $row2->userFile->file_path;
                             }
+                             else  if($row2->doc_id == 34) { 
+                                
+                                $main1[$key]['aadharFile'] = $row2->userFile->file_path;
+                            }
                            
                         } 
                         
@@ -113,7 +119,6 @@ height: 31px;
 
                                             <span class="mandatory">*</span>
                                         </label>
-                                         <input type="hidden" id="rowcount" value="{{count($ownerDetails)}}">
                                          <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">   
                                          <input type="text" name="first_name[]" id="first_name{{isset($row->first_name) ? $i : '1'}}" vname="first_name1" value="{{$row->first_name}}" class="form-control first_name" placeholder="Enter First Name" >
                                                          </div>
@@ -386,6 +391,29 @@ height: 31px;
                                                               <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
                                                                     <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="photofile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        
+                                                        
+                                                        <tr>
+                                                            <td class="text-left">5</td>
+                                                            <td width="30%">Aadhar Card </td>
+                                                            <td width="30%" >
+                                                               
+                                                            </td>
+                                                            <td width="14%">
+                                                                <div class="file-browse float-left position-seta">
+                                                                   
+                                                                   <a  href="{{ isset($main1[$j]['aadharFile']) ? Storage::url($main1[$j]['aadharFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                </div>
+                                                              
+                                                            </td>
+                                                            <td width="14%"> 
+                                                              <div class="upload-btn-wrapper setupload-btn">
+                                                                    <button class="btn">Upload</button>
+                                                                    <input type="file" class="aadharfile"  name="aadharfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="aadharfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 34)">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -1173,6 +1201,7 @@ jQuery.ajax({
  <script type="text/javascript">
    appurl = '{{URL::route("verify_mobile") }}';
    _token = "{{ csrf_token() }}";
+   appId = "{{ $appId }}";
 </script>
 <script>
     $(document).on('click', '.verify_mobile_no',function () {
@@ -1185,7 +1214,7 @@ jQuery.ajax({
             span_target.html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i><i>Please enter the mobile no.</i> </span>');
             return false;
         }
-        data = {_token, mobile_no};
+        data = {_token, mobile_no, appId};
         $.ajax({
              url  : appurl,
              type :'POST',

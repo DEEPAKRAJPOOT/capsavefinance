@@ -75,7 +75,7 @@
         $('select[name=finc_year]').parent('div').hide();
         $('select[name=gst_month]').parent('div').hide();
         $('select[name=gst_year]').parent('div').hide();
-        if (docId != 6 && $('input[name="is_pwd_protected"]').is(':checked') && $('input[name="is_pwd_protected"]:checked').val() == 'yes') {
+        if (docId != 6 && $('input[name="is_pwd_protected"]').is(':checked') && $('input[name="is_pwd_protected"]:checked').val() == '1') {
             $('#password_file_div').show();
         }
 
@@ -102,7 +102,7 @@
 
     $(document).on('click','input[name="is_pwd_protected"]', function() {
         $('#password_file_div').hide();
-       if ($(this).is(':checked') && $(this).val() == 'yes') {
+       if ($(this).is(':checked') && $(this).val() == '1') {
         $('#password_file_div').show();
        }
     })
