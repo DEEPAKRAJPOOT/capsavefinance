@@ -311,33 +311,11 @@
                         data: form.serialize(), // serializes the form's elements.
                         cache: false,
                         success: function (res)
-                        { $('.isloader').hide();
-                            console.log(res);
-                           //// return false;
-                           
-                         ar ownerNull =  false; 
-                        $(".owneridDynamic").each(function(k,v){
-                                 var GetVal  = $(this).val();
-                                 if(GetVal=='')
-                                 {
-                                    return  ownerNull =  true;
-                                 } 
-
-                           }); 
-                
-                            if(ownerNull==true)
+                        { 
+                            $('.isloader').hide();
+                            if (res.status == 1)
                             {
-                               window.location.href = "{{ route('promoter-detail', []) }}";
-                            }
-                            else
-                            {
-                              if (res.status == 1)
-                              {
-                                  window.location.href = "{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
-                              }
-                              else {
-                                  alert("Something went wrong, please try again !");
-                              }
+                                window.location.href = "{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'edit' => 0 ]) }}";
                             }
                         },
                         error: function (error)
