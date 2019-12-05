@@ -35,9 +35,11 @@
     @endphp
     
     @if($wfStageToProcess == 'sales_queue' || $isWfStageCompleted)
+    @can('view_offer')
     <li>
         <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('view-offer') ? 'active' : '' }}">View Offer</a>
     </li>
+    @endcan
     @endif
 
 </ul>
