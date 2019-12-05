@@ -366,13 +366,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     });
 
 
-
-            
-
-
-            Route::get('mobile_verify', [
-                'as' => 'mobile_verify',
-                'uses' => 'Backend\ApplicationController@mobileModel'
-            ]);
+    Route::get('mobile_verify', [
+        'as' => 'mobile_verify',
+        'uses' => 'Backend\ApplicationController@mobileModel'
+    ]);
 
 

@@ -198,7 +198,9 @@ class CamController extends Controller
             'app_id' => $doc->app_id,
             'file_id' => $doc->file_id,
             'fin_year' => $doc->finc_year,
-            'file_path' => public_path('storage/'.$doc->file_path)
+            'file_path' => public_path('storage/'.$doc->file_path),
+            'is_scanned' => $doc->is_scanned == 1 ? 'true' : 'false',
+            'file_password' => $doc->pwd_txt ?? NULL,
           );
         }
         return $files;
@@ -209,7 +211,14 @@ class CamController extends Controller
         $bankdocs = $fin->getBankStatements($appId);
         $files = [];
         foreach ($bankdocs as $doc) {
-          $files[] = public_path('storage/'.$doc->file_path);
+           $files[] = array(
+            'app_id' => $doc->app_id,
+            'file_id' => $doc->file_id,
+            'fin_year' => $doc->finc_year,
+            'file_path' => public_path('storage/'.$doc->file_path),
+            'is_scanned' => $doc->is_scanned == 1 ? 'true' : 'false',
+            'file_password' => $doc->pwd_txt ?? NULL,
+          );
         }
         return $files;
     }
@@ -228,13 +237,12 @@ class CamController extends Controller
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
             'transactionCompleteCallbackUrl' => 'http://122.170.7.185:8080/CallbackTest/CallbackStatus',
-            'uploadingScannedStatements' => 'false',
-            'yearMonthFrom' => '2019-10',
-            'yearMonthTo' => '2019-10',
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
         if ($init_txn['status'] == 'success') {
-          foreach ($filespath as $filepath) {
+          foreach ($filespath as $file_doc) {
+             $filepath = $file_doc['file_path'];
+             $password = $file_doc['file_password'];
               $req_arr = array(
                 'perfiosTransactionId' => $init_txn['perfiostransactionid'],
                 'file_content' => $filepath,
@@ -245,7 +253,7 @@ class CamController extends Controller
                     'perfiosTransactionId' => $init_txn['perfiostransactionid'],
                     'fileId' => $upl_file['fileid'],
                     'institutionId' => '',
-                    'password' => '',
+                    'password' => $password,
                   );
                   $proc_txn = $bsa->api_call(Bsa_lib::PRC_STMT, $req_arr);
                   if ($proc_txn['status'] == 'success') {
@@ -342,6 +350,7 @@ class CamController extends Controller
          	foreach ($filespath as $file_doc) {
             $financial_year = $file_doc['fin_year'];
             $filepath = $file_doc['file_path'];
+            $file_password = $file_doc['file_password'];
          		$req_arr = array(
 	                'apiVersion' => $apiVersion,
 	                'vendorId' => $vendorId,
@@ -352,7 +361,7 @@ class CamController extends Controller
              	if ($add_year['status'] == 'success') {
              	    $req_arr = array(
                     'file_content' => $filepath,
-                    'file_password' => '',
+                    'file_password' => $file_password,
                     'perfiosTransactionId' => $start_txn['perfiostransactionid'],
                     'financialYear' => $financial_year,
                   );
