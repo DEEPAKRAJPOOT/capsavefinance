@@ -148,7 +148,10 @@ function checkValidation(){
 	if(biz_pan_number.length != 10){
 		setError('input[name=biz_pan_number]', 'Enter valid PAN Number');
 		flag = false;
-	}else if($('.pan-verify').text() == 'Verify' || $('biz_cin').val() == ''){
+	}else if(/[a-zA-z]{5}\d{4}[a-zA-Z]{1}/.test(biz_pan_number)){
+		setError('input[name=biz_pan_number]', 'Please fill and verify Business PAN First');
+		flag = false;
+	}else if($('.pan-verify').text() == 'Verify'){
 		setError('input[name=biz_pan_number]', 'Please fill and verify Business PAN First');
 		flag = false;
 	}
@@ -156,9 +159,6 @@ function checkValidation(){
 	if(biz_gst_number == ''){
 		setError('select[name=biz_gst_number]', 'Please select GST Number');
 		flag = false;
-	}else if($('biz_cin').val()  == ''){
-		setError('select[name=biz_gst_number]', 'Service unavailable!');
-		flag = false;	
 	}
 
 	if(biz_entity_name.length == ''){
@@ -220,13 +220,16 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if(biz_city.length == '' || parseInt(biz_city) == 0){
+	if(biz_city.length == '' || !isNaN(biz_city)){
 		setError('input[name=biz_city]', 'Registered City is required');
 		flag = false;
 	}
 
 	if(biz_pin.length != 6){
 		setError('input[name=biz_pin]', 'Registered Pin is required');
+		flag = false;
+	}else if(/^\d{6}$/.test(biz_pin) || parseInt(biz_pin) < 100000){
+		setError('input[name=biz_pin]', 'Registered Pin should be numeric only');
 		flag = false;
 	}
 
@@ -236,6 +239,18 @@ function checkValidation(){
 		return false;
 	}
 }
+
+$(document).on('blur', '.pan-validate', function(e){
+	unsetError('input[name=biz_pan_number]');
+	let pan = $('input[name=biz_pan_number]').val();
+
+	if(/[a-zA-z]{5}\d{4}[a-zA-Z]{1}/.test(pan)){
+		return true;
+	}else{
+		setError('input[name=biz_pan_number]', 'Enter valid PAN number');
+		return false;
+	}	
+});
 
 function fillRegisteredAddress(addr_str){
 	try {
