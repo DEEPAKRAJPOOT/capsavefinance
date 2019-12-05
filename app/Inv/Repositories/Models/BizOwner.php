@@ -125,7 +125,6 @@ class BizOwner extends Model
                 $ownerInputArr =  BizOwner::create( ['biz_id' => $attributes['biz_id'],   
                 'user_id' => $uid, 
                 'first_name' => $first_name,
-                'last_name'   =>  $last_name,
                 'date_of_birth' => ($val['dob'])? Carbon::createFromFormat('d/m/Y', $val['dob'])->format('Y-m-d'): NULL,
                 'owner_addr' => $val['address'],
               'created_by' => Auth::user()->user_id]);
