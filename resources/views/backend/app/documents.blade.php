@@ -146,7 +146,7 @@
                     <div class="modal-body text-left">
                         <div class="form-group">
                             <label for="email">Select Bank Name</label>
-                            <select class="form-control" name="doc_name">
+                            <select class="form-control" name="file_bank_id">
                                 <option disabled value="" selected>Select Bank Name</option>
                                 @foreach($bankdata as $bank)
                                     <option value="{{$bank['id']}}">{{$bank['bank_name']}}</option>
@@ -195,10 +195,10 @@
                              <label>Is Password Protected</label>
                              <div class="form-group">
                                 <label for="is_password_y">
-                                  <input type="radio" name="is_password" id="is_password_y" value="yes"> Yes
+                                  <input type="radio" name="is_pwd_protected" id="is_password_y" value="yes"> Yes
                                 </label>
                                 <label for="is_password_n">
-                                  <input type="radio" name="is_password" checked id="is_password_n" value="no"> No
+                                  <input type="radio" name="is_pwd_protected" checked id="is_password_n" value="no"> No
                                 </label>
                              </div>
                           </div>
@@ -217,8 +217,8 @@
                         <div class="row" id="password_file_div">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="file_password">Enter File Password</label>
-                                    <input type="password" placeholder="Enter File Password" class="form-control" name="file_password" id="file_password">
+                                    <label for="pwd_txt">Enter File Password</label>
+                                    <input type="password" placeholder="Enter File Password" class="form-control" name="pwd_txt" id="pwd_txt">
                                  </div>
                             </div>
                         </div>

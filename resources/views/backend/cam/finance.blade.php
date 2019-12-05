@@ -31,6 +31,18 @@
                      </div>
                      @endforeach
                      @endif
+                     @if(file_exists(storage_path('app/public/user/'.$appId.'_finance.xlsx')))
+                        <div class="clearfix"></div>
+                        <div style="text-align: end;">
+                           <a class="btn btn-success" href="{{ Storage::url('user/'.$appId.'_finance.xlsx') }}" download>Download analysed Statement</a>
+                        </div>
+                     @endif 
+                     @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
+                        <div class="clearfix"></div>
+                        <div style="text-align: end;">
+                           <a class="btn btn-success" href="javascript:void(0)" download>Process Statement</a>
+                        </div>
+                  @endif 
                      <div class="clearfix"></div>
                      <br/>
                      <hr>
