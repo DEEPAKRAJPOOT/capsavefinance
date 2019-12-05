@@ -104,6 +104,13 @@ class State extends BaseModel
         return $res ? $res : false;
     }
 
+    public static function getUserByAPP($app_id){
+        $result = self::select('*')
+                ->from('app')
+                ->where('app_id', $app_id)
+                ->first();
+        return ($result ?? null);
+    }
 
     public static function getGstbyUser($user_id){
         $data = self::select('*')

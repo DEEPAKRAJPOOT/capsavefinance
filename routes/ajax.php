@@ -84,6 +84,16 @@ Route::group(
         ]
     );
 
+    Route::post('process_finance', [
+        'as' => 'process_financial_statement',
+        'uses' => 'Backend\CamController@getFinanceReport'
+    ]);
+
+    Route::get('process_banking', [
+        'as' => 'process_banking_statement',
+        'uses' => 'Backend\CamController@getBankReport'
+    ]);
+
 
 
     Route::post(
