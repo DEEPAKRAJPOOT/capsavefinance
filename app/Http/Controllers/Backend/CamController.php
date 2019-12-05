@@ -439,42 +439,109 @@ class CamController extends Controller
         return $final_res;
     }
 
-    public function getFinanceReport($value='') {
+    public function getFinanceReport(Request $request) {
+        $alldata = $request->all();
+        $appId = $alldata['appId'];
+        $biz_perfios_id = $alldata['biz_perfios_id'];
+        $perfios_data = FinanceModel::getPerfiosData($biz_perfios_id);
+        if ($perfios_data['app_id'] != $appId) {
+          return response()->json(['message' => 'This application is not belonging to you.','status' => 0,'value'=>['file_url'=>'']]);
+        }
 
-    	$perfios = new Perfios_lib();
+        $perfiostransactionid = $perfios_data['perfios_log_id'];
+        $prolitus_txn = $perfios_data['prolitus_txn_id'];
+
+    	  $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $reportType = 'xlsx';
-        $req_arr = array(
-            'apiVersion' => $apiVersion,
-            'vendorId' => $vendorId,
-            'destination' => 'statement'
-         );
-        
-        $payload = $perfios->api_call(Perfios_lib::GET_INST, $req_arr);
+        $file_name = $appId.'_finance.xlsx';
+        if ($this->download_xlsx) {
+           $req_arr = array(
+              'apiVersion' => $apiVersion,
+              'vendorId' => $vendorId,
+              'perfiosTransactionId' => $perfiostransactionid,
+              'reportType' => 'xlsx',
+              'txnId' => $prolitus_txn,
+           );
+          $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
+          if ($final_res['status'] != 'success') {
+              $final_res['api_type'] = Perfios_lib::GET_STMT;
+              $final_res['prolitusTransactionId'] = $prolitus_txn;
+              $final_res['perfiosTransactionId'] = $perfiostransactionid;
+              return $final_res;
+          }
+          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
+        }
+        $file= url('storage/user/'. $file_name);
+        $final_res['api_type'] = Perfios_lib::GET_STMT;
+        $final_res['file_url'] = $file;
+        $final_res['prolitusTransactionId'] = $prolitus_txn;
+        $final_res['perfiosTransactionId'] = $perfiostransactionid;
+        $final_res['result'] = base64_encode($final_res['result']);
+        $log_data = array(
+          'status' => $final_res['status'],
+          'updated_by' => Auth::user()->user_id,
+        );
+        FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
+        if ($final_res['status'] == 'success') {
+          return response()->json(['message' =>'Financial Statement analysed successfully.','status' => 1,
+            'value' => $final_res]);
+        }else{
+          return response()->json(['message' =>$final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
+        }
+    }
 
-        echo "<pre>";
-        print_r($payload);
-        die;
 
+    public function getBankReport(Request $request) {
+        $alldata = $request->all();
+        $appId = $alldata['appId'];
+        $biz_perfios_id = $alldata['biz_perfios_id'];
+        $perfios_data = FinanceModel::getPerfiosData($biz_perfios_id);
+        if ($perfios_data['app_id'] != $appId) {
+          return response()->json(['message' => 'This application is not belonging to you.','status' => 0,'value'=>['file_url'=>'']]);
+        }
+
+        $perfiostransactionid = $perfios_data['perfios_log_id'];
+        $prolitus_txn = $perfios_data['prolitus_txn_id'];
 
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $reportType = 'xlsx';
-        $req_arr = array(
-            'apiVersion' => $apiVersion,
-            'vendorId' => $vendorId,
-            'perfiosTransactionId' => 'PK261574667829233',// '2JGT1574749448671',$final_res['perfiosTransactionId'],
-            'reportType' => $reportType,
-            'txnId' => '2019112513134830813211',//'2019112611540788638030',//$final_res['prolitusTransactionId'],
-         );
-        
-        $payload = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
-        $file_name = 'finance.xlsx';
-        $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-        \File::put(storage_path('app/public/user').'/'.$file_name, $payload['result']);
-        dd($payload);
+        $file_name = $appId.'_banking.xlsx';
+        if ($this->download_xlsx) {
+          $req_arr = array(
+            'perfiosTransactionId' => $perfiostransactionid,
+            'types' => 'xlsx',
+          );
+          $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
+          if ($final_res['status'] != 'success') {
+              $final_res['api_type'] = Bsa_lib::GET_REP;
+              $final_res['prolitusTransactionId'] = $prolitus_txn;
+              $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
+              return $final_res;
+          }
+          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
+        }
+        $file= url('storage/user/'. $file_name);
+
+        $final_res['api_type'] = Bsa_lib::GET_REP;
+        $final_res['file_url'] = $file;
+        $final_res['prolitusTransactionId'] = $prolitus_txn;
+        $final_res['perfiosTransactionId'] = $perfiostransactionid;
+        $final_res['result'] = base64_encode($final_res['result']);
+        $log_data = array(
+          'status' => $final_res['status'],
+          'updated_by' => Auth::user()->user_id,
+        );
+        FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
+        if ($final_res['status'] == 'success') {
+          return response()->json(['message' =>'Banking Statement analysed successfully.','status' => 1,
+            'value' => $final_res]);
+        }else{
+          return response()->json(['message' => $final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
+        }
     }
 
 

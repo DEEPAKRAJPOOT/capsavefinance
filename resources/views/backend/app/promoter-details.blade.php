@@ -1173,6 +1173,7 @@ jQuery.ajax({
  <script type="text/javascript">
    appurl = '{{URL::route("verify_mobile") }}';
    _token = "{{ csrf_token() }}";
+   appId = "{{ $appId }}";
 </script>
 <script>
     $(document).on('click', '.verify_mobile_no',function () {
@@ -1185,7 +1186,7 @@ jQuery.ajax({
             span_target.html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i><i>Please enter the mobile no.</i> </span>');
             return false;
         }
-        data = {_token, mobile_no};
+        data = {_token, mobile_no, appId};
         $.ajax({
              url  : appurl,
              type :'POST',

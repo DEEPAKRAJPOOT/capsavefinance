@@ -204,5 +204,13 @@ class FinanceModel extends Model
         return ($result ?? null);
     }
 
+    public static function getPerfiosData($biz_perfios_id){
+       $result = self::select('*')
+                ->from('biz_perfios')
+                ->where('biz_perfios_id', $biz_perfios_id)
+                ->first();
+        return ($result ?? null);
+    }
+
    
 }
