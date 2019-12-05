@@ -30,12 +30,16 @@
                                    <a href="#" data-toggle="modal" data-target="#myModal2" class="btn btn-pickup btn-sm">Assign Case</a>
                                         -->
 							  </div>
+                                    
                                     <table id="apppollMaster" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
 
                                                 <th>{{ trans('backend.app_list_head.app_id') }}</th>
+                                                <th>{{ trans('backend.app_list_head.biz_name') }}</th>
                                                 <th>{{ trans('backend.app_list_head.name') }}</th>
+                                                <th>{{ trans('backend.app_list_head.email') }}</th>
+                                                <th>{{ trans('backend.app_list_head.mobile_no') }}</th>
                                                 <th>{{ trans('backend.app_list_head.anchor') }}</th>
                                                 <th>{{ trans('backend.app_list_head.user_type') }}</th>                                                
                                                 <th>{{ trans('backend.app_list_head.assignee') }}</th>

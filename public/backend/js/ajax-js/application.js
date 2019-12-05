@@ -9,6 +9,9 @@ try {
             pageLength: 10,
             searching: false,
             bSort: true,
+                "scrollY": 400,
+                "scrollX": true,
+                scrollCollapse: true,            
             ajax: {
                 "url": messages.get_applications, // json datasource
                 "method": 'POST',
@@ -26,6 +29,9 @@ try {
            columns: [
                 {data: 'app_id'},
                 {data: 'biz_entity_name'},
+                {data: 'name'},
+                {data: 'email'},
+                {data: 'mobile_no'},
                 {data: 'assoc_anchor'},
                 {data: 'user_type'},
                 {data: 'assignee'},

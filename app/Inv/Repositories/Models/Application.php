@@ -61,7 +61,10 @@ class Application extends Model
                 'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type',
                 DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
-                DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),
+                DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),                
+                DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS name"),
+                'users.email',
+                'users.mobile_no',                
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role')
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
@@ -126,6 +129,9 @@ class Application extends Model
                 'users.is_buyer as user_type', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 'assignee_r.name AS assignee', 
                 DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),
+                DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS name"),
+                'users.email',
+                'users.mobile_no',                   
                 'app_assign.sharing_comment')                 
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
                     ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
