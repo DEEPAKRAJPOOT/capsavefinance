@@ -132,20 +132,18 @@
                                                 <td>Pan Card</td>
                                                 <td>
                                                     <div class="col-md-12">
-                                                            <input type="text" {{isset($arrPan[$j]->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($arrPan[$j]->requestId) ? $arrPan[$j]->requestId : '' }}"  class="form-control verifydl"  >
-                                                            <span class="text-success float-left" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified </i> </span>
-                                                            <span class="text-danger float-left" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
-                                 
+                                                        <input type="text" readonly='readonly' value="{{ isset($arrPan[$j]->requestId) ? $arrPan[$j]->requestId : '' }}"  class="form-control verifydl"  >
+                                                        <span class="text-success float-left" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified </i> </span>
+                                                        <span class="text-danger float-left" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                                     </div>
 
                                                 </td>
                                                 <td>{{isset($panNoFileName[$j]) ? $panNoFileName[$j] : '' }}</td>
                                                 <td>
                                                     <div class="file-browse float-left position-seta">
-                                                                <a data-toggle="modal" id="ppanVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
-                                                                </a>
-                                                                <a  href="{{ isset($panNoFilePath[$j]) ? Storage::url($panNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-
+                                                        <a data-toggle="modal" id="ppanVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
+                                                        </a>
+                                                        <a  href="{{ isset($panNoFilePath[$j]) ? Storage::url($panNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                     </div>  
                                                 </td>
                                              </tr>
@@ -153,10 +151,20 @@
                                             <tr>
                                                 <td>2</td>
                                                 <td>Driving License</td>
-                                                <td>Driving License</td>
+                                                <td>
+                                                    <div class="col-md-12">
+                                                        <input type="text" readonly='readonly'  value="{{ isset($arrDl[$j]->requestId) ? $arrDl[$j]->requestId : '' }}"  class="form-control verifydl"  >
+                                                        <span class="text-success float-left" style="display:{{isset($arrDl[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified </i> </span>
+                                                        <span class="text-danger float-left"  style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                    </div>
+
+                                                </td>
                                                 <td>{{isset($dlNoFileName[$j]) ? $dlNoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($dlNoFilePath[$j]) ? Storage::url($dlNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($dlNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                    <div class="file-browse float-left position-seta">
+                                                         <a data-toggle="modal" id="ddrivingVeriView{{isset($row->first_name) ? $i : '1'}}"  data-target="#modalPromoter1" data-height="400" data-width="100%" accesskey="" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $row->biz_owner_id ])}}" style="display:{{ (isset($arrDl[$j]->requestId)) ? 'inline' : 'none'}}">  <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i></button></a>
+                                                        <a  href="{{ isset($dlNoFilePath[$j]) ? Storage::url($dlNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($dlNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                    </div>            
                                                    
                                                 </td>
                                             </tr>
@@ -165,10 +173,20 @@
                                             <tr>
                                                 <td>3</td>
                                                 <td>Voter ID</td>
-                                                <td>Voter ID</td>
+                                                <td>
+                                                    <div class="col-md-12">
+                                                        <input type="text" readonly='readonly'  value="{{ isset($arrVoterNo[$j]->requestId) ? $arrVoterNo[$j]->requestId : '' }}" name="verifyvoter[]" id="verifyvoter{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifyvoter" >
+                                                       <span class="text-success float-left" id="v3successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($arrVoterNo[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                        <span class="text-danger float-left" id="v3failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                    </div>
+
+                                                </td>
                                                 <td>{{isset($voterNoFileName[$j]) ? $voterNoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($voterNoFilePath[$j]) ? Storage::url($voterNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($voterNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                    <div class="file-browse float-left position-seta">
+                                                        <a data-toggle="modal" id="vvoterVeriView{{isset($row->first_name) ? $i : '1'}}"  data-target="#modalPromoter2" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_voter_data',['type'=>4,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrVoterNo[$j]->requestId) ? 'inline' : 'none'}}">   <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="4"> <i class="fa fa-eye"></i></button></a>
+                                                        <a  href="{{ isset($voterNoFilePath[$j]) ? Storage::url($voterNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($voterNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                    </div>                
                                                    
                                                 </td>
                                             </tr>
@@ -176,10 +194,25 @@
                                             <tr>
                                                 <td>4</td>
                                                 <td>Passport</td>
-                                                <td>Passport</td>
+                                                <td>
+                                                    <div class="col-md-12">
+                                                         
+                                                         <input type="text" readonly='readonly'  value="{{ isset($arrPassNo[$j]->requestId) ? $arrPassNo[$j]->requestId : '' }}" name="verifypassport[]" id="verifypassport{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifypassport" >
+                                                    
+                                                          <span class="text-success float-left" id="v4successpanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:{{isset($arrPassNo[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+
+                                                         <span class="text-danger float-left" id="v4failurepanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                     
+                                                    </div>
+
+
+                                                </td>
                                                 <td>{{isset($passNoFileName[$j]) ? $passNoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($passNoFilePath[$j]) ? Storage::url($passNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($passNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                    <div class="file-browse float-left position-seta">
+                                                        <a data-toggle="modal" id="ppassportVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter3" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pass_data',['type'=>6,'ownerid' => $row->biz_owner_id ])}}"  style="display:{{isset($arrPassNo[$j]->requestId) ? 'inline' : 'none'}}">     <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="6"> <i class="fa fa-eye"></i></button></a>
+                                                        <a  href="{{ isset($passNoFilePath[$j]) ? Storage::url($passNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($passNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                    </div>               
                                                    
                                                 </td>
                                             </tr>
@@ -187,7 +220,7 @@
                                             <tr>
                                                 <td>5</td>
                                                 <td>Photo</td>
-                                                <td>Photo</td>
+                                                <td></td>
                                                 <td>{{isset($photoFileName[$j]) ? $photoFileName[$j] : '' }}</td>
                                                 <td>
                                                 <a  href="{{ isset($photoFilePath[$j]) ? Storage::url($photoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($photoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
