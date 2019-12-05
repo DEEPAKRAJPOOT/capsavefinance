@@ -130,4 +130,13 @@ class State extends BaseModel
         return ($result ?? null);
     }
 
+    public static function getBankName($file_bank_id){
+        $result = self::select('*')
+                ->from('mst_bank')
+                ->where('is_active', '1')
+                ->where('id', $file_bank_id)
+                ->first();
+        return ($result ?? null);
+    }
+
 }
