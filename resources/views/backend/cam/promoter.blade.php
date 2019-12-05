@@ -48,6 +48,23 @@
                                             }
                            
                                          } 
+
+
+                                         foreach($row->businessApi as $row1) {
+                        
+                                          if($row1->type == 3) { 
+                                                $arrPan[] = json_decode($row1->karza->req_file);
+                                            }
+                                            else if($row1->type == 5) { 
+                                                $arrDl[] = json_decode($row1->karza->req_file);
+                                            }
+                                             else if($row1->type == 4) { 
+                                                $arrVoterNo[] = json_decode($row1->karza->req_file); 
+                                            }
+                                            else if($row1->type == 6) { 
+                                                $arrPassNo[] = json_decode($row1->karza->req_file); 
+                                            }
+                                        } 
                                         ?>
 
 
@@ -104,23 +121,38 @@
                                          <table class="table table-bordered overview-table mt-3" cellpadding="0" cellspacing="0" border="1">
                                           <tbody>
                                              <tr>
-                                                <td width="25%"><b>S.No.</b></td>
-                                                <td width="25%"><b>Document Name</b></td>
-                                                <td width="25%"><b>File Name</b></td>
-                                                <td width="25%"><b>Action</b></td>
+                                                <td width="20%"><b>S.No.</b></td>
+                                                <td width="20%"><b>Document Name</b></td>
+                                                <td width="20%"><b> Document ID No.</b></td>
+                                                <td width="20%"><b>File Name</b></td>
+                                                <td width="20%"><b>Action</b></td>
                                              </tr>
                                              <tr>
                                                 <td>1</td>
                                                 <td>Pan Card</td>
+                                                <td>
+                                                    <div class="col-md-12">
+                                                            <input type="text" {{isset($arrPan[$j]->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($arrPan[$j]->requestId) ? $arrPan[$j]->requestId : '' }}"  class="form-control verifydl"  >
+                                                            <span class="text-success float-left" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified </i> </span>
+                                                            <span class="text-danger float-left" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                 
+                                                    </div>
+
+                                                </td>
                                                 <td>{{isset($panNoFileName[$j]) ? $panNoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($panNoFilePath[$j]) ? Storage::url($panNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                   
+                                                    <div class="file-browse float-left position-seta">
+                                                                <a data-toggle="modal" id="ppanVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
+                                                                </a>
+                                                                <a  href="{{ isset($panNoFilePath[$j]) ? Storage::url($panNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+
+                                                    </div>  
                                                 </td>
                                              </tr>
                                              
                                             <tr>
                                                 <td>2</td>
+                                                <td>Driving License</td>
                                                 <td>Driving License</td>
                                                 <td>{{isset($dlNoFileName[$j]) ? $dlNoFileName[$j] : '' }}</td>
                                                 <td>
@@ -133,6 +165,7 @@
                                             <tr>
                                                 <td>3</td>
                                                 <td>Voter ID</td>
+                                                <td>Voter ID</td>
                                                 <td>{{isset($voterNoFileName[$j]) ? $voterNoFileName[$j] : '' }}</td>
                                                 <td>
                                                 <a  href="{{ isset($voterNoFilePath[$j]) ? Storage::url($voterNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($voterNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
@@ -143,6 +176,7 @@
                                             <tr>
                                                 <td>4</td>
                                                 <td>Passport</td>
+                                                <td>Passport</td>
                                                 <td>{{isset($passNoFileName[$j]) ? $passNoFileName[$j] : '' }}</td>
                                                 <td>
                                                 <a  href="{{ isset($passNoFilePath[$j]) ? Storage::url($passNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($passNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
@@ -152,6 +186,7 @@
 
                                             <tr>
                                                 <td>5</td>
+                                                <td>Photo</td>
                                                 <td>Photo</td>
                                                 <td>{{isset($photoFileName[$j]) ? $photoFileName[$j] : '' }}</td>
                                                 <td>
@@ -195,6 +230,12 @@
 
     </div>
 </div>
+
+
+    {!!Helpers::makeIframePopup('modalPromoter','View PAN Card Detail', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('modalPromoter1','View Driving License Detail', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('modalPromoter2','View Voter ID  Detail', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('modalPromoter3','View Passport Detail', 'modal-lg')!!}
 @endsection
 @section('jscript')
 
