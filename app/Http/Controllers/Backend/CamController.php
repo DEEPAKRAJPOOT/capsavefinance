@@ -46,7 +46,6 @@ class CamController extends Controller
         $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
        if(isset($arrOwnerData[0])){
               $arrBizData['ownerName'] = $arrOwnerData[0]['first_name'].' '.$arrOwnerData[0]['last_name'];
-              
        }
         $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
         if(isset($arrEntityData['entity_name'])){
