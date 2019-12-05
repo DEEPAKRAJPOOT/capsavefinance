@@ -1,5 +1,6 @@
 <?php 
 namespace App\Libraries;
+use Illuminate\Support\Facades\Config;
 
 define('KARZA_TXN_LIB_URL', config('proin.KARZA_TXN_LIB_URL'));
 define('KARZA_TXN_LIB_KEY', config('proin.KARZA_TXN_LIB_KEY'));

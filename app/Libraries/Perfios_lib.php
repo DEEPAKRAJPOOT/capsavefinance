@@ -1,5 +1,8 @@
 <?php 
 namespace App\Libraries;
+use Illuminate\Support\Facades\Config;
+use Auth;
+use App\Inv\Repositories\Models\FinanceModel;
 
 define('FSA_LIB_URL', config('proin.FSA_LIB_URL'));
 
@@ -95,23 +98,37 @@ class Perfios_lib{
 	     	$header = array("Content-Type: application/x-www-form-urlencoded");
 	     	$postdata = http_build_query($data);
 	     }
-
 	     $url = SELF::METHOD[$method]. $concat;
+	     $log_req = array(
+	     	'perfios_log_id' => $params['perfiosTransactionId'] ?? NULL,
+	     	'req_file' => is_array($postdata) || is_object($postdata) ? base64_encode(json_encode($postdata)) : base64_encode($postdata),
+	     	'status' => 'pending',
+	     	'created_by' => Auth::user()->user_id,
+	     	'url' => base64_encode($url),
+	     );
+	     $inserted_id = FinanceModel::insertPerfios($log_req, 'biz_perfios_log');
 	     $response = $this->_curl_call($method, $url, $postdata, $header);
 	     if (!empty($response['error_no'])  || !empty($response['error'])) {
 	     	$resp['code'] 	 = "CurlError";
 	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
 	     }
+	     $update_log = array(
+	     	"res_file" => is_array($response['result']) || is_object($response['result']) ? base64_encode(json_encode($response['result'])) : base64_encode($response['result']),
+	     );
 	     if ($method == SELF::GET_STMT && !in_array($params['reportType'], ['xml','json'])) {
 	     	$xml = @simplexml_load_string($response['result']);
 	     	if(!$xml){
+	     		$update_log['status'] = "success";
+	     		FinanceModel::updatePerfios($update_log,'biz_perfios_log', $inserted_id);
 	     		$resp['status'] = "success";
 			 	$resp['result'] = $response['result'];
 			 	return $resp;
 	     	}
 	     }
 	     $result = $this->_parseResult($response['result'], $method);
+	     $update_log['status'] = $result['status'];
+	     FinanceModel::updatePerfios($update_log, 'biz_perfios_log', $inserted_id);
 		 return $result;
     }
 

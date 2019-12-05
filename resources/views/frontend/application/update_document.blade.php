@@ -179,10 +179,10 @@
                              <label>Is Password Protected</label>
                              <div class="form-group">
                                 <label for="is_password_y">
-                                  <input type="radio" name="is_password" id="is_password_y" value="yes"> Yes
+                                  <input type="radio" name="is_pwd_protected" id="is_password_y" value="yes"> Yes
                                 </label>
                                 <label for="is_password_n">
-                                  <input type="radio" name="is_password" checked id="is_password_n" value="no"> No
+                                  <input type="radio" name="is_pwd_protected" checked id="is_password_n" value="no"> No
                                 </label>
                              </div>
                           </div>
@@ -201,8 +201,8 @@
                         <div class="row" style="display: none">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="file_password">Enter File Password</label>
-                                    <input type="password" placeholder="Enter File Password" class="form-control" name="file_password" id="file_password">
+                                    <label for="pwd_txt">Enter File Password</label>
+                                    <input type="password" placeholder="Enter File Password" class="form-control" name="pwd_txt" id="pwd_txt">
                                  </div>
                             </div>
                         </div>

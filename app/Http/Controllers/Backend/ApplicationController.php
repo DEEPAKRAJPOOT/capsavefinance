@@ -327,6 +327,31 @@ class ApplicationController extends Controller
             $appId = (int)$request->app_id; //  fetch document id
             $userData = $this->userRepo->getUserByAppId($appId);
             $userId = $userData->user_id;
+
+            switch ($docId) {
+                case '4':
+                    $arrFileData['finc_year'] = NULL;
+                    $arrFileData['gst_month'] = NULL;
+                    $arrFileData['gst_year'] = NULL;
+                    break;
+                case '5':
+                    $arrFileData['file_bank_id'] = NULL;
+                    $arrFileData['gst_month'] = NULL;
+                    $arrFileData['gst_year'] = NULL;
+                    break;
+
+                case '6':
+                    $arrFileData['file_bank_id'] = NULL;
+                    $arrFileData['finc_year']    = NULL;
+                    $arrFileData['is_pwd_protected'] = NULL;
+                    $arrFileData['is_scanned'] = NULL;
+                    $arrFileData['pwd_txt'] = NULL;
+                    break;
+                
+                default:
+                    $arrFileData = "Invalid Doc ID";
+                    break;
+            }
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 //Add/Update application workflow stages    
