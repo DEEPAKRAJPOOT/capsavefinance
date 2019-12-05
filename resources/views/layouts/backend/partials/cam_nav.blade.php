@@ -31,20 +31,24 @@
         <li>
             <a href="{{ route('cam_finance', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{$route_name == 'cam_finance' ? 'active' : '' }}">Financial</a>
         </li>
-        @endcan
+         @endcan
+     @can('cam_gstin')
     
         <li>
             <a href="{{ route('cam_gstin', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{$route_name == 'cam_gstin' ? 'active' : '' }}">GST/Ledger Detail</a>
         </li>
-       
+        @endcan
+     @can('limit_assessment')
     
         <li>
             <a href="{{ route('limit_assessment', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{$route_name == 'limit_assessment' ? 'active' : '' }}">Limit Assessment</a>
         </li>
-       
+        @endcan
+     
     
         <li>
             <a href="#" class="{{$route_name == 'cam_gst' ? 'active' : '' }}">Limit Management</a>
         </li>
        
+     
     </ul>
