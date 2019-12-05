@@ -176,9 +176,33 @@ class FinanceModel extends Model
         return ($result ?? null);
     }
 
-    public static function insertPerfios($data){
-      DB::table('biz_perfios')->insert($data);
-      return;
+    public static function insertPerfios($data, $table = 'biz_perfios'){
+      $inserted_id = DB::table($table)->insertGetId($data);
+      return $inserted_id;
     }
+
+    public static function updatePerfios($data, $table = 'biz_perfios_log', $value = '1', $column = 'id'){
+      $inserted_id = DB::table($table)->where($column, $value)->update($data);
+      return $inserted_id;
+    }
+
+    public static function getPendingFinanceStatement($app_id){
+       $result = self::select('*')
+                ->from('biz_perfios')
+                ->where('app_id', $app_id)
+                ->where('api_name', '1005')
+                ->first();
+        return ($result ?? null);
+    }
+
+    public static function getPendingBankStatement($app_id){
+       $result = self::select('*')
+                ->from('biz_perfios')
+                ->where('app_id', $app_id)
+                ->where('api_name', '1007')
+                ->first();
+        return ($result ?? null);
+    }
+
    
 }
