@@ -106,13 +106,18 @@ class AppDocumentFile extends Authenticatable
     {
         $inputArr = [];
 //        dd($attributes);
-        $inputArr['app_id']  = (isset($attributes['appId'])) ? $attributes['appId'] : $attributes['app_id'];   
+        $inputArr['app_id']  = (isset($attributes['appId'])) ? $attributes['appId'] : $attributes['app_id']; 
         $inputArr['doc_id']  = (isset($attributes['docId'])) ? $attributes['docId'] : $attributes['doc_id']; 
         $inputArr['doc_name']  = (isset($attributes['doc_name'])) ? $attributes['doc_name'] : ''; 
         $inputArr['finc_year']  = (isset($attributes['finc_year'])) ? $attributes['finc_year'] : ''; 
         $inputArr['gst_month']  = (isset($attributes['gst_month'])) ? $attributes['gst_month'] : ''; 
         $inputArr['gst_year']  = (isset($attributes['gst_year'])) ? $attributes['gst_year'] : ''; 
-        $inputArr['doc_id_no']  = (isset($attributes['doc_id_no'])) ? $attributes['doc_id_no'] : ''; 
+        $inputArr['doc_id_no']  = (isset($attributes['doc_id_no'])) ? $attributes['doc_id_no'] : '';
+
+        $inputArr['file_bank_id']  = $attributes['file_bank_id'] ?? NULL;
+        $inputArr['is_pwd_protected']  = $attributes['is_pwd_protected'] ?? NULL;
+        $inputArr['is_scanned']  = $attributes['is_scanned'] ?? NULL;
+        $inputArr['pwd_txt']  = $attributes['pwd_txt'] ?? NULL;
         $inputArr['file_id']  = $fileId; 
         $inputArr['is_upload'] = 1;
         $inputArr['created_by'] = 1;

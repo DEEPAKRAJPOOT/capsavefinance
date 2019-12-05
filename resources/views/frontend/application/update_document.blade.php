@@ -179,10 +179,10 @@
                              <label>Is Password Protected</label>
                              <div class="form-group">
                                 <label for="is_password_y">
-                                  <input type="radio" name="is_pwd_protected" id="is_password_y" value="yes"> Yes
+                                  <input type="radio" name="is_pwd_protected" id="is_password_y" value="1"> Yes
                                 </label>
                                 <label for="is_password_n">
-                                  <input type="radio" name="is_pwd_protected" checked id="is_password_n" value="no"> No
+                                  <input type="radio" name="is_pwd_protected" checked id="is_password_n" value="0"> No
                                 </label>
                              </div>
                           </div>
@@ -190,10 +190,10 @@
                              <label>Is Scanned</label>
                              <div class="form-group">
                                 <label for="is_scanned_y">
-                                  <input type="radio" name="is_scanned" id="is_scanned_y" value="yes"> Yes
+                                  <input type="radio" name="is_scanned" id="is_scanned_y" value="1"> Yes
                                 </label>
                                 <label for="is_scanned_n">
-                                  <input type="radio" name="is_scanned" checked id="is_scanned_n" value="no"> No
+                                  <input type="radio" name="is_scanned" checked id="is_scanned_n" value="0"> No
                                 </label>
                              </div>
                           </div>
