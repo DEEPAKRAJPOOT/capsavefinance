@@ -304,6 +304,7 @@ class CamController extends Controller
           );
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
+              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Bsa_lib::GET_REP;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
@@ -421,6 +422,7 @@ class CamController extends Controller
 	         );
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
+              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Perfios_lib::GET_STMT;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
@@ -473,6 +475,7 @@ class CamController extends Controller
            );
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
+              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Perfios_lib::GET_STMT;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
@@ -496,7 +499,7 @@ class CamController extends Controller
           return response()->json(['message' =>'Financial Statement analysed successfully.','status' => 1,
             'value' => $final_res]);
         }else{
-          return response()->json(['message' =>$final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
+          return response()->json(['message' => $final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
         }
     }
 
@@ -524,6 +527,7 @@ class CamController extends Controller
           );
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
+              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Bsa_lib::GET_REP;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
