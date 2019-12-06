@@ -197,7 +197,7 @@
 						<div class="form-sections">
 							<div class="row">
 								<div class="col-md-12">
-										<h5 class="form-head">Registered Address</h5>
+										<h5 class="form-head">GST Address</h5>
 										<div class="row">
 											<div class="col-md-4">
 												<div class="form-group">
@@ -261,7 +261,7 @@
 						<div class="form-sections">
 								<div id="accordion" class="accordion">
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseOne',this)"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseOne',this)"> <span> Same as GST Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseOne">
 											<a class="card-title">
@@ -315,8 +315,8 @@
 										</div>
 									</div>
 
-									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseTwo',this)"> <span> Same as Registered Address
+									<div class="card card-color mb-0" style="display: none;">
+										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseTwo',this)"> <span> Same as GST Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo">
 											<a class="card-title">GST Address</a>
@@ -372,7 +372,7 @@
 									</div>
 
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as GST Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseThree">
 											<a class="card-title">Warehouse Address</a>
@@ -425,7 +425,7 @@
 										</div>
 									</div>
 									<div class="card card-color mb-0">
-										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseFour', this)"> <span> Same as Registered Address
+										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseFour', this)"> <span> Same as GST Address
 										</span></div>
 										<div class="card-header collapsed" data-toggle="collapse" href="#collapseFour">
 											<a class="card-title">Factory Address</a>
@@ -491,5 +491,14 @@
 @endsection
 
 @section('jscript')
+<script>
+var messages = {
+	biz_pan_to_gst_karza: "{{ URL::route('chk_biz_pan_to_gst') }}",
+	biz_gst_to_entity_karza: "{{ URL::route('chk_biz_gst_to_entity') }}",
+	biz_entity_to_cin_karza: "{{ URL::route('chk_biz_entity_to_cin') }}",
+	data_not_found: "{{ trans('error_messages.data_not_found') }}",
+	token: "{{ csrf_token() }}"
+};
+</script>
 <script src="{{url('common/js/business_information.js?v=1')}}"></script>
 @endsection

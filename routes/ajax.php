@@ -225,5 +225,28 @@ Route::group(
         ]
     );
 
+    Route::post(
+        'chk_biz_pan_to_gst',
+        [
+        'as' => 'chk_biz_pan_to_gst',
+        'uses' => 'Karza\KarzaController@checkBizPanToGst'
+        ]
+    );
+
+    Route::post(
+        'chk_biz_gst_to_entity',
+        [
+        'as' => 'chk_biz_gst_to_entity',
+        'uses' => 'Karza\KarzaController@checkBizGstToEntity'
+        ]
+    );
+
+    Route::post(
+        'chk_biz_entity_to_cin',
+        [
+        'as' => 'chk_biz_entity_to_cin',
+        'uses' => 'Karza\KarzaController@checkBizEntityToCin'
+        ]
+    );
 
 });
