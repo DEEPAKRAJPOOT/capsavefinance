@@ -53,6 +53,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                     'as' => 'front_promoter_detail_save',
                     'uses' => 'Application\ApplicationController@updatePromoterDetail'
             ]); 
+
+            Route::get('verify_mobile_front', [
+                'as' => 'verify_mobile_front',
+                'uses' => 'Application\ApplicationController@mobileModel'
+            ]);
             
             Route::post('promoter-save',
                 [
