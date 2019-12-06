@@ -12,7 +12,7 @@
                             <div class="login-bar"> <img src="{{ asset('backend/theme/assets/img/login-bars.png') }}" class="img-responsive" alt="login bar" width="743" height="7"> </div>
                             <div class="prtm-block-title text-center">
                                 <div class="mrgn-b-lg">
-                                    <a href="javascript:;"> <img src="{{ asset('backend/theme/assets/img/prtm-logo.png') }}" alt="login logo" class="img-responsive display-ib" width="218" height="23"> </a>
+                                    <a href="javascript:;"> <img src="{{ asset('backend/theme/assets/img/prtm-logo.svg') }}" alt="login logo" class="img-responsive display-ib" width="218" height="23"> </a>
                                 </div>
                                 <div class="login-top mrgn-b-lg">
                                     <div class="mrgn-b-md">
