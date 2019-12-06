@@ -403,7 +403,7 @@
             $('.isloader').show();
             var CIN = '{{ (isset($cin_no)) ? $cin_no : "" }}';
             var consent = "Y";
-            var key = "h3JOdjfOvay7J8SF";
+            var key = "NX1nBICr7TNEisJ";
             var dataStore = ({'consent': consent, 'entityId': CIN});
             var jsonData = JSON.stringify(dataStore);
              jQuery.ajax({

@@ -836,7 +836,7 @@ class ApplicationController extends Controller
         $req_arr = array(
             'mobile' => $mobile_no,//'09AALCS4138B1ZE',
         );
-
+        
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
       $createApiLog = $response['createApiLog'];
