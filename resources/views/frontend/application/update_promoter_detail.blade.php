@@ -410,7 +410,7 @@
 
                ///url: "https://stub.kscan.in/v1/corp/profile",
 
-                url:"https://testapi.kscan.in/v1/corp/profile",
+                url:"https://api.kscan.in/v1/corp/profile",
                  headers: {
                     'Content-Type': "application/json",
                     'x-karza-key': key
