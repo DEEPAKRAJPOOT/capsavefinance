@@ -346,6 +346,7 @@ class ApplicationController extends Controller
                     $arrFileData['file_bank_id'] = NULL;
                     $arrFileData['gst_month'] = NULL;
                     $arrFileData['gst_year'] = NULL;
+                    $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
                     break;
 
                 case '6':
