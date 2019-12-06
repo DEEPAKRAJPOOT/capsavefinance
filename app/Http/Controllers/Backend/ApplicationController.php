@@ -334,14 +334,19 @@ class ApplicationController extends Controller
 
             switch ($docId) {
                 case '4':
+                    $file_bank_id = $arrFileData['file_bank_id'];
+                    $bankData = State::getBankName($file_bank_id);
+                    $arrFileData['doc_name'] = $bankData['bank_name'] ?? NULL;
                     $arrFileData['finc_year'] = NULL;
                     $arrFileData['gst_month'] = NULL;
                     $arrFileData['gst_year'] = NULL;
+                    $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
                     break;
                 case '5':
                     $arrFileData['file_bank_id'] = NULL;
                     $arrFileData['gst_month'] = NULL;
                     $arrFileData['gst_year'] = NULL;
+                    $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
                     break;
 
                 case '6':
@@ -831,7 +836,7 @@ class ApplicationController extends Controller
         $req_arr = array(
             'mobile' => $mobile_no,//'09AALCS4138B1ZE',
         );
-
+        
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
       $createApiLog = $response['createApiLog'];
@@ -845,6 +850,9 @@ class ApplicationController extends Controller
           'biz_api_log_id' => $createApiLog['biz_api_log_id'],
           'created_by' => Auth::user()->user_id
        ]);
+      if (empty($response['result'])) {
+        $response['status'] = 'fail';
+      }
       if ($response['status'] == 'success') {
         return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
           'value' => $response['result']]);
@@ -866,6 +874,9 @@ class ApplicationController extends Controller
             'mobile' => $mobile_no,//'09AALCS4138B1ZE',
       );
       $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      if (empty($response['result'])) {
+        $response['status'] = 'fail';
+      }
       if ($response['status'] == 'success') {
        return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
       }else{

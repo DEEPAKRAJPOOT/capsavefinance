@@ -97,6 +97,7 @@ class CibilController extends Controller
         $arrBizData = Business::getCompanyDataByBizId($biz_id);
         $arrData = BizOwner::where('biz_id','=',$biz_id)->first();
         $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($arrData['biz_owner_id']);
+        $arrOwnerData->pan_gst_hash = $arrBizData['0']['pan_gst_hash'];
         $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
         $arrOwnerData->biz_cin = $arrBizData['0']['cin'];
         $responce =  $CibilApi->getCommercialCibilAcknowledgement($arrOwnerData);

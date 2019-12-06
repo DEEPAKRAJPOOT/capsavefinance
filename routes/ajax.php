@@ -77,6 +77,11 @@ Route::group(
         'as' => 'verify_mobile',
         'uses' => 'Backend\ApplicationController@verify_mobile'
     ]);
+    
+    Route::post('verify_front_mobile', [
+        'as' => 'verify_front_mobile',
+        'uses' => 'Application\ApplicationController@verify_mobile'
+    ]);
 
     Route::post('download_user_cibil',[
         'as' => 'download_user_cibil',

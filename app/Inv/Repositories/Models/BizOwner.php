@@ -48,6 +48,7 @@ class BizOwner extends Model
         'is_pan_verified',
         'first_name',
         'last_name',
+        'mobile_no',
         'date_of_birth',
         'gender',
         'share_per',
@@ -112,20 +113,31 @@ class BizOwner extends Model
         $i =0;
        foreach($attributes['data'] as $key=>$val)
        {
-                $first_name = $val['first_name'];
+              
                 $last_name = '';
-                $ex =  explode(' ',$first_name);
+                $ex =  explode(' ', $val['first_name']);
                 $count =   count($ex);
-                if($count > 1) {
-                        $ucount  =  $count-1;
-                        unset($ex[$ucount]);
-                        $first_name =  implode(' ',$ex);
-                        $last_name =  end($ex);
+                if($count==1)
+                {
+                   $first_name = $val['first_name'];
                 }
+                else if($count==2)
+                {
+                    $first_name =  $ex[0]; 
+                    $last_name =  end($ex);
+                }
+                else if($count > 2)
+                {
+                    $first_name =  $ex[0]." ".$ex[1];  
+                    $last_name =  end($ex);
+                }
+                
+                
+               
                 $ownerInputArr =  BizOwner::create( ['biz_id' => $attributes['biz_id'],   
                 'user_id' => $uid, 
                 'first_name' => $first_name,
-                'last_name'   =>  $last_name,
+                'last_name' =>  $last_name,
                 'date_of_birth' => ($val['dob'])? Carbon::createFromFormat('d/m/Y', $val['dob'])->format('Y-m-d'): NULL,
                 'owner_addr' => $val['address'],
               'created_by' => Auth::user()->user_id]);
@@ -225,6 +237,7 @@ class BizOwner extends Model
             'user_id' => $userId, 
             'first_name' => $attributes['first_name'][$i],
             'last_name' => $attributes['last_name'][$i],
+            'mobile_no' => $attributes['mobile_no'][$i],     
             'date_of_birth' => ($attributes['date_of_birth'])? Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i])->format('Y-m-d'): NULL,
             'gender' => $attributes['gender'][$i],
             'owner_addr' => $attributes['owner_addr'][$i],
@@ -242,6 +255,7 @@ class BizOwner extends Model
             'user_id' => $userId, 
             'first_name' => $attributes['first_name'][$i],
             'last_name' => $attributes['last_name'][$i],
+            'mobile_no' => $attributes['mobile_no'][$i], 
             'date_of_birth' => ($attributes['date_of_birth'])? Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i])->format('Y-m-d'): NULL,
             'gender' => $attributes['gender'][$i],
             'owner_addr' => $attributes['owner_addr'][$i],
@@ -300,6 +314,7 @@ class BizOwner extends Model
             'user_id' => $userId, 
             'first_name' => $attributes['first_name'][$i],
             'last_name' => $attributes['last_name'][$i],
+            'mobile_no' => $attributes['mobile_no'][$i], 
             'date_of_birth' => date('Y-m-d', strtotime($attributes['date_of_birth'][$i])),
             'gender' => $attributes['gender'][$i],
             'owner_addr' => $attributes['owner_addr'][$i],

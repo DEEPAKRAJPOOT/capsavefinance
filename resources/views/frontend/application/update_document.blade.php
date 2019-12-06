@@ -15,11 +15,6 @@
     </ul>
     <div class="card mt-4">
         <div class="card-body">
-            
-            @if(session()->has('message'))
-            <p class="alert alert-info">{{ Session::get('message') }}</p>
-            @endif
-
             @foreach($errors->all() as $error)
             <span class="text-danger error">{{ $error }}</span>
             @endforeach
@@ -130,7 +125,7 @@
                     <div class="modal-body text-left">
                         <div class="form-group">
                             <label for="email">Select Bank Name</label>
-                            <select class="form-control" name="doc_name">
+                            <select class="form-control" name="file_bank_id">
                                 <option value="" selected disabled>Select Bank Name</option>
                                  @foreach($bankdata as $bank)
                                     <option value="{{$bank['id']}}">{{$bank['bank_name']}}</option>
@@ -198,7 +193,7 @@
                              </div>
                           </div>
                         </div>
-                        <div class="row" style="display: none">
+                        <div class="row" style="display: none" id="password_file_div">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="pwd_txt">Enter File Password</label>
@@ -255,5 +250,41 @@
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script src="{{ url('frontend/js/document.js?v=1') }}"></script>
-
+<script type="text/javascript">
+   appurl = 'http://rent.local/gst_analysys';
+   _token = "3tWYajuMtpb6VoOtTY3RK8wm62CWrqjZ5rGoN4rP";
+</script>
+<script>
+    $(document).on('click', '#fetchdetails',function () {
+        let gst_no   = $('#biz_gst_number').val();
+        let gst_usr  = $('#biz_gst_username').val();
+        let gst_pass = $('#biz_gst_password').val();
+        data = {_token,gst_no,gst_usr,gst_pass};
+        $.ajax({
+             url  : appurl,
+             type :'POST',
+             data : data,
+             beforeSend: function() {
+               $(".isloader").show();
+             },
+             dataType : 'json',
+             success:function(result) {
+                console.log(result);
+                let mclass = result['status'] ? 'success' : 'danger';
+                var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
+                $("#pullMsg").html(html);
+                if (result['status']) {
+                    $('#gstin_detail_div').show();
+                }
+             },
+             error:function(error) {
+                var html = '<div class="alert-danger alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>Some error occured. Please try again later.</div>';
+                $("#pullMsg").html(html);
+             },
+             complete: function() {
+                $(".isloader").hide();
+             },
+        })
+    })
+</script>
 @endsection

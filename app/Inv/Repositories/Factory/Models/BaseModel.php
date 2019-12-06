@@ -134,7 +134,7 @@ class BaseModel extends Model
      */
     public function getUserId()
     {
-        return (\Auth::user() ? \Auth::user()->id : (static::$nullable_user ? null
+        return (\Auth::user() ? \Auth::user()->user_id : (static::$nullable_user ? null
                 : 0));
     }
 

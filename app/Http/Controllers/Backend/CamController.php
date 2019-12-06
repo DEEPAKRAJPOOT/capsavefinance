@@ -144,15 +144,19 @@ class CamController extends Controller
       $appId = $request->get('appId');
       $filepath = $this->getBankFilePath($appId);
       $response = $this->_callBankApi($filepath, $appId);
-      $response['result'] = base64_encode($response['result']);
-
+      $response['result'] = base64_encode($response['result'] ?? '');
+      if (empty($response['perfiosTransactionId']) && empty($response['perfiostransactionid'])) {
+         $response['perfiosTransactionId'] = NULL;
+      }else{
+          $response['perfiosTransactionId'] = $response['perfiosTransactionId'] ?? $response['perfiostransactionid'];
+      }
       $log_data = array(
         'app_id' =>  $appId,
         'status' => $response['status'],
         'type' => '1',
         'api_name' => $response['api_type'] ?? NULL,
-        'prolitus_txn_id' => $response['prolitusTransactionId'],
-        'perfios_log_id' => $response['perfiosTransactionId'] ?? $response['perfiostransactionid'],
+        'prolitus_txn_id' => $response['prolitusTransactionId'] ?? NULL,
+        'perfios_log_id' => $response['perfiosTransactionId'],
         'created_by' => Auth::user()->user_id,
       );
       FinanceModel::insertPerfios($log_data);
@@ -169,14 +173,20 @@ class CamController extends Controller
       $appId = $request->get('appId');
       $filepath = $this->getFinanceFilePath($appId);
       $response = $this->_callFinanceApi($filepath, $appId);
-      $response['result'] = base64_encode($response['result']);
+      $response['result'] = base64_encode($response['result'] ?? '');
+      if (empty($response['perfiosTransactionId']) && empty($response['perfiostransactionid'])) {
+         $response['perfiosTransactionId'] = NULL;
+      }else{
+          $response['perfiosTransactionId'] = $response['perfiosTransactionId'] ?? $response['perfiostransactionid'];
+      }
+
       $log_data = array(
         'app_id' =>  $appId,
         'status' => $response['status'],
         'type' => '2',
         'api_name' => $response['api_type'] ?? NULL,
-        'prolitus_txn_id' => $response['prolitusTransactionId'],
-        'perfios_log_id' => $response['perfiosTransactionId'] ?? $response['perfiostransactionid'],
+        'prolitus_txn_id' => $response['prolitusTransactionId'] ?? NULL,
+        'perfios_log_id' => $response['perfiosTransactionId'],
         'created_by' => Auth::user()->user_id,
       );
       FinanceModel::insertPerfios($log_data);
@@ -304,6 +314,7 @@ class CamController extends Controller
           );
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
+              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Bsa_lib::GET_REP;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
@@ -421,6 +432,7 @@ class CamController extends Controller
 	         );
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
+              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Perfios_lib::GET_STMT;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
@@ -473,6 +485,7 @@ class CamController extends Controller
            );
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
+              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Perfios_lib::GET_STMT;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
@@ -496,7 +509,7 @@ class CamController extends Controller
           return response()->json(['message' =>'Financial Statement analysed successfully.','status' => 1,
             'value' => $final_res]);
         }else{
-          return response()->json(['message' =>$final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
+          return response()->json(['message' => $final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
         }
     }
 
@@ -524,6 +537,7 @@ class CamController extends Controller
           );
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
+              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Bsa_lib::GET_REP;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];

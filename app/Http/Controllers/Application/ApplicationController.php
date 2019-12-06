@@ -16,6 +16,8 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Libraries\KarzaTxn_lib;
+use App\Libraries\MobileAuth_lib;
+use App\Inv\Repositories\Models\BizApi;
 use PDF;
 
 class ApplicationController extends Controller
@@ -103,6 +105,7 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail(Request $request)
     {
+        $appId = $request->get('app_id');
         $biz_id = $request->get('biz_id');
         $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
@@ -120,6 +123,7 @@ class ApplicationController extends Controller
         return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
             'cin_no' => $getCin->cin,
             'ownerDetails' => $ownerDetail,
+            'appId' => $appId,
             'biz_id' => $biz_id
         ]);
         
@@ -220,6 +224,7 @@ class ApplicationController extends Controller
             'documentData' => $docData,
             'gst_no' => $gst_no,
             'bankdata' => $bankdata,
+            'appId' => $appId,
         ]); 
     } 
     
@@ -234,12 +239,43 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-            $docId = 1; //  fetch document id
+
+            $docId = (int)$request->docId; //  fetch document id
+            $appId = (int)$request->appId; //  fetch document id
             $userId = Auth::user()->user_id;
+
+            switch ($docId) {
+                case '4':
+                    $file_bank_id = $arrFileData['file_bank_id'];
+                    $bankData = State::getBankName($file_bank_id);
+                    $arrFileData['doc_name'] = $bankData['bank_name'] ?? NULL;
+                    $arrFileData['finc_year'] = NULL;
+                    $arrFileData['gst_month'] = NULL;
+                    $arrFileData['gst_year'] = NULL;
+                    $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
+                    break;
+                case '5':
+                    $arrFileData['file_bank_id'] = NULL;
+                    $arrFileData['gst_month'] = NULL;
+                    $arrFileData['gst_year'] = NULL;
+                    $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
+                    break;
+
+                case '6':
+                    $arrFileData['file_bank_id'] = NULL;
+                    $arrFileData['finc_year']    = NULL;
+                    $arrFileData['is_pwd_protected'] = NULL;
+                    $arrFileData['is_scanned'] = NULL;
+                    $arrFileData['pwd_txt'] = NULL;
+                    break;
+                
+                default:
+                    $arrFileData = "Invalid Doc ID";
+                    break;
+            }
+            
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
-                
-                //Add/Update application workflow stages
                 $appId = $arrFileData['appId'];       
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 $wf_status = $response->count() < 1 ? 1 : 2;
@@ -365,7 +401,7 @@ class ApplicationController extends Controller
 
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
-          //$this->logdata($response, 'F', $gst_no.'_'.date('ymdH').'.txt');
+          $this->logdata($response, 'F', $gst_no.'.txt');
           $json_decoded = json_decode($response['result'], TRUE);
           $file_name = $gst_no.'.pdf';
           $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
@@ -378,10 +414,71 @@ class ApplicationController extends Controller
     }
 
 
+    public function verify_mobile(Request $request){
+      $post_data = $request->all();
+      $mobile_no = trim($request->get('mobile_no'));
+      $appId = trim($request->get('appId'));
+      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
+        return response()->json(['message' =>'Mobile Number is not valid.','status' => 0]);
+      }
+
+      $mob = new MobileAuth_lib();
+        $req_arr = array(
+            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+        );
+        
+      $userData = State::getUserByAPP($appId);
+      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      $createApiLog = $response['createApiLog'];
+      $createBizApi= @BizApi::create([
+          'user_id' =>$userData['user_id'], 
+          'biz_id' =>   $userData['biz_id'],
+          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
+          'type' => 1,
+          'verify_doc_no' => 1,
+          'status' => 1,
+          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+          'created_by' => Auth::user()->user_id
+       ]);
+      if (empty($response['result'])) {
+        $response['status'] = 'fail';
+      }
+      if ($response['status'] == 'success') {
+        return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
+          'value' => $response['result']]);
+      }else{
+        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
+      }
+    }
+
+
+
+    public function mobileModel(Request $request){
+      $post_data = $request->all();
+      $mobile_no = trim($request->get('mobile'));
+      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
+        return '<div>Mobile Number is not valid.</div>';
+      }
+      $mob = new MobileAuth_lib();
+      $req_arr = array(
+            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+      );
+      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      if (empty($response['result'])) {
+        $response['status'] = 'fail';
+      }
+      if ($response['status'] == 'success') {
+       return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
+      }else{
+         return "<div>Unable to verify the mobile.</div>";
+      }
+    }
+
+
   public function logdata($data, $w_mode = 'D', $w_filename = '', $w_folder = '') {
     list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
-    $main_dir = base_path('apilogs/');
-    $year_dir = $main_dir . "$year/";
+    $main_dir = storage_path('app/public/user/');
+   /* $year_dir = $main_dir . "$year/";
     $month_dir = $year_dir . "$month/";
     $date_dir = $month_dir . "$date/";
     $hour_dir = $date_dir . "$hour/";
@@ -398,8 +495,10 @@ class ApplicationController extends Controller
     if (!file_exists($hour_dir)) {
       mkdir($hour_dir, 0777, true);
     }
+*/
+    $hour_dir = $main_dir;
 
-    $data = is_array($data) ? json_encode($data) : $data;
+    $data = is_array($data) || is_object($data) ? json_encode($data) : $data;
 
     $data = base64_encode($data);
     if (strtolower($w_mode) == 'f') {

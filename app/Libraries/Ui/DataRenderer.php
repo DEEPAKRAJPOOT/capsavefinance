@@ -192,6 +192,21 @@ class DataRenderer implements DataProviderInterface
                         return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
+                    'name',
+                    function ($app) {                        
+                        return $app->name ? $app->name : '';
+                })
+                ->addColumn(
+                    'email',
+                    function ($app) {                        
+                        return $app->email ? $app->email : '';
+                })
+                ->addColumn(
+                    'mobile_no',
+                    function ($app) {                        
+                        return $app->mobile_no ? $app->mobile_no : '';
+                })                
+                ->addColumn(
                     'assoc_anchor',
                     function ($app) {
                         //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
