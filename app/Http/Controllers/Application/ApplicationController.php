@@ -365,7 +365,7 @@ class ApplicationController extends Controller
 
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
-          //$this->logdata($response, 'F', $gst_no.'_'.date('ymdH').'.txt');
+          $this->logdata($response, 'F', $gst_no.'_'.date('ymdH').'.txt');
           $json_decoded = json_decode($response['result'], TRUE);
           $file_name = $gst_no.'.pdf';
           $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
@@ -380,8 +380,8 @@ class ApplicationController extends Controller
 
   public function logdata($data, $w_mode = 'D', $w_filename = '', $w_folder = '') {
     list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
-    $main_dir = base_path('apilogs/');
-    $year_dir = $main_dir . "$year/";
+    $main_dir = storage_path('app/public/user/');
+   /* $year_dir = $main_dir . "$year/";
     $month_dir = $year_dir . "$month/";
     $date_dir = $month_dir . "$date/";
     $hour_dir = $date_dir . "$hour/";
@@ -398,8 +398,10 @@ class ApplicationController extends Controller
     if (!file_exists($hour_dir)) {
       mkdir($hour_dir, 0777, true);
     }
+*/
+    $hour_dir = $main_dir;
 
-    $data = is_array($data) ? json_encode($data) : $data;
+    $data = is_array($data) || is_object($data) ? json_encode($data) : $data;
 
     $data = base64_encode($data);
     if (strtolower($w_mode) == 'f') {
