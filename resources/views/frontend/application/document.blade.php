@@ -233,13 +233,13 @@
                                                  </div>
                                               </div>
                                             </div>
-                                            <div class="row">
-                                              <div class="col-md-12">
-                                                  <div class="form-group">
-                                                      <label for="pwd_txt">Enter File Password</label>
-                                                      <input type="password" placeholder="Enter File Password" class="form-control" name="pwd_txt" id="pwd_txt">
-                                                   </div>
-                                              </div>
+                                            <div class="row" style="display: none" id="password_file_div">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="pwd_txt">Enter File Password</label>
+                                                        <input type="password" placeholder="Enter File Password" class="form-control" name="pwd_txt" id="pwd_txt">
+                                                     </div>
+                                                </div>
                                             </div>
                                             <button type="submit" class="btn btn-success float-right btn-sm">Submit</button>  
                                         </div>
@@ -272,9 +272,10 @@
 @endsection
 
 @section('scripts')
-
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+<script src="{{ url('frontend/js/document.js?v=1') }}"></script>
 <script>
-    
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
         $(".trigger").click(function(){
@@ -291,7 +292,7 @@
     $(document).ready(function(){
             $('input[type="file"]').change(function(e){
                 var fileName = e.target.files[0].name;
-                            $(".fileUpload").text(fileName);
+                    $(".fileUpload").text(fileName);
                 //alert('The file "' + fileName +  '" has been selected.');
             });
     });

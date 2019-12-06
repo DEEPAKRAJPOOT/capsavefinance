@@ -234,12 +234,43 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-            $docId = 1; //  fetch document id
+
+            $docId = (int)$request->docId; //  fetch document id
+            $appId = (int)$request->appId; //  fetch document id
             $userId = Auth::user()->user_id;
+
+            switch ($docId) {
+                case '4':
+                    $file_bank_id = $arrFileData['file_bank_id'];
+                    $bankData = State::getBankName($file_bank_id);
+                    $arrFileData['doc_name'] = $bankData['bank_name'] ?? NULL;
+                    $arrFileData['finc_year'] = NULL;
+                    $arrFileData['gst_month'] = NULL;
+                    $arrFileData['gst_year'] = NULL;
+                    $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
+                    break;
+                case '5':
+                    $arrFileData['file_bank_id'] = NULL;
+                    $arrFileData['gst_month'] = NULL;
+                    $arrFileData['gst_year'] = NULL;
+                    $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
+                    break;
+
+                case '6':
+                    $arrFileData['file_bank_id'] = NULL;
+                    $arrFileData['finc_year']    = NULL;
+                    $arrFileData['is_pwd_protected'] = NULL;
+                    $arrFileData['is_scanned'] = NULL;
+                    $arrFileData['pwd_txt'] = NULL;
+                    break;
+                
+                default:
+                    $arrFileData = "Invalid Doc ID";
+                    break;
+            }
+            
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
-                
-                //Add/Update application workflow stages
                 $appId = $arrFileData['appId'];       
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 $wf_status = $response->count() < 1 ? 1 : 2;
@@ -365,7 +396,7 @@ class ApplicationController extends Controller
 
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
-          $this->logdata($response, 'F', $gst_no.'_'.date('ymdH').'.txt');
+          $this->logdata($response, 'F', $gst_no.'.txt');
           $json_decoded = json_decode($response['result'], TRUE);
           $file_name = $gst_no.'.pdf';
           $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
