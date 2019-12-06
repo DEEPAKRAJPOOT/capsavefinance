@@ -608,7 +608,7 @@ class Helper extends PaypalHelper
             
             $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
             $app_wf_order_no = $last_completed_wf_stage ? $last_completed_wf_stage->order_no : 0;
-            if ($app_wf_order_no > $wf_order_no) {
+            if ($app_wf_order_no >= $wf_order_no) {
                 $isWfStageCompleted = 1;
             }
         }
