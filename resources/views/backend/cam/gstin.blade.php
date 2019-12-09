@@ -45,102 +45,17 @@
                      </tr>
                   </thead>
                   <tbody>
-                     <tr>
+
+                     @for($i = 1; $i <= 12; $i++)
+                      <tr>
                         <td>
                            <div id="head2">
-                              October,2019
+                              {{ date("F,Y", strtotime("-$i month", strtotime(date('Y-m-d'))))}}
                            </div>
                         </td>
                         <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
                      </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              September,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              August,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              July,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              June,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              May,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              April,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              March,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              February,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              January,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              December,2018
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              November,2018
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
+                     @endfor
                   </tbody>
                   <tbody>
                   </tbody>
