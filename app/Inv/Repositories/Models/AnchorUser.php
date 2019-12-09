@@ -26,6 +26,20 @@ class AnchorUser extends BaseModel {
     protected $primaryKey = 'anchor_user_id';
 
     /**
+     * Maintain created_at and updated_at automatically
+     *
+     * @var boolean
+     */
+    public $timestamps = true;
+
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = true;
+    
+    /**
      * The attributes that should be mutated to dates.
      *
      * @var array
@@ -49,7 +63,10 @@ class AnchorUser extends BaseModel {
         'token',
         'is_registered',
         'registered_type',
-        'created_by'
+        'created_by',
+        'created_at',
+        'updated_at',
+        'updated_by'
     ];
 
     /**
