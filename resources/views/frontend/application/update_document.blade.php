@@ -123,6 +123,8 @@
                     <input type="hidden" name="appId" value="{{ request()->get('app_id') }}">
 
                     <div class="modal-body text-left">
+                        
+                        <div id="is_required_addl_info">
                         <div class="form-group">
                             <label for="email">Select Bank Name</label>
                             <select class="form-control" name="file_bank_id">
@@ -165,6 +167,8 @@
                                </div>
                             </div>
                          </div>
+                        </div>
+                        
                         <div class="custom-file upload-btn-cls mb-3 mt-2">
                             <input type="file" class="custom-file-input getFileName" id="customFile" name="doc_file[]" multiple="">
                             <label class="custom-file-label" for="customFile">Choose file</label>

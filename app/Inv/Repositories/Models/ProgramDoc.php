@@ -80,7 +80,7 @@ class ProgramDoc extends BaseModel {
                 ->join('wf_stage', 'prgm_doc.wf_stage_id', '=', 'wf_stage.wf_stage_id')
                 
                 ->where($whereCondition)
-                ->first();
+                ->get();
         return $prgmDocs;
     }    
 }

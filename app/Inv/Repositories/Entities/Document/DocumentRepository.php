@@ -269,5 +269,30 @@ class DocumentRepository implements DocumentInterface
     public function getProgramDocs($whereCondition=[])
     {
         return ProgramDoc::getProgramDocs($whereCondition);
+    }
+    
+    /**
+     * Save Required Documents for Application
+     * 
+     * @param array $attributes
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveAppRequiredDocs($attributes=[])
+    {
+        return AppDocument::saveAppRequiredDocs($attributes);
+    }
+    
+    /**
+     * Check the required document for application
+     * 
+     * @param integer $app_id
+     * @param integer $doc_id
+     * 
+     * @return boolean
+     */
+    public function isAppDocFound($app_id, $doc_id) 
+    {
+        return AppDocument::isAppDocFound($app_id, $doc_id);
     }    
 }

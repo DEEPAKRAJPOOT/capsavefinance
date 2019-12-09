@@ -18,9 +18,12 @@ use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
 use App\Libraries\Pdf;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
 class ApplicationController extends Controller
 {
+    use ApplicationTrait;
+    
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
@@ -167,13 +170,18 @@ class ApplicationController extends Controller
        try {
             $arrFileData = $request->all();
             $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
-           
+                  
             if ($owner_info) {
             
                 //Add application workflow stages
                 $appId = $arrFileData['app_id']; 
                 $appData = $this->appRepo->getAppDataByAppId($appId);               
-                $userId = $appData ? $appData->user_id : null;                
+                $userId = $appData ? $appData->user_id : null;     
+                
+                $prgmDocsWhere = [];
+                $prgmDocsWhere['stage_code'] = 'doc_upload';
+                $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+            
                 Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);                                
                 $toUserId = $this->userRepo->getLeadSalesManager($userId);
                 
@@ -358,7 +366,12 @@ class ApplicationController extends Controller
                     break;
                 
                 default:
-                    $arrFileData = "Invalid Doc ID";
+                    //$arrFileData = "Invalid Doc ID";
+                    $arrFileData['file_bank_id'] = NULL;
+                    $arrFileData['finc_year']    = NULL;
+                    $arrFileData['is_pwd_protected'] = NULL;
+                    $arrFileData['is_scanned'] = NULL;
+                    $arrFileData['pwd_txt'] = NULL;                                        
                     break;
             }
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
@@ -932,7 +945,7 @@ class ApplicationController extends Controller
         $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
         $prgmDocs = $this->docRepo->getProgramDocs($prgmDocsWhere);    //33;
         
-        $docId = $prgmDocs ? $prgmDocs->doc_id : null;
+        $docId = $prgmDocs ? $prgmDocs[0]->doc_id : null;
        
         return view('backend.app.upload_sanction_letter')
                 ->with('appId', $appId)
