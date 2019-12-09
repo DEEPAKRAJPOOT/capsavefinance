@@ -19,9 +19,12 @@ use App\Libraries\KarzaTxn_lib;
 use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Models\BizApi;
 use PDF;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
 class ApplicationController extends Controller
 {
+    use ApplicationTrait;
+    
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
@@ -146,6 +149,12 @@ class ApplicationController extends Controller
         
        try {
             $arrFileData = $request->all();
+            $userId = Auth::user()->user_id;
+            
+            $prgmDocsWhere = [];        
+            $prgmDocsWhere['stage_code'] = 'doc_upload';            
+            $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $arrFileData['app_id']);            
+            
             $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); 
             if ($owner_info) {
             
@@ -268,6 +277,14 @@ class ApplicationController extends Controller
                     $arrFileData['is_scanned'] = NULL;
                     $arrFileData['pwd_txt'] = NULL;
                     break;
+                case '1' :
+                case '11':
+                    $arrFileData['file_bank_id'] = NULL;
+                    $arrFileData['finc_year']    = NULL;
+                    $arrFileData['is_pwd_protected'] = NULL;
+                    $arrFileData['is_scanned'] = NULL;
+                    $arrFileData['pwd_txt'] = NULL;
+                    break;                
                 
                 default:
                     $arrFileData = "Invalid Doc ID";

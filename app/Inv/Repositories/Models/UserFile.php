@@ -9,11 +9,10 @@ use App\Inv\Repositories\Models\AppDocumentFile;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class UserFile extends Authenticatable
+class UserFile extends BaseModel
 {
-
-    use Notifiable;
  
 
     /**

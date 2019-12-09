@@ -92,7 +92,11 @@
             $('select[name=file_bank_id]').parent('div').show();
         } else if (docId == 5) {
             $('select[name=finc_year]').parent('div').show();
-        } else {
+        } else if (docId == 1 || docId == 11) {            
+            $('#is_not_for_gst').hide();
+            $('#is_required_addl_info').hide();       
+        }        
+        else {            
             $('#is_not_for_gst').hide();
             $('select[name=gst_month]').parent('div').show();
             $('select[name=gst_year]').parent('div').show();

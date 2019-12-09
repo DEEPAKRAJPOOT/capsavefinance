@@ -161,6 +161,7 @@ class BizOwner extends Model
                 $getRes =  self::savePanApiRes($attributes, $attributes['biz_id']); 
             }
          
+          /*  
           $appDocCheck = AppDocument::where('user_id', $uid)
                     ->where('app_id', $attributes['app_id'])
                     ->count();
@@ -195,7 +196,7 @@ class BizOwner extends Model
               ]
               ]);
           }
-         
+          */
           return true;
 
     }
