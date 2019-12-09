@@ -146,7 +146,7 @@ class ApplicationController extends Controller
        try {
           $arrFileData = json_decode($request->getContent(), true);
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
-         dd($owner_info);
+        
           if ($owner_info) {
                 return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
