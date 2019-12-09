@@ -175,10 +175,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('business-information', [
                 'as' => 'save_new_application',
                 'uses' => 'Backend\ApplicationController@saveBusinessInformation'
-            ]);
-
-            
-//            
+            ]);        
             
             Route::get('view-offer', [
                 'as' => 'view_offer',
@@ -214,9 +211,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@mobileModel'
             ]);
             
-            
-
-//////////////// For Promoter Iframe////////////////////////
+            //////////////// For Promoter Iframe///////////////////
 
             Route::get('show-pan-data', [
                 'as' => 'show_pan_data',
@@ -235,7 +230,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_pass_data',
                 'uses' => 'Backend\ApplicationController@showPassResponseData'
             ]);
-         //////////////for cibil Iframe//////////////////////// 
+            //////////////for cibil Iframe//////////////////////// 
              Route::get('pull-cibil-commercial', [
                 'as' => 'pull_cibil_commercial',
                 'uses' => 'Backend\CamController@pullCibilCommercial'
@@ -247,6 +242,17 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                Route::get('view-cibil-report', [
                 'as' => 'view_cibil_report',
                 'uses' => 'Backend\CamController@viewCibilReport'
+            ]);
+
+            //////////////for Assign FI Iframe////////////////////
+            Route::get('assign-fi', [
+                'as' => 'show_assign_fi',
+                'uses' => 'Backend\FiRcuController@showAssignFi'
+            ]);
+
+            Route::post('assign-fi', [
+                'as' => 'save_assign_fi',
+                'uses' => 'Backend\FiRcuController@saveAssignFi'
             ]);
 
         });

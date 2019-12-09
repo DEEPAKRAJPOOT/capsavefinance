@@ -43,7 +43,7 @@
                                      $addrType = ['Company (Registered Address)', 'Company (Communication Address)', 'Company (GST Address)', 'Company (Warehouse Address)', 'Company (Factory Address)','Promoter Address'];
                                      ?>
                                     <tr role="row" class="odd">
-                                        <td><input type="checkbox" value="{{$fiList->biz_addr_id}}">{{$fiList->biz_addr_id}}</td>
+                                        <td><input type="checkbox" value="{{$fiList->biz_addr_id}}" class="address_id">{{$fiList->biz_addr_id}}</td>
                                         <td>{{$addrType[$fiList->address_type]}}</td>
                                         <td>{{($fiList->biz_owner_id)? $fiList->owner->first_name: $fiList->business->biz_entity_name}}</td>                                      
                                         <td>{{$fiList->addr_1.' '.$fiList->city_name.' '.(isset($fiList->state->name)? $fiList->state->name: '').' '.$fiList->pin_code}}</td>                                      
@@ -116,7 +116,8 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                           <button class="btn btn-success btn-sm " data-toggle="modal" data-target="#myModal">Trigger for FI</button>
+                           <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for FI</button>
+                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal"><i class="fa fa-plus"></i>Assign FI</a>
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
                         </div>
                      </div>
@@ -126,9 +127,19 @@
     </div>
 </div>
 </div>
-
+{!!Helpers::makeIframePopup('assignFiFrame','Assign FI', 'modal-lg')!!}
 @endsection
 
 @section('jscript')
-
+<script>
+$(document).ready(function(){
+    $('#trigger-for-fi').on('click', function(){
+        if($('.address_id').is(':checked')){
+            $('#openFiModal').trigger('click');
+        }else{
+            alert('First check at least one checkbox.');
+        }
+    })
+});
+</script>
 @endsection
