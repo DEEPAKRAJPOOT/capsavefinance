@@ -146,7 +146,7 @@ class ApplicationController extends Controller
        try {
           $arrFileData = json_decode($request->getContent(), true);
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
-         dd($owner_info);
+        
           if ($owner_info) {
                 return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
@@ -838,7 +838,8 @@ class ApplicationController extends Controller
         );
         
       $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      $response = $mob->api_call(MobileAuth_lib::SEND_OTP, $req_arr);
+      dd($response);
       $createApiLog = $response['createApiLog'];
       $createBizApi= @BizApi::create([
           'user_id' =>$userData['user_id'], 

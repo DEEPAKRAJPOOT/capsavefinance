@@ -43,14 +43,17 @@
 
                         <tr>
                             <td><b>Type of Industry</b></td>
-                            <td>{{$arrBizData->entityName }}</td>
+                            <td>{{$arrBizData->industryType }}</td>
                             <td><b>Registered Office Address</b></td>
-                            <td>{{$arrBizData->registeredAddress->addr_1}}</td>
+                            <td>{{$arrBizData->registeredAddress->addr_1.', '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}
+                            </td>
+                            
+                            
                         </tr>
 
                         <tr>
                             <td><b>Corporate office Address</b></td>
-                            <td>{{$arrBizData->communicationAddress->addr_1}}</td>
+                            <td>{{$arrBizData->communicationAddress->addr_1.', '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}</td>
                             <td><b>Manufacturing facilities address</b></td>
                             <td>
                                 <table class="table" cellpadding="0" cellspacing="0" border="1">
@@ -82,30 +85,30 @@
                         <tr>
                             <td><b>Program</b></td>
                             <td>
-                                <input type="text" name="program" id="program" class="form-control" value="{{isset($arrCamData->program) ? $arrCamData->program : ''}}">
+                                {{$arrBizData->prgm_name}}
                             </td>
                             <td><b>External Rating ( If any )</b></td>
                             <td style="text-align: center;">
                                 <fieldset class="rating" id="goof" name="goof">
-                                    <input type="radio" id="star5" name="rating_no" value="5">
+                                    <input type="radio" id="star5" name="rating_no" value="5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 5 ? 'checked' : ''}}>
                                     <label class="full" for="star5" title="Awesome - 5 stars"></label>
-                                    <input type="radio" id="star4half" name="rating_no" value="4.5">
+                                    <input type="radio" id="star4half" name="rating_no" value="4.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 4.5 ? 'checked' : ''}}>
                                     <label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
-                                    <input type="radio" id="star4" name="rating_no" value="4">
+                                    <input type="radio" id="star4" name="rating_no" value="4" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 4 ? 'checked' : ''}}> 
                                     <label class="full" for="star4" title="Pretty good - 4 stars"></label>
-                                    <input type="radio" id="star3half" name="rating_no" value="3.5">
+                                    <input type="radio" id="star3half" name="rating_no" value="3.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 3.5 ? 'checked' : ''}}>
                                     <label class="half" for="star3half" title="Meh - 3.5 stars"></label>
-                                    <input type="radio" id="star3" name="rating_no" value="3">
+                                    <input type="radio" id="star3" name="rating_no" value="3" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 3 ? 'checked' : ''}}>
                                     <label class="full" for="star3" title="Meh - 3 stars"></label>
-                                    <input type="radio" id="star2half" name="rating_no" value="2.5">
+                                    <input type="radio" id="star2half" name="rating_no" value="2.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 2.5 ? 'checked' : ''}}>
                                     <label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
-                                    <input type="radio" id="star2" name="rating_no" value="2">
+                                    <input type="radio" id="star2" name="rating_no" value="2" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 2 ? 'checked' : ''}}>
                                     <label class="full" for="star2" title="Kinda bad - 2 stars"></label>
-                                    <input type="radio" id="star1half" name="rating_no" value="1.5">
+                                    <input type="radio" id="star1half" name="rating_no" value="1.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 1.5 ? 'checked' : ''}}>
                                     <label class="half" for="star1half" title="Meh - 1.5 stars"></label>
-                                    <input type="radio" id="star1" name="rating_no" value="1">
+                                    <input type="radio" id="star1" name="rating_no" value="1" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 1 ? 'checked' : ''}}>
                                     <label class="full" for="star1" title="Sucks big time - 1 star"></label>
-                                    <input type="radio" id="starhalf" name="rating_no" value=".5">
+                                    <input type="radio" id="starhalf" name="rating_no" value=".5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == .5 ? 'checked' : ''}}>
                                     <label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
                                 </fieldset>
                                 <textarea class="form-control" id="external_rating_comments" rows="2" name="rating_comment"> {{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</textarea>
@@ -162,7 +165,7 @@
                             <tbody>
                                 <tr>
                                     <td width="30%"><b>Proposed Limit</b> </td>
-                                    <td id="limits" name="limits">{{$arrBizData->app->loan_amt}} </td>
+                                    <td id="limits" name="limits"> {!! $arrBizData->app->loan_amt ? \Helpers::formatCurreny($arrBizData->app->loan_amt) : '' !!} </td>
                                     <td><b>Exiting Limits ( If any ) </b></td>
                                     <td>
                                         <input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr" value="{{isset($arrCamData->t_o_f_limit) ? $arrCamData->t_o_f_limit : '0'}}">

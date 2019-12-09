@@ -67,7 +67,9 @@
                                             <input type="text" name="biz_gst_number" value="{{$gst_detail['pan_gst_hash']}}" readonly class="form-control biz_gst_number" tabindex="1" placeholder="Enter GST Number">
                                         </div>
                                     </div>
+
                                      @if(!file_exists(public_path("storage/user/".$appId.'_'.$gst_detail['pan_gst_hash'].".pdf")))
+
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="txtEmail">GST USERNAME
@@ -94,7 +96,6 @@
                                         <div class="form-group mt-25">
                                             <a href="javascript:void(0)" class="btn btn-primary">GST Pulled</a>
                                         </div>
-                                    </div>
                                     @endif
                                 </div>
                                 @endforeach
@@ -150,7 +151,8 @@
         let gst_no   = $target_div.find('.biz_gst_number').val();
         let gst_usr  = $target_div.find('.biz_gst_username').val();
         let gst_pass = $target_div.find('.biz_gst_password').val();
-        data = {_token,gst_no,gst_usr,gst_pass, appId};
+
+        data = {_token,gst_no,gst_usr,gst_pass};
         $.ajax({
              url  : appurl,
              type :'POST',

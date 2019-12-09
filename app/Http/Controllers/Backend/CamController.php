@@ -15,6 +15,7 @@ use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Models\BusinessAddress;
 use Auth;
 use Session;
 date_default_timezone_set('Asia/Kolkata');
@@ -48,16 +49,24 @@ class CamController extends Controller
               $arrBizData['ownerName'] = $arrOwnerData[0]['first_name'].' '.$arrOwnerData[0]['last_name'];
        }
         $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
-        if(isset($arrEntityData['entity_name'])){
-              $arrBizData['entityName'] = $arrEntityData['entity_name'];
+        if(isset($arrEntityData['industryType'])){
+              $arrBizData['industryType'] = $arrEntityData['industryType'];
         }
         if(isset($arrEntityData['name'])){      
               $arrBizData['legalConstitution'] = $arrEntityData['name'];
         }
-			$arrBizData['email']  = $arrEntityData['email'];
-			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
+
+         $whereCondition = [];
+        //$whereCondition['anchor_id'] = $anchorId;
+        $prgmData = $this->appRepo->getProgramData($whereCondition);
+        if(!empty($prgmData))
+        {
+           $arrBizData['prgm_name'] = $prgmData['prgm_name'];
+        }
+  			$arrBizData['email']  = $arrEntityData['email'];
+  			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
         $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-        return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData]);
+          return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData]);
 
     }
 
@@ -70,16 +79,16 @@ class CamController extends Controller
         if($arrCamData['cam_report_id'] != ''){
              $updateCamData = Cam::updateCamData($arrCamData, $userId);
              if($updateCamData){
-                    Session::flash('message',trans('Cam Information Updated Successfully'));
+                    Session::flash('message',trans('CAM information updated sauccessfully'));
              }else{
-                   Session::flash('message',trans('Cam Information Not Updated Successfully'));
+                   Session::flash('message',trans('CAM information not updated successfully'));
              }
         }else{
             $saveCamData = Cam::creates($arrCamData, $userId);
             if($saveCamData){
-                    Session::flash('message',trans('Cam Information Saved Successfully'));
+                    Session::flash('message',trans('CAM information saved successfully'));
              }else{
-                   Session::flash('message',trans('Cam Information Not Saved Successfully'));
+                   Session::flash('message',trans('CAM information not saved successfully'));
              }
         }    
         return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
@@ -727,9 +736,10 @@ class CamController extends Controller
         $gstdocs = $fin->getGSTStatements($appId);
     	$user = $fin->getUserByAPP($appId);
     	$user_id = $user['user_id'];
-	    $gst_details = $fin->getGstbyUser($user_id);
+      $gst_details = $fin->getGstbyUser($user_id);
+	    $all_gst_details = $fin->getAllGstbyUser($user_id);
 	    $gst_no = $gst_details['pan_gst_hash'];
-        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no]);
+        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details]);
     }
 
 
