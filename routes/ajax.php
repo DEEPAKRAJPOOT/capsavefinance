@@ -82,6 +82,16 @@ Route::group(
         'as' => 'verify_front_mobile',
         'uses' => 'Application\ApplicationController@verify_mobile'
     ]);
+    
+     Route::post('verify-otp-mobile', [
+        'as' => 'verify_otp_mobile',
+        'uses' => 'Backend\ApplicationController@verify_otp_mobile'
+    ]);
+    
+     Route::post('verify-front-otp', [
+        'as' => 'verify_front_otp',
+        'uses' => 'Application\ApplicationController@verify_otp'
+    ]);
 
     Route::post('download_user_cibil',[
         'as' => 'download_user_cibil',
