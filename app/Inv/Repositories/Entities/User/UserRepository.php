@@ -998,9 +998,9 @@ class UserRepository extends BaseRepositories implements UserInterface
     * @return type
     */
      
-        public function getAllAnchor()
+        public function getAllAnchor($orderBy='anchor_id')
         {
-          $result = Anchor::getAllAnchor();
+          $result = Anchor::getAllAnchor($orderBy);
         
           return $result ?: false;
         }

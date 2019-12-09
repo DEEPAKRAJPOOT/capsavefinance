@@ -100,10 +100,18 @@ public static function saveAnchor($arrAnchor = [])
      * 
      * @return type
      */
-    public static function getAllAnchor() {
+    public static function getAllAnchor($orderBy='anchor_id') {
         $result = self::select('anchor.*', 'u.user_id', 'u.f_name')
-                ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id')        
-            ->orderByRaw('anchor_id DESC')->get();
+                ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id') 
+                ->where('u.user_type', 2);
+        
+        if ($orderBy == 'anchor_id') {
+            $result->orderBy('anchor.anchor_id', 'DESC');
+        } else {
+            $result->orderBy('anchor.comp_name');
+        }
+            
+        $result = $result->get();
         return ($result ? $result : false);
     }
     
