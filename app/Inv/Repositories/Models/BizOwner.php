@@ -294,7 +294,7 @@ class BizOwner extends Model
             'first_name' => $attributes['first_name'][$i],
             'is_promoter' => isset($attributes['is_promoter'][$i]) ? $attributes['is_promoter'][$i] : Null,
             'mobile_no' => $attributes['mobile_no'][$i], 
-            'date_of_birth' => date('Y-m-d', strtotime($attributes['date_of_birth'][$i])),
+            'date_of_birth' =>($attributes['date_of_birth'])? Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i])->format('Y-m-d'): NULL,
             'gender' => $attributes['gender'][$i],
             'owner_addr' => $attributes['owner_addr'][$i],
             'is_pan_verified' => 1, 

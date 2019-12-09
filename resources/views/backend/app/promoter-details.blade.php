@@ -212,6 +212,18 @@
                                                 <input type="text" name="mobile_no[]"  {{ (isset($row->mobile_no)) ? '    readonly' : '' }} maxlength='10' id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{$row->mobile_no}}" class="form-control mobileveri"  placeholder="Enter Mobile no">
                                             </div>
                                         </div>
+                                         <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="txtEmail">OTP <span class="mandatory">*</span></label>  
+                                                <span class="text-success pullMsg_mob">
+                                                    @if(isset($row->mobile_no)) 
+                                                    <i class="fa fa-check-circle" aria-hidden="true"></i><i>Verified Successfully</i>
+                                                    @endif
+                                                </span>
+                                                <a class="verify-owner-no verify-show verify_mobile_no" name="verify_mobile_no" id="verify_mobile_no" > {{ (isset($row->mobile_no)) ? 'Verified' : 'Verify' }}</a>
+                                                <input type="text" name="mobile_no[]"  {{ (isset($row->mobile_no)) ? '    readonly' : '' }} maxlength='10' id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{$row->mobile_no}}" class="form-control mobileveri"  placeholder="Enter Mobile no">
+                                            </div>
+                                        </div>
 
                                     </div>
                                 </div>
@@ -721,13 +733,13 @@
                 });
                 if (ownerNull == true)
                 {
-                window.location.href = "{{ route('promoter_details', []) }}";
+                   window.location.href = "{{ route('promoter_details', []) }}";
                 }
                 else
                 {
                 if (res.status == 1)
                 {
-                window.location.href = "{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
+                    window.location.href = "{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
                 }
                 else {
                 alert("Something went wrong, please try again !");
