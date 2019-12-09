@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\LiftingDetail;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
@@ -419,4 +420,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $result ?: false;
     }
 
+    
+    /**
+     * get address for FI
+     * 
+     * @param integer $biz_id
+     * @return all address result
+     */
+    public function creates($attributes){
+        $result =  LiftingDetail::creates(($attributes));
+        return $result ?: false;
+    }
+
+   
 }

@@ -326,13 +326,28 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::get('limit-assessment', [
                 'as' => 'limit_assessment',
                 'uses' => 'Backend\CamController@showLimitAssessment'
-            ]);  
+                ]);  
             
-            Route::post('save-limit-assessment', [
-                'as' => 'save_limit_assessment',
-                'uses' => 'Backend\CamController@saveLimitAssessment'
-            ]); 
-            }); //end of cam
+                Route::post('save-limit-assessment', [
+                    'as' => 'save_limit_assessment',
+                    'uses' => 'Backend\CamController@saveLimitAssessment'
+                ]);
+
+                Route::get('anchor-view', [
+                    'as' => 'anchor_view',
+                    'uses' => 'Backend\CamController@anchorViewForm'
+                ]);
+                
+                Route::post('save-anchor-view', [
+                    'as' => 'save_anchor_view',
+                    'uses' => 'Backend\CamController@SaveAnchorForm'
+                ]);
+                
+                
+                
+                
+                
+        }); //end of cam
         });//end of application
 
         Route::group(['prefix' => 'lead'], function () {

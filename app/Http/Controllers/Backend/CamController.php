@@ -758,8 +758,88 @@ class CamController extends Controller
        $request =  $request->all();
     }
     
-    
-
+    /**
+     * View Anchor Form
+     * 
+     * @param Request $request
+     * @return null
+     * 
+     * @author Anand
+     */
+    public function anchorViewForm(Request $request)            
+    {   
+        try {
+            $biz_id = $request->get('biz_id'); 
+            $app_id = $request->get('app_id');
+            return view('backend.cam.cam_anchor_view')
+                ->with('biz_id',$biz_id)
+                    ->with('app_id',$app_id);
+          
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+  
+    /**
+     * Save Anchor Form
+     * 
+     * @param Request $request
+     * @return null
+     * 
+     * @author Anand
+     */ 
+   public function  SaveAnchorForm(Request $request)            
+    {   
+        try {
+            $allData = $request->all();
+            $relationShipArr = [];
+            $liftingArr = [];
+            
+            $relationShipArr['biz_id']                = $allData['biz_id'];
+            $relationShipArr['app_id']                = $allData['app_id'];
+            $relationShipArr['year_of_association']   = $allData['year_of_association'];
+            $relationShipArr['year']                  = $allData['yearss'];
+            $relationShipArr['payment_terms']         = $allData['payment_terms'];
+            $relationShipArr['grp_rating']            = $allData['grp_rating'];
+            $relationShipArr['contact_number']        = $allData['contact_number'];
+            $relationShipArr['security_deposit']      = $allData['security_deposit'];
+            $relationShipArr['note_on_lifting']       = $allData['note_on_lifting'];
+            $relationShipArr['reference_from_anchor'] = $allData['reference_from_anchor'];
+            $relationShipArr['anchor_risk_comments'] = $allData['anchor_risk_comments'];
+            
+            //need to saveddd $relationShipArr and pass its id to lifting table
+            
+            
+            //store array date of month
+            $months = $allData['month'];
+            $mtType = $allData['mt_type'];
+            $years = $allData['year'];
+             $countMonths = count($months);
+            //dd($months, $mtType, $years,$countMonths);
+            $mm = 1;
+          
+            for($i = 0;$i<$countMonths; $i++){
+               foreach($months[$i] as $key => $monthAmt){
+                   if($key % 2 != 0){
+                       $mm = $mm+1;
+                   }
+                   $liftingArr['app_id'] = $allData['app_id'];
+                   $liftingArr['year'] = $years[$i];
+                   $liftingArr['month'] = $mm;
+                   $liftingArr['mt_type'] = $mtType[$i];
+                   $liftingArr['mt_value'] = 1111;
+                   $liftingArr['amount'] = $monthAmt;
+                  $this->appRepo->creates($liftingArr);
+               }
+           }
+            
+           return redirect()->back();
+            
+            
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 
 
 }
