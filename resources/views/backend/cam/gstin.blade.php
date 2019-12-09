@@ -22,16 +22,18 @@
                   </div>
                      @endforeach
                   @endif
-                  @if(file_exists(public_path("storage/user/$gst_no.pdf")))
+                  @foreach($all_gst_details as $gst_data)
+                  @if(file_exists(public_path("storage/user/".$appId.'_'.$gst_data['pan_gst_hash'].".pdf")))
                   <div class="doc" style="text-align: center;">
-                     <small>GST FROM KARZA</small>
+                     <small><strong>{{ $gst_data['pan_gst_hash'] }}</strong></small>
                      <ul>
-                        <li><span class="icon"><i class="fa fa-file-excel-o"></i></span></li>
-                        <li><a href="{{ Storage::url('user/'.$gst_no.'.pdf') }}" download target="_blank">Download Karza GST Statement</a></li>
+                        <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
+                        <li><a href="{{ Storage::url('user/'.$appId.'_'.$gst_data['pan_gst_hash'].'.pdf') }}" download target="_blank">Download Karza GST Statement</a></li>
                         <li><a href="javascript:void(0)"></a>&nbsp;</li>
                      </ul>
                   </div>
                   @endif
+                  @endforeach
                   <div class="clearfix"></div>
                   <br/>
                   <hr>
@@ -43,102 +45,17 @@
                      </tr>
                   </thead>
                   <tbody>
-                     <tr>
+
+                     @for($i = 1; $i <= 12; $i++)
+                      <tr>
                         <td>
                            <div id="head2">
-                              October,2019
+                              {{ date("F,Y", strtotime("-$i month", strtotime(date('Y-m-d'))))}}
                            </div>
                         </td>
                         <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
                      </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              September,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              August,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              July,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              June,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              May,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              April,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              March,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              February,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              January,2019
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              December,2018
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <div id="head2">
-                              November,2018
-                           </div>
-                        </td>
-                        <td colspan="2" style="padding-left: 0rem !important;padding-right: 0rem !important;padding:0;"></td>
-                     </tr>
+                     @endfor
                   </tbody>
                   <tbody>
                   </tbody>

@@ -368,11 +368,13 @@ class ApplicationController extends Controller
     }
 
 
-    public function gstinForm(){
+    public function gstinForm(Request $request){
+     $appId = $request->get('app_id');
      $user_id = Auth::user()->user_id;
      $gst_details = State::getGstbyUser($user_id);
+     $all_gst_details = State::getAllGstbyUser($user_id);
      $gst_no = $gst_details['pan_gst_hash'];
-     return view('frontend.application.gstin',compact('gst_no'));   
+     return view('frontend.application.gstin',compact('gst_no','all_gst_details','appId'));   
     }
 
     public function analyse_gst(Request $request){
@@ -380,7 +382,14 @@ class ApplicationController extends Controller
       $gst_no = trim($request->get('gst_no'));
       $gst_usr = trim($request->get('gst_usr'));
       $gst_pass = trim($request->get('gst_pass'));
+      $appId = trim($request->get('appId'));
+      $user_id = Auth::user()->user_id;
+      $app_user = State::getUserByAPP($appId);
+      $app_userId = $app_user['user_id'];
 
+      if ($app_userId != $user_id) {
+        return response()->json(['message' =>'Data can not be manipulated','status' => 0]);
+      }
       if (empty($gst_no)) {
         return response()->json(['message' =>'GST Number can\'t be empty.','status' => 0]);
       }
@@ -401,9 +410,10 @@ class ApplicationController extends Controller
 
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
-          $this->logdata($response, 'F', $gst_no.'.txt');
+          $fname = $appId.'_'.$gst_no;
+          $this->logdata($response, 'F', $fname.'.txt');
           $json_decoded = json_decode($response['result'], TRUE);
-          $file_name = $gst_no.'.pdf';
+          $file_name = $fname.'.pdf';
           $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
           \File::put(storage_path('app/public/user').'/'.$file_name, file_get_contents($json_decoded['pdfDownloadLink'])); 
           $file= url('storage/user/'. $file_name);

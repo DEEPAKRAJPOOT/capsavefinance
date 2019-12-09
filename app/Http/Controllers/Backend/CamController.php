@@ -56,7 +56,7 @@ class CamController extends Controller
         }
 			$arrBizData['email']  = $arrEntityData['email'];
 			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
-        $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+      $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
         return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData]);
 
     }
@@ -724,12 +724,13 @@ class CamController extends Controller
 
     public function gstin(Request $request, FinanceModel $fin){
     	$appId = $request->get('app_id');
-        $gstdocs = $fin->getGSTStatements($appId);
+      $gstdocs = $fin->getGSTStatements($appId);
     	$user = $fin->getUserByAPP($appId);
     	$user_id = $user['user_id'];
-	    $gst_details = $fin->getGstbyUser($user_id);
+      $gst_details = $fin->getGstbyUser($user_id);
+	    $all_gst_details = $fin->getAllGstbyUser($user_id);
 	    $gst_no = $gst_details['pan_gst_hash'];
-        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no]);
+        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details]);
     }
 
 
