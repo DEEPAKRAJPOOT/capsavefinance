@@ -9052,3 +9052,15 @@ body.avgrund-active {
 table.dataTable.no-footer {
      border-bottom: 0; 
 }
+
+.mt-25{
+  margin-top: 25px;
+}
+
+.mt--10{
+  margin-top: -10px;
+}
+
+.ml-15{
+  margin-left: 15px;
+}

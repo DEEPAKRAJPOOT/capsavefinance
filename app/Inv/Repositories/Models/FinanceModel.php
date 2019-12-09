@@ -159,6 +159,15 @@ class FinanceModel extends Model
         return ($result ?? null);
     }
 
+     public static function getAllGstbyUser($user_id){
+        $result = self::select('*')
+                ->from('biz_pan_gst')
+                ->where('user_id', $user_id)
+                ->where('parent_pan_gst_id', '0')
+                ->where('type', '2')
+                ->get();
+        return ($result ?? null);
+    }
 
     public static function getUserByAPP($app_id){
         $result = self::select('*')
