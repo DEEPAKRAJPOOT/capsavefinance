@@ -251,7 +251,7 @@ class LeadController extends Controller {
         try {
               $roleData = Helpers::getUserRole();
             $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
-                $anchLeadList = $this->userRepo->getAllAnchor();                
+                $anchLeadList = $this->userRepo->getAllAnchor($orderBy='comp_name');                
             return view('backend.anchor.upload_anchor_lead')
                  ->with('is_superadmin',$is_superadmin)                    
                 ->with('anchDropUserList',$anchLeadList);
@@ -410,7 +410,7 @@ class LeadController extends Controller {
       try{
           $roleData = Helpers::getUserRole();
           $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
-       $anchLeadList = $this->userRepo->getAllAnchor();
+       $anchLeadList = $this->userRepo->getAllAnchor($orderBy='comp_name');
         return view('backend.anchor.anchor_manual_lead')
        ->with('anchDropUserList',$anchLeadList)
         ->with('is_superadmin',$is_superadmin);
