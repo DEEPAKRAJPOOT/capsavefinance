@@ -277,18 +277,17 @@ class ApplicationController extends Controller
                     $arrFileData['is_scanned'] = NULL;
                     $arrFileData['pwd_txt'] = NULL;
                     break;
-                case '1' :
-                case '11':
+                                                
+                default:
+                    //$arrFileData = "Invalid Doc ID";
                     $arrFileData['file_bank_id'] = NULL;
                     $arrFileData['finc_year']    = NULL;
                     $arrFileData['is_pwd_protected'] = NULL;
                     $arrFileData['is_scanned'] = NULL;
                     $arrFileData['pwd_txt'] = NULL;
-                    break;                
+                    break;     
                 
-                default:
-                    $arrFileData = "Invalid Doc ID";
-                    break;
+                
             }
             
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
