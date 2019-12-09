@@ -7,6 +7,7 @@ use DateTime;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Models\User;
 
 class AnchorUser extends BaseModel {
 
@@ -83,10 +84,14 @@ class AnchorUser extends BaseModel {
      * @return type
      */
     public static function getAllAnchorUsers() {
-        $result = self::select('anchor_user.*')
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        
+        $result = self::select('anchor_user.*');
              //->join('users', 'users.user_id', '=', 'anchor_user.user_id')
-             ->where('anchor_user.anchor_id', \Auth::user()->anchor_id) 
-            ->orderByRaw('anchor_user_id DESC');
+        if ($roleData[0]->is_superadmin != 1) {        
+             $result->where('anchor_user.anchor_id', \Auth::user()->anchor_id);
+        }
+        $result =  $result->orderByRaw('anchor_user_id DESC');
                 //->where('user_type', 1);
         return ($result ? $result : '');
     }
