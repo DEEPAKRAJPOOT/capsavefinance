@@ -43,14 +43,17 @@
 
                         <tr>
                             <td><b>Type of Industry</b></td>
-                            <td>{{$arrBizData->entityName }}</td>
+                            <td>{{$arrBizData->industryType }}</td>
                             <td><b>Registered Office Address</b></td>
-                            <td>{{$arrBizData->registeredAddress->addr_1}}</td>
+                            <td>{{$arrBizData->registeredAddress->addr_1.', '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}
+                            </td>
+                            
+                            
                         </tr>
 
                         <tr>
                             <td><b>Corporate office Address</b></td>
-                            <td>{{$arrBizData->communicationAddress->addr_1}}</td>
+                            <td>{{$arrBizData->communicationAddress->addr_1.', '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}</td>
                             <td><b>Manufacturing facilities address</b></td>
                             <td>
                                 <table class="table" cellpadding="0" cellspacing="0" border="1">
@@ -82,7 +85,7 @@
                         <tr>
                             <td><b>Program</b></td>
                             <td>
-                                <input type="text" name="program" id="program" class="form-control" value="{{isset($arrCamData->program) ? $arrCamData->program : ''}}">
+                                {{$arrBizData->prgm_name}}
                             </td>
                             <td><b>External Rating ( If any )</b></td>
                             <td style="text-align: center;">
@@ -162,7 +165,7 @@
                             <tbody>
                                 <tr>
                                     <td width="30%"><b>Proposed Limit</b> </td>
-                                    <td id="limits" name="limits">{{$arrBizData->app->loan_amt}} </td>
+                                    <td id="limits" name="limits"> {!! $arrBizData->app->loan_amt ? \Helpers::formatCurreny($arrBizData->app->loan_amt) : '' !!} </td>
                                     <td><b>Exiting Limits ( If any ) </b></td>
                                     <td>
                                         <input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr" value="{{isset($arrCamData->t_o_f_limit) ? $arrCamData->t_o_f_limit : '0'}}">
