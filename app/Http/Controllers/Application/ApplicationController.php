@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Application;
-
 use Auth;
 use Helpers;
 use Session;

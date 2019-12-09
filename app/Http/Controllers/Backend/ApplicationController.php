@@ -838,7 +838,8 @@ class ApplicationController extends Controller
         );
         
       $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+      $response = $mob->api_call(MobileAuth_lib::SEND_OTP, $req_arr);
+      dd($response);
       $createApiLog = $response['createApiLog'];
       $createBizApi= @BizApi::create([
           'user_id' =>$userData['user_id'], 
