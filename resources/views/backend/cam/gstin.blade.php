@@ -22,16 +22,18 @@
                   </div>
                      @endforeach
                   @endif
-                  @if(file_exists(public_path("storage/user/$gst_no.pdf")))
+                  @foreach($all_gst_details as $gst_data)
+                  @if(file_exists(public_path("storage/user/".$gst_data['pan_gst_hash'].".pdf")))
                   <div class="doc" style="text-align: center;">
                      <small>GST FROM KARZA</small>
                      <ul>
                         <li><span class="icon"><i class="fa fa-file-excel-o"></i></span></li>
-                        <li><a href="{{ Storage::url('user/'.$gst_no.'.pdf') }}" download target="_blank">Download Karza GST Statement</a></li>
+                        <li><a href="{{ Storage::url('user/'.$gst_data['pan_gst_hash'].'.pdf') }}" download target="_blank">Download Karza GST Statement</a></li>
                         <li><a href="javascript:void(0)"></a>&nbsp;</li>
                      </ul>
                   </div>
                   @endif
+                  @endforeach
                   <div class="clearfix"></div>
                   <br/>
                   <hr>
