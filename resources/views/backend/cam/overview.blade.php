@@ -45,7 +45,8 @@
                             <td><b>Type of Industry</b></td>
                             <td>{{$arrBizData->entityName }}</td>
                             <td><b>Registered Office Address</b></td>
-                            <td>{{$arrBizData->registeredAddress->addr_1}}</td>
+                            <td>{{$arrBizData->registeredAddress->addr_1.','.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state_id.' '.$arrBizData->registeredAddress->pin_code}}</td>
+                            
                         </tr>
 
                         <tr>
