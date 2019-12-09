@@ -122,6 +122,15 @@ class State extends BaseModel
         return ($data ? $data : false);
     }
 
+      public static function getAllGstbyUser($user_id){
+        $data = self::select('*')
+                ->from('biz_pan_gst')
+                ->where('user_id', $user_id)
+                ->where('type', '2')
+                ->get();
+        return ($data ? $data : false);
+    }
+
      public static function getBankData(){
         $result = self::select('*')
                 ->from('mst_bank')
