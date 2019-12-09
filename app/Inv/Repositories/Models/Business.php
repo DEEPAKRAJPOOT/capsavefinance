@@ -28,6 +28,20 @@ class Business extends BaseModel
      */
     protected $primaryKey = 'biz_id';
 
+     /**
+     * Maintain created_at and updated_at automatically
+     *
+     * @var boolean
+     */
+    public $timestamps = true;
+
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = true;
+    
     /**
      * The attributes that should be mutated to dates.
      *

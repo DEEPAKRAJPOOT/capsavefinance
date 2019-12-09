@@ -6,8 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Illuminate\Notifications\Notifiable;
 //use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class Cam extends Model
+class Cam extends BaseModel
 {
     use Notifiable;
     /**
@@ -24,6 +25,20 @@ class Cam extends Model
      */
     protected $primaryKey = 'cam_report_id';
 
+     /**
+     * Maintain created_at and updated_at automatically
+     *
+     * @var boolean
+     */
+    public $timestamps = true;
+
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = true;
+    
     /**
      * The attributes that should be mutated to dates.
      *
@@ -57,6 +72,8 @@ class Cam extends Model
         'cm_comment',
         'created_by',
         'created_at',
+        'updated_at',
+        'updated_by'
     ];
 
     public static function creates($attributes, $userId){

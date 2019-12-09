@@ -7,12 +7,10 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class DocumentMaster extends Authenticatable
+class DocumentMaster extends BaseModel
 {
-
-    use Notifiable;
- 
 
     /**
      * The database table used by the model.
@@ -27,6 +25,20 @@ class DocumentMaster extends Authenticatable
      * @var integer
      */
     protected $primaryKey = 'id';
+    
+     /**
+     * Maintain created_at and updated_at automatically
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
+
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = false;
     
     /**
      * The attributes that are mass assignable.
