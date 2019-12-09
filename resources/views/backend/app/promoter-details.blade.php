@@ -1371,7 +1371,7 @@
                 var html = result['message'];
                 
                 span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
-                if (result['status']) {
+                if (result.status==1) {
                
                 $("#toggleOtp"+count).show();
                 button_target.text('Verified');
