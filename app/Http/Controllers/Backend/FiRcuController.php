@@ -37,9 +37,6 @@ class FiRcuController extends Controller
      */
     public function showAssignFi(Request $request)
     {
-        //$biz_id = $request->get('biz_id');
-        //$fiLists = $this->appRepo->getAddressforFI($biz_id);
-        //dd($fiLists);
         return view('backend.fircu.fi_trigger');   
     }
 
@@ -48,10 +45,10 @@ class FiRcuController extends Controller
      */
     public function saveAssignFi(Request $request)
     {
-        //$biz_id = $request->get('biz_id');
-        //$fiLists = $this->appRepo->getAddressforFI($biz_id);
-        dd(1);
-        return view('backend.fircu.fi')->with('fiLists', $fiLists);   
+        //dd($request->all());
+        $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
+        $this->appRepo->insertFIAddress($request->all());  
+        return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
     /**

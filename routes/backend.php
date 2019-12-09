@@ -245,12 +245,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
 
             //////////////for Assign FI Iframe////////////////////
-            Route::get('assign-fi', [
+            Route::get('fircu/assign-fi', [
                 'as' => 'show_assign_fi',
                 'uses' => 'Backend\FiRcuController@showAssignFi'
             ]);
 
-            Route::post('assign-fi', [
+            Route::post('fircu/assign-fi', [
                 'as' => 'save_assign_fi',
                 'uses' => 'Backend\FiRcuController@saveAssignFi'
             ]);

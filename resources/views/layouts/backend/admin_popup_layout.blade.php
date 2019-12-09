@@ -62,6 +62,14 @@
             $(this).parents("tr").next(".dpr").slideToggle();
             });
         });
+
+        function unsetError(ele){
+            $(ele+' +span').remove();
+        }
+
+        function setError(ele, msg){
+            $(ele).after('<span class="text-danger error">'+msg+'</span>');
+        }
     </script>
     @yield('jscript')
 </body>
