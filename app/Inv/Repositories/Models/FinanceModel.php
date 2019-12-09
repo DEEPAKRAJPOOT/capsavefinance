@@ -5,10 +5,10 @@ namespace App\Inv\Repositories\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use DB;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class FinanceModel extends Model
-{
-    use Notifiable;
+class FinanceModel extends BaseModel
+{    
     /**
      * The database table used by the model.
      *
@@ -23,6 +23,20 @@ class FinanceModel extends Model
      */
     protected $primaryKey = 'sno';
 
+     /**
+     * Maintain created_at and updated_at automatically
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
+
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = false;
+    
     /**
      * The attributes that should be mutated to dates.
      *

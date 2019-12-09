@@ -8,10 +8,11 @@ use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class Application extends Model
+class Application extends BaseModel
 {
-    use Notifiable;
+    
     /**
      * The database table used by the model.
      *
@@ -26,6 +27,20 @@ class Application extends Model
      */
     protected $primaryKey = 'app_id';
 
+     /**
+     * Maintain created_at and updated_at automatically
+     *
+     * @var boolean
+     */
+    public $timestamps = true;
+
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = true;
+    
     /**
      * The attributes that should be mutated to dates.
      *

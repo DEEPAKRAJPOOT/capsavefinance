@@ -3,8 +3,9 @@
 namespace App\Inv\Repositories\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class UserBussinessAddress extends Model {  //
+class UserBussinessAddress extends BaseModel {  //
 
     /* The database table used by the model.
      *
@@ -24,7 +25,7 @@ class UserBussinessAddress extends Model {  //
      *
      * @var boolean
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Maintain created_by and updated_by automatically
