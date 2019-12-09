@@ -189,15 +189,7 @@ Route::group(
         'uses' => 'AjaxController@getAnchorLeadLists'
         ]
     ); 
-     
-    /*Route::get(
-        'check-exist-user',
-        [
-        'as' => 'check_exist_user',
-        'uses' => 'AjaxController@checkExistUser'
-        ]
-    );*/
-
+    
     Route::post(
         'get-user-application',
         [

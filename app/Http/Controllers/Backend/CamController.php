@@ -724,7 +724,7 @@ class CamController extends Controller
 
     public function gstin(Request $request, FinanceModel $fin){
     	$appId = $request->get('app_id');
-        $gstdocs = $fin->getGSTStatements($appId);
+      $gstdocs = $fin->getGSTStatements($appId);
     	$user = $fin->getUserByAPP($appId);
     	$user_id = $user['user_id'];
       $gst_details = $fin->getGstbyUser($user_id);
