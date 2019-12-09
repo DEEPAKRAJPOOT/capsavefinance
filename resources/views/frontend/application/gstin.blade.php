@@ -1,5 +1,5 @@
+<?php $enable_download = false;?>
 @extends('layouts.app')
-
 @section('content')
 <style type="text/css">
     .pullout{
@@ -92,7 +92,7 @@
                                     @else
                                     <div class="col-md-3">
                                         <div class="form-group mt-25">
-                                            <a href="javascript:void(0)" class="btn btn-primary">GST Pulled</a>
+                                            <a href="{{$enable_download ? (Storage::url('user/'.$appId.'_'.$gst_detail['pan_gst_hash'].'.pdf')) : 'javascript:void(0)'}}" class="btn btn-primary" download>GST Pulled</a>
                                         </div>
                                     </div>
                                     @endif
