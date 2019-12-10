@@ -246,7 +246,7 @@ class CamController extends Controller
     	$user = FinanceModel::getUserByAPP($appId);
     	$loanAmount = (int)$user['loan_amt'];
         $bsa = new Bsa_lib();
-        $reportType = 'xml';
+        $reportType = 'xls,json';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
         $process_txn_cnt = 0;
         $req_arr = array(
@@ -319,9 +319,10 @@ class CamController extends Controller
         if ($this->download_xlsx) {
           $req_arr = array(
             'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-            'types' => 'xlsx',
+            'types' => 'xls,json',
           );
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
+          dd($final_res);
           if ($final_res['status'] != 'success') {
               $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Bsa_lib::GET_REP;
@@ -349,7 +350,7 @@ class CamController extends Controller
     	$user = FinanceModel::getUserByAPP($appId);
     	$loanAmount = (int)$user['loan_amt'];
         $perfios = new Perfios_lib();
-        $reportType = 'xml';
+        $reportType = 'json';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
         $process_txn_cnt = 0;
         $apiVersion = '2.1';
