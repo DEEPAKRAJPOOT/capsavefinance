@@ -238,4 +238,94 @@ class KarzaApi {
         }
     }
 
+    /**
+     * Business Pan Card status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkBizPanToGst($request) {
+        try {
+            $api_url = '/prod/v1/search';
+            $baseUrl = 'https://gst.karza.in'; //config('proin.karza_auth_api_url');
+            $apiKey = 'NX1nBICr7TNEisJ';//config('proin.karza_auth_api_key');
+            $options = [
+                'base_uri' => $baseUrl,
+                'json' => [
+                    'consent' => 'Y',
+                    'pan' => $request['pan']
+                   ],
+                'headers' => [
+                    'cache-control' => "no-cache",
+                    'Content-Type' => "application/json",
+                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                ]
+            ];
+            $response = $this->client->post($api_url, $options);
+            $response = $response->getBody()->getContents();
+            return $response;
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
+    /**
+     * Business GST to ENTITY verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkBizGstToEntity($request) {
+        try {
+            $api_url = '/prod/v1/gst-verification';
+            $baseUrl = 'https://gst.karza.in'; //config('proin.karza_auth_api_url');
+            $apiKey = 'NX1nBICr7TNEisJ';//config('proin.karza_auth_api_key');
+            $options = [
+                'base_uri' => $baseUrl,
+                'json' => [
+                    'consent' => 'Y',
+                    'gstin' => $request['gstin']
+                   ],
+                'headers' => [
+                    'cache-control' => "no-cache",
+                    'Content-Type' => "application/json",
+                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                ]
+            ];
+            $response = $this->client->post($api_url, $options);
+            $response = $response->getBody()->getContents();
+            return $response;
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
+    /**
+     * Business ENTITY to CIN verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkBizEntityToCin($request) {
+        try {
+            $api_url = '/v2/compsearch-lite';
+            $baseUrl = 'https://api.karza.in'; //config('proin.karza_auth_api_url');
+            $apiKey = 'NX1nBICr7TNEisJ';//config('proin.karza_auth_api_key');
+            $options = [
+                'base_uri' => $baseUrl,
+                'json' => [
+                    'consent' => 'Y',
+                    'companyName' => $request['companyName']
+                   ],
+                'headers' => [
+                    'cache-control' => "no-cache",
+                    'Content-Type' => "application/json",
+                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                ]
+            ];
+            $response = $this->client->post($api_url, $options);
+            $response = $response->getBody()->getContents();
+            return $response;
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
 }

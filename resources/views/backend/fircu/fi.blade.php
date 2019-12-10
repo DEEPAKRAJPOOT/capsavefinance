@@ -38,12 +38,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                <?php $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Promoter Address'];
+                                $status = ['Pending', 'Inprogress', 'Positive', 'Negative', 'Cancelled', 'Refer to Credit']; ?>
                                 @forelse($fiLists as $key=>$fiList)
-                                    <?php
-                                     $addrType = ['Company (Registered Address)', 'Company (Communication Address)', 'Company (GST Address)', 'Company (Warehouse Address)', 'Company (Factory Address)','Promoter Address'];
-                                     ?>
                                     <tr role="row" class="odd">
-                                        <td><input type="checkbox" value="{{$fiList->biz_addr_id}}">{{$fiList->biz_addr_id}}</td>
+                                        <td><input type="checkbox" value="{{$fiList->biz_addr_id}}" class="address_id">{{$fiList->biz_addr_id}}</td>
                                         <td>{{$addrType[$fiList->address_type]}}</td>
                                         <td>{{($fiList->biz_owner_id)? $fiList->owner->first_name: $fiList->business->biz_entity_name}}</td>                                      
                                         <td>{{$fiList->addr_1.' '.$fiList->city_name.' '.(isset($fiList->state->name)? $fiList->state->name: '').' '.$fiList->pin_code}}</td>                                      
@@ -55,13 +54,13 @@
                                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 Action
                                                 </button>
-                                                <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                                    <a class="dropdown-item" href="#" value="0">Pending</a>
-                                                    <a class="dropdown-item" href="#" value="1">Inprogress</a>
-                                                    <a class="dropdown-item" href="#" value="2">Positive</a>
-                                                    <a class="dropdown-item" href="#" value="3">Negative</a>
-                                                    <a class="dropdown-item" href="#" value="4">Cancelled</a>
-                                                    <a class="dropdown-item" href="#" value="5">Refer to Credit</a>
+                                                <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
+                                                    <a class="dropdown-item change-status" href="#" value="0">Pending</a>
+                                                    <a class="dropdown-item change-status" href="#" value="1">Inprogress</a>
+                                                    <a class="dropdown-item change-status" href="#" value="2">Positive</a>
+                                                    <a class="dropdown-item change-status" href="#" value="3">Negative</a>
+                                                    <a class="dropdown-item change-status" href="#" value="4">Cancelled</a>
+                                                    <a class="dropdown-item change-status" href="#" value="5">Refer to Credit</a>
                                                 </div>
                                                 <div class="d-flex file-upload-cls">
                                                     <div class="file-browse float-left mr-3 ml-4">
@@ -75,9 +74,9 @@
                                                 </div>
                                             </div>
                                         </td> 
-                                        <td align="right"><span class="trigger"></span></td> 
+                                        <td align="right"><span class="trigger minus"></span></td> 
                                     </tr>
-                                    <tr class="dpr" style="display: none;">
+                                    <tr class="dpr" style="display: table-row;">
                                         <td colspan="7" class="p-0">
                                            <table class="overview-table remove-tr-bg" cellpadding="0" cellspacing="0" border="0" width="100%">
                                               <tbody>
@@ -94,10 +93,10 @@
                                                     <td width="25%">{{ucwords($fiAdd->user->f_name.' '.$fiAdd->user->l_name)}}</td>
                                                     <td width="20%">{{\Carbon\Carbon::parse($fiAdd->fi_status_updatetime)->format('d/m/Y H:m A')}}</td>
                                                     <td width="10%"><a href="#"><i class="fa fa-download"></i></a></td>
-                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$fiAdd->fi_status}}</td>
+                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$status[$fiAdd->fi_status]}}</td>
                                                  </tr>
                                                  @empty
-                                                 <tr>
+                                                 <tr style="text-align: center;">
                                                     <td width="100%" colspan="5">No data found</td>
                                                  </tr>
                                                  @endforelse
@@ -116,7 +115,8 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                           <button class="btn btn-success btn-sm " data-toggle="modal" data-target="#myModal">Trigger for FI</button>
+                           <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for FI</button>
+                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal"><i class="fa fa-plus"></i>Assign FI</a>
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
                         </div>
                      </div>
@@ -126,9 +126,25 @@
     </div>
 </div>
 </div>
-
+{!!Helpers::makeIframePopup('assignFiFrame','Assign FI', 'modal-lg')!!}
 @endsection
 
 @section('jscript')
+<script>
+$(document).ready(function(){
+    $('#trigger-for-fi').on('click', function(){
+        if($('.address_id').is(':checked')){
+            $('#openFiModal').trigger('click');
+        }else{
+            alert('First check at least one checkbox.');
+        }
+    });
 
+    $('.change-status').on('click', function(){
+        let address_id = $(this).parent('div').data('address_id');
+        let status = $(this).attr('value');
+        //hit ajax to save data to log table and update status of fi address and status in biz_addr table
+    });
+});
+</script>
 @endsection
