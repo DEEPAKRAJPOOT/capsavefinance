@@ -733,11 +733,12 @@ class CamController extends Controller
 
     public function gstin(Request $request, FinanceModel $fin){
     	$appId = $request->get('app_id');
+      $biz_id = $request->get('biz_id');
       $gstdocs = $fin->getGSTStatements($appId);
     	$user = $fin->getUserByAPP($appId);
     	$user_id = $user['user_id'];
       $gst_details = $fin->getGstbyUser($user_id);
-	    $all_gst_details = $fin->getAllGstbyUser($user_id);
+	    $all_gst_details = $fin->getAllGstbyBiz($biz_id);
 	    $gst_no = $gst_details['pan_gst_hash'];
         return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details]);
     }
