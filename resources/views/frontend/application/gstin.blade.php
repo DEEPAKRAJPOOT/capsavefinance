@@ -1,5 +1,5 @@
+<?php $enable_download = false;?>
 @extends('layouts.app')
-
 @section('content')
 <style type="text/css">
     .pullout{
@@ -67,6 +67,7 @@
                                             <input type="text" name="biz_gst_number" value="{{$gst_detail['pan_gst_hash']}}" readonly class="form-control biz_gst_number" tabindex="1" placeholder="Enter GST Number">
                                         </div>
                                     </div>
+                                     @if(!file_exists(public_path("storage/user/".$appId.'_'.$gst_detail['pan_gst_hash'].".pdf")))
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="txtEmail">GST USERNAME
@@ -88,6 +89,13 @@
                                             <input type="submit" value="Fetch Detail" class="fetchdetails btn btn-primary">
                                         </div>
                                     </div>
+                                    @else
+                                    <div class="col-md-3">
+                                        <div class="form-group mt-25">
+                                            <a href="{{$enable_download ? (Storage::url('user/'.$appId.'_'.$gst_detail['pan_gst_hash'].'.pdf')) : 'javascript:void(0)'}}" class="btn btn-primary" download>GST Pulled</a>
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                                 @endforeach
                                 @endif
@@ -104,6 +112,7 @@
 <script type="text/javascript">
    appurl = '{{URL::route("gstAnalysis") }}';
    _token = "{{ csrf_token() }}";
+   appId  = "{{ $appId }}";
 </script>
 <script>
     $(document).on('click', '#fetchdetails',function () {
@@ -141,7 +150,7 @@
         let gst_no   = $target_div.find('.biz_gst_number').val();
         let gst_usr  = $target_div.find('.biz_gst_username').val();
         let gst_pass = $target_div.find('.biz_gst_password').val();
-        data = {_token,gst_no,gst_usr,gst_pass};
+        data = {_token,gst_no,gst_usr,gst_pass, appId};
         $.ajax({
              url  : appurl,
              type :'POST',

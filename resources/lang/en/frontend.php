@@ -11,5 +11,6 @@ return [
         'created_date'          => 'Created Date',
         'status'                => 'Status',
         'action'                => 'Action',
+        'gst'                   => 'Pull GST',
     ]
 ];

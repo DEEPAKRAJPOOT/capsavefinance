@@ -9,7 +9,7 @@
         @endcan
     
         <li>
-            <a href="#" class="{{$route_name == 'cam_anchor' ? 'active' : '' }}">Anchor</a>
+            <a href="{{route('anchor_view', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{$route_name == 'anchor_view' ? 'active' : '' }}">Anchor</a>
         </li>
        
      @can('cam_promoter')
