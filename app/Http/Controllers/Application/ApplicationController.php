@@ -385,9 +385,10 @@ class ApplicationController extends Controller
 
     public function gstinForm(Request $request){
      $appId = $request->get('app_id');
+     $biz_id = $request->get('biz_id');
      $user_id = Auth::user()->user_id;
      $gst_details = State::getGstbyUser($user_id);
-     $all_gst_details = State::getAllGstbyUser($user_id);
+     $all_gst_details = State::getAllGstbyBiz($biz_id);
      $gst_no = $gst_details['pan_gst_hash'];
      return view('frontend.application.gstin',compact('gst_no','all_gst_details','appId'));   
     }
