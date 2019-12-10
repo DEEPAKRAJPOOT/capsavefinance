@@ -59,7 +59,7 @@
                             @csrf
 
                             <?php
-                            array_push($main, array('panNo' => null, 'dlNo' => null, 'voterNo' => null, 'passNo' => null));
+                            array_push($main, array('panNo' => null, 'dlNo' => null, 'voterNo' => null, 'passNo' => null,'mobileNo' => null));
                             array_push($main1, array('panNoFile' => null, 'dlNoFile' => null, 'voterNoFile' => null, 'passNoFile' => null, 'aadharFile' => null));
 
                             // dd($row->businessApi);
@@ -75,9 +75,12 @@
                                 } else if ($row1->type == 6) {
                                     $main[$key]['passNo'] = json_decode($row1->karza->req_file);
                                 }
+                                else if ($row1->type == 7) {
+                                    $main[$key]['mobileNo'] = json_decode($row1->karza->req_file);
+                                }
                             }
                             /* for get document file data   */
-                            //dd($panNo);
+                          
 
                             foreach ($row->document as $row2) {
                                 if ($row2->doc_id == 2) {
@@ -105,22 +108,28 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Management Name
+                                            <label for="txtCreditPeriod" class="d-block"> Name
 
                                                 <span class="mandatory">*</span>
+                                                
+                                                <span class="pull-right d-flex"><input type="checkbox" name="is_promoter[]" data-id="{{isset($row->first_name) ? $i : '1'}}" id="is_promoter{{isset($row->first_name) ? $i : '1'}}" {{($row->is_promoter==1) ?  "checked='checked'" : ''}} value="{{($row->is_promoter==1) ?  '1' : '0'}}" class="form-control is_promoter mr-2">
+                                                    <span class="white-space-nowrap">Is Promoter</span></span>
                                             </label>
                                             <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">   
                                             <input type="text" name="first_name[]" id="first_name{{isset($row->first_name) ? $i : '1'}}" vname="first_name1" value="{{$row->first_name}}" class="form-control first_name" placeholder="Enter First Name" >
                                         </div>
                                     </div>
+                                      <div class="col-md-4">
+                                        <div class="form-group password-input">
+                                            <label for="txtPassword">Shareholding (%)
 
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="txtCreditPeriod " class="opacity-0">Is Promoter
+                                              
                                             </label>
-                                            <input type="checkbox" name="is_promoter[]" data-id="{{isset($row->first_name) ? $i : '1'}}" id="is_promoter{{isset($row->is_promoter) ? $i : '1'}}" {{($row->is_promoter==1) ?  "checked='checked'" : ''}} value="{{($row->is_promoter==1) ?  '1' : '0'}}" class="form-control is_promoter">
+                                            <input type="text" readonly=readonly id="share_per{{isset($row->first_name) ? $i : '1'}}" name="share_per[]" data-id="{{isset($row->first_name) ? $i : '1'}}" maxlength="3"  value="{{$row->share_per}}" class="form-control share_per"  placeholder="Enter Shareholder" >
+                                            <span class="error" id="shareCheck{{isset($row->first_name) ? $i : '1'}}"></span> 
                                         </div>
                                     </div>
+                                   
                                     <div class="col-md-4">
                                         <div class="form-group password-input">
                                             <label for="txtPassword">DOB
@@ -161,20 +170,7 @@
                                             <input name="response[]" id="response{{isset($row->first_name) ? $i : '1'}}" type="hidden" value="">
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group password-input">
-                                            <label for="txtPassword">Shareholding (%)
-
-                                              
-                                            </label>
-                                            <input type="text" id="share_per{{isset($row->first_name) ? $i : '1'}}" name="share_per[]" data-id="{{isset($row->first_name) ? $i : '1'}}" maxlength="3"  value="{{$row->share_per}}" class="form-control share_per"  placeholder="Enter Shareholder" >
-                                            <span class="error" id="shareCheck{{isset($row->first_name) ? $i : '1'}}"></span> 
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-4">
+                                   <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtEmail">Educational Qualification
 
@@ -183,41 +179,53 @@
                                         </div>
                                     </div>
 
+                                </div>
+
+                                <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtEmail">Other Ownerships
+                                                 <label for="txtEmail">Other Ownerships
+                                                 </label>
+                                                 <input type="text" name="other_ownership[]" id="other_ownership{{isset($row->first_name) ? $i : '1'}}" value="{{$row->other_ownership}}" class="form-control other_ownership"  placeholder="Other Ownership">
+                                             </div>
+                                     </div>
+                                  
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label for="txtCreditPeriod">Address
+                                                <span class="mandatory">*</span>
                                             </label>
-                                            <input type="text" name="other_ownership[]" id="other_ownership{{isset($row->first_name) ? $i : '1'}}" value="{{$row->other_ownership}}" class="form-control other_ownership"  placeholder="Other Ownership">
+                                            <textarea  style="height: 35px;" class="form-control textarea address" placeholder="Enter Address" name="owner_addr[]" id="address{{isset($row->first_name) ? $i : '1'}}">{{$row->owner_addr}}</textarea>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group INR">
-                                            <label for="txtEmail">Networth
-                                            </label><a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                            <input type="text" name="networth[]" maxlength='15' id="networth{{isset($row->first_name) ? $i : '1'}}" value="{{$row->networth}}" class="form-control networth"  placeholder="Enter Networth">
-                                        </div>
-                                    </div>
+                                
                                 </div>
                                 <div class="row">
-                                
+                                    <div class="col-md-4"> 
+                                    <div class="form-group INR">
+                                                 <label for="txtEmail">Networth
+                                                 </label><a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                 <input type="text" name="networth[]" maxlength='15' id="networth{{isset($row->first_name) ? $i : '1'}}" value="{{$row->networth}}" class="form-control networth"  placeholder="Enter Networth">
+                                             </div>
+                                    </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtEmail">Mobile <span class="mandatory">*</span></label>  
                                                 <span class="text-success pullMsg_mob">
-                                                    @if(isset($row->mobile_no)) 
+                                                    @if(isset($main[$j]['mobileNo']->mobile)) 
                                                     <i class="fa fa-check-circle" aria-hidden="true"></i><i>Verified Successfully</i>
                                                     @endif
                                                 </span>
-                                                <a class="verify-owner-no verify-show verify_mobile_no" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" > {{ (isset($row->mobile_no)) ? 'Verified' : 'Verify' }}</a>
-                                                <input type="text" name="mobile_no[]"  {{ (isset($row->mobile_no)) ? "'readonly'='readonly'" : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{$row->mobile_no}}" class="form-control mobileveri"  placeholder="Enter Mobile no">
+                                                <a class="verify-owner-no verify-show verify_mobile_no" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="bottom: 15px;top: auto; pointer-events:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify' }}</a>
+                                                <input type="text" name="mobile_no[]"  {{ isset($main[$j]['mobileNo']->mobile) ? "readonly=readonly" : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : '' }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
                                             </div>
                                         </div>
-                                    <div class="col-md-3" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
+                                    <div class="col-md-4" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
                                             <div class="form-group">
                                                 <label for="txtEmail">OTP <span class="mandatory">*</span></label>  
                                                 <span class="text-danger" id="v5failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                                 <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($row->first_name) ? $i : '1'}}"> {{ (isset($row->mobile_no)) ? 'Verified' : 'Verify' }}</a>
-                                                <input type="text" name="otp_no[]"   maxlength="4" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="{{$row->mobile_no}}" class="form-control mobileotpveri"  placeholder="Enter OTP">
+                                                <input type="text" name="otp_no[]"   maxlength="4" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP">
                                             </div>
                                         </div>
 
@@ -227,10 +235,10 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Address
-                                                <span class="mandatory">*</span>
+                                            <label for="txtCreditPeriod">Comment
+                                              
                                             </label>
-                                            <textarea class="form-control textarea address" placeholder="Enter Address" name="owner_addr[]" id="address{{isset($row->first_name) ? $i : '1'}}">{{$row->owner_addr}}</textarea>
+                                            <textarea class="form-control textarea" placeholder="Enter Comment" name="comment[]" id="comment{{isset($row->first_name) ? $i : '1'}}">{{$row->comment}}</textarea>
                                         </div>
                                     </div> 
                                 </div>
@@ -672,39 +680,41 @@
         }
 
         });
+        
+        
         ///// validation for where is checked then shareholder is mandaterory/////
-
-        //// for mobile verify///
         $(".is_promoter").each(function (k, v) {
         promoCount++;
         var is_promoter = $("#is_promoter" + promoCount).val();
         if (is_promoter == 1)
         {
-        var shareHolder = $("#share_per" + promoCount).val();
-        if (shareHolder == '')
-        {
-        $("#shareCheck" + promoCount).text('This field is required.');
-        e.preventDefault();
-        return false;
-        }
-        else if (shareHolder == 0 || shareHolder > 100)
-        {
-        $("#shareCheck" + promoCount).text('Enter correct value 1 to 100 range');
-        e.preventDefault();
-        return false;
-        }
+            $("#share_per"+promoCount).attr("readonly","readonly");
+            var shareHolder = $("#share_per" + promoCount).val();
+            if (shareHolder == '')
+            {
+                $("#shareCheck" + promoCount).text('This field is required.');
+                e.preventDefault();
+                return false;
+            }
+            else if (shareHolder == 0 || shareHolder > 100)
+            {
+                $("#shareCheck" + promoCount).text('Enter correct value 1 to 100 range');
+                e.preventDefault();
+                return false;
+            }
 
+            else
+            {
+                $("#shareCheck" + promoCount).text('');
+                return true;
+            }
+
+        }
         else
         {
-        $("#shareCheck" + promoCount).text('');
-        return true;
-        }
-
-        }
-        else
-        {
-        $("#shareCheck" + promoCount).text('');
-        return true;
+                $("#share_per"+promoCount).removeAttr("readonly");
+                $("#shareCheck" + promoCount).text('');
+                return true;
         }
         });
         var form = $("#signupForm");
@@ -792,55 +802,61 @@
        
         if (is_promoter == 1)
         {
-        if (shareHolder == '')
-        {
-        $("#shareCheck" + promoCount).text('This field is required.');
-        return false;
-        }
-        else if (shareHolder == 0 || shareHolder > 100)
-        {
-        $("#shareCheck" + promoCount).text('Enter correct value 1 to 100 range');
-        return false;
-        }
-        else
-        {
-        $("#shareCheck" + promoCount).text('');
-        return true;
-        }
+               
+                if (shareHolder == '')
+                {
+                        $("#shareCheck" + promoCount).text('This field is required.');
+                        return false;
+                }
+                else if (shareHolder == 0 || shareHolder > 100)
+                {
+                        $("#shareCheck" + promoCount).text('Enter correct value 1 to 100 range');
+                        return false;
+                }
+                else
+                {
+                        $("#shareCheck" + promoCount).text('');
+                        return true;
+                }
 
 
 
         }
         else
         {
-
-        $("#share_per" + promoCount).val('');
-        $("#shareCheck" + promoCount).text('');
-        alert('Firstly checked is promoter');
-        return true;
+               
+               
+                $("#share_per" + promoCount).val('');
+                $("#shareCheck" + promoCount).text('');
+                return true;
         }
         });
-    /////// for checking checkbox//////////////////////
-
-        $(document).on('click', '.is_promoter', function () {
+        
+    /////// for is promoter checking checkbox//////////////////////
+      $(document).on('click', '.is_promoter', function () {
         var res = $(this).val();
         var count = $(this).attr('data-id');
-        if (res == 1)
-        {
-
-        $("#shareCheck" + count).text('');
-        $("#share_per" + count).val('');
-        $(this).val(0);
-        return true;
+      
+        if (res==1)
+        { 
+                $(this).val(0);
+                $("#share_per"+count).attr("readonly","readonly");
+                $("#shareCheck"+count).text('');
+                $("#share_per"+count).val('');
+                return true;
         }
         else
         {
-        $(this).val(1);
-        $("#share_per" + count).val('');
-        $("#shareCheck" + count).text('This field is required.');
-        return true;
+                $(this).val(1);
+                $("#share_per"+count).removeAttr("readonly");
+                $("#share_per"+count).val('');
+                $("#shareCheck"+count).text('This field is required.');
+                return true;
         }
         });
+        
+       ////////////////// new form create by add promoter/////////////////
+       
         $(document).on('click', '#btnAddMore', function () {
         var rowcount = parseInt($("#rowcount").val());
         if (rowcount > 0)
@@ -851,8 +867,8 @@
         var x = 2;
         }
         $("#rowcount").val(x);
-        $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><h5 class='card-title form-head'>Management Details (" + x + ") </h5></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name  <span class='mandatory'>*</span></label><input type='hidden' class='owneridDynamic' id='ownerid" + x + "'   value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' class='opacity-0'>Is Promoter</label><input type='checkbox' data-id='" + x + "' name='is_promoter[]'' id='is_promoter" + x + "' value='0' class='form-control is_promoter' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' readonly='readonly' value='' class='form-control date_of_birth datepicker-dis-fdate'  placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span><span class='text-success' id='successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span></label><a href='javascript:void(0);' data-id='" + x + "' id='pan_verify" + x + "' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[] id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)</label><input type='text' id='share_per" + x + "' data-id='" + x + "' maxlength='3' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per'  placeholder='Enter Shareholder' ><span class='error' id='shareCheck" + x + "'></span></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification'  placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership'  placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' maxlength='15' name='networth[]' id='networth" + x + "' value='' class='form-control networth'  placeholder='Enter Networth'></div></div> </div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Mobile<span class='mandatory'>*</span></label><span class='text-success pullMsg_mob' style='display:none'><i class='fa fa-check-circle' aria-hidden='true'></i><i>Verified Successfully</i></span><a class='verify-owner-no verify-show verify_mobile_no' data-id='"+ x +"' name='verify_mobile_no' id='verify_mobile_no"+ x +"' >Verify</a><input type='text' name='mobile_no[]'   maxlength='10' id='mobile_no"+ x +"' value='' class='form-control mobileveri'  placeholder='Enter Mobile no'></div></div><div class='col-md-3' id='toggleOtp"+ x +"' style='display:none'><div class='form-group'><label for='txtEmail'>OTP <span class='mandatory'>*</span></label><span class='text-danger' id='v5failurepanverify"+ x +"' style='display:none;'><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i> </span><a class='verify-owner-no verify-show verify_otp' name='verify_otp' data-id='"+ x +"'> Verify</a><input type='text' name='otp_no[]'   maxlength='4' id='verify_otp_no"+ x +"' value='' class='form-control mobileotpveri'  placeholder='Enter OTP'></div></div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address" + x + "'></textarea></div></div> <span id='disableDocumentPart" + x + "' style='display:none'><h5 class='card-title form-head-h5 mt-3'>Document </h5><div class='row mt-2 mb-4'><div class='col-md-12'> <div class='prtm-full-block'><div class='prtm-block-content'><div class='table-responsive ps ps--theme_default' data-ps-id='9615ce02-be28-0492-7403-d251d7f6339e'><table class='table text-center table-striped table-hover'><thead class='thead-primary'><tr><th class='text-left'>S.No</th><th>Document Name</th><th>Document ID No.</th><th>Action</th></tr></thead><tbody><tr><td class='text-left'>1</td><td width='30%'>Pan Card</td><td width='30%'><div class='col-md-12'><span class='text-success' id='v1successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v1failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppan" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripan' style='top:0px'>Verify</a><input type='text'  name='veripan[]' id='veripan" + x + "' value='' class='form-control'  placeholder='Enter PAN Number'></div></td><td width='28%'><div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details' data-id='" + x + "' data-type='3'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button><input type='file' name='verifyfile[]' class='verifyfile' id='verifyfile" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='panfile[]' data-id='" + x + "' class='panfile' id='panfile" + x + "'> </div> </td> </tr><tr> <td class='text-left'>2</td> <td width='30%'>Driving License</td> <td width='30%' > <div class='col-md-12'><span class='text-success' id='v2successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v2failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='ddriving" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show veridl' style='top:0px;'>Verify</a> <input type='text' name='verifydl[]' id='verifydl" + x + "' value='' class='form-control verifydl'  placeholder='Enter DL Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "' data-type='5'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' id='downloaddl" + x + "' name='downloaddl[]' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple='' class='downloaddl'> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='dlfile[]' data-id='" + x + "' class='dlfile' id='dlfile" + x + "'> </div> </td> </tr> <tr> <td class='text-left'>3</td> <td width='30%'>Voter ID</td> <td width='30%' > <div class='col-md-12'><span class='text-success' id='v3successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v3failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='vvoter" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show verivoter' style='top:0px;'>Verify</a> <input type='text' name='verifyvoter[]' id='verifyvoter" + x + "' value='' class='form-control verifyvoter'  placeholder='Enter Voter's Epic Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='4'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadvoter[]' class='downloadvoter' id='downloadvoter" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  class='voterfile' name='voterfile[]' id='voterfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>4</td> <td width='30%'>Passport</td> <td width='30%' > <div class='col-md-12'> <span class='text-success' id='v4successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v4failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppassport" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripass' style='top:0px;'>Verify</a> <input type='text' name='verifypassport[]' id='verifypassport" + x + "' value='' class='form-control verifypassport'  placeholder='Enter File Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='6'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadpassport[]' class='downloadpassport'  id='downloadpassport" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'   name='passportfile[]' class='passportfile' id='passportfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>5</td> <td width='30%'>Photo</td> <td width='30%' > </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadphoto[]' class='downloadphoto' id='downloadphoto" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  name='photofile[]' name='photofile' id='photofile" + x + "'> </div> </td> </tr> </tbody> </table> </span> <div class='ps__scrollbar-x-rail' style='left: 0px; bottom: 0px;'><div class='ps__scrollbar-x'  style='left: 0px; width: 0px;'></div></div><div class='ps__scrollbar-y-rail' style='top: 0px; right: 0px;'><div class='ps__scrollbar-y'  style='top: 0px; height: 0px;'></div></div> </div> </div> </div> </div> </div> </div></div></div> ");
-        x++;
+           $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><h5 class='card-title form-head'>Management Details (" + x + ") </h5></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' class='d-block'> Name  <span class='mandatory'>*</span> <span class='pull-right d-flex'><input type='checkbox' name='is_promoter[]' data-id='"+x+"'  id='is_promoter"+x+"'  value='0' class='form-control is_promoter mr-2'><span class='white-space-nowrap'>Is Promoter</span></span></label><input type='hidden' class='owneridDynamic' id='ownerid" + x + "'   value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)</label><input type='text' id='share_per" + x + "' data-id='" + x + "' maxlength='3' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per'  placeholder='Enter Shareholder' ><span class='error' id='shareCheck" + x + "'></span></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' readonly='readonly' value='' class='form-control date_of_birth datepicker-dis-fdate'  placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span><span class='text-success' id='successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span></label><a href='javascript:void(0);' data-id='" + x + "' id='pan_verify" + x + "' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[] id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification'  placeholder='Enter Education Qualification.'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership'  placeholder='Enter Other Ownership'></div></div><div class='col-md-8'><div class='form-group'><label for='txtCreditPeriod'>Address<span class='mandatory'>*</span></label><textarea  style='height: 35px;' class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address'"+ x +"'></textarea></div></div></div><div class='row'><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' maxlength='15' name='networth[]' id='networth" + x + "' value='' class='form-control networth'  placeholder='Enter Networth'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Mobile<span class='mandatory'>*</span></label><span class='text-success pullMsg_mob' style='display:none'><i class='fa fa-check-circle' aria-hidden='true'></i><i>Verified Successfully</i></span><a class='verify-owner-no verify-show verify_mobile_no' data-id='"+ x +"' name='verify_mobile_no' id='verify_mobile_no"+ x +"' >Verify</a><input type='text' name='mobile_no[]'   maxlength='10' id='mobile_no"+ x +"' value='' class='form-control mobileveri'  placeholder='Enter Mobile no'></div></div><div class='col-md-4' id='toggleOtp"+ x +"' style='display:none'><div class='form-group'><label for='txtEmail'>OTP <span class='mandatory'>*</span></label><span class='text-danger' id='v5failurepanverify"+ x +"' style='display:none;'><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i> </span><a class='verify-owner-no verify-show verify_otp' name='verify_otp' data-id='"+ x +"'> Verify</a><input type='text' name='otp_no[]'   maxlength='4' id='verify_otp_no"+ x +"' value='' class='form-control mobileotpveri'  placeholder='Enter OTP'></div></div></div><div class='row'><div class='col-md-12'><div class='form-group'><label for='txtCreditPeriod'>Comment</label><textarea class='form-control textarea' placeholder='Enter Comment' name='comment[]' id='comment"+x+"'></textarea></div></div></div></div><span id='disableDocumentPart"+x+"' style='display:none'><h5 class='card-title form-head-h5 mt-3'>Document </h5><div class='row mt-2 mb-4'><div class='col-md-12'> <div class='prtm-full-block'><div class='prtm-block-content'> <div class='table-responsive ps ps--theme_default' data-ps-id='9615ce02-be28-0492-7403-d251d7f6339e'><table class='table text-center table-striped table-hover'><thead class='thead-primary'><tr><th class='text-left'>S.No</th><th>Document Name</th><th>Document ID No.</th><th>Action</th></tr></thead><tbody><tr><td class='text-left'>1</td><td width='30%'>Pan Card</td><td width='30%'><div class='col-md-12'><span class='text-success' id='v1successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v1failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppan" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripan' style='top:0px'>Verify</a><input type='text'  name='veripan[]' id='veripan" + x + "' value='' class='form-control'  placeholder='Enter PAN Number'></div></td><td width='28%'><div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details' data-id='" + x + "' data-type='3'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button><input type='file' name='verifyfile[]' class='verifyfile' id='verifyfile" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='panfile[]' data-id='" + x + "' class='panfile' id='panfile" + x + "'> </div> </td> </tr><tr> <td class='text-left'>2</td> <td width='30%'>Driving License</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v2successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v2failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='ddriving" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show veridl' style='top:0px;'>Verify</a> <input type='text' name='verifydl[]' id='verifydl" + x + "' value='' class='form-control verifydl'  placeholder='Enter DL Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "' data-type='5'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' id='downloaddl" + x + "' name='downloaddl[]' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple='' class='downloaddl'> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='dlfile[]' data-id='" + x + "' class='dlfile' id='dlfile" + x + "'> </div> </td> </tr> <tr> <td class='text-left'>3</td> <td width='30%'>Voter ID</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v3successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v3failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='vvoter" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show verivoter' style='top:0px;'>Verify</a> <input type='text' name='verifyvoter[]' id='verifyvoter" + x + "' value='' class='form-control verifyvoter'  placeholder='Enter Voter's Epic Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='4'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadvoter[]' class='downloadvoter' id='downloadvoter" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  class='voterfile' name='voterfile[]' id='voterfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>4</td> <td width='30%'>Passport</td> <td width='30%' ><div class='col-md-12'> <span class='text-success' id='v4successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v4failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppassport" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripass' style='top:0px;'>Verify</a> <input type='text' name='verifypassport[]' id='verifypassport" + x + "' value='' class='form-control verifypassport'  placeholder='Enter File Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='6'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadpassport[]' class='downloadpassport'  id='downloadpassport" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'   name='passportfile[]' class='passportfile' id='passportfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>5</td> <td width='30%'>Photo</td> <td width='30%' > </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadphoto[]' class='downloadphoto' id='downloadphoto" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  name='photofile[]' name='photofile' id='photofile" + x + "'> </div> </td> </tr> </tbody> </table> </span> <div class='ps__scrollbar-x-rail' style='left: 0px; bottom: 0px;'><div class='ps__scrollbar-x'  style='left: 0px; width: 0px;'></div></div><div class='ps__scrollbar-y-rail' style='top: 0px; right: 0px;'><div class='ps__scrollbar-y'  style='top: 0px; height: 0px;'></div></div> </div> </div> </div> </div></div> </div></div></div>"); 
+           x++;
         datepickerDisFdate();
         $(".owneridDynamic").each(function(k, v){
         var GetVal = $(this).val();
@@ -867,9 +883,10 @@
 
         });
         });
+        
+        
     //////////CIN webservice for get promoter details start here//////////////////////////////////////        
         $(document).on('click', '.clsdiv', function () {
-
         $(this).parent().parent().remove();
         $(".owneridDynamic").each(function(k, v){
         var GetVal = $(this).val();
@@ -884,13 +901,16 @@
 
         });
         });
+        
+        
+         //////////CIN webservice for get promoter details start here//////////////////////////////////////        
+        
         jQuery(document).ready(function () {
         var countOwnerRow = $("#rowcount").val();
         if (countOwnerRow > 0)
         {
-        return false;
+           return false;
         }
-
 
         $('.isloader').show();
         var CIN = '{{ (isset($cin_no)) ? $cin_no : "" }}';
@@ -908,7 +928,7 @@
                 dataType: 'json',
                 data: jsonData,
                 error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
+                console.log(xhr);
                 $('.isloader').hide();
                 $('#btnAddMore').trigger('click'); return false;
                 },
@@ -1319,12 +1339,13 @@
                     let mclass = result['status'] ? 'success' : 'danger';
                     let micon = result['status'] ? 'circle' : 'close';
                     var html = result['message'];
-                    span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
-                    span_target.css('pointer-events', 'none');
                     if (result.status==1) {
-                          $("#mobile_no"+count).attr('readonly', 'readonly');
-                          $("#verify_mobile_no"+count).css('pointer-events', 'none');
-                          $("#toggleOtp"+count).hide();  
+                            span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
+                            span_target.css('pointer-events', 'none');
+
+                            $("#mobile_no"+count).attr('readonly', 'readonly');
+                            $("#verify_mobile_no"+count).css('pointer-events', 'none');
+                            $("#toggleOtp"+count).hide();  
                       }
                     else
                     {
@@ -1347,7 +1368,7 @@
         var count  = $(this).attr('data-id');    
         button_target = $(this);
         mobile_target = $(this).closest('div').find('input');
-        span_target = $(this).closest('div').find('.pullMsg_mob');
+        span_target = $(this).closest('div').find('.pullMsg_mob').show();
         span_target.html('');
         let mobile_no = mobile_target.val();
         var  biz_owner_id    = $("#ownerid"+count).val();
@@ -1370,9 +1391,8 @@
                 let micon = result['status'] ? 'circle' : 'close';
                 var html = result['message'];
                 
-                span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
                 if (result.status==1) {
-               
+                span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
                 $("#toggleOtp"+count).show();
                 button_target.text('Verified');
                 $('#modalMobile').show();
