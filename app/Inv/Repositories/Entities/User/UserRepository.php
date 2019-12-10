@@ -1298,4 +1298,13 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
        return RoleUser::updateUserRole($userId, $role);
     }
+
+    /**
+     * get all agency users list
+     * @return users
+     */
+    public function getAllAgencyUsers(){
+        $users = UserModel::where('agency_id','<>', null)->where('is_active',1)->get(['user_id','agency_id','f_name','m_name','l_name']);
+        return $users ?: false;
+    }
 }
