@@ -86,13 +86,13 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group mt-25">
-                                            <input type="submit" value="Fetch Detail" class="fetchdetails btn btn-primary">
+                                            <input type="submit" value="Fetch Detail" class="fetchdetails btn btn-success btn-sm">
                                         </div>
                                     </div>
                                     @else
                                     <div class="col-md-3">
                                         <div class="form-group mt-25">
-                                            <a href="{{$enable_download ? (Storage::url('user/'.$appId.'_'.$gst_detail['pan_gst_hash'].'.pdf')) : 'javascript:void(0)'}}" class="btn btn-primary" download>GST Pulled</a>
+                                            <a href="{{$enable_download ? (Storage::url('user/'.$appId.'_'.$gst_detail['pan_gst_hash'].'.pdf')) : 'javascript:void(0)'}}" class="btn btn-success btn-sm" download>GST Pulled</a>
                                         </div>
                                     </div>
                                     @endif
