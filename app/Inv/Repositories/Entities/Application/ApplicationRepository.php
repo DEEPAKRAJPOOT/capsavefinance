@@ -19,6 +19,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Offer;
+use App\Inv\Repositories\Models\Agency;
 
 /**
  * Application repository class
@@ -431,4 +432,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $result ?: false;
     }
 
+    /**
+     * get all agency list
+     * @return agency
+     */
+    public function getAllAgency(){
+        $agency = Agency::get();
+        return $agency ?: false;
+    }
 }
