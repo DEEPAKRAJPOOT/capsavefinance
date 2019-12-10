@@ -420,8 +420,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $result = BusinessAddress::getAddressforFI($biz_id);
         return $result ?: false;
     }
-
-
     
     /**
      * get address for FI
@@ -434,11 +432,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $result ?: false;
     }
 
-     public function getLiftingDetail($appId){
+    public function getLiftingDetail($appId){
         $result =  LiftingDetail::where('app_id',$appId)->get();
         return $result ?: false;
     }
-
 
      public function updateLiftingDetail($attributes, $anchor_lift_detail_id){
         $anchor =  LiftingDetail::where('anchor_lift_detail_id',$anchor_lift_detail_id)->first();
