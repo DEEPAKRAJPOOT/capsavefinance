@@ -117,6 +117,11 @@
             <div class="data mt-4">
                <h2 class="sub-title bg">Hygiene Check</h2>
                <div class="pl-4 pr-4 pb-4 pt-2">
+               <form method="POST" action="{{url('cam/cam-hygiene-save')}}"> 
+                  @csrf
+                  <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
+                <input type="hidden" name="biz_id" value="{{isset($arrRequest['biz_id']) ? $arrRequest['biz_id'] : ''}}" />
+                <input type="hidden" name="cam_hygiene_id" value="{{isset($arrHygieneData->cam_hygiene_id) ? $arrHygieneData->cam_hygiene_id : ''}}" />
                   <table class="table overview-table">
                      <tbody>
                         <tr>
@@ -135,12 +140,13 @@
                                        <td colspan="4">
                                           <div class="form-check" style="display: inline-block; margin-right:10px;">
                                              <label for="cibil_check_yes" class="form-check-label">
-                                             <input type="radio" id="cibil_check_yes" class="form-check-input" name="cibil_check" value="1">Yes
+                                             <input type="radio" id="cibil_check_yes" class="form-check-input" name="cibil_check" value="Yes" {{isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes' ? 'checked' : ''}}>Yes
                                              <i class="input-helper"></i></label>
                                           </div>
+
                                           <div class="form-check" style="display: inline-block;">
                                              <label for="cibil_check_no" class="form-check-label">
-                                             <input type="radio" id="cibil_check_no" class="form-check-input" name="cibil_check" value="0">No
+                                             <input type="radio" id="cibil_check_no" class="form-check-input"               name="cibil_check" value="No" {{!isset($arrHygieneData->cibil_check) || $arrHygieneData->cibil_check == 'No' ? 'checked' : ''}}>No
                                              <i class="input-helper"></i></label>
                                           </div>
                                           <p style="margin: 0;">CIBIL Analysis (for promoters / guarantors):</p>
@@ -163,46 +169,46 @@
                                              </thead>
                                              <tbody>
                                                 <tr>
-                                                   <td name="name[]">trtretr</td>
-                                                   <td name="pan_number_director[]"></td>
-                                                   <td name="cibil_score[]">0</td>
+                                                   <td name="name[]">{{$arrCompanyDetail['0']['biz_entity_name']}}</td>
+                                                   <td name="pan_number_director[]">{{$arrCompanyDetail['0']['pan_gst_hash']}}</td>
+                                                   <td name="cibil_score[]">{{$arrCompanyDetail['0']['cibil_score']}}</td>
                                                    <td>
-                                                      <input type="text" name="remarks" id="remarks" class="form-control" value="">
+                                                      <input type="text" name="remarks" id="remarks" class="form-control" value="{{isset($arrHygieneData->remarks) ? $arrHygieneData->remarks : ''}}">
                                                    </td>
                                                 </tr>
                                              </tbody>
                                           </table>
                                        </td>
                                     </tr>
-                                    <tr>
+                                    <!-- <tr>
                                        <td>No negative observation found</td>
-                                    </tr>
+                                    </tr> -->
                                  </tbody>
                               </table>
                            </td>
                         </tr>
                         <tr>
                            <td><b>RBI Willful Defaulters List </b></td>
-                           <td><input type="text" id="rbi_willfull_defaulters_list" class="form-control from-inline" value=""></td>
+                           <td><input type="text" id="rbi_willfull_defaulters_list" class="form-control from-inline" value="{{isset($arrHygieneData->rbi_willful_defaulters) ? $arrHygieneData->rbi_willful_defaulters : ''}}" name="rbi_willful_defaulters"></td>
                         </tr>
                         <tr>
                            <td><b>Watchoutinvestors </b></td>
-                           <td><input type="text" id="watch_out_investors" class="form-control from-inline" value=""></td>
+                           <td><input type="text" id="watch_out_investors" class="form-control from-inline" name="watchoutinvestors" value="{{isset($arrHygieneData->watchoutinvestors) ? $arrHygieneData->watchoutinvestors : ''}}"></td>
                         </tr>
                         <tr>
                            <td><b>Politically Exposed Person</b></td>
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="politically_check" id="politically_check_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="politically_check" id="politically_check_yes" value="Yes" {{isset($arrHygieneData->politically_check) && $arrHygieneData->politically_check == 'Yes' ? 'checked' : ''}}>Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="politically_check" id="politically_check_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="politically_check" id="politically_check_no" value="No" {{!isset($arrHygieneData->politically_check) || $arrHygieneData->politically_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="politically_exposed_person_comments" value="">
+                              <input type="text" class="form-control from-inline" id="politically_exposed_person_comments" value="{{isset($arrHygieneData->politically_exposed_person_comments) ? $arrHygieneData->politically_exposed_person_comments : ''}}" name="politically_exposed_person_comments">
                            </td>
                         </tr>
                         <tr>
@@ -210,15 +216,15 @@
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="CDR/BIFR" id="CDR_check_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="CDR_check" id="CDR_check_yes" value="Yes" {{isset($arrHygieneData->CDR_check) && $arrHygieneData->CDR_check == 'Yes' ? 'checked' : ''}}>Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="CDR/BIFR" id="CDR_check_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="CDR_check" id="CDR_check_no" value="No" {{!isset($arrHygieneData->CDR_check) || $arrHygieneData->CDR_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="CDR_comments" value="">
+                              <input type="text" class="form-control from-inline" id="CDR_comments" name="CDR_comments" value="{{isset($arrHygieneData->CDR_comments) ? $arrHygieneData->CDR_comments : ''}}">
                            </td>
                         </tr>
                         <tr>
@@ -226,15 +232,15 @@
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="UNSC" id="UNSC_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="UNSC_check" id="UNSC_yes" value="Yes" {{isset($arrHygieneData->UNSC_check) && $arrHygieneData->UNSC_check == 'Yes' ? 'checked' : ''}}>Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="UNSC" id="UNSC_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="UNSC_check" id="UNSC_no" value="No" {{!isset($arrHygieneData->UNSC_check) || $arrHygieneData->UNSC_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="UNSC_comments" value="">
+                              <input type="text" class="form-control from-inline" id="UNSC_comments" name="UNSC_comments" value="{{isset($arrHygieneData->UNSC_comments) ? $arrHygieneData->UNSC_comments : ''}}">
                            </td>
                         </tr>
                         <tr>
@@ -242,15 +248,15 @@
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="npa_history_account_holder_check" id="npa_history_account_holder_check_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="npa_history_check" id="npa_history_account_holder_check_yes" value="Yes" {{isset($arrHygieneData->npa_history_check) && $arrHygieneData->npa_history_check == 'Yes' ? 'checked' : ''}} >Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="npa_history_account_holder_check" id="npa_history_account_holder_check_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="npa_history_check" id="npa_history_account_holder_check_no" value="No" {{!isset($arrHygieneData->npa_history_check) || $arrHygieneData->npa_history_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="npa_history_comments" value="">
+                              <input type="text" class="form-control from-inline" id="npa_history_comments" name="npa_history_comments" value="{{isset($arrHygieneData->npa_history_comments) ? $arrHygieneData->npa_history_comments : ''}}">
                            </td>
                         </tr>
                         <tr>
@@ -258,15 +264,15 @@
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="cop_gov_issues_check" id="cop_gov_issues_check_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="cop_gov_check" id="cop_gov_issues_check_yes" value="Yes" {{isset($arrHygieneData->cop_gov_check) && $arrHygieneData->cop_gov_check == 'Yes' ? 'checked' : ''}}>Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="cop_gov_issues_check" id="cop_gov_issues_check_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="cop_gov_check" id="cop_gov_issues_check_no" value="No" {{!isset($arrHygieneData->cop_gov_check) || $arrHygieneData->cop_gov_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="cop_gov_issues_comments" value="">
+                              <input type="text" class="form-control from-inline" id="cop_gov_issues_comments" name="   cop_gov_issues_comments" value="{{isset($arrHygieneData->cop_gov_issues_comments) ? $arrHygieneData->cop_gov_issues_comments : ''}}">
                            </td>
                         </tr>
                         <tr>
@@ -274,15 +280,15 @@
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="change_in_auditor_check" id="change_in_auditor_check_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="change_auditor_check" id="change_in_auditor_check_yes" value="Yes" {{isset($arrHygieneData->change_auditor_check) && $arrHygieneData->change_auditor_check == 'Yes' ? 'checked' : ''}}>Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="change_in_auditor_check" id="change_in_auditor_check_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="change_auditor_check" id="change_in_auditor_check_no" value="No" {{!isset($arrHygieneData->change_auditor_check) || $arrHygieneData->change_auditor_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="change_in_auditor_comments" value="">
+                              <input type="text" class="form-control from-inline" id="change_in_auditor_comments" name="change_in_auditor_comments" value="{{isset($arrHygieneData->change_in_auditor_comments) ? $arrHygieneData->change_in_auditor_comments : ''}}">
                            </td>
                         </tr>
                         <tr>
@@ -290,15 +296,15 @@
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="auditor_qualification_check" id="auditor_qualification_check_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="change_auditor_qualification_check" id="auditor_qualification_check_yes" value="Yes" {{isset($arrHygieneData->change_auditor_qualification_check) && $arrHygieneData->change_auditor_qualification_check == 'Yes' ? 'checked' : ''}}>Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="auditor_qualification_check" id="auditor_qualification_check_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="change_auditor_qualification_check" id="auditor_qualification_check_no" value="No" {{!isset($arrHygieneData->change_auditor_qualification_check) || $arrHygieneData->change_auditor_qualification_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="auditor_qualification_comments" value="">
+                              <input type="text" class="form-control from-inline" name="change_auditor_qualification_comment" id="auditor_qualification_comments" value="{{isset($arrHygieneData->change_auditor_qualification_comment) ? $arrHygieneData->change_auditor_qualification_comment : ''}}">
                            </td>
                         </tr>
                         <tr>
@@ -306,15 +312,15 @@
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="audit_report_check" id="audit_report_check_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="audit_report_check" id="audit_report_check_yes" value="Yes" {{isset($arrHygieneData->audit_report_check) && $arrHygieneData->audit_report_check == 'Yes' ? 'checked' : ''}}>Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="audit_report_check" id="audit_report_check_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="audit_report_check" id="audit_report_check_no" value="No" {{!isset($arrHygieneData->audit_report_check) || $arrHygieneData->audit_report_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="audit_report_comments" value="">
+                              <input type="text" class="form-control from-inline" id="audit_report_comment" name="audit_report_comment" value="{{isset($arrHygieneData->audit_report_comment) ? $arrHygieneData->audit_report_comment : ''}}">
                            </td>
                         </tr>
                         <tr>
@@ -322,15 +328,15 @@
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="adequate_insurance_check" id="adequate_insurance_check_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="adequate_insurance_check" id="adequate_insurance_check_yes" value="Yes" {{isset($arrHygieneData->adequate_insurance_check) && $arrHygieneData->adequate_insurance_check == 'Yes' ? 'checked' : ''}}>Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="adequate_insurance_check" id="adequate_insurance_check_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="adequate_insurance_check" id="adequate_insurance_check_no" value="No" {{!isset($arrHygieneData->adequate_insurance_check) || $arrHygieneData->adequate_insurance_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="adequate_insurance_comments" value="">
+                              <input type="text" class="form-control from-inline" id="adequate_insurance_comments" name="adequate_insurance_comments" value="{{isset($arrHygieneData->adequate_insurance_comments) ? $arrHygieneData->adequate_insurance_comments : ''}}">
                            </td>
                         </tr>
                         <tr>
@@ -338,15 +344,15 @@
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="negative_news_report" id="negative_news_report_yes" value="1">Yes
+                                 <input type="radio" class="form-check-input" name="negative_news_report_check" id="negative_news_report_yes" value="Yes" {{isset($arrHygieneData->negative_news_report_check) && $arrHygieneData->negative_news_report_check == 'Yes' ? 'checked' : ''}}>Yes
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="negative_news_report" id="negative_news_report_no" value="0">No
+                                 <input type="radio" class="form-check-input" name="negative_news_report_check" id="negative_news_report_no" value="No" {{!isset($arrHygieneData->negative_news_report_check) || $arrHygieneData->negative_news_report_check == 'No' ? 'checked' : ''}}>No
                                  <i class="input-helper"></i></label>
                               </div>
-                              <input type="text" class="form-control from-inline" id="negative_news_report_comments" value="">
+                              <input type="text" class="form-control from-inline" id="negative_news_report_comments" name="negative_news_report_comments" value="{{isset($arrHygieneData->negative_news_report_comments) ? $arrHygieneData->negative_news_report_comments : ''}}">
                            </td>
                         </tr>
                      </tbody>
@@ -354,10 +360,11 @@
                   <div class="row">
                      <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                           <button  class="btn btn-primary btn-ext submitBtnBank" data-toggle="modal" data-target="#myModal">Submit</button>                                        
+                           <button  class="btn btn-primary btn-ext submitBtnBank" data-toggle="modal" data-target="#myModal">Save</button>                                        
                         </div>
                      </div>
                   </div>
+               </form>
                </div>
             </div>
          </div>

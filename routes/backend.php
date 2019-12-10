@@ -349,7 +349,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@SaveAnchorForm'
                 ]);
                 
-                
+                Route::post('cam-hygiene-save', [
+                    'as' => 'cam_hygiene_save',
+                    'uses' => 'Backend\CamController@camHygieneSave'
+                ]);
                 
                 
                 
