@@ -58,7 +58,10 @@
                                         <thead>
                                             <tr role="row">
                                                 <th>{{ trans('frontend.app_list_head.app_id') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.name') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.business_name') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.user_name') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.user_email') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.user_phone') }}</th>
                                                 <th>{{ trans('frontend.app_list_head.anchor') }}</th>
                                                 <th>{{ trans('frontend.app_list_head.applied_loan_amount') }}</th>
                                                 <th>{{ trans('frontend.app_list_head.created_date') }}</th>
