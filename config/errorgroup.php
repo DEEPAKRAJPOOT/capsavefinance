@@ -14,12 +14,12 @@ return [
     /*
      * From email name
      */
-    'error_notification_from' => env('ERROR_FROM_NAME', 'Inventrust'),
+    'error_notification_from' => env('ERROR_FROM_NAME', 'RentAlpha'),
 
     /*
      * Group of people to whom the error should be reported
      */
     'error_notification_group' => [
-        'amit.suman@prolitus.com'
+        'pankaj.sharma@prolitus.com'
     ]
 ];
