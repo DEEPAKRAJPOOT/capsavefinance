@@ -60,6 +60,7 @@ class LiftingDetail extends Model {
         'year',
         'month',
         'mt_type',
+        'mt_value',
         'amount',
         'is_active',
         'created_by',

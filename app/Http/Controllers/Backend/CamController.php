@@ -772,7 +772,17 @@ class CamController extends Controller
         try {
             $biz_id = $request->get('biz_id'); 
             $app_id = $request->get('app_id');
-            return view('backend.cam.cam_anchor_view')
+            $liftingData = $this->appRepo->getLiftingDetail($app_id);
+            $data = [];
+            foreach ($liftingData as $key => $value) {
+              $year = $value['year'];
+              $data[$year]['mt_value'][] = $value['mt_value'];
+              $data[$year]['mt_type'] = $value['mt_type'];
+              $data[$year]['anchor_lift_detail_id'][] = $value['anchor_lift_detail_id'];
+              $data[$year]['year'] = $year;
+              $data[$year]['mt_amount'][] = $value['amount'];
+            }
+            return view('backend.cam.cam_anchor_view',['data'=> $data])
                 ->with('biz_id',$biz_id)
                     ->with('app_id',$app_id);
           
@@ -815,28 +825,30 @@ class CamController extends Controller
             $months = $allData['month'];
             $mtType = $allData['mt_type'];
             $years = $allData['year'];
-             $countMonths = count($months);
-            //dd($months, $mtType, $years,$countMonths);
-            $mm = 1;
-          
-            for($i = 0;$i<$countMonths; $i++){
-               foreach($months[$i] as $key => $monthAmt){
-                   if($key % 2 != 0){
-                       $mm = $mm+1;
+            $countMonths = count($months);
+            #dd($months, $mtType, $years,$countMonths);
+
+           $liftingData = $this->appRepo->getLiftingDetail($allData['app_id']);
+           
+            for($i = 0; $i < $countMonths; $i++){
+               foreach($months[$i]['mt_value'] as $key => $value){
+                   if (!empty($liftingData)) {
+                     $liftingArr['anchor_lift_detail_id'] = $months[$i]['anchor_lift_detail_id'][$key];;
                    }
                    $liftingArr['app_id'] = $allData['app_id'];
                    $liftingArr['year'] = $years[$i];
-                   $liftingArr['month'] = $mm;
+                   $liftingArr['month'] = $key+1;
                    $liftingArr['mt_type'] = $mtType[$i];
-                   $liftingArr['mt_value'] = 1111;
-                   $liftingArr['amount'] = $monthAmt;
-                  $this->appRepo->creates($liftingArr);
+                   $liftingArr['mt_value'] = $value;
+                   $liftingArr['amount'] = $months[$i]['mt_amount'][$key];
+                   if (!empty($liftingData)) {
+                      $this->appRepo->updateLiftingDetail($liftingArr, $liftingArr['anchor_lift_detail_id']);
+                   }else{
+                        $this->appRepo->creates($liftingArr);
+                   }
                }
            }
-            
            return redirect()->back();
-            
-            
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
