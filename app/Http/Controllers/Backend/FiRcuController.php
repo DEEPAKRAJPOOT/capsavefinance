@@ -33,6 +33,25 @@ class FiRcuController extends Controller
     }
 
     /**
+     * Show assign FI 
+     */
+    public function showAssignFi(Request $request)
+    {
+        return view('backend.fircu.fi_trigger');   
+    }
+
+    /**
+     * Save assign FI 
+     */
+    public function saveAssignFi(Request $request)
+    {
+        //dd($request->all());
+        $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
+        $this->appRepo->insertFIAddress($request->all());  
+        return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
+    }
+
+    /**
      * Display a listing of RCU
      */
     public function listRCU(Request $request)

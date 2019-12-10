@@ -265,4 +265,58 @@ class KarzaController extends Controller
         }
           
     }
+
+    /**
+    * Business PAN to GST status verification API
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function checkBizPanToGst(KarzaApi $KarzaApi, Request $request)
+    {
+        $requestArr   = $request->all();
+        try{
+          $result =  $KarzaApi->checkBizPanToGst($requestArr);
+          $res = json_decode($result);
+          //$res =   json_encode(array('requestId' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
+          return response()->json(['response' =>$res]);
+        }catch (Exception $e){
+          return false;
+        }      
+    }
+
+    /**
+    * Business GST to ENTITY API
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function checkBizGstToEntity(KarzaApi $KarzaApi, Request $request)
+    {
+        $requestArr   = $request->all();
+        try{
+          $result =  $KarzaApi->checkBizGstToEntity($requestArr);
+          $res = json_decode($result);
+          //$res =   json_encode(array('requestId' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
+          return response()->json(['response' =>$res]);
+        }catch (Exception $e){
+          return false;
+        }      
+    }
+
+    /**
+    * Business ENTITY to CIN API
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function checkBizEntityToCin(KarzaApi $KarzaApi, Request $request)
+    {
+        $requestArr   = $request->all();
+        try{
+          $result =  $KarzaApi->checkBizEntityToCin($requestArr);
+          $res = json_decode($result);
+          //$res =   json_encode(array('requestId' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
+          return response()->json(['response' =>$res]);
+        }catch (Exception $e){
+          return false;
+        }      
+    }
 }

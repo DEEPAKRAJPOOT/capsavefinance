@@ -24,6 +24,7 @@ class FiRcuLog extends BaseModel {
      *
      * @var array
      */
+
     protected $fillable = [
         'whom_id',
         'fi_rcu_type',
@@ -31,5 +32,5 @@ class FiRcuLog extends BaseModel {
         'fi_rcu_comment',
         'created_at',
         'created_by'
-
+        ];
 }

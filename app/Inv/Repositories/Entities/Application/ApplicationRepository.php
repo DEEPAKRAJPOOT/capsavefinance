@@ -12,6 +12,7 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Models\FiAddress;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -416,6 +417,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getAddressforFI($biz_id){
         $result = BusinessAddress::getAddressforFI($biz_id);
+        return $result ?: false;
+    }
+
+    /**
+     * insert into FI address
+     * 
+     * @param array $data
+     * @return status
+     */
+    public function insertFIAddress($data){
+        $result = FiAddress::insertFiAddress($data);
         return $result ?: false;
     }
 

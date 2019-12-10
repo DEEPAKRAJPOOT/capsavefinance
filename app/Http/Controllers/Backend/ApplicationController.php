@@ -146,7 +146,7 @@ class ApplicationController extends Controller
        try {
           $arrFileData = json_decode($request->getContent(), true);
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
-         dd($owner_info);
+        
           if ($owner_info) {
                 return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
@@ -838,24 +838,67 @@ class ApplicationController extends Controller
         );
         
       $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      $createApiLog = $response['createApiLog'];
-      $createBizApi= @BizApi::create([
-          'user_id' =>$userData['user_id'], 
-          'biz_id' =>   $userData['biz_id'],
-          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
-          'type' => 1,
-          'verify_doc_no' => 1,
-          'status' => 1,
-          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
-          'created_by' => Auth::user()->user_id
-       ]);
+      $response = $mob->api_call(MobileAuth_lib::SEND_OTP, $req_arr);
+//      $createApiLog = $response['createApiLog'];
+//      $createBizApi= @BizApi::create([
+//          'user_id' =>$userData['user_id'], 
+//          'biz_id' =>   $userData['biz_id'],
+//          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
+//          'type' => 1,
+//          'verify_doc_no' => 1,
+//          'status' => 1,
+//          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+//          'created_by' => Auth::user()->user_id
+//       ]);
       if (empty($response['result'])) {
         $response['status'] = 'fail';
       }
       if ($response['status'] == 'success') {
-        return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
+        return response()->json(['message' =>"OTP Sent to $mobile_no.",'status' => 1,
+          'value' => $response['result'], 'request_id'=> $response['request_id']]);
+      }else{
+        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
+      }
+    }
+    
+    public function verify_otp_mobile(Request $request){
+      $post_data = $request->all();
+      $request_id = trim($request->get('request_id'));
+      $otp = trim($request->get('otp'));
+      $appId = trim($request->get('appId'));
+      $mob = new MobileAuth_lib();
+        $req_arr = array(
+            'request_id' => $request_id,
+            'otp' => $otp,
+        );
+        
+      $userData = State::getUserByAPP($appId);
+      $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);
+      dd($response);
+
+//      $createApiLog = $response['createApiLog'];
+//      $createBizApi= @BizApi::create([
+//          'user_id' =>$userData['user_id'], 
+//          'biz_id' =>   $userData['biz_id'],
+//          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
+//          'type' => 1,
+//          'verify_doc_no' => 1,
+//          'status' => 1,
+//          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+//          'created_by' => Auth::user()->user_id
+//       ]);
+      if (empty($response['result'])) {
+        $response['status'] = 'fail';
+      }
+    ///  dd($response['status']);
+      if ($response['status'] == 'success') {
+          if (!empty($response['result']['sim_details']['otp_validated'])) {
+              return response()->json(['message' =>'Verified Successfully','status' => 1,
           'value' => $response['result']]);
+          }else{
+             return response()->json(['message' =>'','status' => 0]); 
+          }
+        
       }else{
         return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
       }
