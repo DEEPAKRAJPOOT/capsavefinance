@@ -241,8 +241,6 @@ class ApplicationController extends Controller
             $ownerId = $request->get('owner_id'); //  fetch document id
 //            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
             $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
-           
-            
             $userFile = $this->docRepo->saveFile($uploadData);
             if(!empty($userFile->file_id)) {
                 $ownerDocCheck = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
@@ -852,17 +850,20 @@ class ApplicationController extends Controller
         
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::SEND_OTP, $req_arr);
-//      $createApiLog = $response['createApiLog'];
-//      $createBizApi= @BizApi::create([
-//          'user_id' =>$userData['user_id'], 
-//          'biz_id' =>   $userData['biz_id'],
-//          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
-//          'type' => 1,
-//          'verify_doc_no' => 1,
-//          'status' => 1,
-//          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
-//          'created_by' => Auth::user()->user_id
-//       ]);
+      if( $response['status']=='success')
+      {
+            $createApiLog = $response['createApiLog'];
+            $createBizApi= @BizApi::create([
+                'user_id' =>$userData['user_id'], 
+                'biz_id' =>   $userData['biz_id'],
+                'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
+                'type' => 7,
+                'verify_doc_no' => 1,
+                'status' => 1,
+                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                'created_by' => Auth::user()->user_id
+             ]);
+      }
       if (empty($response['result'])) {
         $response['status'] = 'fail';
       }
@@ -887,19 +888,22 @@ class ApplicationController extends Controller
         
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);
-      dd($response);
+      
 
-//      $createApiLog = $response['createApiLog'];
-//      $createBizApi= @BizApi::create([
-//          'user_id' =>$userData['user_id'], 
-//          'biz_id' =>   $userData['biz_id'],
-//          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
-//          'type' => 1,
-//          'verify_doc_no' => 1,
-//          'status' => 1,
-//          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
-//          'created_by' => Auth::user()->user_id
-//       ]);
+      $createApiLog = $response['createApiLog'];
+       if( $response['status']=='success')
+      {
+            $createBizApi= @BizApi::create([
+                'user_id' =>$userData['user_id'], 
+                'biz_id' =>   $userData['biz_id'],
+                'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
+                'type' => 8,
+                'verify_doc_no' => 1,
+                'status' => 1,
+                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                'created_by' => Auth::user()->user_id
+             ]);
+      }     
       if (empty($response['result'])) {
         $response['status'] = 'fail';
       }
