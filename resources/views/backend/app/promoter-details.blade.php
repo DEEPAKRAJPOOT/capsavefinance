@@ -541,6 +541,7 @@
     {!!Helpers::makeIframePopup('modalPromoter3','View Passport Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter','Upload User List', 'modal-md')!!}
     {!!Helpers::makeIframePopup('modalMobile','Mobile Verification', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('modalOtp','OTP Verification', 'modal-lg')!!}
     @endsection
     @section('jscript')
 
@@ -1340,18 +1341,18 @@
                     let micon = result['status'] ? 'circle' : 'close';
                     var html = result['message'];
                     if (result.status==1) {
+                            var request_id = result['request_id'];
                             span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
                             span_target.css('pointer-events', 'none');
-
                             $("#mobile_no"+count).attr('readonly', 'readonly');
                             $("#verify_mobile_no"+count).css('pointer-events', 'none');
-                            $("#toggleOtp"+count).hide();  
+                         ///   $("#toggleOtp"+count).hide();
+                            $('#modalOtp').show();
+                            $('#modalOtp iframe').attr({'src':'{{URL::route("mobile_verify") }}?type=otp&request_id=' + request_id, 'width':'100%'});
                       }
                     else
                     {
-                        
-                         $("#v5failurepanverify"+count).css('display','inline'); 
-                          
+                         $("#v5failurepanverify"+count).css('display','inline');      
                     }
                 },
                 error:function(error) {
@@ -1386,19 +1387,19 @@
                 },
                 dataType : 'json',
                 success:function(result) {
-                $(".isloader").css('display', 'none');
-                let mclass = result['status'] ? 'success' : 'danger';
-                let micon = result['status'] ? 'circle' : 'close';
-                var html = result['message'];
-                
-                if (result.status==1) {
-                span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
-                $("#toggleOtp"+count).show();
-                button_target.text('Verified');
-                $('#modalMobile').show();
-                request_id = result.request_id;
-                $('#modalMobile iframe').attr({'src':'{{URL::route("mobile_verify") }}?mobile=' + mobile_no, 'width':'100%'});
-                }
+                    $(".isloader").css('display', 'none');
+                    let mclass = result['status'] ? 'success' : 'danger';
+                    let micon = result['status'] ? 'circle' : 'close';
+                    var html = result['message'];
+
+                    if (result.status==1) {
+                        span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
+                        $("#toggleOtp"+count).show();
+                        button_target.text('Verified');
+                        request_id = result.request_id;
+                         $('#modalMobile').show();
+                            $('#modalMobile iframe').attr({'src':'{{URL::route("mobile_verify") }}?type=mobile&mobile=' + mobile_no, 'width':'100%'});
+                    }
                 },
                 error:function(error) {
                 var html = 'Some error occured.';
@@ -1413,6 +1414,12 @@
         $(document).on('click', '#modalMobile .close', function() {
         $('#modalMobile').hide();
         });
+        
+        $(document).on('click', '#modalOtp .close', function() {
+        $('#modalOtp').hide();
+        });
+        
+        
         
         $(document).on('keypress', '.share_per', function(e){
         $char = e.keyCode || e.which;

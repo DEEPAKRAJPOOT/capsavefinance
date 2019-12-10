@@ -887,9 +887,7 @@ class ApplicationController extends Controller
         );
         
       $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);
-      
-
+      $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);         
       $createApiLog = $response['createApiLog'];
        if( $response['status']=='success')
       {
@@ -909,9 +907,10 @@ class ApplicationController extends Controller
       }
     ///  dd($response['status']);
       if ($response['status'] == 'success') {
-          if (!empty($response['result']['sim_details']['otp_validated'])) {
+          $stts = $response['result']['sim_details']['otp_validated'] ?? NULL;
+          if ($stts) {
               return response()->json(['message' =>'Verified Successfully','status' => 1,
-          'value' => $response['result']]);
+          'value' => $request_id, 'request_id'=> base64_encode($request_id)]);
           }else{
              return response()->json(['message' =>'','status' => 0]); 
           }
@@ -925,22 +924,42 @@ class ApplicationController extends Controller
 
     public function mobileModel(Request $request){
       $post_data = $request->all();
-      $mobile_no = trim($request->get('mobile'));
-      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
-        return '<div>Mobile Number is not valid.</div>';
-      }
-      $mob = new MobileAuth_lib();
-      $req_arr = array(
-            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
-      );
-      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      if (empty($response['result'])) {
-        $response['status'] = 'fail';
-      }
-      if ($response['status'] == 'success') {
-       return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
+      $type = trim($request->get('type'));
+      if($type == 'otp'){
+         $request_id = trim($request->get('request_id'));
+        if (empty($request_id)) {
+          return '<div>Request Id is not valid.</div>';
+        }
+        $mob = new MobileAuth_lib();
+
+        $req_arr= ['request_id' => base64_decode($request_id)];
+        $response = $mob->api_call(MobileAuth_lib::GET_DTL, $req_arr);
+        if (empty($response['result'])) {
+          $response['status'] = 'fail';
+        }
+        if ($response['status'] == 'success') {
+          return view('backend.app.otp_verification_detail',['response'=>$response['result']]);
+        }else{
+          return "<div>Unable to get detail of the mobile.</div>";
+        } 
       }else{
-         return "<div>Unable to verify the mobile.</div>";
+        $mobile_no = trim($request->get('mobile'));
+        if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
+          return '<div>Mobile Number is not valid.</div>';
+        }
+        $mob = new MobileAuth_lib();
+        $req_arr = array(
+              'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+        );
+        $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+        if (empty($response['result'])) {
+          $response['status'] = 'fail';
+        }
+        if ($response['status'] == 'success') {
+         return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
+        }else{
+           return "<div>Unable to verify the mobile.</div>";
+        } 
       }
     }
     
