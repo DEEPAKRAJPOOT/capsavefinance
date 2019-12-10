@@ -857,7 +857,7 @@ class CamController extends Controller
                    }
                }
            }
-           return redirect()->back();
+           return redirect()->back()->with('message', 'Lifiting Data Saved Successfully.');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
