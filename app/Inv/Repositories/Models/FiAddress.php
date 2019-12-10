@@ -3,6 +3,8 @@
 namespace App\Inv\Repositories\Models;
 
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\FiRcuLog;
+use Auth;
 
 class FiAddress extends BaseModel {
     /* The database table used by the model.
@@ -48,6 +50,30 @@ class FiAddress extends BaseModel {
 
     public function user(){
         return $this->belongsTo('App\Inv\Repositories\Models\User','to_id','user_id');
+    }
+
+    public static function insertFiAddress($data){
+        $addr_ids = explode('#', trim($data['address_ids'], '#'));
+        $customLogArr = [];
+        $customAddArr = [];
+        foreach ($addr_ids as $key=>$value) {
+            $customLogArr[$key]['whom_id']=$value;
+            $customLogArr[$key]['fi_rcu_type']=1;
+            $customLogArr[$key]['fi_rcu_status']=2;
+            $customLogArr[$key]['fi_rcu_comment']=$data['comment'];
+            $customLogArr[$key]['created_by']=Auth::user()->user_id;
+
+            $customAddArr[$key]['agency_id']=$data['agency_id'];
+            $customAddArr[$key]['from_id']=Auth::user()->user_id;
+            $customAddArr[$key]['to_id']=$data['to_id'];
+            $customAddArr[$key]['biz_addr_id']=$value;
+            $customAddArr[$key]['fi_comment']=$data['comment'];
+            $customAddArr[$key]['is_active']=1;
+            $customAddArr[$key]['created_by']=Auth::user()->user_id;
+        }
+        $q = FiRcuLog::insert($customLogArr);
+        $fiAddress = FiAddress::insert($customAddArr);
+        return $fiAddress;
     }
 
 }

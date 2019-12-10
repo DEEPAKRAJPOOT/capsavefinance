@@ -82,6 +82,16 @@ Route::group(
         'as' => 'verify_front_mobile',
         'uses' => 'Application\ApplicationController@verify_mobile'
     ]);
+    
+     Route::post('verify-otp-mobile', [
+        'as' => 'verify_otp_mobile',
+        'uses' => 'Backend\ApplicationController@verify_otp_mobile'
+    ]);
+    
+     Route::post('verify-front-otp', [
+        'as' => 'verify_front_otp',
+        'uses' => 'Application\ApplicationController@verify_otp'
+    ]);
 
     Route::post('download_user_cibil',[
         'as' => 'download_user_cibil',
@@ -222,5 +232,28 @@ Route::group(
         ]
     );
 
+    Route::post(
+        'chk_biz_pan_to_gst',
+        [
+        'as' => 'chk_biz_pan_to_gst',
+        'uses' => 'Karza\KarzaController@checkBizPanToGst'
+        ]
+    );
+
+    Route::post(
+        'chk_biz_gst_to_entity',
+        [
+        'as' => 'chk_biz_gst_to_entity',
+        'uses' => 'Karza\KarzaController@checkBizGstToEntity'
+        ]
+    );
+
+    Route::post(
+        'chk_biz_entity_to_cin',
+        [
+        'as' => 'chk_biz_entity_to_cin',
+        'uses' => 'Karza\KarzaController@checkBizEntityToCin'
+        ]
+    );
 
 });

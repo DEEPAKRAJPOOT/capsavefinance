@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\LiftingDetail;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Models\FiAddress;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -419,7 +420,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $result = BusinessAddress::getAddressforFI($biz_id);
         return $result ?: false;
     }
-
     
     /**
      * get address for FI
@@ -432,11 +432,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $result ?: false;
     }
 
-     public function getLiftingDetail($appId){
+    public function getLiftingDetail($appId){
         $result =  LiftingDetail::where('app_id',$appId)->get();
         return $result ?: false;
     }
-
 
      public function updateLiftingDetail($attributes, $anchor_lift_detail_id){
         $anchor =  LiftingDetail::where('anchor_lift_detail_id',$anchor_lift_detail_id)->first();
@@ -444,5 +443,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $updateAnchorData ? true : false;
     }
 
-   
+    /**
+     * insert into FI address
+     * 
+     * @param array $data
+     * @return status
+     */
+    public function insertFIAddress($data){
+        $result = FiAddress::insertFiAddress($data);
+        return $result ?: false;
+    }
 }

@@ -25,13 +25,16 @@ try {
             columns: [
                 {data: 'app_id'},
                 {data: 'biz_entity_name'},
+                {data: 'user_name'},
+                {data: 'user_email'},
+                {data: 'user_phone'},
                 {data: 'assoc_anchor'},
                 {data: 'applied_loan_amount'},
                 {data: 'created_at'},
                 {data: 'status'},
                 {data: 'action'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2,3,4,6,7,8,9]}]
         });
 
         //Search
