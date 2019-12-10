@@ -116,7 +116,7 @@
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
                            <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for FI</button>
-                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal"><i class="fa fa-plus"></i>Assign FI</a>
+                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal"><i class="fa fa-plus"></i>Assign FI</a>
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
                         </div>
                      </div>

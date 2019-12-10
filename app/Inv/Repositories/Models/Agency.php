@@ -51,4 +51,9 @@ class Agency extends BaseModel
         'updated_by'
     ];
 
+    public function getFullnameAttribute(){
+        return ucwords($this->f_name.' '.$this->m_name.' '.$this->l_name);
+    }
+
+
 }
