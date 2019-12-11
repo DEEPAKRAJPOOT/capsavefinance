@@ -26,7 +26,7 @@ class AppAssignment extends BaseModel
      *
      * @var integer
      */
-    protected $primaryKey = 'lead_assign_id';
+    protected $primaryKey = 'app_assign_id';
     
      /**
      * Maintain created_at and updated_at automatically
@@ -163,12 +163,31 @@ class AppAssignment extends BaseModel
                 ->leftJoin('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')                   
-                ->where('app_id', $app_id)
+                ->where('app_id', $app_id)                
                 ->where('is_owner', '0')
-                ->orderBy('lead_assign_id', 'DESC')
+                ->orderBy('app_assign_id', 'DESC')
                 ->first();
         return $assignData ? $assignData : false;
-    }    
+    } 
+    
+    /**
+     * Get Application current assignee
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function getAppCurrentAssignee($app_id)
+    {
+        $assignData = self::select(DB::raw("CONCAT_WS(' ', rta_to_u.f_name, rta_to_u.l_name) AS assignee"), 
+                'to_r.name as assignee_role')
+                ->leftJoin('users as to_u', 'app_assign.to_id', '=', 'to_u.user_id')
+                ->leftJoin('role_user as to_ru', 'app_assign.to_id', '=', 'to_ru.user_id')
+                ->leftJoin('roles as to_r', 'to_ru.role_id', '=', 'to_r.id')                   
+                ->where('app_id', $app_id)
+                ->where('is_owner', '1')                
+                ->first();
+        return $assignData ? $assignData : false;
+    }     
   
 }
   

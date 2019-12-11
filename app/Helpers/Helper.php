@@ -683,4 +683,15 @@ class Helper extends PaypalHelper
                 return $data;
                 
     }
+    
+    /**
+     * Get Application current assignee 
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function getAppCurrentAssignee($app_id) {
+        $assigneeData = AppAssignment::getAppCurrentAssignee($app_id);
+        return $assigneeData;
+    }
 }

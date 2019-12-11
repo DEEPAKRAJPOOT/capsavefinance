@@ -235,21 +235,23 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'assignee',
                     function ($app) {                    
-                    //if($app->to_id){
-                    //$userInfo=Helpers::getUserInfo($app->to_id);                    
-                    //   $assignName=$userInfo->f_name. ''.$userInfo->l_name;  
-                    //}else{
-                    //   $assignName=''; 
+                    //if ($app->to_id){
+                    //    $userInfo = Helpers::getUserInfo($app->to_id);                    
+                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
+                    //} else {
+                    //    $assignName=''; 
                     //} 
-                    //    return $assignName;
-                    return $app->assignee ? $app->assignee . '<br><small>(' . $app->assignee_role . ')</small>' : '';
+                    //return $assignName;
+                    $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
+                    
+                    return $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
                 })
                 ->addColumn(
                     'assigned_by',
                     function ($app) {
-                        //return $app->assigned_by ? $app->assigned_by . '<br>(' . $app->from_role . ')' : '';
-                        $fromData = AppAssignment::getOrgFromUser($app->app_id);
-                        return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
+                        return $app->assigned_by ? $app->assigned_by . '<br><small>(' . $app->from_role . ')</small>' : '';
+                        //$fromData = AppAssignment::getOrgFromUser($app->app_id);
+                        //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
                 })                
                 ->addColumn(
                     'shared_detail',
@@ -403,8 +405,14 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'app_id',
                     function ($app) {
+                        //$roleData = User::getBackendUser(\Auth::user()->user_id);
+                        //if ($roleData[0]->is_superadmin == 1) {
+                        //    $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);                                                            
+                        //} else {
+                            $link = '#';
+                        //}                        
                         //$link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\">" . 'CAPS000'.$app->app_id . "</a> ";
+                        return '<a id="app-id-' . $app->app_id . ' rel="tooltip" href="' . $link . '">' . 'CAPS000'.$app->app_id . '</a>';
                     }
                 )
                 ->addColumn(

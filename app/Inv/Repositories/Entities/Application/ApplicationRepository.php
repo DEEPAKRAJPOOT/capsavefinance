@@ -459,4 +459,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $agency ?: false;
     }
 
+    /**
+     * Get Application assign data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     */
+    public function getAppAssignmentData ($whereCondition=[])
+    {
+        return AppAssignment::getAppAssignmentData ($whereCondition);
+    }    
 }
