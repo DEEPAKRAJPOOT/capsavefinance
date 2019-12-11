@@ -241,8 +241,6 @@ class ApplicationController extends Controller
             $ownerId = $request->get('owner_id'); //  fetch document id
 //            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
             $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
-           
-            
             $userFile = $this->docRepo->saveFile($uploadData);
             if(!empty($userFile->file_id)) {
                 $ownerDocCheck = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
@@ -852,17 +850,20 @@ class ApplicationController extends Controller
         
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::SEND_OTP, $req_arr);
-//      $createApiLog = $response['createApiLog'];
-//      $createBizApi= @BizApi::create([
-//          'user_id' =>$userData['user_id'], 
-//          'biz_id' =>   $userData['biz_id'],
-//          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
-//          'type' => 1,
-//          'verify_doc_no' => 1,
-//          'status' => 1,
-//          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
-//          'created_by' => Auth::user()->user_id
-//       ]);
+      if( $response['status']=='success')
+      {
+            $createApiLog = $response['createApiLog'];
+            $createBizApi= @BizApi::create([
+                'user_id' =>$userData['user_id'], 
+                'biz_id' =>   $userData['biz_id'],
+                'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
+                'type' => 7,
+                'verify_doc_no' => 1,
+                'status' => 1,
+                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                'created_by' => Auth::user()->user_id
+             ]);
+      }
       if (empty($response['result'])) {
         $response['status'] = 'fail';
       }
@@ -886,28 +887,30 @@ class ApplicationController extends Controller
         );
         
       $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);
-      dd($response);
-
-//      $createApiLog = $response['createApiLog'];
-//      $createBizApi= @BizApi::create([
-//          'user_id' =>$userData['user_id'], 
-//          'biz_id' =>   $userData['biz_id'],
-//          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
-//          'type' => 1,
-//          'verify_doc_no' => 1,
-//          'status' => 1,
-//          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
-//          'created_by' => Auth::user()->user_id
-//       ]);
+      $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);         
+      $createApiLog = $response['createApiLog'];
+       if( $response['status']=='success')
+      {
+            $createBizApi= @BizApi::create([
+                'user_id' =>$userData['user_id'], 
+                'biz_id' =>   $userData['biz_id'],
+                'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
+                'type' => 8,
+                'verify_doc_no' => 1,
+                'status' => 1,
+                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                'created_by' => Auth::user()->user_id
+             ]);
+      }     
       if (empty($response['result'])) {
         $response['status'] = 'fail';
       }
     ///  dd($response['status']);
       if ($response['status'] == 'success') {
-          if (!empty($response['result']['sim_details']['otp_validated'])) {
+          $stts = $response['result']['sim_details']['otp_validated'] ?? NULL;
+          if ($stts) {
               return response()->json(['message' =>'Verified Successfully','status' => 1,
-          'value' => $response['result']]);
+          'value' => $request_id, 'request_id'=> base64_encode($request_id)]);
           }else{
              return response()->json(['message' =>'','status' => 0]); 
           }
@@ -921,22 +924,42 @@ class ApplicationController extends Controller
 
     public function mobileModel(Request $request){
       $post_data = $request->all();
-      $mobile_no = trim($request->get('mobile'));
-      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
-        return '<div>Mobile Number is not valid.</div>';
-      }
-      $mob = new MobileAuth_lib();
-      $req_arr = array(
-            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
-      );
-      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      if (empty($response['result'])) {
-        $response['status'] = 'fail';
-      }
-      if ($response['status'] == 'success') {
-       return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
+      $type = trim($request->get('type'));
+      if($type == 'otp'){
+         $request_id = trim($request->get('request_id'));
+        if (empty($request_id)) {
+          return '<div>Request Id is not valid.</div>';
+        }
+        $mob = new MobileAuth_lib();
+
+        $req_arr= ['request_id' => base64_decode($request_id)];
+        $response = $mob->api_call(MobileAuth_lib::GET_DTL, $req_arr);
+        if (empty($response['result'])) {
+          $response['status'] = 'fail';
+        }
+        if ($response['status'] == 'success') {
+          return view('backend.app.otp_verification_detail',['response'=>$response['result']]);
+        }else{
+          return "<div>Unable to get detail of the mobile.</div>";
+        } 
       }else{
-         return "<div>Unable to verify the mobile.</div>";
+        $mobile_no = trim($request->get('mobile'));
+        if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
+          return '<div>Mobile Number is not valid.</div>';
+        }
+        $mob = new MobileAuth_lib();
+        $req_arr = array(
+              'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+        );
+        $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
+        if (empty($response['result'])) {
+          $response['status'] = 'fail';
+        }
+        if ($response['status'] == 'success') {
+         return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
+        }else{
+           return "<div>Unable to verify the mobile.</div>";
+        } 
       }
     }
     

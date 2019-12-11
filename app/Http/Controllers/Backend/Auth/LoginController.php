@@ -1,6 +1,9 @@
 <?php
-use Clouser;
+
 namespace App\Http\Controllers\Backend\Auth;
+
+use Session;
+use Clouser;
 use Redirect;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -78,7 +81,15 @@ use AuthenticatesUsers;
        
         $userEmail    = $request['email'];
         $userInfo = $this->userRepo->getUserByEmail($userEmail);
-        
+                
+        if (!empty($userInfo)) {            
+            // Checking User is frontend user            
+            if ($this->isFrontendUser($userInfo)) {                
+                Session::flash('messages', trans('error_messages.creadential_not_valid'));                
+                return redirect()->route('get_backend_login_open');
+            }
+        }
+            
         if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);
         }
@@ -146,4 +157,17 @@ use AuthenticatesUsers;
         }
    
     }
+    
+    /**
+     * Check If user is front-end user or not
+     *
+     * @param object $user
+     * @return boolean     
+     */
+    protected function isFrontendUser($user) {                
+        if (!empty($user) && ($user->user_type == config('common.USER_TYPE.FRONTEND'))) {   // || $user->user_type == 2
+            return true;
+        }
+        return false;
+    }    
 }

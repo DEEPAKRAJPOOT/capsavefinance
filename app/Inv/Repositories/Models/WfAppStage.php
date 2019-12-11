@@ -52,7 +52,11 @@ class WfAppStage extends BaseModel
         'biz_app_id',
         'user_id',
         'app_wf_status',        
-        'is_complete'        
+        'is_complete',
+        'created_by',
+        'created_at',
+        'updated_at',
+        'updated_by'        
      ];
     
     /**

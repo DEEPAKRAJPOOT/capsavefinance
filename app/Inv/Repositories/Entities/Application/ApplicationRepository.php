@@ -20,6 +20,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Offer;
+use App\Inv\Repositories\Models\Agency;
 
 /**
  * Application repository class
@@ -428,23 +429,23 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param integer $biz_id
      * @return all address result
      */
+    
+
     public function creates($attributes){
         $result =  LiftingDetail::creates(($attributes));
         return $result ?: false;
     }
 
-     public function getLiftingDetail($appId){
+    public function getLiftingDetail($appId){
         $result =  LiftingDetail::where('app_id',$appId)->get();
         return $result ?: false;
     }
-
 
      public function updateLiftingDetail($attributes, $anchor_lift_detail_id){
         $anchor =  LiftingDetail::where('anchor_lift_detail_id',$anchor_lift_detail_id)->first();
         $updateAnchorData = $anchor->update($attributes);
         return $updateAnchorData ? true : false;
     }
-
 
     /**
      * insert into FI address
@@ -455,6 +456,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function insertFIAddress($data){
         $result = FiAddress::insertFiAddress($data);
         return $result ?: false;
+    }
+
+    /**
+     * get all agency list
+     * @return agency
+     */
+    public function getAllAgency(){
+        $agency = Agency::get();
+        return $agency ?: false;
     }
 
 }
