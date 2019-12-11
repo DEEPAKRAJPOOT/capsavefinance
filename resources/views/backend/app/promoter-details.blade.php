@@ -208,22 +208,26 @@
                                                  <input type="text" name="networth[]" maxlength='15' id="networth{{isset($row->first_name) ? $i : '1'}}" value="{{$row->networth}}" class="form-control networth"  placeholder="Enter Networth">
                                              </div>
                                     </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="form-group">
-                                                <label for="txtEmail">Mobile <span class="mandatory">*</span></label>  
-                                                <span class="text-success pullMsg_mob">
-                                                    @if(isset($main[$j]['mobileNo']->mobile)) 
-                                                    <i class="fa fa-check-circle" aria-hidden="true"></i><i>Verified Successfully</i>
-                                                    @endif
-                                                </span>
-                                                <a class="verify-owner-no verify-show verify_mobile_no" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="bottom: 15px;top: auto; pointer-events:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify' }}</a>
-                                                <input type="text" name="mobile_no[]"  {{ isset($main[$j]['mobileNo']->mobile) ? "readonly=readonly" : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : '' }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
+                                                <label for="txtEmail">Mobile <span class="mandatory">*</span>  </label> 
+                                             <input type="text" name="mobile_no[]"  {{ isset($main[$j]['mobileNo']->mobile) ? "readonly=readonly" : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : '' }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
+                                              
+                                                <span class="text-success float-left" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}">{{isset($main[$j]['mobileNo']->mobile) ? <i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                <span class="text-danger float-left" id="v5failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
+                                                
+                                             
                                             </div>
                                         </div>
-                                    <div class="col-md-4" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
+                                    <div class="col-md-3">
+                                        
+                                       <a class="btn btn-success btn-sm verify_mobile_no" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="margin-top:30px;bottom: 15px;top: auto;  pointer-events:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify with OTP ' }}</a>
+                                       <a class="btn btn-success btn-sm ml-2" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="margin-top:30px;bottom: 15px;top: auto; pointer-events:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify without OTP' }}</a> 
+                                    </div>
+                                    <div class="col-md-2" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
                                             <div class="form-group">
                                                 <label for="txtEmail">OTP <span class="mandatory">*</span></label>  
-                                                <span class="text-danger" id="v5failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                <span class="text-danger" id="v6failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
                                                 <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($row->first_name) ? $i : '1'}}"> {{ (isset($row->mobile_no)) ? 'Verified' : 'Verify' }}</a>
                                                 <input type="text" name="otp_no[]"   maxlength="4" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP">
                                             </div>
@@ -1366,16 +1370,13 @@
        //////////////////////for mobile verified///////////////////
        
         $(document).on('click', '.verify_mobile_no', function () {
-        var count  = $(this).attr('data-id');    
-        button_target = $(this);
-        mobile_target = $(this).closest('div').find('input');
-        span_target = $(this).closest('div').find('.pullMsg_mob').show();
-        span_target.html('');
-        let mobile_no = mobile_target.val();
+        var count  = $(this).attr('data-id');  
+        var appId   =  $("#app_id").val();
         var  biz_owner_id    = $("#ownerid"+count).val();
-        if (!mobile_no) {
-        span_target.html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i><i>Please enter the mobile no.</i> </span>');
-        return false;
+        var  mobile_no  =  $("#mobile_no"+count).val();
+         if (mobile_no=='') {
+            $("#v5failurepanverify"+count).html('<i>Please enter mobile no.</i>');
+              return false;
         }
         data = {_token, mobile_no, appId, biz_owner_id};
         $.ajax({
@@ -1387,27 +1388,25 @@
                 },
                 dataType : 'json',
                 success:function(result) {
-                    $(".isloader").css('display', 'none');
-                    let mclass = result['status'] ? 'success' : 'danger';
-                    let micon = result['status'] ? 'circle' : 'close';
+                    $(".isloader").hide();
                     var html = result['message'];
 
                     if (result.status==1) {
-                        span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
-                        $("#toggleOtp"+count).show();
-                        button_target.text('Verified');
-                        request_id = result.request_id;
-                         $('#modalMobile').show();
-                            $('#modalMobile iframe').attr({'src':'{{URL::route("mobile_verify") }}?type=mobile&mobile=' + mobile_no, 'width':'100%'});
+                        $("v5successpanverify"+count).css('display','inline'); 
+                        ///$("#toggleOtp"+count).show();
+                        $("#verify_mobile_no").text('Verified');
+                       // request_id = result.request_id;
+                       //  $('#modalMobile').show();
+                          ///  $('#modalMobile iframe').attr({'src':'{{URL::route("mobile_verify") }}?type=mobile&mobile=' + mobile_no, 'width':'100%'});
                     }
                 },
                 error:function(error) {
                 var html = 'Some error occured.';
-                 $("#toggleOtp"+count).hide();
-                span_target.html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i> <i>' + html + '</i> </span>');
-                },
+                $("#v5failurepanverify"+count).html(html);
+         //         $("#toggleOtp"+count).hide();
+              },
                 complete: function() {
-                $(".isloader").hide();
+                    $(".isloader").hide();
                 },
         })
         });

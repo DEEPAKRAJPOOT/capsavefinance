@@ -122,10 +122,10 @@ class State extends BaseModel
         return ($data ? $data : false);
     }
 
-    public static function getAllGstbyUser($user_id){
+    public static function getAllGstbyUser($biz_id){
         $data = self::select('*')
                 ->from('biz_pan_gst')
-                ->where('user_id', $user_id)
+                ->where('biz_id', $biz_id)
                 ->where('type', '2')
                 ->get();
         return ($data ? $data : false);

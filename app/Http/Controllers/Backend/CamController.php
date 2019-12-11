@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FinanceInformationRequest as FinanceRequest;
+use App\Http\Requests\AnchorInfoRequest;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Business;
@@ -19,6 +20,7 @@ use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\CamHygiene;
 use Auth;
 use Session;
+use App\Libraries\Gupshup_lib;
 date_default_timezone_set('Asia/Kolkata');
 use Helpers;
 
@@ -797,20 +799,24 @@ class CamController extends Controller
      * 
      * @author Anand
      */
-    public function anchorViewForm(Request $request)            
-    {   
+    public function anchorViewForm(Request $request, Gupshup_lib $gupshup)            
+    {
+      /*$req  = array('mobile' => '+919667305959', 'message' => "hi gajendra, what is this.");
+      $resp = $gupshup->api_call($req);*/
         try {
             $biz_id = $request->get('biz_id'); 
             $app_id = $request->get('app_id');
             $liftingData = $this->appRepo->getLiftingDetail($app_id);
             $data = [];
-            foreach ($liftingData as $key => $value) {
-              $year = $value['year'];
-              $data[$year]['mt_value'][] = $value['mt_value'];
-              $data[$year]['mt_type'] = $value['mt_type'];
-              $data[$year]['anchor_lift_detail_id'][] = $value['anchor_lift_detail_id'];
-              $data[$year]['year'] = $year;
-              $data[$year]['mt_amount'][] = $value['amount'];
+            if (!empty($liftingData)) {
+                foreach ($liftingData as $key => $value) {
+                $year = $value['year'];
+                $data[$year]['mt_value'][] = $value['mt_value'];
+                $data[$year]['mt_type'] = $value['mt_type'];
+                $data[$year]['anchor_lift_detail_id'][] = $value['anchor_lift_detail_id'];
+                $data[$year]['year'] = $year;
+                $data[$year]['mt_amount'][] = $value['amount'];
+              }
             }
             return view('backend.cam.cam_anchor_view',['data'=> $data])
                 ->with('biz_id',$biz_id)
@@ -829,7 +835,7 @@ class CamController extends Controller
      * 
      * @author Anand
      */ 
-   public function  SaveAnchorForm(Request $request)            
+   public function  SaveAnchorForm(Request $request,AnchorInfoRequest $anchor)            
     {   
         try {
             $allData = $request->all();
@@ -839,7 +845,7 @@ class CamController extends Controller
             $relationShipArr['biz_id']                = $allData['biz_id'];
             $relationShipArr['app_id']                = $allData['app_id'];
             $relationShipArr['year_of_association']   = $allData['year_of_association'];
-            $relationShipArr['year']                  = $allData['yearss'];
+            $relationShipArr['year']                  = $allData['years'];
             $relationShipArr['payment_terms']         = $allData['payment_terms'];
             $relationShipArr['grp_rating']            = $allData['grp_rating'];
             $relationShipArr['contact_number']        = $allData['contact_number'];
@@ -850,7 +856,6 @@ class CamController extends Controller
             
             //need to saveddd $relationShipArr and pass its id to lifting table
             
-            
             //store array date of month
             $months = $allData['month'];
             $mtType = $allData['mt_type'];
@@ -859,7 +864,6 @@ class CamController extends Controller
             #dd($months, $mtType, $years,$countMonths);
 
            $liftingData = $this->appRepo->getLiftingDetail($allData['app_id']);
-           
             for($i = 0; $i < $countMonths; $i++){
                foreach($months[$i]['mt_value'] as $key => $value){
                    if (!empty($liftingData)) {
@@ -868,9 +872,9 @@ class CamController extends Controller
                    $liftingArr['app_id'] = $allData['app_id'];
                    $liftingArr['year'] = $years[$i];
                    $liftingArr['month'] = $key+1;
-                   $liftingArr['mt_type'] = $mtType[$i];
-                   $liftingArr['mt_value'] = $value;
-                   $liftingArr['amount'] = $months[$i]['mt_amount'][$key];
+                   $liftingArr['mt_type'] = $mtType[$i] ?? 0;
+                   $liftingArr['mt_value'] = $value ?? 0;
+                   $liftingArr['amount'] = $months[$i]['mt_amount'][$key] ?? 0;
                    if (!empty($liftingData)) {
                       $this->appRepo->updateLiftingDetail($liftingArr, $liftingArr['anchor_lift_detail_id']);
                    }else{
