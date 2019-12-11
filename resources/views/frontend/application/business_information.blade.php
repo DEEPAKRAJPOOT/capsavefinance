@@ -8,7 +8,7 @@
              <a href="javascript:void(0);" class="active">Business Information</a>
 		</li>
 		<li>
-			<a href="javascript:void(0);">Promoter Details</a>
+			<a href="javascript:void(0);">Management Details</a>
 		</li>
 		<li>
 			<a href="javascript:void(0);">Documents</a>

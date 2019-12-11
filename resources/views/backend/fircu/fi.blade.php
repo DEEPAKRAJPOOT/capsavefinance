@@ -38,7 +38,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <?php $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Promoter Address'];
+                                <?php $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Management Address'];
                                 $status = ['Pending', 'Inprogress', 'Positive', 'Negative', 'Cancelled', 'Refer to Credit']; ?>
                                 @forelse($fiLists as $key=>$fiList)
                                     <tr role="row" class="odd">
@@ -55,12 +55,12 @@
                                                 Action
                                                 </button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
-                                                    <a class="dropdown-item change-status" href="#" value="0">Pending</a>
-                                                    <a class="dropdown-item change-status" href="#" value="1">Inprogress</a>
-                                                    <a class="dropdown-item change-status" href="#" value="2">Positive</a>
-                                                    <a class="dropdown-item change-status" href="#" value="3">Negative</a>
-                                                    <a class="dropdown-item change-status" href="#" value="4">Cancelled</a>
-                                                    <a class="dropdown-item change-status" href="#" value="5">Refer to Credit</a>
+                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="0">Pending</a>
+                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="1">Inprogress</a>
+                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="2">Positive</a>
+                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="3">Negative</a>
+                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="4">Cancelled</a>
+                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="5">Refer to Credit</a>
                                                 </div>
                                                 <div class="d-flex file-upload-cls">
                                                     <div class="file-browse float-left mr-3 ml-4">
@@ -116,7 +116,7 @@
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
                            <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for FI</button>
-                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal"><i class="fa fa-plus"></i>Assign FI</a>
+                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
                         </div>
                      </div>

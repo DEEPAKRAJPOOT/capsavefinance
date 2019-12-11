@@ -19,21 +19,26 @@
                      <ul>
                         <li><span class="icon"><i class="fa fa-file-excel-o"></i></span></li>
                         <li><a href="{{ Storage::url($bankdoc->file_path) }}" download target="_blank">Download Bank Statement</a></li>
-                        <li><a href="javascript:void(0)" class="getAnalysis">Get Analysis</a></li>
+                        <li><a href="javascript:void(0)"></a></li>
                      </ul>
                   </div>
                      @endforeach
+                  <div class="clearfix"></div>
+                  <div style="text-align: end;">
+                     <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
+                  </div>
                   @endif
+                  
                   @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
                   <div class="clearfix"></div>
                   <div style="text-align: end;">
-                     <a class="btn btn-success" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download analysed Statement</a>
+                     <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download</a>
                   </div>
                   @endif 
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
                   <div class="clearfix"></div>
                   <div style="text-align: end;">
-                     <a class="btn btn-success process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process Statement</a>
+                     <a class="btn btn-success process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
                   </div>
                   @endif 
                   <div class="clearfix"></div>

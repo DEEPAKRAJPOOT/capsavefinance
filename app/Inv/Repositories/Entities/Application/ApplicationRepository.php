@@ -429,7 +429,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param integer $biz_id
      * @return all address result
      */
-
     
 
     public function creates($attributes){

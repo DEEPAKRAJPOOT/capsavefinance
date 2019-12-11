@@ -86,13 +86,13 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group mt-25">
-                                            <input type="submit" value="Fetch Detail" class="fetchdetails btn btn-primary">
+                                            <input type="submit" value="Fetch Detail" class="fetchdetails btn btn-success btn-sm">
                                         </div>
                                     </div>
                                     @else
                                     <div class="col-md-3">
                                         <div class="form-group mt-25">
-                                            <a href="{{$enable_download ? (Storage::url('user/'.$appId.'_'.$gst_detail['pan_gst_hash'].'.pdf')) : 'javascript:void(0)'}}" class="btn btn-primary" download>GST Pulled</a>
+                                            <a href="{{$enable_download ? (Storage::url('user/'.$appId.'_'.$gst_detail['pan_gst_hash'].'.pdf')) : 'javascript:void(0)'}}" class="btn btn-success btn-sm" download>GST Pulled</a>
                                         </div>
                                     </div>
                                     @endif
@@ -150,12 +150,7 @@
         let gst_no   = $target_div.find('.biz_gst_number').val();
         let gst_usr  = $target_div.find('.biz_gst_username').val();
         let gst_pass = $target_div.find('.biz_gst_password').val();
-<<<<<<< HEAD
         data = {_token,gst_no,gst_usr,gst_pass, appId};
-=======
-
-        data = {_token,gst_no,gst_usr,gst_pass};
->>>>>>> df64713100693b6b8ef1e2ddc068630d68f121e1
         $.ajax({
              url  : appurl,
              type :'POST',
