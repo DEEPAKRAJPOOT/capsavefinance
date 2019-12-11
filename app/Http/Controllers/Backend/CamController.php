@@ -17,6 +17,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\CamHygiene;
 use Auth;
 use Session;
 date_default_timezone_set('Asia/Kolkata');
@@ -42,64 +43,79 @@ class CamController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request){
-        $arrRequest['biz_id'] = $request->get('biz_id');
-        $arrRequest['app_id'] = $request->get('app_id');
-        $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
-        $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
-       if(isset($arrOwnerData[0])){
-              $arrBizData['ownerName'] = $arrOwnerData[0]['first_name'].' '.$arrOwnerData[0]['last_name'];
-       }
-        $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
-        if(isset($arrEntityData['industryType'])){
-              $arrBizData['industryType'] = $arrEntityData['industryType'];
-        }
-        if(isset($arrEntityData['name'])){      
-              $arrBizData['legalConstitution'] = $arrEntityData['name'];
-        }
+        try{
+            $arrRequest['biz_id'] = $request->get('biz_id');
+            $arrRequest['app_id'] = $request->get('app_id');
+            $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
+            $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
+           if(isset($arrOwnerData[0])){
+                  $arrBizData['ownerName'] = $arrOwnerData[0]['first_name'].' '.$arrOwnerData[0]['last_name'];
+           }
+            $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
+            if(isset($arrEntityData['industryType'])){
+                  $arrBizData['industryType'] = $arrEntityData['industryType'];
+            }
+            if(isset($arrEntityData['name'])){      
+                  $arrBizData['legalConstitution'] = $arrEntityData['name'];
+            }
 
-         $whereCondition = [];
-        //$whereCondition['anchor_id'] = $anchorId;
-        $prgmData = $this->appRepo->getProgramData($whereCondition);
-        if(!empty($prgmData))
-        {
-           $arrBizData['prgm_name'] = $prgmData['prgm_name'];
-        }
-  			$arrBizData['email']  = $arrEntityData['email'];
-  			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
-        $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-          return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData]);
+            $whereCondition = [];
+            //$whereCondition['anchor_id'] = $anchorId;
+            $prgmData = $this->appRepo->getProgramData($whereCondition);
+            if(!empty($prgmData))
+            {
+               $arrBizData['prgm_name'] = $prgmData['prgm_name'];
+            }
+      			$arrBizData['email']  = $arrEntityData['email'];
+      			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
+            $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+              return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
 
     }
 
     public function camInformationSave(Request $request){
-    	  $arrCamData = $request->all();
-        $userId = Auth::user()->user_id;
-        if(!isset($arrCamData['rating_no'])){
-                $arrCamData['rating_no'] = NULL;
+    	 try{
+            $arrCamData = $request->all();
+            $userId = Auth::user()->user_id;
+            if(!isset($arrCamData['rating_no'])){
+                    $arrCamData['rating_no'] = NULL;
+            }
+            if($arrCamData['cam_report_id'] != ''){
+                 $updateCamData = Cam::updateCamData($arrCamData, $userId);
+                 if($updateCamData){
+                        Session::flash('message',trans('CAM information updated sauccessfully'));
+                 }else{
+                       Session::flash('message',trans('CAM information not updated successfully'));
+                 }
+            }else{
+                $saveCamData = Cam::creates($arrCamData, $userId);
+                if($saveCamData){
+                        Session::flash('message',trans('CAM information saved successfully'));
+                 }else{
+                       Session::flash('message',trans('CAM information not saved successfully'));
+                 }
+            }    
+            return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
-        if($arrCamData['cam_report_id'] != ''){
-             $updateCamData = Cam::updateCamData($arrCamData, $userId);
-             if($updateCamData){
-                    Session::flash('message',trans('CAM information updated sauccessfully'));
-             }else{
-                   Session::flash('message',trans('CAM information not updated successfully'));
-             }
-        }else{
-            $saveCamData = Cam::creates($arrCamData, $userId);
-            if($saveCamData){
-                    Session::flash('message',trans('CAM information saved successfully'));
-             }else{
-                   Session::flash('message',trans('CAM information not saved successfully'));
-             }
-        }    
-        return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
     }
 
     public function showCibilForm(Request $request){
-        $biz_id = $request->get('biz_id');
-        $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
-        $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
-        return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData'));
+        try{
+            $arrRequest['biz_id'] = $biz_id = $request->get('biz_id');
+            $arrRequest['app_id'] = $request->get('app_id');
+            $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+
+            $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
+            $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
+            return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData', 'arrRequest', 'arrHygieneData'));
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
 
     public function finance(Request $request, FinanceModel $fin){
@@ -863,6 +879,36 @@ class CamController extends Controller
            return redirect()->back()->with('message', 'Lifiting Data Saved Successfully.');
         } catch (Exception $ex) {
             dd($ex->getMessage());
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+
+
+
+     public function camHygieneSave(Request $request){
+      try {
+            $arrHygieneData = $request->all();
+            //dd($arrHygieneData);
+             $userId = Auth::user()->user_id;
+            
+            if($arrHygieneData['cam_hygiene_id'] != ''){
+                 $updateHygieneDat = CamHygiene::updateHygieneData($arrHygieneData, $userId);
+                 if($updateHygieneDat){
+                        Session::flash('message',trans('CAM hygiene information updated sauccessfully'));
+                 }else{
+                       Session::flash('message',trans('CAM hygiene information not updated successfully'));
+                 }
+            }else{
+                $saveHygieneData = CamHygiene::creates($arrHygieneData, $userId);
+                if($saveHygieneData){
+                        Session::flash('message',trans('CAM hygiene information saved successfully'));
+                 }else{
+                       Session::flash('message',trans('CAM hygiene information not saved successfully'));
+                 }
+            }    
+            return redirect()->route('cam_cibil', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
