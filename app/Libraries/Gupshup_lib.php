@@ -64,7 +64,7 @@ class Gupshup_lib
 	    }
 	    
 	    list($status, $code, $message) = explode('|', $response['result']);
-	    if (strtolower($status) != 'success') {
+	    if (strtolower(trim($status)) != 'success') {
 	    	$resp['message'] =  $message ?? "Unable to get response. Please retry.";
 			return $resp;
 	    }

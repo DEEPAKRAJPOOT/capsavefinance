@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
@@ -118,6 +117,9 @@ class ApplicationController extends Controller
 
      /* Show promoter details page  */
      public function showPromoterDetails(Request $request){
+        try
+        {
+       
         $id = Auth::user()->user_id;
         $appId = $request->get('app_id');  
         $bizId = $request->get('biz_id'); 
@@ -129,6 +131,7 @@ class ApplicationController extends Controller
        {
           return redirect()->back();
        }
+      
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
       // dd($OwnerPanApi);
         return view('backend.app.promoter-details')->with([
@@ -138,6 +141,10 @@ class ApplicationController extends Controller
             'bizId' => $bizId,
             'edit' => $editFlag
             ]);
+             
+        } catch (Exception $ex) {
+                return false;
+        }
     }
      /**
      * Save Promoter details form.
@@ -833,7 +840,24 @@ class ApplicationController extends Controller
         
     } 
 
-
+ public function sentOtpmobile(Request $request){
+      $post_data = $request->all();
+      $mobile_no = trim($request->get('mobile_no'));
+       $mob = new MobileAuth_lib();
+        $req_arr = array(
+            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+        );
+        
+      $userData = State::getUserByAPP($post_data['appId']);
+      $response = $mob->api_call(MobileAuth_lib::SEND_OTP, $req_arr);
+      if ($response['status'] == 'success') {
+        return response()->json(['message' =>"OTP Sent to $mobile_no.",'status' => 1,
+          'value' => $response['result'], 'request_id'=> $response['request_id']]);
+      }else{
+        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
+      }
+    }
+    
 
      public function verify_mobile(Request $request){
       $post_data = $request->all();
@@ -849,7 +873,7 @@ class ApplicationController extends Controller
         );
         
       $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::SEND_OTP, $req_arr);
+      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
       if( $response['status']=='success')
       {
             $createApiLog = $response['createApiLog'];
