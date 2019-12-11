@@ -951,6 +951,12 @@ class ApplicationController extends Controller
       dd($post_data);
     }
     
+    
+    public function mobileOtpModel(Request $request){
+      $post_data = $request->all();
+      dd($post_data);
+    }
+    
     /**
      * Download sanction letter
      * 
