@@ -20,6 +20,7 @@ use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\CamHygiene;
 use Auth;
 use Session;
+use App\Libraries\Gupshup_lib;
 date_default_timezone_set('Asia/Kolkata');
 use Helpers;
 
@@ -794,8 +795,10 @@ class CamController extends Controller
      * 
      * @author Anand
      */
-    public function anchorViewForm(Request $request)            
+    public function anchorViewForm(Request $request, Gupshup_lib $gupshup)            
     {
+      /*$req  = array('mobile' => '+919667305959', 'message' => "hi gajendra, what is this.");
+      $resp = $gupshup->api_call($req);*/
         try {
             $biz_id = $request->get('biz_id'); 
             $app_id = $request->get('app_id');
@@ -849,7 +852,6 @@ class CamController extends Controller
             
             //need to saveddd $relationShipArr and pass its id to lifting table
             
-            
             //store array date of month
             $months = $allData['month'];
             $mtType = $allData['mt_type'];
@@ -878,7 +880,6 @@ class CamController extends Controller
            }
            return redirect()->back()->with('message', 'Lifiting Data Saved Successfully.');
         } catch (Exception $ex) {
-            dd($ex->getMessage());
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
