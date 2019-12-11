@@ -70,15 +70,6 @@ class Handler extends ExceptionHandler
             ])->validate();
         }
 
-        return Validator::make($request->all(), [
-            'doc_file' => 'required|file|size:5000000',
-        ])->validate();
-    }
-
-    ////return parent::render($request, $exception);
-
-
-        
         if (config('app.debug')) {
             if ($maintenanceMode) {
                 return Response::view('errors.503', [], 503);
@@ -95,9 +86,6 @@ class Handler extends ExceptionHandler
             }elseif ($exception instanceof MethodNotAllowedHttpException) {
                 return redirect('/');
             }
-            /*elseif ($exception instanceof Exception) {
-               dd($exception->getMessage());
-            }*/
         }
         return parent::render($request, $exception);
     }
