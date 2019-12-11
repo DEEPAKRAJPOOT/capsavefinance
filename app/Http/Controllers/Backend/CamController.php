@@ -114,6 +114,7 @@ class CamController extends Controller
             }
             $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
             $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
+            //dd($arrCompanyOwnersData);
             return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData', 'arrRequest', 'arrHygieneData'));
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -898,6 +899,9 @@ class CamController extends Controller
 
             }else{
                 $arrHygieneData['remarks'] = '';
+            }
+            if(!isset($arrHygieneData['comment'])){
+               $arrHygieneData['comment'] = '';
             }
             $userId = Auth::user()->user_id;
             if($arrHygieneData['cam_hygiene_id'] != ''){
