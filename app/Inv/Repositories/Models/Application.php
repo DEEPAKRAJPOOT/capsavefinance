@@ -87,7 +87,7 @@ class Application extends BaseModel
                               
                 ->leftJoin('app_assign', function ($join) use($roleData) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
-                    $join->on('app_assign.is_owner', '=', DB::raw("1"));
+                    //$join->on('app_assign.is_owner', '=', DB::raw("1"));
                 })
                 ->leftJoin('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')             
                 ->leftJoin('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
