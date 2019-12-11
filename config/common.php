@@ -50,5 +50,9 @@ return [
         '0' => 'In Active',
         '1' => 'Active',
         '2' => 'Ended'
-    ]    
+    ],
+    'USER_TYPE' => [
+        'FRONTEND' => 1,
+        'BACKEND' => 2,
+    ]
 ];

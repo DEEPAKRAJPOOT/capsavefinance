@@ -20,6 +20,22 @@
                                     <p>Please enter your user information</p>
                                 </div>
                             </div>
+                            <div class="failed">
+                                <div>
+                                    @if(Session::has("messages"))
+                                    <strong class="erro-sms text-danger">
+                                        {{ Session::get('messages') }}
+                                    </strong>
+                                    @endif
+                                </div>
+                                <div>
+                                    @if($errors->has('messages'))
+                                    <strong class="erro-sms text-danger">
+                                        {{trans('auth.throttle')}}
+                                    </strong>
+                                    @endif
+                                </div>
+                            </div>                            
                             <div class="prtm-block-content">
                                 <form class="login-form" method="POST" action="{{ route('backend_login_open') }}" id="backendFrmLogin" >
                                     {{ csrf_field() }}

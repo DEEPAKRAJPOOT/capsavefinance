@@ -79,8 +79,8 @@ use AuthenticatesUsers;
             $userEmail = $request['email'];
 
             $userInfo = $this->userRepo->getUserByEmail($userEmail);
-
-            if (empty($userInfo)) {
+            
+            if (!empty($userInfo)) {                                
                 // Checking User is frontend user
                 if (!$this->isFrontendUser($userInfo)) {
 
@@ -201,8 +201,8 @@ use AuthenticatesUsers;
      * @return boolean
      * @auther Harish
      */
-    protected function isFrontendUser($user) {
-        if (!empty($user) && ($user->user_type == config('inv_common.USER_TYPE.FRONTEND') || $user->user_type == 2)) {
+    protected function isFrontendUser($user) {        
+        if (!empty($user) && ($user->user_type == config('common.USER_TYPE.FRONTEND'))) {   // || $user->user_type == 2
             return true;
         }
         return false;
