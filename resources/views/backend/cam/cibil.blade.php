@@ -25,10 +25,10 @@
                <!--
                   <h2 class="sub-title bg mb-4"><span class=" mt-2">Company CIBIL</span> <button  class="btn btn-primary  btn-sm float-right"> Upload Document</button></h2>
                   -->
-               <h2 class="sub-title bg mb-3">Company</h2>
+               <h2 class="sub-title bg">Company</h2>
                <div id="pullMsgCommercial"></div>
-               <div class="pl-4 pr-4 pb-4 pt-2">
-                  <div class="row mt-3">
+               <div class="">
+                  <div class="row ">
                      <div class="col-sm-12">
                         <table id="cibil-table" class="table table-striped  no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="cibil-table_info" style="width: 100%;">
                            <thead>
@@ -36,7 +36,7 @@
                                  <th class="sorting_asc" tabindex="0" aria-controls="cibil-table" rowspan="1" colspan="1" style="width: 118px;" aria-sort="ascending" aria-label="Sr.No.: activate to sort column descending">Sr.No.</th>
                                  <th class="sorting" tabindex="0" aria-controls="cibil-table" rowspan="1" colspan="1" style="width: 162px;" aria-label="Company: activate to sort column ascending">Company</th>
                                  <th class="sorting" tabindex="0" aria-controls="cibil-table" rowspan="1" colspan="1" style="width: 96px;" aria-label="PAN: activate to sort column ascending">PAN</th>
-                                 <th class="sorting" tabindex="0" aria-controls="cibil-table" rowspan="1" colspan="1" style="width: 105px;" aria-label="Rank: activate to sort column ascending">Rank</th>
+                                 <th class="sorting" tabindex="0" aria-controls="cibil-table" rowspan="1" colspan="1" style="width: 105px;" aria-label="Rank: activate to sort column ascending">Score</th>
                                  <th class="numericCol sorting" tabindex="0" aria-controls="cibil-table" rowspan="1" colspan="1" style="width: 209px;" aria-label="Action: activate to sort column ascending">Action</th>
                               </tr>
                            </thead>
@@ -69,10 +69,10 @@
                </div>
             </div>
             <div class="data mt-4">
-               <h2 class="sub-title bg mb-3">Director / Proprietor / Owner / Partner</h2>
+               <h2 class="sub-title bg ">Director / Proprietor / Owner / Partner</h2>
                <div id="pullMsg"></div>
-               <div class="pl-4 pr-4 pb-4 pt-2">
-                  <div class="row mt-3">
+               <div class="">
+                  <div class="row ">
                      <div class="col-sm-12">
                         <table id="cibil-dpop-table" class="table table-striped  no-footer overview-table"" cellspacing="0" width="100%" role="grid" aria-describedby="cibil-dpop-table_info" style="width: 100%;">
                            <thead>
