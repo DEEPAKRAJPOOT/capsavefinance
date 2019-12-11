@@ -168,14 +168,19 @@
                                                 </tr>
                                              </thead>
                                              <tbody>
+                                               @foreach($arrCompanyOwnersData as $arr)
                                                 <tr>
-                                                   <td name="name[]">{{$arrCompanyDetail['0']['biz_entity_name']}}</td>
-                                                   <td name="pan_number_director[]">{{$arrCompanyDetail['0']['pan_gst_hash']}}</td>
-                                                   <td name="cibil_score[]">{{$arrCompanyDetail['0']['cibil_score']}}</td>
+                                                   <td>{{$arr->first_name." ".$arr->last_name}}</td>
+                                                   <td name="promoterPan[]">
+                                                         <input type="text" name="promoterPan[]" value="{{$arr->pan_gst_hash}}" class="form-control" readonly >   
+                                                   </td>
+                                                   <td>{{$arr->cibil_score}}</td>
                                                    <td>
-                                                      <input type="text" name="remarks" id="remarks" class="form-control" value="{{isset($arrHygieneData->remarks) ? $arrHygieneData->remarks : ''}}">
+                                                       <input type="text" name="remarks[]" id="remarks" class="form-control" value="{{$arrHygieneData->remarks[$arr->pan_gst_hash]  ?? ''}}">
+                                                        
                                                    </td>
                                                 </tr>
+                                                @endforeach
                                              </tbody>
                                           </table>
                                        </td>

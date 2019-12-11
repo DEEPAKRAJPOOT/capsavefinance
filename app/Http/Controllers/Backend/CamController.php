@@ -108,7 +108,10 @@ class CamController extends Controller
             $arrRequest['biz_id'] = $biz_id = $request->get('biz_id');
             $arrRequest['app_id'] = $request->get('app_id');
             $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+            if(!empty($arrHygieneData)){
+                  $arrHygieneData['remarks'] = json_decode($arrHygieneData['remarks'], true);  
 
+            }
             $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
             $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
             return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData', 'arrRequest', 'arrHygieneData'));
@@ -886,9 +889,17 @@ class CamController extends Controller
      public function camHygieneSave(Request $request){
       try {
             $arrHygieneData = $request->all();
-            //dd($arrHygieneData);
-             $userId = Auth::user()->user_id;
-            
+            if(isset($arrHygieneData['remarks'])){
+                $arrRemarkData = array();
+                foreach ($arrHygieneData['remarks'] as $key => $value) {
+                    $arrRemarkData[$arrHygieneData['promoterPan'][$key]]  = $value;
+                }
+                $arrHygieneData['remarks'] = json_encode($arrRemarkData);
+
+            }else{
+                $arrHygieneData['remarks'] = '';
+            }
+            $userId = Auth::user()->user_id;
             if($arrHygieneData['cam_hygiene_id'] != ''){
                  $updateHygieneDat = CamHygiene::updateHygieneData($arrHygieneData, $userId);
                  if($updateHygieneDat){
