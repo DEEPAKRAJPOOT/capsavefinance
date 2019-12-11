@@ -72,7 +72,12 @@ Route::group(
         'as' => 'gstAnalysis',
         'uses' => 'Application\ApplicationController@analyse_gst'
     ]);
-
+  
+    Route::post('sent_otp_mobile', [
+        'as' => 'sent_otp_mobile',
+        'uses' => 'Backend\ApplicationController@sentOtpmobile'
+    ]);
+  
     Route::post('verify_mobile', [
         'as' => 'verify_mobile',
         'uses' => 'Backend\ApplicationController@verify_mobile'

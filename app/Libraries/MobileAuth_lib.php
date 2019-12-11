@@ -102,17 +102,13 @@ class MobileAuth_lib
 			return $resp;
 	    }
 	    $result = json_decode($response['result'], TRUE);
-            if((!empty($result['status-code']) && $result['status-code']==101) || !empty($result['status']))
-            {
-                 $status = 1;
-            }
-            else
-            {
-                $status = 0;
-            }
-            $createApiLog = @BizApiLog::create(['req_file' =>$payload, 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+            
+             $status = 1;
+           
+             $createApiLog = @BizApiLog::create(['req_file' =>$payload, 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
                   'created_by' => Auth::user()->user_id]);
-	   $resp['createApiLog'] = $createApiLog;
+	      $resp['createApiLog'] = $createApiLog;
+           
 	    if (!empty($result['status-code']) && $result['status-code'] != '101') {
 	    	$resp['message'] = $this->error_desc($result['status-code']) ?? "Unable to get response. Please retry.";
 			return $resp;
