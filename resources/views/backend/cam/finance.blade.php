@@ -26,10 +26,14 @@
                         <ul>
                            <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
                            <li><a href="{{ Storage::url($financedoc->file_path) }}" download target="_blank">Download Finance Statement</a></li>
-                           <li><a href="javascript:void(0)" class="getAnalysis">Get Analysis</a></li>
+                           <li><a href="javascript:void(0)"></a></li>
                         </ul>
                      </div>
                      @endforeach
+                     <div class="clearfix"></div>
+                     <div style="text-align: end;">
+                        <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
+                     </div>
                      @endif
                      @if(file_exists(storage_path('app/public/user/'.$appId.'_finance.xlsx')))
                         <div class="clearfix"></div>

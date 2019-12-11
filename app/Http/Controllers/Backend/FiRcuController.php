@@ -37,7 +37,10 @@ class FiRcuController extends Controller
      */
     public function showAssignFi(Request $request)
     {
-        return view('backend.fircu.fi_trigger');   
+        $agencies = $this->appRepo->getAllAgency();
+        $agency_users = $this->userRepo->getAllAgencyUsers();
+        //dd($agency_users->toArray());
+        return view('backend.fircu.fi_trigger')->with(['agencies'=>$agencies, 'agency_users'=>$agency_users]);   
     }
 
     /**
