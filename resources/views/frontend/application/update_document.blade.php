@@ -39,7 +39,12 @@
                         <div class="action-btn">
                             <div class="upload-btn-wrapper setupload-btn pos">
                                 @if($data->doc_id == '6')
+                                    @if(file_exists(public_path("storage/user/".$appId.'_'.$gst_no.".pdf")))
+                                    <button class="btn upload-btn">GST Pulled</button>
+                                    @else
                                     <button class="btn upload-btn pullGST" id="pullgst_rep" data-id="{{ $gst_no }}">PULL GST</button>
+                                    @endif
+                                    
                                 @endif
                                 <button class="btn upload-btn openModal" data-id="{{ $data->doc_id }}">Upload</button>
                             </div>
@@ -65,7 +70,7 @@
                                     </tr>
                                     @foreach($documentData[$data->document->doc_name] as $value)
                                     <tr>
-                                        @if($data->doc_id == '4')
+                                    @if($data->doc_id == '4')
                                         <td width="20%">{{ $value->doc_name }}</td>
                                         @endif
                                         @if($data->doc_id == '5')
@@ -220,7 +225,7 @@
       <div id="pullMsg"></div>
          <!-- Modal Header -->
          <div class="modal-header">
-           GST Report(<strong> {{$gst_no}}</strong>)
+           GST Report (<strong> {{$gst_no}}</strong>)
             <button type="button" class="close close-btns" data-dismiss="modal">×</button>
          </div>
          <form id="gstform" method="POST" enctype="multipart/form-data" novalidate="novalidate">
@@ -241,7 +246,7 @@
                      </div>
                   </div>
                </div>
-               <button type="button" class="btn btn-success float-right  btn-sm" id="fetchdetails">Pull Report</button>  
+               <button type="button" class="btn btn-success float-right  btn-sm" id="fetchdetails">Fetch Detail</button>  
             </div>
          </form>
       </div>
@@ -254,16 +259,19 @@
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script src="{{ url('frontend/js/document.js?v=1') }}"></script>
+
+
 <script type="text/javascript">
-   appurl = 'http://rent.local/gst_analysys';
-   _token = "3tWYajuMtpb6VoOtTY3RK8wm62CWrqjZ5rGoN4rP";
+   appurl = '{{URL::route("gstAnalysis") }}';
+   _token = "{{ csrf_token() }}";
+   appId  = "{{ $appId }}";
 </script>
 <script>
     $(document).on('click', '#fetchdetails',function () {
         let gst_no   = $('#biz_gst_number').val();
         let gst_usr  = $('#biz_gst_username').val();
         let gst_pass = $('#biz_gst_password').val();
-        data = {_token,gst_no,gst_usr,gst_pass};
+        data = {_token,gst_no,gst_usr,gst_pass,appId};
         $.ajax({
              url  : appurl,
              type :'POST',

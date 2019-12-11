@@ -406,6 +406,11 @@ class ApplicationController extends Controller
       if ($app_userId != $user_id) {
         return response()->json(['message' =>'Data can not be manipulated','status' => 0]);
       }
+
+      if(file_exists(public_path("storage/user/".$appId.'_'.$gst_no.".pdf"))){
+        return response()->json(['message' =>'GST Report already pulled.','status' => 0]);
+      }
+
       if (empty($gst_no)) {
         return response()->json(['message' =>'GST Number can\'t be empty.','status' => 0]);
       }
