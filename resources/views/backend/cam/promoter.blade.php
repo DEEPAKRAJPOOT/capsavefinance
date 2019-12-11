@@ -14,7 +14,7 @@
                  
                      <!-- <div id="js-grid-static"></div>    -->
                      <div class="data">
-                        <h2 class="sub-title bg">Management Details</h2>
+                        <h2 class="sub-title bg">Management Information</h2>
                         <div class="p-2 full-width">
                            <div id="accordion" class="accordion d-table col-sm-12">
                             @php ($count = 0)
@@ -71,7 +71,7 @@
                               <div class="card card-color mb-0">
                                  <div class="card-header collapsed" data-toggle="collapse" href="#collapse{{$count}}">
                                     <a class="card-title">
-                                    Management Details ({{$count}})
+                                    Management Information ({{$count}})
                                     </a>
                                  </div>
                                  <div id="collapse{{$count}}" class="card-body collapse @if ($count == 1) show @endif" data-parent="#accordion">
@@ -81,8 +81,8 @@
                                              <tr>
                                                 <td width="25%"><b>Promoter Name</b></td>
                                                 <td width="25%">{{$row->first_name}}</td>
-                                                <td width="25%"><b>Lastname </b></td>
-                                                <td width="25%">{{$row->last_name}}</td>
+                                                <td width="25%"><b>Is Promoter </b></td>
+                                                <td width="25%">@if($row->is_promoter==1) Yes @else No @endif</td>
                                              </tr>
                                              <tr>
                                                 <td><b>DOB </b></td>

@@ -87,11 +87,15 @@
                            <tbody>
                               @php
                               $i = 0;
+                              $defpro = 0;
                               @endphp
                               @foreach($arrCompanyOwnersData as $arr)
                               @php
-                              $i++;
+                                 $i++;
                               @endphp
+                              @if ($arr->cibil_score < 500)
+                                    @php ($defpro++)
+                              @endif         
                               <tr role="row" class="odd">
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->first_name." ".$arr->last_name}}</td>
@@ -140,13 +144,13 @@
                                        <td colspan="4">
                                           <div class="form-check" style="display: inline-block; margin-right:10px;">
                                              <label for="cibil_check_yes" class="form-check-label">
-                                             <input type="radio" id="cibil_check_yes" class="form-check-input" name="cibil_check" value="Yes" {{isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes' ? 'checked' : ''}}>Yes
+                                             <input type="radio" id="cibil_check_yes" class="form-check-input" name="cibil_check" value="Yes" {{((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0)) ? 'checked' : ''}}>Yes
                                              <i class="input-helper"></i></label>
                                           </div>
 
                                           <div class="form-check" style="display: inline-block;">
                                              <label for="cibil_check_no" class="form-check-label">
-                                             <input type="radio" id="cibil_check_no" class="form-check-input"               name="cibil_check" value="No" {{!isset($arrHygieneData->cibil_check) || $arrHygieneData->cibil_check == 'No' ? 'checked' : ''}}>No
+                                             <input type="radio" id="cibil_check_no" class="form-check-input" name="cibil_check" value="No" {{((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'No') || ((!isset($arrHygieneData->cibil_check)) && ($defpro == 0))) ? 'checked' : ''}}>No
                                              <i class="input-helper"></i></label>
                                           </div>
                                           <p style="margin: 0;">CIBIL Analysis (for promoters / guarantors):</p>
@@ -168,21 +172,37 @@
                                                 </tr>
                                              </thead>
                                              <tbody>
-                                                <tr>
-                                                   <td name="name[]">{{$arrCompanyDetail['0']['biz_entity_name']}}</td>
-                                                   <td name="pan_number_director[]">{{$arrCompanyDetail['0']['pan_gst_hash']}}</td>
-                                                   <td name="cibil_score[]">{{$arrCompanyDetail['0']['cibil_score']}}</td>
-                                                   <td>
-                                                      <input type="text" name="remarks" id="remarks" class="form-control" value="{{isset($arrHygieneData->remarks) ? $arrHygieneData->remarks : ''}}">
-                                                   </td>
-                                                </tr>
+                                               @php ($count = 0)
+                                               @foreach($arrCompanyOwnersData as $arr)
+                                                   @if ($arr->cibil_score < 500)
+                                                       @php ($count++)
+                                                         <tr>
+                                                            <td>{{$arr->first_name." ".$arr->last_name}}</td>
+                                                            <td name="promoterPan[]">
+                                                                  <input type="text" name="promoterPan[]" value="{{$arr->pan_gst_hash}}" class="form-control" readonly >   
+                                                            </td>
+                                                            <td>{{$arr->cibil_score}}</td>
+                                                            <td>
+                                                                <input type="text" name="remarks[]" id="remarks" class="form-control" value="{{$arrHygieneData->remarks[$arr->pan_gst_hash]  ?? ''}}">
+                                                                 
+                                                            </td>
+                                                         </tr>
+                                                   @endif
+                                                @endforeach
+                                                @if ($count == 0)
+                                                    <tr>
+                                                      <td>No defaulters found</td>
+                                                             <td>
+                                                                <input type="text" name="comment" id="remarks" class="form-control" value="{{$arrHygieneData->comment  ?? ''}}">
+                                                                 
+                                                            </td>
+                                                   </tr> 
+                                                 @endif  
                                              </tbody>
                                           </table>
                                        </td>
                                     </tr>
-                                    <!-- <tr>
-                                       <td>No negative observation found</td>
-                                    </tr> -->
+                                   
                                  </tbody>
                               </table>
                            </td>

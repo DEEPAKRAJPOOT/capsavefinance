@@ -62,7 +62,8 @@ class CamHygiene extends BaseModel
                         'pol_exp_per_cmnt', 
                         'cdr_check', 
                         'cdr_cmnt', 
-                        'unsc_check', 
+                        'unsc_check',
+                        'comment', 
                         'unsc_cmnt',
                         'npa_history_check', 
                         'npa_history_cmnt', 
@@ -91,6 +92,7 @@ class CamHygiene extends BaseModel
                         'biz_id' => $attributes['biz_id'],
                         'app_id' => $attributes['app_id'],
                         'remarks' => $attributes['remarks'], 
+                        'comment' => $attributes['comment'], 
                         'rbi_willful_defaulters' => $attributes['rbi_willful_defaulters'], 
                         'watchout_investors' => $attributes['watchout_investors'], 
                         'cibil_check' => $attributes['cibil_check'], 
@@ -126,6 +128,7 @@ class CamHygiene extends BaseModel
         //update cam_hygiene table
         $updateCamData = $cam->update([
                         'remarks' => $attributes['remarks'], 
+                        'comment' => $attributes['comment'], 
                         'rbi_willful_defaulters' => $attributes['rbi_willful_defaulters'], 
                         'watchout_investors' => $attributes['watchout_investors'], 
                         'cibil_check' => $attributes['cibil_check'], 
