@@ -38,7 +38,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <?php $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Promoter Address'];
+                                <?php $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Management Address'];
                                 $status = ['Pending', 'Inprogress', 'Positive', 'Negative', 'Cancelled', 'Refer to Credit']; ?>
                                 @forelse($fiLists as $key=>$fiList)
                                     <tr role="row" class="odd">
