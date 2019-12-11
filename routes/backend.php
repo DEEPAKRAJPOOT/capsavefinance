@@ -348,11 +348,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'save_anchor_view',
                     'uses' => 'Backend\CamController@SaveAnchorForm'
                 ]);
-                
-                
-                
-                
-                
+  
         }); //end of cam
         });//end of application
 

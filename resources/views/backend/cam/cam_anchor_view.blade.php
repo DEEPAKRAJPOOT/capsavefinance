@@ -17,24 +17,42 @@
                         <tbody>
                             <tr>
                                 <td width="30%">Years of Association with Group</td>
-                                <td><input type="text" id="year_of_association" name="year_of_association" class="form-control" value=""></td>
+                                <td>
+                                    <input type="text" id="year_of_association" name="year_of_association" class="form-control" value="">
+                                    {!! $errors->first('year_of_association', '<span class="error">:message</span>') !!}
+                                </td>
 
                                 <td>Years</td>
-                                <td><input type="text" id="year" name="yearss" class="form-control" value=""></td>
+                                <td>
+                                    <input type="text" id="year" name="years" class="form-control" value="">
+                                    {!! $errors->first('years', '<span class="error">:message</span>') !!}
+                                </td>
                             </tr>
                             <tr>
                                 <td>Payment Terms with the Group</td>
-                                <td><input type="text" id="payment_terms" name="payment_terms" class="form-control" value=""></td>
+                                <td>
+                                    <input type="text" id="payment_terms" name="payment_terms" class="form-control" value="">
+                                    {!! $errors->first('payment_terms', '<span class="error">:message</span>') !!}
+                                </td>
 
                                 <td>Rating / Reference by the Group</td>
-                                <td><input type="text" id="grp_rating" name="grp_rating" class="form-control" value=""></td>
+                                <td>
+                                    <input type="text" id="grp_rating" name="grp_rating" class="form-control" value="">
+                                    {!! $errors->first('grp_rating', '<span class="error">:message</span>') !!}
+                                </td>
                             </tr>
                             <tr>
                                 <td>Contact Person in Group Co. / Contact No.</td>
-                                <td><input type="text" id="contact_number" name="contact_number" class="form-control" value=""></td>
+                                <td>
+                                    <input type="text" id="contact_number" name="contact_number" class="form-control" value="" maxlength="10">
+                                    {!! $errors->first('contact_number', '<span class="error">:message</span>') !!}
+                                </td>
 
                                 <td>Security Deposit with Anchor Company</td>
-                                <td><input type="text" id="security_deposit" name="security_deposit" class="form-control" value=""></td>
+                                <td>
+                                    <input type="text" id="security_deposit" name="security_deposit" class="form-control" value="">
+                                    {!! $errors->first('security_deposit', '<span class="error">:message</span>') !!}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -55,7 +73,10 @@
                         @if(count($data) > 0)
                             @php $j = 0 @endphp
                             @foreach($data as $key => $val)
-                                <td colspan="2"><b><input type="text" name="year[{{$j}}]" value="{{$key}}" class="form-control"></b></td>
+                                <td colspan="2"><b>
+                                    <input type="text" name="year[{{$j}}]" value="{{$key}}" class="form-control">
+                                    {!! $errors->first('year.'.$j, '<span class="error">:message</span>') !!}
+                                </b></td>
                                 @php 
                                 $year = 'year_'.$j;
                                 $$year = $key;
@@ -68,27 +89,45 @@
                             $year_1 = 0;
                             @endphp
                             @for($k=0;$k<2;$k++)
-                                <td colspan="2"><b><input type="text" name="year[{{$k}}]" value="" class="form-control"></b></td>
+                                <td colspan="2"><b>
+                                    <input type="text" name="year[{{$k}}]" value="" class="form-control"></b>
+                                    {!! $errors->first('year.'.$k, '<span class="error">:message</span>') !!}
+                                </td>
                             @endfor
                         @endif
                         
                         </tr>
                         <tr>
                             <td><b>Month</b></td>
+
+                            @php 
+
+                            $year_0_kg = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'KG'? 'selected' : '';
+                            $year_0_ton = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'TON'? 'selected' : '';
+                            $year_1_kg = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'KG'? 'selected' : '' ;
+                            $year_1_ton = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'TON'? 'selected' : '';
+
+
+                            @endphp
+
+
                             <td>In MT
-                                <select name="mt_type[0]" class="form-control" id="mt_1" required>
-                                    <option selected disabled value="">Select</option>
-                                    <option {{ !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'KG'? 'selected' : '' }} value="KG"> Kg</option>
-                                    <option {{ !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'TON'? 'selected' : '' }} value="TON">Ton</option>
+                                <select name="mt_type[]" class="form-control" id="mt_1">
+                                    <option selected value="">Select</option>
+                                    <option {{$year_0_kg}} value="KG"> Kg</option>
+                                    <option {{$year_0_ton}} value="TON">Ton</option>
                                 </select>
+                                 {!! $errors->first('mt_type.0', '<span class="error">:message</span>') !!}
+
                             </td>
                             <td>In Rs. Lakhs</td>
                             <td>In Mt
-                                <select name="mt_type[1]" class="form-control" id="mt_2" required>
-                                    <option selected disabled value="">Select</option>
-                                     <option {{ !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'KG'? 'selected' : '' }} value="KG"> Kg</option>
-                                    <option {{ !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'TON'? 'selected' : '' }} value="TON">Ton</option>
+                                <select name="mt_type[]" class="form-control" id="mt_2">
+                                    <option selected value="">Select</option>
+                                     <option {{$year_1_kg}} value="KG"> Kg</option>
+                                    <option {{$year_1_ton}} value="TON">Ton</option>
                                 </select>
+                                 {!! $errors->first('mt_type.1', '<span class="error">:message</span>') !!}
                             </td>
                             <td>In Rs. Lakhs</td>
                         </tr>
@@ -178,14 +217,16 @@
             mt_amt_total = 0;
             $('.mt_value_'+i).each(function() {
                mt_val =  parseFloat($(this).val());
-               mt_val_total += mt_val;
+               mt_val_total += mt_val ? mt_val : 0;
             })
             $('.mt_amount_'+i).each(function() {
                mt_amt =  parseFloat($(this).val());
-               mt_amt_total += mt_amt;
+               mt_amt_total += mt_amt ? mt_amt : 0;
             })
-            $('.mt_amt_total_'+i).val(parseFloat(mt_amt_total));
-            $('.mt_val_total_'+i).val(parseFloat(mt_val_total));
+            mt_amt_total = mt_amt_total ? mt_amt_total : 0;
+            mt_val_total = mt_val_total ? mt_val_total : 0;
+            $('.mt_amt_total_'+i).val(mt_amt_total);
+            $('.mt_val_total_'+i).val(mt_val_total);
         }
         
     }
