@@ -55,12 +55,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+
         // Check whether site is down for maintenance or not
         $maintenanceMode = (bool) ($exception instanceof HttpException && $exception->getStatusCode() === 503);
         if ($exception instanceof TokenMismatchException) {
             return $this->handleTokenMismatch();
         }
-
 
         // create a validator and validate to throw a new ValidationException
         if ($exception instanceof \Symfony\Component\HttpFoundation\File\Exception\FileException) {
@@ -68,7 +68,6 @@ class Handler extends ExceptionHandler
                 'doc_file' => 'required|file|size:5000000',
             ])->validate();
         }
-
         
         if (config('app.debug')) {
             if ($maintenanceMode) {
@@ -86,7 +85,10 @@ class Handler extends ExceptionHandler
             }elseif ($exception instanceof MethodNotAllowedHttpException) {
                 return redirect('/');
             }
-        } 
+            /*elseif ($exception instanceof Exception) {
+               dd($exception->getMessage());
+            }*/
+        }
         return parent::render($request, $exception);
     }
 

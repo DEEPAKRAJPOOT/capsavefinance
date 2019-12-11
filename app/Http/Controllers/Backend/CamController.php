@@ -19,6 +19,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\BusinessAddress;
 use Auth;
 use Session;
+use App\Libraries\Gupshup_lib;
 date_default_timezone_set('Asia/Kolkata');
 use Helpers;
 
@@ -778,8 +779,10 @@ class CamController extends Controller
      * 
      * @author Anand
      */
-    public function anchorViewForm(Request $request)            
+    public function anchorViewForm(Request $request, Gupshup_lib $gupshup)            
     {
+      /*$req  = array('mobile' => '+919667305959', 'message' => "hi gajendra, what is this.");
+      $resp = $gupshup->api_call($req);*/
         try {
             $biz_id = $request->get('biz_id'); 
             $app_id = $request->get('app_id');
