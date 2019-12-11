@@ -75,7 +75,7 @@ class Handler extends ExceptionHandler
         ])->validate();
     }
 
-    //return parent::render($request, $exception);
+    return parent::render($request, $exception);
 
         
         if (config('app.debug')) {

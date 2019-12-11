@@ -59,7 +59,7 @@
                             @csrf
 
                             <?php
-                            array_push($main, array('panNo' => null, 'dlNo' => null, 'voterNo' => null, 'passNo' => null,'mobileNo' => null));
+                            array_push($main, array('panNo' => null, 'dlNo' => null, 'voterNo' => null, 'passNo' => null,'mobileNo' => null,'mobileOtpNo' => null));
                             array_push($main1, array('panNoFile' => null, 'dlNoFile' => null, 'voterNoFile' => null, 'passNoFile' => null, 'aadharFile' => null));
 
                             // dd($row->businessApi);
@@ -78,10 +78,12 @@
                                 else if ($row1->type == 7) {
                                     $main[$key]['mobileNo'] = json_decode($row1->karza->req_file);
                                 }
+                                 else if ($row1->type == 8) {
+                                    $main[$key]['mobileOtpNo'] = json_decode($row1->karza->req_file);
+                                }
                             }
-                            /* for get document file data   */
-                          
-
+                       
+                                /* for get document file data   */
                             foreach ($row->document as $row2) {
                                 if ($row2->doc_id == 2) {
                                     $main1[$key]['panNoFile'] = $row2->userFile->file_path;
@@ -211,25 +213,30 @@
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="txtEmail">Mobile <span class="mandatory">*</span>  </label> 
-                                             <input type="text" name="mobile_no[]"  {{ isset($main[$j]['mobileNo']->mobile) ? "readonly=readonly" : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : '' }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
+                                             <input type="text" name="mobile_no[]"  {{isset($main[$j]['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : '' }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
                                               
-                                                <span class="text-success float-left" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}">{{isset($main[$j]['mobileNo']->mobile) ? <i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                <span class="text-success float-left" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }} </span>
                                                 <span class="text-danger float-left" id="v5failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
                                                 
                                              
                                             </div>
                                         </div>
                                     <div class="col-md-3">
-                                        
-                                       <a class="btn btn-success btn-sm verify_mobile_no" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="margin-top:30px;bottom: 15px;top: auto;  pointer-events:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify with OTP ' }}</a>
-                                       <a class="btn btn-success btn-sm ml-2" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="margin-top:30px;bottom: 15px;top: auto; pointer-events:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify without OTP' }}</a> 
+                                        <a data-toggle="modal" id="pMobileVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($main[$j]['mobileNo']->mobile) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="7"> <i class="fa fa-eye"></i></button>
+                                       <a class="btn btn-success btn-sm verify_mobile_no" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="margin-top:30px;bottom: 15px;top: auto;  display:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify without OTP' }}</a>
+                                       <a class="btn btn-success btn-sm ml-2 sen_otp_to_mobile" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_otp_no" id="verify_mobile_otp_no{{isset($row->first_name) ? $i : '1'}}" style="margin-top:30px;bottom: 15px;top: auto; " > {{ isset($main[$j]['mobileOtpNo']->request_id) ? 'Verified' : 'Verify with OTP' }}</a> 
                                     </div>
-                                    <div class="col-md-2" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
-                                            <div class="form-group">
+                                    <div class="col-md-2">
+                                        <a data-toggle="modal" id="pOtpVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($main[$j]['mobileOtpNo']->request_id) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="view Details" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="8"> <i class="fa fa-eye"></i></button>
+                                       
+                                        <div class="form-group" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
+                                                
                                                 <label for="txtEmail">OTP <span class="mandatory">*</span></label>  
-                                                <span class="text-danger" id="v6failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
-                                                <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($row->first_name) ? $i : '1'}}"> {{ (isset($row->mobile_no)) ? 'Verified' : 'Verify' }}</a>
-                                                <input type="text" name="otp_no[]"   maxlength="4" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP">
+                                                <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileOtpNo']->request_id) ?  'Verified' : 'Verify' }}</a>
+                                                <input type="text" name="otp_no[]"   maxlength="4" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP" style="margin-top:-29px;">
+                                               <span class="text-success float-left" id="v6successpanverify{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileNo']->request_id) ? 'Verified Successfully' : '' }} </span>
+                                                <span class="text-danger float-left" id="v6failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
+                                                
                                             </div>
                                         </div>
 
@@ -1319,6 +1326,7 @@
     <script src="{{ url('backend/js/promoter.js') }}"></script>
     <script type="text/javascript">
        appurl = '{{URL::route("verify_mobile") }}';
+       otpSend = '{{URL::route("sent_otp_mobile") }}';
        otpurl = '{{URL::route("verify_otp_mobile") }}';
        _token = "{{ csrf_token() }}";
        appId = "{{ $appId }}";</script>
@@ -1328,8 +1336,19 @@
           
         $(document).on('click', '.verify_otp', function () { 
         var count    = $(this).attr('data-id');
+         var  mobile_no  =  $("#mobile_no"+count).val();
+         if (mobile_no=='') {
+            $("#v5failurepanverify"+count).html('<i>Please enter mobile no.</i>');
+              return false;
+        }
         var biz_owner_id    = $("#ownerid"+count).val();
+        var appId   =  $("#app_id").val();
         var otp =  $("#verify_otp_no"+count).val();
+        if(otp=='')
+        {
+            $("#toggleOtp"+count).show();
+            return false;
+        }
         data = {_token, otp,request_id, appId, biz_owner_id};
         $.ajax({
                 url  : otpurl,
@@ -1340,24 +1359,24 @@
                 },
                 dataType : 'json',
                 success:function(result) {
-                    $(".isloader").css('display', 'none');
-                    let mclass = result['status'] ? 'success' : 'danger';
-                    let micon = result['status'] ? 'circle' : 'close';
-                    var html = result['message'];
-                    if (result.status==1) {
-                            var request_id = result['request_id'];
-                            span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
-                            span_target.css('pointer-events', 'none');
-                            $("#mobile_no"+count).attr('readonly', 'readonly');
-                            $("#verify_mobile_no"+count).css('pointer-events', 'none');
-                         ///   $("#toggleOtp"+count).hide();
-                            $('#modalOtp').show();
-                            $('#modalOtp iframe').attr({'src':'{{URL::route("mobile_verify") }}?type=otp&request_id=' + request_id, 'width':'100%'});
-                      }
-                    else
-                    {
-                         $("#v5failurepanverify"+count).css('display','inline');      
-                    }
+//                    $(".isloader").css('display', 'none');
+//                    let mclass = result['status'] ? 'success' : 'danger';
+//                    let micon = result['status'] ? 'circle' : 'close';
+//                    var html = result['message'];
+//                    if (result.status==1) {
+//                            var request_id = result['request_id'];
+//                            span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
+//                            span_target.css('pointer-events', 'none');
+//                            $("#mobile_no"+count).attr('readonly', 'readonly');
+//                            $("#verify_mobile_no"+count).css('pointer-events', 'none');
+//                         ///   $("#toggleOtp"+count).hide();
+//                            $('#modalOtp').show();
+//                            $('#modalOtp iframe').attr({'src':'{{URL::route("mobile_verify") }}?type=otp&request_id=' + request_id, 'width':'100%'});
+//                      }
+//                    else
+//                    {
+//                         $("#v5failurepanverify"+count).css('display','inline');      
+//                    }
                 },
                 error:function(error) {
                       },
@@ -1367,6 +1386,38 @@
         })
         });
         
+        
+        ////////////////////send opt on mobile/////////////////
+        
+        $(document).on('click', '.sen_otp_to_mobile', function () {
+        var count  = $(this).attr('data-id');  
+        var biz_owner_id    = $("#ownerid"+count).val();
+        var appId   =  $("#app_id").val();
+        var  mobile_no  =  $("#mobile_no"+count).val();
+        data = {_token, mobile_no, appId, biz_owner_id};
+        $.ajax({
+        url  : otpSend,
+                type :'POST',
+                data : data,
+                beforeSend: function() {
+                $(".isloader").show();
+                },
+                dataType : 'json',
+                success:function(result) {
+                    request_id = result.request_id;
+                    $("#toggleOtp"+count).show();
+                },
+                error:function(error) {
+                var html = 'Some error occured.';
+                $("#v6failurepanverify"+count).html(html);
+         //        $("#toggleOtp"+count).hide();
+              },
+                complete: function() {
+                    $(".isloader").hide();
+                },
+        })
+        });
+      
        //////////////////////for mobile verified///////////////////
        
         $(document).on('click', '.verify_mobile_no', function () {
@@ -1378,6 +1429,8 @@
             $("#v5failurepanverify"+count).html('<i>Please enter mobile no.</i>');
               return false;
         }
+         $("#v5failurepanverify"+count).hide();
+         $("#v5successpanverify"+count).hide();
         data = {_token, mobile_no, appId, biz_owner_id};
         $.ajax({
         url  : appurl,
@@ -1390,14 +1443,25 @@
                 success:function(result) {
                     $(".isloader").hide();
                     var html = result['message'];
-
+                   alert(result.status);
                     if (result.status==1) {
-                        $("v5successpanverify"+count).css('display','inline'); 
+                        $(this).hide();
+                        $("#v5successpanverify"+count).show();
+                        $("#v5successpanverify"+count).html('<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>'); 
                         ///$("#toggleOtp"+count).show();
-                        $("#verify_mobile_no").text('Verified');
-                       // request_id = result.request_id;
+                        $("#verify_mobile_no"+count).text('Verified');
+                        $("#mobile_no"+count).attr('readonly','readonly');
+                        $("#verify_mobile_no"+count).hide();
+                         request_id = result.request_id;
+                        $("#verify_mobile_otp_no"+count).css('pointer-events','auto');
+                        $("#pMobileVeriView"+count).show();
                        //  $('#modalMobile').show();
                           ///  $('#modalMobile iframe').attr({'src':'{{URL::route("mobile_verify") }}?type=mobile&mobile=' + mobile_no, 'width':'100%'});
+                    }
+                    else
+                    {
+                         var html = 'Some error occured.';
+                         $("#v5failurepanverify"+count).html(html);
                     }
                 },
                 error:function(error) {
