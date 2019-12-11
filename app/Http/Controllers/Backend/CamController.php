@@ -833,7 +833,6 @@ class CamController extends Controller
             
             //need to saveddd $relationShipArr and pass its id to lifting table
             
-            
             //store array date of month
             $months = $allData['month'];
             $mtType = $allData['mt_type'];
@@ -862,7 +861,6 @@ class CamController extends Controller
            }
            return redirect()->back()->with('message', 'Lifiting Data Saved Successfully.');
         } catch (Exception $ex) {
-            dd($ex->getMessage());
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
