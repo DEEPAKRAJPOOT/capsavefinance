@@ -68,10 +68,55 @@ class FiRcuController extends Controller
             $rcuResult[$key]['documents'] = $this->appRepo->getRcuDocuments($appId, $value->doc_id);
         }
         
-//        dd($rcuResult);
         return view('backend.fircu.rcu', [
                     'data' => $rcuResult
                 ]);   
+    }
+    
+    
+    /**
+     * Show assign RCU 
+     */
+    public function showAssignRcu(Request $request)
+    {
+        $agencies = $this->appRepo->getAllAgency();
+        $agency_users = $this->userRepo->getAllAgencyUsers();
+        
+        return view('backend.fircu.rcu_trigger')->with(['agencies'=>$agencies, 'agency_users'=>$agency_users]);   
+    }
+
+    /**
+     * Save assign RCU 
+     */
+    public function saveAssignRcu(Request $request)
+    {
+        $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
+        $addr_ids = explode('#', trim($data['address_ids'], '#'));
+        $customLogArr = [];
+        $customAddArr = [];
+        foreach ($addr_ids as $key=>$value) {
+            $customLogArr[$key]['whom_id']=$value;
+            $customLogArr[$key]['fi_rcu_type']=1;
+            $customLogArr[$key]['fi_rcu_status']=2;
+            $customLogArr[$key]['fi_rcu_comment']=$data['comment'];
+            $customLogArr[$key]['created_by']=Auth::user()->user_id;
+
+            $customAddArr[$key]['agency_id']=$data['agency_id'];
+            $customAddArr[$key]['from_id']=Auth::user()->user_id;
+            $customAddArr[$key]['to_id']=$data['to_id'];
+            $customAddArr[$key]['biz_addr_id']=$value;
+            $customAddArr[$key]['fi_comment']=$data['comment'];
+            $customAddArr[$key]['is_active']=1;
+            $customAddArr[$key]['created_by']=Auth::user()->user_id;
+        }
+        $q = FiRcuLog::insert($customLogArr);
+        $fiAddress = FiAddress::insert($customAddArr);
+        
+//        return $fiAddress;
+        
+        $this->appRepo->insertFIAddress($request->all()); 
+        
+        return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
 
