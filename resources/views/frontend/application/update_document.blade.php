@@ -40,7 +40,7 @@
                             <div class="upload-btn-wrapper setupload-btn pos">
                                 @if($data->doc_id == '6')
                                     @if(file_exists(public_path("storage/user/".$appId.'_'.$gst_no.".pdf")))
-                                    <button class="btn upload-btn">GST Pulled</button>
+                                    <a href="javascript:void(0)" class="badge badge-info font12">GST Pulled</a>
                                     @else
                                     <button class="btn upload-btn pullGST" id="pullgst_rep" data-id="{{ $gst_no }}">PULL GST</button>
                                     @endif

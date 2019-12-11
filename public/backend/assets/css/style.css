@@ -9067,3 +9067,6 @@ table.dataTable.no-footer {
 .white-space-nowrap{
     white-space:nowrap;
 }
+.font12{
+  font-size: 12px;
+}
