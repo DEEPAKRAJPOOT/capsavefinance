@@ -71,7 +71,7 @@
                               <div class="card card-color mb-0">
                                  <div class="card-header collapsed" data-toggle="collapse" href="#collapse{{$count}}">
                                     <a class="card-title">
-                                    Promoter{{$count}}
+                                    Management Details ({{$count}})
                                     </a>
                                  </div>
                                  <div id="collapse{{$count}}" class="card-body collapse @if ($count == 1) show @endif" data-parent="#accordion">
