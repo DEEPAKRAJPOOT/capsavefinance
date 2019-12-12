@@ -18,17 +18,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
- Route::post(
-        'api/perfios/fsa-callback',
-        [
+ Route::post('api/perfios/fsa-callback',[
         'as' => 'api_perfios_fsa_callback',
         'uses' => 'Auth\ApiController@fsa_callback'
         ]
     );
 
-    Route::post(
-        'api/perfios/bsa-callback',
-        [
+    Route::post('api/perfios/bsa-callback',[
         'as' => 'api_perfios_bsa_callback',
         'uses' => 'Auth\ApiController@bsa_callback'
         ]

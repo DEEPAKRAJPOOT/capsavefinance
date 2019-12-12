@@ -170,7 +170,7 @@ class ApiController
             \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
           } 
         }
-        $req_arr['types'] = 'json'
+        $req_arr['types'] = 'json';
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['api_type'] = Bsa_lib::GET_REP;
         $final_res['prolitusTransactionId'] = $prolitus_txn;

@@ -81,14 +81,13 @@ class Handler extends ExceptionHandler
                 return redirect('/');
             } elseif ($exception instanceof HttpException && $exception->getStatusCode() === 401) {
                  return redirect('/');
-            }
-            elseif ($exception instanceof MethodNotAllowedHttpException) {
-                (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
+            }elseif ($exception instanceof MethodNotAllowedHttpException) {
+                //(!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 return redirect('/');
             }
-               }
+        }
 
-        ////return parent::render($request, $exception);
+        return parent::render($request, $exception);
     }
 
     /**
