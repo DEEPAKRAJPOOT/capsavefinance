@@ -86,8 +86,9 @@ class Handler extends ExceptionHandler
                 (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 return redirect('/');
             }
-        } 
-        return parent::render($request, $exception);
+               }
+
+        ////return parent::render($request, $exception);
     }
 
     /**
