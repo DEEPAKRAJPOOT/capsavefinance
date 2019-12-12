@@ -52,7 +52,7 @@ td, th{padding: 5px;}
                     </tr>
                     
                 @foreach($response['history'] as $history)
-                 <span style="border:2px solid gray">
+                
                      <tr>
                         <td width="50%">Amount</td>
                         <td width="50%"><strong>{{$history['amount']}}</strong></td>
@@ -65,7 +65,7 @@ td, th{padding: 5px;}
                         <td width="50%">Payment Type</td>
                         <td width="50%"><strong>{{$history['payment_type']}}</strong></td>
                     </tr>
-                </span>    
+               
                    @endforeach 
                     <tr>
                         <td width="50%">Date of birth</td>

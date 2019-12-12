@@ -87,7 +87,11 @@ class Handler extends ExceptionHandler
                 //return Response::view('errors.400', [], 400);
                 return redirect('/');
             }
-        } 
+
+      
+
+        }
+
         return parent::render($request, $exception);
     }
 
