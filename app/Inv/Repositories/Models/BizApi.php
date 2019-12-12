@@ -67,12 +67,12 @@ class BizApi extends BaseModel
      public static function getKarzaRes($attribute)
      {
        
-         return self::with('karza')->where(['biz_owner_id' => $attribute['ownerid'],'type' => $attribute['type']])->first();
+         return self::with('karza')->where(['biz_owner_id' => $attribute['ownerid'],'type' => $attribute['type'],'status' => 1])->first();
      }
  /* GET karaza api response mapping  */
    public  function karza()
    {
-      return $this->belongsTo('App\Inv\Repositories\Models\BizApiLog', 'biz_api_log_id','biz_api_log_id')->where(['status' => 1]);  
+      return $this->belongsTo('App\Inv\Repositories\Models\BizApiLog', 'biz_api_log_id','biz_api_log_id');  
        
    }
    
