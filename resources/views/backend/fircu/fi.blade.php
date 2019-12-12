@@ -94,7 +94,7 @@
                                                     <td width="20%">{{ucwords($fiAdd->user->f_name.' '.$fiAdd->user->l_name)}}</td>
                                                     <td width="15%">{{\Carbon\Carbon::parse($fiAdd->created_at)->format('d/m/Y h:i A')}}</td>
                                                     <td width="15%">{{($fiAdd->fi_status_updatetime)? \Carbon\Carbon::parse($fiAdd->fi_status_updatetime)->format('d/m/Y h:i A'): ''}}</td>
-                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$status[$fiAdd->fi_status]}}</td>
+                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$fiAdd->status->status_name}}</td>
                                                     <td width="15%">
                                                         <button class="btn-upload btn-sm"  style="padding: 1px 8px;" type="button"> <i class="fa fa-download"></i></button>
                                                         <button class="btn-upload btn-sm" style="padding: 1px 8px;" type="button"> <i class="fa fa-upload"></i></button>
@@ -161,6 +161,13 @@ $(document).ready(function(){
         let address_id = $(this).parent('div').data('address_id');
         let status = $(this).attr('value');
         $('#fi_list').load(' #fi_list');
+        /*$.ajax({
+            'url':zzz,
+            'data':zzzzz
+            'type':post
+        }).success(function(){
+            alert(1);
+        })*/
         //hit ajax to save data to log table and update status of fi address and status in biz_addr table
     });
 
