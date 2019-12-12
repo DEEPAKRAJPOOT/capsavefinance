@@ -802,7 +802,7 @@ class ApplicationController extends Controller
                 ->with('offerData', $offerData);          
     }
 
-   /* For Promoter iframe model    */
+   /* For Promoter pan iframe model    */
     
     public function showPanResponseData(Request $request)
     {
@@ -812,7 +812,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_pan_data')->with('res', $res);
         
     } 
-    /* For Promoter iframe model    */
+    /* For Promoter driving  iframe model    */
     public function showDlResponseData(Request $request)
     {
          $request =  $request->all();
@@ -821,7 +821,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_dl_data')->with('res', $res);
         
     } 
-    /* For Promoter iframe model    */
+    /* For Promoter voter iframe model    */
     public function showVoterResponseData(Request $request)
     {
          $request =  $request->all();
@@ -830,7 +830,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_voter_data')->with('res', $res);
         
     } 
-    /* For Promoter iframe model    */
+    /* For Promoter passport iframe model    */
     public function showPassResponseData(Request $request)
     {
          $request =  $request->all();
@@ -839,6 +839,25 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_pass_data')->with('res', $res);
         
     } 
+    
+
+  /* For mobile Promoter iframe model    */
+    public function mobileModel(Request $request){
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file,1);
+         return view('backend.app.mobile_verification_detail')->with('response', $res['result']);
+    }
+    
+   
+  /* For mobile  otp Promoter iframe model    */ 
+    public function mobileOtpModel(Request $request){
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file,1);
+        return view('backend.app.otp_verification_detail')->with('response', $res['result']);
+    }
+    
 
  public function sentOtpmobile(Request $request){
       $post_data = $request->all();
@@ -960,23 +979,6 @@ class ApplicationController extends Controller
       }
     }
 
-
-
-    public function mobileModel(Request $request){
-         $request =  $request->all();
-         $result   = $this->userRepo->getOwnerAppRes($request);
-         $res = json_decode($result->karza->res_file,1);
-         return view('backend.app.mobile_verification_detail')->with('response', $res['result']);
-    }
-    
-    
-    public function mobileOtpModel(Request $request){
-        $request =  $request->all();
-        $result   = $this->userRepo->getOwnerAppRes($request);
-        $res = json_decode($result->karza->res_file,1);
-        return view('backend.app.otp_verification_detail')->with('response', $res['result']);
-    }
-    
     /**
      * Download sanction letter
      * 
