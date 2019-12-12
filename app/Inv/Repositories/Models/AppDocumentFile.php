@@ -174,9 +174,9 @@ class AppDocumentFile extends BaseModel
     {  
        return AppDocumentFile::select(['doc_id'])
                 ->with('rcuDoc')
-                ->with('rcu', $appId)
                 ->whereHas('rcuDoc')
                 ->where('app_id', $appId)
+                ->where('is_active', 1)
                 ->groupBy('doc_id')
                 ->get();
     }
@@ -189,7 +189,6 @@ class AppDocumentFile extends BaseModel
     public static function getRcuDocuments($appId, $docId)
     {
         return AppDocumentFile::with('userFile')
-                ->with('rcu')
                 ->whereHas('userFile')
                 ->where('app_id', $appId)
                 ->where('doc_id', $docId)
@@ -199,7 +198,7 @@ class AppDocumentFile extends BaseModel
         return $results;
     }
     
-    public function rcu($appId)
+    public function rcu($appId, $docId)
     {
         return $this->hasOne('App\Inv\Repositories\Models\RcuDocument', 'doc_id', 'app_doc_file_id')->where('app_id', $appId);
     }

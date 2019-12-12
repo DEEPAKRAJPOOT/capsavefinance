@@ -1,11 +1,10 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('save_assign_fi')}}" target="_top" onsubmit="return checkValidation();">
+  <form method="POST" style="width:100%;" action="{{route('save_assign_rcu')}}" target="_top" onsubmit="return checkValidation();">
     @csrf
     <input type="hidden" value="" name="document_ids" id="document_ids">
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
-    <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
     <div class="row">
       <div class="col-md-6">
         <div class="form-group">

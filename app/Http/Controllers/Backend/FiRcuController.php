@@ -60,15 +60,11 @@ class FiRcuController extends Controller
     public function listRCU(Request $request)
     {
         $appId = $request->get('app_id');
-        $promoterDocId = [2, 22, 30, 31, 32];
-        
         $rcuResult = $this->appRepo->getRcuLists($appId);
-//        $promoterDoc = $this->appRepo->getPromoterRcuLists($appId);
         foreach ($rcuResult as $key => $value) {
-//        die("here");
             $rcuResult[$key]['documents'] = $this->appRepo->getRcuDocuments($appId, $value->doc_id);
         }
-        dd($rcuResult);
+        
         return view('backend.fircu.rcu', [
                     'data' => $rcuResult
                 ]);   
@@ -92,10 +88,10 @@ class FiRcuController extends Controller
     public function saveAssignRcu(Request $request)
     {
         $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
-        $addr_ids = explode('#', trim($data['address_ids'], '#'));
+        $docIds = explode('#', trim($data['document_ids'], '#'));
         $customLogArr = [];
         $customAddArr = [];
-        foreach ($addr_ids as $key=>$value) {
+        foreach ($docIds as $key=>$value) {
             $customLogArr[$key]['whom_id']=$value;
             $customLogArr[$key]['fi_rcu_type']=1;
             $customLogArr[$key]['fi_rcu_status']=2;
