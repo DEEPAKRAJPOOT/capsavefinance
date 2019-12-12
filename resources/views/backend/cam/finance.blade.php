@@ -32,7 +32,9 @@
                      @endforeach
                      <div class="clearfix"></div>
                      <div style="text-align: end;">
+                        @if(request()->get('view_only')) 
                         <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
+                        @endif
                      </div>
                      @endif
                      @if(file_exists(storage_path('app/public/user/'.$appId.'_finance.xlsx')))
@@ -1051,7 +1053,9 @@
                                                 </tr>
                                              </thead>
                                           </table>
+                                          @if(request()->get('view_only')) 
                                           <button  class="btn btn-primary pull-right btn-sm mt-3"> + Add Row</button>
+                                          @endif
                                           <div class="clearfix"></div>
                                        </div>
                                     </div>
@@ -1105,11 +1109,15 @@
                                              <tbody id="inter_group_transaction">
                                              </tbody>
                                           </table>
+                                          @if(request()->get('view_only'))
                                           <button class="btn btn-primary pull-right btn-sm mt-3"> + Add Row</button>
+                                          @endif
                                           <div class="clearfix"></div>
                                        </div>
                                     </div>
+                                    @if(request()->get('view_only')) 
                                     <button class="btn btn-success ml-auto  mt-3"> Save</button>
+                                    @endif
                                  </div>
                               </div>
                            </div>

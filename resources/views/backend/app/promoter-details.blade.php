@@ -518,11 +518,13 @@
 
                                 <div class="d-flex btn-section ">
                                     <div class="ml-auto text-right">
-
+                                        @if(request()->get('view_only'))
                                         <button type="button" id="btnAddMore" class="btn btn-success btn-add btn-sm ml-auto">
                                             <i class="fa fa-plus"></i>
                                             Add Promoter
-                                        </button>  </div>
+                                        </button> 
+                                        @endif
+                                    </div>
                                 </div>				
 
                             </div>
@@ -534,8 +536,10 @@
                                 <div class="d-flex btn-section ">
                                     <div class="ml-auto text-right">
                                        <!-- <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href='company-details.php'">
-                                        --> <input type="button" value="Save and Continue" id="submit" class="btn btn-success btn-sm">
-
+                                        -->
+                                        @if(request()->get('view_only'))
+                                        <input type="button" value="Save and Continue" id="submit" class="btn btn-success btn-sm">
+                                        @endif
                                     </div>
                                 </div>	
                             </div>						

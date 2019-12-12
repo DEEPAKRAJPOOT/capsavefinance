@@ -111,8 +111,8 @@
                                 {!! Form::hidden('prgm_id', $prgm_id) !!}
                                 {!! Form::hidden('loan_amount', $loanAmount) !!}
 
-                                @if(!in_array($offer_status, [1,2]))
-                                {{--
+                                @if(request()->get('view_only'))
+                                @if(!in_array($offer_status, [1,2]))                                
                                 {!! 
                                 Form::submit(
                                 'Reject', 
@@ -122,7 +122,7 @@
                                 ]
                                 )
                                 !!} 
-                                --}}
+                                
                                 {!! 
                                 Form::submit(
                                 'Accept', 
@@ -133,7 +133,7 @@
                                 )
                                 !!}                                                               
                                 @endif
-                                
+                                @endif
                                 {!!
                                 Form::close()
                                 !!}

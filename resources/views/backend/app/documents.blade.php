@@ -114,7 +114,9 @@
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
                                 <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
+                                @if(request()->get('view_only'))
                                 <input type="submit" value="Submit" class="btn btn-success btn-sm">
+                                @endif
                             </form>
                         </div>
                     </div>

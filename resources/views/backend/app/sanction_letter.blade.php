@@ -9,8 +9,10 @@
                     <div class=" form-fields">
                         <div class="col-md-12">
                             <h5 class="card-title form-head-h5">Sanction Letter
+                            @if(request()->get('view_only'))    
                             <a data-toggle="modal" data-target="#uploadSanctionLetter" data-height="200px" data-width="100%" data-placement="top" href="#" data-url="{{ route('show_upload_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'upload'=>1 ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Upload</a>    
                             <a href="{{ route('download_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'download'=>1 ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Download</a>                            
+                            @endif
                             </h5>
                             <div class="col-md-12">
 

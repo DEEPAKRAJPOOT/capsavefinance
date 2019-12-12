@@ -238,7 +238,9 @@
                     </div>
 
                 </div>
+                @if(request()->get('view_only'))
                 <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                @endif
               </form>
             </div>
         </div>

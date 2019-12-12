@@ -189,6 +189,20 @@ class AppAssignment extends BaseModel
         return $assignData ? $assignData : false;
     }     
   
+    /**
+     * Check logged in user is application owner or not
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function isAppCurrentAssignee($app_id, $to_id)
+    {                
+        $assignData = self::where('app_id', $app_id)
+                ->where('is_owner', '1')
+                ->where('to_id', $to_id)
+                ->count();
+        return $assignData > 0 ? true : false;        
+    }
 }
   
 

@@ -694,4 +694,26 @@ class Helper extends PaypalHelper
         $assigneeData = AppAssignment::getAppCurrentAssignee($app_id);
         return $assigneeData;
     }
+    
+    /**
+     * Check access of application is view only or not
+     * 
+     * @param integer $app_id
+     * @param integer $to_id optional
+     * 
+     * @return mixed
+     */
+    public static function isAccessViewOnly($app_id, $to_id=null)
+    {
+        if (is_null($to_id)) {
+            $to_id = \Auth::user()->user_id;            
+        }        
+        $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);        
+        if (!$isWfStageCompleted) {
+            $isViewOnly = 1;
+        } else {
+            $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $to_id);            
+        }
+        return $isViewOnly ? 1 : 0;
+    }
 }
