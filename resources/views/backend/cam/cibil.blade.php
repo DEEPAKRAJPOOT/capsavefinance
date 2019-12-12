@@ -27,7 +27,7 @@
                   -->
                <h2 class="sub-title bg">Company</h2>
                <div id="pullMsgCommercial"></div>
-               <div class="">
+               <div class="pl-4 pr-4 pb-4 pt-2">
                   <div class="row ">
                      <div class="col-sm-12">
                         <table id="cibil-table" class="table table-striped  no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="cibil-table_info" style="width: 100%;">
@@ -71,7 +71,7 @@
             <div class="data mt-4">
                <h2 class="sub-title bg ">Director / Proprietor / Owner / Partner</h2>
                <div id="pullMsg"></div>
-               <div class="">
+               <div class="pl-4 pr-4 pb-4 pt-2">
                   <div class="row ">
                      <div class="col-sm-12">
                         <table id="cibil-dpop-table" class="table table-striped  no-footer overview-table"" cellspacing="0" width="100%" role="grid" aria-describedby="cibil-dpop-table_info" style="width: 100%;">
@@ -153,7 +153,7 @@
                                              <input type="radio" id="cibil_check_no" class="form-check-input" name="cibil_check" value="No" {{((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'No') || ((!isset($arrHygieneData->cibil_check)) && ($defpro == 0))) ? 'checked' : ''}} onclick="showDefPro('no')">No
                                              <i class="input-helper"></i></label>
                                           </div>
-                                          <p style="margin: 0;" id="defProHeading"  style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes')) ? show  @else none @endif">CIBIL Analysis (for promoters / guarantors):</p>
+                                          <p id="defProHeading"  style="margin: 0; display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes')) ? show  @else none @endif">CIBIL Analysis (for promoters / guarantors):</p>
                                        </td>
                                     </tr>
                                     <tr>
@@ -193,7 +193,7 @@
 
                                                 
 
-                                                    <tr id="noDefProTr" style="display:@if (($count == 0) || (isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'No')) ? show  @else none @endif">
+                                                    <tr id="noDefProTr" style="display:@if (($count == 0 && (!isset($arrHygieneData->cibil_check))) || (isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'No')) ? show  @else none @endif">
                                                          <td>No defaulters found</td>
                                                           <td>
                                                              <input type="text" name="comment" id="remarks" class="form-control" value="{{$arrHygieneData->comment  ?? ''}}">
