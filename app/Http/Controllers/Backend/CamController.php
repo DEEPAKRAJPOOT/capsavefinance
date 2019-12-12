@@ -134,6 +134,7 @@ class CamController extends Controller
         $pending_rec = $fin->getPendingBankStatement($appId);        
         $bankdocs = $fin->getBankStatements($appId);
         return view('backend.cam.bank', ['bankdocs' => $bankdocs, 'appId'=> $appId, 'pending_rec'=> $pending_rec]);
+
     }
 
     public function finance_store(FinanceRequest $request, FinanceModel $fin){
@@ -159,6 +160,7 @@ class CamController extends Controller
         $insert_data[$curr-1]['period_ended'] = date($curr-1 . '-03-31');
         $insert_data[$curr]['finance_id'] = $financeid;
         $insert_data[$curr]['period_ended'] = date($curr . '-03-31');
+        
         foreach ($insert_data as  $ins_arr) {
             $fin->create($ins_arr);
         }
