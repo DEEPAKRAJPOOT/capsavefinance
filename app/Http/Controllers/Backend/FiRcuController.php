@@ -106,12 +106,8 @@ class FiRcuController extends Controller
             $customAddArr[$key]['is_active']=1;
             $customAddArr[$key]['created_by']=Auth::user()->user_id;
         }
-        $q = FiRcuLog::insert($customLogArr);
-        $fiAddress = FiAddress::insert($customAddArr);
         
-//        return $fiAddress;
-        
-        $this->appRepo->insertFIAddress($request->all()); 
+        $this->appRepo->assignRcuDocument($request->all()); 
         
         return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
