@@ -919,12 +919,28 @@ class ApplicationController extends Controller
                 'user_id' =>$userData['user_id'], 
                 'biz_id' =>   $userData['biz_id'],
                 'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
-                'type' => 8,
+                'type' => 9,
                 'verify_doc_no' => 1,
                 'status' => 1,
                 'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                 'created_by' => Auth::user()->user_id
              ]);
+            $response1 = $mob->api_call(MobileAuth_lib::GET_DTL, $req_arr);  
+            $createApiLog1 = $response1['createApiLog'];
+            if( $response1['status']=='success')
+            {
+                 $createBizApi= @BizApi::create([
+                'user_id' =>$userData['user_id'], 
+                'biz_id' =>   $userData['biz_id'],
+                'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
+                'type' => 8,
+                'verify_doc_no' => 1,
+                'status' => 1,
+                'biz_api_log_id' => $createApiLog1['biz_api_log_id'],
+                'created_by' => Auth::user()->user_id
+             ]);
+                
+            }
       }     
       if (empty($response['result'])) {
         $response['status'] = 'fail';
@@ -947,14 +963,18 @@ class ApplicationController extends Controller
 
 
     public function mobileModel(Request $request){
-      $post_data = $request->all();
-      dd($post_data);
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file,1);
+         return view('backend.app.mobile_verification_detail')->with('response', $res['result']);
     }
     
     
     public function mobileOtpModel(Request $request){
-      $post_data = $request->all();
-      dd($post_data);
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file,1);
+        return view('backend.app.otp_verification_detail')->with('response', $res['result']);
     }
     
     /**
