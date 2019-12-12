@@ -79,7 +79,7 @@
                                        <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0" border="1">
                                           <tbody>
                                              <tr>
-                                                <td width="25%"><b>Promoter Name</b></td>
+                                                <td width="25%"><b> Name</b></td>
                                                 <td width="25%">{{$row->first_name}}</td>
                                                 <td width="25%"><b>Is Promoter </b></td>
                                                 <td width="25%">@if($row->is_promoter==1) Yes @else No @endif</td>
