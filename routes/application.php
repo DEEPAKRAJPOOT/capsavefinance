@@ -59,9 +59,9 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'uses' => 'Application\ApplicationController@mobileModel'
             ]);
             
-            Route::post('promoter-save',
+            Route::post('front-promoter-save',
                 [
-                    'as' => 'promoter_save',
+                    'as' => 'front_promoter_save',
                     'uses' => 'Application\ApplicationController@savePromoter'
             ]);
             
