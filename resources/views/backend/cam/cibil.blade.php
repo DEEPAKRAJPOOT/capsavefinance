@@ -165,7 +165,7 @@
                                                 </tr>
                                              </tbody>
                                              <thead>
-                                                <tr id="defProTr" style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0)) ? show  @else none @endif">
+                                                <tr id="defProTr" style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0 )) ? show  @else none @endif">
                                                    <th>Name</th>
                                                    <th class="white-space">PAN Number</th>
                                                    <th class="white-space">CIBIL Rank/Score</th>
