@@ -55,29 +55,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-       // dd($exception);
-         //dump($exception->getStatusCode()); exit;
-//echo $exception->getStatusCode(); exit;
-// Check whether site is down for maintenance or not
         $maintenanceMode = (bool) ($exception instanceof HttpException && $exception->getStatusCode() === 503);
 
         if ($exception instanceof TokenMismatchException) {
             return $this->handleTokenMismatch();
         }
 
-      // dd($maintenanceMode);
+        if ($exception instanceof \Symfony\Component\HttpFoundation\File\Exception\FileException) {
+            // create a validator and validate to throw a new ValidationException
+            return Validator::make($request->all(), [
+                'doc_file' => 'required|file|size:5000000',
+            ])->validate();
+        }
 
-
-    if ($exception instanceof \Symfony\Component\HttpFoundation\File\Exception\FileException) {
-        // create a validator and validate to throw a new ValidationException
-        return Validator::make($request->all(), [
-            'doc_file' => 'required|file|size:5000000',
-        ])->validate();
-    }
-
-    //return parent::render($request, $exception);
-
-        
         if (config('app.debug')) {
             if ($maintenanceMode) {
                 return Response::view('errors.503', [], 503);
@@ -88,25 +78,17 @@ class Handler extends ExceptionHandler
             } elseif ($exception instanceof HttpException && $exception->getStatusCode() === 403) {
                 return Response::view('errors.403', [], 403);
             } elseif ($exception instanceof HttpException && $exception->getStatusCode() === 400) {
-
-                 
-               // return Response::view('errors.400', [], 400);
                 return redirect('/');
             } elseif ($exception instanceof HttpException && $exception->getStatusCode() === 401) {
                  return redirect('/');
             }
             elseif ($exception instanceof MethodNotAllowedHttpException) {
                 (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
-                //return Response::view('errors.400', [], 400);
                 return redirect('/');
-            } else {
-                (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
-                return Response::view('errors.custom', [], 500);
             }
-        } 
+               }
 
-        
-        return parent::render($request, $exception);
+        ////return parent::render($request, $exception);
     }
 
     /**

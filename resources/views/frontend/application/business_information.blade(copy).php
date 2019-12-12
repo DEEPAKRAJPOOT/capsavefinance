@@ -18,7 +18,7 @@
 				</div>
 			</li>
 			<li>
-				<div class="count-heading"> Promoter Details </div>
+				<div class="count-heading">Management Details </div>
 				<div class="top-circle-bg">
 					<div class="count-top">
 						<img src="{{url('frontend/assets/images/kyc.png')}}" width="36" height="36">

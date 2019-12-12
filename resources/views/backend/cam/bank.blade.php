@@ -19,23 +19,23 @@
                      <ul>
                         <li><span class="icon"><i class="fa fa-file-excel-o"></i></span></li>
                         <li><a href="{{ Storage::url($bankdoc->file_path) }}" download target="_blank">Download Bank Statement</a></li>
-                        <li><a href="javascript:void(0)" class="getAnalysis">Get Analysis</a></li>
+                        <li><a href="javascript:void(0)"></a></li>
                      </ul>
                   </div>
                      @endforeach
                   @endif
-                  @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
                   <div class="clearfix"></div>
-                  <div style="text-align: end;">
-                     <a class="btn btn-success" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download analysed Statement</a>
-                  </div>
+                  <div style="text-align: right;">
+                  @if($bankdocs->count() > 0)
+                     <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
+                  @endif 
+                  @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
+                     <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download</a>
                   @endif 
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
-                  <div class="clearfix"></div>
-                  <div style="text-align: end;">
-                     <a class="btn btn-success process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process Statement</a>
-                  </div>
-                  @endif 
+                     <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
+                  @endif
+                  </div> 
                   <div class="clearfix"></div>
                   <br/>
                   <hr>

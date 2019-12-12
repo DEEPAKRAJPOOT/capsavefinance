@@ -12,7 +12,7 @@
         @endcan 
         @can('promoter_details')
 		<li>
-			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Promoter Details</a>
+			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Management Information</a>
 		</li>
         @endcan 
         @can('documents')
@@ -29,7 +29,7 @@
 		<div class="card">
 			<div class="card-body">
 				<div class=" form-fields">
-					<h5 class="card-title form-head mt-0">Business Details</h5>
+					<h5 class="card-title form-head mt-0">Business Information</h5>
 				</div>	
 				<form id="business_information_form" method="POST" action="{{route('company_details_save')}}" onsubmit="return checkValidation();">
 				@csrf

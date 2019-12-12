@@ -112,26 +112,19 @@ class State extends BaseModel
         return ($result ?? null);
     }
 
-    public static function getGstbyUser($user_id){
-        $data = self::select('*')
+   
+
+     public static function getSelectedGstForApp($biz_id){
+        $result = self::select('*')
                 ->from('biz_pan_gst')
-                ->where('user_id', $user_id)
+                ->where('biz_id', $biz_id)
                 ->where('parent_pan_gst_id', '0')
                 ->where('type', '2')
                 ->first();
-        return ($data ? $data : false);
+        return ($result ?? null);
     }
 
-    public static function getAllGstbyUser($user_id){
-        $data = self::select('*')
-                ->from('biz_pan_gst')
-                ->where('user_id', $user_id)
-                ->where('type', '2')
-                ->get();
-        return ($data ? $data : false);
-    }
-
-    public static function getAllGstbyBiz($biz_id){
+     public static function getAllGstForApp($biz_id){
         $data = self::select('*')
                 ->from('biz_pan_gst')
                 ->where('biz_id', $biz_id)
@@ -140,6 +133,7 @@ class State extends BaseModel
                 ->get();
         return ($data ? $data : false);
     }
+   
 
      public static function getBankData(){
         $result = self::select('*')

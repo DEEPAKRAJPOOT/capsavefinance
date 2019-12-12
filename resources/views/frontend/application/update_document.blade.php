@@ -7,7 +7,7 @@
             <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Business Information</a>
         </li>
         <li>
-            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}">Promoter Details</a>
+            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}">Management Details</a>
         </li>
         <li>
             <a href="{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}"  class="active">Documents</a>
@@ -40,7 +40,7 @@
                             <div class="upload-btn-wrapper setupload-btn pos">
                                 @if($data->doc_id == '6')
                                     @if(file_exists(public_path("storage/user/".$appId.'_'.$gst_no.".pdf")))
-                                    <button class="btn upload-btn">GST Pulled</button>
+                                    <a href="javascript:void(0)" class="badge badge-info font12">GST Pulled</a>
                                     @else
                                     <button class="btn upload-btn pullGST" id="pullgst_rep" data-id="{{ $gst_no }}">PULL GST</button>
                                     @endif
@@ -285,8 +285,8 @@
                 let mclass = result['status'] ? 'success' : 'danger';
                 var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
                 $("#pullMsg").html(html);
-                if (result['status']) {
-                    $('#gstin_detail_div').show();
+                if (mclass == 'success') {
+                    setTimeout(function(){ location.reload() }, 3000);
                 }
              },
              error:function(error) {

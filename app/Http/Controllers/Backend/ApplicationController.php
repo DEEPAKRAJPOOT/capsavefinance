@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
@@ -118,6 +117,9 @@ class ApplicationController extends Controller
 
      /* Show promoter details page  */
      public function showPromoterDetails(Request $request){
+        try
+        {
+       
         $id = Auth::user()->user_id;
         $appId = $request->get('app_id');  
         $bizId = $request->get('biz_id'); 
@@ -129,6 +131,7 @@ class ApplicationController extends Controller
        {
           return redirect()->back();
        }
+      
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
       // dd($OwnerPanApi);
         return view('backend.app.promoter-details')->with([
@@ -138,6 +141,10 @@ class ApplicationController extends Controller
             'bizId' => $bizId,
             'edit' => $editFlag
             ]);
+             
+        } catch (Exception $ex) {
+                return false;
+        }
     }
      /**
      * Save Promoter details form.
@@ -795,7 +802,7 @@ class ApplicationController extends Controller
                 ->with('offerData', $offerData);          
     }
 
-   /* For Promoter iframe model    */
+   /* For Promoter pan iframe model    */
     
     public function showPanResponseData(Request $request)
     {
@@ -805,7 +812,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_pan_data')->with('res', $res);
         
     } 
-    /* For Promoter iframe model    */
+    /* For Promoter driving  iframe model    */
     public function showDlResponseData(Request $request)
     {
          $request =  $request->all();
@@ -814,7 +821,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_dl_data')->with('res', $res);
         
     } 
-    /* For Promoter iframe model    */
+    /* For Promoter voter iframe model    */
     public function showVoterResponseData(Request $request)
     {
          $request =  $request->all();
@@ -823,7 +830,7 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_voter_data')->with('res', $res);
         
     } 
-    /* For Promoter iframe model    */
+    /* For Promoter passport iframe model    */
     public function showPassResponseData(Request $request)
     {
          $request =  $request->all();
@@ -832,8 +839,44 @@ class ApplicationController extends Controller
         return view('backend.app.promoter_pass_data')->with('res', $res);
         
     } 
+    
 
+  /* For mobile Promoter iframe model    */
+    public function mobileModel(Request $request){
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file,1);
+         return view('backend.app.mobile_verification_detail')->with('response', $res['result']);
+    }
+    
+   
+  /* For mobile  otp Promoter iframe model    */ 
+    public function mobileOtpModel(Request $request){
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file,1);
+        return view('backend.app.otp_verification_detail')->with('response', $res['result']);
+    }
+    
 
+ public function sentOtpmobile(Request $request){
+      $post_data = $request->all();
+      $mobile_no = trim($request->get('mobile_no'));
+       $mob = new MobileAuth_lib();
+        $req_arr = array(
+            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
+        );
+        
+      $userData = State::getUserByAPP($post_data['appId']);
+      $response = $mob->api_call(MobileAuth_lib::SEND_OTP, $req_arr);
+      if ($response['status'] == 'success') {
+        return response()->json(['message' =>"OTP Sent to $mobile_no.",'status' => 1,
+          'value' => $response['result'], 'request_id'=> $response['request_id']]);
+      }else{
+        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
+      }
+    }
+    
 
      public function verify_mobile(Request $request){
       $post_data = $request->all();
@@ -849,7 +892,7 @@ class ApplicationController extends Controller
         );
         
       $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::SEND_OTP, $req_arr);
+      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
       if( $response['status']=='success')
       {
             $createApiLog = $response['createApiLog'];
@@ -895,12 +938,28 @@ class ApplicationController extends Controller
                 'user_id' =>$userData['user_id'], 
                 'biz_id' =>   $userData['biz_id'],
                 'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
-                'type' => 8,
+                'type' => 9,
                 'verify_doc_no' => 1,
                 'status' => 1,
                 'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                 'created_by' => Auth::user()->user_id
              ]);
+            $response1 = $mob->api_call(MobileAuth_lib::GET_DTL, $req_arr);  
+            $createApiLog1 = $response1['createApiLog'];
+            if( $response1['status']=='success')
+            {
+                 $createBizApi= @BizApi::create([
+                'user_id' =>$userData['user_id'], 
+                'biz_id' =>   $userData['biz_id'],
+                'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
+                'type' => 8,
+                'verify_doc_no' => 1,
+                'status' => 1,
+                'biz_api_log_id' => $createApiLog1['biz_api_log_id'],
+                'created_by' => Auth::user()->user_id
+             ]);
+                
+            }
       }     
       if (empty($response['result'])) {
         $response['status'] = 'fail';
@@ -920,49 +979,6 @@ class ApplicationController extends Controller
       }
     }
 
-
-
-    public function mobileModel(Request $request){
-      $post_data = $request->all();
-      $type = trim($request->get('type'));
-      if($type == 'otp'){
-         $request_id = trim($request->get('request_id'));
-        if (empty($request_id)) {
-          return '<div>Request Id is not valid.</div>';
-        }
-        $mob = new MobileAuth_lib();
-
-        $req_arr= ['request_id' => base64_decode($request_id)];
-        $response = $mob->api_call(MobileAuth_lib::GET_DTL, $req_arr);
-        if (empty($response['result'])) {
-          $response['status'] = 'fail';
-        }
-        if ($response['status'] == 'success') {
-          return view('backend.app.otp_verification_detail',['response'=>$response['result']]);
-        }else{
-          return "<div>Unable to get detail of the mobile.</div>";
-        } 
-      }else{
-        $mobile_no = trim($request->get('mobile'));
-        if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
-          return '<div>Mobile Number is not valid.</div>';
-        }
-        $mob = new MobileAuth_lib();
-        $req_arr = array(
-              'mobile' => $mobile_no,//'09AALCS4138B1ZE',
-        );
-        $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-        if (empty($response['result'])) {
-          $response['status'] = 'fail';
-        }
-        if ($response['status'] == 'success') {
-         return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
-        }else{
-           return "<div>Unable to verify the mobile.</div>";
-        } 
-      }
-    }
-    
     /**
      * Download sanction letter
      * 

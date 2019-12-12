@@ -256,6 +256,34 @@ $(document).ready(function(){
                         }
                 );
         });
+        
+         $("#modalPromoter7").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#modalPromoter7 iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
+        
+         $("#modalPromoter8").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#modalPromoter8 iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
 
         $("#assignFiFrame").on('show.bs.modal', function (e) {
                 var parent = $(e.relatedTarget);
