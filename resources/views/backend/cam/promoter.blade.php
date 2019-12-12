@@ -46,6 +46,10 @@
                                                 $photoFilePath[] = $row2->userFile->file_path;
                                                 $photoFileName[] =   $row2->userFile->file_name;
                                             }
+                                            if ($row2->doc_id == 34) {
+                                                $aadharFilePath[] = $row2->userFile->file_path;
+                                                $aadharFileName[] =   $row2->userFile->file_name;
+                                            }
                            
                                          } 
 
@@ -63,6 +67,10 @@
                                             }
                                             else if($row1->type == 6) { 
                                                 $arrPassNo[] = json_decode($row1->karza->req_file); 
+                                            }else if ($row1->type == 7) {
+                                                $arrMobileNo[] = json_decode($row1->karza->req_file);
+                                            }else if ($row1->type == 8) {
+                                                $arrMobileOtpNo[] = json_decode($row1->karza->req_file);
                                             }
                                         } 
                                         ?>
@@ -108,12 +116,27 @@
                                                 <td><b>Address</b></td>
                                                 <td>{{$row->owner_addr}}</td>
                                              </tr> 
-                                             <!-- <tr>
-                                                <td><b>State </b></td>
-                                                <td>{{$row->other_ownership}}</td>
-                                                <td><b>City & pin code</b></td>
-                                                <td>Noida (201304)</td>
-                                             </tr> -->
+                                             <tr>
+                                                <td><b>Mobile{{$row->biz_owner_id}} </b></td>
+                                                <td>
+                                                    
+                                                     <div class="col-md-12">
+                                                        <input type="text" readonly='readonly'  value="{{ isset($arrMobileNo[$j]->mobile) ? $arrMobileNo[$j]->mobile : '' }}" name="verifyvoter[]" id="verifyvoter{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifyvoter" >
+                                                      
+                                                       <span class="text-success float-left"  style="display:{{isset($arrMobileNo[$j]->mobile) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified</i> </span>
+
+                                                      
+                                                    </div>   
+
+                                                </td>
+
+                                                <td>
+                                                    <a data-toggle="modal"  data-target="#modalPromoter7" data-height="400px" data-width="100%" accesskey="" data-url ="{{ route('mobile_verify',['type' => 7,'ownerid' => $row->biz_owner_id]) }}" style="display:{{isset($arrMobileNo[$j]->mobile) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="Mobile Verify Detail" data-type="7"> <i class="fa fa-eye"></i></button></a>
+                                                </td>
+                                                <td>
+                                                    <a data-toggle="modal"  data-target="#modalPromoter8" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('mobile_otp_view',['type'=> 8,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrMobileOtpNo[$j]->request_id) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="OTP Verify Detail"  data-type="8"> <i class="fa fa-eye"></i></button></a>
+                                                </td>
+                                             </tr>
                                           </tbody>
                                        </table>
                                        
@@ -222,8 +245,18 @@
                                                    
                                                 </td>
                                             </tr>
-                                          
-                                           
+
+                                            <tr>
+                                                <td>6</td>
+                                                <td>Aadhar Card</td>
+                                                <td></td>
+                                                <td>{{isset($aadharFileName[$j]) ? $aadharFileName[$j] : '' }}</td>
+                                                <td>
+                                                <a  href="{{ isset($aadharFilePath[$j]) ? Storage::url($aadharFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($aadharFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                   
+                                                </td>
+                                            </tr>
+
                                           </tbody>
                                        </table>
                                     </div>
@@ -264,6 +297,10 @@
     {!!Helpers::makeIframePopup('modalPromoter1','View Driving License Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter2','View Voter ID  Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter3','View Passport Detail', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('modalPromoter7','Mobile Verify Detail', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('modalPromoter8','OTP Verify Detail', 'modal-lg')!!}
+
+    
 @endsection
 @section('jscript')
 
