@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
 use App\Http\Requests\DocumentRequest;
+use Illuminate\Support\Facades\Storage;
 use Eastwest\Json\Facades\Json;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
@@ -107,81 +108,41 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail(Request $request)
     {
-     
-        $appId = $request->get('app_id');
-        $biz_id = $request->get('biz_id');
-        $editFlag = $request->get('edit');
-        $userId = Auth::user()->user_id;
-        $userArr = [];
-        if ($userId > 0) {
-            $userArr = $this->userRepo->find($userId);
-        }
-       $attribute['biz_id'] = $biz_id;
-       $ownerDetail = $this->userRepo->getOwnerDetail($attribute); 
-       $getCin = $this->userRepo->getCinByUserId($biz_id);
+        
+        try
+        {
+       
+        $id = Auth::user()->user_id;
+        $appId = $request->get('app_id');  
+        $bizId = $request->get('biz_id'); 
+        $editFlag = $request->get('edit'); 
+        $attribute['biz_id'] = $bizId;
+        $attribute['app_id'] = $appId;
+        $getCin = $this->userRepo->getCinByUserId($bizId);
        if($getCin==false)
        {
-           return  redirect()->back();
+          return redirect()->back();
        }
-      return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
-        
-       // return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
-            'cin_no' => $getCin->cin,
-            'ownerDetails' => $ownerDetail,
-            'appId' => $appId,
-            'biz_id' => $biz_id
-        ]);
-        
       
-           /* return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
-                'cin_no' => $getCin->cin,
-                'ownerDetails' => $ownerDetail,
-                'biz_id' => $biz_id
-            ]);  */
+        $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
+      // dd($OwnerPanApi);
+        return view('frontend.application.promoter-detail')->with([
+            'ownerDetails' => $OwnerPanApi, 
+            'cin_no' => $getCin->cin,
+            'appId' => $appId, 
+            'bizId' => $bizId,
+            'edit' => $editFlag
+            ]);
+             
+        } catch (Exception $ex) {
+                return false;
+        }
+     
+       
         
     } 
 
-    /**
-     * Save Promoter details form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    //////////////////Save Promoter Multiple Details///////////////////////// 
-    public function updatePromoterDetail(Request $request) {
-        
-       try {
-            $arrFileData = $request->all();
-            $userId = Auth::user()->user_id;
-            
-            $prgmDocsWhere = [];        
-            $prgmDocsWhere['stage_code'] = 'doc_upload';            
-            $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $arrFileData['app_id']);            
-            
-            $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); 
-            if ($owner_info) {
-            
-                //Add application workflow stages
-                $appId = $arrFileData['app_id']; 
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
-                $toUserId = $this->userRepo->getLeadSalesManager(Auth::user()->user_id);                
-                if ($toUserId) {
-                   Helpers::assignAppToUser($toUserId, $appId);
-                }
-                return response()->json(['message' =>trans('success_messages.save_company_detail_successfully'),'status' => 1]);
-            }
-            else {
-               //Add application workflow stages 
-               Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
-               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
-            }
-        } catch (Exception $ex) {
-            //Add application workflow stages
-            Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
-    
-    /**
+     /**
      * Save Promoter details form.
      *
      * @return \Illuminate\Http\Response
@@ -191,13 +152,55 @@ class ApplicationController extends Controller
        try {
           $arrFileData = json_decode($request->getContent(), true);
           $owner_info = $this->userRepo->saveOwner($arrFileData); //Auth::user()->id
-         
+        
           if ($owner_info) {
                 return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1, 'data' => $owner_info]);
             } else {
                return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
             }
         } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+     /**
+     * Save Promoter details form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    //////////////////Save Promoter Multiple Details///////////////////////// 
+    public function updatePromoterDetail(Request $request) {
+       try {
+            $arrFileData = $request->all();
+            $owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
+                  
+            if ($owner_info) {
+            
+                //Add application workflow stages
+                $appId = $arrFileData['app_id']; 
+                $appData = $this->appRepo->getAppDataByAppId($appId);               
+                $userId = $appData ? $appData->user_id : null;     
+                
+                $prgmDocsWhere = [];
+                $prgmDocsWhere['stage_code'] = 'doc_upload';
+                $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+            
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);                                
+                $toUserId = $this->userRepo->getLeadSalesManager($userId);
+                
+                if ($toUserId) {
+                   Helpers::assignAppToUser($toUserId, $appId);
+                }
+                return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1]);
+            }
+            else {
+               //Add application workflow stages 
+               Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        } catch (Exception $ex) {
+            //Add application workflow stages
+            Helpers::updateWfStage('promo_detail', $request->get('app_id'), $wf_status = 2);
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
@@ -240,12 +243,67 @@ class ApplicationController extends Controller
         ]); 
     } 
     
+    
     /**
      * Handle a Business documents for the application.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    
+    public function promoterDocumentSave(Request $request)
+    {
+        try {
+            
+            $userId = Auth::user()->user_id;
+            $arrFileData = $request->all();
+            $docId = $request->get('doc_id'); //  fetch document id
+            $appId = $request->get('app_id'); //  fetch document id
+            $ownerId = $request->get('owner_id'); //  fetch document id
+//            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
+            $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
+            $userFile = $this->docRepo->saveFile($uploadData);
+            if(!empty($userFile->file_id)) {
+                $ownerDocCheck = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
+                if(!empty($ownerDocCheck)) {
+                    $appDocResponse = $this->docRepo->updateAppDocFile($ownerDocCheck, $userFile->file_id);
+                    $fileId = $appDocResponse->file_id;
+                    $response = $this->docRepo->getFileByFileId($fileId);
+                    
+                } else {
+                    $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+                    $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+                    $fileId = $appDocResponse->file_id;
+                    $response = $this->docRepo->getFileByFileId($fileId);
+                }   
+                
+            }
+            if ($response) {
+                return response()->json([
+                    'result' => $response, 
+                    'status' => 1, 
+                    'file_path' => Storage::url($response->file_path)  
+//                    'file_path' => Storage::disk('s3')->url($response->file_path)  
+                ]);
+            } else {
+                return response()->json([
+                    'result' => '', 
+                    'status' => 0 
+                ]);
+            }
+        } catch (Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+    
+    
+    /**
+     * Handle a Business documents for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
     
     public function saveDocument(DocumentRequest $request)
     {
@@ -448,65 +506,60 @@ class ApplicationController extends Controller
       }
     }
 
-
-    public function verify_mobile(Request $request){
-      $post_data = $request->all();
-      $mobile_no = trim($request->get('mobile_no'));
-      $appId = trim($request->get('appId'));
-      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
-        return response()->json(['message' =>'Mobile Number is not valid.','status' => 0]);
-      }
-
-      $mob = new MobileAuth_lib();
-        $req_arr = array(
-            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
-        );
+     /* For Promoter pan iframe model    */
+    
+    public function showPanResponseData(Request $request)
+    {
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_pan_data')->with('res', $res);
         
-      $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      $createApiLog = $response['createApiLog'];
-      $createBizApi= @BizApi::create([
-          'user_id' =>$userData['user_id'], 
-          'biz_id' =>   $userData['biz_id'],
-          'biz_owner_id' => $arrOwnerData['biz_owner_id'] ?? NULL,
-          'type' => 1,
-          'verify_doc_no' => 1,
-          'status' => 1,
-          'biz_api_log_id' => $createApiLog['biz_api_log_id'],
-          'created_by' => Auth::user()->user_id
-       ]);
-      if (empty($response['result'])) {
-        $response['status'] = 'fail';
-      }
-      if ($response['status'] == 'success') {
-        return response()->json(['message' =>'Mobile verified Successfully.','status' => 1,
-          'value' => $response['result']]);
-      }else{
-        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
-      }
-    }
+    } 
+    /* For Promoter driving  iframe model    */
+    public function showDlResponseData(Request $request)
+    {
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_dl_data')->with('res', $res);
+        
+    } 
+    /* For Promoter voter iframe model    */
+    public function showVoterResponseData(Request $request)
+    {
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_voter_data')->with('res', $res);
+        
+    } 
+    /* For Promoter passport iframe model    */
+    public function showPassResponseData(Request $request)
+    {
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_pass_data')->with('res', $res);
+        
+    } 
+    
 
-
-
+  /* For mobile Promoter iframe model    */
     public function mobileModel(Request $request){
-      $post_data = $request->all();
-      $mobile_no = trim($request->get('mobile'));
-      if (empty($mobile_no) || !ctype_digit($mobile_no) || strlen($mobile_no) != 10) {
-        return '<div>Mobile Number is not valid.</div>';
-      }
-      $mob = new MobileAuth_lib();
-      $req_arr = array(
-            'mobile' => $mobile_no,//'09AALCS4138B1ZE',
-      );
-      $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      if (empty($response['result'])) {
-        $response['status'] = 'fail';
-      }
-      if ($response['status'] == 'success') {
-       return view('backend.app.mobile_verification_detail',['response'=>$response['result']]);
-      }else{
-         return "<div>Unable to verify the mobile.</div>";
-      }
+         $request =  $request->all();
+         $result   = $this->userRepo->getOwnerAppRes($request);
+         $res = json_decode($result->karza->res_file,1);
+         return view('backend.app.mobile_verification_detail')->with('response', $res['result']);
+    }
+    
+   
+  /* For mobile  otp Promoter iframe model    */ 
+    public function mobileOtpModel(Request $request){
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file,1);
+        return view('backend.app.otp_verification_detail')->with('response', $res['result']);
     }
 
 
