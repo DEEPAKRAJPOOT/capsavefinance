@@ -355,8 +355,8 @@ class CamController extends Controller
           \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']); 
         }
         $file= url('storage/user/'. $file_name);
-        /*$req_arr['types'] =  $reportType;
-        $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);*/
+        $req_arr['types'] =  $reportType;
+        $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['api_type'] = Bsa_lib::GET_REP;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
@@ -470,8 +470,8 @@ class CamController extends Controller
         $file= url('storage/user/'. $file_name);
 
 
-        /*$req_arr['reportType'] = $reportType;
-        $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);*/
+        $req_arr['reportType'] = $reportType;
+        $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
 
         $final_res['api_type'] = Perfios_lib::GET_STMT;
         $final_res['file_url'] = $file;
