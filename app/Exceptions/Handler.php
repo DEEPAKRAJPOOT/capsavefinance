@@ -87,7 +87,7 @@ class Handler extends ExceptionHandler
                 return redirect('/');
             }
         }
-      //  return parent::render($request, $exception);
+        return parent::render($request, $exception);
     }
 
     /**

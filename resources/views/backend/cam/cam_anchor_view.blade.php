@@ -21,38 +21,36 @@
                                     <input type="text" id="year_of_association" name="year_of_association" class="form-control" value="{{old('year_of_association')}}" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" maxlength="3">
                                     {!! $errors->first('year_of_association', '<span class="error">:message</span>') !!}
                                 </td>
-
-                                <td>Years</td>
-                                <td>
-                                    <input type="text" id="year" name="years" class="form-control" value="{{old('years')}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
-                                    {!! $errors->first('years', '<span class="error">:message</span>') !!}
-                                </td>
-                            </tr>
-                            <tr>
                                 <td>Payment Terms with the Group</td>
                                 <td>
                                     <input type="text" id="payment_terms" name="payment_terms" class="form-control" value="{{old('payment_terms')}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('payment_terms', '<span class="error">:message</span>') !!}
                                 </td>
-
-                                <td>Rating / Reference by the Group</td>
-                                <td>
-                                    <input type="text" id="grp_rating" name="grp_rating" class="form-control" value="{{old('grp_rating')}}" maxlength="2" oninput="this.value = this.value.replace(/[^0-9A-Za-z.]/g, '').replace(/(\..*)\./g, '$1');">
-                                    {!! $errors->first('grp_rating', '<span class="error">:message</span>') !!}
-                                </td>
                             </tr>
                             <tr>
-                                <td>Contact Person in Group Co. / Contact No.</td>
+                                <td>Rating / Reference by the Group</td>
                                 <td>
-                                    <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{old('contact_number')}}" minlength="10" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
-                                    {!! $errors->first('contact_number', '<span class="error">:message</span>') !!}
+                                    <input type="text" id="grp_rating" name="grp_rating" class="form-control" value="{{old('grp_rating')}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z.\+]/g, '').replace(/(\..*)\./g, '$1');">
+                                    {!! $errors->first('grp_rating', '<span class="error">:message</span>') !!}
                                 </td>
-
                                 <td>Security Deposit with Anchor Company</td>
                                 <td>
                                     <input type="text" id="security_deposit" name="security_deposit" class="form-control" value="{{old('security_deposit')}}" maxlength="15" oninput="this.value = this.value.replace(/[^0-9.,]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('security_deposit', '<span class="error">:message</span>') !!}
                                 </td>
+                            </tr>
+                            <tr>
+                                <td>Contact Person in Group Co.</td>
+                                <td>
+                                    <input type="text" id="contact_person" name="contact_person" class="form-control" value="{{old('contact_person')}}" minlength="10" maxlength="50" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/(\..*)\./g, '$1');">
+                                    {!! $errors->first('contact_person', '<span class="error">:message</span>') !!}
+                                </td>
+                                <td> Contact No.</td>
+                                <td>
+                                    <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{old('contact_number')}}" minlength="10" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+                                    {!! $errors->first('contact_number', '<span class="error">:message</span>') !!}
+                                </td>
+                                
                             </tr>
                         </tbody>
                     </table>
@@ -104,8 +102,10 @@
 
                             $year_0_kg = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'KG'? 'selected' : '';
                             $year_0_ton = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'TON'? 'selected' : '';
+                            $year_0_unit = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'UNIT'? 'selected' : '';
                             $year_1_kg = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'KG'? 'selected' : '' ;
                             $year_1_ton = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'TON'? 'selected' : '';
+                            $year_1_unit = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'UNIT'? 'selected' : '';
 
 
                             @endphp
@@ -116,6 +116,7 @@
                                     <option selected value="">Select</option>
                                     <option {{$year_0_kg}} value="KG"> Kg</option>
                                     <option {{$year_0_ton}} value="TON">Ton</option>
+                                    <option {{$year_0_unit}} value="UNIT">Unit</option>
                                 </select>
                                  {!! $errors->first('mt_type.0', '<span class="error">:message</span>') !!}
 
@@ -126,6 +127,7 @@
                                     <option selected value="">Select</option>
                                      <option {{$year_1_kg}} value="KG"> Kg</option>
                                     <option {{$year_1_ton}} value="TON">Ton</option>
+                                    <option {{$year_1_unit}} value="UNIT">Unit</option>
                                 </select>
                                  {!! $errors->first('mt_type.1', '<span class="error">:message</span>') !!}
                             </td>
@@ -143,7 +145,7 @@
                                 <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onkeyup="get_calc()" name="month[0][mt_value][{{$key}}]" value="{{!empty($data[$year_0]['mt_value'][$key]) ? $data[$year_0]['mt_value'][$key] : ''}}" class="form-control mt_value_0" maxlength="9">
                             </td>
                             <td>
-                                <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onkeyup="get_calc()" name="month[0][mt_amount][{{$key}}]" value="{{!empty($data[$year_0]['mt_amount'][$key]) ? $data[$year_0]['mt_amount'][$key] : ''}}" class="form-control mt_amount_0" maxlength="15">
+                                <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onkeyup="get_calc()" name="month[0][mt_amount][{{$key}}]" value="{{!empty($data[$year_0]['mt_amount'][$key]) ? $data[$year_0]['mt_amount'][$key] : ''}}" class="form-control mt_amount_0" maxlength="20">
                             </td>
                             <td>
                                 <input type="hidden" name="month[1][anchor_lift_detail_id][{{$key}}]" value="{{!empty($data[$year_1]['anchor_lift_detail_id'][$key]) ? $data[$year_1]['anchor_lift_detail_id'][$key] : 0}}" class="form-control">
@@ -151,7 +153,7 @@
                                 <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onkeyup="get_calc()" name="month[1][mt_value][{{$key}}]" value="{{!empty($data[$year_1]['mt_value'][$key]) ? $data[$year_1]['mt_value'][$key] : ''}}" class="form-control mt_value_1"  maxlength="9">
                             </td>
                             <td>
-                                <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onkeyup="get_calc()" name="month[1][mt_amount][{{$key}}]" value="{{!empty($data[$year_1]['mt_amount'][$key]) ? $data[$year_1]['mt_amount'][$key] : ''}}" class="form-control mt_amount_1"  maxlength="15">
+                                <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onkeyup="get_calc()" name="month[1][mt_amount][{{$key}}]" value="{{!empty($data[$year_1]['mt_amount'][$key]) ? $data[$year_1]['mt_amount'][$key] : ''}}" class="form-control mt_amount_1"  maxlength="20">
                             </td>
                         </tr>
                         @endforeach
