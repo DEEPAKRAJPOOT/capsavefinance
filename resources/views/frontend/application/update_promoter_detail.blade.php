@@ -24,6 +24,7 @@
                     </div>	
                     <form id="signupForm">
                         @csrf
+                        
                         <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                          <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
                          <input type="hidden" id="rowcount" value="{{count($ownerDetails)}}">
@@ -33,7 +34,7 @@
                             @if(count($ownerDetails) > 0) 
                             @foreach($ownerDetails as $row)    @php ($i++)
                             <div class="form-sections">
-
+                           <input type="hidden" name="comment[]" value="">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="col-md-12">

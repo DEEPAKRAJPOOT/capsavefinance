@@ -48,9 +48,9 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'uses' => 'Application\ApplicationController@showPromoterDetail'
             ]);
             
-            Route::post('promoter-detail-save',
+            Route::post('front_promoter_detail_update',
                 [
-                    'as' => 'front_promoter_detail_save',
+                    'as' => 'front_promoter_detail_update',
                     'uses' => 'Application\ApplicationController@updatePromoterDetail'
             ]); 
 
@@ -64,6 +64,41 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                     'as' => 'promoter_save',
                     'uses' => 'Application\ApplicationController@savePromoter'
             ]);
+            
+            
+//////////////// For Promoter Iframe////////////////////////
+
+            Route::get('front_show-pan-data', [
+                'as' => 'front_show_pan_data',
+                'uses' => 'Application\ApplicationController@showPanResponseData'
+            ]);
+
+            Route::get('front_show-dl-data', [
+                'as' => 'front_show_dl_data',
+                'uses' => 'Application\ApplicationController@showDlResponseData'
+            ]);
+            Route::get('front_show-voter-data', [
+                'as' => 'front_show_voter_data',
+                'uses' => 'Application\ApplicationController@showVoterResponseData'
+            ]);
+            Route::get('front_show-pass-data', [
+                'as' => 'front_show_pass_data',
+                'uses' => 'Application\ApplicationController@showPassResponseData'
+            ]);
+             Route::get('front_verify_mobile', [
+                'as' => 'front_verify_mobile',
+                'uses' => 'Application\ApplicationController@mobileModel'
+            ]);
+              Route::get('front_mobile_otp_view', [
+                'as' => 'front_mobile_otp_view',
+                'uses' => 'Application\ApplicationController@mobileOtpModel'
+            ]);
+            
+               Route::post('front_promoter_document_save', [
+                'as' => 'front_promoter_document_save',
+                'uses' => 'Application\ApplicationController@promoterDocumentSave'
+            ]); 
+            
             Route::get('document',
                 [
                 'as' => 'document',

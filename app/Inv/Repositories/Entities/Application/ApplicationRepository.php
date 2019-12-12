@@ -421,6 +421,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $result = BusinessAddress::getAddressforFI($biz_id);
         return $result ?: false;
     }
+
+
+    /**
+     * get address for FI
+     * 
+     * @param integer $biz_id
+     * @return all address result
+     */
     
 
     public function creates($attributes){
@@ -430,7 +438,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function getLiftingDetail($appId){
         $result =  LiftingDetail::where('app_id',$appId)->get();
-        return $result ?: false;
+        return !$result->isEmpty() ? $result : false;
     }
 
      public function updateLiftingDetail($attributes, $anchor_lift_detail_id){
