@@ -84,7 +84,6 @@ class Handler extends ExceptionHandler
             }
             elseif ($exception instanceof MethodNotAllowedHttpException) {
                 (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
-                //return Response::view('errors.400', [], 400);
                 return redirect('/');
             }
         } 
