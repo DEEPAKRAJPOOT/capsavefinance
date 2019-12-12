@@ -27,6 +27,12 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies($gate);
            $gate->before(function ($user, $ability) {
+            
+            //if frontend user control by pass   
+            if($user->user_type == 1){
+                return true;
+            }   
+            
             if ($user->roles->first()->is_superadmin == 1) {
                 return true;
             }
