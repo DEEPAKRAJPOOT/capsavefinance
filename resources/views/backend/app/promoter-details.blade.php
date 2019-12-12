@@ -215,7 +215,7 @@
                                                 <label for="txtEmail">Mobile <span class="mandatory">*</span>  </label> 
                                              <input type="text" name="mobile_no[]"  {{isset($main[$j]['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : '' }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
                                               
-                                                <span class="text-success float-left" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }} </span>
+                                                <span class="text-success float-left" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"> <i class="fa fa-{{isset($main[$j]['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i><i> {{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> </span>
                                                 <span class="text-danger float-left" id="v5failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
                                                 
                                              
