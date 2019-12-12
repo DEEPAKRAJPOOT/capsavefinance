@@ -30,7 +30,7 @@ class AnchorInfoRequest extends FormRequest
            'mt_type' => 'required|array',
            'mt_type.*' => "required|string|min:2|max:3",
            'year_of_association' => "required|numeric|min:1",
-           'years' => "required|numeric|min:1",
+           'contact_person' => "required|string|min:1|max:50",
            'payment_terms' => "required|string|min:1",
            'grp_rating' => "required|string",
            'contact_number' => "required|string|min:10|max:10",
