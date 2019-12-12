@@ -65,9 +65,10 @@ class FiRcuController extends Controller
         $rcuResult = $this->appRepo->getRcuLists($appId);
 //        $promoterDoc = $this->appRepo->getPromoterRcuLists($appId);
         foreach ($rcuResult as $key => $value) {
+//        die("here");
             $rcuResult[$key]['documents'] = $this->appRepo->getRcuDocuments($appId, $value->doc_id);
         }
-        
+        dd($rcuResult);
         return view('backend.fircu.rcu', [
                     'data' => $rcuResult
                 ]);   
