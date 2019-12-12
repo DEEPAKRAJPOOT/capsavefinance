@@ -93,7 +93,7 @@
                               @php
                                  $i++;
                               @endphp
-                              @if ($arr->cibil_score < 500)
+                              @if ($arr->cibil_score < 500 && $arr->is_cibil_pulled == 1)
                                     @php ($defpro++)
                               @endif         
                               <tr role="row" class="odd">
@@ -144,27 +144,28 @@
                                        <td colspan="4">
                                           <div class="form-check" style="display: inline-block; margin-right:10px;">
                                              <label for="cibil_check_yes" class="form-check-label">
-                                             <input type="radio" id="cibil_check_yes" class="form-check-input" name="cibil_check" value="Yes" {{((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0)) ? 'checked' : ''}}>Yes
+                                             <input type="radio" id="cibil_check_yes" class="form-check-input" name="cibil_check" value="Yes" {{((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0)) ? 'checked' : ''}} onclick="showDefPro('yes')">Yes
                                              <i class="input-helper"></i></label>
                                           </div>
 
                                           <div class="form-check" style="display: inline-block;">
                                              <label for="cibil_check_no" class="form-check-label">
-                                             <input type="radio" id="cibil_check_no" class="form-check-input" name="cibil_check" value="No" {{((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'No') || ((!isset($arrHygieneData->cibil_check)) && ($defpro == 0))) ? 'checked' : ''}}>No
+                                             <input type="radio" id="cibil_check_no" class="form-check-input" name="cibil_check" value="No" {{((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'No') || ((!isset($arrHygieneData->cibil_check)) && ($defpro == 0))) ? 'checked' : ''}} onclick="showDefPro('no')">No
                                              <i class="input-helper"></i></label>
                                           </div>
-                                          <p style="margin: 0;">CIBIL Analysis (for promoters / guarantors):</p>
+                                          <p style="margin: 0;" id="defProHeading"  style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes')) ? show  @else none @endif">CIBIL Analysis (for promoters / guarantors):</p>
                                        </td>
                                     </tr>
                                     <tr>
                                        <td>
+
                                           <table style="width: 100%;">
                                              <tbody>
                                                 <tr>
                                                 </tr>
                                              </tbody>
                                              <thead>
-                                                <tr>
+                                                <tr id="defProTr" style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes')) ? show  @else none @endif">
                                                    <th>Name</th>
                                                    <th class="white-space">PAN Number</th>
                                                    <th class="white-space">CIBIL Rank/Score</th>
@@ -174,9 +175,9 @@
                                              <tbody>
                                                @php ($count = 0)
                                                @foreach($arrCompanyOwnersData as $arr)
-                                                   @if ($arr->cibil_score < 500)
+                                                   @if ($arr->cibil_score < 500 && $arr->is_cibil_pulled == 1)
                                                        @php ($count++)
-                                                         <tr>
+                                                         <tr id="defProDetailsTr" style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes')) ? show  @else none @endif">
                                                             <td>{{$arr->first_name." ".$arr->last_name}}</td>
                                                             <td name="promoterPan[]">
                                                                   <input type="text" name="promoterPan[]" value="{{$arr->pan_gst_hash}}" class="form-control" readonly >   
@@ -189,15 +190,16 @@
                                                          </tr>
                                                    @endif
                                                 @endforeach
-                                                @if ($count == 0)
-                                                    <tr>
-                                                      <td>No defaulters found</td>
-                                                             <td>
-                                                                <input type="text" name="comment" id="remarks" class="form-control" value="{{$arrHygieneData->comment  ?? ''}}">
-                                                                 
-                                                            </td>
+
+                                                
+
+                                                    <tr id="noDefProTr" style="display:@if (($count == 0) || (isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'No')) ? show  @else none @endif">
+                                                         <td>No defaulters found</td>
+                                                          <td>
+                                                             <input type="text" name="comment" id="remarks" class="form-control" value="{{$arrHygieneData->comment  ?? ''}}">
+                                                         </td>
                                                    </tr> 
-                                                 @endif  
+                                                  
                                              </tbody>
                                           </table>
                                        </td>
@@ -616,5 +618,20 @@
       });
    }
    
+
+   function showDefPro(value){
+      if(value == 'yes'){
+         $("#defProHeading").show();
+         $("#defProTr").show();
+         $("#defProDetailsTr").show();
+         $("#noDefProTr").hide();
+      }else if(value == 'no'){
+         $("#defProHeading").hide();
+         $("#defProTr").hide();
+         $("#defProDetailsTr").hide();
+         $("#noDefProTr").show();
+
+      }
+   }
 </script>
 @endsection

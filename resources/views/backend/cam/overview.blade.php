@@ -45,7 +45,7 @@
                             <td><b>Type of Industry</b></td>
                             <td>{{$arrBizData->industryType }}</td>
                             <td><b>Registered Office Address</b></td>
-                            <td>{{$arrBizData->registeredAddress->addr_1.', '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}
+                            <td>{{$arrBizData->registeredAddress->addr_1.' '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}
                             </td>
                             
                             
@@ -53,7 +53,7 @@
 
                         <tr>
                             <td><b>Corporate office Address</b></td>
-                            <td>{{$arrBizData->communicationAddress->addr_1.', '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}</td>
+                            <td>{{$arrBizData->communicationAddress->addr_1.' '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}</td>
                             <td><b>Manufacturing facilities address</b></td>
                             <td>
                                 <table class="table" cellpadding="0" cellspacing="0" border="1">
@@ -115,47 +115,25 @@
                             </td>
                         </tr>
 
+                        <tr>
+                            <td width="25%"><b>Existing Group Exposure</b></td>
+                            <td width="25%"><input type="text" class="form-control" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
+                            <td width="25%"><b>Proposed Group Exposure</b></td>
+                            <td width="25%"><input type="text" name="proposed_exposure" class="form-control" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
+                        </tr>
+
+                        <tr>
+                            <td width="25%"><b>Industry / Activity / Products</b></td>
+                            <td width="25%"></td>
+                            <td width="25%"><b>PAN Number of borrower</b></td>
+                            <td width="25%">{{$arrBizData->pan->pan_gst_hash}}</td>
+                        </tr>
+
                     </tbody>
                 </table>
 
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="data mt-4">
-                            <h2 class="sub-title bg">Existing Group Exposure  </h2>
-                            <div class="pl-4 pr-4 pb-4 pt-2">
-                                <textarea name="existing_exposure" id="existing_group_exposure" class="form-control" >{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="data mt-4">
-                            <h2 class="sub-title bg">Proposed Group Exposure</h2>
-                            <div class="pl-4 pr-4 pb-4 pt-2">
-                                <textarea name="proposed_exposure" id="existing_group_exposure" class="form-control"> {{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</textarea>
-                            </div>
-                        </div>
 
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="data mt-4">
-                            <h2 class="sub-title bg">Industry / Activity / Products</h2>
-                            <div class="pl-4 pr-4 pb-4 pt-2">
-                                <p>No Records</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="data mt-4">
-                            <h2 class="sub-title bg">PAN Number of borrower</h2>
-                            <div class="pl-4 pr-4 pb-4 pt-2">
-                                <p>{{$arrBizData->pan->pan_gst_hash}}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Terms Of Facility</h2>
@@ -172,6 +150,7 @@
                                     </td>
                                 </tr>
 
+                                
                                 <tr>
                                     <td><b>Maximum Tenor of Invoices/tranch</b></td>
                                     <td value=""></td>
