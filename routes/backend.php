@@ -357,7 +357,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@camHygieneSave'
                 ]);
 
-            }); //end of cam
+            }); //end of cam   
         });//end of application
 
         Route::group(['prefix' => 'lead'], function () {

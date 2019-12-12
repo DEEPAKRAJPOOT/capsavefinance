@@ -131,7 +131,7 @@ class ApiController
           	 \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
           }
         }
-        $req_arr['reportType'] = 'xml';
+        $req_arr['reportType'] = 'json';
         $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
        	$final_res['api_type'] = Perfios_lib::GET_STMT;
 	    $final_res['prolitusTransactionId'] = $prolitus_txn;
@@ -170,7 +170,7 @@ class ApiController
             \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
           } 
         }
-        $req_arr['types'] = 'xml'
+        $req_arr['types'] = 'json'
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['api_type'] = Bsa_lib::GET_REP;
         $final_res['prolitusTransactionId'] = $prolitus_txn;

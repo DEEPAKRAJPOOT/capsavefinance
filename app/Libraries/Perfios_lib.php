@@ -126,6 +126,18 @@ class Perfios_lib{
 			 	return $resp;
 	     	}
 	     }
+
+	     if ($method == SELF::GET_STMT && 'json' == strtolower($params['reportType'])) {
+	     	$xml = @simplexml_load_string($response['result']);
+	     	if(!$xml){
+	     		$update_log['status'] = "success";
+	     		FinanceModel::updatePerfios($update_log,'biz_perfios_log', $inserted_id);
+	     		$resp['status'] = "success";
+			 	$resp['result'] = $response['result'];
+			 	return $resp;
+	     	}
+	     }
+
 	     $result = $this->_parseResult($response['result'], $method);
 	     $update_log['status'] = $result['status'];
 	     FinanceModel::updatePerfios($update_log, 'biz_perfios_log', $inserted_id);
