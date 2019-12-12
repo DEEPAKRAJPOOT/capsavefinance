@@ -153,7 +153,7 @@
                                              <input type="radio" id="cibil_check_no" class="form-check-input" name="cibil_check" value="No" {{((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'No') || ((!isset($arrHygieneData->cibil_check)) && ($defpro == 0))) ? 'checked' : ''}} onclick="showDefPro('no')">No
                                              <i class="input-helper"></i></label>
                                           </div>
-                                          <p id="defProHeading"  style="margin: 0; display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0)) ? show  @else none @endif">CIBIL Analysis (for promoters / guarantors):</p>
+                                          <p id="defProHeading"  style="margin: 0; display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0 && (!isset($arrHygieneData->cibil_check)))) ? show  @else none @endif">CIBIL Analysis (for promoters / guarantors):</p>
                                        </td>
                                     </tr>
                                     <tr>
@@ -165,7 +165,8 @@
                                                 </tr>
                                              </tbody>
                                              <thead>
-                                                <tr id="defProTr" style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0 )) ? show  @else none @endif">
+
+                                                <tr id="defProTr" style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0 && (!isset($arrHygieneData->cibil_check)))) ? show  @else none @endif">
                                                    <th>Name</th>
                                                    <th class="white-space">PAN Number</th>
                                                    <th class="white-space">CIBIL Rank/Score</th>
@@ -177,7 +178,7 @@
                                                @foreach($arrCompanyOwnersData as $arr)
                                                    @if ($arr->cibil_score < 500 && $arr->is_cibil_pulled == 1)
                                                        @php ($count++)
-                                                         <tr id="defProDetailsTr" style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0)) ? show  @else none @endif">
+                                                         <tr id="defProDetailsTr" style="display:@if ((isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes') ||($defpro > 0 && (!isset($arrHygieneData->cibil_check)))) ? show  @else none @endif">
                                                             <td>{{$arr->first_name." ".$arr->last_name}}</td>
                                                             <td name="promoterPan[]">
                                                                   <input type="text" name="promoterPan[]" value="{{$arr->pan_gst_hash}}" class="form-control" readonly >   

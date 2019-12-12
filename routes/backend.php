@@ -210,7 +210,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'mobile_verify',
                 'uses' => 'Backend\ApplicationController@mobileModel'
             ]);
-            
+              Route::get('mobile_otp_view', [
+                'as' => 'mobile_otp_view',
+                'uses' => 'Backend\ApplicationController@mobileOtpModel'
+            ]);
             //////////////// For Promoter Iframe///////////////////
 
             Route::get('show-pan-data', [
@@ -353,8 +356,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'cam_hygiene_save',
                     'uses' => 'Backend\CamController@camHygieneSave'
                 ]);
-                
-                
                 
         }); //end of cam
         });//end of application

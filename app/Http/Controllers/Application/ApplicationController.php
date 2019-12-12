@@ -206,9 +206,10 @@ class ApplicationController extends Controller
     public function showDocument(Request $request)
     {
         $appId = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
         $editFlag = $request->get('edit');
         $userId = Auth::user()->user_id;
-        $gstdata = State::getGstbyUser($userId);
+        $gstdata = State::getSelectedGstForApp($biz_id);
         $bankdata = State::getBankData();
         $gst_no = $gstdata['pan_gst_hash'] ?? '';
         $appData = $this->appRepo->getAppDataByAppId($appId);
@@ -387,8 +388,8 @@ class ApplicationController extends Controller
      $appId = $request->get('app_id');
      $biz_id = $request->get('biz_id');
      $user_id = Auth::user()->user_id;
-     $gst_details = State::getGstbyUser($user_id);
-     $all_gst_details = State::getAllGstbyBiz($biz_id);
+     $gst_details = State::getSelectedGstForApp($biz_id);
+     $all_gst_details = State::getAllGstForApp($biz_id);
      $gst_no = $gst_details['pan_gst_hash'];
      return view('frontend.application.gstin',compact('gst_no','all_gst_details','appId'));   
     }

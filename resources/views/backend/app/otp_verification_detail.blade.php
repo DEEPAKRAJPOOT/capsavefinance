@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE HTML>
 <html lang="en-US">
 <head>
@@ -16,8 +14,7 @@ td, th{padding: 5px;}
 <body>
 <table width="100%" border="0" align="center" cellspacing="0" cellpadding="0" style="font-size:13px;padding:20px;background-color:#efefef;font-family:Montserrat,Arial,sans-serif;table-layout:fixed">
     <tbody>
-         
-         <tr>
+          <tr>
             <td align="center" style="">
              <table width="100%" border="0">
                  <tbody>
@@ -54,7 +51,8 @@ td, th{padding: 5px;}
                         <td width="50%"><strong>{{$response['device']['model']}}</strong></td>
                     </tr>
                     
-                   @foreach($response['history'] as $history)
+                @foreach($response['history'] as $history)
+                 <span style="border:2px solid gray">
                      <tr>
                         <td width="50%">Amount</td>
                         <td width="50%"><strong>{{$history['amount']}}</strong></td>
@@ -67,9 +65,62 @@ td, th{padding: 5px;}
                         <td width="50%">Payment Type</td>
                         <td width="50%"><strong>{{$history['payment_type']}}</strong></td>
                     </tr>
-                    
+                </span>    
                    @endforeach 
+                    <tr>
+                        <td width="50%">Date of birth</td>
+                        <td width="50%"><strong>{{$response['identity']['date_of_birth']}}</strong></td>
+                    </tr>
+                     <tr>
+                        <td width="50%">Gender</td>
+                        <td width="50%"><strong>{{$response['identity']['gender']}}</strong></td>
+                    </tr>
+                     <tr>
+                        <td width="50%">Name</td>
+                        <td width="50%"><strong>{{$response['identity']['name']}}</strong></td>
+                    </tr>
                     
+                    <tr>
+                        <td width="50%">Education</td>
+                        <td width="50%"><strong>{{$response['profile']['education']}}</strong></td>
+                    </tr>
+                     <tr>
+                        <td width="50%">Marital status</td>
+                        <td width="50%"><strong>{{$response['profile']['marital_status']}}</strong></td>
+                    </tr>
+                     <tr>
+                        <td width="50%">Occupation</td>
+                        <td width="50%"><strong>{{$response['profile']['occupation']}}</strong></td>
+                    </tr>
+                     <tr>
+                        <td width="50%">Relationships</td>
+                        <td width="50%"><strong>{{$response['profile']['relationships']}}</strong></td>
+                    </tr>
+                     <tr>
+                        <td width="50%">Workplace</td>
+                        <td width="50%"><strong>{{$response['profile']['workplace']}}</strong></td>
+                    </tr>
+                    
+                     <tr>
+                        <td width="50%">Activation Date</td>
+                        <td width="50%"><strong>{{$response['sim_details']['activation_date']}}</strong></td>
+                    </tr>
+                    <tr>
+                        <td width="50%">Last Activity date</td>
+                        <td width="50%"><strong>{{$response['sim_details']['last_activity_date']}}</strong></td>
+                    </tr>
+                     <tr>
+                        <td width="50%">Otp Validated</td>
+                        <td width="50%"><strong>{{$response['sim_details']['otp_validated']}}</strong></td>
+                    </tr>
+                     <tr>
+                        <td width="50%">Provider</td>
+                        <td width="50%"><strong>{{$response['sim_details']['provider']}}</strong></td>
+                    </tr>
+                     <tr>
+                         <td width="50%">Type</td>
+                        <td width="50%"><strong>{{$response['sim_details']['type']}}</strong></td>
+                    </tr>
                     
                 </tbody>
              </table>

@@ -92,7 +92,7 @@
                                     @else
                                     <div class="col-md-3">
                                         <div class="form-group mt-25">
-                                            <a href="{{$enable_download ? (Storage::url('user/'.$appId.'_'.$gst_detail['pan_gst_hash'].'.pdf')) : 'javascript:void(0)'}}" class="btn btn-success btn-sm" download>GST Pulled</a>
+                                            <a href="{{$enable_download ? (Storage::url('user/'.$appId.'_'.$gst_detail['pan_gst_hash'].'.pdf')) : 'javascript:void(0)'}}" class="badge badge-info mt-2 font12" download>GST report has been pulled for this GST number.</a>
                                         </div>
                                     </div>
                                     @endif
