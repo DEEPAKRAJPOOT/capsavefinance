@@ -24,7 +24,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="table-responsive">
+                        <div class="table-responsive" id="fi_list">
                             <table id="fiList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                 <thead>
                                     <tr role="row">
@@ -55,14 +55,14 @@
                                                 Action
                                                 </button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
-                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="0">Pending</a>
-                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="1">Inprogress</a>
-                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="2">Positive</a>
-                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="3">Negative</a>
-                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="4">Cancelled</a>
-                                                    <a class="dropdown-item change-status" href="javascript:void(0);" value="5">Refer to Credit</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="0">Pending</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Inprogress</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="2">Positive</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="3">Negative</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="4">Cancelled</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Refer to Credit</a>
                                                 </div>
-                                                <div class="d-flex file-upload-cls">
+                                                <!-- <div class="d-flex file-upload-cls">
                                                     <div class="file-browse float-left mr-3 ml-4">
                                                         <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
                                                         <input type="file" title="Download RCU Report" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
@@ -71,29 +71,46 @@
                                                         <button class="btn-upload  title=" ffff"="" btn-sm"="" type="button"> <i class="fa fa-upload"></i></button>
                                                         <input type="file" id="file_1" dir="1" title="Upload RCU Report" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                     </div>
-                                                </div>
+                                                </div> -->
                                             </div>
                                         </td> 
                                         <td align="right"><span class="trigger minus"></span></td> 
                                     </tr>
                                     <tr class="dpr" style="display: table-row;">
-                                        <td colspan="7" class="p-0">
+                                        <td colspan="8" class="p-0">
                                            <table class="overview-table remove-tr-bg" cellpadding="0" cellspacing="0" border="0" width="100%">
                                               <tbody>
                                                  <tr>
-                                                    <td width="30%"><b>Agency Name</b></td>
-                                                    <td width="25%"><b>User Name</b></td>
-                                                    <td width="20%"><b>Updated On</b></td>
-                                                    <td width="10%"><b>Download</b></td>
+                                                    <td width="20%"><b>Agency Name</b></td>
+                                                    <td width="20%"><b>User Name</b></td>
+                                                    <td width="15%"><b>Created At</b></td>
+                                                    <td width="15%"><b>Updated On</b></td>
                                                     <td align="center" width="15%" style="border-right: 1px solid #e9ecef;"><b>Status</b></td>
+                                                    <td width="15%"><b>Action</b></td>
                                                  </tr>
                                                  @forelse($fiList->fiAddress as $fiAdd)
-                                                 <tr>
-                                                    <td width="30%">{{$fiAdd->agency->comp_name}}</td>
-                                                    <td width="25%">{{ucwords($fiAdd->user->f_name.' '.$fiAdd->user->l_name)}}</td>
-                                                    <td width="20%">{{\Carbon\Carbon::parse($fiAdd->fi_status_updatetime)->format('d/m/Y H:m A')}}</td>
-                                                    <td width="10%"><a href="#"><i class="fa fa-download"></i></a></td>
-                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$status[$fiAdd->fi_status]}}</td>
+                                                 <tr data-id="{{$fiAdd->fi_addr_id}}">
+                                                    <td width="20%">{{$fiAdd->agency->comp_name}}</td>
+                                                    <td width="20%">{{ucwords($fiAdd->user->f_name.' '.$fiAdd->user->l_name)}}</td>
+                                                    <td width="15%">{{\Carbon\Carbon::parse($fiAdd->created_at)->format('d/m/Y h:i A')}}</td>
+                                                    <td width="15%">{{($fiAdd->fi_status_updatetime)? \Carbon\Carbon::parse($fiAdd->fi_status_updatetime)->format('d/m/Y h:i A'): ''}}</td>
+                                                    <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$fiAdd->status->status_name}}</td>
+                                                    <td width="15%">
+                                                        <button class="btn-upload btn-sm"  style="padding: 1px 8px;" type="button"> <i class="fa fa-download"></i></button>
+                                                        <button class="btn-upload btn-sm" style="padding: 1px 8px;" type="button"> <i class="fa fa-upload"></i></button>
+                                                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+
+                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="0">Pending</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="1">Inprogress</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="2">Positive</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="3">Negative</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="4">Cancelled</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="5">Refer to Credit</a>
+                                                        </div>
+
+
+                                                    </td>
                                                  </tr>
                                                  @empty
                                                  <tr style="text-align: center;">
@@ -140,9 +157,24 @@ $(document).ready(function(){
         }
     });
 
-    $('.change-status').on('click', function(){
+    $(document).on('click', '.change-cm-status', function(){
         let address_id = $(this).parent('div').data('address_id');
         let status = $(this).attr('value');
+        $('#fi_list').load(' #fi_list');
+        /*$.ajax({
+            'url':zzz,
+            'data':zzzzz
+            'type':post
+        }).success(function(){
+            alert(1);
+        })*/
+        //hit ajax to save data to log table and update status of fi address and status in biz_addr table
+    });
+
+    $(document).on('click', '.change-agent-status', function(){
+        let address_id = $(this).parent('div').data('address_id');
+        let status = $(this).attr('value');
+        $('#fi_list').load(' #fi_list');
         //hit ajax to save data to log table and update status of fi address and status in biz_addr table
     });
 });
