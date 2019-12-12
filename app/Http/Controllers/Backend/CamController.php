@@ -842,9 +842,9 @@ class CamController extends Controller
             $relationShipArr['biz_id']                = $allData['biz_id'];
             $relationShipArr['app_id']                = $allData['app_id'];
             $relationShipArr['year_of_association']   = $allData['year_of_association'];
-            $relationShipArr['year']                  = $allData['years'];
             $relationShipArr['payment_terms']         = $allData['payment_terms'];
             $relationShipArr['grp_rating']            = $allData['grp_rating'];
+            $relationShipArr['contact_person']        = $allData['contact_person'];
             $relationShipArr['contact_number']        = $allData['contact_number'];
             $relationShipArr['security_deposit']      = $allData['security_deposit'];
             $relationShipArr['note_on_lifting']       = $allData['note_on_lifting'];
