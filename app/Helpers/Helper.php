@@ -372,7 +372,7 @@ class Helper extends PaypalHelper
      * @param integer $wf_status
      * @return boolean
      */
-    public static function updateWfStageManual($wf_stage_code, $app_id, $wf_status = 0, $assign_role, $addl_data=[])
+    public static function updateWfStageManualOld($wf_stage_code, $app_id, $wf_status = 0, $assign_role, $addl_data=[])
     {
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
@@ -428,6 +428,70 @@ class Helper extends PaypalHelper
         } else {
             return false;
         }
+    }
+    
+    /**
+     * Update workflow stages to move the stages back
+     * 
+     * @param integer $app_id
+     * @param integer $from_wf_stage_order_no
+     * @param integer $to_wf_stage_order_no
+     * @param integer $wf_status
+     * @param integer $assign_role
+     * @param array $addl_data
+     * 
+     * @return boolean
+     */
+    public static function updateWfStageManual($app_id, $from_wf_stage_order_no, $to_wf_stage_order_no, $wf_status = 2, $assign_role=null, $addl_data=[])
+    {
+        $appData = Application::getAppData((int)$app_id);
+        $user_id = $appData->user_id;        
+        if ($from_wf_stage_order_no < $to_wf_stage_order_no) {
+            for($wf_order_no=$from_wf_stage_order_no;$wf_order_no <= $to_wf_stage_order_no;$wf_order_no++) {
+                $wfData = WfStage::getWfDetailByOrderNo($wf_order_no);
+                $wf_stage_id = $wfData->wf_stage_id;
+                $updateData = [
+                    'app_wf_status' => $wf_status,
+                    'is_complete' => $wf_status
+                ];
+                WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
+            }
+        } else {
+            for ($wf_order_no=$from_wf_stage_order_no;$wf_order_no <= $to_wf_stage_order_no;$wf_order_no++) {
+                $wfData = WfStage::getWfDetailByOrderNo($wf_order_no);
+                $wfAppStageData = WfAppStage::getAppWfStage($wfData->stage_code, $user_id, $app_id);
+                if ( !$wfAppStageData ) {
+                    $insertData = [
+                        'wf_stage_id' => $wfData->wf_stage_id,
+                        'biz_app_id' => $app_id,
+                        'user_id' => $user_id,
+                        'app_wf_status' => 0,
+                        'is_complete' => 0
+                    ];
+                    $result = WfAppStage::saveWfDetail($insertData);
+                } 
+            }
+        }
+            
+        if ($assign_role) {
+
+            
+            AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+            //update assign table
+            $dataArr = []; 
+            $dataArr['from_id'] = \Auth::user()->user_id;
+            $dataArr['to_id'] = null;
+            $dataArr['role_id'] = $assign_role;
+            $dataArr['assigned_user_id'] = $user_id;
+            $dataArr['app_id'] = $app_id;
+            $dataArr['assign_status'] = '0';
+            $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';;
+            $dataArr['is_owner'] = 1;
+
+            AppAssignment::saveData($dataArr);
+        }
+         
+        return true;
     }
     
      /**
@@ -707,7 +771,9 @@ class Helper extends PaypalHelper
     {
         if (is_null($to_id)) {
             $to_id = \Auth::user()->user_id;            
-        }        
+        }
+        $roleData = self::getUserRole();
+        if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;        
         $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);        
         if (!$isWfStageCompleted) {
             $isViewOnly = 1;

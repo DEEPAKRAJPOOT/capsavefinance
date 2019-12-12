@@ -18,26 +18,29 @@
             <div class="row">                
                <div class="col-md-12">
                     
-                   @php $data = [];@endphp
-                   @foreach($roles as $role)
-                   @php $data[$role['id']] = $role['name'] @endphp
-                   @endforeach
+
                    
                   
-                   
-               Are you sure to move the next stage?<br>
-
-                    
-                    @if ($data)
+                   @if ($assign_case)
+                    <label for="txtCreditPeriod">Please select Assignee
+                      <span class="mandatory">*</span>
+                    </label>
+                   <br>
+                    @if ($roles)
                     {!!
-                    Form::select('assign_role',
+                    Form::select('sel_assign_role',
                     [
-                    ''=>'Status']+$data,
-                    $next_role_id,
+                    ''=>'Assignee']+$roles,
+                    null,
                     array('id' => 'is_active',
                     'class'=>'form-control'))
                     !!}
-                    @endif
+                    @endif                                      
+                   @else
+                    Are you sure to move the next stage <strong>({{ isset($roles[$next_role_id]) ? $roles[$next_role_id] : '' }})</strong>?<br>
+                   @endif
+
+                    
                     
               </div>
                 <div class="col-md-12">
@@ -52,7 +55,7 @@
                     {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}
                     {!! Form::hidden('curr_role_id', $curr_role_id) !!}
-
+                    {!! Form::hidden('assign_case', $assign_case) !!}
                    
                     <br>
                 <button type="submit" class="btn btn-success">Yes</button>
@@ -90,6 +93,9 @@ var messages = {
         
         $('#frmMoveStage').validate({
             rules: {
+                sel_assign_role: {
+                    required: true
+                },
                 sharing_comment: {
                    required: true
                 }
