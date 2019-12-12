@@ -37,50 +37,60 @@
                         <tr>
                             <td width="25%"><b>Name of Borrower</b></td>
                             <td width="25%">{{$arrBizData->biz_entity_name}}</td>
-                            <td width="25%"><b>Legal Constitution </b></td>
-                            <td width="25%">{{$arrBizData->legalConstitution}}</td>
+                            
+
+                            <td><b>Contact Person of Key Personal</b></td>
+                            <td>{{$arrBizData->ownerName}}</td>
+                            
+
                         </tr>
 
                         <tr>
+                            <td width="25%"><b>PAN Number of Borrower</b></td>
+                            <td width="25%">{{$arrBizData->pan->pan_gst_hash}}</td>
                             <td><b>Type of Industry</b></td>
                             <td>{{$arrBizData->industryType }}</td>
-                            <td><b>Registered Office Address</b></td>
-                            <td>{{$arrBizData->registeredAddress->addr_1.' '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}
-                            </td>
+                           
                             
+                            
+                            
+                        </tr>
+                        <tr>
+                            <td><b>Phone Number</b></td>
+                            <td>{{$arrBizData->mobile_no}}</td>
+                             <td><b>Email</b></td>
+                            <td>{{$arrBizData->email}}</td>
                             
                         </tr>
 
                         <tr>
                             <td><b>Corporate office Address</b></td>
                             <td>{{$arrBizData->communicationAddress->addr_1.' '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}</td>
-                            <td><b>Manufacturing facilities address</b></td>
-                            <td>
-                                <table class="table" cellpadding="0" cellspacing="0" border="1">
-                                    <tbody>
-                                        <tr>
-                                            <td>{{$arrBizData->factoryAddress->addr_1}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                             <td><b>Registered Office Address</b></td>
+                            <td>{{$arrBizData->registeredAddress->addr_1.' '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}
                             </td>
+                             
+                                      
+                            
                         </tr>
 
                         <tr>
-                            <td><b>Contact Person of Key Personal</b></td>
-                            <td>{{$arrBizData->ownerName}}</td>
-                            <td><b>Email</b></td>
-                            <td>{{$arrBizData->email}}</td>
+                            <td><b>Manufacturing facilities address</b></td>
+                           
+                                <td>{{$arrBizData->factoryAddress->addr_1}}</td>
+                            <td width="25%"><b>Legal Constitution </b></td>
+                            <td width="25%">{{$arrBizData->legalConstitution}}</td>
+                           
                         </tr>
-
                         <tr>
-                            <td><b>Phone Number</b></td>
-                            <td>{{$arrBizData->mobile_no}}</td>
+                            <td width="25%"><b>Industry / Activity / Products</b></td>
+                            <td width="25%"></td>
                             <td><b>Operational Person</b></td>
                             <td>
                                 <input type="text" name="operational_person" id="operational_person" class="form-control" value="{{isset($arrCamData->operational_person) ? $arrCamData->operational_person : '' }}">
                             </td>
                         </tr>
+                        
 
                         <tr>
                             <td><b>Program</b></td>
@@ -122,12 +132,7 @@
                             <td width="25%"><input type="text" name="proposed_exposure" class="form-control" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
                         </tr>
 
-                        <tr>
-                            <td width="25%"><b>Industry / Activity / Products</b></td>
-                            <td width="25%"></td>
-                            <td width="25%"><b>PAN Number of borrower</b></td>
-                            <td width="25%">{{$arrBizData->pan->pan_gst_hash}}</td>
-                        </tr>
+                       
 
                     </tbody>
                 </table>
@@ -189,34 +194,44 @@
                                     </td>
                                 </tr>
 
+
+                                 <tr>
+                                    <td><b>Brief Profile of the Company</b></td>
+                                    <td colspan="3">
+                                        <input type="text" name="t_o_f_profile_comp" id="profile_of_company" class="form-control" value="{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}}">
+
+
+                                    </td>
+                                </tr>
+
+
+
+
+                                 <tr>
+                                    <td><b>Risk Comments</b></td>
+                                    <td colspan="3">
+                                        <input type="text" name="risk_comments" id="last_approval_status_stipulated" class="form-control" value="{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}">
+
+
+                                    </td>
+                                </tr>
+
+
+
+                                 <tr>
+                                    <td><b>Recommendation and Comments of Credit Manager</b></td>
+                                    <td colspan="3">
+                                        <input type="text" name="cm_comment" id="anchor_risk_comments" class="form-control" value="{{isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}">
+
+
+                                    </td>
+                                </tr>
+
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <div class="data mt-4">
-                    <h2 class="sub-title bg">Brief Profile of the Company</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="profile_of_company" name="t_o_f_profile_comp" rows="3" spellcheck="false" >{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}}</textarea>
-                    </div>
-                </div>
-
-                <div class="data mt-4">
-                    <h2 class="sub-title bg">Risk Comments</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="profile_of_company" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
-                    </div>
-                </div>
-
-                <div class="data mt-4">
-                    <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
-
-                        <div class="clearfix"></div>
-                    </div>
-
-                </div>
                 <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
               </form>
             </div>
