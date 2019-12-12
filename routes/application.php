@@ -64,6 +64,37 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                     'as' => 'promoter_save',
                     'uses' => 'Application\ApplicationController@savePromoter'
             ]);
+            
+            
+//////////////// For Promoter Iframe////////////////////////
+
+            Route::get('show-pan-data', [
+                'as' => 'show_pan_data',
+                'uses' => 'Application\ApplicationController@showPanResponseData'
+            ]);
+
+            Route::get('show-dl-data', [
+                'as' => 'show_dl_data',
+                'uses' => 'Application\ApplicationController@showDlResponseData'
+            ]);
+            Route::get('show-voter-data', [
+                'as' => 'show_voter_data',
+                'uses' => 'Application\ApplicationController@showVoterResponseData'
+            ]);
+            Route::get('show-pass-data', [
+                'as' => 'show_pass_data',
+                'uses' => 'Application\ApplicationController@showPassResponseData'
+            ]);
+             Route::get('mobile_verify', [
+                'as' => 'mobile_verify',
+                'uses' => 'Application\ApplicationController@mobileModel'
+            ]);
+              Route::get('mobile_otp_view', [
+                'as' => 'mobile_otp_view',
+                'uses' => 'Application\ApplicationController@mobileOtpModel'
+            ]);
+            
+            
             Route::get('document',
                 [
                 'as' => 'document',

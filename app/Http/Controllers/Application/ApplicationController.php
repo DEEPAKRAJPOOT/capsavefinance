@@ -107,6 +107,7 @@ class ApplicationController extends Controller
      */
     public function showPromoterDetail(Request $request)
     {
+     
         $appId = $request->get('app_id');
         $biz_id = $request->get('biz_id');
         $editFlag = $request->get('edit');
@@ -122,7 +123,9 @@ class ApplicationController extends Controller
        {
            return  redirect()->back();
        }
-        return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
+      return view('frontend.application.promoter-detail')->with(['userArr' => $userArr,
+        
+       // return view('frontend.application.update_promoter_detail')->with(['userArr' => $userArr,
             'cin_no' => $getCin->cin,
             'ownerDetails' => $ownerDetail,
             'appId' => $appId,
