@@ -88,4 +88,20 @@ class FiAddress extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'fi_status_id', 'id');
     }
 
+    public static function changeAgentFiStatus($data){
+        return FiAddress::where('fi_addr_id',$data->fi_addr_id)->update([
+            'fi_status_id'=>$data->status,
+            'fi_status_updated_by'=>Auth::user()->user_id,
+            'fi_status_updatetime'=>\Carbon\Carbon::now()
+            ]);
+    }
+
+    public static function changeCmFiStatus($data){
+        return FiAddress::where('fi_addr_id',$data->fi_addr_id)->update([
+            'fi_status_id'=>$data->status,
+            'fi_status_updated_by'=>Auth::user()->user_id,
+            'fi_status_updatetime'=>\Carbon\Carbon::now()
+            ]);
+    }
+
 }

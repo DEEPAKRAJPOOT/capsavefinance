@@ -55,12 +55,12 @@
                                                 Action
                                                 </button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="0">Pending</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Inprogress</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="2">Positive</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="3">Negative</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="4">Cancelled</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Refer to Credit</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="2">Inprogress</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="3">Positive</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="4">Negative</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Cancelled</a>
+                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="6">Refer to Credit</a>
                                                 </div>
                                                 <!-- <div class="d-flex file-upload-cls">
                                                     <div class="file-browse float-left mr-3 ml-4">
@@ -89,7 +89,7 @@
                                                     <td width="15%"><b>Action</b></td>
                                                  </tr>
                                                  @forelse($fiList->fiAddress as $fiAdd)
-                                                 <tr data-id="{{$fiAdd->fi_addr_id}}">
+                                                 <tr>
                                                     <td width="20%">{{$fiAdd->agency->comp_name}}</td>
                                                     <td width="20%">{{ucwords($fiAdd->user->f_name.' '.$fiAdd->user->l_name)}}</td>
                                                     <td width="15%">{{\Carbon\Carbon::parse($fiAdd->created_at)->format('d/m/Y h:i A')}}</td>
@@ -97,16 +97,18 @@
                                                     <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$fiAdd->status->status_name}}</td>
                                                     <td width="15%">
                                                         <button class="btn-upload btn-sm"  style="padding: 1px 8px;" type="button"> <i class="fa fa-download"></i></button>
+                                                        @if($fiAdd->is_active)
                                                         <button class="btn-upload btn-sm" style="padding: 1px 8px;" type="button"> <i class="fa fa-upload"></i></button>
                                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                        @endif
 
-                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="0">Pending</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="1">Inprogress</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="2">Positive</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="3">Negative</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="4">Cancelled</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="5">Refer to Credit</a>
+                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$fiAdd->fi_addr_id}}">
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="1">Pending</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="2">Inprogress</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="3">Positive</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="4">Negative</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="5">Cancelled</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="6">Refer to Credit</a>
                                                         </div>
 
 
@@ -161,20 +163,37 @@ $(document).ready(function(){
         let address_id = $(this).parent('div').data('address_id');
         let status = $(this).attr('value');
         $('#fi_list').load(' #fi_list');
-        /*$.ajax({
-            'url':zzz,
-            'data':zzzzz
-            'type':post
-        }).success(function(){
-            alert(1);
-        })*/
+
+        
         //hit ajax to save data to log table and update status of fi address and status in biz_addr table
     });
 
     $(document).on('click', '.change-agent-status', function(){
-        let address_id = $(this).parent('div').data('address_id');
+        let fi_addr_id = $(this).parent('div').data('fi_address_id');
         let status = $(this).attr('value');
-        $('#fi_list').load(' #fi_list');
+        let token = '{{ csrf_token() }}';
+        $('.isloader').hide();
+        
+        /*--------------------------------------*/
+        $.ajax({
+            url: "{{route('change_agent_fi_status')}}",
+            type: "POST",
+            data: {"fi_addr_id": fi_addr_id, "status": status, "_token":token},
+            //dataType:'json',
+            error:function (xhr, status, errorThrown) {
+                $('.isloader').hide();
+                alert(errorThrown);
+            },
+            success: function(res){
+                if(res.status == 1){
+                    $('#fi_list').load(' #fi_list');
+                }else{
+                    alert(res.message);
+                }
+                $('.isloader').hide();
+              }
+        });
+        /*------------------------------------------------------*/
         //hit ajax to save data to log table and update status of fi address and status in biz_addr table
     });
 });

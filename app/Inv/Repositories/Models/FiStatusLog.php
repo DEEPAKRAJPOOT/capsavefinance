@@ -29,7 +29,6 @@ class FiStatusLog extends BaseModel {
         'fi_addr_id',
         'fi_status_id',
         'fi_comment',
-        'fi_rcu_status',
         'created_at',
         'created_by'
         ];
