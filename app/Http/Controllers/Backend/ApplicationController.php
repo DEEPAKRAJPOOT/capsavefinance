@@ -384,8 +384,14 @@ class ApplicationController extends Controller
                 //Add/Update application workflow stages    
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 $wf_status = $response->count() < 1 ? 1 : 2;
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
+                $currentStage = Helpers::getCurrentWfStage($appId);            
+                $curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
+                if ($curr_wf_stage_code == 'doc_upload') {
+                    Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                } else if($curr_wf_stage_code == 'upload_exe_doc') {
+                    Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status);
+                }
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->back();
             } else {
@@ -443,9 +449,15 @@ class ApplicationController extends Controller
             if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
-                
+                                                
                 //Add application workflow stages                
                 Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                
+                //Update workflow stage
+                //$currentStage = Helpers::getCurrentWfStage($app_id);            
+                //$curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
+                //Helpers::updateWfStage($curr_wf_stage_code, $appId, $wf_status = 1);
+            
                 
                 return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
             } else {
@@ -744,6 +756,9 @@ class ApplicationController extends Controller
         $offerId = $offerData ? $offerData->offer_id : 0;
         $prgmId = $offerData ? $offerData->prgm_id : 0;
         $loanAmount = $offerData ? $offerData->loan_amount : 0;
+        $currentStage = Helpers::getCurrentWfStage($appId);   
+        $roleData = Helpers::getUserRole();        
+        $viewGenSancLettertBtn = $currentStage->role_id == $roleData[0]->id ? 1 : 0;
         
         return view('backend.app.offer')
                 ->with('appId', $appId)
@@ -751,7 +766,9 @@ class ApplicationController extends Controller
                 ->with('loanAmount', $loanAmount)
                 ->with('prgm_id', $prgmId)
                 ->with('offerId', $offerId)                
-                ->with('offerData', $offerData);        
+                ->with('offerData', $offerData)
+                ->with('currentStage', $currentStage)
+                ->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
     }
 
     /**
@@ -807,12 +824,29 @@ class ApplicationController extends Controller
     {
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-        $offerId = $request->get('offer_id');
-        
+        if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+            $offerId = $request->get('offer_id');
+        } else {
+            $offerWhereCond = [];
+            $offerWhereCond['app_id'] = $appId;   
+            $offerWhereCond['is_active'] = 1; 
+            $offerWhereCond['status'] = 1;  
+            $offerData = $this->appRepo->getOfferData($offerWhereCond);
+            $offerId = $offerData ? $offerData->offer_id : 0;
+        }
         $offerWhereCond = [];
         $offerWhereCond['offer_id'] = $offerId;        
         $offerData = $this->appRepo->getOfferData($offerWhereCond);
         
+        //Update workflow stage
+        Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 1);  
+        
+        $appData = $this->appRepo->getAppDataByAppId($appId);               
+        $userId  = $appData ? $appData->user_id : null;
+        $prgmDocsWhere = [];
+        $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
+        $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);  
+                
         return view('backend.app.sanction_letter')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
@@ -1018,8 +1052,6 @@ class ApplicationController extends Controller
                     compact('offerData')+['appId' => $appId, 'offerId' => $offerId]
                     )->render();
 
-            //Update workflow stage
-            Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 1);
             
             return response($this->pdf->render($htmlContent), 200)->withHeaders([
                 'Content-Type' => 'application/pdf',
@@ -1081,8 +1113,8 @@ class ApplicationController extends Controller
                 $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
                 
                 //Update workflow stage
-                Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 1);
-                
+                //Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 1);
+                                             
                 Session::flash('message',trans('backend_messages.upload_sanction_letter_success'));
             } else {
                 Session::flash('message',trans('backend_messages.upload_sanction_letter_fail'));
@@ -1092,5 +1124,5 @@ class ApplicationController extends Controller
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }       
-    }    
+    }
 }

@@ -138,8 +138,8 @@
                                 Form::close()
                                 !!}
                                 
-                                @if($offer_status == 1)
-                                <a href="{{ route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]) }}" class="btn btn-success btn-sm float-right  mt-3 ml-3">View & Download Sanction Letter</a>
+                                @if($offer_status == 1 && $currentStage->stage_code == 'sanction_letter' && $viewGenSancLettertBtn)
+                                <a href="{{ route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]) }}" class="btn btn-success btn-sm float-right  mt-3 ml-3">Generate Sanction Letter</a>
                                 @endif
                             </div>
                         </div>	
