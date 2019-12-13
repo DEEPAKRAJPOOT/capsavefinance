@@ -1414,6 +1414,11 @@
             $("#v5failurepanverify"+count).html('<i>Please enter mobile no.</i>');
               return false;
         }
+        else if(mobile_no.length < 10)
+        {
+             $("#v5failurepanverify"+count).html('<i> Enter 10 digit mobile no.</i>');
+              return false;
+        }
         data = {_token, mobile_no, appId, biz_owner_id};
         $.ajax({
         url  : otpSend,
@@ -1449,6 +1454,11 @@
             $("#v5failurepanverify"+count).html('<i>Please enter mobile no.</i>');
               return false;
         }
+        else if(mobile_no.length < 10)
+        {
+             $("#v5failurepanverify"+count).html('<i> Enter 10 digit mobile no.</i>');
+              return false;
+        }
          $("#v5failurepanverify"+count).hide();
          $("#v5successpanverify"+count).hide();
         data = {_token, mobile_no, appId, biz_owner_id};
@@ -1480,11 +1490,13 @@
                     }
                     else
                     {
+                         $("#v5failurepanverify"+count).show();
                          var html = 'Some error occured.';
                          $("#v5failurepanverify"+count).html(html);
                     }
                 },
                 error:function(error) {
+                $("#v5failurepanverify"+count).show();
                 var html = 'Some error occured.';
                 $("#v5failurepanverify"+count).html(html);
          //         $("#toggleOtp"+count).hide();
@@ -1505,6 +1517,23 @@
         
         
         $(document).on('keypress', '.share_per', function(e){
+        $char = e.keyCode || e.which;
+        if ($char < 48 || $char > 57) {
+            return false;
+        }
+            return true;
+        })
+        
+         $(document).on('keypress', '.networth', function(e){
+        $char = e.keyCode || e.which;
+        if ($char < 48 || $char > 57) {
+            return false;
+        }
+            return true;
+        })
+        
+        
+          $(document).on('keypress', '.mobileveri', function(e){
         $char = e.keyCode || e.which;
         if ($char < 48 || $char > 57) {
             return false;
