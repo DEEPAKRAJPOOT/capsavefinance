@@ -95,34 +95,44 @@ class FiRcuController extends Controller
         $docIds = explode('#', trim($documentIds, '#'));
         $rcuDocArr = [];
         $rcuStatusLogArr = [];
-        foreach ($docIds as $key=>$value) {
-            $rcuDocArr[$key]['app_id']=$requestAll['app_id'];
-            $rcuDocArr[$key]['agency_id']=$requestAll['agency_id'];
-            $rcuDocArr[$key]['from_id']=Auth::user()->user_id;
-            $rcuDocArr[$key]['to_id']=$requestAll['agency_id'];
-            $rcuDocArr[$key]['doc_id']=$requestAll['agency_id'];
-            $rcuDocArr[$key]['rcu_status_id']=$value;
-            $rcuDocArr[$key]['rcu_status_updated_by']=$requestAll['comment'];
-            $rcuDocArr[$key]['rcu_status_updatetime']=Auth::user()->user_id;
-            $rcuDocArr[$key]['rcu_comment']=$requestAll[''];
-            $rcuDocArr[$key]['cm_rcu_status_id']=0;
-            $rcuDocArr[$key]['is_active']= 1;
-            $rcuDocArr[$key]['created_at']=\Carbon\Carbon::now();
-            $rcuDocArr[$key]['created_by']=Auth::user()->user_id;
+        if($requestAll) {
             
-            $rcuDocResponse = $this->appRepo->assignRcuDocument($rcuDocArr); 
-        
-                
-            $rcuStatusLogArr[$key]['agency_id']=$data['agency_id'];
-            $rcuStatusLogArr[$key]['from_id']=Auth::user()->user_id;
-            $rcuStatusLogArr[$key]['to_id']=$data['to_id'];
-            $rcuStatusLogArr[$key]['biz_addr_id']=$value;
-            $rcuStatusLogArr[$key]['fi_comment']=$data['comment'];
-            $rcuStatusLogArr[$key]['is_active']=1;
-            $rcuStatusLogArr[$key]['created_by']=Auth::user()->user_id;
+            $rcuDocArr['app_id']=$requestAll['app_id'];
+            $rcuDocArr['agency_id']=$requestAll['agency_id'];
+            $rcuDocArr['from_id']=Auth::user()->user_id;
+            $rcuDocArr['to_id']=$requestAll['to_id'];
+            $rcuDocArr['rcu_status_id']= 2;
+            $rcuDocArr['rcu_status_updated_by']=0;
+            $rcuDocArr['rcu_comment']=$requestAll['comment'];
+            $rcuDocArr['cm_rcu_status_id']=0;
+            $rcuDocArr['is_active']= 1;
+            $rcuDocArr['created_at']=\Carbon\Carbon::now();
+            $rcuDocArr['created_by']=Auth::user()->user_id;
+            
+            $rcuStatusLogArr['rcu_status_id']=2;
+            $rcuStatusLogArr['rcu_comment']=$requestAll['comment'];
+            $rcuStatusLogArr['created_at']=\Carbon\Carbon::now();
+            $rcuStatusLogArr['created_by']=Auth::user()->user_id;
         }
         
+        foreach ($docIds as $key=>$value) {
+            $rcuDocArr['doc_id']=$value;
+            $rcuDocResponse = $this->appRepo->assignRcuDocument($rcuDocArr);
+            
+            
+            if($rcuDocResponse == 'Assigned') {
+                Session::flash('message',trans('success_messages.rcu.alreadyAssigned'));
+                return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);
+                
+            }
+            if($rcuDocResponse) {
+                $rcuStatusLogArr['rcu_doc_id'] = $rcuDocResponse->rcu_doc_id;
+                $result = $this->appRepo->saveRcuStatusLog($rcuStatusLogArr);
+            }
+                
+        }
         
+        Session::flash('message',trans('success_messages.rcu.assigned'));
         return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 

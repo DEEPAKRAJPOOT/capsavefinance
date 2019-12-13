@@ -14,6 +14,8 @@ use App\Inv\Repositories\Models\LiftingDetail;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\FiAddress;
+use App\Inv\Repositories\Models\RcuDocument;
+use App\Inv\Repositories\Models\RcuStatusLog;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -457,14 +459,66 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $result = FiAddress::insertFiAddress($data);
         return $result ?: false;
     }
+    
     /**
-     * insert into FI address
+     * insert into RCU documents
      * 
      * @param array $data
      * @return status
      */
     public function assignRcuDocument($data){
-        $result = RcuDocument::insertFiAddress($data);
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($data)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        $assignData = RcuDocument::where('agency_id', $data['agency_id'])
+                ->where('to_id', $data['to_id'])
+                ->where('app_id', $data['app_id'])
+                ->where('doc_id', $data['doc_id'])
+                ->first();
+        
+        if(!$assignData) {
+            $result = RcuDocument::create($data);
+            return $result ?: false;
+        }
+        else {
+            return "Assigned";
+        }
+        
+    }
+    
+    /**
+     * insert into RCU documents
+     * 
+     * @param array $data
+     * @return status
+     */
+    public function saveRcuStatusLog($data){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($data)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        $result = RcuStatusLog::insert($data);
+        
         return $result ?: false;
     }
 

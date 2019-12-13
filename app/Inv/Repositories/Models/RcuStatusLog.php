@@ -26,10 +26,15 @@ class RcuStatusLog extends BaseModel {
      */
 
     protected $fillable = [
-        'rcu_addr_id',
+        'rcu_doc_id',
         'rcu_status_id',
         'rcu_comment',
         'created_at',
         'created_by'
         ];
+    
+    
+    public function rcuDocument(){
+        return $this->belongsTo('App\Inv\Repositories\Models\RcuDocument','rcu_doc_id','rcu_doc_id');
+    }
 }
