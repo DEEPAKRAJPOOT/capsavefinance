@@ -2708,4 +2708,22 @@ if ($err) {
        $role = $dataProvider->getUserRoleList($this->request, $List);
        return $role;
     }
+
+    /**
+     * change FI status by agent
+     * @param Request $request
+     */
+    public function changeAgentFiStatus(Request $request){
+      $status = $this->application->changeAgentFiStatus($request);
+      return $status;
+    }
+
+    /**
+     * change FI status by Credit manager
+     * @param Request $request
+     */
+    public function changeCmFiStatus(Request $request){
+      $status = $this->application->changeAgentFiStatus($request);
+      return $status;
+    }
 }

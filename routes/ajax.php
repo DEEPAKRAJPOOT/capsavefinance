@@ -263,4 +263,20 @@ Route::group(
         ]
     );
 
+    Route::post(
+        'change_agent_fi_status',
+        [
+        'as' => 'change_agent_fi_status',
+        'uses' => 'AjaxController@changeAgentFiStatus'
+        ]
+    );
+
+    Route::post(
+        'change_cm_fi_status',
+        [
+        'as' => 'change_cm_fi_status',
+        'uses' => 'AjaxController@changeCmFiStatus'
+        ]
+    );
+
 });
