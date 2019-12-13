@@ -35,7 +35,7 @@
                                 </td>
                                 <td>Security Deposit with Anchor Company</td>
                                 <td>
-                                    <input type="text" id="security_deposit" name="security_deposit" class="form-control" value="{{old('security_deposit')}}" maxlength="15" oninput="this.value = this.value.replace(/[^0-9.,]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="security_deposit" name="security_deposit" class="form-control number_format" value="{{old('security_deposit')}}" maxlength="15" oninput="">
                                     {!! $errors->first('security_deposit', '<span class="error">:message</span>') !!}
                                 </td>
                             </tr>
