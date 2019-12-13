@@ -23,26 +23,21 @@
                      </ul>
                   </div>
                      @endforeach
-                  <div class="clearfix"></div>
-                  <div style="text-align: end;">
-                     @if(request()->get('view_only')) 
-                     <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
-                     @endif
-                  </div>
                   @endif
-                  
-                  @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
                   <div class="clearfix"></div>
-                  <div style="text-align: end;">
+
+                  <div style="text-align: right;">                  
+                  @if(request()->get('view_only') && $bankdocs->count() > 0)
+                     <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
+                  @endif                   
+
+                  @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
                      <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download</a>
-                  </div>
                   @endif 
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
-                  <div class="clearfix"></div>
-                  <div style="text-align: end;">
-                     <a class="btn btn-success process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
-                  </div>
-                  @endif 
+                     <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
+                  @endif
+                  </div> 
                   <div class="clearfix"></div>
                   <br/>
                   <hr>

@@ -249,7 +249,11 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'assigned_by',
                     function ($app) {
-                        return $app->assigned_by ? $app->assigned_by . '<br><small>(' . $app->from_role . ')</small>' : '';
+                        if ($app->from_role && !empty($app->from_role)) {
+                            return $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
+                        } else {
+                            return $app->assigned_by ? $app->assigned_by : '';
+                        }
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
                 })                

@@ -2,7 +2,7 @@
 
 @section('content')
 
-
+ 
 
 
 <table class="table  overview-table">
@@ -27,6 +27,10 @@
                                     <tr>
                                         <th>Name</th>
                                         <td>{{isset($res->name) ? $res->name : 'N/A' }}</td>													
+                                    </tr>
+                                     <tr>
+                                        <th>Photo</th>
+                                        <td><img src="data:image/png;base64, {{$res->img}}" width="130" height="150"></td>													
                                     </tr>
                                     <tr>
                                         <th>Father/Husband Name</th>

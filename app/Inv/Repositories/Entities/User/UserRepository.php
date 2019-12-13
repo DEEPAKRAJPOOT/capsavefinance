@@ -790,31 +790,6 @@ class UserRepository extends BaseRepositories implements UserInterface
     }
     
     /**
-     * Store user KYC Bissiness Address data
-     *
-     * @param array $inputData
-     * @param integer $Id
-     * @return array
-     */
-    public function storeUserKycBussAddrData($inputData,$id)
-    {
-        return UserBussinessAddress::storeData($inputData,$id);
-    }
-    
-    /**
-     * Get user KYC Bissiness Address data
-     *
-     * @param 
-     * @param integer $user_id
-     * @return array
-     */
-    public function getBussAddrInfo($user_kyc_id){
-        
-        return UserBussinessAddress::getData($user_kyc_id);
-    }
- 
-
-    /**
      * Save Promoter Details
      *
      * @param mixed $id

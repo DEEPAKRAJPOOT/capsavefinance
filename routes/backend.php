@@ -206,11 +206,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'upload_sanction_letter',
                 'uses' => 'Backend\ApplicationController@uploadSanctionLetter'
             ]); 
-            Route::get('mobile_verify', [
-                'as' => 'mobile_verify',
-                'uses' => 'Backend\ApplicationController@mobileModel'
-            ]);
-            
+           
             //////////////// For Promoter Iframe///////////////////
 
             Route::get('show-pan-data', [
@@ -229,6 +225,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('show-pass-data', [
                 'as' => 'show_pass_data',
                 'uses' => 'Backend\ApplicationController@showPassResponseData'
+            ]);
+             Route::get('mobile_verify', [
+                'as' => 'mobile_verify',
+                'uses' => 'Backend\ApplicationController@mobileModel'
+            ]);
+              Route::get('mobile_otp_view', [
+                'as' => 'mobile_otp_view',
+                'uses' => 'Backend\ApplicationController@mobileOtpModel'
             ]);
             //////////////for cibil Iframe//////////////////////// 
              Route::get('pull-cibil-commercial', [
@@ -258,38 +262,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         });
 
 
-//////////////// For Promoter Iframe////////////////////////
-
-            Route::get('show-pan-data', [
-                'as' => 'show_pan_data',
-                'uses' => 'Backend\ApplicationController@showPanResponseData'
-            ]);
-
-            Route::get('show-dl-data', [
-                'as' => 'show_dl_data',
-                'uses' => 'Backend\ApplicationController@showDlResponseData'
-            ]);
-            Route::get('show-voter-data', [
-                'as' => 'show_voter_data',
-                'uses' => 'Backend\ApplicationController@showVoterResponseData'
-            ]);
-            Route::get('show-pass-data', [
-                'as' => 'show_pass_data',
-                'uses' => 'Backend\ApplicationController@showPassResponseData'
-            ]);
-         //////////////for cibil Iframe//////////////////////// 
-             Route::get('pull-cibil-commercial', [
-                'as' => 'pull_cibil_commercial',
-                'uses' => 'Backend\CamController@pullCibilCommercial'
-            ]);
-              Route::get('pull-cibil-promoter', [
-                'as' => 'pull_cibil_promoter',
-                'uses' => 'Backend\CamController@pullCibilPromoter'
-            ]);
-               Route::get('view-cibil-report', [
-                'as' => 'view_cibil_report',
-                'uses' => 'Backend\CamController@viewCibilReport'
-            ]);
+       
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 
@@ -348,8 +321,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'save_anchor_view',
                     'uses' => 'Backend\CamController@SaveAnchorForm'
                 ]);
-  
-        }); //end of cam
+                
+                Route::post('cam-hygiene-save', [
+                    'as' => 'cam_hygiene_save',
+                    'uses' => 'Backend\CamController@camHygieneSave'
+                ]);
+
+            }); //end of cam   
         });//end of application
 
         Route::group(['prefix' => 'lead'], function () {

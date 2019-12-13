@@ -97,8 +97,8 @@ class Application extends BaseModel
                 ->join('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
                 ->join('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
                 ->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
-                ->join('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
-                ->join('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
+                ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
         if ($roleData[0]->id == 11) {            
                 //$appData->where('users.anchor_user_id', \Auth::user()->user_id);            
                 $appData->where('users.anchor_id', \Auth::user()->anchor_id);            

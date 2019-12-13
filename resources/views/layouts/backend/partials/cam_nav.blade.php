@@ -14,7 +14,7 @@
        
      @can('cam_promoter')
         <li>
-            <a href="{{route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{$route_name == 'cam_promoter' ? 'active' : '' }}">Promoter</a>
+            <a href="{{route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{$route_name == 'cam_promoter' ? 'active' : '' }}">Management</a>
         </li>
         @endcan
      @can('cam_cibil')

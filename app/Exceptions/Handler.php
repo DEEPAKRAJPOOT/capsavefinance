@@ -55,16 +55,14 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-
-        // Check whether site is down for maintenance or not
         $maintenanceMode = (bool) ($exception instanceof HttpException && $exception->getStatusCode() === 503);
+
         if ($exception instanceof TokenMismatchException) {
             return $this->handleTokenMismatch();
         }
 
-        // create a validator and validate to throw a new ValidationException
-
         if ($exception instanceof \Symfony\Component\HttpFoundation\File\Exception\FileException) {
+            // create a validator and validate to throw a new ValidationException
             return \Validator::make($request->all(), [
                 'doc_file' => 'required|file|size:5000000',
             ])->validate();
@@ -89,12 +87,11 @@ class Handler extends ExceptionHandler
             } elseif ($exception instanceof HttpException && $exception->getStatusCode() === 401) {
                  return redirect('/');
             }elseif ($exception instanceof MethodNotAllowedHttpException) {
+                //(!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 return redirect('/');
             }
-            /*elseif ($exception instanceof Exception) {
-               dd($exception->getMessage());
-            }*/
         }
+
         return parent::render($request, $exception);
     }
 
@@ -105,11 +102,13 @@ class Handler extends ExceptionHandler
      * @param  \Illuminate\Auth\AuthenticationException  $exception
      * @return \Illuminate\Http\Response
      */
-    protected function unauthenticated($request, AuthenticationException $exception)
+    protected function unauthenticated($request,
+                                       AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
+
         return redirect()->guest(route('login'));
     }
 
@@ -122,9 +121,12 @@ class Handler extends ExceptionHandler
     protected function handleTokenMismatch()
     {
         $isGuest = auth()->guest();
+
         $message  = $isGuest ? 'Please retry.' : 'Token mismatched. Please retry.';
         $httpCode = $isGuest ? 401 : 400;
+
         $request = request();
+
         if ($request->isJson() || $request->ajax()) {
             return Response::json([$message], $httpCode);
         }

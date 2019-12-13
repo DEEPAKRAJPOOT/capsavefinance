@@ -17,6 +17,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\CamHygiene;
 use Auth;
 use Session;
 use App\Libraries\Gupshup_lib;
@@ -43,64 +44,83 @@ class CamController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request){
-        $arrRequest['biz_id'] = $request->get('biz_id');
-        $arrRequest['app_id'] = $request->get('app_id');
-        $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
-        $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
-       if(isset($arrOwnerData[0])){
-              $arrBizData['ownerName'] = $arrOwnerData[0]['first_name'].' '.$arrOwnerData[0]['last_name'];
-       }
-        $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
-        if(isset($arrEntityData['industryType'])){
-              $arrBizData['industryType'] = $arrEntityData['industryType'];
-        }
-        if(isset($arrEntityData['name'])){      
-              $arrBizData['legalConstitution'] = $arrEntityData['name'];
-        }
+        try{
+            $arrRequest['biz_id'] = $request->get('biz_id');
+            $arrRequest['app_id'] = $request->get('app_id');
+            $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
+            $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
+           if(isset($arrOwnerData[0])){
+                  $arrBizData['ownerName'] = $arrOwnerData[0]['first_name'].' '.$arrOwnerData[0]['last_name'];
+           }
+            $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
+            if(isset($arrEntityData['industryType'])){
+                  $arrBizData['industryType'] = $arrEntityData['industryType'];
+            }
+            if(isset($arrEntityData['name'])){      
+                  $arrBizData['legalConstitution'] = $arrEntityData['name'];
+            }
 
-         $whereCondition = [];
-        //$whereCondition['anchor_id'] = $anchorId;
-        $prgmData = $this->appRepo->getProgramData($whereCondition);
-        if(!empty($prgmData))
-        {
-           $arrBizData['prgm_name'] = $prgmData['prgm_name'];
-        }
-  			$arrBizData['email']  = $arrEntityData['email'];
-  			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
-        $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-          return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData]);
+            $whereCondition = [];
+            //$whereCondition['anchor_id'] = $anchorId;
+            $prgmData = $this->appRepo->getProgramData($whereCondition);
+            if(!empty($prgmData))
+            {
+               $arrBizData['prgm_name'] = $prgmData['prgm_name'];
+            }
+      			$arrBizData['email']  = $arrEntityData['email'];
+      			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
+            $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+              return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
 
     }
 
     public function camInformationSave(Request $request){
-    	  $arrCamData = $request->all();
-        $userId = Auth::user()->user_id;
-        if(!isset($arrCamData['rating_no'])){
-                $arrCamData['rating_no'] = NULL;
+    	 try{
+            $arrCamData = $request->all();
+            $userId = Auth::user()->user_id;
+            if(!isset($arrCamData['rating_no'])){
+                    $arrCamData['rating_no'] = NULL;
+            }
+            if($arrCamData['cam_report_id'] != ''){
+                 $updateCamData = Cam::updateCamData($arrCamData, $userId);
+                 if($updateCamData){
+                        Session::flash('message',trans('CAM information updated sauccessfully'));
+                 }else{
+                       Session::flash('message',trans('CAM information not updated successfully'));
+                 }
+            }else{
+                $saveCamData = Cam::creates($arrCamData, $userId);
+                if($saveCamData){
+                        Session::flash('message',trans('CAM information saved successfully'));
+                 }else{
+                       Session::flash('message',trans('CAM information not saved successfully'));
+                 }
+            }    
+            return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
-        if($arrCamData['cam_report_id'] != ''){
-             $updateCamData = Cam::updateCamData($arrCamData, $userId);
-             if($updateCamData){
-                    Session::flash('message',trans('CAM information updated sauccessfully'));
-             }else{
-                   Session::flash('message',trans('CAM information not updated successfully'));
-             }
-        }else{
-            $saveCamData = Cam::creates($arrCamData, $userId);
-            if($saveCamData){
-                    Session::flash('message',trans('CAM information saved successfully'));
-             }else{
-                   Session::flash('message',trans('CAM information not saved successfully'));
-             }
-        }    
-        return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
     }
 
     public function showCibilForm(Request $request){
-        $biz_id = $request->get('biz_id');
-        $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
-        $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
-        return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData'));
+        try{
+            $arrRequest['biz_id'] = $biz_id = $request->get('biz_id');
+            $arrRequest['app_id'] = $request->get('app_id');
+            $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+            if(!empty($arrHygieneData)){
+                  $arrHygieneData['remarks'] = json_decode($arrHygieneData['remarks'], true);  
+
+            }
+            $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
+            $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
+            //dd($arrCompanyOwnersData);
+            return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData', 'arrRequest', 'arrHygieneData'));
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
 
     public function finance(Request $request, FinanceModel $fin){
@@ -248,7 +268,7 @@ class CamController extends Controller
     	$user = FinanceModel::getUserByAPP($appId);
     	$loanAmount = (int)$user['loan_amt'];
         $bsa = new Bsa_lib();
-        $reportType = 'xml';
+        $reportType = 'json';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
         $process_txn_cnt = 0;
         $req_arr = array(
@@ -257,7 +277,7 @@ class CamController extends Controller
             'loanDuration' => '6',
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
-            'transactionCompleteCallbackUrl' => 'http://122.170.7.185:8080/CallbackTest/CallbackStatus',
+            'transactionCompleteCallbackUrl' => route('api_perfios_bsa_callback'),
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
         if ($init_txn['status'] == 'success') {
@@ -312,17 +332,17 @@ class CamController extends Controller
             return $final_res;
         }
 
-        if (!empty($is_scanned) && strtolower($is_scanned) == 'yes') {
+        if (!empty($is_scanned) && strtolower($is_scanned) == '1') {
            $final_res['api_type'] = Bsa_lib::REP_GEN;
         	 return $final_res;
         }
 
         $file_name = $appId.'_banking.xlsx';
+        $req_arr = array(
+          'perfiosTransactionId' => $init_txn['perfiostransactionid'],
+          'types' => 'xlsx',
+        );
         if ($this->download_xlsx) {
-          $req_arr = array(
-            'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-            'types' => 'xlsx',
-          );
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['status']  = ($final_res['status'] == 'success');
@@ -335,11 +355,8 @@ class CamController extends Controller
           \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']); 
         }
         $file= url('storage/user/'. $file_name);
-        /*$req_arr = array(
-            'perfiosTransactionId' => $final_res['perfiosTransactionId'],
-            'types' => $reportType,
-        );
-        $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);*/
+        $req_arr['types'] =  $reportType;
+        $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['api_type'] = Bsa_lib::GET_REP;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
@@ -351,7 +368,7 @@ class CamController extends Controller
     	$user = FinanceModel::getUserByAPP($appId);
     	$loanAmount = (int)$user['loan_amt'];
         $perfios = new Perfios_lib();
-        $reportType = 'xml';
+        $reportType = 'json';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
         $process_txn_cnt = 0;
         $apiVersion = '2.1';
@@ -365,7 +382,7 @@ class CamController extends Controller
             'loanAmount' => $loanAmount,
             'loanDuration' => '24',
             'loanType' => 'Home',
-            'transactionCompleteCallbackUrl' => 'http://admin.rent.local/test2',
+            'transactionCompleteCallbackUrl' => route('api_perfios_fsa_callback'),
         );
         $start_txn = $perfios->api_call(Perfios_lib::STRT_TXN, $req_arr);
          if ($start_txn['status'] == 'success') {
@@ -431,19 +448,17 @@ class CamController extends Controller
           $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
         	 return $final_res;
         }
-
         $file_name = $appId.'_finance.xlsx';
+        $req_arr = array(
+            'apiVersion' => $apiVersion,
+            'vendorId' => $vendorId,
+            'perfiosTransactionId' => $start_txn['perfiostransactionid'],
+            'reportType' => 'xlsx',
+            'txnId' => $prolitus_txn,
+        );
         if ($this->download_xlsx) {
-	         $req_arr = array(
-	            'apiVersion' => $apiVersion,
-	            'vendorId' => $vendorId,
-	            'perfiosTransactionId' => $start_txn['perfiostransactionid'],
-	            'reportType' => 'xlsx',
-	            'txnId' => $prolitus_txn,
-	         );
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
-              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Perfios_lib::GET_STMT;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
@@ -455,14 +470,9 @@ class CamController extends Controller
         $file= url('storage/user/'. $file_name);
 
 
-        /*$req_arr = array(
-            'apiVersion' => $apiVersion,
-            'vendorId' => $vendorId,
-            'perfiosTransactionId' => $start_txn['perfiosTransactionId'],
-            'reportType' => $reportType,
-            'txnId' => $prolitus_txn,
-         );
-        $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);*/
+        $req_arr['reportType'] = $reportType;
+        $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
+
         $final_res['api_type'] = Perfios_lib::GET_STMT;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
@@ -486,36 +496,40 @@ class CamController extends Controller
         $apiVersion = '2.1';
         $vendorId = 'capsave';
         $file_name = $appId.'_finance.xlsx';
-        if ($this->download_xlsx) {
-           $req_arr = array(
+        $req_arr = array(
               'apiVersion' => $apiVersion,
               'vendorId' => $vendorId,
               'perfiosTransactionId' => $perfiostransactionid,
               'reportType' => 'xlsx',
               'txnId' => $prolitus_txn,
-           );
+        );
+        if ($this->download_xlsx) {
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
-              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Perfios_lib::GET_STMT;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
               return $final_res;
+          }else{
+            $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+            \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
           }
-          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
         }
         $file= url('storage/user/'. $file_name);
+        $req_arr['reportType'] = 'json';
+        $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
         $final_res['api_type'] = Perfios_lib::GET_STMT;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
-        $final_res['result'] = base64_encode($final_res['result']);
-        $log_data = array(
-          'status' => $final_res['status'],
-          'updated_by' => Auth::user()->user_id,
-        );
-        FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
+        if ($final_res['status'] == 'success') {
+          $final_res['result'] = base64_encode($final_res['result']);
+          $log_data = array(
+            'status' => $final_res['status'],
+            'updated_by' => Auth::user()->user_id,
+          );
+          FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
+        }
         if ($final_res['status'] == 'success') {
           return response()->json(['message' =>'Financial Statement analysed successfully.','status' => 1,
             'value' => $final_res]);
@@ -533,42 +547,45 @@ class CamController extends Controller
         if ($perfios_data['app_id'] != $appId) {
           return response()->json(['message' => 'This application is not belonging to you.','status' => 0,'value'=>['file_url'=>'']]);
         }
-
         $perfiostransactionid = $perfios_data['perfios_log_id'];
         $prolitus_txn = $perfios_data['prolitus_txn_id'];
-
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
         $file_name = $appId.'_banking.xlsx';
+
+        $req_arr = array(
+          'perfiosTransactionId' => $perfiostransactionid,
+          'types' => 'xlsx',
+        );
         if ($this->download_xlsx) {
-          $req_arr = array(
-            'perfiosTransactionId' => $perfiostransactionid,
-            'types' => 'xlsx',
-          );
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
-              $final_res['status']  = ($final_res['status'] == 'success');
               $final_res['api_type'] = Bsa_lib::GET_REP;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
               return $final_res;
+          }else{
+             $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+             \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
           }
-          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
         }
         $file= url('storage/user/'. $file_name);
-
+        $req_arr['types'] = 'json'; 
+        $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['api_type'] = Bsa_lib::GET_REP;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
-        $final_res['result'] = base64_encode($final_res['result']);
-        $log_data = array(
-          'status' => $final_res['status'],
-          'updated_by' => Auth::user()->user_id,
-        );
-        FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
+        if ($final_res['status'] == 'success') {
+          $final_res['result'] = base64_encode($final_res['result']);
+          $log_data = array(
+            'status' => $final_res['status'],
+            'updated_by' => Auth::user()->user_id,
+          );
+          FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
+        }
+
         if ($final_res['status'] == 'success') {
           return response()->json(['message' =>'Banking Statement analysed successfully.','status' => 1,
             'value' => $final_res]);
@@ -739,8 +756,8 @@ class CamController extends Controller
       $gstdocs = $fin->getGSTStatements($appId);
     	$user = $fin->getUserByAPP($appId);
     	$user_id = $user['user_id'];
-      $gst_details = $fin->getGstbyUser($user_id);
-	    $all_gst_details = $fin->getAllGstbyBiz($biz_id);
+      $gst_details = $fin->getSelectedGstForApp($user_id);
+	    $all_gst_details = $fin->getAllGstForApp($biz_id);
 	    $gst_no = $gst_details['pan_gst_hash'];
         return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details]);
     }
@@ -825,9 +842,9 @@ class CamController extends Controller
             $relationShipArr['biz_id']                = $allData['biz_id'];
             $relationShipArr['app_id']                = $allData['app_id'];
             $relationShipArr['year_of_association']   = $allData['year_of_association'];
-            $relationShipArr['year']                  = $allData['years'];
             $relationShipArr['payment_terms']         = $allData['payment_terms'];
             $relationShipArr['grp_rating']            = $allData['grp_rating'];
+            $relationShipArr['contact_person']        = $allData['contact_person'];
             $relationShipArr['contact_number']        = $allData['contact_number'];
             $relationShipArr['security_deposit']      = $allData['security_deposit'];
             $relationShipArr['note_on_lifting']       = $allData['note_on_lifting'];
@@ -863,6 +880,47 @@ class CamController extends Controller
                }
            }
            return redirect()->back()->with('message', 'Lifiting Data Saved Successfully.');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+
+
+
+     public function camHygieneSave(Request $request){
+      try {
+            $arrHygieneData = $request->all();
+            if(isset($arrHygieneData['remarks'])){
+                $arrRemarkData = array();
+                foreach ($arrHygieneData['remarks'] as $key => $value) {
+                    $arrRemarkData[$arrHygieneData['promoterPan'][$key]]  = $value;
+                }
+                $arrHygieneData['remarks'] = json_encode($arrRemarkData);
+
+            }else{
+                $arrHygieneData['remarks'] = '';
+            }
+            if(!isset($arrHygieneData['comment'])){
+               $arrHygieneData['comment'] = '';
+            }
+            $userId = Auth::user()->user_id;
+            if($arrHygieneData['cam_hygiene_id'] != ''){
+                 $updateHygieneDat = CamHygiene::updateHygieneData($arrHygieneData, $userId);
+                 if($updateHygieneDat){
+                        Session::flash('message',trans('CAM hygiene information updated sauccessfully'));
+                 }else{
+                       Session::flash('message',trans('CAM hygiene information not updated successfully'));
+                 }
+            }else{
+                $saveHygieneData = CamHygiene::creates($arrHygieneData, $userId);
+                if($saveHygieneData){
+                        Session::flash('message',trans('CAM hygiene information saved successfully'));
+                 }else{
+                       Session::flash('message',trans('CAM hygiene information not saved successfully'));
+                 }
+            }    
+            return redirect()->route('cam_cibil', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

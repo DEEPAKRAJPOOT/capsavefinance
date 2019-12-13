@@ -83,6 +83,8 @@ Route::group(
         'uses' => 'Backend\ApplicationController@verify_mobile'
     ]);
     
+    
+    
     Route::post('verify_front_mobile', [
         'as' => 'verify_front_mobile',
         'uses' => 'Application\ApplicationController@verify_mobile'
@@ -258,6 +260,22 @@ Route::group(
         [
         'as' => 'chk_biz_entity_to_cin',
         'uses' => 'Karza\KarzaController@checkBizEntityToCin'
+        ]
+    );
+
+    Route::post(
+        'change_agent_fi_status',
+        [
+        'as' => 'change_agent_fi_status',
+        'uses' => 'AjaxController@changeAgentFiStatus'
+        ]
+    );
+
+    Route::post(
+        'change_cm_fi_status',
+        [
+        'as' => 'change_cm_fi_status',
+        'uses' => 'AjaxController@changeCmFiStatus'
         ]
     );
 

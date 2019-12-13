@@ -421,6 +421,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $result = BusinessAddress::getAddressforFI($biz_id);
         return $result ?: false;
     }
+
+
+    /**
+     * get address for FI
+     * 
+     * @param integer $biz_id
+     * @return all address result
+     */
     
 
     public function creates($attributes){
@@ -482,4 +490,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return AppAssignment::getBackStageUsers ($app_id, $roles);
     }    
+
+    public function changeAgentFiStatus($request){
+      $status = FiAddress::changeAgentFiStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function changeCmFiStatus($request){
+      $status = $this->application->changeAgentFiStatus($request);
+      return $status;
+    }
+
 }
