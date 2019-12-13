@@ -117,7 +117,7 @@
                                                 <td>{{$row->owner_addr}}</td>
                                              </tr> 
                                              <tr>
-                                                <td><b>Mobile{{$row->biz_owner_id}} </b></td>
+                                                <td><b>Mobile</b></td>
                                                 <td>
                                                      <div class="col-md-12">
                                                         <input type="text" readonly='readonly'  value="{{ isset($arrMobileNo[$j]->mobile) ? $arrMobileNo[$j]->mobile : '' }}" name="verifyvoter[]" id="verifyvoter{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifyvoter" >
