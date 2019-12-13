@@ -180,6 +180,10 @@ class Helper extends PaypalHelper
                         $toUserId = User::getLeadSalesManager($user_id);
                         $dataArr['to_id'] = $toUserId;
                         $dataArr['role_id'] = null;                        
+                    } else if (isset($addl_data['to_id']) && !empty($addl_data['to_id'])) {
+                        $toUserId = $addl_data['to_id'];
+                        $dataArr['to_id'] = $toUserId;
+                        $dataArr['role_id'] = null;                        
                     } else {
                         $dataArr['to_id'] = null;
                         $dataArr['role_id'] = $data->role_id;
@@ -362,73 +366,7 @@ class Helper extends PaypalHelper
      */
     public static function getCurrentWfStagebyRole($roleId){
         return WfStage::getCurrentWfStagebyRole($roleId);
-    }
-    
-     /**
-     * Update workflow Dynamic stage
-     * 
-     * @param string $wf_stage_code
-     * @param integer $app_id
-     * @param integer $wf_status
-     * @return boolean
-     */
-    public static function updateWfStageManualOld($wf_stage_code, $app_id, $wf_status = 0, $assign_role, $addl_data=[])
-    {
-        $wfData = WfStage::getWfDetailById($wf_stage_code);
-        if ($wfData) {
-            $wf_stage_id = $wfData->wf_stage_id;
-            $wf_order_no = $wfData->order_no;
-            $assignedRoleId = $wfData->role_id;
-            $updateData = [                
-                'app_wf_status' => $wf_status,
-                'is_complete' => $wf_status
-            ];
-            
-            $appData = Application::getAppData((int)$app_id);
-            $user_id = $appData->user_id;
-            if ($wf_stage_code == 'new_case') {
-                $updateData['biz_app_id'] = $app_id;
-                $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
-            } else {
-                $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
-            }
-            //dd($wf_stage_code, $app_id, $wf_status, $assign_role, $nextWfData->stage_code);
-            if ($wf_status == 1) {
-                $nextWfData = WfStage::getNextWfStage($wf_order_no);
-                $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
-                //dd('hhhhhhhhhhhhhhh', $nextWfData, $wfAppStageData);
-                if ( !$wfAppStageData ) {
-                    $insertData = [
-                        'wf_stage_id' => $nextWfData->wf_stage_id,
-                        'biz_app_id' => $app_id,
-                        'user_id' => $user_id,
-                        'app_wf_status' => 0,
-                        'is_complete' => 0
-                    ];
-                    $result = WfAppStage::saveWfDetail($insertData);
-                }
-            }
-                //get role id by wf_stage_id
-                //$data = WfStage::find($result->wf_stage_id);
-                 AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
-                //update assign table
-            $dataArr = []; 
-             $dataArr['from_id'] = \Auth::user()->user_id;
-             $dataArr['to_id'] = null;
-             $dataArr['role_id'] = $assign_role;
-             $dataArr['assigned_user_id'] = $user_id;
-             $dataArr['app_id'] = $app_id;
-             $dataArr['assign_status'] = '0';
-             $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';;
-             $dataArr['is_owner'] = 1;
-             
-            AppAssignment::saveData($dataArr);
-          
-                return true;
-        } else {
-            return false;
-        }
-    }
+    }    
     
     /**
      * Update workflow stages to move the stages back
@@ -442,7 +380,7 @@ class Helper extends PaypalHelper
      * 
      * @return boolean
      */
-    public static function updateWfStageManual($app_id, $from_wf_stage_order_no, $to_wf_stage_order_no, $wf_status = 2, $assign_role=null, $addl_data=[])
+    public static function updateWfStageManual($app_id, $from_wf_stage_order_no, $to_wf_stage_order_no, $wf_status = 2, $assign_role_uid=null, $addl_data=[])
     {
         $appData = Application::getAppData((int)$app_id);
         $user_id = $appData->user_id;        
@@ -456,41 +394,23 @@ class Helper extends PaypalHelper
                 ];
                 WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
-        } else {
-            for ($wf_order_no=$from_wf_stage_order_no;$wf_order_no <= $to_wf_stage_order_no;$wf_order_no++) {
-                $wfData = WfStage::getWfDetailByOrderNo($wf_order_no);
-                $wfAppStageData = WfAppStage::getAppWfStage($wfData->stage_code, $user_id, $app_id);
-                if ( !$wfAppStageData ) {
-                    $insertData = [
-                        'wf_stage_id' => $wfData->wf_stage_id,
-                        'biz_app_id' => $app_id,
-                        'user_id' => $user_id,
-                        'app_wf_status' => 0,
-                        'is_complete' => 0
-                    ];
-                    $result = WfAppStage::saveWfDetail($insertData);
-                } 
+                    
+            if ($assign_role_uid) {
+                AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+                //update assign table
+                $dataArr = []; 
+                $dataArr['from_id'] = \Auth::user()->user_id;
+                $dataArr['to_id'] = $assign_role_uid;
+                $dataArr['role_id'] = null; //$assign_role;
+                $dataArr['assigned_user_id'] = $user_id;
+                $dataArr['app_id'] = $app_id;
+                $dataArr['assign_status'] = '0';
+                $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';;
+                $dataArr['is_owner'] = 1;
+
+                AppAssignment::saveData($dataArr);
             }
-        }
-            
-        if ($assign_role) {
-
-            
-            AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
-            //update assign table
-            $dataArr = []; 
-            $dataArr['from_id'] = \Auth::user()->user_id;
-            $dataArr['to_id'] = null;
-            $dataArr['role_id'] = $assign_role;
-            $dataArr['assigned_user_id'] = $user_id;
-            $dataArr['app_id'] = $app_id;
-            $dataArr['assign_status'] = '0';
-            $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';;
-            $dataArr['is_owner'] = 1;
-
-            AppAssignment::saveData($dataArr);
-        }
-         
+        } 
         return true;
     }
     

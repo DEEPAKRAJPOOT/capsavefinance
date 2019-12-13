@@ -35,9 +35,17 @@
                     array('id' => 'is_active',
                     'class'=>'form-control'))
                     !!}
-                    @endif                                      
+                    @endif 
+                    @php 
+                    $confirmBtn = 'Assign';
+                    $closeBtn = 'Cancel';
+                    @endphp
                    @else
                     Are you sure to move the next stage <strong>({{ isset($roles[$next_role_id]) ? $roles[$next_role_id] : '' }})</strong>?<br>
+                    @php 
+                    $confirmBtn = 'Yes';
+                    $closeBtn = 'No';
+                    @endphp                    
                    @endif
 
                     
@@ -58,8 +66,9 @@
                     {!! Form::hidden('assign_case', $assign_case) !!}
                    
                     <br>
-                <button type="submit" class="btn btn-success">Yes</button>
-                <button id="close_btn" type="button" class="btn btn-secondary">No</button>              
+                    
+                <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
+                <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>              
                 
             </div>
                 {!!
@@ -81,15 +90,18 @@ var messages = {
     is_accept: "{{ Session::get('is_accept') }}",
  };
      $(document).ready(function(){
-       var parent =  window.parent;    
-     if(messages.is_accept == 1){
-       parent.jQuery("#sendNextstage").modal('hide');  
-        parent.oTable.draw();
-    }
-    
-    $('#close_btn').click(function() {
-    parent.$('#sendNextstage').modal('hide');
-});
+        var assign_case = $("input[name=assign_case]").val(); 
+        var targetModel = assign_case ? 'assignCaseFrame' : 'sendNextstage';
+        var parent =  window.parent;    
+        if(messages.is_accept == 1){
+           parent.jQuery("#"+targetModel).modal('hide');  
+           parent.oTable.draw();
+        }
+
+        $('#close_btn').click(function() {
+            //alert('targetModel ' + targetModel);
+            parent.$('#'+targetModel).modal('hide');
+        });
         
         $('#frmMoveStage').validate({
             rules: {
