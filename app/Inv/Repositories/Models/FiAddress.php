@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Models;
 
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\FiStatusLog;
+use App\Inv\Repositories\Models\FiFileLog;
 use Auth;
 
 class FiAddress extends BaseModel {
@@ -38,7 +39,7 @@ class FiAddress extends BaseModel {
         'cm_fi_status_id',
         'cm_status_updatetime',
         'cm_status_updated_by',
-        'fi_upload_file_id',
+        'file_id',
         'is_active',
         'created_at',
         'created_by',
@@ -88,6 +89,10 @@ class FiAddress extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'fi_status_id', 'id');
     }
 
+    public function userFile(){
+        return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id', 'file_id');
+    }
+
     public static function changeAgentFiStatus($data){
         return FiAddress::where('fi_addr_id',$data->fi_addr_id)->update([
             'fi_status_id'=>$data->status,
@@ -101,6 +106,19 @@ class FiAddress extends BaseModel {
             'fi_status_id'=>$data->status,
             'fi_status_updated_by'=>Auth::user()->user_id,
             'fi_status_updatetime'=>\Carbon\Carbon::now()
+            ]);
+    }
+
+    public static function updateFiFile($data, $fiAddrId){
+        $file_log =  FiFileLog::create([
+            'fi_addr_id'=>$fiAddrId,
+            'file_id'=>$data->file_id,
+            'created_by'=>Auth::user()->user_id,
+            'created_at'=>\Carbon\Carbon::now()
+            ]);
+
+        return FiAddress::where('fi_addr_id',$fiAddrId)->update([
+            'file_id'=>$data->file_id
             ]);
     }
 
