@@ -21,7 +21,7 @@ use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Offer;
 use App\Inv\Repositories\Models\Agency;
-
+use App\Inv\Repositories\Models\AppPdNote;
 /**
  * Application repository class
  */
@@ -479,6 +479,20 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function changeCmFiStatus($request){
       $status = $this->application->changeAgentFiStatus($request);
       return $status;
+    }
+    
+    
+    
+    /**
+     * Save pd notes 
+     * 
+     * @param type $attr Array
+     * @param type $id Int
+     * @return type mixed
+     */
+    public function savePdNotes($attr, $id = null)
+    {
+        return AppPdNote::savePdNotes($attr, $id);
     }
 
 }

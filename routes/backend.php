@@ -258,7 +258,22 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_assign_fi',
                 'uses' => 'Backend\FiRcuController@saveAssignFi'
             ]);
+            
+            
+            
+            Route::get('pd-notes', [
+                'as' => 'pd_notes_list',
+                'uses' => 'Backend\NotesController@pdNotesList'
+            ]);
 
+            Route::get('pd-notes-from', [
+                'as' => 'backend_pd_notes_from',
+                'uses' => 'Backend\NotesController@showPdNotesForm'
+            ]);
+            Route::post('save-pd-notes', [
+                'as' => 'save_pd_notes',
+                'uses' => 'Backend\NotesController@savePdNotes'
+            ]);
         });
 
 
