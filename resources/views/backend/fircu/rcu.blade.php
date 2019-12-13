@@ -39,7 +39,7 @@
                                     @foreach ($data as $key => $value) 
                                     
                                         <tr role="row" class="odd">
-                                            <td class="sorting_1"><input type="checkbox" name="documentIds" value="{{ $value->rcuDoc->id }}">{{ $i }}.</td>
+                                            <td class="sorting_1"><input type="checkbox" class="document_id" value="{{ $value->rcuDoc->id }}">{{ $value->rcuDoc->id }}.</td>
                                             <td>{{ $value->rcuDoc->doc_name }}</td>                                 
                                             <td>abc company</td>                                      
                                             <td>
@@ -94,6 +94,18 @@
                                                      @endforeach
                                                   </tbody>
                                                </table>
+                                               <table class="overview-table remove-tr-bg" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                  <tbody>
+                                                     <tr>
+                                                        <td width="20%"><b>Agency Name</b></td>
+                                                        <td width="20%"><b>User Name</b></td>
+                                                        <td width="15%"><b>Created At</b></td>
+                                                        <td width="15%"><b>Updated On</b></td>
+                                                        <td align="center" width="15%" style="border-right: 1px solid #e9ecef;"><b>Status</b></td>
+                                                        <td width="15%"><b>Action</b></td>
+                                                     </tr>
+                                                  </tbody>
+                                               </table>
                                             </td>
                                         </tr>
                                     @php
@@ -109,8 +121,8 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                            <button class="btn btn-success btn-sm " onclick="triggerRCU()">Trigger for FI</button>
-                            <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
+                           <button class="btn btn-success btn-sm" id="trigger-for-rcu">Trigger for RCU</button>
+                           <a data-toggle="modal" data-target="#assignRcuFrame" data-url ="{{route('show_assign_rcu', ['app_id' => request()->get('app_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuModal" style="display: none;"><i class="fa fa-plus"></i>Assign RCU</a>
                         </div>
                      </div>
                 </div>
@@ -119,12 +131,25 @@
     </div>
 </div>
 </div>
+{!!Helpers::makeIframePopup('assignRcuFrame','Assign RCU', 'modal-lg')!!}
 @endsection
 
 @section('jscript')
-    <script>
-        var messages = {
-        };
-    </script> 
-    <script src="{{ url('backend/js/fi-rcu.js') }}"></script>
+<script>
+$(document).ready(function(){
+    $('#trigger-for-rcu').on('click', function(){
+        if($('.document_id').is(':checked')){
+            $('#openRcuModal').trigger('click');
+        }else{
+            alert('First check at least one checkbox.');
+        }
+    });
+
+    $('.change-status').on('click', function(){
+        let address_id = $(this).parent('div').data('address_id');
+        let status = $(this).attr('value');
+        //hit ajax to save data to log table and update status of fi address and status in biz_addr table
+    });
+});
+</script>
 @endsection

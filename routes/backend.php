@@ -248,7 +248,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@viewCibilReport'
             ]);
 
-            //////////////for Assign FI Iframe////////////////////
+            //////////////for Assign FI RCU Iframe////////////////////
             Route::get('fircu/assign-fi', [
                 'as' => 'show_assign_fi',
                 'uses' => 'Backend\FiRcuController@showAssignFi'
@@ -257,6 +257,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('fircu/assign-fi', [
                 'as' => 'save_assign_fi',
                 'uses' => 'Backend\FiRcuController@saveAssignFi'
+            ]);
+            
+            Route::get('fircu/assign-rcu', [
+                'as' => 'show_assign_rcu',
+                'uses' => 'Backend\FiRcuController@showAssignRcu'
+            ]);
+
+            Route::post('fircu/assign-rcu', [
+                'as' => 'save_assign_rcu',
+                'uses' => 'Backend\FiRcuController@saveAssignRcu'
             ]);
 
         });
