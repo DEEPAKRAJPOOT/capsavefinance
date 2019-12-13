@@ -515,7 +515,9 @@
                         @php ($j++)
                         @endforeach
                         @else
-                        <input type="hidden" name="ownerid[]">   
+                         <input type="hidden" name="ownerid[]">   
+                        <input type="hidden" name="is_promoter[]">   
+                         <input type="hidden" name="mobile_no[]"> 
 
                         @endif
                         <span class="form-fields-appand"></span>   

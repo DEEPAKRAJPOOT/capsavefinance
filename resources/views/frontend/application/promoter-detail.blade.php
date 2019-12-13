@@ -514,7 +514,8 @@
                         @endforeach
                         @else
                         <input type="hidden" name="ownerid[]">   
-
+                        <input type="hidden" name="is_promoter[]">   
+                         <input type="hidden" name="mobile_no[]"> 
                         @endif
                         <span class="form-fields-appand"></span>   
                         <div class="row">
@@ -1330,8 +1331,7 @@
             color:red;
         }
     </style>
-    <script src="{{ url('backend/js/promoter.js') }}"></script>
-    <script type="text/javascript">
+        <script type="text/javascript">
        appurl = '{{URL::route("verify_mobile") }}';
        otpSend = '{{URL::route("sent_otp_mobile") }}';
        otpurl = '{{URL::route("verify_otp_mobile") }}';
