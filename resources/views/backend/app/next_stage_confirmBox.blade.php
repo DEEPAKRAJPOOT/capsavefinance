@@ -91,8 +91,8 @@ var messages = {
  };
      $(document).ready(function(){
         var assign_case = $("input[name=assign_case]").val(); 
-        var targetModel = assign_case ? 'assignCaseFrame' : 'sendNextstage';
-        var parent =  window.parent;    
+        var targetModel = assign_case == '1' ? 'assignCaseFrame' : 'sendNextstage';
+        var parent =  window.parent;        
         if(messages.is_accept == 1){
            parent.jQuery("#"+targetModel).modal('hide');  
            parent.oTable.draw();

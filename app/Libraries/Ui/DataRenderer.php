@@ -260,7 +260,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
-                    return '';
+                    return $app->sharing_comment ? $app->sharing_comment : '';
 
                 })
                 ->addColumn(
