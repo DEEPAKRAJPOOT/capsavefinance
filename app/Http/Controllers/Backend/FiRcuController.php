@@ -88,26 +88,40 @@ class FiRcuController extends Controller
     public function saveAssignRcu(Request $request)
     {
         $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
-        $docIds = explode('#', trim($data['document_ids'], '#'));
-        $customLogArr = [];
-        $customAddArr = [];
+        $requestAll = $request->all();
+        $appId = $request->get('app_id');
+        $documentIds = $request->get('document_ids');
+        
+        $docIds = explode('#', trim($documentIds, '#'));
+        $rcuDocArr = [];
+        $rcuStatusLogArr = [];
         foreach ($docIds as $key=>$value) {
-            $customLogArr[$key]['whom_id']=$value;
-            $customLogArr[$key]['fi_rcu_type']=1;
-            $customLogArr[$key]['fi_rcu_status']=2;
-            $customLogArr[$key]['fi_rcu_comment']=$data['comment'];
-            $customLogArr[$key]['created_by']=Auth::user()->user_id;
-
-            $customAddArr[$key]['agency_id']=$data['agency_id'];
-            $customAddArr[$key]['from_id']=Auth::user()->user_id;
-            $customAddArr[$key]['to_id']=$data['to_id'];
-            $customAddArr[$key]['biz_addr_id']=$value;
-            $customAddArr[$key]['fi_comment']=$data['comment'];
-            $customAddArr[$key]['is_active']=1;
-            $customAddArr[$key]['created_by']=Auth::user()->user_id;
+            $rcuDocArr[$key]['app_id']=$requestAll['app_id'];
+            $rcuDocArr[$key]['agency_id']=$requestAll['agency_id'];
+            $rcuDocArr[$key]['from_id']=Auth::user()->user_id;
+            $rcuDocArr[$key]['to_id']=$requestAll['agency_id'];
+            $rcuDocArr[$key]['doc_id']=$requestAll['agency_id'];
+            $rcuDocArr[$key]['rcu_status_id']=$value;
+            $rcuDocArr[$key]['rcu_status_updated_by']=$requestAll['comment'];
+            $rcuDocArr[$key]['rcu_status_updatetime']=Auth::user()->user_id;
+            $rcuDocArr[$key]['rcu_comment']=$requestAll[''];
+            $rcuDocArr[$key]['cm_rcu_status_id']=0;
+            $rcuDocArr[$key]['is_active']= 1;
+            $rcuDocArr[$key]['created_at']=\Carbon\Carbon::now();
+            $rcuDocArr[$key]['created_by']=Auth::user()->user_id;
+            
+            $rcuDocResponse = $this->appRepo->assignRcuDocument($rcuDocArr); 
+        
+                
+            $rcuStatusLogArr[$key]['agency_id']=$data['agency_id'];
+            $rcuStatusLogArr[$key]['from_id']=Auth::user()->user_id;
+            $rcuStatusLogArr[$key]['to_id']=$data['to_id'];
+            $rcuStatusLogArr[$key]['biz_addr_id']=$value;
+            $rcuStatusLogArr[$key]['fi_comment']=$data['comment'];
+            $rcuStatusLogArr[$key]['is_active']=1;
+            $rcuStatusLogArr[$key]['created_by']=Auth::user()->user_id;
         }
         
-        $this->appRepo->assignRcuDocument($request->all()); 
         
         return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }

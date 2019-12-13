@@ -27,14 +27,16 @@ class RcuDocument extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'app_id',
         'agency_id',
         'from_id',
         'to_id',
-        'app_doc_file_id',
-        'rcu_status',
+        'doc_id',
+        'rcu_status_id',
         'rcu_status_updated_by',
         'rcu_status_updatetime',
         'rcu_comment',
+        'cm_rcu_status_id',
         'cm_status_updatetime',
         'cm_status_updated_by',
         'is_active',

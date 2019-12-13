@@ -94,6 +94,18 @@
                                                      @endforeach
                                                   </tbody>
                                                </table>
+                                               <table class="overview-table remove-tr-bg" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                  <tbody>
+                                                     <tr>
+                                                        <td width="20%"><b>Agency Name</b></td>
+                                                        <td width="20%"><b>User Name</b></td>
+                                                        <td width="15%"><b>Created At</b></td>
+                                                        <td width="15%"><b>Updated On</b></td>
+                                                        <td align="center" width="15%" style="border-right: 1px solid #e9ecef;"><b>Status</b></td>
+                                                        <td width="15%"><b>Action</b></td>
+                                                     </tr>
+                                                  </tbody>
+                                               </table>
                                             </td>
                                         </tr>
                                     @php

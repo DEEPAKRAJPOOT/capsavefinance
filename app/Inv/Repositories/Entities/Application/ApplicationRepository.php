@@ -457,6 +457,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $result = FiAddress::insertFiAddress($data);
         return $result ?: false;
     }
+    /**
+     * insert into FI address
+     * 
+     * @param array $data
+     * @return status
+     */
+    public function assignRcuDocument($data){
+        $result = RcuDocument::insertFiAddress($data);
+        return $result ?: false;
+    }
 
     /**
      * get all agency list
