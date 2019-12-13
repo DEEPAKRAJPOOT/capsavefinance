@@ -81,14 +81,15 @@
                                                         <td width="25%"><b>File Name</b></td>
                                                         <td width="25%"><b>Upload On </b></td>
                                                         <td width="25%">Download</td>
-                                                        <td align="center" width="25%">Action</td>
                                                      </tr>
                                                     @foreach ($value->documents as $key1 => $document) 
                                                      <tr>
                                                       <td width="25%">{{ $document->userFile->file_name }}</td>
-                                                      <td width="25%">Tue, Nov 12, 2019, 2:56 AM</td>
-                                                      <td width="25%"><a href="#"><i class="fa fa-download"></i></a></td>
-                                                      <td align="center" width="25%"><a class="mr-2" href="#"><i class="fa fa-eye"></i></a>
+                                                      <td width="25%">{{\Carbon\Carbon::parse($document->created_at)->format('d/m/Y h:i A')}}</td>
+                                                      <td width="25%">
+                                                          <a title="Download Document" href="{{ Storage::url($document->userFile->file_path) }}" download>
+                                                                <i class="fa fa-download"></i>
+                                                          </a>
                                                       </td>
                                                      </tr>
                                                      @endforeach
@@ -104,13 +105,44 @@
                                                         <td align="center" width="15%" style="border-right: 1px solid #e9ecef;"><b>Status</b></td>
                                                         <td width="15%"><b>Action</b></td>
                                                      </tr>
+                                                    @forelse($value['agencies'] as $value2)
+                                                    <tr>
+                                                       <td width="20%">{{$value2->agency->comp_name}}</td>
+                                                       <td width="20%">{{ucwords($value2->user->f_name.' '.$value2->user->l_name)}}</td>
+                                                       <td width="15%">{{\Carbon\Carbon::parse($value2->created_at)->format('d/m/Y h:i A')}}</td>
+                                                       <td width="15%">{{($value2->rcu_status_updatetime)? \Carbon\Carbon::parse($value2->fi_status_updatetime)->format('d/m/Y h:i A'): ''}}</td>
+                                                       <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$value2->status->status_name}}</td>
+                                                       <td width="15%">
+                                                           <button class="btn-upload btn-sm"  style="padding: 1px 8px;" type="button"> <i class="fa fa-download"></i></button>
+                                                           @if($value2->is_active)
+                                                           <button class="btn-upload btn-sm" style="padding: 1px 8px;" type="button"> <i class="fa fa-upload"></i></button>
+                                                           <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                           @endif
+
+                                                           <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$value2->rcu_doc_id}}">
+                                                               <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="1">Pending</a>
+                                                               <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="2">Inprogress</a>
+                                                               <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="3">Positive</a>
+                                                               <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="4">Negative</a>
+                                                               <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="5">Cancelled</a>
+                                                               <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="6">Refer to Credit</a>
+                                                           </div>
+
+
+                                                       </td>
+                                                    </tr>
+                                                    @empty
+                                                    <tr style="text-align: center;">
+                                                       <td width="100%" colspan="5">No data found</td>
+                                                    </tr>
+                                                    @endforelse
                                                   </tbody>
                                                </table>
                                             </td>
                                         </tr>
-                                    @php
-                                        $i++;
-                                    @endphp
+                                        @php
+                                            $i++;
+                                        @endphp
                                     @endforeach
                                 </tbody>
                             </table>

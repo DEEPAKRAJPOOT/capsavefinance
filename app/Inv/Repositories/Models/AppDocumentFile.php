@@ -195,7 +195,6 @@ class AppDocumentFile extends BaseModel
                 ->where('is_active', 1)
                 ->get();
         
-        return $results;
     }
     
     public function rcu($appId, $docId)

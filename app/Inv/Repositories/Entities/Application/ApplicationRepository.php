@@ -343,6 +343,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       return $result ?: false;
     }
     
+     /**
+     * function for get all RCU documents filess list
+     * @return type
+     */
+     
+    public function getRcuAgencies($appId, $docId)
+    {
+      $result = RcuDocument::getRcuAgencies($appId, $docId);
+      return $result ?: false;
+    }
+    
     /**
      * Get Program Data
      * 
@@ -480,6 +491,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         if (empty($data)) {
             throw new BlankDataExceptions('No Data Found');
         }
+        
         $assignData = RcuDocument::where('agency_id', $data['agency_id'])
                 ->where('to_id', $data['to_id'])
                 ->where('app_id', $data['app_id'])
@@ -487,8 +499,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->first();
         
         if(!$assignData) {
-            $result = RcuDocument::create($data);
-            return $result ?: false;
+            $resp = RcuDocument::where('app_id', $data['app_id'])
+                    ->where('doc_id', $data['doc_id'])
+                    ->update(['is_active' => 0]);
+            if($resp == true) {
+                $result = RcuDocument::create($data);
+                return $result ?: false;
+            }
         }
         else {
             return "Assigned";

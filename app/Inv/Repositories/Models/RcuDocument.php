@@ -45,7 +45,16 @@ class RcuDocument extends BaseModel {
         'updated_at',
         'updated_by'
     ];
-
+    
+    
+    public static function getRcuAgencies($appId, $docId)
+    {
+        return RcuDocument::with('status')->where('app_id', $appId)
+                ->where('doc_id', $docId)
+                ->get();
+        
+    }
+    
     public function agency(){
         return $this->belongsTo('App\Inv\Repositories\Models\Agency','agency_id','agency_id');
     }
@@ -53,5 +62,8 @@ class RcuDocument extends BaseModel {
     public function user(){
         return $this->belongsTo('App\Inv\Repositories\Models\User','to_id','user_id');
     }
-
+    
+    public function status(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'rcu_status_id', 'id');
+    }
 }
