@@ -60,11 +60,11 @@
                                        <tbody>
                                           <tr>
                                              <td><b>Name of the Borrower</b></td>
-                                             <td colspan="4">Chandan</td>
+                                             <td colspan="4">{{$borrower_name}}</td>
                                           </tr>
                                           <tr>
                                              <td width="25%"><b>Latest Audited Financial Year</b></td>
-                                             <td width="15%">2019</td>
+                                             <td width="15%">{{$latest_finance_year}}</td>
                                              <td width="20%"><b>Projections Available for</b> </td>
                                              <td width="20%">
                                                 <select class="form-control">
