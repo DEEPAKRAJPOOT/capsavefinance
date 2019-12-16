@@ -18,7 +18,9 @@ class RcuFileLog extends BaseModel {
      * @var integer
      */
     protected $primaryKey = 'rcu_file_log_id';
-
+    
+    public $userstamps = false;
+    public $timestamps = false;
     /**
      * The attributes that are mass assignable.
      *
