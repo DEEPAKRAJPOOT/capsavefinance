@@ -477,7 +477,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function changeCmFiStatus($request){
-      $status = FiAddress::changeAgentFiStatus($request);
+      $status = FiAddress::changeCmFiStatus($request);
       if($status){
         return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
       }else{

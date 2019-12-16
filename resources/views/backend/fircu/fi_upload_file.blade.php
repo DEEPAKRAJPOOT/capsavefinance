@@ -3,7 +3,7 @@
 
   <form method="POST" style="width:100%;" action="{{route('save_fi_upload')}}" target="_top" onsubmit="return checkValidation1();" enctype="multipart/form-data">
     @csrf
-    <input type="hidden" value="" name="address_ids" id="address_ids">
+    <input type="hidden" value="" name="fiaid" id="fiaid">
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
     <div class="row">
@@ -11,6 +11,7 @@
         <div class="form-group">
           <!-- <label for="email">Select Agency</label> -->
           <div class="custom-file upload-btn-cls mb-3 mt-2">
+            <input type="hidden" name="fi_addr_id">
 	        <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file">
 	        <label class="custom-file-label" for="customFile">Choose file</label>
 	      </div>
@@ -30,8 +31,8 @@
 @section('jscript')
 <script>
 $(document).ready(function(){
-	let address_id = parent.$('.address_id:checked').val();
-	$('#address_ids').val(address_ids);
+	let fiaid = parent.$('#fiaid4upload').val();
+	$('#fiaid').val(fiaid);
 
 	$('.getFileName').change(function(e) {
         var fileName = e.target.files[0].name;

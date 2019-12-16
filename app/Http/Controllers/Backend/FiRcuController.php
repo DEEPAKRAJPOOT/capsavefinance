@@ -49,10 +49,11 @@ class FiRcuController extends Controller
     {
         $biz_id = $request->get('biz_id');
         $app_id = $request->get('app_id');
+        $fi_addr_id = $request->fiaid;
         $uploadData = Helpers::uploadAppFile($request->all(), $app_id);
         $userFile = $this->docRepo->saveFile($uploadData);
-        
-        $status = $this->appRepo->updateFiFile($userFile,1);
+
+        $status = $this->appRepo->updateFiFile($userFile, $fi_addr_id);
         if($status){
             Session::flash('message',trans('success_messages.uploaded'));
         }else{
