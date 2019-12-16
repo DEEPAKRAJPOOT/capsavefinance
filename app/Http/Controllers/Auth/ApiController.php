@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Inv\Repositories\Models\FinanceModel;
 
 /**
  * 
@@ -10,11 +11,68 @@ use Illuminate\Http\Request;
 class ApiController
 {
 
-	protected $download_xlsx = true;
+	protected $secret_key = "0702f2c9c1414b70efc1e69f2ff31af0";
+  protected $download_xlsx = true;
 	
 	function __construct(){
 		
 	}
+
+  public function karza_webhook(Request $request){
+    $response = array(
+      'status' => 'failure',
+      'message' => 'Request method not allowed',
+    );
+    $headers = getallheaders();
+    if ($request->method() === 'POST') {
+       $content_type = $headers['Content-Type'] ?? '';
+       $secret_key = $headers['key'] ?? '';
+
+       if ($content_type != 'application/json') {
+         $response['message'] =  'Content Type is not valid.';
+         return $this->_setResponse($response, 431);
+       }
+
+      if ($secret_key != $this->secret_key) {
+         $response['message'] =  'Secret Key is not valid';
+         return $this->_setResponse($response, 401);
+       }
+      $result = $request->all();
+      if (!empty($result['statusCode']) && $result['statusCode'] != '101') {
+        $response['message'] = "We are getting statusCode with error.";
+         return $this->_setResponse($response, 403);
+      }
+      if (!empty($result['status'])) {
+        $resp['message'] = $result['error'] ?? "Unable to get success response.";
+        return $this->_setResponse($response, 406);
+      }
+      $result =    $result['result'] ?? $result;
+      $request_id =    $result['requestId'] ?? '';
+      if (empty($request_id)) {
+        $resp['message'] = "Insufficiant data to update the report.";
+        return $this->_setResponse($response, 417);
+      }
+
+      $gst_data = FinanceModel::getGstData($request_id);
+      if (empty($gst_data)) {
+         $resp['message'] = "Unable to get record against the requestId.";
+         return $this->_setResponse($response, 422);
+      }
+
+      $app_id = $gst_data['app_id'];
+      $gst_no = $gst_data['gstin'];
+      $fname = $app_id.'_'.$gst_no;
+      $this->logdata($result, 'F', $fname.'.json');
+      $file_name = $fname.'.pdf';
+      $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+      \File::put(storage_path('app/public/user').'/'.$file_name, file_get_contents($result['pdfDownloadLink'])); 
+      $response['message'] =  'Response generated Successfully';
+      $response['status'] =  'success';
+      return $this->_setResponse($response, 200);
+    }else{
+       return $this->_setResponse($response, 405);
+    }
+  }
 
 
 	public function fsa_callback(Request $request){
@@ -185,6 +243,57 @@ class ApiController
         }
         return $final_res;
     }
+
+    private function _setResponse($response, $statusCode){
+       return response($response, $statusCode)
+                  ->header('Content-Type', 'application/json');
+    }
+
+
+    public function logdata($data, $w_mode = 'D', $w_filename = '', $w_folder = '') {
+      list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
+      $main_dir = storage_path('app/public/user/');
+     /*$year_dir = $main_dir . "$year/";
+      $month_dir = $year_dir . "$month/";
+      $date_dir = $month_dir . "$date/";
+      $hour_dir = $date_dir . "$hour/";
+
+      if (!file_exists($year_dir)) {
+        mkdir($year_dir, 0777, true);
+      }
+      if (!file_exists($month_dir)) {
+        mkdir($month_dir, 0777, true);
+      }
+      if (!file_exists($date_dir)) {
+        mkdir($date_dir, 0777, true);
+      }
+      if (!file_exists($hour_dir)) {
+        mkdir($hour_dir, 0777, true);
+      }*/
+      $hour_dir = $main_dir;
+      $data = is_array($data) || is_object($data) ? json_encode($data) : $data;
+      $data = base64_encode($data);
+      if (strtolower($w_mode) == 'f') {
+        $final_dir = $hour_dir;
+        $filepath = explode('/', $w_folder);
+        foreach ($filepath as $value) {
+          $final_dir .= "$value/";
+          if (!file_exists($final_dir)) {
+            mkdir($final_dir, 0777, true);
+          }
+        }
+        $my_file = $final_dir . $w_filename;
+        $handle = fopen($my_file, 'w');
+        return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+      } else {
+        $my_file = $hour_dir . date('ymd') . '.log';
+        $handle = fopen($my_file, 'a');
+        $time = date('H:i:s');
+        fwrite($handle, PHP_EOL . 'Log ' . $time);
+        return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+      }
+      return FALSE;
+  }
 }
 
 

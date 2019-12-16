@@ -300,7 +300,7 @@ $(document).ready(function(){
         });   
         
         $("#assignRcuFrame").on('show.bs.modal', function (e) {
-                var parent = $(e.relatedTarget);
+            var parent = $(e.relatedTarget);
                 var height = parent.attr('data-height');
                 var url = parent.attr('data-url');
                 var width = parent.attr('data-width');
@@ -311,7 +311,7 @@ $(document).ready(function(){
                             'width': width
                         }
                 );
-        });               
+        });
 
         $("#uploadFiDocFrame").on('show.bs.modal', function (e) {
                 var parent = $(e.relatedTarget);
@@ -340,6 +340,6 @@ $(document).ready(function(){
                             'width': width
                         }
                 );
-        });               
-    
+        });  
+        
 });

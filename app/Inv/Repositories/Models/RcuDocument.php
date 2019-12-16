@@ -39,6 +39,7 @@ class RcuDocument extends BaseModel {
         'cm_rcu_status_id',
         'cm_status_updatetime',
         'cm_status_updated_by',
+        'file_id',
         'is_active',
         'created_at',
         'created_by',
@@ -67,6 +68,14 @@ class RcuDocument extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'rcu_status_id', 'id');
     }
     
+    public function cmStatus(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'cm_rcu_status_id', 'id');
+    }
+    
+    public function userFile(){
+        return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id', 'file_id');
+    }
+    
     public static function changeAgentRcuStatus($data){
         return RcuDocument::where('rcu_doc_id',$data->rcu_doc_id)->update([
             'rcu_status_id'=>$data->status,
@@ -76,10 +85,24 @@ class RcuDocument extends BaseModel {
     }
 
     public static function changeCmRcuStatus($data){
+        dd($data->rcu_doc_id);
         return RcuDocument::where('rcu_doc_id',$data->rcu_doc_id)->update([
-            'rcu_status_id'=>$data->status,
-            'rcu_status_updated_by'=>Auth::user()->user_id,
-            'rcu_status_updatetime'=>\Carbon\Carbon::now()
+            'cm_rcu_status_id'=>$data->status,
+            'cm_status_updated_by'=>Auth::user()->user_id,
+            'cm_status_updatetime'=>\Carbon\Carbon::now()
+            ]);
+    }
+    
+    public static function updateRcuFile($data, $rcuDocId){
+        $file_log =  RcuFileLog::create([
+            'rcu_doc_id'=> $rcuDocId,
+            'file_id'=>$data->file_id,
+            'created_by'=>Auth::user()->user_id,
+            'created_at'=>\Carbon\Carbon::now()
+            ]);
+
+        return RcuDocument::where('rcu_doc_id',$rcuDocId)->update([
+            'file_id'=>$data->file_id
             ]);
     }
 }

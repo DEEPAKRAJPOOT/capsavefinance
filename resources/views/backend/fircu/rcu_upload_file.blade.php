@@ -1,9 +1,9 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('save_fi_upload')}}" target="_top" onsubmit="return checkValidation1();" enctype="multipart/form-data">
+  <form method="POST" style="width:100%;" action="{{route('save_rcu_upload')}}" target="_top" onsubmit="return checkValidation1();" enctype="multipart/form-data">
     @csrf
-    <input type="hidden" value="" name="address_ids" id="address_ids">
+    <input type="hidden" value="" name="rcu_doc_id" id="rcuDocId">
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
     <div class="row">
@@ -29,8 +29,8 @@
 @section('jscript')
 <script>
 $(document).ready(function(){
-    let address_id = parent.$('.address_id:checked').val();
-    $('#address_ids').val(address_ids);
+    let rcuDocId = parent.$('#rcuDId').val();
+    $('#rcuDocId').val(rcuDocId);
 
     $('.getFileName').change(function(e) {
         var fileName = e.target.files[0].name;

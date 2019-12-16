@@ -49,10 +49,11 @@ class FiRcuController extends Controller
     {
         $biz_id = $request->get('biz_id');
         $app_id = $request->get('app_id');
+        $fi_addr_id = $request->fiaid;
         $uploadData = Helpers::uploadAppFile($request->all(), $app_id);
         $userFile = $this->docRepo->saveFile($uploadData);
-        
-        $status = $this->appRepo->updateFiFile($userFile,1);
+
+        $status = $this->appRepo->updateFiFile($userFile, $fi_addr_id);
         if($status){
             Session::flash('message',trans('success_messages.uploaded'));
         }else{
@@ -91,6 +92,9 @@ class FiRcuController extends Controller
         $appId = $request->get('app_id');
         $rcuResult = $this->appRepo->getRcuLists($appId);
         foreach ($rcuResult as $key => $value) {
+            $currentRcuDoc = $this->appRepo->getCurrentRcuDoc($appId, $value->doc_id);
+            $value->current_agency =  $currentRcuDoc->agency->comp_name;
+            $value->cm_status =  (isset($currentRcuDoc->cmStatus->status_name)) ? $currentRcuDoc->cmStatus->status_name : '';
             $rcuResult[$key]['documents'] = $this->appRepo->getRcuDocuments($appId, $value->doc_id);
             $rcuResult[$key]['agencies'] = $this->appRepo->getRcuAgencies($appId, $value->doc_id);
         }
@@ -134,7 +138,8 @@ class FiRcuController extends Controller
             $rcuDocArr['rcu_status_id']= 2;
             $rcuDocArr['rcu_status_updated_by']=0;
             $rcuDocArr['rcu_comment']=$requestAll['comment'];
-            $rcuDocArr['cm_rcu_status_id']=0;
+            $rcuDocArr['cm_rcu_status_id']=1;
+            $rcuDocArr['file_id']= 0;
             $rcuDocArr['is_active']= 1;
             $rcuDocArr['created_at']=\Carbon\Carbon::now();
             $rcuDocArr['created_by']=Auth::user()->user_id;
@@ -177,18 +182,19 @@ class FiRcuController extends Controller
      */
     public function saveRcuUpload(Request $request)
     {
-        $biz_id = $request->get('biz_id');
         $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
+        $rcuDocId = $request->rcu_doc_id;
         $uploadData = Helpers::uploadAppFile($request->all(), $app_id);
         $userFile = $this->docRepo->saveFile($uploadData);
-        
-        $status = $this->appRepo->updateFiFile($userFile,1);
+
+        $status = $this->appRepo->updateRcuFile($userFile, $rcuDocId);
         if($status){
             Session::flash('message',trans('success_messages.uploaded'));
         }else{
             Session::flash('message',trans('auth.oops_something_went_wrong'));
         }
-        return redirect()->route('backend_fi', ['app_id' => $app_id, 'biz_id' => $biz_id]);  
+        return redirect()->route('backend_rcu', ['app_id' => $app_id, 'biz_id' => $biz_id]); 
     }
 
 }

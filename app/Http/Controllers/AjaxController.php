@@ -2723,7 +2723,7 @@ if ($err) {
      * @param Request $request
      */
     public function changeCmFiStatus(Request $request){
-      $status = $this->application->changeAgentFiStatus($request);
+      $status = $this->application->changeCmFiStatus($request);
       return $status;
     }
 
@@ -2741,7 +2741,8 @@ if ($err) {
      * @param Request $request
      */
     public function changeCmRcuStatus(Request $request){
-      $status = $this->application->changeAgentRcuStatus($request);
+        dd($request->all());
+      $status = $this->application->changeCmRcuStatus($request);
       return $status;
     }
 }
