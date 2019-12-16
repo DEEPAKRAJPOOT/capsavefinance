@@ -55,7 +55,7 @@ class AppPdNote extends BaseModel {
     public static function showData($app_id)
     {
         $appNote = self::select('pd_note.*', 'users.f_name', 'users.m_name', 'users.l_name')
-                ->join('users', 'users.user_id', '=', 'note.created_by')
+                ->join('users', 'users.user_id', '=', 'pd_note.created_by')
                 ->where('pd_note.app_id', $app_id)
                 ->get();
         return $appNote ?: false;

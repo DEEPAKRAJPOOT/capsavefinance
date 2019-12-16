@@ -495,4 +495,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppPdNote::savePdNotes($attr, $id);
     }
 
+
+    public function showData($id = null)
+    {
+        return AppPdNote::showData($id);
+    }
 }

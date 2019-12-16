@@ -50,6 +50,7 @@ class NotesController extends Controller {
     {
         $app_id = $request->get('app_id');
         $arrData = [];
+        $arrData = $this->appRepo->showData($app_id);
         return view('backend.pdNotes.pd_notes', compact('arrData', 'app_id'));
     }
 
@@ -78,16 +79,15 @@ class NotesController extends Controller {
             $app_id = $request->get('app_id');
             $type = $request->get('type');
             $comments = $request->get('comments');
-
             $this->appRepo->savePdNotes([
-                'app_id' => $app_id,
-                'type' => $type,
-                'comments' => $comments,
-                'created_by' => Auth::user()->user_id,
-                'created_at' => \Carbon\Carbon::now(),
+            'app_id' => $app_id,
+            'type' => $type,
+            'comments' => $comments,
+            'created_by' => Auth::user()->user_id,
+            'created_at' => \Carbon\Carbon::now(),
             ]);
             Session::flash('message', trans('success_messages.pd_notes_saved'));
-            Session::flash('operation_status', 1);
+            Session::flash('operation_status', 1); 
             return redirect()->back();
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

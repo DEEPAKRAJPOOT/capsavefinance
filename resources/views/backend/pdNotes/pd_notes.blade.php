@@ -27,7 +27,7 @@
                                                     <td class="text-right">Added By</td>                                 </tr> 
                                                 @foreach($arrData as $data)
                                                 <tr>
-                                                    <th class="text-left">{{$data->note_data}}</th>
+                                                    <th class="text-left">{{$data->comments}}</th>
                                                     <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>                                                                        
                                                 </tr>
                                                 @endforeach

@@ -11,12 +11,12 @@
         <div class="form-group">
             <label class="">Type : </label>
             {!!Form::radio('type','1' ,'', [   'class'=>'form-control' ]) !!} Physical
-            {!!Form::radio('type','2','', [   'class'=>'form-control' ]) !!} Tele
+            {!!Form::radio('type','2','', [   'class'=>'form-control', 'checked'=>'checked']) !!} Tele
 
         </div>
         <div class="form-group">
             <label class="">Comment : </label> 
-            {!!Form::textarea('comments', '', [ 'class'=>'form-control'  , 'rows'=>3]) !!}
+            {!!Form::textarea('comments', '', [ 'class'=>'form-control'  , 'rows'=>3 , 'required']) !!}
             <span id='msg'></span>
         </div> 
         <button type="submit" class="btn btn-primary float-right">Submit</button>
@@ -45,8 +45,6 @@ $messages = trans('success_messages.pd_notes_saved')
 </script>
 
 @endif
-
-
 
 
 
