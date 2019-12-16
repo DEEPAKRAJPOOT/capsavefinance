@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Inv\Repositories\Models\FinanceModel;
 
 /**
  * 
@@ -19,7 +20,7 @@ class ApiController
 
   public function karza_webhook(Request $request){
     $response = array(
-      'status' => 'fail',
+      'status' => 'failure',
       'message' => 'Request method not allowed',
     );
     $headers = getallheaders();
@@ -28,7 +29,7 @@ class ApiController
        $secret_key = $headers['key'] ?? '';
 
        if ($content_type != 'application/json') {
-         $response['message'] =  'Content Type is not valid';
+         $response['message'] =  'Content Type is not valid.';
          return $this->_setResponse($response, 431);
        }
 
@@ -38,15 +39,29 @@ class ApiController
        }
       $result = $request->all();
       if (!empty($result['statusCode']) && $result['statusCode'] != '101') {
-        $response['message'] = "Unable to get success response.";
-         return $this->_setResponse($response, 406);
+        $response['message'] = "We are getting statusCode with error.";
+         return $this->_setResponse($response, 403);
       }
       if (!empty($result['status'])) {
         $resp['message'] = $result['error'] ?? "Unable to get success response.";
         return $this->_setResponse($response, 406);
       }
       $result =    $result['result'] ?? $result;
-      $fname = "ravi";
+      $request_id =    $result['requestId'] ?? '';
+      if (empty($request_id)) {
+        $resp['message'] = "Insufficiant data to update the report.";
+        return $this->_setResponse($response, 417);
+      }
+
+      $gst_data = FinanceModel::getGstData($request_id);
+      if (empty($gst_data)) {
+         $resp['message'] = "Unable to get record against the requestId.";
+         return $this->_setResponse($response, 422);
+      }
+
+      $app_id = $gst_data['app_id'];
+      $gst_no = $gst_data['gstin'];
+      $fname = $app_id.'_'.$gst_no;
       $this->logdata($result, 'F', $fname.'.json');
       $file_name = $fname.'.pdf';
       $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");

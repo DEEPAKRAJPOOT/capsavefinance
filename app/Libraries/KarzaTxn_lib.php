@@ -27,12 +27,12 @@ class KarzaTxn_lib
 			$url = SELF::BASE_URL . 'gst-return-auth';
 		}
 
-		if (!$validate_otp && (empty($params['username'] || empty($params['gstin'])))) {
+		if (!$validate_otp && (empty($params['username']) || empty($params['gstin']))) {
 			$resp['message'] = "Mandate Fields are required";
 			return $resp;
 		}
 
-		if ($validate_otp && (empty($params['requestId'] || empty($params['otp'])))) {
+		if ($validate_otp && (empty($params['requestId']) || empty($params['otp']))) {
 			$resp['message'] = "Mandate Fields are required";
 			return $resp;
 		}
@@ -61,6 +61,7 @@ class KarzaTxn_lib
 		$log_req = array(
 	     	'req_file' => base64_encode($payload),
 	     	'status' => 'pending',
+	     	'gstin' => $params['gstin'],
 	     	'app_id' => $params['app_id'],
 	     	'url' => base64_encode($url),
 	     );
@@ -88,6 +89,14 @@ class KarzaTxn_lib
 	    	$resp['message'] = $result['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
 	    }
+
+	    if ($validate_otp && !empty($result['result']['responseStatusCode'])) {
+	    	$update_log['status'] = 'fail';
+	    	FinanceModel::updatePerfios($update_log,'biz_gst_log', $inserted_id);
+	    	$resp['message'] = "Unable to validate OTP. Please try again.";
+			return $resp;
+	    }
+
 	    $resp['status'] =  "success";
 	    $resp['message'] =  "success";
 	    $resp['requestId'] = $result['requestId'];
