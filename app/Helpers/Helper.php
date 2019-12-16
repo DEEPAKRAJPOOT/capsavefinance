@@ -246,7 +246,7 @@ class Helper extends PaypalHelper
      */
     public static function uploadAppFile($attributes, $appId) 
     {
-        $userId = Auth::user()->user_id;
+        $userId = Application::where('app_id',$appId)->pluck('user_id')->first();
         $inputArr = [];
         if($attributes['doc_file']) {
             if(!Storage::exists('/public/user/' .$userId. '/' .$appId)) {

@@ -96,9 +96,13 @@
                                                     <td width="15%">{{($fiAdd->fi_status_updatetime)? \Carbon\Carbon::parse($fiAdd->fi_status_updatetime)->format('d/m/Y h:i A'): ''}}</td>
                                                     <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$fiAdd->status->status_name}}</td>
                                                     <td width="15%">
-                                                        <button class="btn-upload btn-sm"  style="padding: 1px 8px;" type="button"> <i class="fa fa-download"></i></button>
+
+                                                        @if(isset($fiAdd->userFile->file_path))
+                                                        <a title="Download Document" href="{{ Storage::url($fiAdd->userFile->file_path) }}" download><i class="fa fa-download"></i></a>
+                                                        @endif
+
                                                         @if($fiAdd->is_active)
-                                                        <button class="btn-upload btn-sm" style="padding: 1px 8px;" type="button"> <i class="fa fa-upload"></i></button>
+                                                        <button class="btn-upload btn-sm trigger-for-fi-doc" style="padding: 1px 8px;" type="button" data-fiadd_id="{{$fiAdd->fi_addr_id}}"> <i class="fa fa-upload"></i></button>
                                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                         @endif
 
@@ -135,7 +139,9 @@
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
                            <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for FI</button>
-                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
+                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
+                           <a data-toggle="modal" data-target="#uploadFiDocFrame" data-url ="{{route('fi_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="200px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiDocModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
+                           <input type="hidden" id="fiaid4upload" value="">
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
                         </div>
                      </div>
@@ -146,6 +152,7 @@
 </div>
 </div>
 {!!Helpers::makeIframePopup('assignFiFrame','Assign FI', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('uploadFiDocFrame','Upload FI Document', 'modal-md')!!}
 @endsection
 
 @section('jscript')
@@ -159,10 +166,36 @@ $(document).ready(function(){
         }
     });
 
+    $('.trigger-for-fi-doc').on('click', function(){
+        $('#fiaid4upload').val($(this).data('fiadd_id'));
+        $('#openFiDocModal').trigger('click');
+    });
+
     $(document).on('click', '.change-cm-status', function(){
         let address_id = $(this).parent('div').data('address_id');
         let status = $(this).attr('value');
-        $('#fi_list').load(' #fi_list');
+        let token = '{{ csrf_token() }}';
+        $('.isloader').hide();
+        /*--------------------------------------*/
+        $.ajax({
+            url: "{{route('change_cm_fi_status')}}",
+            type: "POST",
+            data: {"addr_id": address_id, "status": status, "_token":token},
+            //dataType:'json',
+            error:function (xhr, status, errorThrown) {
+                $('.isloader').hide();
+                alert(errorThrown);
+            },
+            success: function(res){
+                if(res.status == 1){
+                    $('#fi_list').load(' #fi_list');
+                }else{
+                    alert(res.message);
+                }
+                $('.isloader').hide();
+              }
+        });
+        /*------------------------------------------------------*/
 
         
         //hit ajax to save data to log table and update status of fi address and status in biz_addr table
@@ -174,7 +207,6 @@ $(document).ready(function(){
         let token = '{{ csrf_token() }}';
         $('.isloader').hide();
         
-        /*--------------------------------------*/
         $.ajax({
             url: "{{route('change_agent_fi_status')}}",
             type: "POST",
@@ -193,8 +225,6 @@ $(document).ready(function(){
                 $('.isloader').hide();
               }
         });
-        /*------------------------------------------------------*/
-        //hit ajax to save data to log table and update status of fi address and status in biz_addr table
     });
 });
 </script>
