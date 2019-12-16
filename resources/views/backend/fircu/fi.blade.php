@@ -102,7 +102,6 @@
                                                         @if($fiList->cmFiStatus && $fiList->cmFiStatus->cmStatus->status_name == 'Positive')
                                                         <!-- Take Rest -->
                                                         @elseif($fiAdd->is_active)
-                                                        {{$fiList->cmFiStatus->cmStatus->status_name}}
                                                         <button class="btn-upload btn-sm trigger-for-fi-doc" style="padding: 1px 8px;" type="button" data-fiadd_id="{{$fiAdd->fi_addr_id}}"> <i class="fa fa-upload"></i></button>
                                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                         @else
