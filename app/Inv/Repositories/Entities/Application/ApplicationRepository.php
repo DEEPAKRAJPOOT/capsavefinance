@@ -348,6 +348,21 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @return type
      */
      
+    public function getCurrentRcuDoc($appId, $docId)
+    {
+      return RcuDocument::where('app_id', $appId)
+                ->with('cmStatus')
+                ->where('doc_id', $docId)
+                ->where('is_active', 1)
+                ->first();
+      
+    }
+    
+     /**
+     * function for get all RCU documents filess list
+     * @return type
+     */
+     
     public function getRcuAgencies($appId, $docId)
     {
       $result = RcuDocument::getRcuAgencies($appId, $docId);
@@ -567,6 +582,29 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function updateFiFile($data, $fiAddrId){
         return FiAddress::updateFiFile($data, $fiAddrId);
+    }
+
+    public function changeAgentRcuStatus($request){
+      $status = RcuDocument::changeAgentRcuStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function changeCmRcuStatus($request){
+      $status = RcuDocument::changeCmRcuStatus($request);
+      dd($status);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function updateRcuFile($data, $rcuDocId){
+        return RcuDocument::updateRcuFile($data, $rcuDocId);
     }
 
 }
