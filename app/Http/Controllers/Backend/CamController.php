@@ -156,6 +156,10 @@ class CamController extends Controller
         $appId = $request->get('app_id');
         $pending_rec = $fin->getPendingBankStatement($appId);        
         $bankdocs = $fin->getBankStatements($appId);
+        $contents = array();
+        if (file_exists(storage_path('app/public/user/'.$appId.'_banking.json'))) {
+          $contents = json_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json')),true);
+        }
         return view('backend.cam.bank', ['bankdocs' => $bankdocs, 'appId'=> $appId, 'pending_rec'=> $pending_rec]);
 
     }

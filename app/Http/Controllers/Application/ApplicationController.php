@@ -488,13 +488,14 @@ class ApplicationController extends Controller
             'gstin' => $gst_no,//'09AALCS4138B1ZE',
             'username' => $gst_usr,//'prolitus27',
             'password' => $gst_pass,//'Prolitus@1234',
+            'app_id' => $appId,
         );
 
 
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
           $fname = $appId.'_'.$gst_no;
-          $this->logdata($response, 'F', $fname.'.txt');
+          $this->logdata($response['result'], 'F', $fname.'.json');
           $json_decoded = json_decode($response['result'], TRUE);
           $file_name = $fname.'.pdf';
           $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
