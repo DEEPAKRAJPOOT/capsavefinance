@@ -497,12 +497,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->where('app_id', $data['app_id'])
                 ->where('doc_id', $data['doc_id'])
                 ->first();
-        
         if(!$assignData) {
             $resp = RcuDocument::where('app_id', $data['app_id'])
                     ->where('doc_id', $data['doc_id'])
                     ->update(['is_active' => 0]);
-            if($resp == true) {
+            if($resp == true || !$assignData) {
                 $result = RcuDocument::create($data);
                 return $result ?: false;
             }

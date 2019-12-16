@@ -109,7 +109,6 @@ class FiRcuController extends Controller
             $rcuDocArr['is_active']= 1;
             $rcuDocArr['created_at']=\Carbon\Carbon::now();
             $rcuDocArr['created_by']=Auth::user()->user_id;
-            
             $rcuStatusLogArr['rcu_status_id']=2;
             $rcuStatusLogArr['rcu_comment']=$requestAll['comment'];
             $rcuStatusLogArr['created_at']=\Carbon\Carbon::now();
@@ -119,7 +118,6 @@ class FiRcuController extends Controller
         foreach ($docIds as $key=>$value) {
             $rcuDocArr['doc_id']=$value;
             $rcuDocResponse = $this->appRepo->assignRcuDocument($rcuDocArr);
-            
             
             if($rcuDocResponse == 'Assigned') {
                 Session::flash('message',trans('success_messages.rcu.alreadyAssigned'));
