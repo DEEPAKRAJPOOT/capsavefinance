@@ -30,8 +30,9 @@ class FiRcuController extends Controller
     {
         $biz_id = $request->get('biz_id');
         $fiLists = $this->appRepo->getAddressforFI($biz_id);
+        $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Management Address'];
         //dd($fiLists[0]->fiAddress);
-        return view('backend.fircu.fi')->with('fiLists', $fiLists);   
+        return view('backend.fircu.fi')->with(['fiLists'=> $fiLists, 'addrType'=> $addrType]);   
     }
 
     /**
