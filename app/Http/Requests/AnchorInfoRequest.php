@@ -34,7 +34,7 @@ class AnchorInfoRequest extends FormRequest
            'payment_terms' => "required|string|min:1",
            'grp_rating' => "required|string",
            'contact_number' => "required|string|min:10|max:10",
-           'security_deposit' => "required|numeric",
+           'security_deposit' => "required|string",
         ];
     }
 

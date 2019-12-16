@@ -104,9 +104,9 @@
                         </tr>
                         <tr>
                             <td width="25%"><b>Existing Group Exposure</b></td>
-                            <td width="25%"><input type="text" class="form-control" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" maxlength="20" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
                             <td width="25%"><b>Proposed Group Exposure</b></td>
-                            <td width="25%"><input type="text" name="proposed_exposure" class="form-control" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
                         </tr>
                     </tbody>
                 </table>
@@ -120,7 +120,7 @@
                                     <td width="30%"><b>Proposed Limit</b> </td>
                                     <td id="limits" name="limits"> {!! $arrBizData->app->loan_amt ? \Helpers::formatCurreny($arrBizData->app->loan_amt) : '' !!} </td>
                                     <td><b>Exiting Limits ( If any ) </b></td>
-                                    <td><input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr" value="{{isset($arrCamData->t_o_f_limit) ? $arrCamData->t_o_f_limit : '0'}}"></td>
+                                    <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr number_format" maxlength="20" value="{{isset($arrCamData->t_o_f_limit) ? $arrCamData->t_o_f_limit : ''}}"></td>
                                 </tr>
                                 <tr>
                                     <td><b>Maximum Tenor of Invoices/tranch</b></td>
@@ -146,7 +146,7 @@
                                         <input type="text" name="t_o_f_security" id="security" class="form-control" value="{{isset($arrCamData->t_o_f_security) ? $arrCamData->t_o_f_security : ''}}" <="" td="">
                                     </td>
                                     <td><b>Adhoc Limit</b></td>
-                                    <td><input type="text" name="t_o_f_adhoc_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" id="adhoc_limit" class="form-control inr" onfocusout="checkNumber(this)" value="{{isset($arrCamData->t_o_f_adhoc_limit) ? $arrCamData->t_o_f_adhoc_limit : '0'}}"></td>
+                                    <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="t_o_f_adhoc_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" id="adhoc_limit" class="form-control inr number_format" onfocusout="checkNumber(this)" maxlength="20" value="{{isset($arrCamData->t_o_f_adhoc_limit) ? $arrCamData->t_o_f_adhoc_limit : ''}}"></td>
                                 </tr>
                                 <tr>
                                     <td><b>Status of Covenants stipulated during last approval</b></td>
