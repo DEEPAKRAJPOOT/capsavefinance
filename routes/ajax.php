@@ -72,6 +72,16 @@ Route::group(
         'as' => 'gstAnalysis',
         'uses' => 'Application\ApplicationController@analyse_gst'
     ]);
+
+    Route::post('send_gst_otp', [
+        'as' => 'send_gst_otp',
+        'uses' => 'Application\ApplicationController@send_gst_otp'
+    ]);
+    
+    Route::post('verify_gst_otp', [
+        'as' => 'verify_gst_otp',
+        'uses' => 'Application\ApplicationController@verify_gst_otp'
+    ]);
   
     Route::post('sent_otp_mobile', [
         'as' => 'sent_otp_mobile',
