@@ -79,12 +79,14 @@ class KarzaTxn_lib
 	    $result = json_decode($response['result'], TRUE);
 	    if (!empty($result['statusCode']) && $result['statusCode'] != '101') {
 	    	$update_log['status'] = 'fail';
+	    	$update_log['request_id'] = $result['requestId'] ?? NULL;
 	    	FinanceModel::updatePerfios($update_log,'biz_gst_log', $inserted_id);
 	    	$resp['message'] = $this->request_type == 'login' ? $this->error_desc($result['statusCode']) : "Unable to send OTP. Please try again later.";
 			return $resp;
 	    }
 	    if (!empty($result['status'])) {
 	    	$update_log['status'] = 'fail';
+	    	$update_log['request_id'] = $result['requestId'] ?? NULL;
 	    	FinanceModel::updatePerfios($update_log,'biz_gst_log', $inserted_id);
 	    	$resp['message'] = $result['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
@@ -92,6 +94,7 @@ class KarzaTxn_lib
 
 	    if ($validate_otp && !empty($result['result']['responseStatusCode'])) {
 	    	$update_log['status'] = 'fail';
+	    	$update_log['request_id'] = $result['requestId'] ?? NULL;
 	    	FinanceModel::updatePerfios($update_log,'biz_gst_log', $inserted_id);
 	    	$resp['message'] = "Unable to validate OTP. Please try again.";
 			return $resp;

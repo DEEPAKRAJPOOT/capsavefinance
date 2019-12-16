@@ -11,7 +11,7 @@ use App\Inv\Repositories\Models\FinanceModel;
 class ApiController
 {
 
-	protected $secret_key = "0702f2c9c1414b70efc1e69f2ff31af0";
+	protected $secret_key = "Rentalpha__vkzARY";
   protected $download_xlsx = true;
 	
 	function __construct(){
