@@ -279,4 +279,20 @@ Route::group(
         ]
     );
 
+    Route::post(
+        'change_agent_rcu_status',
+        [
+        'as' => 'change_agent_rcu_status',
+        'uses' => 'AjaxController@changeAgentRcuStatus'
+        ]
+    );
+
+    Route::post(
+        'change_cm_rcu_status',
+        [
+        'as' => 'change_cm_rcu_status',
+        'uses' => 'AjaxController@changeCmRcuStatus'
+        ]
+    );
+
 });

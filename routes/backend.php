@@ -106,6 +106,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'backend_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'
             ]);
+            
+            Route::get('fircu/rcuupload', [
+                'as' => 'rcu_upload',
+                'uses' => 'Backend\FiRcuController@RcuUpload'
+            ]);
+
+            Route::post('fircu/rcuupload', [
+                'as' => 'save_rcu_upload',
+                'uses' => 'Backend\FiRcuController@saveRcuUpload'
+            ]);
 
             Route::get('notes-from', [
                 'as' => 'backend_notes_from',

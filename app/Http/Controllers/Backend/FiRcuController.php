@@ -164,5 +164,31 @@ class FiRcuController extends Controller
         return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
+    /**
+     * Display Rcu upload modal
+     */
+    public function RcuUpload(Request $request)
+    {
+        return view('backend.fircu.rcu_upload_file');   
+    }
+
+    /**
+     * Save FI upload File
+     */
+    public function saveRcuUpload(Request $request)
+    {
+        $biz_id = $request->get('biz_id');
+        $app_id = $request->get('app_id');
+        $uploadData = Helpers::uploadAppFile($request->all(), $app_id);
+        $userFile = $this->docRepo->saveFile($uploadData);
+        
+        $status = $this->appRepo->updateFiFile($userFile,1);
+        if($status){
+            Session::flash('message',trans('success_messages.uploaded'));
+        }else{
+            Session::flash('message',trans('auth.oops_something_went_wrong'));
+        }
+        return redirect()->route('backend_fi', ['app_id' => $app_id, 'biz_id' => $biz_id]);  
+    }
 
 }

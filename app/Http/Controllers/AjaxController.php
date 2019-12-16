@@ -2726,4 +2726,22 @@ if ($err) {
       $status = $this->application->changeAgentFiStatus($request);
       return $status;
     }
+
+    /**
+     * change Rcu status by agent
+     * @param Request $request
+     */
+    public function changeAgentRcuStatus(Request $request){
+      $status = $this->application->changeAgentRcuStatus($request);
+      return $status;
+    }
+
+    /**
+     * change FI status by Credit manager
+     * @param Request $request
+     */
+    public function changeCmRcuStatus(Request $request){
+      $status = $this->application->changeAgentRcuStatus($request);
+      return $status;
+    }
 }

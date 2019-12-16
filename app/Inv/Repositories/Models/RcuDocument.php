@@ -3,7 +3,7 @@
 namespace App\Inv\Repositories\Models;
 
 use App\Inv\Repositories\Factory\Models\BaseModel;
-use App\Inv\Repositories\Models\FiRcuLog;
+use App\Inv\Repositories\Models\RcuRcuLog;
 use Auth;
 
 class RcuDocument extends BaseModel {
@@ -65,5 +65,21 @@ class RcuDocument extends BaseModel {
     
     public function status(){
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'rcu_status_id', 'id');
+    }
+    
+    public static function changeAgentRcuStatus($data){
+        return RcuDocument::where('rcu_doc_id',$data->rcu_doc_id)->update([
+            'rcu_status_id'=>$data->status,
+            'rcu_status_updated_by'=>Auth::user()->user_id,
+            'rcu_status_updatetime'=>\Carbon\Carbon::now()
+            ]);
+    }
+
+    public static function changeCmRcuStatus($data){
+        return RcuDocument::where('rcu_doc_id',$data->rcu_doc_id)->update([
+            'rcu_status_id'=>$data->status,
+            'rcu_status_updated_by'=>Auth::user()->user_id,
+            'rcu_status_updatetime'=>\Carbon\Carbon::now()
+            ]);
     }
 }

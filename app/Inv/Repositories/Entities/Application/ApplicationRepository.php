@@ -569,4 +569,26 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return FiAddress::updateFiFile($data, $fiAddrId);
     }
 
+    public function changeAgentRcuStatus($request){
+      $status = RcuDocument::changeAgentRcuStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function changeCmRcuStatus($request){
+      $status = RcuDocument::changeAgentRcuStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function updateRcuFile($data, $fiAddrId){
+        return FiAddress::updateFiFile($data, $fiAddrId);
+    }
+
 }
