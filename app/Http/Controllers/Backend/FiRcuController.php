@@ -30,7 +30,7 @@ class FiRcuController extends Controller
     {
         $biz_id = $request->get('biz_id');
         $fiLists = $this->appRepo->getAddressforFI($biz_id);
-        //dd($fiLists[0]->fiAddress[0]->userFile);
+        //dd($fiLists[0]->fiAddress);
         return view('backend.fircu.fi')->with('fiLists', $fiLists);   
     }
 

@@ -69,7 +69,7 @@ class FiAddress extends BaseModel {
             $customAddArr[$key]['fi_status_id']=2;
             $customAddArr[$key]['fi_status_updated_by']=0;
             $customAddArr[$key]['fi_comment']=$data['comment'];
-            $customAddArr[$key]['cm_fi_status_id']=1;
+            $customAddArr[$key]['cm_fi_status_id']=2;
             $customAddArr[$key]['file_id']=0;
             $customAddArr[$key]['is_active']=1;
             $customAddArr[$key]['created_at']=\Carbon\Carbon::now();
@@ -91,6 +91,10 @@ class FiAddress extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'fi_status_id', 'id');
     }
 
+    public function cmStatus(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'cm_fi_status_id', 'id');
+    }
+
     public function userFile(){
         return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id', 'file_id');
     }
@@ -108,6 +112,10 @@ class FiAddress extends BaseModel {
         $last_active_addr = FiAddress::where(['biz_addr_id'=>$data->addr_id, 'is_active'=>1])->first();
         if($last_active_addr){
             FiStatusLog::insert(['fi_addr_id'=>$last_active_addr->fi_addr_id,'fi_status_id'=>$data->status,'created_at'=>\Carbon\Carbon::now()]);
+            if($data->status == 3){
+                //update rcu status in rta_biz_addr table
+                BusinessAddress::where('biz_addr_id', $data->addr_id)->update(['rcu_status'=>1]);
+            }
             return FiAddress::where('fi_addr_id',$last_active_addr->fi_addr_id)->update([
                 'cm_fi_status_id'=>$data->status,
                 'cm_status_updated_by'=>Auth::user()->user_id,
