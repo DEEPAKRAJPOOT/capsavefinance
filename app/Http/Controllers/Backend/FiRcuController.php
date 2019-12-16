@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\DocumentInterface as InvDocRepoInterface;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Session;
@@ -15,9 +16,10 @@ class FiRcuController extends Controller
     protected $appRepo;
     protected $userRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocRepoInterface $doc_repo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
+        $this->docRepo = $doc_repo;
         $this->middleware('checkBackendLeadAccess');
     }
     
@@ -28,8 +30,35 @@ class FiRcuController extends Controller
     {
         $biz_id = $request->get('biz_id');
         $fiLists = $this->appRepo->getAddressforFI($biz_id);
-        //dd($fiLists[0]->fiAddress[0]->status);
+        //dd($fiLists[0]->fiAddress[0]->userFile);
         return view('backend.fircu.fi')->with('fiLists', $fiLists);   
+    }
+
+    /**
+     * Display FI upload modal
+     */
+    public function FiUpload(Request $request)
+    {
+        return view('backend.fircu.fi_upload_file');   
+    }
+
+    /**
+     * Save FI upload File
+     */
+    public function saveFiUpload(Request $request)
+    {
+        $biz_id = $request->get('biz_id');
+        $app_id = $request->get('app_id');
+        $uploadData = Helpers::uploadAppFile($request->all(), $app_id);
+        $userFile = $this->docRepo->saveFile($uploadData);
+        
+        $status = $this->appRepo->updateFiFile($userFile,1);
+        if($status){
+            Session::flash('message',trans('success_messages.uploaded'));
+        }else{
+            Session::flash('message',trans('auth.oops_something_went_wrong'));
+        }
+        return redirect()->route('backend_fi', ['app_id' => $app_id, 'biz_id' => $biz_id]);  
     }
 
     /**

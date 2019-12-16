@@ -92,6 +92,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@listFI'
             ]);
 
+            Route::get('fircu/fiupload', [
+                'as' => 'fi_upload',
+                'uses' => 'Backend\FiRcuController@FiUpload'
+            ]);
+
+            Route::post('fircu/fiupload', [
+                'as' => 'save_fi_upload',
+                'uses' => 'Backend\FiRcuController@saveFiUpload'
+            ]);
+
             Route::get('fircu/rcu', [
                 'as' => 'backend_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'

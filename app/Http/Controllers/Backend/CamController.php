@@ -127,7 +127,28 @@ class CamController extends Controller
     	  $appId = $request->get('app_id');
         $pending_rec = $fin->getPendingFinanceStatement($appId);
         $financedocs = $fin->getFinanceStatements($appId);
-        return view('backend.cam.finance', ['financedocs' => $financedocs, 'appId'=> $appId, 'pending_rec'=> $pending_rec]);
+        $contents = array();
+        if (file_exists(storage_path('app/public/user/'.$appId.'_finance.json'))) {
+          $contents = json_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json')),true);
+        }
+        $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
+        $latest_finance_year = 2010;
+        $fy = $contents['FinancialStatement']['FY'] ?? array();
+        $financeData = [];
+        if (!empty($fy)) {
+          foreach ($fy as $k => $v) {
+            $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
+            $financeData[$v['year']] = $v;
+          }
+        }
+        return view('backend.cam.finance', [
+          'financedocs' => $financedocs, 
+          'appId'=> $appId, 
+          'pending_rec'=> $pending_rec,
+          'borrower_name'=> $borrower_name,
+          'finance_data'=> $financeData,
+          'latest_finance_year'=> $latest_finance_year,
+        ]);
 
     }
 
@@ -357,6 +378,17 @@ class CamController extends Controller
         $file= url('storage/user/'. $file_name);
         $req_arr['types'] =  $reportType;
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
+        if ($final_res['status'] == 'success') {
+          $final_res['result'] = base64_encode($final_res['result']);
+          $json_file_name = $appId.'_banking.json';
+          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
+          $log_data = array(
+            'status' => $final_res['status'],
+            'updated_by' => Auth::user()->user_id,
+          );
+          FinanceModel::updatePerfios($log_data,'biz_perfios',$init_txn['perfiostransactionid'],'biz_perfios_id');
+        }
         $final_res['api_type'] = Bsa_lib::GET_REP;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
@@ -468,11 +500,19 @@ class CamController extends Controller
 	        \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
         }
         $file= url('storage/user/'. $file_name);
-
-
         $req_arr['reportType'] = $reportType;
         $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
-
+        if ($final_res['status'] == 'success') {
+          $final_res['result'] = base64_encode($final_res['result']);
+          $json_file_name = $appId.'_finance.json';
+          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
+          $log_data = array(
+            'status' => $final_res['status'],
+            'updated_by' => Auth::user()->user_id,
+          );
+          FinanceModel::updatePerfios($log_data,'biz_perfios',$start_txn['perfiostransactionid'],'biz_perfios_id');
+        }
         $final_res['api_type'] = Perfios_lib::GET_STMT;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
@@ -524,6 +564,9 @@ class CamController extends Controller
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
           $final_res['result'] = base64_encode($final_res['result']);
+          $json_file_name = $appId.'_finance.json';
+          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => Auth::user()->user_id,
@@ -579,6 +622,9 @@ class CamController extends Controller
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
           $final_res['result'] = base64_encode($final_res['result']);
+          $json_file_name = $appId.'_banking.json';
+          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => Auth::user()->user_id,
