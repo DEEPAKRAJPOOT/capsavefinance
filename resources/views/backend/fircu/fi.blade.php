@@ -47,13 +47,11 @@
                                         <td>{{($fiList->biz_owner_id)? $fiList->owner->first_name: $fiList->business->biz_entity_name}}</td>                                      
                                         <td>{{$fiList->addr_1.' '.$fiList->city_name.' '.(isset($fiList->state->name)? $fiList->state->name: '').' '.$fiList->pin_code}}</td>                                      
                                         <td>
-                                          <div class="btn-group"><label class="badge badge-warning">Pending&nbsp; &nbsp;</label></div>
+                                          <div class="btn-group"><label class="badge badge-warning">{{($fiList->cmFiStatus)? $fiList->cmFiStatus->cmStatus->status_name: 'Pending'}}&nbsp; &nbsp;</label></div>
                                         </td>
                                         <td>
                                             <div class="btn-group ml-2 mb-1">
-                                                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Action
-                                                </button>
+                                                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="2">Inprogress</a>
@@ -101,9 +99,13 @@
                                                         <a title="Download Document" href="{{ Storage::url($fiAdd->userFile->file_path) }}" download><i class="fa fa-download"></i></a>
                                                         @endif
 
-                                                        @if($fiAdd->is_active)
+                                                        @if($fiList->cmFiStatus && $fiList->cmFiStatus->cmStatus->status_name == 'Positive')
+                                                        <!-- Take Rest -->
+                                                        @elseif($fiAdd->is_active)
+                                                        {{$fiList->cmFiStatus->cmStatus->status_name}}
                                                         <button class="btn-upload btn-sm trigger-for-fi-doc" style="padding: 1px 8px;" type="button" data-fiadd_id="{{$fiAdd->fi_addr_id}}"> <i class="fa fa-upload"></i></button>
                                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                        @else
                                                         @endif
 
                                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$fiAdd->fi_addr_id}}">
