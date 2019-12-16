@@ -93,7 +93,7 @@ class FiRcuController extends Controller
         $rcuResult = $this->appRepo->getRcuLists($appId);
         foreach ($rcuResult as $key => $value) {
             $currentRcuDoc = $this->appRepo->getCurrentRcuDoc($appId, $value->doc_id);
-            $value->current_agency =  (isset($currentRcuDoc->agency->comp_name)) $currentRcuDoc->agency->comp_name : '';
+            $value->current_agency =  (isset($currentRcuDoc->agency->comp_name)) ? $currentRcuDoc->agency->comp_name : '';
             $value->cm_status =  (isset($currentRcuDoc->cmStatus->status_name)) ? $currentRcuDoc->cmStatus->status_name : '';
             $rcuResult[$key]['documents'] = $this->appRepo->getRcuDocuments($appId, $value->doc_id);
             $rcuResult[$key]['agencies'] = $this->appRepo->getRcuAgencies($appId, $value->doc_id);
