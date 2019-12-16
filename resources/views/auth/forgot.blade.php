@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+x@extends('layouts.guest')
 @section('content')
 <div class="form-content no-padding sign-up mt-5">
     <div class="row justify-content-center align-items-center m-0">
@@ -11,7 +11,7 @@
                         <h4 class="section-title"> Recover Your Password</h4>
                     </div>
                     <div class="failed">
-                        <div>
+                        <div class="text-center">
                             @if(Session::has("messages"))
                             <strong class="erro-sms text-success">
                                 {{ Session::get('messages') }}
