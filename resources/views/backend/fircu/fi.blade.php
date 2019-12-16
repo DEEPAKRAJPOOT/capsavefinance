@@ -38,8 +38,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <?php $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Management Address'];
-                                $status = ['Pending', 'Inprogress', 'Positive', 'Negative', 'Cancelled', 'Refer to Credit']; ?>
                                 @forelse($fiLists as $key=>$fiList)
                                     <tr role="row" class="odd">
                                         <td><input type="checkbox" value="{{$fiList->biz_addr_id}}" class="address_id">{{$fiList->biz_addr_id}}</td>
@@ -51,6 +49,7 @@
                                         </td>
                                         <td>
                                             <div class="btn-group ml-2 mb-1">
+                                                @if($fiList->fiAddress->count())
                                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
@@ -60,6 +59,7 @@
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Cancelled</a>
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="6">Refer to Credit</a>
                                                 </div>
+                                                @endif
                                                 <!-- <div class="d-flex file-upload-cls">
                                                     <div class="file-browse float-left mr-3 ml-4">
                                                         <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
@@ -167,7 +167,7 @@ $(document).ready(function(){
         }
     });
 
-    $('.trigger-for-fi-doc').on('click', function(){
+    $(document).on('click', '.trigger-for-fi-doc', function(){
         $('#fiaid4upload').val($(this).data('fiadd_id'));
         $('#openFiDocModal').trigger('click');
     });
