@@ -47,6 +47,7 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group ml-2 mb-1">
+                                                    @if(request()->get('view_only'))
                                                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Action
                                                     </button>
@@ -57,6 +58,7 @@
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="4">Negative</a>
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Cancelled</a>
                                                     </div>
+                                                    @endif
                                                 </div>
                                             </td> 
                                             <td align="right"><span class="trigger minus"></span></td> 
@@ -145,10 +147,12 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                           <button class="btn btn-success btn-sm" id="trigger-for-rcu">Trigger for RCU</button>
-                           <a data-toggle="modal" data-target="#assignRcuFrame" data-url ="{{route('show_assign_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuModal" style="display: none;"><i class="fa fa-plus"></i>Assign RCU</a>
-                           <a data-toggle="modal" data-target="#uploadRcuDocFrame" data-url ="{{route('rcu_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="150px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuDocModal" style="display: none;"><i class="fa fa-plus"></i>Upload Report</a>
+                            @if(request()->get('view_only'))
+                            <button class="btn btn-success btn-sm" id="trigger-for-rcu">Trigger for RCU</button>
+                            <a data-toggle="modal" data-target="#assignRcuFrame" data-url ="{{route('show_assign_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuModal" style="display: none;"><i class="fa fa-plus"></i>Assign RCU</a>
+                            <a data-toggle="modal" data-target="#uploadRcuDocFrame" data-url ="{{route('rcu_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="150px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuDocModal" style="display: none;"><i class="fa fa-plus"></i>Upload Report</a>
                             <input type="hidden" id="rcuDId" value="">
+                            @endif
                         </div>
                      </div>
                 </div>

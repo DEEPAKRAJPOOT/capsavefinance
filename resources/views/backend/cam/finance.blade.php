@@ -33,13 +33,13 @@
                      @endif
                      <div class="clearfix"></div>
                      <div style="text-align: right;">
-                     @if($financedocs->count() > 0)
+                     @if(request()->get('view_only') && $financedocs->count() > 0)
                         <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
                      @endif
                      @if(file_exists(storage_path('app/public/user/'.$appId.'_finance.xlsx')))
                            <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_finance.xlsx') }}" download>Download</a>
                      @endif 
-                     @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
+                     @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
                            <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
                      @endif 
                      </div>
@@ -1047,7 +1047,9 @@
                                                 </tr>
                                              </thead>
                                           </table>
+                                          @if(request()->get('view_only')) 
                                           <button  class="btn btn-primary pull-right btn-sm mt-3"> + Add Row</button>
+                                          @endif
                                           <div class="clearfix"></div>
                                        </div>
                                     </div>
@@ -1101,11 +1103,15 @@
                                              <tbody id="inter_group_transaction">
                                              </tbody>
                                           </table>
+                                          @if(request()->get('view_only'))
                                           <button class="btn btn-primary pull-right btn-sm mt-3"> + Add Row</button>
+                                          @endif
                                           <div class="clearfix"></div>
                                        </div>
                                     </div>
+                                    @if(request()->get('view_only')) 
                                     <button class="btn btn-success ml-auto  mt-3"> Save</button>
+                                    @endif
                                  </div>
                               </div>
                            </div>

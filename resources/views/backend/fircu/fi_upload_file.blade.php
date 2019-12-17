@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('save_fi_upload')}}" target="_top" onsubmit="return checkValidation1();" enctype="multipart/form-data">
+  <form method="POST" style="width:100%;" action="{{route('save_fi_upload')}}" target="_top" enctype="multipart/form-data" id="documentForm">
     @csrf
     <input type="hidden" value="" name="fiaid" id="fiaid">
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
@@ -21,7 +21,7 @@
     
     <div class="row">
       <div class="col-md-12">
-        <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
+        <button type="submit" class="btn btn-success btn-sm float-right" id="savedocument">Submit</button>
       </div>
     </div>   
   </form>
@@ -30,6 +30,10 @@
 
 @section('jscript')
 <script>
+$.validator.addMethod('filesize', function (value, element, param) {
+        return this.optional(element) || (element.files[0].size <= param)
+    }, 'File size must be less than {0}');
+
 $(document).ready(function(){
 	let fiaid = parent.$('#fiaid4upload').val();
 	$('#fiaid').val(fiaid);
@@ -38,24 +42,42 @@ $(document).ready(function(){
         var fileName = e.target.files[0].name;
         $(this).parent('div').children('.custom-file-label').html(fileName);
     });
+    /* FUNCTION FOR VALIDATE */
+    $('#documentForm').validate({
+            rules: {
+                'doc_file': {
+                    required: true,
+                    extension: "jpg,jpeg,png,pdf,doc,docx",
+                    filesize : 200000000,
+                }
+            },
+            messages: {
+                'doc_file': {
+                    required: "Please select file",
+                    extension:"Please select jpg, png, pdf, doc, docx type format only.",
+                    filesize:"Maximum size for upload 20 MB.",
+                }
+            }
+        });
+
+        // $('#documentForm').validate();
+
+        $("#savedocument").click(function(){
+            if($('#documentForm').valid()){
+                $('form#documentForm').submit();
+                $("#savedocument").attr("disabled","disabled");
+            }  
+        }); 
+    /* FUNCTION FOR VALIDATE */
 
     
 });
 
 function checkValidation(){
     unsetError('select[name=agency_id]');
-    unsetError('select[name=to_id]');
-    //unsetError('textarea[name=comment]');
 
     let flag = true;
     let agency_id = $('select[name=agency_id]').val();
-    let to_id = $('select[name=to_id]').val();
-    //let comment = $('textarea[name=comment]').val().trim();
-
-    if(agency_id == ''){
-        setError('select[name=agency_id]', 'Plese select Agency');
-        flag = false;
-    }
 
     if(to_id == ''){
         setError('select[name=to_id]', 'Plese select User');

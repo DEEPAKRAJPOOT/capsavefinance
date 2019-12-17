@@ -1282,4 +1282,15 @@ class UserRepository extends BaseRepositories implements UserInterface
         $users = UserModel::where('agency_id','<>', null)->where('is_active',1)->get(['user_id','agency_id','f_name','m_name','l_name']);
         return $users ?: false;
     }
+    
+    /**
+     * Get Backend Roles          
+     * 
+     * @return mixed
+     */
+    public function getAllRole()
+    {
+        $role = Role::getAllRole();
+        return $role;
+    }    
 }

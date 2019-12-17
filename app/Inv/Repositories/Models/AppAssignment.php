@@ -26,7 +26,7 @@ class AppAssignment extends BaseModel
      *
      * @var integer
      */
-    protected $primaryKey = 'lead_assign_id';
+    protected $primaryKey = 'app_assign_id';
     
      /**
      * Maintain created_at and updated_at automatically
@@ -163,13 +163,68 @@ class AppAssignment extends BaseModel
                 ->leftJoin('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')                   
-                ->where('app_id', $app_id)
+                ->where('app_id', $app_id)                
                 ->where('is_owner', '0')
-                ->orderBy('lead_assign_id', 'DESC')
+                ->orderBy('app_assign_id', 'DESC')
                 ->first();
         return $assignData ? $assignData : false;
-    }    
+    } 
+    
+    /**
+     * Get Application current assignee
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function getAppCurrentAssignee($app_id)
+    {
+        $assignData = self::select(DB::raw("CONCAT_WS(' ', rta_to_u.f_name, rta_to_u.l_name) AS assignee"), 
+                'to_r.name as assignee_role')
+                ->leftJoin('users as to_u', 'app_assign.to_id', '=', 'to_u.user_id')
+                ->leftJoin('role_user as to_ru', 'app_assign.to_id', '=', 'to_ru.user_id')
+                ->leftJoin('roles as to_r', 'to_ru.role_id', '=', 'to_r.id')                   
+                ->where('app_id', $app_id)
+                ->where('is_owner', '1')                
+                ->first();
+        return $assignData ? $assignData : false;
+    }     
   
+    /**
+     * Check logged in user is application owner or not
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function isAppCurrentAssignee($app_id, $to_id)
+    {                
+        $assignData = self::where('app_id', $app_id)
+                ->where('is_owner', '1')
+                ->where('to_id', $to_id)
+                ->count();
+        return $assignData > 0 ? true : false;        
+    }
+    
+    /**
+     * Get Back stages users to assign the application
+     * 
+     * @param integer $app_id
+     * @param array $roles
+     * 
+     * @return mixed
+     */
+    public static function getBackStageUsers($app_id, $roles=[])
+    {
+        $assignData = self::select('u.user_id', 'r.id', DB::raw("CONCAT_WS(' ', rta_u.f_name, rta_u.l_name) AS assignee"),
+                'r.name as assignee_role')
+                ->join('users as u', 'app_assign.from_id', '=', 'u.user_id')
+                ->join('role_user as ru', 'u.user_id', '=', 'ru.user_id')
+                ->join('roles as r', 'ru.role_id', '=', 'r.id')
+                ->where('app_assign.app_id', $app_id)
+                ->whereIn('r.id', $roles)
+                ->groupBy('u.user_id')
+                ->get();
+        return $assignData ? $assignData : [];
+    }
 }
   
 

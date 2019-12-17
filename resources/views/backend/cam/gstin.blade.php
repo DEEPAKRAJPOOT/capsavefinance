@@ -62,7 +62,9 @@
                </table>
             </div>
          </div>
+         @if(request()->get('view_only')) 
          <button class="btn btn-success btn-sm pull-right  mt-3"> Save</button>
+         @endif
       </div>
    </div>
 </div>
