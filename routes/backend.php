@@ -397,7 +397,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
-        });
+            
+            
+            
+            Route::get('manage-program', [
+                'as' => 'manage_program',
+                'uses' => 'Backend\ProgramController@mangeProgramList'
+            ]);
+            
+             Route::get('add-program', [
+                'as' => 'add_program',
+                'uses' => 'Backend\ProgramController@addProgram'
+            ]);
+             
+             
+            Route::post('save-program', [
+            'as' => 'save_program',
+            'uses' => 'Backend\ProgramController@saveProgram'
+           ]);
+    });
     });
 
 

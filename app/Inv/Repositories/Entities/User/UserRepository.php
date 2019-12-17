@@ -1282,4 +1282,16 @@ class UserRepository extends BaseRepositories implements UserInterface
         $users = UserModel::where('agency_id','<>', null)->where('is_active',1)->get(['user_id','agency_id','f_name','m_name','l_name']);
         return $users ?: false;
     }
+    
+    
+    /**
+     * get all anchor list
+     * 
+     * @param type $id int
+     * @return type mixed
+     */
+    public function getAnchorDataById($id)
+    {
+        return Anchor::getAnchorDataById($id);
+    }
 }

@@ -278,5 +278,17 @@ Route::group(
         'uses' => 'AjaxController@changeCmFiStatus'
         ]
     );
+    
+      Route::post(
+        'get-sub-industry',
+        [
+        'as' => 'get_sub_industry',
+        'uses' => 'AjaxController@getSubIndustry'
+        ]
+    );
+    
+    
+    
+    
 
 });

@@ -22,4 +22,5 @@ return [
     'update_company_detail_successfully' => 'Company details updated successfully!',
     'save_company_detail_successfully' => 'Company details saved successfully!',
     'promoter_saved_successfully' => 'Promoter details saved successfully!',
+    'program_save_successfully'=>'Program details saved successfully!'
 ];

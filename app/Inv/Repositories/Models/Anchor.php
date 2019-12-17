@@ -188,4 +188,28 @@ public static function saveAnchor($arrAnchor = [])
         $rowUpdate = self::find((int) $anchId)->update($arrUserData);
         return ($rowUpdate ? true : false);
     }
+    
+    
+    /**
+     * get all anchor list 
+     * 
+     * @param type $id int
+     * @return type mixed
+     */
+    public static function getAnchorDataById($id)
+    {
+         if (empty($id)) {
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
+        }
+
+        if (!is_int($id)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+        $result = self::
+                join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id')
+                ->where(['u.user_type' => 2, 'anchor.anchor_id' => $id])->get();
+               
+        return ($result ? : false);
+    }
+
 }

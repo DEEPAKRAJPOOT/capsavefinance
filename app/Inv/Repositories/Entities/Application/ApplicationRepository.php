@@ -21,6 +21,7 @@ use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Offer;
 use App\Inv\Repositories\Models\Agency;
+use App\Inv\Repositories\Models\Master\Industry;
 
 /**
  * Application repository class
@@ -353,7 +354,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $prgmData = Program::getProgramData($whereCondition);
         return $prgmData ? $prgmData : [];
     }
-        
+         
     /**
      * Get Anchor Data By Application Id
      * 
@@ -479,6 +480,43 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function changeCmFiStatus($request){
       $status = $this->application->changeAgentFiStatus($request);
       return $status;
+    }
+    
+    
+    
+    /**
+     * Get industry 
+     * 
+     * @return type mixed
+     */
+    public function getIndustryDropDown()
+    {
+        return Industry::getIndustryDropDown();
+    }
+    
+    
+    /**
+     * Get sub industry 
+     * 
+     * @param type $where Array
+     * @return type mixed
+     */
+    public function getSubIndustryByWhere($where)
+    {
+        return \App\Inv\Repositories\Models\Master\SubIndustry::getSubIndustryByWhere($where);
+    }
+    
+    
+    
+    /**
+     * Save program
+     * 
+     * @param type $attr array
+     * @return type mixed
+     */
+    public function saveProgram($attr)
+    {
+        return Program::saveProgram($attr);
     }
 
 }

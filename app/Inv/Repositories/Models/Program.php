@@ -25,14 +25,14 @@ class Program extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -43,6 +43,7 @@ class Program extends BaseModel {
         'anchor_id',
         'anchor_user_id',
         'prgm_name',
+        'prgm_detail',
         'industry_id',
         'sub_industry_id',
         'cibil_score',
@@ -73,7 +74,7 @@ class Program extends BaseModel {
         'created_by',
         'created_at',
         'updated_by',
-        'updated_at',        
+        'updated_at',
     ];
 
     /**
@@ -83,40 +84,40 @@ class Program extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getProgramData($whereCondition=[])
+    public static function getProgramData($whereCondition = [])
     {
         //Check $whereCondition is not an array
         if (!is_array($whereCondition)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-        
+
         $whereCondition['status'] = isset($whereCondition['status']) ? $whereCondition['status'] : 1;
-        
-        $appNote = self::select('prgm.prgm_id','prgm.prgm_name', 'prgm.product_name',
-                'prgm.anchor_limit', 'prgm.min_loan_size',
-                'prgm.max_loan_size',
-                'prgm.min_interest_rate',
-                'prgm.max_interest_rate',
-                'prgm.min_tenor',
-                'prgm.max_tenor',
-                'prgm.min_tenor_old_invoice',
-                'prgm.max_tenor_old_invoice',
-                'prgm.margin',
-                'prgm.overdue_interest_rate',
-                'prgm.interest_linkage',
-                'prgm.is_adhoc_facility',
-                'prgm.adhoc_interest_rate',
-                'prgm.is_grace_period',
-                'prgm.grace_period',
-                'prgm.interest_borne_by',
-                'prgm.disburse_method',
-                'prgm.repayment_method',
-                'prgm.processing_fee',
-                'prgm.check_bounce_fee',                
-                'prgm.status',                
-                'mst_industry.name as industry_name', 
-                'mst_sub_industry.name as sub_industry_name',
-                DB::raw("CASE
+
+        $appNote = self::select('prgm.prgm_id', 'prgm.prgm_name', 'prgm.product_name',
+                        'prgm.anchor_limit', 'prgm.min_loan_size',
+                        'prgm.max_loan_size',
+                        'prgm.min_interest_rate',
+                        'prgm.max_interest_rate',
+                        'prgm.min_tenor',
+                        'prgm.max_tenor',
+                        'prgm.min_tenor_old_invoice',
+                        'prgm.max_tenor_old_invoice',
+                        'prgm.margin',
+                        'prgm.overdue_interest_rate',
+                        'prgm.interest_linkage',
+                        'prgm.is_adhoc_facility',
+                        'prgm.adhoc_interest_rate',
+                        'prgm.is_grace_period',
+                        'prgm.grace_period',
+                        'prgm.interest_borne_by',
+                        'prgm.disburse_method',
+                        'prgm.repayment_method',
+                        'prgm.processing_fee',
+                        'prgm.check_bounce_fee',
+                        'prgm.status',
+                        'mst_industry.name as industry_name',
+                        'mst_sub_industry.name as sub_industry_name',
+                        DB::raw("CASE
                             WHEN is_fldg_applicable = 0 THEN 'No'
                             WHEN is_fldg_applicable = 1 THEN 'Yes'
                             ELSE ''
@@ -125,9 +126,36 @@ class Program extends BaseModel {
                 ->leftJoin('mst_industry', 'prgm.industry_id', '=', 'mst_industry.id')
                 ->leftJoin('mst_sub_industry', 'prgm.sub_industry_id', '=', 'mst_sub_industry.id')
                 ->where($whereCondition)
-                ->first();      
+                ->first();
         return $appNote;
     }
 
+    /**
+     * Save program
+     * 
+     * @param type $arrAnchor
+     * @return type
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function saveProgram($attr = [])
+    {
+        //Check data is Array
+        if (!is_array($attr)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
+        }
+
+        //Check data is not blank
+        if (empty($attr)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        /**
+         * Create anchor
+         */
+        $arrAnchorVal = self::create($attr);
+
+        return ($arrAnchorVal->prgm_id ?: false);
+    }
 
 }

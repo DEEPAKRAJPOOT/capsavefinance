@@ -24,6 +24,7 @@ use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
 use Illuminate\Support\Facades\Validator;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 
 
 class AjaxController extends Controller {
@@ -2726,4 +2727,24 @@ if ($err) {
       $status = $this->application->changeAgentFiStatus($request);
       return $status;
     }
+    
+    
+    
+    /**
+     * Get sub industry
+     * 
+     * @param Request $request
+     * @return type Mixed
+     * @throws BlankDataExceptions 
+     */
+    public function getSubIndustry(Request $request)
+    {
+        $id = $request->get('id');
+        if (is_null($id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $result = $this->application->getSubIndustryByWhere(['industry_id' => $id]);
+        return response()->json($result);
+    }
+
 }
