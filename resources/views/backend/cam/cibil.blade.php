@@ -267,7 +267,7 @@
                            </td>
                         </tr>
                         <tr>
-                           <td><b>Any  NPA  History  of the  Account  Holder  or Any  of  the  Directors  / Partners  /  Guarantors/ assoc</b>iate concerns? </td>
+                           <td><b>Any  NPA  History  of the  Account  Holder  or Any  of  the  Directors  / Partners  /  Guarantors/ associate concerns?</b> </td>
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">

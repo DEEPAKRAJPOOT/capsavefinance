@@ -848,27 +848,27 @@ class CamController extends Controller
      */
     public function anchorViewForm(Request $request, Gupshup_lib $gupshup)            
     {
-      /*$req  = array('mobile' => '+919667305959', 'message' => "hi gajendra, what is this.");
-      $resp = $gupshup->api_call($req);*/
         try {
             $biz_id = $request->get('biz_id'); 
             $app_id = $request->get('app_id');
             $liftingData = $this->appRepo->getLiftingDetail($app_id);
+            $anchorRelationData = $this->appRepo->getAnchorRelationDetails($app_id);
             $data = [];
             if (!empty($liftingData)) {
                 foreach ($liftingData as $key => $value) {
-                $year = $value['year'];
-                $data[$year]['mt_value'][] = $value['mt_value'];
-                $data[$year]['mt_type'] = $value['mt_type'];
-                $data[$year]['anchor_lift_detail_id'][] = $value['anchor_lift_detail_id'];
-                $data[$year]['year'] = $year;
-                $data[$year]['mt_amount'][] = $value['amount'];
-              }
+                    $year = $value['year'];
+                    $data[$year]['mt_value'][] = $value['mt_value'];
+                    $data[$year]['mt_type'] = $value['mt_type'];
+                    $data[$year]['anchor_lift_detail_id'][] = $value['anchor_lift_detail_id'];
+                    $data[$year]['year'] = $year;
+                    $data[$year]['mt_amount'][] = $value['amount'];
+                }
             }
             return view('backend.cam.cam_anchor_view',['data'=> $data])
                 ->with('biz_id',$biz_id)
-                    ->with('app_id',$app_id);
-          
+                ->with('anchorRelationData', $anchorRelationData)
+                ->with('app_id',$app_id);
+
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -886,6 +886,7 @@ class CamController extends Controller
     {   
         try {
             $allData = $request->all();
+            $userId = Auth::user()->user_id;
             $relationShipArr = [];
             $liftingArr = [];
             
@@ -899,7 +900,16 @@ class CamController extends Controller
             $relationShipArr['security_deposit']      = $allData['security_deposit'];
             $relationShipArr['note_on_lifting']       = $allData['note_on_lifting'];
             $relationShipArr['reference_from_anchor'] = $allData['reference_from_anchor'];
-            $relationShipArr['anchor_risk_comments'] = $allData['anchor_risk_comments'];
+            $relationShipArr['anchor_risk_comments']  = $allData['anchor_risk_comments'];
+            $anchorRelationData = $this->appRepo->getAnchorRelationDetails($allData['app_id']);
+            if (!empty($anchorRelationData)) {
+                $relationShipArr['updated_by'] = $userId;
+                $this->appRepo->updateAnchorRelationDetails($relationShipArr, $anchorRelationData['anchor_relation_id']);
+            }else{
+                $relationShipArr['created_by'] = $userId;
+                $this->appRepo->saveAnchorRelationDetails($relationShipArr);
+            }
+
             
             //need to saveddd $relationShipArr and pass its id to lifting table
             
