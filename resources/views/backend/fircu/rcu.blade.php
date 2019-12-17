@@ -149,9 +149,9 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                            @if(request()->get('view_only'))
+                            {{-- @if(request()->get('view_only')) --}}
                             <button class="btn btn-success btn-sm" id="trigger-for-rcu">Trigger for RCU</button>
-                            @endif
+                            {{-- @endif --}}
                             <a data-toggle="modal" data-target="#assignRcuFrame" data-url ="{{route('show_assign_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuModal" style="display: none;"><i class="fa fa-plus"></i>Assign RCU</a>
                             <a data-toggle="modal" data-target="#uploadRcuDocFrame" data-url ="{{route('rcu_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="150px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuDocModal" style="display: none;"><i class="fa fa-plus"></i>Upload Report</a>
                             <input type="hidden" id="rcuDId" value="">
