@@ -1,4 +1,4 @@
-x@extends('layouts.guest')
+@extends('layouts.guest')
 @section('content')
 <div class="form-content no-padding sign-up mt-5">
     <div class="row justify-content-center align-items-center m-0">
