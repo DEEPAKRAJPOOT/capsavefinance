@@ -23,7 +23,7 @@
                <div class="form-fields">
                   <div class="active" id="details">
                       
-                    {{ Form::open(array('url' => route('save_program'))) }}
+                    {{ Form::open(array('url' => route('save_program') ,'id'=>'addProgram')) }}
                       {!! Form::hidden('anchor_id', isset($anchor_id) ? $anchor_id : null)   !!}
                       
                      <div class="form-sections">
@@ -123,7 +123,7 @@
                                        <div class="form-check-inline">
                                           <label class="form-check-label fnt">
                                           {!! Form::radio('is_fldg_applicable',1,'', ['class'=>'form-check-input'])!!}  
-                                          <input type="radio" class="form-check-input" name="fldg">Yes
+                                         Yes
                                           </label>
                                        </div>
                                        <div class="form-check-inline ">

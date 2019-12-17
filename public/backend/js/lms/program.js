@@ -43,10 +43,47 @@ try {
         $(document).on('change', '.industry_change', function () {
             $(this).handleIndustryChange();
         });
-        
-        
-        $(document).on('click','.submit' , function (e) {
+
+
+        $(document).on('click', '.submit', function (e) {
             e.preventDefault();
+            let form = $('#addProgram');
+
+            let validRules = {
+                rules: {
+                    prgm_detail: {
+                        required: true
+                    },
+                    prgm_name: {
+                        required: true
+                    },
+                    industry_id: {
+                        required: true
+                    },
+                    sub_industry_id: {
+                        required: true
+                    },
+                    anchor_limit: {
+                        required: true
+                    },
+                    is_fldg_applicable: {
+                        required: true
+                    },
+                    anchor_user_id: {
+                        required: true
+                    },
+                },
+                messages: {
+
+                }
+            }
+
+            form.validate(validRules);
+            var valid = form.valid();
+            if (valid) {
+                form.submit();
+            }
+
         });
 
     });
