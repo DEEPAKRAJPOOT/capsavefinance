@@ -59,7 +59,9 @@
                         </div>
                         <div class="action-btn">
                             <div class="upload-btn-wrapper setupload-btn pos">
+                                @if(request()->get('view_only'))
                                 <button class="btn upload-btn openModal" data-id="{{ $data->doc_id }}">Upload</button>
+                                @endif
                                 <!--<input type="file" name="myfile">-->
                             </div>
                         </div>
@@ -95,7 +97,9 @@
                                         <td width="20%"> {{ (isset($value->created_at)) ? date('d-m-Y', strtotime($value->created_at)) : ''}} </td>
                                         <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
                                         <td align="center" width="20%">
+                                            @if(request()->get('view_only'))
                                             <a title="Delete Document" href="{{ Route('document_delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach
@@ -114,7 +118,9 @@
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
                                 <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
+                                @if(request()->get('view_only'))
                                 <input type="submit" value="Submit" class="btn btn-success btn-sm">
+                                @endif
                             </form>
                         </div>
                     </div>

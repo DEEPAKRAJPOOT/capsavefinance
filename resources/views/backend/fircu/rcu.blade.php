@@ -40,24 +40,28 @@
                                     
                                         <tr role="row" class="odd">
                                             <td class="sorting_1"><input type="checkbox" class="document_id" value="{{ $value->rcuDoc->id }}">{{ $value->rcuDoc->id }}.</td>
-                                            <td>{{ $value->rcuDoc->doc_name }}</td>                                 
-                                            <td>{{ $value->current_agency }}</td>                                      
+                                            <td>{{ $value->rcuDoc->doc_name }}</td> 
+                                            <td>{{ (isset($value->current_agency->comp_name)) ? $value->current_agency->comp_name : '' }}</td>                                      
                                             <td>
                                                 <div class="btn-group"><label class="badge badge-warning">{{(isset($value->cm_status)) ? ($value->cm_status): 'Pending' }}</label></div>
                                             </td>
                                             <td>
+                                                @if($value['agencies']->count())
                                                 <div class="btn-group ml-2 mb-1">
+                                                    @if(request()->get('view_only'))
                                                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Action
                                                     </button>
-                                                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;"  data-doc_id="{{$value->doc_id}}">
+                                                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;"  data-rcu_doc_id="{{ $value->current_rcu->rcu_doc_id}}">
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="2">Inprogress</a>
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="3">Positive</a>
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="4">Negative</a>
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Cancelled</a>
                                                     </div>
+                                                    @endif
                                                 </div>
+                                                @endif
                                             </td> 
                                             <td align="right"><span class="trigger minus"></span></td> 
                                         </tr>
@@ -145,9 +149,11 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                           <button class="btn btn-success btn-sm" id="trigger-for-rcu">Trigger for RCU</button>
-                           <a data-toggle="modal" data-target="#assignRcuFrame" data-url ="{{route('show_assign_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuModal" style="display: none;"><i class="fa fa-plus"></i>Assign RCU</a>
-                           <a data-toggle="modal" data-target="#uploadRcuDocFrame" data-url ="{{route('rcu_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="150px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuDocModal" style="display: none;"><i class="fa fa-plus"></i>Upload Report</a>
+                            @if(request()->get('view_only'))
+                            <button class="btn btn-success btn-sm" id="trigger-for-rcu">Trigger for RCU</button>
+                            @endif
+                            <a data-toggle="modal" data-target="#assignRcuFrame" data-url ="{{route('show_assign_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuModal" style="display: none;"><i class="fa fa-plus"></i>Assign RCU</a>
+                            <a data-toggle="modal" data-target="#uploadRcuDocFrame" data-url ="{{route('rcu_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="150px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuDocModal" style="display: none;"><i class="fa fa-plus"></i>Upload Report</a>
                             <input type="hidden" id="rcuDId" value="">
                         </div>
                      </div>
@@ -164,7 +170,7 @@
 @section('jscript')
 <script>
 $(document).ready(function(){
-    $('#trigger-for-rcu').on('click', function(){
+    $(document).on('click', '.trigger-for-rcu', function(){
         if($('.document_id').is(':checked')){
             $('#openRcuModal').trigger('click');
         }else{
@@ -172,7 +178,7 @@ $(document).ready(function(){
         }
     });
     
-    $('.trigger-for-rcu-doc').on('click', function(){
+    $(document).on('click', '.trigger-for-rcu-doc', function(){
         $('#rcuDId').val($(this).data('rcu_doc_id'));
         $('#openRcuDocModal').trigger('click');
     });
@@ -216,7 +222,7 @@ $(document).on('click', '.change-cm-status', function(){
     let rcu_doc_id = $(this).parent('div').data('rcu_doc_id');
     let status = $(this).attr('value');
     let token = '{{ csrf_token() }}';
-    $('.isloader').hide();
+    $('.isloader').show();
 
     $.ajax({
         url: "{{route('change_cm_rcu_status')}}",
@@ -225,13 +231,13 @@ $(document).on('click', '.change-cm-status', function(){
         //dataType:'json',
         error:function (xhr, status, errorThrown) {
             $('.isloader').hide();
-//            alert(errorThrown);
+            alert(errorThrown);
         },
         success: function(res){
             if(res.status == 1){
                 $('#rcu_list').load(' #rcu_list');
             }else{
-//                alert(res.message);
+                alert(res.message);
             }
             $('.isloader').hide();
           }

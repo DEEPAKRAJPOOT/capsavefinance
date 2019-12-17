@@ -2741,7 +2741,6 @@ if ($err) {
      * @param Request $request
      */
     public function changeCmRcuStatus(Request $request){
-        dd($request->all());
       $status = $this->application->changeCmRcuStatus($request);
       return $status;
     }

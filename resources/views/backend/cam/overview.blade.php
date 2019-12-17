@@ -176,7 +176,33 @@
                         </table>
                     </div>
                 </div>
+
+                <div class="data mt-4">
+                    <h2 class="sub-title bg">Brief Profile of the Company</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <textarea class="form-control" id="profile_of_company" name="t_o_f_profile_comp" rows="3" spellcheck="false" >{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}}</textarea>
+                    </div>
+                </div>
+
+                <div class="data mt-4">
+                    <h2 class="sub-title bg">Risk Comments</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <textarea class="form-control" id="profile_of_company" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
+                    </div>
+                </div>
+
+                <div class="data mt-4">
+                    <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
+
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+                @if(request()->get('view_only'))
                 <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                @endif
               </form>
             </div>
         </div>
