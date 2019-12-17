@@ -910,21 +910,38 @@
         });
         
         
+          
     //////////CIN webservice for get promoter details start here//////////////////////////////////////        
         $(document).on('click', '.clsdiv', function () {
         $(this).parent().parent().remove();
-        $(".owneridDynamic").each(function(k, v){
-        var GetVal = $(this).val();
-        if (GetVal == '')
+        var rowcount = parseInt($("#rowcount").val());
+         if (rowcount > 0)
         {
-        $("#submit").val('Save');
+          var x = rowcount - 1;
         }
-        else
+        $("#rowcount").val(x);
+        var numItems = $('.owneridDynamic').length;
+        if(numItems > 0)
         {
-        $("#submit").val('Save and Continue');
-        }
+                $(".owneridDynamic").each(function(k, v){
+                var GetVal = $(this).val();
+                alert(v);
+                if (GetVal == '')
+                {
+                    $("#submit").val('Save');
+                }
+                else
+                {
+                   $("#submit").val('Save and Continue');
+                }
 
-        });
+                });
+            }
+            else
+            {
+           $("#submit").val('Save and Continue');     
+                
+        }
         });
         
         
