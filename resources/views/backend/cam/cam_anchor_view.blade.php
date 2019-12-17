@@ -23,7 +23,7 @@
                                 </td>
                                 <td>Payment Terms with the Group</td>
                                 <td>
-                                    <input type="text" id="payment_terms" name="payment_terms" class="form-control" value="{{isset($anchorRelationData['payment_terms']) ? $anchorRelationData['payment_terms'] : ''}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z]/g, '').replace(/(\..*)\./g, '$1');">
+                                        <input type="text" id="payment_terms" name="payment_terms" class="form-control" value="{{isset($anchorRelationData['payment_terms']) ? $anchorRelationData['payment_terms'] : ''}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('payment_terms', '<span class="error">:message</span>') !!}
                                 </td>
                             </tr>
