@@ -38,8 +38,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <?php $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Management Address'];
-                                $status = ['Pending', 'Inprogress', 'Positive', 'Negative', 'Cancelled', 'Refer to Credit']; ?>
                                 @forelse($fiLists as $key=>$fiList)
                                     <tr role="row" class="odd">
                                         <td><input type="checkbox" value="{{$fiList->biz_addr_id}}" class="address_id">{{$fiList->biz_addr_id}}</td>
@@ -47,13 +45,12 @@
                                         <td>{{($fiList->biz_owner_id)? $fiList->owner->first_name: $fiList->business->biz_entity_name}}</td>                                      
                                         <td>{{$fiList->addr_1.' '.$fiList->city_name.' '.(isset($fiList->state->name)? $fiList->state->name: '').' '.$fiList->pin_code}}</td>                                      
                                         <td>
-                                          <div class="btn-group"><label class="badge badge-warning">Pending&nbsp; &nbsp;</label></div>
+                                          <div class="btn-group"><label class="badge badge-warning">{{($fiList->cmFiStatus)? $fiList->cmFiStatus->cmStatus->status_name: 'Pending'}}&nbsp; &nbsp;</label></div>
                                         </td>
                                         <td>
                                             <div class="btn-group ml-2 mb-1">
-                                                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Action
-                                                </button>
+                                                @if($fiList->fiAddress->count() && request()->get('view_only'))
+                                                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="2">Inprogress</a>
@@ -62,6 +59,8 @@
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Cancelled</a>
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="6">Refer to Credit</a>
                                                 </div>
+                                                @endif
+
                                                 <!-- <div class="d-flex file-upload-cls">
                                                     <div class="file-browse float-left mr-3 ml-4">
                                                         <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
@@ -72,6 +71,7 @@
                                                         <input type="file" id="file_1" dir="1" title="Upload RCU Report" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                     </div>
                                                 </div> -->
+                                                @endif
                                             </div>
                                         </td> 
                                         <td align="right"><span class="trigger minus"></span></td> 
@@ -96,10 +96,17 @@
                                                     <td width="15%">{{($fiAdd->fi_status_updatetime)? \Carbon\Carbon::parse($fiAdd->fi_status_updatetime)->format('d/m/Y h:i A'): ''}}</td>
                                                     <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$fiAdd->status->status_name}}</td>
                                                     <td width="15%">
-                                                        <button class="btn-upload btn-sm"  style="padding: 1px 8px;" type="button"> <i class="fa fa-download"></i></button>
-                                                        @if($fiAdd->is_active)
-                                                        <button class="btn-upload btn-sm" style="padding: 1px 8px;" type="button"> <i class="fa fa-upload"></i></button>
+
+                                                        @if(isset($fiAdd->userFile->file_path))
+                                                        <a title="Download Document" href="{{ Storage::url($fiAdd->userFile->file_path) }}" download><i class="fa fa-download"></i></a>
+                                                        @endif
+
+                                                        @if($fiList->cmFiStatus && $fiList->cmFiStatus->cmStatus->status_name == 'Positive')
+                                                        <!-- Take Rest -->
+                                                        @elseif($fiAdd->is_active)
+                                                        <button class="btn-upload btn-sm trigger-for-fi-doc" style="padding: 1px 8px;" type="button" data-fiadd_id="{{$fiAdd->fi_addr_id}}"> <i class="fa fa-upload"></i></button>
                                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                        @else
                                                         @endif
 
                                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$fiAdd->fi_addr_id}}">
@@ -134,8 +141,13 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
+                           @if(request()->get('view_only')) 
                            <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for FI</button>
+                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
+                           <a data-toggle="modal" data-target="#uploadFiDocFrame" data-url ="{{route('fi_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="200px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiDocModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
+                           <input type="hidden" id="fiaid4upload" value="">
                            <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
+                           @endif
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
                         </div>
                      </div>
@@ -146,6 +158,7 @@
 </div>
 </div>
 {!!Helpers::makeIframePopup('assignFiFrame','Assign FI', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('uploadFiDocFrame','Upload FI Document', 'modal-md')!!}
 @endsection
 
 @section('jscript')
@@ -159,10 +172,36 @@ $(document).ready(function(){
         }
     });
 
+    $(document).on('click', '.trigger-for-fi-doc', function(){
+        $('#fiaid4upload').val($(this).data('fiadd_id'));
+        $('#openFiDocModal').trigger('click');
+    });
+
     $(document).on('click', '.change-cm-status', function(){
         let address_id = $(this).parent('div').data('address_id');
         let status = $(this).attr('value');
-        $('#fi_list').load(' #fi_list');
+        let token = '{{ csrf_token() }}';
+        $('.isloader').show();
+        /*--------------------------------------*/
+        $.ajax({
+            url: "{{route('change_cm_fi_status')}}",
+            type: "POST",
+            data: {"addr_id": address_id, "status": status, "_token":token},
+            //dataType:'json',
+            error:function (xhr, status, errorThrown) {
+                $('.isloader').hide();
+                alert(errorThrown);
+            },
+            success: function(res){
+                if(res.status == 1){
+                    $('#fi_list').load(' #fi_list');
+                }else{
+                    alert(res.message);
+                }
+                $('.isloader').hide();
+              }
+        });
+        /*------------------------------------------------------*/
 
         
         //hit ajax to save data to log table and update status of fi address and status in biz_addr table
@@ -172,9 +211,8 @@ $(document).ready(function(){
         let fi_addr_id = $(this).parent('div').data('fi_address_id');
         let status = $(this).attr('value');
         let token = '{{ csrf_token() }}';
-        $('.isloader').hide();
+        $('.isloader').show();
         
-        /*--------------------------------------*/
         $.ajax({
             url: "{{route('change_agent_fi_status')}}",
             type: "POST",
@@ -193,8 +231,6 @@ $(document).ready(function(){
                 $('.isloader').hide();
               }
         });
-        /*------------------------------------------------------*/
-        //hit ajax to save data to log table and update status of fi address and status in biz_addr table
     });
 });
 </script>

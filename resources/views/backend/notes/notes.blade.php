@@ -9,7 +9,9 @@
           <div class=" form-fields">
            <div class="col-md-12">
               <h5 class="card-title form-head-h5">Notes  
+              @if(request()->get('view_only'))    
               <a data-toggle="modal" data-target="#noteFrame" data-url ="{{route('backend_notes_from',['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls float-right"><i class="fa fa-plus"></i>Add Note</a>
+              @endif
             </h5>
                     <div class="col-md-12-cls">
                             <div class="prtm-full-block">       

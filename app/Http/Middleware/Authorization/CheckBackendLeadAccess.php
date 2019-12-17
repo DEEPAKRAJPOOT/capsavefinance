@@ -19,6 +19,10 @@ class CheckBackendLeadAccess extends BaseAuthorization
          if ($this->gate->denies($request->route()->getName())) {
             return response()->view('errors.403', [], 403);
         }
+        if ($request->has('app_id')) {
+            $isViewOnly = \Helpers::isAccessViewOnly($request->get('app_id'));                        
+            $request->request->add(['view_only' => $isViewOnly]);
+        }
 
         return $next($request);
     }
