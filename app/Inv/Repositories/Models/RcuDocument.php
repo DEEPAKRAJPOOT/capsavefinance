@@ -85,7 +85,6 @@ class RcuDocument extends BaseModel {
     }
 
     public static function changeCmRcuStatus($data){
-        dd($data->rcu_doc_id);
         return RcuDocument::where('rcu_doc_id',$data->rcu_doc_id)->update([
             'cm_rcu_status_id'=>$data->status,
             'cm_status_updated_by'=>Auth::user()->user_id,

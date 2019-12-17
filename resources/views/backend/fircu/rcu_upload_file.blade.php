@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('save_rcu_upload')}}" target="_top" onsubmit="return checkValidation1();" enctype="multipart/form-data">
+<form method="POST" style="width:100%;" action="{{route('save_rcu_upload')}}" target="_top" id="documentForm" enctype="multipart/form-data">
     @csrf
     <input type="hidden" value="" name="rcu_doc_id" id="rcuDocId">
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
@@ -19,7 +19,7 @@
     
     <div class="row">
       <div class="col-md-12">
-        <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
+          <button type="submit" class="btn btn-success btn-sm float-right" id="savedocument">Submit</button>
       </div>
     </div>   
   </form>
@@ -28,17 +28,51 @@
 
 @section('jscript')
 <script>
-$(document).ready(function(){
-    let rcuDocId = parent.$('#rcuDId').val();
-    $('#rcuDocId').val(rcuDocId);
+    $.validator.addMethod('filesize', function (value, element, param) {
+        return this.optional(element) || (element.files[0].size <= param)
+    }, 'File size must be less than {0}');
 
-    $('.getFileName').change(function(e) {
-        var fileName = e.target.files[0].name;
-        $(this).parent('div').children('.custom-file-label').html(fileName);
+    $(document).ready(function () {
+        /* rcu doc id filler*/
+        
+        let rcuDocId = parent.$('#rcuDId').val();
+        $('#rcuDocId').val(rcuDocId);
+
+        /* file name into input type file on choose */
+        $('.getFileName').change(function(e) {
+            var fileName = e.target.files[0].name;
+            $(this).parent('div').children('.custom-file-label').html(fileName);
+        });
+
+        /* validator */
+        
+        $('#documentForm').validate({ // initialize the plugin
+            rules: {
+                'doc_file': {
+                    required: true,
+                    extension: "jpg,jpeg,png,pdf,doc,docx",
+                    filesize : 200000000,
+                }
+            },
+            messages: {
+                'doc_file': {
+                    required: "Please select file",
+                    extension:"Please select jpg,jpeg,png,pdf,doc,docx type format only.",
+                    filesize:"maximum size for upload 20 MB.",
+                }
+            }
+        });
+
+        $('#documentForm').validate();
+
+        $("#savedocument").click(function(){
+            if($('#documentForm').valid()){
+                $('form#documentForm').submit();
+                $("#savedocument").attr("disabled","disabled");
+            }  
+        });            
+
     });
-
-    
-});
 
 </script>
 @endsection

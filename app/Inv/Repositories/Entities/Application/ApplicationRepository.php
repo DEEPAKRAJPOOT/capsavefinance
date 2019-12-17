@@ -620,7 +620,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function changeCmRcuStatus($request){
       $status = RcuDocument::changeCmRcuStatus($request);
-      dd($status);
       if($status){
         return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
       }else{
