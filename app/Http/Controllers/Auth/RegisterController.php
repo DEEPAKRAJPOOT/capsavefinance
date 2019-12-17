@@ -434,7 +434,7 @@ use RegistersUsers,
                     $userMailArr['otp'] = $Otpstring;
                     $gupshup = new Gupshup_lib();
                     $mobile_no = $userCheckArr->mobile_no;
-                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on rentalpha.\r\n Regards";
+                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
                     // Send OTP mobile to User
                     $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
                     //if ($otp_resp['status'] != 'success') {
@@ -554,7 +554,7 @@ use RegistersUsers,
                 $userMailArr['otp'] = $Otpstring;
                 $gupshup = new Gupshup_lib();
                 $mobile_no = $userCheckArr->mobile_no;
-                $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on rentalpha.\r\n Regards";
+                $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
 
                 $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
 
