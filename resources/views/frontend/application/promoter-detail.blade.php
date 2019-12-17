@@ -124,7 +124,7 @@
 
                                               
                                             </label>
-                                            <input type="text" readonly=readonly id="share_per{{isset($row->first_name) ? $i : '1'}}" name="share_per[]" data-id="{{isset($row->first_name) ? $i : '1'}}" maxlength="3"  value="{{$row->share_per}}" class="form-control share_per"  placeholder="Enter Shareholder" >
+                                            <input type="text"  id="share_per{{isset($row->first_name) ? $i : '1'}}" name="share_per[]" data-id="{{isset($row->first_name) ? $i : '1'}}" maxlength="3"  value="{{$row->share_per}}" class="form-control share_per"  placeholder="Enter Shareholder" >
                                             <span class="error" id="shareCheck{{isset($row->first_name) ? $i : '1'}}"></span> 
                                         </div>
                                     </div>
@@ -212,7 +212,7 @@
                                          <label for="txtEmail">Mobile <span class="mandatory">*</span>  </label> 
                                              <input type="text" name="mobile_no[]"  {{isset($main[$j]['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : '' }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
                                               
-                                             <span class="text-success float-left" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"><i class="fa fa-{{isset($main[$j]['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i><i> {{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> </span>
+                                             <span class="text-success float-left findMobileverify" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"><i class="fa fa-{{isset($main[$j]['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i><i> {{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> </span>
                                                 <span class="text-danger float-left" id="v5failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
                                                 
                                              
@@ -421,7 +421,7 @@
 
 
                                                         <tr>
-                                                            <td class="text-left">5</td>
+                                                            <td class="text-left">6</td>
                                                             <td width="30%">Aadhar Card </td>
                                                             <td width="30%" >
 
@@ -681,19 +681,22 @@
         }
 
         });
-        //// for mobile verify///
-       /* $(".verify_mobile_no").each(function (k, v) {
-        panCount++;
-        $spantrgt = $(this).closest('div').find('.pullMsg_mob');
-        var result = $(this).text();
-        if (result == "Verify")
-        {
-        $spantrgt.html('<span class="text-danger"><i class="fa fa-check-close" aria-hidden="true"></i> <i>Mobile no is not verified.</i> </span>');
-        e.preventDefault();
-        return false;
-        }
-
-        }); */
+        
+          //// for mobile verify///
+        $(".findMobileverify").each(function (k, v) {
+         mobileVeriCount++;   
+         var mobileVeri =   $(this).text();
+        
+         if($.trim(mobileVeri)!="Verified Successfully")
+         {
+             
+              $("#v5failurepanverify"+mobileVeriCount).html('<i class="fa fa-close" aria-hidden="true"></i><i>Not verified</i>');
+              e.preventDefault();
+              return false;
+         }
+        
+        
+        });
         
         
         ///// validation for where is checked then shareholder is mandaterory/////
@@ -1086,12 +1089,12 @@
                 $('#pan_verify' + count).text('Verified')
                         $('#successpanverify' + count).show();
                 $('#failurepanverify' + count).hide();
-                $("#submit").attr("disabled", false);
+               /// $("#submit").attr("disabled", false);
                 } else {
                 $('#pan_verify' + count).text('Verify');
                 $('#successpanverify' + count).hide();
                 $('#failurepanverify' + count).show();
-                $("#submit").attr("disabled", true);
+              ///  $("#submit").attr("disabled", true);
                 }
                 }
         });
@@ -1136,7 +1139,7 @@
                 $('#ppanVeriView' + count).css('display', 'inline');
                 $('#v1successpanverify' + count).show();
                 $('#v1failurepanverify' + count).hide();
-                $("#submit").attr("disabled", false);
+              ///  $("#submit").attr("disabled", false);
                 } else{
                 $('#ppan' + count).text('Verify');
                 $('#v1successpanverify' + count).hide();
