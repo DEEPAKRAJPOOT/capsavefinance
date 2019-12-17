@@ -20,7 +20,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="table-responsive">
+                        <div class="table-responsive" id="rcu_list">
                             <table id="rcuList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                 <thead>
                                     <tr role="row">
@@ -39,41 +39,34 @@
                                     @foreach ($data as $key => $value) 
                                     
                                         <tr role="row" class="odd">
-                                            <td class="sorting_1"><input type="checkbox" name="documentIds" value="{{ $value->rcuDoc->id }}">{{ $i }}.</td>
+                                            <td class="sorting_1"><input type="checkbox" class="document_id" value="{{ $value->rcuDoc->id }}">{{ $value->rcuDoc->id }}.</td>
                                             <td>{{ $value->rcuDoc->doc_name }}</td>                                 
-                                            <td>abc company</td>                                      
+                                            <td>{{ (isset($value->current_agency->comp_name)) ? $value->current_agency->comp_name : '' }}</td>                                      
                                             <td>
-                                                <div class="btn-group"><label class="badge badge-warning">Pending&nbsp; &nbsp;</label></div>
+                                                <div class="btn-group"><label class="badge badge-warning">{{(isset($value->cm_status)) ? ($value->cm_status): 'Pending' }}</label></div>
                                             </td>
                                             <td>
+                                                @if($value['agencies']->count())
                                                 <div class="btn-group ml-2 mb-1">
+                                                    @if(request()->get('view_only'))
                                                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Action
                                                     </button>
-                                                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                                        <a class="dropdown-item" href="#" value="0">Pending</a>
-                                                        <a class="dropdown-item" href="#" value="1">Inprogress</a>
-                                                        <a class="dropdown-item" href="#" value="2">Positive</a>
-                                                        <a class="dropdown-item" href="#" value="3">Negative</a>
-                                                        <a class="dropdown-item" href="#" value="4">Cancelled</a>
-                                                        <a class="dropdown-item" href="#" value="5">Refer to Credit</a>
+                                                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;"  data-rcu_doc_id="{{ $value->current_rcu->rcu_doc_id}}">
+                                                        <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
+                                                        <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="2">Inprogress</a>
+                                                        <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="3">Positive</a>
+                                                        <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="4">Negative</a>
+                                                        <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Cancelled</a>
                                                     </div>
-                                                    <div class="d-flex file-upload-cls">
-                                                        <div class="file-browse float-left mr-3 ml-4">
-                                                            <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
-                                                            <input type="file" title="Download RCU Report" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                                        </div>
-                                                        <div class="file-browse float-left ">
-                                                            <button class="btn-upload  title=" ffff"="" btn-sm"="" type="button"> <i class="fa fa-upload"></i></button>
-                                                            <input type="file" id="file_1" dir="1" title="Upload RCU Report" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                                        </div>
-                                                    </div>
+                                                    @endif
                                                 </div>
+                                                @endif
                                             </td> 
-                                            <td align="right"><span class="trigger"></span></td> 
+                                            <td align="right"><span class="trigger minus"></span></td> 
                                         </tr>
                                         
-                                        <tr class="dpr" style="display: none;">
+                                        <tr class="dpr" style="display: table-row;">
                                             <td colspan="7" class="p-0">
                                                <table class="overview-table remove-tr-bg" cellpadding="0" cellspacing="0" border="0" width="100%">
                                                   <tbody>
@@ -81,24 +74,71 @@
                                                         <td width="25%"><b>File Name</b></td>
                                                         <td width="25%"><b>Upload On </b></td>
                                                         <td width="25%">Download</td>
-                                                        <td align="center" width="25%">Action</td>
                                                      </tr>
                                                     @foreach ($value->documents as $key1 => $document) 
                                                      <tr>
                                                       <td width="25%">{{ $document->userFile->file_name }}</td>
-                                                      <td width="25%">Tue, Nov 12, 2019, 2:56 AM</td>
-                                                      <td width="25%"><a href="#"><i class="fa fa-download"></i></a></td>
-                                                      <td align="center" width="25%"><a class="mr-2" href="#"><i class="fa fa-eye"></i></a>
+                                                      <td width="25%">{{\Carbon\Carbon::parse($document->created_at)->format('d/m/Y h:i A')}}</td>
+                                                      <td width="25%">
+                                                          <a title="Download Document" href="{{ Storage::url($document->userFile->file_path) }}" download>
+                                                                <i class="fa fa-download"></i>
+                                                          </a>
                                                       </td>
                                                      </tr>
                                                      @endforeach
                                                   </tbody>
                                                </table>
+                                               <table class="overview-table remove-tr-bg" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                  <tbody>
+                                                     <tr>
+                                                        <td width="20%"><b>Agency Name</b></td>
+                                                        <td width="20%"><b>User Name</b></td>
+                                                        <td width="15%"><b>Created At</b></td>
+                                                        <td width="15%"><b>Updated On</b></td>
+                                                        <td align="center" width="15%" style="border-right: 1px solid #e9ecef;"><b>Status</b></td>
+                                                        <td width="15%"><b>Action</b></td>
+                                                     </tr>
+                                                    @forelse($value['agencies'] as $value2)
+                                                    <tr>
+                                                       <td width="20%">{{$value2->agency->comp_name}}</td>
+                                                       <td width="20%">{{ucwords($value2->user->f_name.' '.$value2->user->l_name)}}</td>
+                                                       <td width="15%">{{\Carbon\Carbon::parse($value2->created_at)->format('d/m/Y h:i A')}}</td>
+                                                       <td width="15%">{{($value2->rcu_status_updatetime)? \Carbon\Carbon::parse($value2->rcu_status_updatetime)->format('d/m/Y h:i A'): ''}}</td>
+                                                       <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$value2->status->status_name}}</td>
+                                                       <td width="15%">
+                                                           
+                                                        @if(isset($value2->userFile->file_path))
+                                                        <a title="Download Report Document" href="{{ Storage::url($value2->userFile->file_path) }}" download><i class="fa fa-download"></i></a>
+                                                        @endif
+                                                        @if($value2->is_active)
+                                                        <button class="btn-upload btn-sm trigger-for-rcu-doc" style="padding: 1px 8px;" type="button" data-rcu_doc_id="{{$value2->rcu_doc_id}}"> <i class="fa fa-upload"></i></button>
+                                                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                        @endif
+
+                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-rcu_doc_id="{{$value2->rcu_doc_id}}">
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="1">Pending</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="2">Inprogress</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="3">Positive</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="4">Negative</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="5">Cancelled</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="6">Refer to Credit</a>
+                                                        </div>
+
+
+                                                       </td>
+                                                    </tr>
+                                                    @empty
+                                                    <tr style="text-align: center;">
+                                                       <td width="100%" colspan="5">No data found</td>
+                                                    </tr>
+                                                    @endforelse
+                                                  </tbody>
+                                               </table>
                                             </td>
                                         </tr>
-                                    @php
-                                        $i++;
-                                    @endphp
+                                        @php
+                                            $i++;
+                                        @endphp
                                     @endforeach
                                 </tbody>
                             </table>
@@ -109,8 +149,12 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                            <button class="btn btn-success btn-sm " onclick="triggerRCU()">Trigger for FI</button>
-                            <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
+                            @if(request()->get('view_only'))
+                            <button class="btn btn-success btn-sm" id="trigger-for-rcu">Trigger for RCU</button>
+                            @endif
+                            <a data-toggle="modal" data-target="#assignRcuFrame" data-url ="{{route('show_assign_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuModal" style="display: none;"><i class="fa fa-plus"></i>Assign RCU</a>
+                            <a data-toggle="modal" data-target="#uploadRcuDocFrame" data-url ="{{route('rcu_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="150px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openRcuDocModal" style="display: none;"><i class="fa fa-plus"></i>Upload Report</a>
+                            <input type="hidden" id="rcuDId" value="">
                         </div>
                      </div>
                 </div>
@@ -119,12 +163,85 @@
     </div>
 </div>
 </div>
+{!!Helpers::makeIframePopup('assignRcuFrame','Assign RCU', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('uploadRcuDocFrame','Upload Rcu Document', 'modal-md')!!}
 @endsection
 
 @section('jscript')
-    <script>
-        var messages = {
-        };
-    </script> 
-    <script src="{{ url('backend/js/fi-rcu.js') }}"></script>
+<script>
+$(document).ready(function(){
+    $('#trigger-for-rcu').on('click', function(){
+        if($('.document_id').is(':checked')){
+            $('#openRcuModal').trigger('click');
+        }else{
+            alert('First check at least one checkbox.');
+        }
+    });
+    
+    $(document).on('click', '.trigger-for-rcu-doc', function(){
+        $('#rcuDId').val($(this).data('rcu_doc_id'));
+        $('#openRcuDocModal').trigger('click');
+    });
+    
+    $('.change-status').on('click', function(){
+        let address_id = $(this).parent('div').data('address_id');
+        let status = $(this).attr('value');
+        //hit ajax to save data to log table and update status of fi address and status in biz_addr table
+    });
+});
+
+$(document).on('click', '.change-agent-status', function(){
+    let rcu_doc_id = $(this).parent('div').data('rcu_doc_id');
+    let status = $(this).attr('value');
+    let token = '{{ csrf_token() }}';
+    $('.isloader').hide();
+
+    $.ajax({
+        url: "{{route('change_agent_rcu_status')}}",
+        type: "POST",
+        data: {"rcu_doc_id": rcu_doc_id, "status": status, "_token":token},
+        //dataType:'json',
+        error:function (xhr, status, errorThrown) {
+            $('.isloader').hide();
+            alert(errorThrown);
+        },
+        success: function(res){
+            if(res.status == 1){
+                $('#rcu_list').load(' #rcu_list');
+            }else{
+                alert(res.message);
+            }
+            $('.isloader').hide();
+          }
+    });
+    /*------------------------------------------------------*/
+    //hit ajax to save data to log table and update status of fi address and status in biz_addr table
+});
+
+$(document).on('click', '.change-cm-status', function(){
+    let rcu_doc_id = $(this).parent('div').data('rcu_doc_id');
+    let status = $(this).attr('value');
+    let token = '{{ csrf_token() }}';
+    $('.isloader').show();
+
+    $.ajax({
+        url: "{{route('change_cm_rcu_status')}}",
+        type: "POST",
+        data: {"rcu_doc_id": rcu_doc_id, "status": status, "_token":token},
+        //dataType:'json',
+        error:function (xhr, status, errorThrown) {
+            $('.isloader').hide();
+            alert(errorThrown);
+        },
+        success: function(res){
+            if(res.status == 1){
+                $('#rcu_list').load(' #rcu_list');
+            }else{
+                alert(res.message);
+            }
+            $('.isloader').hide();
+          }
+    });
+});
+</script>
 @endsection

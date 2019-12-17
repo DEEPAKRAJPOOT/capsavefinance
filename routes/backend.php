@@ -92,9 +92,29 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@listFI'
             ]);
 
+            Route::get('fircu/fiupload', [
+                'as' => 'fi_upload',
+                'uses' => 'Backend\FiRcuController@FiUpload'
+            ]);
+
+            Route::post('fircu/fiupload', [
+                'as' => 'save_fi_upload',
+                'uses' => 'Backend\FiRcuController@saveFiUpload'
+            ]);
+
             Route::get('fircu/rcu', [
                 'as' => 'backend_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'
+            ]);
+            
+            Route::get('fircu/rcuupload', [
+                'as' => 'rcu_upload',
+                'uses' => 'Backend\FiRcuController@RcuUpload'
+            ]);
+
+            Route::post('fircu/rcuupload', [
+                'as' => 'save_rcu_upload',
+                'uses' => 'Backend\FiRcuController@saveRcuUpload'
             ]);
 
             Route::get('notes-from', [
@@ -248,7 +268,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@viewCibilReport'
             ]);
 
-            //////////////for Assign FI Iframe////////////////////
+            //////////////for Assign FI RCU Iframe////////////////////
             Route::get('fircu/assign-fi', [
                 'as' => 'show_assign_fi',
                 'uses' => 'Backend\FiRcuController@showAssignFi'
@@ -257,6 +277,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('fircu/assign-fi', [
                 'as' => 'save_assign_fi',
                 'uses' => 'Backend\FiRcuController@saveAssignFi'
+            ]);
+            
+            Route::get('fircu/assign-rcu', [
+                'as' => 'show_assign_rcu',
+                'uses' => 'Backend\FiRcuController@showAssignRcu'
+            ]);
+
+            Route::post('fircu/assign-rcu', [
+                'as' => 'save_assign_rcu',
+                'uses' => 'Backend\FiRcuController@saveAssignRcu'
             ]);
 
         });

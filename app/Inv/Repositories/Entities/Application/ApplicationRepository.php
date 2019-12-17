@@ -14,6 +14,8 @@ use App\Inv\Repositories\Models\LiftingDetail;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\FiAddress;
+use App\Inv\Repositories\Models\RcuDocument;
+use App\Inv\Repositories\Models\RcuStatusLog;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -341,6 +343,32 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       return $result ?: false;
     }
     
+     /**
+     * function for get all RCU documents filess list
+     * @return type
+     */
+     
+    public function getCurrentRcuDoc($appId, $docId)
+    {
+      return RcuDocument::where('app_id', $appId)
+                ->with('cmStatus')
+                ->where('doc_id', $docId)
+                ->where('is_active', 1)
+                ->first();
+      
+    }
+    
+     /**
+     * function for get all RCU documents filess list
+     * @return type
+     */
+     
+    public function getRcuAgencies($appId, $docId)
+    {
+      $result = RcuDocument::getRcuAgencies($appId, $docId);
+      return $result ?: false;
+    }
+    
     /**
      * Get Program Data
      * 
@@ -457,6 +485,73 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $result = FiAddress::insertFiAddress($data);
         return $result ?: false;
     }
+    
+    /**
+     * insert into RCU documents
+     * 
+     * @param array $data
+     * @return status
+     */
+    public function assignRcuDocument($data){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($data)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        $assignData = RcuDocument::where('agency_id', $data['agency_id'])
+                ->where('to_id', $data['to_id'])
+                ->where('app_id', $data['app_id'])
+                ->where('doc_id', $data['doc_id'])
+                ->first();
+        if(!$assignData) {
+            $resp = RcuDocument::where('app_id', $data['app_id'])
+                    ->where('doc_id', $data['doc_id'])
+                    ->update(['is_active' => 0]);
+            if($resp == true || !$assignData) {
+                $result = RcuDocument::create($data);
+                return $result ?: false;
+            }
+        }
+        else {
+            return "Assigned";
+        }
+        
+    }
+    
+    /**
+     * insert into RCU documents
+     * 
+     * @param array $data
+     * @return status
+     */
+    public function saveRcuStatusLog($data){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($data)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        $result = RcuStatusLog::insert($data);
+        
+        return $result ?: false;
+    }
 
     /**
      * get all agency list
@@ -466,6 +561,30 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $agency = Agency::get();
         return $agency ?: false;
     }
+
+    /**
+     * Get Application assign data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     */
+    public function getAppAssignmentData ($whereCondition=[])
+    {
+        return AppAssignment::getAppAssignmentData ($whereCondition);
+    }
+
+    /**
+     * Get Back stages users to assign the application
+     * 
+     * @param integer $app_id
+     * @param array $roles
+     * 
+     * @return mixed
+     */
+    public function getBackStageUsers($app_id, $roles=[])
+    {
+        return AppAssignment::getBackStageUsers ($app_id, $roles);
+    }    
 
     public function changeAgentFiStatus($request){
       $status = FiAddress::changeAgentFiStatus($request);
@@ -477,8 +596,38 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function changeCmFiStatus($request){
-      $status = $this->application->changeAgentFiStatus($request);
-      return $status;
+      $status = FiAddress::changeCmFiStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function updateFiFile($data, $fiAddrId){
+        return FiAddress::updateFiFile($data, $fiAddrId);
+    }
+
+    public function changeAgentRcuStatus($request){
+      $status = RcuDocument::changeAgentRcuStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function changeCmRcuStatus($request){
+      $status = RcuDocument::changeCmRcuStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function updateRcuFile($data, $rcuDocId){
+        return RcuDocument::updateRcuFile($data, $rcuDocId);
     }
 
 }
