@@ -145,7 +145,7 @@ class BizOwner extends BaseModel
               {    
                 BusinessAddress::create(['addr_1'  =>  $val['address'],
                  'biz_id'  =>  $attributes['biz_id'],
-                 'address_type'  =>  6,
+                 'address_type'  =>  5,
                  'rcu_status'  =>   0,
                  'created_by'  => Auth::user()->user_id,
                  'biz_owner_id'  =>  $ownerInputArr->biz_owner_id]);
@@ -287,7 +287,7 @@ class BizOwner extends BaseModel
                 {
                     BusinessAddress::create(['addr_1'  =>  $attributes['owner_addr'][$i],
                         'biz_id'  =>  $biz_id,
-                        'address_type'  =>  6,
+                        'address_type'  =>  5,
                         'rcu_status'  =>   0,
                         'created_by'  => Auth::user()->user_id,
                         'biz_owner_id'  =>  $biz_owner_id]);
@@ -357,7 +357,7 @@ class BizOwner extends BaseModel
                 {
                     BusinessAddress::create(['addr_1'  =>  $attributes['owner_addr'][$i],
                         'biz_id'  =>  $biz_id,
-                        'address_type'  =>  6,
+                        'address_type'  =>  5,
                         'rcu_status'  =>   0,
                         'created_by'  => Auth::user()->user_id,
                         'biz_owner_id'  =>  $biz_owner_id]);
