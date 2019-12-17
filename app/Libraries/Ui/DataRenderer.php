@@ -243,8 +243,10 @@ class DataRenderer implements DataProviderInterface
                     //} 
                     //return $assignName;
                     $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
-                    
-                    return $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
+                    if($userInfo){
+                        return $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
+                    }
+                    return '';
                 })
                 ->addColumn(
                     'assigned_by',

@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\User;
 use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Models\BizApi;
@@ -898,7 +899,8 @@ class ApplicationController extends Controller
          $request =  $request->all();
          $result   = $this->userRepo->getOwnerAppRes($request);
          $res = json_decode($result->karza->res_file,1);
-         return view('backend.app.mobile_verification_detail')->with('response', $res['result']);
+        
+         return view('backend.app.mobile_verification_detail')->with('response', $res);
     }
     
    
@@ -907,7 +909,7 @@ class ApplicationController extends Controller
         $request =  $request->all();
         $result   = $this->userRepo->getOwnerAppRes($request);
         $res = json_decode($result->karza->res_file,1);
-        return view('backend.app.otp_verification_detail')->with('response', $res['result']);
+        return view('backend.app.otp_verification_detail')->with('response', $res);
     }
     
 
@@ -945,9 +947,11 @@ class ApplicationController extends Controller
         
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      if( $response['status']=='success')
-      {
-            $createApiLog = $response['createApiLog'];
+      if($response['result'])
+      {     $status = 1;
+            $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+           
             $createBizApi= @BizApi::create([
                 'user_id' =>$userData['user_id'], 
                 'biz_id' =>   $userData['biz_id'],
@@ -959,6 +963,14 @@ class ApplicationController extends Controller
                 'created_by' => Auth::user()->user_id
              ]);
       }
+      else
+      {
+             $status = 0;
+            $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+            $resp['createApiLog'] = $createApiLog;
+      }
+      
       if (empty($response['result'])) {
         $response['status'] = 'fail';
       }
@@ -982,11 +994,15 @@ class ApplicationController extends Controller
         );
         
       $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);         
-      $createApiLog = $response['createApiLog'];
-       if( $response['status']=='success')
+      $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);  
+   
+       if( $response['result'])
       {
-            $createBizApi= @BizApi::create([
+            $status = 1;
+            $createApiLog = BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+                'created_by' => Auth::user()->user_id]);
+           
+            $createBizApi= BizApi::create([
                 'user_id' =>$userData['user_id'], 
                 'biz_id' =>   $userData['biz_id'],
                 'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
@@ -996,11 +1012,14 @@ class ApplicationController extends Controller
                 'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                 'created_by' => Auth::user()->user_id
              ]);
-            $response1 = $mob->api_call(MobileAuth_lib::GET_DTL, $req_arr);  
-            $createApiLog1 = $response1['createApiLog'];
-            if( $response1['status']=='success')
-            {
-                 $createBizApi= @BizApi::create([
+              $response1 = $mob->api_call(MobileAuth_lib::GET_DTL, $req_arr);  
+              if($response1)
+              {
+               $status = 1;
+               $createApiLog1 = BizApiLog::create(['req_file' =>$response1['payload'], 'res_file' => (is_array($response1['result']) || is_object($response1['result']) ? json_encode($response1['result']) : $response1['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+               
+                $createBizApi= BizApi::create([
                 'user_id' =>$userData['user_id'], 
                 'biz_id' =>   $userData['biz_id'],
                 'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
@@ -1012,7 +1031,18 @@ class ApplicationController extends Controller
              ]);
                 
             }
-      }     
+            
+         
+      }  
+      else
+      {
+               $status = 0;
+               $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+              
+               $createApiLog1 = @BizApiLog::create(['req_file' =>$response1['payload'], 'res_file' => (is_array($response1['result']) || is_object($response1['result']) ? json_encode($response1['result']) : $response1['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+      }
       if (empty($response['result'])) {
         $response['status'] = 'fail';
       }

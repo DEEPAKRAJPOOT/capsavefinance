@@ -731,6 +731,21 @@
                 return true;
         }
         });
+         ////// Combination of Shareholding (%) should  not exceed more than 100 %///////////
+        $(".share_per").each(function (k, v) { 
+            if($(this).val()!='')
+            {
+                total += parseInt($(this).val());
+            }
+        });
+       
+        if(total > 100)
+        {
+          
+           alert('Combination of Shareholding (%) should  not exceed more than 100 %');
+            e.preventDefault();
+           return false;
+       }
         var form = $("#signupForm");
         $('.isloader').show();
         $.ajax({
@@ -914,7 +929,6 @@
         {
                 $(".owneridDynamic").each(function(k, v){
                 var GetVal = $(this).val();
-                alert(v);
                 if (GetVal == '')
                 {
                     $("#submit").val('Save');
@@ -1061,6 +1075,7 @@
                 var status = data['status-code'];
                 if (data['status-code'] == 101)
                 {
+                $("#veripan"+count).val(PAN);  
                 var MergeResonse = name_status.concat(request_id, status);
                 $('#response' + count).val(MergeResonse);
                 $('#pan_no' + count).attr('readonly', true);
