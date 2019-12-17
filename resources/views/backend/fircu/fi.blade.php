@@ -176,7 +176,7 @@ $(document).ready(function(){
         let address_id = $(this).parent('div').data('address_id');
         let status = $(this).attr('value');
         let token = '{{ csrf_token() }}';
-        $('.isloader').hide();
+        $('.isloader').show();
         /*--------------------------------------*/
         $.ajax({
             url: "{{route('change_cm_fi_status')}}",
@@ -206,7 +206,7 @@ $(document).ready(function(){
         let fi_addr_id = $(this).parent('div').data('fi_address_id');
         let status = $(this).attr('value');
         let token = '{{ csrf_token() }}';
-        $('.isloader').hide();
+        $('.isloader').show();
         
         $.ajax({
             url: "{{route('change_agent_fi_status')}}",
