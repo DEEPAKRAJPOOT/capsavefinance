@@ -23,6 +23,7 @@ use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Offer;
 use App\Inv\Repositories\Models\Agency;
+use App\Inv\Repositories\Models\AnchorRelation;
 
 /**
  * Application repository class
@@ -606,5 +607,24 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function updateRcuFile($data, $rcuDocId){
         return RcuDocument::updateRcuFile($data, $rcuDocId);
     }
+
+
+
+    public function saveAnchorRelationDetails($attributes){
+        $result =  AnchorRelation::creates(($attributes));
+        return $result ?: false;
+    }
+
+    public function getAnchorRelationDetails($appId){
+        $result =  AnchorRelation::where('app_id',$appId)->first();
+        return $result;
+    }
+
+     public function updateAnchorRelationDetails($attributes, $anchor_relation_id){
+        $anchor =  AnchorRelation::where('anchor_relation_id',$anchor_relation_id)->first();
+        $updateAnchorData = $anchor->update($attributes);
+        return $updateAnchorData ? true : false;
+    }
+
 
 }
