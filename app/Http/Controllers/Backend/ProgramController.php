@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Backend;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Lms\ProgramRequest;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-use Illuminate\Http\Request;
 
 class ProgramController extends Controller {
 
@@ -63,7 +64,13 @@ class ProgramController extends Controller {
         }
     }
 
-    public function saveProgram(Request $request)
+    /**
+     * Save program 
+     * 
+     * @param Request $request
+     * @return type mixed 
+     */
+    public function saveProgram(ProgramRequest $request)
     {
         try {
             $anchor_id = $request->get('anchor_id');
@@ -78,7 +85,6 @@ class ProgramController extends Controller {
                 'is_fldg_applicable' => $request->get('is_fldg_applicable'),
                 'status' => 1
             ];
-
             $this->appRepo->saveProgram($prepareDate);
             \Session::flash('message', trans('success_messages.program_save_successfully'));
             return redirect()->route('manage_program', ['anchor_id' => $anchor_id]);

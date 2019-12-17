@@ -4,7 +4,12 @@
 try {
     jQuery(document).ready(function ($) {
 
-        $.fn.handleIndustrtChange = function () {
+        /**
+         * handle Industry Change evnet
+         * 
+         * @returns {undefined} mixed
+         */
+        $.fn.handleIndustryChange = function () {
             let selector = $(this);
             let currentValue = selector.val();
             let  subIndus = $('.sub_industry');
@@ -32,8 +37,16 @@ try {
             });
         };
 
+        /**
+         *  Handle change event
+         */
         $(document).on('change', '.industry_change', function () {
-            $(this).handleIndustrtChange();
+            $(this).handleIndustryChange();
+        });
+        
+        
+        $(document).on('click','.submit' , function (e) {
+            e.preventDefault();
         });
 
     });

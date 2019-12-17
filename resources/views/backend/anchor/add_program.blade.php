@@ -144,7 +144,7 @@
                                    
                                      {!! Form::button('Cancel', ['class'=>'btn btn-secondary btn-sm' ,'id'=>'pre4']) !!}
                                     
-                                     {!! Form::submit('Save and Next', ['class'=>'btn btn-primary' ,'id'=>'pre3']) !!}
+                                     {!! Form::submit('Save and Next', ['class'=>'btn btn-primary submit' ,'id'=>'pre3']) !!}
                                    
                                  </div>
                               </div>
