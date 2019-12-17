@@ -170,7 +170,7 @@
 @section('jscript')
 <script>
 $(document).ready(function(){
-    $(document).on('click', '.trigger-for-rcu', function(){
+    $('#trigger-for-rcu').on('click', function(){
         if($('.document_id').is(':checked')){
             $('#openRcuModal').trigger('click');
         }else{
