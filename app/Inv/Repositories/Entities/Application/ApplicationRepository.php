@@ -563,6 +563,30 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $agency ?: false;
     }
 
+    /**
+     * Get Application assign data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     */
+    public function getAppAssignmentData ($whereCondition=[])
+    {
+        return AppAssignment::getAppAssignmentData ($whereCondition);
+    }
+
+    /**
+     * Get Back stages users to assign the application
+     * 
+     * @param integer $app_id
+     * @param array $roles
+     * 
+     * @return mixed
+     */
+    public function getBackStageUsers($app_id, $roles=[])
+    {
+        return AppAssignment::getBackStageUsers ($app_id, $roles);
+    }    
+
     public function changeAgentFiStatus($request){
       $status = FiAddress::changeAgentFiStatus($request);
       if($status){

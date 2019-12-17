@@ -478,8 +478,10 @@
 							</div>
 						</div>
 						<div class="d-flex btn-section">
-							<div class="ml-auto text-right">
+							<div class="ml-auto text-right">                                                            
+                                                            @if(request()->get('view_only'))
 								<input type="submit" value="Save and Continue" class="btn btn-success btn-sm">
+                                                            @endif
 							</div>
 						</div>
 					</div>

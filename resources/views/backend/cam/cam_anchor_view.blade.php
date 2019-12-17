@@ -197,7 +197,9 @@
                     <div class="row">
                         <div class="col-md-12 mt-3">
                             <div class="form-group text-right">
-                                <button  class="btn btn-primary btn-ext submitBtnBank" type="submit">Submit</button>                                        
+                                @if(request()->get('view_only'))
+                                <button  class="btn btn-primary btn-ext submitBtnBank" type="submit">Submit</button>
+                                @endif
                             </div>
                         </div>
                     </div>

@@ -134,12 +134,19 @@ class LeadController extends Controller {
 
     public function acceptApplicationPool(Request $request){
          try {
-            $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
              $user_id = $request->get('user_id');
              $app_id = $request->get('app_id');
+             
+            $whereCond = [];
+            $whereCond['app_id'] = $app_id;
+            $whereCond['is_owner'] = 1;
+            $appAssignData = $this->appRepo->getAppAssignmentData($whereCond);
+            $fromUserId = $appAssignData ? $appAssignData->from_id : null;
+            
+            $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
             
              $dataArr = []; 
-             $dataArr['from_id'] = Auth::user()->user_id;
+             $dataArr['from_id'] = $fromUserId;     //Auth::user()->user_id;
              $dataArr['to_id'] = Auth::user()->user_id;
              $dataArr['role_id'] = null;  //$roleData->id;
              $dataArr['assigned_user_id'] = $user_id;
