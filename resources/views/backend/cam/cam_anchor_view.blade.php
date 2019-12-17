@@ -18,36 +18,35 @@
                             <tr>
                                 <td width="30%">Years of Association with Group</td>
                                 <td>
-                                    <input type="text" id="year_of_association" name="year_of_association" class="form-control" value="{{old('year_of_association')}}" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" maxlength="3">
+                                    <input type="text" id="year_of_association" name="year_of_association" class="form-control" value="{{isset($anchorRelationData['year_of_association']) ? $anchorRelationData['year_of_association'] : ''}}" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" maxlength="3">
                                     {!! $errors->first('year_of_association', '<span class="error">:message</span>') !!}
                                 </td>
                                 <td>Payment Terms with the Group</td>
                                 <td>
-                                    <input type="text" id="payment_terms" name="payment_terms" class="form-control" value="{{old('payment_terms')}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="payment_terms" name="payment_terms" class="form-control" value="{{isset($anchorRelationData['payment_terms']) ? $anchorRelationData['payment_terms'] : ''}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('payment_terms', '<span class="error">:message</span>') !!}
                                 </td>
                             </tr>
                             <tr>
                                 <td>Rating / Reference by the Group</td>
                                 <td>
-                                    <input type="text" id="grp_rating" name="grp_rating" class="form-control" value="{{old('grp_rating')}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z.\+]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="grp_rating" name="grp_rating" class="form-control" value="{{isset($anchorRelationData['grp_rating']) ? $anchorRelationData['grp_rating'] : ''}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z.\+]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('grp_rating', '<span class="error">:message</span>') !!}
                                 </td>
                                 <td>Security Deposit with Anchor Company</td>
-                                <td>
-                                    <input type="text" id="security_deposit" name="security_deposit" class="form-control number_format" value="{{old('security_deposit')}}" maxlength="15" oninput="">
+                                <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" id="security_deposit" name="security_deposit" class="form-control " value="{{isset($anchorRelationData['security_deposit']) ? $anchorRelationData['security_deposit'] : ''}}" maxlength="15" oninput="">
                                     {!! $errors->first('security_deposit', '<span class="error">:message</span>') !!}
                                 </td>
                             </tr>
                             <tr>
                                 <td>Contact Person in Group Co.</td>
                                 <td>
-                                    <input type="text" id="contact_person" name="contact_person" class="form-control" value="{{old('contact_person')}}" minlength="10" maxlength="50" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="contact_person" name="contact_person" class="form-control" value="{{isset($anchorRelationData['contact_person']) ? $anchorRelationData['contact_person'] : ''}}" minlength="10" maxlength="50" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('contact_person', '<span class="error">:message</span>') !!}
                                 </td>
                                 <td> Contact No.</td>
                                 <td>
-                                    <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{old('contact_number')}}" minlength="10" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{isset($anchorRelationData['contact_number']) ? $anchorRelationData['contact_number'] : ''}}" minlength="10" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('contact_number', '<span class="error">:message</span>') !!}
                                 </td>
                                 
@@ -175,11 +174,11 @@
                         
                         <tr>
                             <td>Note on Lifting:</td>
-                            <td colspan="4"><input type="text" id="note_on_lifting" class="form-control" name="note_on_lifting" value=""></td>
+                            <td colspan="4"><input type="text" id="note_on_lifting" class="form-control" name="note_on_lifting" value="{{isset($anchorRelationData['note_on_lifting']) ? $anchorRelationData['note_on_lifting'] : ''}}"></td>
                         </tr>
                         <tr>
                             <td>Reference from Anchor:</td>
-                            <td colspan="4"><input type="text" id="reference_from_anchor" class="form-control" name="reference_from_anchor" value=""></td>
+                            <td colspan="4"><input type="text" id="reference_from_anchor" class="form-control" name="reference_from_anchor" value="{{isset($anchorRelationData['reference_from_anchor']) ? $anchorRelationData['reference_from_anchor'] : ''}}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -191,7 +190,7 @@
             <div class="data mt-4">
                 <h2 class="sub-title bg">Risk Comments on Relationship with Anchor</h2>
                 <div class="pl-4 pr-4 pb-4 pt-2">
-                    <textarea class="form-control" name='anchor_risk_comments' id="anchor_risk_comments" rows="3" spellcheck="false"></textarea>
+                    <textarea class="form-control" name='anchor_risk_comments' id="anchor_risk_comments" rows="3" spellcheck="false">{{isset($anchorRelationData['anchor_risk_comments']) ? $anchorRelationData['anchor_risk_comments'] : ''}}</textarea>
 
 
                     <div class="clearfix"></div>
