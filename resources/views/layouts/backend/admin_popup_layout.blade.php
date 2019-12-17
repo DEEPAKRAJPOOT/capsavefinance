@@ -24,30 +24,6 @@
 
     <body class="sidebar-icon-only">
         <div class=" container-scroller">
-            @if(Session::has('error'))
-            <div class="content-wrapper-msg">
-                <div class=" alert-danger alert" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    {{ Session::get('error') }}
-                </div>
-            </div>
-            @endif
-
-            @if (count($errors) > 0)
-            <div class="content-wrapper-msg">
-                <div class="alertMsgBox">
-                    <div class="alert alert-danger" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            @endif
-
             <div class="container-fluid page-body-wrapper">
                 <div class="row row-offcanvas row-offcanvas-right">
                     <!-- partial -->

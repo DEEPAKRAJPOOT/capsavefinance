@@ -4,6 +4,7 @@
     Form::open([
     'url'=>route('save_pd_notes'),
     'autocomplete'=>'off',
+    'name' => 'pdNotesForm',
         ]) 
 }}
 <div class="row">
@@ -11,13 +12,13 @@
         <div class="form-group">
             <label class="">Type : </label>
             {!!Form::radio('type','1' ,'', [   'class'=>'form-control' ]) !!} Physical
-            {!!Form::radio('type','2','', [   'class'=>'form-control', 'checked'=>'checked']) !!} Tele
-
+            {!!Form::radio('type','2','', [   'class'=>'form-control']) !!} Tele
         </div>
+            {!! $errors->first('type', '<span class="error">:message</span>') !!}
         <div class="form-group">
             <label class="">Comment : </label> 
-            {!!Form::textarea('comments', '', [ 'class'=>'form-control'  , 'rows'=>3 , 'required']) !!}
-            <span id='msg'></span>
+            {!!Form::textarea('comments', '', [ 'class'=>'form-control'  , 'rows'=>3 ]) !!}
+            {!! $errors->first('comments', '<span class="error">:message</span>') !!}
         </div> 
         <button type="submit" class="btn btn-primary float-right">Submit</button>
     </div>
@@ -46,7 +47,27 @@ $messages = trans('success_messages.pd_notes_saved')
 
 @endif
 
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 
+<script>
+    $(function() {
+  $("form[name='pdNotesForm']").validate({
+    rules: {
+      type: "required",
+      comments: "required",
+    },
+    // Specify validation error messages
+    messages: {
+      type: "Type is required",
+      comments: "Comment is required",
+     },
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+});
+    
+</script>
 
 @endsection	
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PdNotesRequest;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\AppNote;
 use Auth;
@@ -73,7 +74,7 @@ class NotesController extends Controller {
      * @param Request $request
      * @return type mixed
      */
-    public function savePdNotes(Request $request)
+    public function savePdNotes(PdNotesRequest $request)
     {
         try {
             $app_id = $request->get('app_id');
