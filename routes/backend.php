@@ -428,6 +428,53 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
         });
+
+        Route::group(['prefix' => 'agency'], function () {
+            Route::get('/', [
+                'as' => 'get_anchor_list',
+                'uses' => 'Backend\LeadController@allAnchorList'
+            ]);
+            /*Route::get('add-anchor', [
+                'as' => 'add_anchor_reg',
+                'uses' => 'Backend\LeadController@addAnchorReg'
+            ]);*/
+
+            /*Route::post('add-anchor', [
+                'as' => 'add_anchor_reg',
+                'uses' => 'Backend\LeadController@saveaddAnchorReg'
+            ]);*/
+
+            /*Route::get('/add-anchor-lead',
+                [
+                'as' => 'add_anchor_lead',
+                'uses' => 'Backend\LeadController@uploadAnchorlead'
+            ]);*/
+            /*Route::post('/add-anchor-lead',
+                [
+                'as' => 'add_anchor_lead',
+                'uses' => 'Backend\LeadController@saveUploadAnchorlead'
+            ]);*/
+            /*Route::get('update-anchor', [
+                'as' => 'edit_anchor_reg',
+                'uses' => 'Backend\LeadController@editAnchorReg'
+            ]);*/
+            /*Route::post('update-anchor', [
+                'as' => 'update_anchor_reg',
+                'uses' => 'Backend\LeadController@updateAnchorReg'
+            ]);*/ 
+            /*Route::get('manage-anchor-lead', [
+                'as' => 'get_anchor_lead_list',
+                'uses' => 'Backend\LeadController@getAnchorLeadList'
+            ]);*/ 
+            /*Route::get('add-manual-anchor-lead', [
+                'as' => 'add_manual_anchor_lead',
+                'uses' => 'Backend\LeadController@addManualAnchorLead'
+            ]);*/
+            /*Route::post('add-manual-anchor-lead', [
+               'as' => 'add_manual_anchor_lead',
+               'uses' => 'Backend\LeadController@saveManualAnchorLead'
+            ]);*/         
+        });
     });
 
 
