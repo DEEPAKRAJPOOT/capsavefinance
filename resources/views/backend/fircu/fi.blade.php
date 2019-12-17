@@ -60,18 +60,6 @@
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="6">Refer to Credit</a>
                                                 </div>
                                                 @endif
-
-                                                <!-- <div class="d-flex file-upload-cls">
-                                                    <div class="file-browse float-left mr-3 ml-4">
-                                                        <button class="btn-upload   btn-sm" type="button"> <i class="fa fa-download"></i></button>
-                                                        <input type="file" title="Download RCU Report" id="file_1" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                                    </div>
-                                                    <div class="file-browse float-left ">
-                                                        <button class="btn-upload  title=" ffff"="" btn-sm"="" type="button"> <i class="fa fa-upload"></i></button>
-                                                        <input type="file" id="file_1" dir="1" title="Upload RCU Report" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
-                                                    </div>
-                                                </div> -->
-                                                @endif
                                             </div>
                                         </td> 
                                         <td align="right"><span class="trigger minus"></span></td> 
