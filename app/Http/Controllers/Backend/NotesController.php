@@ -77,6 +77,7 @@ class NotesController extends Controller {
     public function savePdNotes(PdNotesRequest $request)
     {
         try {
+            dd($request->all());
             $app_id = $request->get('app_id');
             $type = $request->get('type');
             $comments = $request->get('comments');

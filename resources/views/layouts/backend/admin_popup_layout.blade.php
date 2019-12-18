@@ -18,6 +18,7 @@
         <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
         <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
         <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
+        <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.4/summernote.css" rel="stylesheet">
 
 
     </head>

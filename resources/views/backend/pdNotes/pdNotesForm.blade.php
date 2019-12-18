@@ -1,4 +1,5 @@
 @extends('layouts.backend.admin_popup_layout')
+
 @section('content')
 {{ 
     Form::open([
@@ -15,17 +16,27 @@
             {!!Form::radio('type','2','', [   'class'=>'form-control']) !!} Tele
         </div>
             {!! $errors->first('type', '<span class="error">:message</span>') !!}
+
+        <div class="form-group">
+            <label for="usr">Title of Feature:</label>
+            {!!Form::text('title', '', [ 'class'=>'form-control']) !!}
+        </div> 
+          
         <div class="form-group">
             <label class="">Comment : </label> 
-            {!!Form::textarea('comments', '', [ 'class'=>'form-control'  , 'rows'=>3 ]) !!}
+            {!!Form::textarea('comments', '', [ 'class'=>'form-control summernote']) !!}
             {!! $errors->first('comments', '<span class="error">:message</span>') !!}
         </div> 
+
+
         <button type="submit" class="btn btn-primary float-right">Submit</button>
     </div>
 </div>	
 {!!Form::hidden('app_id',$app_id )!!} 
 {{ Form::close() }}
 @endsection
+
+
 @section('jscript')
 @php 
 $operation_status = session()->get('operation_status', false);
@@ -48,24 +59,31 @@ $messages = trans('success_messages.pd_notes_saved')
 @endif
 
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.4/summernote.js"></script>
 
 <script>
+    $(document).ready(function() {
+        $('.summernote').summernote({
+              height: 300,
+         });
+    });
+
     $(function() {
-  $("form[name='pdNotesForm']").validate({
-    rules: {
-      type: "required",
-      comments: "required",
-    },
-    // Specify validation error messages
-    messages: {
-      type: "Type is required",
-      comments: "Comment is required",
-     },
-    submitHandler: function(form) {
-      form.submit();
-    }
-  });
-});
+      $("form[name='pdNotesForm']").validate({
+        rules: {
+          type: "required",
+          comments: "required",
+        },
+        // Specify validation error messages
+        messages: {
+          type: "Type is required",
+          comments: "Comment is required",
+         },
+        submitHandler: function(form) {
+          form.submit();
+        }
+      });
+    });
     
 </script>
 
