@@ -649,6 +649,7 @@
         if ($('form#signupForm').validate().form()) {
         var panCount = 0;
         var promoCount = 0;
+        var mobileVeriCount = 0;
         var DlLength = $('input[name="dlfile[]"]').length;
         var total = 0;
         ///// for upload one in three id proff..............
