@@ -55,14 +55,24 @@
                         </tr>
                         <tr>
                             <td><b>Corporate office Address</b></td>
-                            <td>{{$arrBizData->communicationAddress->addr_1.' '.$arrBizData->address[1]->city_name.' '. $arrBizData->address[1]->state->name.' '.$arrBizData->address[1]->pin_code}}  </td>
-                             <td><b>Registered Office Address</b></td>
-                            <td>{{$arrBizData->registeredAddress->addr_1.' '.$arrBizData->address[0]->city_name.' '. $arrBizData->address[0]->state->name.' '.$arrBizData->address[0]->pin_code}}
+                            <!-- <td>{{$arrBizData->communicationAddress->addr_1.' '.$arrBizData->address[1]->city_name.' '. $arrBizData->address[1]->state->name.' '.$arrBizData->address[1]->pin_code}}  </td>
+ -->
+                            <td>{{$arrBizData->communicationAddress->addr_1.' '.(isset($arrBizData->address[1]->city_name) ? $arrBizData->address[1]->city_name : '').' '. (isset($arrBizData->address[1]->state->name) ? $arrBizData->address[1]->state->name : '').' '. (isset($arrBizData->address[1]->pin_code) ? $arrBizData->address[1]->pin_code : '')}}
                             </td>
+
+
+                            <td><b>Registered Office Address</b></td>
+
+                            <td>{{$arrBizData->registeredAddress->addr_1.' '.(isset($arrBizData->address[0]->city_name) ? $arrBizData->address[0]->city_name : '').' '. (isset($arrBizData->address[0]->state->name) ? $arrBizData->address[0]->state->name : '').' '. (isset($arrBizData->address[0]->pin_code) ? $arrBizData->address[0]->pin_code : '')}}
+                            </td>
+
+
                         </tr>
                         <tr>
                             <td><b>Manufacturing facilities address</b></td>
-                            <td>{{$arrBizData->factoryAddress->addr_1.' '.$arrBizData->address[4]->city_name.' '. $arrBizData->address[4]->state->name.' '.$arrBizData->address[4]->pin_code}}</td>
+                             <td>{{$arrBizData->factoryAddress->addr_1.' '.(isset($arrBizData->address[4]->city_name) ? $arrBizData->address[4]->city_name : '').' '. (isset($arrBizData->address[4]->state->name) ? $arrBizData->address[4]->state->name : '').' '. (isset($arrBizData->address[4]->pin_code) ? $arrBizData->address[4]->pin_code : '')}}
+                            </td>
+
                             <td width="25%"><b>Legal Constitution </b></td>
                             <td width="25%">{{$arrBizData->legalConstitution}}</td>
                         </tr>
