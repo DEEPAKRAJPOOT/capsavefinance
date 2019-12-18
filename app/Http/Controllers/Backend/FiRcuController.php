@@ -24,6 +24,14 @@ class FiRcuController extends Controller
     }
     
     /**
+     * Display a application for Fi and Rcu
+     */
+    public function appList()
+    {
+        return view('backend.fircu.app_list');   
+    }
+    
+    /**
      * Display a listing of FI
      */
     public function listFI(Request $request)

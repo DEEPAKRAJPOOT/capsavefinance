@@ -377,6 +377,23 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);        
         });
         
+        Route::group(['prefix' => 'fircu'], function () {
+            Route::get('/applications', [
+                'as' => 'applicaiton_list',
+                'uses' => 'Backend\FiRcuController@appList'
+            ]);
+
+
+            Route::get('edit-backend-lead', [
+                'as' => 'edit_backend_lead',
+                'uses' => 'Backend\LeadController@editBackendLead'
+            ]);
+            Route::get('lead-detail', [
+                'as' => 'lead_detail',
+                'uses' => 'Backend\LeadController@leadDetail'
+            ]);        
+        });
+        
         Route::group(['prefix' => 'anchor'], function () {
             Route::get('/', [
                 'as' => 'get_anchor_list',
