@@ -1304,5 +1304,15 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
       $result = Agency::orderBy('agency_id', 'DESC');
       return $result ?: false;
+    }
+
+    /**
+    * function for get all anchor register user detail
+    * @return type
+    */
+    public function getAgencyById($agency_id)
+    {
+      $result = Agency::find($agency_id)->first();
+      return $result ?: false;
     }    
 }

@@ -24,7 +24,7 @@
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
                             @can('add_anchor_reg')
-                            <a  data-toggle="modal" data-target="#addAnchorFrm" data-url ="{{route('add_anchor_reg')}}" data-height="475px" data-width="100%" data-placement="top" >
+                            <a  data-toggle="modal" data-target="#addAgencyFrame" data-url ="{{route('add_agency_reg')}}" data-height="475px" data-width="100%" data-placement="top" >
                                 <button class="btn  btn-success btn-sm" type="button">
                                     <span class="btn-label">
                                         <i class="fa fa-plus"></i>
@@ -80,8 +80,8 @@
 </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor', 'modal-md')!!}
-{!!Helpers::makeIframePopup('editAnchorFrm','Edit Anchor Detail', 'modal-md')!!}
+{!!Helpers::makeIframePopup('addAgencyFrame','Add Agency', 'modal-md')!!}
+{!!Helpers::makeIframePopup('editAgencyFrame','Edit Agency Detail', 'modal-md')!!}
 @endsection
 
 @section('jscript')

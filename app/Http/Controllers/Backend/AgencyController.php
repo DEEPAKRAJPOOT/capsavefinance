@@ -49,6 +49,75 @@ class AgencyController extends Controller {
         return view('backend.agency.agency_user_list');
     }
 
+    public function addAgencyReg(Request $request) {
+        try {
+            $states = State::getStateList()->get();
+            return view('backend.agency.add_agency_reg')->with(['states'=>$states]);
+        } catch (Exception $ex) {
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    /**
+     * function for update anchor info
+     * @param Request $request
+     * @return type
+     */
+    public function editAgencyReg(Request $request) {
+        try {
+            $agencyId = $request->get('agency_id');
+            if($agencyId) {
+                $agencyData = $this->userRepo->getAgencyById($agencyId);
+            }
+            $states = State::getStateList()->get();
+            return view('backend.agency.edit_agency_reg')
+                    ->with(['agencyData'=>$agencyData, 'states'=>$states]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    /**
+     * function for update anchor information
+     * @param Request $request
+     * @return type
+     */
+    public function updateAnchorReg(Request $request) {
+        try {
+            $arrAnchorVal = $request->all();
+            $anchId = $request->post('anchor_id');
+            $anchId=(int)$anchId;
+            $arrAnchorData = [
+                'comp_name' => $arrAnchorVal['comp_name'],
+                'comp_email' => $arrAnchorVal['email'],
+                'sales_user_id' => $arrAnchorVal['assigned_sale_mgr'],
+                'comp_phone' => $arrAnchorVal['phone'],
+                'comp_addr' => $arrAnchorVal['comp_addr'],
+                'comp_state' => $arrAnchorVal['state'],
+                'comp_city' => $arrAnchorVal['city'],
+                'comp_zip' => $arrAnchorVal['pin_code']
+            ];
+            $updateAnchInfo = $this->userRepo->updateAnchor($anchId, $arrAnchorData);            
+            $anchorInfo = $this->userRepo->getUserByAnchorId($anchId);
+            $arrAnchorUserData = [
+                'f_name' => $arrAnchorVal['employee'],
+                'biz_name' => $arrAnchorData['comp_name'],
+                'email' => $arrAnchorData['comp_email'],
+                'mobile_no' => $arrAnchorData['comp_phone'],
+            ];
+            $Updateanchorinfo = $this->userRepo->updateUser($arrAnchorUserData, (int) $anchorInfo->user_id);
+            
+            if ($updateAnchInfo && $Updateanchorinfo) {
+                Session::flash('message', trans('backend_messages.anchor_registration_updated'));
+                return redirect()->route('get_anchor_list');
+            } else {
+                // return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
 
     /*------------------------------------------------------*/
     /**
@@ -180,18 +249,7 @@ class AgencyController extends Controller {
 
     
 
-    public function addAnchorReg(Request $request) {
-        try {
-            //$stateList= $this->userRepo->getStateList();
-            $states = State::getStateList()->get();
-            //dd($states);
-            return view('backend.anchor.add_anchor_reg')
-            ->with(['states'=>$states]);
-                     //->with('state', $stateList);
-        } catch (Exception $ex) {
-             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
+    
 
     /**
      * function for save anchor info and also create anchor user
@@ -346,69 +404,7 @@ class AgencyController extends Controller {
         }
     }
 
-    /**
-     * function for update anchor info
-     * @param Request $request
-     * @return type
-     */
-    public function editAnchorReg(Request $request) {
-        try {
-            $anchorId = $request->get('anchor_id');
-            if ($anchorId) {
-                $anchorUserInfo = $this->userRepo->getUserByAnchorId($anchorId);
-                $anchorVal = $this->userRepo->getAnchorById($anchorId);
-            }
-             $states = State::getStateList()->get();
-            return view('backend.anchor.edit_anchor_reg')
-                            ->with('anchor_id', $anchorId)
-                            ->with('anchorUserData',$anchorUserInfo)
-                            ->with(['states'=>$states])
-                            ->with('anchorData', $anchorVal);
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
-
-    /**
-     * function for update anchor information
-     * @param Request $request
-     * @return type
-     */
-    public function updateAnchorReg(Request $request) {
-        try {
-            $arrAnchorVal = $request->all();
-            $anchId = $request->post('anchor_id');
-            $anchId=(int)$anchId;
-            $arrAnchorData = [
-                'comp_name' => $arrAnchorVal['comp_name'],
-                'comp_email' => $arrAnchorVal['email'],
-                'sales_user_id' => $arrAnchorVal['assigned_sale_mgr'],
-                'comp_phone' => $arrAnchorVal['phone'],
-                'comp_addr' => $arrAnchorVal['comp_addr'],
-                'comp_state' => $arrAnchorVal['state'],
-                'comp_city' => $arrAnchorVal['city'],
-                'comp_zip' => $arrAnchorVal['pin_code']
-            ];
-            $updateAnchInfo = $this->userRepo->updateAnchor($anchId, $arrAnchorData);            
-            $anchorInfo = $this->userRepo->getUserByAnchorId($anchId);
-            $arrAnchorUserData = [
-                'f_name' => $arrAnchorVal['employee'],
-                'biz_name' => $arrAnchorData['comp_name'],
-                'email' => $arrAnchorData['comp_email'],
-                'mobile_no' => $arrAnchorData['comp_phone'],
-            ];
-            $Updateanchorinfo = $this->userRepo->updateUser($arrAnchorUserData, (int) $anchorInfo->user_id);
-            
-            if ($updateAnchInfo && $Updateanchorinfo) {
-                Session::flash('message', trans('backend_messages.anchor_registration_updated'));
-                return redirect()->route('get_anchor_list');
-            } else {
-                // return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
-            }
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
+    
     
    
     

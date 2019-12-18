@@ -438,16 +438,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_agency_user_list',
                 'uses' => 'Backend\AgencyController@getAgencyUserList'
             ]);
-            /*Route::get('add-anchor', [
-                'as' => 'add_anchor_reg',
-                'uses' => 'Backend\LeadController@addAnchorReg'
-            ]);*/
+            Route::get('add-agency', [
+                'as' => 'add_agency_reg',
+                'uses' => 'Backend\AgencyController@addAgencyReg'
+            ]);
 
-            /*Route::post('add-anchor', [
-                'as' => 'add_anchor_reg',
-                'uses' => 'Backend\LeadController@saveaddAnchorReg'
-            ]);*/
+            Route::post('add-agency', [
+                'as' => 'save_agency_reg',
+                'uses' => 'Backend\AgencyController@saveaddAnchorReg'
+            ]);
 
+            Route::get('update-agency', [
+                'as' => 'edit_agency_reg',
+                'uses' => 'Backend\AgencyController@editAgencyReg'
+            ]);
+            Route::post('update-anchor', [
+                'as' => 'update_agency_reg',
+                'uses' => 'Backend\AgencyController@updateAnchorReg'
+            ]); 
             /*Route::get('/add-anchor-lead',
                 [
                 'as' => 'add_anchor_lead',
@@ -458,14 +466,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'add_anchor_lead',
                 'uses' => 'Backend\LeadController@saveUploadAnchorlead'
             ]);*/
-            /*Route::get('update-anchor', [
-                'as' => 'edit_anchor_reg',
-                'uses' => 'Backend\LeadController@editAnchorReg'
-            ]);*/
-            /*Route::post('update-anchor', [
-                'as' => 'update_anchor_reg',
-                'uses' => 'Backend\LeadController@updateAnchorReg'
-            ]);*/ 
              
             /*Route::get('add-manual-anchor-lead', [
                 'as' => 'add_manual_anchor_lead',
