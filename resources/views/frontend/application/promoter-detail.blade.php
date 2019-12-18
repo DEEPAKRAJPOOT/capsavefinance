@@ -1458,6 +1458,7 @@
                 },
                 dataType : 'json',
                 success:function(result) {
+                    $("#verify_mobile_otp_no"+count).html("Resend otp");
                     request_id = result.request_id;
                     $("#toggleOtp"+count).show();
                 },

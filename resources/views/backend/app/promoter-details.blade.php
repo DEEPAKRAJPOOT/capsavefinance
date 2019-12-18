@@ -1505,6 +1505,7 @@
                 success:function(result) {
                     request_id = result.request_id;
                     $("#toggleOtp"+count).show();
+                    $("#verify_mobile_otp_no"+count).html("Resend otp");
                 },
                 error:function(error) {
                 var html = 'Some error occured.';
