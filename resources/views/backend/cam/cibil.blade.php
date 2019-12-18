@@ -56,7 +56,7 @@
                                  <td class=" numericCol" width="25%">
                                     
                                     <button class="btn btn-success btn-sm" supplier="49" id="cibilScoreBtn{{$arr->biz_id}}" onclick="pull_cibil_commercialModal({{$arr->biz_id}})">@if ($arr->is_cibil_pulled == 1) Re-Pull @else Pull @endif</button>    
-                                    @if ($arr->is_cibil_pulled == 1)z                                
+                                    @if ($arr->is_cibil_pulled == 1)                              
                                     <button class="btn btn-warning btn-sm" supplier="49" onclick="downloadCommercialCibil({{$arr->biz_id}})">View Report</button>
                                     @endif
                                     <!--  <button class="btn btn-info btn-sm" supplier="49" onclick="pull_cibil_org(this)">UPLOAD</button> -->
