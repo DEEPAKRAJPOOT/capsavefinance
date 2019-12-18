@@ -44,7 +44,7 @@
                         <input type="hidden" name="app_id" id="app_id"  value="{{ (!empty($appId)) ? $appId : '' }}" >
                         <input type="hidden" name="biz_id" id="biz_id"  value="{{ (!empty($bizId)) ? $bizId : '' }}" >   
                         <input type="hidden" id="rowcount" value="{{count($ownerDetails)}}">
-               
+                
                         @php ($i = 0)
                         @php ($j = 0)
                         @php ($main = [])
