@@ -445,17 +445,19 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             Route::post('add-agency', [
                 'as' => 'save_agency_reg',
-                'uses' => 'Backend\AgencyController@saveaddAnchorReg'
+                'uses' => 'Backend\AgencyController@saveAgencyReg'
             ]);
 
             Route::get('update-agency', [
                 'as' => 'edit_agency_reg',
                 'uses' => 'Backend\AgencyController@editAgencyReg'
             ]);
-            Route::post('update-anchor', [
+
+            Route::post('update-agency', [
                 'as' => 'update_agency_reg',
-                'uses' => 'Backend\AgencyController@updateAnchorReg'
-            ]); 
+                'uses' => 'Backend\AgencyController@updateAgencyReg'
+            ]);
+             
             /*Route::get('/add-anchor-lead',
                 [
                 'as' => 'add_anchor_lead',

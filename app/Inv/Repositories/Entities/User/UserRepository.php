@@ -1312,7 +1312,17 @@ class UserRepository extends BaseRepositories implements UserInterface
     */
     public function getAgencyById($agency_id)
     {
-      $result = Agency::find($agency_id)->first();
+      $result = Agency::find($agency_id);
       return $result ?: false;
-    }    
+    }
+
+    public function saveAgency($attributes){
+        $status = Agency::create($attributes);
+        return $status ?: false;
+    }
+
+    public function updateAgency($attributes, $agency_id){
+        $status = Agency::whereAgencyId($agency_id)->update($attributes);
+        return $status ?: false;
+    }   
 }

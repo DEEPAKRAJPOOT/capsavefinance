@@ -59,6 +59,29 @@ class AgencyController extends Controller {
     }
 
     /**
+     * function for save anchor info and also create anchor user
+     * @param Request $request
+     * @return type
+     */
+    public function saveAgencyReg(Request $request) {
+        try {
+            $arrAgencyData = $request->all();
+            $arrAgencyData['created_at'] = \carbon\Carbon::now();
+            $status = $this->userRepo->saveAgency($arrAgencyData);
+            if($status){
+                Session::flash('message', trans('backend_messages.agency_registration_success'));
+                return redirect()->route('get_agency_list');
+            }else{
+                Session::flash('message', trans('backend_messages.something_went_wrong'));
+                return redirect()->route('get_agency_list');
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+
+    /**
      * function for update anchor info
      * @param Request $request
      * @return type
@@ -82,36 +105,26 @@ class AgencyController extends Controller {
      * @param Request $request
      * @return type
      */
-    public function updateAnchorReg(Request $request) {
+    public function updateAgencyReg(Request $request) {
         try {
-            $arrAnchorVal = $request->all();
-            $anchId = $request->post('anchor_id');
-            $anchId=(int)$anchId;
-            $arrAnchorData = [
-                'comp_name' => $arrAnchorVal['comp_name'],
-                'comp_email' => $arrAnchorVal['email'],
-                'sales_user_id' => $arrAnchorVal['assigned_sale_mgr'],
-                'comp_phone' => $arrAnchorVal['phone'],
-                'comp_addr' => $arrAnchorVal['comp_addr'],
-                'comp_state' => $arrAnchorVal['state'],
-                'comp_city' => $arrAnchorVal['city'],
-                'comp_zip' => $arrAnchorVal['pin_code']
-            ];
-            $updateAnchInfo = $this->userRepo->updateAnchor($anchId, $arrAnchorData);            
-            $anchorInfo = $this->userRepo->getUserByAnchorId($anchId);
-            $arrAnchorUserData = [
-                'f_name' => $arrAnchorVal['employee'],
-                'biz_name' => $arrAnchorData['comp_name'],
-                'email' => $arrAnchorData['comp_email'],
-                'mobile_no' => $arrAnchorData['comp_phone'],
-            ];
-            $Updateanchorinfo = $this->userRepo->updateUser($arrAnchorUserData, (int) $anchorInfo->user_id);
-            
-            if ($updateAnchInfo && $Updateanchorinfo) {
-                Session::flash('message', trans('backend_messages.anchor_registration_updated'));
-                return redirect()->route('get_anchor_list');
-            } else {
-                // return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            $arrAgencyData = [
+                        'comp_name'=>$request->comp_name,
+                        'comp_email'=>$request->comp_email,
+                        'comp_phone'=>$request->comp_phone,
+                        'comp_addr'=>$request->comp_addr,
+                        'comp_state'=>$request->comp_state,
+                        'comp_city'=>$request->comp_city,
+                        'comp_zip'=>$request->comp_zip,
+                        'updated_at'=>\carbon\Carbon::now(),
+                        'updated_by'=>Auth::user()->user_id
+                    ];
+            $status = $this->userRepo->updateAgency($arrAgencyData, $request->agency_id);
+            if($status){
+                Session::flash('message', trans('backend_messages.agency_registration_updated'));
+                return redirect()->route('get_agency_list');
+            }else{
+                Session::flash('message', trans('backend_messages.something_went_wrong'));
+                return redirect()->route('get_agency_list');
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
