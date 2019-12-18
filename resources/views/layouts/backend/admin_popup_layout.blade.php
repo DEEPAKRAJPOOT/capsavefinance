@@ -43,6 +43,9 @@
         <script src="{{url('backend/assets/js/misc.js')}}"></script>
         <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
         <script src="{{url('common/js/iframePopup.js')}}"></script>
+        <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.4/summernote.js"></script>
+
 
         <script>
     $(document).ready(function () {

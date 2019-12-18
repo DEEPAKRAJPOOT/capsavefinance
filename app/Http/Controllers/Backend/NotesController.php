@@ -77,13 +77,18 @@ class NotesController extends Controller {
     public function savePdNotes(PdNotesRequest $request)
     {
         try {
-            dd($request->all());
+           // dd($request->all());
             $app_id = $request->get('app_id');
             $type = $request->get('type');
+            $title = $request->get('title');
             $comments = $request->get('comments');
+            $dom = new \DomDocument();
+            $dom->loadHtml($comments, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD); 
+            $comments = $dom->saveHTML();
             $this->appRepo->savePdNotes([
             'app_id' => $app_id,
             'type' => $type,
+            'title' => $title,
             'comments' => $comments,
             'created_by' => Auth::user()->user_id,
             'created_at' => \Carbon\Carbon::now(),

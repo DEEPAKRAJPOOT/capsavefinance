@@ -25,6 +25,7 @@ class PdNotesRequest extends Request
     {
         return [
             'type' => 'required',
+            'title' => 'required',
             'comments' => 'required'
         ];
     }
@@ -33,6 +34,7 @@ class PdNotesRequest extends Request
     {
         return [
             'type.required' => 'Type is required',
+            'title.required' => 'Title is required',
             'comments.required' => 'Comment is required',
         ];
     }

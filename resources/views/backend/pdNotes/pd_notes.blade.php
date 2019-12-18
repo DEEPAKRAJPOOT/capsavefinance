@@ -17,17 +17,20 @@
                                     <div class="table-responsive">
                                         <table class="table text-center table-striped table-hover">
                                             <thead class="thead-primary">
-                                                <tr>
-                                                    <th class="text-left" conspan="2">Personal Discussion Note</th>
-                                                </tr>
+                                               
                                             </thead>
                                             <tbody>
                                                 <tr>
+                                                    <th class="text-left">Title</th>
                                                     <th class="text-left">Note Details</th>
-                                                    <td class="text-right">Added By</td>                                 </tr> 
+                                                    <th class="text-left">Type</th>
+                                                    <th class="text-right">Added By</th>   
+                                                </tr> 
                                                 @foreach($arrData as $data)
                                                 <tr>
-                                                    <th class="text-left">{{$data->comments}}</th>
+                                                    <td class="text-left">{{ $data->title }}</td>
+                                                    <td class="text-left">{!! $data->comments !!}</td>
+                                                    <td class="text-left">@if($data->type==1) physical @elseif($data->type==2) Tele  @endif</td>
                                                     <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>                                                                        
                                                 </tr>
                                                 @endforeach

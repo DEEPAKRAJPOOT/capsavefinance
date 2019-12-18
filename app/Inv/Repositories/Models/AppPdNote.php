@@ -41,6 +41,7 @@ class AppPdNote extends BaseModel {
     protected $fillable = [
         'app_id',
         'type',
+        'title',
         'comments',
         'created_at',
         'created_by'
