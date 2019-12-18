@@ -12,8 +12,8 @@
     <div class="col-md-12">
         <div class="form-group">
             <label class="">Type : </label>
-            {!!Form::radio('type','1' ,'', [   'class'=>'form-control' ]) !!} Physical
-            {!!Form::radio('type','2','', [   'class'=>'form-control']) !!} Tele
+            {!!Form::radio('type','1' ,'') !!} Physical
+            {!!Form::radio('type','2','') !!} Tele
         </div>
             {!! $errors->first('type', '<span class="error">:message</span>') !!}
 
