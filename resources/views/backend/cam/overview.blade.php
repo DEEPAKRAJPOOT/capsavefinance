@@ -55,10 +55,11 @@
                         </tr>
                         <tr>
                             <td><b>Corporate office Address</b></td>
-                            <!-- <td>{{$arrBizData->communicationAddress->addr_1.' '.$arrBizData->address[1]->city_name.' '. $arrBizData->address[1]->state->name.' '.$arrBizData->address[1]->pin_code}}  </td>
- -->
+                           
                             <td>{{$arrBizData->communicationAddress->addr_1.' '.(isset($arrBizData->address[1]->city_name) ? $arrBizData->address[1]->city_name : '').' '. (isset($arrBizData->address[1]->state->name) ? $arrBizData->address[1]->state->name : '').' '. (isset($arrBizData->address[1]->pin_code) ? $arrBizData->address[1]->pin_code : '')}}
                             </td>
+
+
 
 
                             <td><b>Registered Office Address</b></td>
