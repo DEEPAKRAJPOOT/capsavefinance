@@ -9,12 +9,12 @@ use Helpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\Master\State;
-use App\Http\Requests\AnchorRegistrationFormRequest;
+use App\Http\Requests\AgencyRegistrationFormRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use Event;
 
-class LeadController extends Controller {
+class AgencyController extends Controller {
 
     protected $userRepo;
     protected $appRepo;
@@ -33,12 +33,31 @@ class LeadController extends Controller {
     }
 
     /**
+     * Display anchor listing
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function allAgencyList() {
+        return view('backend.agency.index');
+    }
+
+    /**
+    * 
+    * @return type
+    */
+     public function getAgencyUserList() {        
+        return view('backend.agency.agency_user_list');
+    }
+
+
+    /*------------------------------------------------------*/
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return view('backend.lead.index');
+        return view('backend.agency.index');
     }
 
     /**
@@ -159,14 +178,7 @@ class LeadController extends Controller {
         }
     }
 
-    /**
-     * Display anchor listing
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function allAnchorList() {
-        return view('backend.anchor.index');
-    }
+    
 
     public function addAnchorReg(Request $request) {
         try {
@@ -398,13 +410,7 @@ class LeadController extends Controller {
         }
     }
     
-   /**
-    * 
-    * @return type
-    */
-     public function getAnchorLeadList() {        
-        return view('backend.anchor.anchor_lead_list');
-    }
+   
     
      public function addManualAnchorLead() {
       try{

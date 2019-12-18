@@ -914,5 +914,66 @@ class DataRenderer implements DataProviderInterface
                     
                 })
                 ->make(true);
+    }
+
+    public function getAgencyList(Request $request, $agency)
+    {
+        
+        return DataTables::of($agency)
+                ->rawColumns(['agency_id', 'action'])
+                ->addColumn(
+                    'agency_id',
+                    function ($agency) {
+                    $link = '000'.$agency->agency_id;
+                    return $link;
+                      // return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        
+                    } )
+                ->editColumn(
+                    'agency_name',
+                    function ($agency) {
+                    return $agency->comp_name;
+                })              
+                ->editColumn(
+                    'address',
+                    function ($agency) {
+                    return $agency->comp_addr; 
+                })
+                ->editColumn(
+                    'email',
+                    function ($agency) {
+                    return $agency->comp_email  ;
+
+                })
+                ->editColumn(
+                    'phone',
+                    function ($agency) {
+                    return $agency->comp_phone; 
+                }) 
+                ->editColumn(
+                    'created_at',
+                    function ($agency) {
+                    return ($agency->created_at)? date('d-M-Y',strtotime($agency->created_at)) : '---';
+                })
+                ->addColumn(
+                    'action',
+                    function ($agency) {
+                       $act = '';
+                     //if(Helpers::checkPermission('edit_anchor_reg')){
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $agency->agency_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></a>";
+                     //}
+                     return $act;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_name') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('by_name'));
+                            $query->where('agency.comp_name', 'like',"%$search_keyword%")
+                            ->orWhere('agency.comp_email', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
     } 
 }

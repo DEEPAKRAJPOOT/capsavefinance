@@ -431,8 +431,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
         Route::group(['prefix' => 'agency'], function () {
             Route::get('/', [
-                'as' => 'get_anchor_list',
-                'uses' => 'Backend\LeadController@allAnchorList'
+                'as' => 'get_agency_list',
+                'uses' => 'Backend\AgencyController@allAgencyList'
+            ]);
+            Route::get('manage-agency-user', [
+                'as' => 'get_agency_user_list',
+                'uses' => 'Backend\AgencyController@getAgencyUserList'
             ]);
             /*Route::get('add-anchor', [
                 'as' => 'add_anchor_reg',
@@ -462,10 +466,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'update_anchor_reg',
                 'uses' => 'Backend\LeadController@updateAnchorReg'
             ]);*/ 
-            /*Route::get('manage-anchor-lead', [
-                'as' => 'get_anchor_lead_list',
-                'uses' => 'Backend\LeadController@getAnchorLeadList'
-            ]);*/ 
+             
             /*Route::get('add-manual-anchor-lead', [
                 'as' => 'add_manual_anchor_lead',
                 'uses' => 'Backend\LeadController@addManualAnchorLead'

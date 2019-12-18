@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
 use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
@@ -1292,5 +1293,16 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         $role = Role::getAllRole();
         return $role;
+    }
+
+    /**
+    * function for get all anchor register user detail
+    * @return type
+    */
+     
+    public function getAllAgency()
+    {
+      $result = Agency::orderBy('agency_id', 'DESC');
+      return $result ?: false;
     }    
 }

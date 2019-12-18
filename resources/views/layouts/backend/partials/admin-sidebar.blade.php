@@ -87,9 +87,9 @@
             </a>
             <div class="collapse" id="layoutsSubmenu">
                 <ul class="nav flex-column sub-menu">
-                @can('get_anchor_list')
+                @can('get_agency_list')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('get_anchor_list') }}">Agency List</a>
+                        <a class="nav-link" href="{{ route('get_agency_list') }}">Agency List</a>
                     </li>
                     @endcan
                     @can('get_anchor_lead_list')
