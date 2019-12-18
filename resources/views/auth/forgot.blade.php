@@ -1,4 +1,4 @@
-x@extends('layouts.guest')
+@extends('layouts.guest')
 @section('content')
 <div class="form-content no-padding sign-up mt-5">
     <div class="row justify-content-center align-items-center m-0">
@@ -40,6 +40,7 @@ x@extends('layouts.guest')
                                         @error('email')
                                             <span class="text-danger"> {{$message}} </span>
                                         @enderror
+                                        <input type="hidden" class="form-control" name="user_type" value="1">
                                     </div>
                                 </div>
                                 
