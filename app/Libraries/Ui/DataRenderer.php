@@ -975,5 +975,64 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->make(true);
-    } 
+    }
+
+    public function getAgencyUserLists(Request $request, $user)
+    {
+        return DataTables::of($user)
+                ->rawColumns(['user_id', 'action'])
+                ->addColumn(
+                    'user_id',
+                    function ($user) {
+                    $link = '000'.$user->user_id;
+                    return $link;
+                    } )             
+                ->editColumn(
+                    'user_name',
+                    function ($user) {
+                    return $user->f_name.' '.$user->l_name; 
+                })
+                ->editColumn(
+                    'agency_name',
+                    function ($user) {
+                    return $user->agency->comp_name;
+                }) 
+                ->editColumn(
+                    'email',
+                    function ($user) {
+                    return $user->email  ;
+
+                })
+                ->editColumn(
+                    'phone',
+                    function ($user) {
+                    return $user->mobile_no; 
+                }) 
+                ->editColumn(
+                    'created_at',
+                    function ($user) {
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+                })
+                ->addColumn(
+                    'action',
+                    function ($user) {
+                       $act = '';
+                     //if(Helpers::checkPermission('edit_anchor_reg')){
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyFrame\" data-url =\"" . route('edit_agency_reg', ['user_id' => $user->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency Detail\"><i class=\"fa fa-edit\"></a>";
+                     //}
+                     return $act;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_name') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('by_name'));
+                            $query->where('users.f_name', 'like',"%$search_keyword%")
+                            ->orWhere('users.email', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
 }

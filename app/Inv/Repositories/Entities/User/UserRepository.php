@@ -1324,5 +1324,10 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function updateAgency($attributes, $agency_id){
         $status = Agency::whereAgencyId($agency_id)->update($attributes);
         return $status ?: false;
+    }
+
+    public function getAgencyUserLists(){
+        $result = UserModel::orderBy('user_id', 'DESC')->where('agency_id','<>', null);
+        return $result ?: false;
     }   
 }

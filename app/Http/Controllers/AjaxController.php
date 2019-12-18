@@ -2750,4 +2750,10 @@ if ($err) {
      $agency = $dataProvider->getAgencyList($this->request, $agencyList);
      return $agency;
     }
+
+    public function getAgencyUserLists(DataProviderInterface $dataProvider) { 
+     $agencyUserList = $this->userRepo->getAgencyUserLists();
+     $agencyUsers = $dataProvider->getAgencyUserLists($this->request, $agencyUserList);
+     return $agencyUsers;
+    }
 }

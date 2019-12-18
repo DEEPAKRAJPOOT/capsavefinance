@@ -312,6 +312,13 @@ Route::group(
         'uses' => 'AjaxController@getAgencyLists'
         ]
     );
+    Route::post(
+        'get-agency-user-list',
+        [
+        'as' => 'get_ajax_agency_user_list',
+        'uses' => 'AjaxController@getAgencyUserLists'
+        ]
+    );
     /*agency route*/
 
 });
