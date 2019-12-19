@@ -433,6 +433,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'add_manual_anchor_lead',
                 'uses' => 'Backend\LeadController@addManualAnchorLead'
             ]);
+
             Route::post('add-manual-anchor-lead', [
                'as' => 'add_manual_anchor_lead',
                'uses' => 'Backend\LeadController@saveManualAnchorLead'
@@ -443,6 +444,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
         });
+ 
     });
-
+});
 
