@@ -688,14 +688,15 @@
         required: true
         })
         });
+        if(button=='next')
+      { 
         $('select.gender').each(function () {
         $(this).rules("add",
         {
         required: true
         })
         });
-        if(button=='next')
-       {  
+        
         $('input.pan_no').each(function () {
         $(this).rules("add",
         {
@@ -718,7 +719,7 @@
                 number: true,
         })
         });
-      }
+     
         /*  $('input.edu_qualification').each(function () {
          $(this).rules("add",
          {
@@ -747,7 +748,7 @@
         required: true
         })
         });
-    
+       }  
         /* $('.privacy_chk').each(function () {
          $(this).rules("add",
          {
