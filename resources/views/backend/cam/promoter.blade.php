@@ -17,62 +17,64 @@
                         <h2 class="sub-title bg">Management Information</h2>
                         <div class="p-2 full-width">
                            <div id="accordion" class="accordion d-table col-sm-12">
-                            @php ($count = 0)
-                         @php ($j = 0)
-                          @php ($i = 0)
-                             @foreach($arrPromoterData as $row)
+                              @php ($count = 0)
+                              @php ($j = 0)
+                              @php ($i = 0)
+                              @php ($panNoFilePath = $panNoFileName = $dlNoFilePath = $dlNoFileName = $voterNoFilePath = $voterNoFileName = $passNoFilePath = $passNoFileName = $photoFilePath = $photoFileName = $aadharFilePath = $aadharFileName = $arrPan = $arrDl = $arrVoterNo = $arrPassNo = $arrMobileNo = $arrMobileOtpNo = [])
+                             @foreach($arrPromoterData as $key=>$row)
                                         @php ($i++)
                                         @php ($count++)
 
                                          <?php 
                                          foreach($row->document as $row2) {
                                              if($row2->doc_id == 2) { 
-                                                $panNoFilePath[] =   $row2->userFile->file_path;
-                                                $panNoFileName[] =   $row2->userFile->file_name;
+                                                $panNoFilePath[$key] =   $row2->userFile->file_path;
+                                                $panNoFileName[$key] =   $row2->userFile->file_name;
                                             }
                                             if($row2->doc_id == 31) { 
-                                                $dlNoFilePath[] = $row2->userFile->file_path;
-                                                $dlNoFileName[] =   $row2->userFile->file_name;
+                                                $dlNoFilePath[$key] = $row2->userFile->file_path;
+                                                $dlNoFileName[$key] =   $row2->userFile->file_name;
                                             }
                                             if($row2->doc_id == 30) { 
-                                                $voterNoFilePath[] = $row2->userFile->file_path;
-                                                $voterNoFileName[] =   $row2->userFile->file_name;
+                                                $voterNoFilePath[$key] = $row2->userFile->file_path;
+                                                $voterNoFileName[$key] =   $row2->userFile->file_name;
                                             }
                                             if($row2->doc_id == 32) { 
-                                                $passNoFilePath[] = $row2->userFile->file_path;
-                                                $passNoFileName[] =   $row2->userFile->file_name;
+                                                $passNoFilePath[$key] = $row2->userFile->file_path;
+                                                $passNoFileName[$key] =   $row2->userFile->file_name;
                                             }
                                              if($row2->doc_id == 22) { 
-                                                $photoFilePath[] = $row2->userFile->file_path;
-                                                $photoFileName[] =   $row2->userFile->file_name;
+                                                $photoFilePath[$key] = $row2->userFile->file_path;
+                                                $photoFileName[$key] =   $row2->userFile->file_name;
                                             }
                                             if ($row2->doc_id == 34) {
-                                                $aadharFilePath[] = $row2->userFile->file_path;
-                                                $aadharFileName[] =   $row2->userFile->file_name;
+                                                $aadharFilePath[$key] = $row2->userFile->file_path;
+                                                $aadharFileName[$key] =   $row2->userFile->file_name;
                                             }
                            
                                          } 
 
 
-                                         foreach($row->businessApi as $row1) {
+                                        foreach($row->businessApi as $row1) {
                         
                                           if($row1->type == 3) { 
-                                                $arrPan[] = json_decode($row1->karza->req_file);
+                                                $arrPan[$key] = json_decode($row1->karza->req_file);
                                             }
                                             else if($row1->type == 5) { 
-                                                $arrDl[] = json_decode($row1->karza->req_file);
+                                                $arrDl[$key] = json_decode($row1->karza->req_file);
                                             }
                                              else if($row1->type == 4) { 
-                                                $arrVoterNo[] = json_decode($row1->karza->req_file); 
+                                                $arrVoterNo[$key] = json_decode($row1->karza->req_file); 
                                             }
                                             else if($row1->type == 6) { 
-                                                $arrPassNo[] = json_decode($row1->karza->req_file); 
+                                                $arrPassNo[$key] = json_decode($row1->karza->req_file); 
                                             }else if ($row1->type == 7) {
-                                                $arrMobileNo[] = json_decode($row1->karza->req_file);
+                                                $arrMobileNo[$key] = json_decode($row1->karza->req_file);
                                             }else if ($row1->type == 8) {
-                                                $arrMobileOtpNo[] = json_decode($row1->karza->req_file);
+                                                $arrMobileOtpNo[$key] = json_decode($row1->karza->req_file);
                                             }
                                         } 
+                                       
                                         ?>
 
 
@@ -150,7 +152,7 @@
                                                 <td>Pan Card</td>
                                                 <td>
                                                     <div class="col-md-12">
-                                                        <input type="text" readonly='readonly' value="{{ isset($arrPan[$j]->requestId) ? $arrPan[$j]->requestId : '' }}"  class="form-control verifydl"  >
+                                                        <input type="text" readonly='readonly' value="{{ isset($arrPan[$j]->requestId) ? $arrPan[$j]->requestId : '' }}"  class="form-control verifydl">
                                                         <span class="text-success float-left" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified </i> </span>
                                                     </div>
 
