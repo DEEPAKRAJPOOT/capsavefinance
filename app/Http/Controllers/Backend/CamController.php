@@ -129,7 +129,7 @@ class CamController extends Controller
         $financedocs = $fin->getFinanceStatements($appId);
         $contents = array();
         if (file_exists(storage_path('app/public/user/'.$appId.'_finance.json'))) {
-          $contents = json_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json')),true);
+          $contents = json_decode(base64_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json'))),true);
         }
         $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
         $latest_finance_year = 2010;
