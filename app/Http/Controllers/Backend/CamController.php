@@ -70,8 +70,11 @@ class CamController extends Controller
       			$arrBizData['email']  = $arrEntityData['email'];
       			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
             $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-       
-              return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData, 'arrOwner' =>$arrOwner]);
+           
+            if(isset($arrCamData['t_o_f_security_check'])){
+                $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
+            }
+            return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData, 'arrOwner' =>$arrOwner]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -87,7 +90,11 @@ class CamController extends Controller
             }
             if(!isset($arrCamData['t_o_f_security_check'])){
                     $arrCamData['t_o_f_security_check'] = NULL;
+            }else{
+                  $arrCamData['t_o_f_security_check'] = implode(',', $arrCamData['t_o_f_security_check']);
             }
+            //dd($arrCamData);
+
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
