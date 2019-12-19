@@ -71,6 +71,7 @@ class Cam extends BaseModel
         't_o_f_profile_comp',
         'risk_comments',
         'cm_comment',
+        'promoter_cmnt',
         'created_by',
         'created_at',
         'updated_at',
@@ -127,6 +128,26 @@ class Cam extends BaseModel
                     't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
                     'risk_comments'=>$attributes['risk_comments'],
                     'cm_comment'=>$attributes['cm_comment'],
+                    'updated_by'=>$userId,
+        ]);
+        return $updateCamData ? true : false;
+    }
+
+     public static function savePromoterComment($attributes, $userId){
+        $inputArr= array(
+            'biz_id'=>$attributes['biz_id'],
+            'app_id'=>$attributes['app_id'],
+            'promoter_cmnt'=>$attributes['promoter_cmnt'],
+            'created_by'=>$userId
+        );
+        $cam = Cam::create($inputArr);
+        return  $cam ? true : false;
+    }
+
+    public static function updatePromoterComment($attributes, $userId){
+        $cam = Cam::where('app_id', $attributes['app_id'])->first();
+        $updateCamData = $cam->update([
+                    'promoter_cmnt'=>$attributes['promoter_cmnt'],
                     'updated_by'=>$userId,
         ]);
         return $updateCamData ? true : false;

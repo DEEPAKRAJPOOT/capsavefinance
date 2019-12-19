@@ -841,8 +841,11 @@ class CamController extends Controller
         $attribute['biz_id'] = $request->get('biz_id'); 
         $attribute['app_id'] = $request->get('app_id');
         $arrPromoterData = $this->userRepo->getOwnerApiDetail($attribute);
-    	return view('backend.cam.promoter')->with([
-            'arrPromoterData' => $arrPromoterData 
+        $arrCamData = Cam::where('biz_id','=',$attribute['biz_id'])->where('app_id','=',$attribute['app_id'])->first();
+        return view('backend.cam.promoter')->with([
+            'arrPromoterData' => $arrPromoterData, 
+            'attribute' => $attribute,
+            'arrCamData' => $arrCamData
             ]);;
     }
 
@@ -1007,6 +1010,34 @@ class CamController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+
+    public function promoterCommentSave(Request $request){
+       try{
+            $arrCamData = $request->all();
+            //  dd($arrCamData);
+            $userId = Auth::user()->user_id;
+            if($arrCamData['cam_report_id'] != ''){
+                 $updateCamData = Cam::updatePromoterComment($arrCamData, $userId);
+                 if($updateCamData){
+                        Session::flash('message',trans('Management information updated sauccessfully'));
+                 }else{
+                       Session::flash('message',trans('Management information not updated successfully'));
+                 }
+            }else{
+                $saveCamData = Cam::savePromoterComment($arrCamData, $userId);
+                if($saveCamData){
+                        Session::flash('message',trans('Management information saved successfully'));
+                 }else{
+                       Session::flash('message',trans('Management information not saved successfully'));
+                 }
+            }    
+            return redirect()->route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
 
 
 }

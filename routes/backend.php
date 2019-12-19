@@ -372,6 +372,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@camHygieneSave'
                 ]);
 
+
+                Route::post('cam-promoter-comment-save', [
+                    'as' => 'cam_promoter_comment_save',
+                    'uses' => 'Backend\CamController@promoterCommentSave'
+                ]);
+
             }); //end of cam   
         });//end of application
 

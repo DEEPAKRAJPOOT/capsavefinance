@@ -266,18 +266,21 @@
                            </div>
                         </div>
                      </div>
-                    <!--  <div class="data mt-4">
-                        <h2 class="sub-title bg">Brief Profile about the Promoters</h2>
+              <form method="POST" action="{{route('cam_promoter_comment_save')}}"> 
+                 @csrf
+
+                <input type="text" name="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />             
+                <input type="text" name="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />             
+                <input type="text" name="cam_report_id" value="{{isset($arrCamData->cam_report_id) ? $arrCamData->cam_report_id : ''}}" /> 
+                     
+                     <div class="data mt-4">
+                        <h2 class="sub-title bg">Risk Comments on the Management</h2>
                         <div class="pl-4 pr-4 pb-4 pt-2">
-                           <textarea class="form-control" id="profile_of_company" name="profile_of_company" rows="3" spellcheck="false"></textarea>
+                           <textarea class="form-control" id="profile_of_company" name="promoter_cmnt" rows="3" spellcheck="false">{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</textarea>
                         </div>
                      </div>
-                     <div class="data mt-4">
-                        <h2 class="sub-title bg">Risk Comments on the Promoters</h2>
-                        <div class="pl-4 pr-4 pb-4 pt-2">
-                           <textarea class="form-control" id="profile_of_company" name="profile_of_company" rows="3" spellcheck="false"></textarea>
-                        </div>
-                     </div> -->
+                     <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                </form>
                  
                </div>
             </div>

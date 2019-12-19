@@ -42,7 +42,7 @@
                                 <select class="form-control" name="contact_person">
                                 <option  value="">Select</option>
                                  @foreach($arrOwner as $key => $val)
-                                    <option @if($arrCamData->contact_person == $val) selected @endif value="{{$val}}"> {{$val}}</option>
+                                    <option @if((isset($arrCamData->contact_person)) && $arrCamData->contact_person == $val) selected @endif value="{{$val}}"> {{$val}}</option>
                                  @endforeach   
                                 </select>
                            </td>
