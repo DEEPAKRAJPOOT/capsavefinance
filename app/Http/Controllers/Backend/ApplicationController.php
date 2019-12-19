@@ -329,7 +329,19 @@ class ApplicationController extends Controller
         }
     }
     
-     
+     /**
+     * showing form for uploading document
+     */
+    
+    public function uploadDocument()
+    {
+        $bankdata = User::getBankData();
+        
+        return view('backend.app.upload_document', [
+                    'bankdata' => $bankdata
+                ]);   
+    }
+    
     /**
      * Handle a Business documents for the application.
      *
@@ -342,7 +354,8 @@ class ApplicationController extends Controller
         try {
             $arrFileData = $request->all();
             $docId = (int)$request->doc_id; //  fetch document id
-            $appId = (int)$request->app_id; //  fetch document id
+            $appId = (int)$request->app_id; //  fetch app id
+            $bizId = (int)$request->biz_id; //  fetch biz id
             $userData = $this->userRepo->getUserByAppId($appId);
             $userId = $userData->user_id;
 
@@ -394,18 +407,18 @@ class ApplicationController extends Controller
                     Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status);
                 }
                 Session::flash('message',trans('success_messages.uploaded'));
-                return redirect()->back();
+                return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
                 //Add application workflow stages
                 Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
             
-                return redirect()->back();
+                return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
             Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
                 
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId])->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
     

@@ -62,6 +62,7 @@ class AppDocumentFile extends BaseModel
         'pwd_txt',
         'doc_id_no',
         'file_id',
+        'comment',
         'is_upload',
         'created_by',
         'created_at',
@@ -134,6 +135,7 @@ class AppDocumentFile extends BaseModel
         $inputArr['is_scanned']  = $attributes['is_scanned'] ?? NULL;
         $inputArr['pwd_txt']  = $attributes['pwd_txt'] ?? NULL;
         $inputArr['file_id']  = $fileId; 
+        $inputArr['comment'] = $attributes['comment'] ?? NULL;
         $inputArr['is_upload'] = 1;
         $inputArr['created_by'] = 1;
         

@@ -64,6 +64,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@showDocuments'
             ]);
             
+            
+            Route::get('documents/upload-document', [
+                'as' => 'show_upload_document',
+                'uses' => 'Backend\ApplicationController@uploadDocument'
+            ]);
+            
             Route::post('documents-save', [
                 'as' => 'document_save',
                 'uses' => 'Backend\ApplicationController@saveDocument'
@@ -382,16 +388,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'applicaiton_list',
                 'uses' => 'Backend\FiRcuController@appList'
             ]);
-
-
-            Route::get('edit-backend-lead', [
-                'as' => 'edit_backend_lead',
-                'uses' => 'Backend\LeadController@editBackendLead'
-            ]);
-            Route::get('lead-detail', [
-                'as' => 'lead_detail',
-                'uses' => 'Backend\LeadController@leadDetail'
-            ]);        
         });
         
         Route::group(['prefix' => 'anchor'], function () {
