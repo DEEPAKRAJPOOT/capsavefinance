@@ -13,7 +13,7 @@
             </a>
 
       </li>             
-        
+<!--        
     <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
@@ -27,7 +27,7 @@
                     </li>
                 </ul>
             </div>
-     </li>
+     </li>-->
         
     <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
