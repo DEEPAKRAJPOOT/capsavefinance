@@ -58,6 +58,7 @@ class AppPdNote extends BaseModel {
         $appNote = self::select('pd_note.*', 'users.f_name', 'users.m_name', 'users.l_name')
                 ->join('users', 'users.user_id', '=', 'pd_note.created_by')
                 ->where('pd_note.app_id', $app_id)
+                ->orderBy('pd_note_id', 'DESC')
                 ->get();
         return $appNote ?: false;
     }

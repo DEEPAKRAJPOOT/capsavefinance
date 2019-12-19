@@ -11,9 +11,19 @@
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <label class="">Type : </label>
-            {!!Form::radio('type','1' ,'') !!} Physical
-            {!!Form::radio('type','2','') !!} Tele
+            <label for="txtCreditPeriod">Type: <span class="error_message_label">*</span></label>
+            <div class="block-div clearfix">
+              <div class="form-check-inline float-left">
+                  <label class="form-check-label fnt">
+                     {!!Form::radio('type','1' ,'',[ 'class'=>'form-check-input']) !!} <strong>Physical</strong>
+                  </label>
+              </div>
+              <div class="form-check-inline float-left">
+                  <label class="form-check-label fnt">
+                     {!!Form::radio('type','2' ,'',[ 'class'=>'form-check-input']) !!} <strong>Tele</strong>
+                  </label>
+              </div>
+            </div>
         </div>
             {!! $errors->first('type', '<span class="error">:message</span>') !!}
 
@@ -64,28 +74,28 @@ $messages = trans('success_messages.pd_notes_saved')
 <script>
     $(document).ready(function() {
         $('.summernote').summernote({
-              height: 200,
+              height: 150,
          });
         $(".note-popover").hide();
     });
 
-    $(function() {
-      $("form[name='pdNotesForm']").validate({
-        rules: {
-          type: "required",
-          title: "required",
-          comments: "required",
-        },
-        messages: {
-          type: "Type is required",
-          title: "Title is required",
-          comments: "Comment is required",
-         },
-        submitHandler: function(form) {
-          form.submit();
-        }
-      });
-    });
+    // $(function() {
+    //   $("form[name='pdNotesForm']").validate({
+    //     rules: {
+    //       type: "required",
+    //       title: "required",
+    //       comments: "required",
+    //     },
+    //     messages: {
+    //       type: "Type is required",
+    //       title: "Title is required",
+    //       comments: "Comment is required",
+    //      },
+    //     submitHandler: function(form) {
+    //       form.submit();
+    //     }
+    //   });
+    // });
     
 </script>
 
