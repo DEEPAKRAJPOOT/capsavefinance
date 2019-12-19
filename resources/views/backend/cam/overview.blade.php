@@ -25,7 +25,7 @@
 
         <div class="card mt-4">
             <div class="card-body ">
-             <form method="POST" action="{{url('cam/cam-information-save')}}"> 
+             <form method="POST" action="{{route('cam_information_save')}}"> 
              @csrf
 
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
@@ -38,15 +38,13 @@
                             <td width="25%"><b>Name of Borrower</b></td>
                             <td width="25%">{{$arrBizData->biz_entity_name}}</td>
                             <td><b>Contact Person of Key Personal</b></td>
-                            <td>
-                                 <select class="form-control" name="contact_person">
-                                  <option  value="">Select</option>
+                            <td> 
+                                <select class="form-control" name="contact_person">
+                                <option  value="">Select</option>
                                  @foreach($arrOwner as $key => $val)
-                                    <option value="{{$val}}"> {{$val}}</option>
+                                    <option @if($arrCamData->contact_person == $val) selected @endif value="{{$val}}"> {{$val}}</option>
                                  @endforeach   
                                 </select>
-                           <!--  {{$arrBizData->ownerName}} -->
-
                            </td>
                         </tr>
 

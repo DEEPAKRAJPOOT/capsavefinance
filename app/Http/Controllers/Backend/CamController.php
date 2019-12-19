@@ -49,18 +49,9 @@ class CamController extends Controller
             $arrRequest['app_id'] = $request->get('app_id');
             $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
             $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
-            
-
             foreach ($arrOwnerData as $key => $arr) {
                   $arrOwner[$key] =  $arr['first_name'];
             }
-          //dd($arrOwner);
-
-
-
-           if(isset($arrOwnerData[0])){
-                  $arrBizData['ownerName'] = $arrOwnerData[0]['first_name'].' '.$arrOwnerData[0]['last_name'];
-           }
             $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
             if(isset($arrEntityData['industryType'])){
                   $arrBizData['industryType'] = $arrEntityData['industryType'];
@@ -79,6 +70,7 @@ class CamController extends Controller
       			$arrBizData['email']  = $arrEntityData['email'];
       			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
             $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+       
               return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData, 'arrOwner' =>$arrOwner]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -87,9 +79,6 @@ class CamController extends Controller
     }
 
     public function camInformationSave(Request $request){
-        dd("ad");
-
-      
     	 try{
             $arrCamData = $request->all();
             $userId = Auth::user()->user_id;

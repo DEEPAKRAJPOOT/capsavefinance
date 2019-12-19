@@ -119,7 +119,7 @@
             <div class="data mt-4">
                <h2 class="sub-title bg">Hygiene Check</h2>
                <div class="pl-4 pr-4 pb-4 pt-2">
-               <form method="POST" action="{{url('cam/cam-hygiene-save')}}"> 
+               <form method="POST" action="{{route('cam_hygiene_save')}}"> 
                   @csrf
                   <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
                 <input type="hidden" name="biz_id" value="{{isset($arrRequest['biz_id']) ? $arrRequest['biz_id'] : ''}}" />
