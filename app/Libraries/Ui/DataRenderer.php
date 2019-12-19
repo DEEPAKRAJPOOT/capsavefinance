@@ -314,6 +314,107 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+    
+    /*      
+     * Get application list
+     */
+    public function getFiRcuAppList(Request $request, $app)
+    {
+        return DataTables::of($app)
+                ->rawColumns(['app_id','assignee', 'assigned_by'])
+                ->addColumn(
+                    'app_id',
+                    function ($app) {
+                        $link = route('backend_agency_fi', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                    }
+                )
+                ->addColumn(
+                    'biz_entity_name',
+                    function ($app) {                        
+                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                })
+                ->addColumn(
+                    'name',
+                    function ($app) {                        
+                        return $app->name ? $app->name : '';
+                })
+                ->addColumn(
+                    'email',
+                    function ($app) {                        
+                        return $app->email ? $app->email : '';
+                })
+                ->addColumn(
+                    'mobile_no',
+                    function ($app) {                        
+                        return $app->mobile_no ? $app->mobile_no : '';
+                })                
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($app) {
+                    return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
+                })
+                ->addColumn(
+                    'user_type',
+                    function ($app) {
+                    if($app->user_type && $app->user_type==1){
+                       $anchorUserType='Supplier'; 
+                    }else if($app->user_type && $app->user_type==2){
+                        $anchorUserType='Buyer';
+                    }else{
+                        $anchorUserType='';
+                    }
+                       return $anchorUserType;
+                })                
+                ->addColumn(
+                    'assignee',
+                    function ($app) {
+                    $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
+                    if($userInfo){
+                        return $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
+                    }
+                    return '';
+                })
+                ->addColumn(
+                    'assigned_by',
+                    function ($app) {
+                        if ($app->from_role && !empty($app->from_role)) {
+                            return $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
+                        } else {
+                            return $app->assigned_by ? $app->assigned_by : '';
+                        }
+                })                
+                ->addColumn(
+                    'shared_detail',
+                    function ($app) {
+                    return $app->sharing_comment ? $app->sharing_comment : '';
+
+                })
+                ->addColumn(
+                    'status',
+                    function ($app) {
+                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+
+                })
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    if ($request->get('is_assign') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_assign');
+                            $query->where('app.is_assigned', $is_assigned);
+                        });
+                    }
+                    
+                })
+                ->make(true);
+    }
 
     /*      
      * Get user application list for frontend

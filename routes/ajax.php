@@ -202,6 +202,14 @@ Route::group(
         'uses' => 'AjaxController@getApplications'
         ]
     );
+
+    Route::post(
+         'get-app-fircu',
+         [
+         'as' => 'ajax_fircu_app_list',
+         'uses' => 'AjaxController@getFiRcuAppList'
+         ]
+     );
     Route::post(
         'get-anchor-user-list',
         [

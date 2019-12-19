@@ -371,11 +371,25 @@ $(document).ready(function () {
         });
 
         $("#addAgencyFrame").on('show.bs.modal', function (e) {
-                var parent = $(e.relatedTarget);
+            var parent = $(e.relatedTarget);
                 var height = parent.attr('data-height');
                 var url = parent.attr('data-url');
                 var width = parent.attr('data-width');
                 $("#addAgencyFrame iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });  
+
+        $("#uploadDocument").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#uploadDocument iframe").attr(
                         {
                             'src': url,
                             'height': height,
@@ -425,5 +439,5 @@ $(document).ready(function () {
                         }
                 );
         });
-        
+      
 });

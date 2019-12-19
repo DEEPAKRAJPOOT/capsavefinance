@@ -73,36 +73,6 @@
         $(this).parent('div').children('.custom-file-label').html('Choose file');
     });
     
-    $('.openModal').click(function(e) {
-        var docId = $(this).attr('data-id');
-        $('#myModal').modal('show');
-        $('#password_file_div').hide();
-        $('#is_not_for_gst').show();
-        $('input[name=docId]').val(docId);
-        $('input[name=doc_id]').val(docId);
-        $('select[name=file_bank_id]').parent('div').hide();
-        $('select[name=finc_year]').parent('div').hide();
-        $('select[name=gst_month]').parent('div').hide();
-        $('select[name=gst_year]').parent('div').hide();
-        if (docId != 6 && $('input[name="is_pwd_protected"]').is(':checked') && $('input[name="is_pwd_protected"]:checked').val() == '1') {
-            $('#password_file_div').show();
-        }
-
-        if(docId == 4) {
-            $('select[name=file_bank_id]').parent('div').show();
-        } else if (docId == 5) {
-            $('select[name=finc_year]').parent('div').show();
-        } else if (docId == 6) {    
-            $('#is_not_for_gst').hide();
-            $('select[name=gst_month]').parent('div').show();
-            $('select[name=gst_year]').parent('div').show();            
-        }        
-        else {            
-            $('#is_not_for_gst').hide();
-            $('#is_required_addl_info').hide();       
-        }
-        
-    });
     $('.getFileName').change(function(e) {
         var fileName = e.target.files[0].name;
         $(this).parent('div').children('.custom-file-label').html(fileName);

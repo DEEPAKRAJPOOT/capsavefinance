@@ -2652,6 +2652,17 @@ if ($err) {
         return $applications;
     }
     
+    /**
+     * Get all Application list
+     *
+     * @return json user data
+     */
+    public function getFiRcuAppList(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getApplications();
+        $applications = $dataProvider->getFiRcuAppList($this->request, $appList);
+        return $applications;
+    }
+    
     
     public function getAnchorLists(DataProviderInterface $dataProvider) { 
      $anchUsersList = $this->userRepo->getAllAnchor();
