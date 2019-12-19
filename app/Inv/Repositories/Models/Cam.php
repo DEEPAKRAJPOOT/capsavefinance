@@ -56,6 +56,7 @@ class Cam extends BaseModel
         'app_id',
         'operational_person',
         // 'program',
+        'contact_person',
         'rating_no',
         'rating_comment',
         'existing_exposure',
@@ -80,6 +81,7 @@ class Cam extends BaseModel
         $inputArr= array(
             'biz_id'=>$attributes['biz_id'],
             'app_id'=>$attributes['app_id'],
+            'contact_person'=>$attributes['contact_person'],
             'operational_person'=>$attributes['operational_person'],
             // 'program'=>$attributes['program'],
             'rating_no'=>$attributes['rating_no'],
@@ -108,6 +110,7 @@ class Cam extends BaseModel
 
         //update Cam table
         $updateCamData = $cam->update([
+                    'contact_person'=>$attributes['contact_person'],
                     'operational_person'=>$attributes['operational_person'],
                     // 'program'=>$attributes['program'],
                     'rating_no'=>$attributes['rating_no'],
