@@ -244,6 +244,28 @@ class UserEventsListener extends BaseEvent
         }
     }
 
+    public function onAgencyUserRegisterSuccess($userData) {
+        $user = unserialize($userData);
+
+        //Send mail to User
+        $email_content = EmailTemplate::getEmailTemplate("AGENCY_USER_REGISTER_MAIL");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name', '%email','%password'],
+                [ucwords($user['name']),$user['email'],$user['password']],
+                $email_content->message
+            );
+
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content) {
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+            });
+        }
+    }
+
     
      public function onAnchorLeadUpload($userData) {
         $user = unserialize($userData);
@@ -330,12 +352,7 @@ class UserEventsListener extends BaseEvent
             'admin.disapproved',
             'App\Inv\Repositories\Events\UserEventsListener@onDisApprovedAdmin'
         );
-        
-       
-        
-        
-        
-        
+               
         $events->listen(
             'forgot_password',
             'App\Inv\Repositories\Events\UserEventsListener@onForgotPassword'
@@ -357,6 +374,10 @@ class UserEventsListener extends BaseEvent
             'App\Inv\Repositories\Events\UserEventsListener@onCreateUserRoleSuccess'
         );
         
+        $events->listen(
+            'AGENCY_USER_REGISTER_MAIL',
+            'App\Inv\Repositories\Events\UserEventsListener@onAgencyUserRegisterSuccess'
+        );
         
         //
     }
