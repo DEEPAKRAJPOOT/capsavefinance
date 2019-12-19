@@ -1,4 +1,5 @@
 <?php
+
 return [
     /**
      * All common config items those we are not keeping in
@@ -12,23 +13,22 @@ return [
     'FRONTEND_FROM_EMAIL' => 'admin@dexter.com',
     'FRONTEND_FROM_EMAIL_NAME' => 'Rent Alpha',
     'BACKEND_FROM_EMAIL' => 'admin@dexter.com',
-    'BACKEND_FROM_EMAIL_NAME' =>'Rent Alpha',
-    'APISecret'   => env('APISecret', ''),
-    'apiKey'      => env('apiKey', ''),
-    'groupId'     => env('groupId', ''),
-    'gatwayurl'   => env('gatwayurl', ''),
+    'BACKEND_FROM_EMAIL_NAME' => 'Rent Alpha',
+    'APISecret' => env('APISecret', ''),
+    'apiKey' => env('apiKey', ''),
+    'groupId' => env('groupId', ''),
+    'gatwayurl' => env('gatwayurl', ''),
     'contentType' => env('contentType', ''),
-    'gatwayhost'  => env('gatwayhost', ''),
-    'google_recaptcha_key'  => env('GOOGLE_RECAPTCHA_KEY', ''), 
-    'google_recaptcha_secret'  => env('GOOGLE_RECAPTCHA_SECRET', ''),    
+    'gatwayhost' => env('gatwayhost', ''),
+    'google_recaptcha_key' => env('GOOGLE_RECAPTCHA_KEY', ''),
+    'google_recaptcha_secret' => env('GOOGLE_RECAPTCHA_SECRET', ''),
     'app_status' => [
         0 => 'In complete',
         1 => 'Completed'
     ],
-    
     //Roles Ids
     'anchor_role' => 11,
-    'YES'=>1,
+    'YES' => 1,
     'yes_no' => [
         '0' => 'No',
         '1' => 'Yes'
@@ -45,7 +45,7 @@ return [
     'disburse_method' => [
         '1' => 'To Anchor',
         '2' => 'To Customer'
-    ],    
+    ],
     'prgm_status' => [
         '0' => 'In Active',
         '1' => 'Active',
@@ -54,5 +54,6 @@ return [
     'USER_TYPE' => [
         'FRONTEND' => 1,
         'BACKEND' => 2,
-    ]
+    ],
+    'YES' => 1,
 ];

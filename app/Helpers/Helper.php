@@ -668,6 +668,26 @@ class Helper extends PaypalHelper
                 
     }
     
+    
+    /**
+     * Create bootstrap alert box
+     *
+     * @param  string $languageKey
+     * @param  string $type        success | info | warning | danger
+     * @return string
+     */
+    public static function createAlertHTML($languageKey, $type)
+    {
+        $allowedTypes = ['success', 'info', 'warning', 'danger'];
+        $type = trim(strtolower($type));
+        $type = in_array($type, $allowedTypes) ? $type : 'info';
+        $html = '<div class=" alert-' . $type . ' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>' .
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>' .
+                e(trans($languageKey)) .
+                '</div>';
+        return $html;
+    }
+
     /**
      * Get Application current assignee 
      * 
@@ -702,4 +722,5 @@ class Helper extends PaypalHelper
         }
         return $isViewOnly ? 1 : 0;
     }
+    
 }

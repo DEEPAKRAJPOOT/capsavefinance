@@ -23,6 +23,7 @@ use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Offer;
 use App\Inv\Repositories\Models\Agency;
+use App\Inv\Repositories\Models\AppPdNote;
 use App\Inv\Repositories\Models\AnchorRelation;
 
 /**
@@ -607,6 +608,26 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function updateFiFile($data, $fiAddrId){
         return FiAddress::updateFiFile($data, $fiAddrId);
+    }
+    
+    
+    
+    /**
+     * Save pd notes 
+     * 
+     * @param type $attr Array
+     * @param type $id Int
+     * @return type mixed
+     */
+    public function savePdNotes($attr, $id = null)
+    {
+        return AppPdNote::savePdNotes($attr, $id);
+    }
+
+
+    public function showData($id = null)
+    {
+        return AppPdNote::showData($id);
     }
 
     public function changeAgentRcuStatus($request){
