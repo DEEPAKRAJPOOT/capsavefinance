@@ -23,7 +23,7 @@
             <div class="collapse" id="layoutsSubmenu1">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('applicaiton_list') }}">My FI/RCU</a>
+                        <a class="nav-link" href="{{ route('applicaiton_list') }}">Applications</a>
                     </li>
                 </ul>
             </div>
