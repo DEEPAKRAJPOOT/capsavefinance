@@ -29,7 +29,7 @@
                 </select>
              </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-6">
                    <div class="form-group">
                       <label for="email">Select GST Month</label>
                       <select class="form-control" name="gst_month">
@@ -40,7 +40,7 @@
                       </select>
                    </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-6">
                    <div class="form-group">
                       <label for="email">Select GST Year</label>
                       <select class="form-control" name="gst_year">
@@ -67,7 +67,7 @@
                 </div>
             </div>
             <div class="row" id="is_not_for_gst">
-              <div class="col-md-6">
+              <div class="col-6">
                  <label>Is Password Protected</label>
                  <div class="form-group">
                     <label for="is_password_y">
@@ -78,7 +78,7 @@
                     </label>
                  </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-6">
                  <label>Is Scanned</label>
                  <div class="form-group">
                     <label for="is_scanned_y">
@@ -134,7 +134,8 @@
             $('#is_not_for_gst').hide();
             $('select[name=gst_month]').parent('div').show();
             $('select[name=gst_year]').parent('div').show();            
-        } else if (docId == 35 || docId == 36) {    
+        } else if (docId == 35 || docId == 36) {
+            $('#is_not_for_gst').hide();    
             $('textarea[name=comment]').parent('div').show();
         } else {            
             $('#is_not_for_gst').hide();

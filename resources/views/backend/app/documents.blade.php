@@ -133,7 +133,7 @@
 
                 </div>
                 @endif
-                <a data-toggle="modal" data-target="#uploadDocument" data-url ="{{route('show_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="400px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
+                <a data-toggle="modal" data-target="#uploadDocument" data-url ="{{route('show_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
                 <input type="hidden" name="uploadDocId" id="uploadDocId" value="" >
             </div>
         </div>

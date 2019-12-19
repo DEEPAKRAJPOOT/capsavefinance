@@ -9,15 +9,16 @@
         <title>Capsave</title>
         <link rel="shortcut icon" href="{{url('backend/assets/images/favicon.png')}}" />
         <!--<link rel="stylesheet" href="fonts/font-awesome/font-awesome.min.css" />-->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="{{url('backend/assets/css/perfect-scrollbar.min.css')}}" />
-        <link rel="stylesheet" href="{{url('backend/assets/css/jsgrid.min.css')}}" />
-        <link rel="stylesheet" href="{{url('backend/assets/css/jsgrid-theme.min.css')}}" />
-        <link rel="stylesheet" href="{{url('backend/assets/css/uploadfile.css')}}" >
-        <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
-        <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
-        <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
-        <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{url('backend/assets/css/perfect-scrollbar.min.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/jsgrid.min.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/jsgrid-theme.min.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/uploadfile.css')}}" >
+    <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
+    <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
         <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.4/summernote.css" rel="stylesheet">
 
 
