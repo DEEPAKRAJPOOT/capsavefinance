@@ -47,16 +47,20 @@
                      <table cellspacing="0" cellpadding="0" class="table overview-table">
                         <tbody>
                            <tr bgcolor="#f2f2f2">
-                              <td colspan="2" style="font-size:18px;">Bank Summary </td>
+                              <td colspan="3" style="font-size:18px;">Bank Summary </td>
                            </tr>
                            <tr>
                               <td style="border-right:0px;">
                                  <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Name :</b> &nbsp; {{ !empty($customers_info) ? $customers_info[0]['name'] : '' }}</p>
-                                 <p style="margin-bottom: 0.5rem;"><b>Bank Name :</b>  &nbsp; {{ !empty($customers_info) ? $customers_info[0]['bank'] : '' }}</p>
+                                  <p style="margin-bottom: 0.5rem;"><b>Email :</b>  &nbsp; {{ !empty($customers_info) ? strtolower($customers_info[0]['email']) : '' }}</p>
                               </td>
                               <td  style="border-left:0px;">
                                  <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Account Number :</b>  &nbsp; {{ !empty($customers_info) ? $customers_info[0]['account_no'] : '' }}</p>
-                                 <p style="margin-bottom: 0.5rem;"><b>Email :</b>  &nbsp; {{ !empty($customers_info) ? strtolower($customers_info[0]['email']) : '' }}</p>
+                                 <p style="margin-bottom: 0.5rem;"><b>Mobile :</b>  &nbsp; {{ !empty($customers_info) ? strtolower($customers_info[0]['mobile']) : '' }}</p>
+                              </td>
+                               <td  style="border-left:0px;">
+                                  <p style="margin-bottom: 0.5rem;"><b>Bank Name :</b>  &nbsp; {{ !empty($customers_info) ? $customers_info[0]['bank'] : '' }}</p>
+                                 <p style="margin-bottom: 0.5rem;"><b>Pan :</b>  &nbsp; {{ !empty($customers_info) ? strtolower($customers_info[0]['pan']) : '' }}</p>
                               </td>
                            </tr>
                            <tr>
