@@ -127,7 +127,28 @@ class CamController extends Controller
     	  $appId = $request->get('app_id');
         $pending_rec = $fin->getPendingFinanceStatement($appId);
         $financedocs = $fin->getFinanceStatements($appId);
-        return view('backend.cam.finance', ['financedocs' => $financedocs, 'appId'=> $appId, 'pending_rec'=> $pending_rec]);
+        $contents = array();
+        if (file_exists(storage_path('app/public/user/'.$appId.'_finance.json'))) {
+          $contents = json_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json')),true);
+        }
+        $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
+        $latest_finance_year = 2010;
+        $fy = $contents['FinancialStatement']['FY'] ?? array();
+        $financeData = [];
+        if (!empty($fy)) {
+          foreach ($fy as $k => $v) {
+            $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
+            $financeData[$v['year']] = $v;
+          }
+        }
+        return view('backend.cam.finance', [
+          'financedocs' => $financedocs, 
+          'appId'=> $appId, 
+          'pending_rec'=> $pending_rec,
+          'borrower_name'=> $borrower_name,
+          'finance_data'=> $financeData,
+          'latest_finance_year'=> $latest_finance_year,
+        ]);
 
     }
 
@@ -135,6 +156,10 @@ class CamController extends Controller
         $appId = $request->get('app_id');
         $pending_rec = $fin->getPendingBankStatement($appId);        
         $bankdocs = $fin->getBankStatements($appId);
+        $contents = array();
+        if (file_exists(storage_path('app/public/user/'.$appId.'_banking.json'))) {
+          $contents = json_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json')),true);
+        }
         return view('backend.cam.bank', ['bankdocs' => $bankdocs, 'appId'=> $appId, 'pending_rec'=> $pending_rec]);
 
     }
@@ -357,6 +382,17 @@ class CamController extends Controller
         $file= url('storage/user/'. $file_name);
         $req_arr['types'] =  $reportType;
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
+        if ($final_res['status'] == 'success') {
+          $final_res['result'] = base64_encode($final_res['result']);
+          $json_file_name = $appId.'_banking.json';
+          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
+          $log_data = array(
+            'status' => $final_res['status'],
+            'updated_by' => Auth::user()->user_id,
+          );
+          FinanceModel::updatePerfios($log_data,'biz_perfios',$init_txn['perfiostransactionid'],'biz_perfios_id');
+        }
         $final_res['api_type'] = Bsa_lib::GET_REP;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
@@ -468,11 +504,19 @@ class CamController extends Controller
 	        \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
         }
         $file= url('storage/user/'. $file_name);
-
-
         $req_arr['reportType'] = $reportType;
         $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
-
+        if ($final_res['status'] == 'success') {
+          $final_res['result'] = base64_encode($final_res['result']);
+          $json_file_name = $appId.'_finance.json';
+          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
+          $log_data = array(
+            'status' => $final_res['status'],
+            'updated_by' => Auth::user()->user_id,
+          );
+          FinanceModel::updatePerfios($log_data,'biz_perfios',$start_txn['perfiostransactionid'],'biz_perfios_id');
+        }
         $final_res['api_type'] = Perfios_lib::GET_STMT;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
@@ -524,6 +568,9 @@ class CamController extends Controller
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
           $final_res['result'] = base64_encode($final_res['result']);
+          $json_file_name = $appId.'_finance.json';
+          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => Auth::user()->user_id,
@@ -579,6 +626,9 @@ class CamController extends Controller
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
           $final_res['result'] = base64_encode($final_res['result']);
+          $json_file_name = $appId.'_banking.json';
+          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => Auth::user()->user_id,
@@ -798,27 +848,27 @@ class CamController extends Controller
      */
     public function anchorViewForm(Request $request, Gupshup_lib $gupshup)            
     {
-      /*$req  = array('mobile' => '+919667305959', 'message' => "hi gajendra, what is this.");
-      $resp = $gupshup->api_call($req);*/
         try {
             $biz_id = $request->get('biz_id'); 
             $app_id = $request->get('app_id');
             $liftingData = $this->appRepo->getLiftingDetail($app_id);
+            $anchorRelationData = $this->appRepo->getAnchorRelationDetails($app_id);
             $data = [];
             if (!empty($liftingData)) {
                 foreach ($liftingData as $key => $value) {
-                $year = $value['year'];
-                $data[$year]['mt_value'][] = $value['mt_value'];
-                $data[$year]['mt_type'] = $value['mt_type'];
-                $data[$year]['anchor_lift_detail_id'][] = $value['anchor_lift_detail_id'];
-                $data[$year]['year'] = $year;
-                $data[$year]['mt_amount'][] = $value['amount'];
-              }
+                    $year = $value['year'];
+                    $data[$year]['mt_value'][] = $value['mt_value'];
+                    $data[$year]['mt_type'] = $value['mt_type'];
+                    $data[$year]['anchor_lift_detail_id'][] = $value['anchor_lift_detail_id'];
+                    $data[$year]['year'] = $year;
+                    $data[$year]['mt_amount'][] = $value['amount'];
+                }
             }
             return view('backend.cam.cam_anchor_view',['data'=> $data])
                 ->with('biz_id',$biz_id)
-                    ->with('app_id',$app_id);
-          
+                ->with('anchorRelationData', $anchorRelationData)
+                ->with('app_id',$app_id);
+
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -836,6 +886,7 @@ class CamController extends Controller
     {   
         try {
             $allData = $request->all();
+            $userId = Auth::user()->user_id;
             $relationShipArr = [];
             $liftingArr = [];
             
@@ -849,7 +900,16 @@ class CamController extends Controller
             $relationShipArr['security_deposit']      = $allData['security_deposit'];
             $relationShipArr['note_on_lifting']       = $allData['note_on_lifting'];
             $relationShipArr['reference_from_anchor'] = $allData['reference_from_anchor'];
-            $relationShipArr['anchor_risk_comments'] = $allData['anchor_risk_comments'];
+            $relationShipArr['anchor_risk_comments']  = $allData['anchor_risk_comments'];
+            $anchorRelationData = $this->appRepo->getAnchorRelationDetails($allData['app_id']);
+            if (!empty($anchorRelationData)) {
+                $relationShipArr['updated_by'] = $userId;
+                $this->appRepo->updateAnchorRelationDetails($relationShipArr, $anchorRelationData['anchor_relation_id']);
+            }else{
+                $relationShipArr['created_by'] = $userId;
+                $this->appRepo->saveAnchorRelationDetails($relationShipArr);
+            }
+
             
             //need to saveddd $relationShipArr and pass its id to lifting table
             

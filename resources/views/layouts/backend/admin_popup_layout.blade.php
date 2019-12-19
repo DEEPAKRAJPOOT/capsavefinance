@@ -34,6 +34,7 @@
                 </div>
             </div>
         </div>
+
         <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
         <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
         <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
@@ -50,7 +51,6 @@
         <script>
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
-
         $(".trigger").click(function () {
             if ($(this).hasClass("minus")) {
                 $(this).removeClass("minus");

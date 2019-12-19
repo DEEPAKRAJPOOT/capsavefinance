@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\User;
 use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Models\BizApi;
@@ -384,8 +385,14 @@ class ApplicationController extends Controller
                 //Add/Update application workflow stages    
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 $wf_status = $response->count() < 1 ? 1 : 2;
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
+                $currentStage = Helpers::getCurrentWfStage($appId);            
+                $curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
+                if ($curr_wf_stage_code == 'doc_upload') {
+                    Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                } else if($curr_wf_stage_code == 'upload_exe_doc') {
+                    Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status);
+                }
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->back();
             } else {
@@ -443,9 +450,15 @@ class ApplicationController extends Controller
             if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
-                
+                                                
                 //Add application workflow stages                
                 Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                
+                //Update workflow stage
+                //$currentStage = Helpers::getCurrentWfStage($app_id);            
+                //$curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
+                //Helpers::updateWfStage($curr_wf_stage_code, $appId, $wf_status = 1);
+            
                 
                 return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
             } else {
@@ -597,21 +610,33 @@ class ApplicationController extends Controller
         try{
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
-            $currentStage = Helpers::getCurrentWfStage($app_id);
+            $assign_case = $request->has('assign_case') ? $request->get('assign_case') : 0;
+            
+            $currentStage = Helpers::getCurrentWfStage($app_id);            
             $curr_role_id = $currentStage ? $currentStage->role_id : null;
             
             //$last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
             $wf_order_no = $currentStage->order_no;
             $nextStage = Helpers::getNextWfStage($wf_order_no);  
             $next_role_id = $nextStage ? $nextStage->role_id : null;
-                        
-            $e = explode(',', $currentStage->assign_role);
-            $roleDropDown = $this->userRepo->getRoleByArray($e)->toArray();
             
+            if ($assign_case) {
+                $rolesArr = explode(',', $currentStage->assign_role);
+                //$roles = $this->userRepo->getRoleByArray($rolesArr);
+                $roles = $this->appRepo->getBackStageUsers($app_id, $rolesArr);
+                $roleDropDown = [];
+                foreach($roles as $role) {
+                    $roleDropDown[$role->id . '-' . $role->user_id] = $role->assignee_role . ' (' . $role->assignee. ')';
+                }
+            } else {
+                $roleDropDown = $this->userRepo->getAllRole()->toArray();
+            }
+            //dd($roleDropDown);
             return view('backend.app.next_stage_confirmBox')
                 ->with('app_id', $app_id)
                 ->with('roles', $roleDropDown)
                 ->with('user_id', $user_id)
+                ->with('assign_case', $assign_case)    
                 ->with('curr_role_id', $curr_role_id)
                 ->with('next_role_id', $next_role_id);
         } catch (Exception $ex) {
@@ -629,23 +654,29 @@ class ApplicationController extends Controller
             
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
-            $assign_role = $request->get('assign_role');
+            $sel_assign_role = $request->get('sel_assign_role');
+            $assign_case = $request->get('assign_case');
             $sharing_comment = $request->get('sharing_comment');
             $curr_role_id = $request->get('curr_role_id');
             
-            
+                        
             $addl_data = [];
             $addl_data['sharing_comment'] = $sharing_comment;
             
-            if ($curr_role_id && $assign_role) {                
-                //$currStage = Helpers::getCurrentWfStagebyRole($curr_role_id);  
+            if ($curr_role_id && $assign_case) {
+                $selData = explode('-', $sel_assign_role);
+                $selRoleId = $selData[0];
+                $selUserId = $selData[1];                
+                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
                 $currStage = Helpers::getCurrentWfStage($app_id);
-                //dd('pppppppppppppppp', $curr_role_id, $assign_role, $currStage->stage_code);
-                Helpers::updateWfStageManual($currStage->stage_code, $app_id, $wf_status = 1,$assign_role, $addl_data);
+                Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
             } else {                
-                $currStage = Helpers::getCurrentWfStage($app_id);      
+                $currStage = Helpers::getCurrentWfStage($app_id);
                 $wf_order_no = $currStage->order_no;
-                $currStage = Helpers::getNextWfStage($wf_order_no);                  
+                $nextStage = Helpers::getNextWfStage($wf_order_no);
+                $roleArr = [$nextStage->role_id];
+                $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
+                $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
                 Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign = true, $addl_data);
             }
 
@@ -726,6 +757,9 @@ class ApplicationController extends Controller
         $offerId = $offerData ? $offerData->offer_id : 0;
         $prgmId = $offerData ? $offerData->prgm_id : 0;
         $loanAmount = $offerData ? $offerData->loan_amount : 0;
+        $currentStage = Helpers::getCurrentWfStage($appId);   
+        $roleData = Helpers::getUserRole();        
+        $viewGenSancLettertBtn = $currentStage->role_id == $roleData[0]->id ? 1 : 0;
         
         return view('backend.app.offer')
                 ->with('appId', $appId)
@@ -733,7 +767,9 @@ class ApplicationController extends Controller
                 ->with('loanAmount', $loanAmount)
                 ->with('prgm_id', $prgmId)
                 ->with('offerId', $offerId)                
-                ->with('offerData', $offerData);        
+                ->with('offerData', $offerData)
+                ->with('currentStage', $currentStage)
+                ->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
     }
 
     /**
@@ -789,12 +825,29 @@ class ApplicationController extends Controller
     {
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-        $offerId = $request->get('offer_id');
-        
+        if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+            $offerId = $request->get('offer_id');
+        } else {
+            $offerWhereCond = [];
+            $offerWhereCond['app_id'] = $appId;   
+            $offerWhereCond['is_active'] = 1; 
+            $offerWhereCond['status'] = 1;  
+            $offerData = $this->appRepo->getOfferData($offerWhereCond);
+            $offerId = $offerData ? $offerData->offer_id : 0;
+        }
         $offerWhereCond = [];
         $offerWhereCond['offer_id'] = $offerId;        
         $offerData = $this->appRepo->getOfferData($offerWhereCond);
         
+        //Update workflow stage
+        Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 1);  
+        
+        $appData = $this->appRepo->getAppDataByAppId($appId);               
+        $userId  = $appData ? $appData->user_id : null;
+        $prgmDocsWhere = [];
+        $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
+        $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);  
+                
         return view('backend.app.sanction_letter')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
@@ -846,7 +899,8 @@ class ApplicationController extends Controller
          $request =  $request->all();
          $result   = $this->userRepo->getOwnerAppRes($request);
          $res = json_decode($result->karza->res_file,1);
-         return view('backend.app.mobile_verification_detail')->with('response', $res['result']);
+        
+         return view('backend.app.mobile_verification_detail')->with('response', $res);
     }
     
    
@@ -855,7 +909,7 @@ class ApplicationController extends Controller
         $request =  $request->all();
         $result   = $this->userRepo->getOwnerAppRes($request);
         $res = json_decode($result->karza->res_file,1);
-        return view('backend.app.otp_verification_detail')->with('response', $res['result']);
+        return view('backend.app.otp_verification_detail')->with('response', $res);
     }
     
 
@@ -893,9 +947,11 @@ class ApplicationController extends Controller
         
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      if( $response['status']=='success')
-      {
-            $createApiLog = $response['createApiLog'];
+      if($response['result'])
+      {     $status = 1;
+            $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+           
             $createBizApi= @BizApi::create([
                 'user_id' =>$userData['user_id'], 
                 'biz_id' =>   $userData['biz_id'],
@@ -907,6 +963,14 @@ class ApplicationController extends Controller
                 'created_by' => Auth::user()->user_id
              ]);
       }
+      else
+      {
+             $status = 0;
+            $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+            $resp['createApiLog'] = $createApiLog;
+      }
+      
       if (empty($response['result'])) {
         $response['status'] = 'fail';
       }
@@ -930,11 +994,15 @@ class ApplicationController extends Controller
         );
         
       $userData = State::getUserByAPP($appId);
-      $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);         
-      $createApiLog = $response['createApiLog'];
-       if( $response['status']=='success')
+      $response = $mob->api_call(MobileAuth_lib::VERF_OTP, $req_arr);  
+   
+       if( $response['result'])
       {
-            $createBizApi= @BizApi::create([
+            $status = 1;
+            $createApiLog = BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+                'created_by' => Auth::user()->user_id]);
+           
+            $createBizApi= BizApi::create([
                 'user_id' =>$userData['user_id'], 
                 'biz_id' =>   $userData['biz_id'],
                 'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
@@ -944,11 +1012,14 @@ class ApplicationController extends Controller
                 'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                 'created_by' => Auth::user()->user_id
              ]);
-            $response1 = $mob->api_call(MobileAuth_lib::GET_DTL, $req_arr);  
-            $createApiLog1 = $response1['createApiLog'];
-            if( $response1['status']=='success')
-            {
-                 $createBizApi= @BizApi::create([
+              $response1 = $mob->api_call(MobileAuth_lib::GET_DTL, $req_arr);  
+              if($response1)
+              {
+               $status = 1;
+               $createApiLog1 = BizApiLog::create(['req_file' =>$response1['payload'], 'res_file' => (is_array($response1['result']) || is_object($response1['result']) ? json_encode($response1['result']) : $response1['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+               
+                $createBizApi= BizApi::create([
                 'user_id' =>$userData['user_id'], 
                 'biz_id' =>   $userData['biz_id'],
                 'biz_owner_id' => $post_data['biz_owner_id'] ?? NULL,
@@ -960,7 +1031,18 @@ class ApplicationController extends Controller
              ]);
                 
             }
-      }     
+            
+         
+      }  
+      else
+      {
+               $status = 0;
+               $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+              
+               $createApiLog1 = @BizApiLog::create(['req_file' =>$response1['payload'], 'res_file' => (is_array($response1['result']) || is_object($response1['result']) ? json_encode($response1['result']) : $response1['result']),'status' => $status,
+              'created_by' => Auth::user()->user_id]);
+      }
       if (empty($response['result'])) {
         $response['status'] = 'fail';
       }
@@ -1000,8 +1082,6 @@ class ApplicationController extends Controller
                     compact('offerData')+['appId' => $appId, 'offerId' => $offerId]
                     )->render();
 
-            //Update workflow stage
-            Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 1);
             
             return response($this->pdf->render($htmlContent), 200)->withHeaders([
                 'Content-Type' => 'application/pdf',
@@ -1063,8 +1143,8 @@ class ApplicationController extends Controller
                 $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
                 
                 //Update workflow stage
-                Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 1);
-                
+                //Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 1);
+                                             
                 Session::flash('message',trans('backend_messages.upload_sanction_letter_success'));
             } else {
                 Session::flash('message',trans('backend_messages.upload_sanction_letter_fail'));
@@ -1074,5 +1154,5 @@ class ApplicationController extends Controller
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }       
-    }    
+    }
 }

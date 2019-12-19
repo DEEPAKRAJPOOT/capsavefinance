@@ -25,10 +25,12 @@
                      @endforeach
                   @endif
                   <div class="clearfix"></div>
-                  <div style="text-align: right;">
-                  @if($bankdocs->count() > 0)
+
+                  <div style="text-align: right;">                  
+                  @if(request()->get('view_only') && $bankdocs->count() > 0)
                      <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
-                  @endif 
+                  @endif                   
+
                   @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
                      <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download</a>
                   @endif 
@@ -333,7 +335,9 @@
                               </tr>
                            </thead>
                         </table>
+                        @if(request()->get('view_only'))
                         <button class="btn btn-success pull-right btn-sm mt-3"> + Add Row</button>
+                        @endif
                         <div class="clearfix"></div>
                         <p class="mt-3">
                            <b>B. Term Loans &amp; Business Loans: </b>
@@ -362,7 +366,9 @@
                               </tr>
                            </thead>
                         </table>
+                        @if(request()->get('view_only'))
                         <button class="btn btn-success pull-right btn-sm mt-3"> + Add Row</button>
+                        @endif
                         <div class="clearfix"></div>
                      </div>
                   </div>
@@ -388,14 +394,18 @@
                            <tbody id="inter_group_transaction">
                            </tbody>
                         </table>
+                        @if(request()->get('view_only'))
                         <button class="btn btn-success pull-right btn-sm mt-3"> + Add Row</button>
+                        @endif
                         <div class="clearfix"></div>
                      </div>
                   </div>
                   <div class="row">
                      <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
+                           @if(request()->get('view_only')) 
                            <button  class="btn btn-success btn-sm btn-ext submitBtnBank" data-toggle="modal" data-target="#myModal">Submit</button>                                        
+                           @endif
                         </div>
                      </div>
                   </div>

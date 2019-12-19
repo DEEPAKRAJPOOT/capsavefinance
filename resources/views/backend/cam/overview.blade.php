@@ -55,14 +55,25 @@
                         </tr>
                         <tr>
                             <td><b>Corporate office Address</b></td>
-                            <td>{{$arrBizData->communicationAddress->addr_1.' '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}</td>
-                             <td><b>Registered Office Address</b></td>
-                            <td>{{$arrBizData->registeredAddress->addr_1.' '.$arrBizData->registeredAddress->city_name.' '. $arrBizData->registeredAddress->state->name.' '.$arrBizData->registeredAddress->pin_code}}
+                           
+                            <td>{{$arrBizData->communicationAddress->addr_1.' '.(isset($arrBizData->address[1]->city_name) ? $arrBizData->address[1]->city_name : '').' '. (isset($arrBizData->address[1]->state->name) ? $arrBizData->address[1]->state->name : '').' '. (isset($arrBizData->address[1]->pin_code) ? $arrBizData->address[1]->pin_code : '')}}
                             </td>
+
+
+
+
+                            <td><b>Registered Office Address</b></td>
+
+                            <td>{{$arrBizData->registeredAddress->addr_1.' '.(isset($arrBizData->address[0]->city_name) ? $arrBizData->address[0]->city_name : '').' '. (isset($arrBizData->address[0]->state->name) ? $arrBizData->address[0]->state->name : '').' '. (isset($arrBizData->address[0]->pin_code) ? $arrBizData->address[0]->pin_code : '')}}
+                            </td>
+
+
                         </tr>
                         <tr>
                             <td><b>Manufacturing facilities address</b></td>
-                            <td>{{$arrBizData->factoryAddress->addr_1}}</td>
+                             <td>{{$arrBizData->factoryAddress->addr_1.' '.(isset($arrBizData->address[4]->city_name) ? $arrBizData->address[4]->city_name : '').' '. (isset($arrBizData->address[4]->state->name) ? $arrBizData->address[4]->state->name : '').' '. (isset($arrBizData->address[4]->pin_code) ? $arrBizData->address[4]->pin_code : '')}}
+                            </td>
+
                             <td width="25%"><b>Legal Constitution </b></td>
                             <td width="25%">{{$arrBizData->legalConstitution}}</td>
                         </tr>
@@ -104,9 +115,9 @@
                         </tr>
                         <tr>
                             <td width="25%"><b>Existing Group Exposure</b></td>
-                            <td width="25%"><input type="text" class="form-control" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" maxlength="20" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
                             <td width="25%"><b>Proposed Group Exposure</b></td>
-                            <td width="25%"><input type="text" name="proposed_exposure" class="form-control" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
                         </tr>
                     </tbody>
                 </table>
@@ -120,7 +131,7 @@
                                     <td width="30%"><b>Proposed Limit</b> </td>
                                     <td id="limits" name="limits"> {!! $arrBizData->app->loan_amt ? \Helpers::formatCurreny($arrBizData->app->loan_amt) : '' !!} </td>
                                     <td><b>Exiting Limits ( If any ) </b></td>
-                                    <td><input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr" value="{{isset($arrCamData->t_o_f_limit) ? $arrCamData->t_o_f_limit : '0'}}"></td>
+                                    <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr number_format" maxlength="20" value="{{isset($arrCamData->t_o_f_limit) ? $arrCamData->t_o_f_limit : ''}}"></td>
                                 </tr>
                                 <tr>
                                     <td><b>Maximum Tenor of Invoices/tranch</b></td>
@@ -146,7 +157,7 @@
                                         <input type="text" name="t_o_f_security" id="security" class="form-control" value="{{isset($arrCamData->t_o_f_security) ? $arrCamData->t_o_f_security : ''}}" <="" td="">
                                     </td>
                                     <td><b>Adhoc Limit</b></td>
-                                    <td><input type="text" name="t_o_f_adhoc_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" id="adhoc_limit" class="form-control inr" onfocusout="checkNumber(this)" value="{{isset($arrCamData->t_o_f_adhoc_limit) ? $arrCamData->t_o_f_adhoc_limit : '0'}}"></td>
+                                    <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="t_o_f_adhoc_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" id="adhoc_limit" class="form-control inr number_format" onfocusout="checkNumber(this)" maxlength="20" value="{{isset($arrCamData->t_o_f_adhoc_limit) ? $arrCamData->t_o_f_adhoc_limit : ''}}"></td>
                                 </tr>
                                 <tr>
                                     <td><b>Status of Covenants stipulated during last approval</b></td>
@@ -176,7 +187,33 @@
                         </table>
                     </div>
                 </div>
+
+                <div class="data mt-4">
+                    <h2 class="sub-title bg">Brief Profile of the Company</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <textarea class="form-control" id="profile_of_company" name="t_o_f_profile_comp" rows="3" spellcheck="false" >{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}}</textarea>
+                    </div>
+                </div>
+
+                <div class="data mt-4">
+                    <h2 class="sub-title bg">Risk Comments</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <textarea class="form-control" id="profile_of_company" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
+                    </div>
+                </div>
+
+                <div class="data mt-4">
+                    <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
+
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+                @if(request()->get('view_only'))
                 <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                @endif
               </form>
             </div>
         </div>

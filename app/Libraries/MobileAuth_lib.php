@@ -103,11 +103,11 @@ class MobileAuth_lib
 	    }
 	    $result = json_decode($response['result'], TRUE);
             
-             $status = 1;
            
-             $createApiLog = @BizApiLog::create(['req_file' =>$payload, 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
-                  'created_by' => Auth::user()->user_id]);
-	      $resp['createApiLog'] = $createApiLog;
+           
+          //   $createApiLog = @BizApiLog::create(['req_file' =>$payload, 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
+            ////      'created_by' => Auth::user()->user_id]);
+	    ////  $resp['createApiLog'] = $createApiLog;
            
 	    if (!empty($result['status-code']) && $result['status-code'] != '101') {
 	    	$resp['message'] = $this->error_desc($result['status-code']) ?? "Unable to get response. Please retry.";
@@ -121,7 +121,8 @@ class MobileAuth_lib
 	    $resp['message'] =  "success";
 	    $resp['request_id'] = $result['request_id'] ?? '';
 	    $resp['result'] =  $result['result'];
-		return $resp;
+            $resp['payload']  = $payload;
+	    return $resp;
 	}
 
 	public function validate_req($method, $req){

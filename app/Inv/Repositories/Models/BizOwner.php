@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\BizPanGstApi;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class BizOwner extends BaseModel
@@ -70,7 +71,6 @@ class BizOwner extends BaseModel
         'comment',
         'other_ownership',
         'networth',
-        'owner_addr',
         'created_by',
         'created_at',
         'updated_by',
@@ -82,7 +82,7 @@ class BizOwner extends BaseModel
    public static function getOwnerApiDetails($bizId)
    {
       $biz_id = $bizId['biz_id'];
-      return BizOwner::with('pan')->with('businessApi.karza')->with('document.userFile')->where('biz_id', $biz_id)->get();
+      return BizOwner::with('pan')->with('address')->with('businessApi.karza')->with('document.userFile')->where('biz_id', $biz_id)->get();
    }
     /* Relation of Owner and Gst Api relation*/
     /* created by gajendra chauhan   */
@@ -100,7 +100,13 @@ class BizOwner extends BaseModel
        
    }
    
-      
+      /* Relation of Owner and Gst Api relation*/
+    /* created by gajendra chauhan   */
+   public function address()
+   {
+      return $this->belongsTo('App\Inv\Repositories\Models\BusinessAddress', 'biz_owner_id','biz_owner_id');  
+       
+   }   
     /* Relation of Owner and Gst Api relation*/
     /* created by gajendra chauhan   */
    public function document()
@@ -128,17 +134,26 @@ class BizOwner extends BaseModel
         $uid =  $userData->user_id;
         $i =0;
        foreach($attributes['data'] as $key=>$val)
-       {
-              
+       {    ///// insert data onload promoter page/////////////////////
                 $ownerInputArr =  BizOwner::create( ['biz_id' => $attributes['biz_id'],   
                 'user_id' => $uid, 
                 'first_name' =>  $val['first_name'],
                 'date_of_birth' => ($val['dob'])? Carbon::createFromFormat('d/m/Y', $val['dob'])->format('Y-m-d'): NULL,
-                'owner_addr' => $val['address'],
-              'created_by' => Auth::user()->user_id]);
-        $getOwnerId[] = $ownerInputArr->biz_owner_id;
-          $i++;      
-       }      
+                'created_by' => Auth::user()->user_id]);
+              /////get details for insert address for promoter///////////
+              if($ownerInputArr)
+              {    
+                BusinessAddress::create(['addr_1'  =>  $val['address'],
+                 'biz_id'  =>  $attributes['biz_id'],
+                 'address_type'  =>  5,
+                 'rcu_status'  =>   0,
+                 'created_by'  => Auth::user()->user_id,
+                 'biz_owner_id'  =>  $ownerInputArr->biz_owner_id]);
+              }
+            $getOwnerId[] = $ownerInputArr->biz_owner_id;  
+            $i++;      
+       } 
+       
        return  $getOwnerId;
    }
    
@@ -232,12 +247,11 @@ class BizOwner extends BaseModel
              $ownerInputArr =  BizOwner::where('biz_owner_id',$attributes['ownerid'][$i])->update( ['biz_id' => $biz_id,   
             'user_id' => $userId, 
             'first_name' => $attributes['first_name'][$i],
-            'is_promoter' => isset($attributes['is_promoter'][$i]) ? $attributes['is_promoter'][$i] : 0,
+            'is_promoter' => isset($attributes['isShareCheck'][$i]) ? $attributes['isShareCheck'][$i] : 0,
             'mobile_no' => $attributes['mobile_no'][$i],     
             'date_of_birth' => ($attributes['date_of_birth'])? Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i])->format('Y-m-d'): NULL,
             'gender' => $attributes['gender'][$i],
             'comment' => $attributes['comment'][$i],
-            'owner_addr' => $attributes['owner_addr'][$i],
             'is_pan_verified' => 1, 
             'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
             'share_per' => $attributes['share_per'][$i],
@@ -245,18 +259,21 @@ class BizOwner extends BaseModel
             'other_ownership' => $attributes['other_ownership'][$i],
             'networth' => $attributes['networth'][$i],
             'created_by' =>  Auth::user()->user_id]);
+             ////////////////adress update
+             
+             BusinessAddress::where('biz_owner_id',$attributes['ownerid'][$i])->update(['addr_1'  =>  $attributes['owner_addr'][$i],
+                 'updated_by'  => Auth::user()->user_id]);
               
            }
       else {
             $ownerInputArr =  BizOwner::create( ['biz_id' => $biz_id,   
             'user_id' => $userId, 
             'first_name' => $attributes['first_name'][$i],
-            'is_promoter' => isset($attributes['is_promoter'][$i]) ? $attributes['is_promoter'][$i] : 0,
-            'mobile_no' => $attributes['mobile_no'][$i], 
+            'is_promoter' => isset($attributes['isShareCheck'][$i]) ? $attributes['isShareCheck'][$i] : 0,
+            'mobile_no' => isset($attributes['mobile_no'][$i]) ? $attributes['mobile_no'][$i] : null, 
             'date_of_birth' => ($attributes['date_of_birth'])? Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i])->format('Y-m-d'): NULL,
             'gender' => $attributes['gender'][$i],
             'comment' => $attributes['comment'][$i],
-            'owner_addr' => $attributes['owner_addr'][$i],
             'is_pan_verified' => 1, 
             'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
             'share_per' => $attributes['share_per'][$i],
@@ -265,7 +282,18 @@ class BizOwner extends BaseModel
             'networth' => $attributes['networth'][$i],
             'created_by' =>  Auth::user()->user_id]);
             $biz_owner_id  = $ownerInputArr->biz_owner_id;
-          }
+            //////////////////////////////save address //////////////////
+                if($biz_owner_id)
+                {
+                    BusinessAddress::create(['addr_1'  =>  $attributes['owner_addr'][$i],
+                        'biz_id'  =>  $biz_id,
+                        'address_type'  =>  5,
+                        'rcu_status'  =>   0,
+                        'created_by'  => Auth::user()->user_id,
+                        'biz_owner_id'  =>  $biz_owner_id]);
+                }
+             
+            }
         }
         
         if($biz_owner_id > 0){
@@ -311,12 +339,11 @@ class BizOwner extends BaseModel
             $ownerInputArr =  BizOwner::create( ['biz_id' => $biz_id,   
             'user_id' => $userId, 
             'first_name' => $attributes['first_name'][$i],
-            'is_promoter' => ($attributes['is_promoter'][$i]) ? $attributes['is_promoter'][$i] : 0,
+            'is_promoter' => ($attributes['isShareCheck'][$i]) ? $attributes['isShareCheck'][$i] : 0,
             'mobile_no' => $attributes['mobile_no'][$i], 
             'date_of_birth' =>($attributes['date_of_birth'])? Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i])->format('Y-m-d'): NULL,
             'gender' => $attributes['gender'][$i],
             'comment' => $attributes['comment'][$i],
-            'owner_addr' => $attributes['owner_addr'][$i],
             'is_pan_verified' => 1, 
             'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
             'share_per' => $attributes['share_per'][$i],
@@ -325,6 +352,16 @@ class BizOwner extends BaseModel
             'networth' => $attributes['networth'][$i],
             'created_by' =>  Auth::user()->user_id]);
             $biz_owner_id  = $ownerInputArr->biz_owner_id;
+            ///////////////// save promoter address/////////////////////
+              if($biz_owner_id)
+                {
+                    BusinessAddress::create(['addr_1'  =>  $attributes['owner_addr'][$i],
+                        'biz_id'  =>  $biz_id,
+                        'address_type'  =>  5,
+                        'rcu_status'  =>   0,
+                        'created_by'  => Auth::user()->user_id,
+                        'biz_owner_id'  =>  $biz_owner_id]);
+                }
           }
        
      }
@@ -352,7 +389,7 @@ class BizOwner extends BaseModel
   public static function getBizOwnerDataByOwnerId($biz_owner_id)
   {
      $arrData = self::select('biz_owner.*','biz_pan_gst.pan_gst_hash')
-        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
+        ->leftjoin('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
         ->where('biz_owner.biz_owner_id', $biz_owner_id)
         ->first();
         return $arrData;

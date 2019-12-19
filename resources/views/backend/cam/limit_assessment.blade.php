@@ -442,6 +442,7 @@
                                     $btnLabel = 'Save';
                                 }
                                 @endphp
+                                @if(request()->get('view_only'))
                                 {!! 
                                     Form::submit(
                                         $btnLabel, 
@@ -451,6 +452,7 @@
                                         ] + $btnAttr
                                     )
                                 !!}
+                                @endif
                                 <small class="float-right  mt-3 ml-3">{{ $noteStr }}</small>
                                 
                                 {!!

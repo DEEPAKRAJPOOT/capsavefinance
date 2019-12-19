@@ -48,6 +48,7 @@ use SendsPasswordResetEmails;
     {   
         try {
             Session::put('token-email',$request->get('email'));
+
           
             // We will send the password reset link to this user. Once we have attempted
             // to send the link, we will examine the response then see the message we
@@ -56,8 +57,17 @@ use SendsPasswordResetEmails;
                 $request->only('email')
             );*/
             $user = $this->broker()->getUser($request->only('email'));
-            
+
+                        
             if (is_null($user)) {
+                $response = PasswordBroker::INVALID_USER;
+                return redirect()->back()->withErrors(['email' => trans($response)]);
+            }
+
+            $utype = $user['user_type'];
+            $user_type = $request->get('user_type') ?? "2";
+
+            if ($utype !=  $user_type) {
                 $response = PasswordBroker::INVALID_USER;
                 return redirect()->back()->withErrors(['email' => trans($response)]);
             }

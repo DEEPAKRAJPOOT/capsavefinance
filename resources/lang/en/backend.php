@@ -11,7 +11,7 @@ return [
         'mobile_no'     => 'Mobile',
         'anchor'        => 'Associate Anchor',
         'user_type'     => 'User Type',
-        'assignee'      => 'Assignee',
+        'assignee'      => 'Current Assignee',
         'assigned_by'   => 'Assigned By',
         'shared_detail' => 'Shared Details',
         'status'        => 'Status',

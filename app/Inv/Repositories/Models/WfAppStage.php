@@ -106,8 +106,9 @@ class WfAppStage extends BaseModel
         $appData = self::select('wf_stage.stage_code','wf_stage.assign_role','wf_stage.order_no','wf_stage.role_id')
                 ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')                 
                 ->where('app_wf.biz_app_id', $app_id)        
-                //->where('app_wf.app_wf_status', 1)        
-                ->orderBy('app_wf.wf_stage_id', 'DESC')
+                ->where('app_wf.app_wf_status', '!=', 1)
+                //->orderBy('app_wf.wf_stage_id', 'DESC')
+                ->orderBy('wf_stage.order_no', 'ASC')
                 ->limit(1)
                 ->first();
         return $appData ? $appData : null;
