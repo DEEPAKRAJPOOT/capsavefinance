@@ -120,12 +120,15 @@ class Bsa_lib{
 	     );
 
 	     if ($method == SELF::GET_REP && !in_array($params['types'], ['xml','json'])) {
-	     	$update_log['status'] = "success";
-	     	FinanceModel::updatePerfios($update_log,'biz_perfios_log', $inserted_id);
-	     	$resp['status'] = "success";
-	     	$resp['message'] = "success";
-		 	$resp['result'] = $response['result'];
-		 	return $resp;
+	     	$xml = @simplexml_load_string($response['result']);
+	     	if(!$xml){
+		     	$update_log['status'] = "success";
+		     	FinanceModel::updatePerfios($update_log,'biz_perfios_log', $inserted_id);
+		     	$resp['status'] = "success";
+		     	$resp['message'] = "success";
+			 	$resp['result'] = $response['result'];
+			 	return $resp;
+		 	}
 	     }
 
 	      if ($method == SELF::GET_REP && 'json' == strtolower($params['types'])) {
