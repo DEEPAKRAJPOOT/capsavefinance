@@ -85,6 +85,9 @@ class CamController extends Controller
             if(!isset($arrCamData['rating_no'])){
                     $arrCamData['rating_no'] = NULL;
             }
+            if(!isset($arrCamData['t_o_f_security_check'])){
+                    $arrCamData['t_o_f_security_check'] = NULL;
+            }
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
