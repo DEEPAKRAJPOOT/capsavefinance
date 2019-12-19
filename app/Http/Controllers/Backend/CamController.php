@@ -170,10 +170,30 @@ class CamController extends Controller
         $bankdocs = $fin->getBankStatements($appId);
         $contents = array();
         if (file_exists(storage_path('app/public/user/'.$appId.'_banking.json'))) {
-          $contents = json_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json')),true);
+          $contents = json_decode(base64_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_banking.json'))),true);
         }
-        return view('backend.cam.bank', ['bankdocs' => $bankdocs, 'appId'=> $appId, 'pending_rec'=> $pending_rec]);
-
+        $customers_info = [];
+        if (!empty($contents)) {
+          foreach ($contents['statementdetails'] as $key => $value) {
+            $account_no = $contents['accountXns'][$key]['accountNo'];
+            $customer_data = $value['customerInfo'];
+            $customers_info[] = array(
+              'name' => $customer_data['name'],
+              'email' => $customer_data['email'],
+              'mobile' => $customer_data['mobile'],
+              'account_no' => $account_no,
+              'bank' => $customer_data['bank'],
+              'pan' => $customer_data['pan'],
+            );
+          }
+        }
+        return view('backend.cam.bank', [
+          'bankdocs' => $bankdocs,
+          'appId'=> $appId,
+          'pending_rec'=> $pending_rec,
+          'bank_data'=> $contents,
+          'customers_info'=> $customers_info,
+          ]);
     }
 
     public function finance_store(FinanceRequest $request, FinanceModel $fin){
@@ -314,6 +334,7 @@ class CamController extends Controller
             'loanDuration' => '6',
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
+            'acceptancePolicy' => 'atLeastOneTransactionInRange',
             'transactionCompleteCallbackUrl' => route('api_perfios_bsa_callback'),
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
