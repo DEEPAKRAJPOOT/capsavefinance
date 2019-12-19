@@ -28,7 +28,16 @@
     <li>
         <a href="#">Submit Commercial</a>
     </li>
-    @php    
+    
+     <li>
+        <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/pd-notes') ? 'active' : '' }}"> Personal Discussion </a>
+    </li>
+    
+    @php
+    $wfStageData = \Helpers::getWfStageToProcess(request()->get('app_id'));
+    $wfStageToProcess = $wfStageData ? $wfStageData->stage_code : '';
+    $isWfStageCompleted = \Helpers::isWfStageCompleted('sales_queue', request()->get('app_id'));    
+
         $currentStage = \Helpers::getCurrentWfStage(request()->get('app_id'));   
         $roleData = \Helpers::getUserRole();        
         $isNavAccessible = $currentStage->role_id == $roleData[0]->id ? 1 : 0;    

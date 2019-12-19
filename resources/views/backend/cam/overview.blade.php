@@ -25,7 +25,7 @@
 
         <div class="card mt-4">
             <div class="card-body ">
-             <form method="POST" action="{{url('cam/cam-information-save')}}"> 
+             <form method="POST" action="{{route('cam_information_save')}}"> 
              @csrf
 
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
@@ -38,7 +38,14 @@
                             <td width="25%"><b>Name of Borrower</b></td>
                             <td width="25%">{{$arrBizData->biz_entity_name}}</td>
                             <td><b>Contact Person of Key Personal</b></td>
-                            <td>{{$arrBizData->ownerName}}</td>
+                            <td> 
+                                <select class="form-control" name="contact_person">
+                                <option  value="">Select</option>
+                                 @foreach($arrOwner as $key => $val)
+                                    <option @if((isset($arrCamData->contact_person)) && $arrCamData->contact_person == $val) selected @endif value="{{$val}}"> {{$val}}</option>
+                                 @endforeach   
+                                </select>
+                           </td>
                         </tr>
 
                         <tr>
@@ -54,7 +61,7 @@
                             <td>{{$arrBizData->email}}</td>
                         </tr>
                         <tr>
-                            <td><b>Corporate office Address</b></td>
+                            <td><b>GST Address</b></td>
                            
                             <td>{{$arrBizData->communicationAddress->addr_1.' '.(isset($arrBizData->address[1]->city_name) ? $arrBizData->address[1]->city_name : '').' '. (isset($arrBizData->address[1]->state->name) ? $arrBizData->address[1]->state->name : '').' '. (isset($arrBizData->address[1]->pin_code) ? $arrBizData->address[1]->pin_code : '')}}
                             </td>
@@ -62,7 +69,7 @@
 
 
 
-                            <td><b>Registered Office Address</b></td>
+                            <td><b>Communication Address </b></td>
 
                             <td>{{$arrBizData->registeredAddress->addr_1.' '.(isset($arrBizData->address[0]->city_name) ? $arrBizData->address[0]->city_name : '').' '. (isset($arrBizData->address[0]->state->name) ? $arrBizData->address[0]->state->name : '').' '. (isset($arrBizData->address[0]->pin_code) ? $arrBizData->address[0]->pin_code : '')}}
                             </td>
@@ -70,7 +77,7 @@
 
                         </tr>
                         <tr>
-                            <td><b>Manufacturing facilities address</b></td>
+                            <td><b>Factory Address</b></td>
                              <td>{{$arrBizData->factoryAddress->addr_1.' '.(isset($arrBizData->address[4]->city_name) ? $arrBizData->address[4]->city_name : '').' '. (isset($arrBizData->address[4]->state->name) ? $arrBizData->address[4]->state->name : '').' '. (isset($arrBizData->address[4]->pin_code) ? $arrBizData->address[4]->pin_code : '')}}
                             </td>
 
@@ -154,7 +161,29 @@
                                 <tr>
                                     <td><b>Security</b></td>
                                     <td>
-                                        <input type="text" name="t_o_f_security" id="security" class="form-control" value="{{isset($arrCamData->t_o_f_security) ? $arrCamData->t_o_f_security : ''}}" <="" td="">
+                                        <div class="form-check" style="display: inline-block; margin-right:10px;">
+                                         <label class="form-check-label">
+                                         <input type="radio" class="form-check-input" name="t_o_f_security_check" value="BG" {{isset($arrCamData->t_o_f_security_check) && $arrCamData->t_o_f_security_check == 'BG' ? 'checked' : ''}} onclick="$('#securityComment').hide();">BG
+                                         <i class="input-helper"></i></label>
+                                       </div>
+                                       <div class="form-check" style="display: inline-block;">
+                                         <label class="form-check-label">
+                                         <input type="radio" class="form-check-input" name="t_o_f_security_check"  value="FD" {{isset($arrCamData->t_o_f_security_check) && $arrCamData->t_o_f_security_check == 'FD' ? 'checked' : ''}} onclick="$('#securityComment').hide();">FD
+                                         <i class="input-helper"></i></label>
+                                      </div>
+                                      <div class="form-check" style="display: inline-block;">
+                                         <label class="form-check-label">
+                                         <input type="radio" class="form-check-input" name="t_o_f_security_check"  value="MF" {{isset($arrCamData->t_o_f_security_check) && $arrCamData->t_o_f_security_check == 'MF' ? 'checked' : ''}} onclick="$('#securityComment').hide();">MF
+                                         <i class="input-helper"></i></label>
+                                      </div>
+                                      <div class="form-check" style="display: inline-block;">
+                                         <label class="form-check-label">
+                                         <input type="radio" class="form-check-input" name="t_o_f_security_check"  value="Others" {{isset($arrCamData->t_o_f_security_check) && $arrCamData->t_o_f_security_check == 'Others' ? 'checked' : ''}} onclick="$('#securityComment').show();">Others
+                                         <i class="input-helper"></i></label>
+                                      </div>
+
+
+                                        <input type="text" name="t_o_f_security" id="securityComment" class="form-control" value="{{isset($arrCamData->t_o_f_security) ? $arrCamData->t_o_f_security : ''}}" style="display: {{isset($arrCamData->t_o_f_security_check) && $arrCamData->t_o_f_security_check == 'Others' ? '' : 'none'}} ">
                                     </td>
                                     <td><b>Adhoc Limit</b></td>
                                     <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="t_o_f_adhoc_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" id="adhoc_limit" class="form-control inr number_format" onfocusout="checkNumber(this)" maxlength="20" value="{{isset($arrCamData->t_o_f_adhoc_limit) ? $arrCamData->t_o_f_adhoc_limit : ''}}"></td>
