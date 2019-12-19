@@ -269,9 +269,9 @@
               <form method="POST" action="{{route('cam_promoter_comment_save')}}"> 
                  @csrf
 
-                <input type="text" name="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />             
-                <input type="text" name="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />             
-                <input type="text" name="cam_report_id" value="{{isset($arrCamData->cam_report_id) ? $arrCamData->cam_report_id : ''}}" /> 
+                <input type="hidden" name="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />             
+                <input type="hidden" name="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />             
+                <input type="hidden" name="cam_report_id" value="{{isset($arrCamData->cam_report_id) ? $arrCamData->cam_report_id : ''}}" /> 
                      
                      <div class="data mt-4">
                         <h2 class="sub-title bg">Risk Comments on the Management</h2>
