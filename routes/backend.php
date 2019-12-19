@@ -228,6 +228,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]); 
            
             //////////////// For Promoter Iframe///////////////////
+             Route::get('show-pan-verify-data', [
+                'as' => 'show_pan_verify_data',
+                'uses' => 'Backend\ApplicationController@showPanVerifyResponseData'
+            ]);
+
 
             Route::get('show-pan-data', [
                 'as' => 'show_pan_data',
