@@ -15,10 +15,10 @@
                <div class="pl-4 pr-4 pb-4 pt-2">
                   @if($bankdocs->count() > 0)
                      @foreach($bankdocs as $bankdoc)
-                  <div class="doc">
+                  <div class="doc"  style="text-align: center;">
                      <small>{{ $bankdoc->doc_name }}</small>
                      <ul>
-                        <li><span class="icon"><i class="fa fa-file-excel-o"></i></span></li>
+                        <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
                         <li><a href="{{ Storage::url($bankdoc->file_path) }}" download target="_blank">Download Bank Statement</a></li>
                         <li><a href="javascript:void(0)"></a></li>
                      </ul>
