@@ -284,18 +284,33 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_assign_fi',
                 'uses' => 'Backend\FiRcuController@saveAssignFi'
             ]);
-            
-            Route::get('fircu/assign-rcu', [
-                'as' => 'show_assign_rcu',
-                'uses' => 'Backend\FiRcuController@showAssignRcu'
-            ]);
 
             Route::post('fircu/assign-rcu', [
                 'as' => 'save_assign_rcu',
                 'uses' => 'Backend\FiRcuController@saveAssignRcu'
             ]);
+            
 
-        });
+             Route::get('fircu/assign-rcu', [
+                'as' => 'show_assign_rcu',
+                'uses' => 'Backend\FiRcuController@showAssignRcu'
+            ]);
+
+            Route::get('pd-notes', [
+                'as' => 'pd_notes_list',
+                'uses' => 'Backend\NotesController@pdNotesList'
+            ]);
+            
+            Route::get('pd-notes-from', [
+                'as' => 'backend_pd_notes_from',
+                'uses' => 'Backend\NotesController@showPdNotesForm'
+            ]);
+
+            Route::post('save-pd-notes', [
+                'as' => 'save_pd_notes',
+                'uses' => 'Backend\NotesController@savePdNotes'
+            ]);
+       
 
 
        
@@ -361,6 +376,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::post('cam-hygiene-save', [
                     'as' => 'cam_hygiene_save',
                     'uses' => 'Backend\CamController@camHygieneSave'
+                ]);
+
+
+                Route::post('cam-promoter-comment-save', [
+                    'as' => 'cam_promoter_comment_save',
+                    'uses' => 'Backend\CamController@promoterCommentSave'
                 ]);
 
             }); //end of cam   
@@ -442,6 +463,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'add_manual_anchor_lead',
                 'uses' => 'Backend\LeadController@addManualAnchorLead'
             ]);
+
             Route::post('add-manual-anchor-lead', [
                'as' => 'add_manual_anchor_lead',
                'uses' => 'Backend\LeadController@saveManualAnchorLead'
@@ -452,6 +474,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
         });
+ 
     });
-
+});
 

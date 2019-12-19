@@ -48,6 +48,7 @@
         <div class="container-fluid page-body-wrapper">
             <div class="row row-offcanvas row-offcanvas-right">
                 <!-- partial -->
+                <div id="iframeMessage" class="content-wrapper-msg"></div>
                 @if(Session::has('message'))
                 <div class="content-wrapper-msg">
                 <div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>

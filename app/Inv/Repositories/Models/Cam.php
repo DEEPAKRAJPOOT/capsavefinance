@@ -56,6 +56,7 @@ class Cam extends BaseModel
         'app_id',
         'operational_person',
         // 'program',
+        'contact_person',
         'rating_no',
         'rating_comment',
         'existing_exposure',
@@ -64,12 +65,14 @@ class Cam extends BaseModel
         't_o_f_purpose', 
         't_o_f_takeout',   
         't_o_f_recourse',
+        't_o_f_security_check',
         't_o_f_security',
         't_o_f_adhoc_limit',
         't_o_f_covenants',
         't_o_f_profile_comp',
         'risk_comments',
         'cm_comment',
+        'promoter_cmnt',
         'created_by',
         'created_at',
         'updated_at',
@@ -80,6 +83,7 @@ class Cam extends BaseModel
         $inputArr= array(
             'biz_id'=>$attributes['biz_id'],
             'app_id'=>$attributes['app_id'],
+            'contact_person'=>$attributes['contact_person'],
             'operational_person'=>$attributes['operational_person'],
             // 'program'=>$attributes['program'],
             'rating_no'=>$attributes['rating_no'],
@@ -90,6 +94,7 @@ class Cam extends BaseModel
             't_o_f_purpose'=>$attributes['t_o_f_purpose'],
             't_o_f_takeout'=>$attributes['t_o_f_takeout'],
             't_o_f_recourse'=>$attributes['t_o_f_recourse'],
+            't_o_f_security_check'=>$attributes['t_o_f_security_check'],
             't_o_f_security'=>$attributes['t_o_f_security'],
             't_o_f_adhoc_limit'=>$attributes['t_o_f_adhoc_limit'],
             't_o_f_covenants'=>$attributes['t_o_f_covenants'],
@@ -108,6 +113,7 @@ class Cam extends BaseModel
 
         //update Cam table
         $updateCamData = $cam->update([
+                    'contact_person'=>$attributes['contact_person'],
                     'operational_person'=>$attributes['operational_person'],
                     // 'program'=>$attributes['program'],
                     'rating_no'=>$attributes['rating_no'],
@@ -118,12 +124,33 @@ class Cam extends BaseModel
                     't_o_f_purpose'=>$attributes['t_o_f_purpose'],
                     't_o_f_takeout'=>$attributes['t_o_f_takeout'],
                     't_o_f_recourse'=>$attributes['t_o_f_recourse'],
+                    't_o_f_security_check'=>$attributes['t_o_f_security_check'],
                     't_o_f_security'=>$attributes['t_o_f_security'],
                     't_o_f_adhoc_limit'=>$attributes['t_o_f_adhoc_limit'],
                     't_o_f_covenants'=>$attributes['t_o_f_covenants'],
                     't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
                     'risk_comments'=>$attributes['risk_comments'],
                     'cm_comment'=>$attributes['cm_comment'],
+                    'updated_by'=>$userId,
+        ]);
+        return $updateCamData ? true : false;
+    }
+
+     public static function savePromoterComment($attributes, $userId){
+        $inputArr= array(
+            'biz_id'=>$attributes['biz_id'],
+            'app_id'=>$attributes['app_id'],
+            'promoter_cmnt'=>$attributes['promoter_cmnt'],
+            'created_by'=>$userId
+        );
+        $cam = Cam::create($inputArr);
+        return  $cam ? true : false;
+    }
+
+    public static function updatePromoterComment($attributes, $userId){
+        $cam = Cam::where('app_id', $attributes['app_id'])->first();
+        $updateCamData = $cam->update([
+                    'promoter_cmnt'=>$attributes['promoter_cmnt'],
                     'updated_by'=>$userId,
         ]);
         return $updateCamData ? true : false;

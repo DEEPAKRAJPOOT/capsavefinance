@@ -49,9 +49,9 @@ class CamController extends Controller
             $arrRequest['app_id'] = $request->get('app_id');
             $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
             $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
-           if(isset($arrOwnerData[0])){
-                  $arrBizData['ownerName'] = $arrOwnerData[0]['first_name'].' '.$arrOwnerData[0]['last_name'];
-           }
+            foreach ($arrOwnerData as $key => $arr) {
+                  $arrOwner[$key] =  $arr['first_name'];
+            }
             $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
             if(isset($arrEntityData['industryType'])){
                   $arrBizData['industryType'] = $arrEntityData['industryType'];
@@ -70,7 +70,11 @@ class CamController extends Controller
       			$arrBizData['email']  = $arrEntityData['email'];
       			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
             $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-              return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData]);
+           
+            if(isset($arrCamData['t_o_f_security_check'])){
+                $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
+            }
+            return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData, 'arrOwner' =>$arrOwner]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -84,6 +88,13 @@ class CamController extends Controller
             if(!isset($arrCamData['rating_no'])){
                     $arrCamData['rating_no'] = NULL;
             }
+            if(!isset($arrCamData['t_o_f_security_check'])){
+                    $arrCamData['t_o_f_security_check'] = NULL;
+            }else{
+                  $arrCamData['t_o_f_security_check'] = implode(',', $arrCamData['t_o_f_security_check']);
+            }
+            //dd($arrCamData);
+
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
@@ -129,7 +140,7 @@ class CamController extends Controller
         $financedocs = $fin->getFinanceStatements($appId);
         $contents = array();
         if (file_exists(storage_path('app/public/user/'.$appId.'_finance.json'))) {
-          $contents = json_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json')),true);
+          $contents = json_decode(base64_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json'))),true);
         }
         $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
         $latest_finance_year = 2010;
@@ -158,10 +169,30 @@ class CamController extends Controller
         $bankdocs = $fin->getBankStatements($appId);
         $contents = array();
         if (file_exists(storage_path('app/public/user/'.$appId.'_banking.json'))) {
-          $contents = json_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json')),true);
+          $contents = json_decode(base64_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_banking.json'))),true);
         }
-        return view('backend.cam.bank', ['bankdocs' => $bankdocs, 'appId'=> $appId, 'pending_rec'=> $pending_rec]);
-
+        $customers_info = [];
+        if (!empty($contents)) {
+          foreach ($contents['statementdetails'] as $key => $value) {
+            $account_no = $contents['accountXns'][$key]['accountNo'];
+            $customer_data = $value['customerInfo'];
+            $customers_info[] = array(
+              'name' => $customer_data['name'],
+              'email' => $customer_data['email'],
+              'mobile' => $customer_data['mobile'],
+              'account_no' => $account_no,
+              'bank' => $customer_data['bank'],
+              'pan' => $customer_data['pan'],
+            );
+          }
+        }
+        return view('backend.cam.bank', [
+          'bankdocs' => $bankdocs,
+          'appId'=> $appId,
+          'pending_rec'=> $pending_rec,
+          'bank_data'=> $contents,
+          'customers_info'=> $customers_info,
+          ]);
     }
 
     public function finance_store(FinanceRequest $request, FinanceModel $fin){
@@ -302,6 +333,7 @@ class CamController extends Controller
             'loanDuration' => '6',
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
+            'acceptancePolicy' => 'atLeastOneTransactionInRange',
             'transactionCompleteCallbackUrl' => route('api_perfios_bsa_callback'),
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
@@ -819,8 +851,11 @@ class CamController extends Controller
         $attribute['biz_id'] = $request->get('biz_id'); 
         $attribute['app_id'] = $request->get('app_id');
         $arrPromoterData = $this->userRepo->getOwnerApiDetail($attribute);
-    	return view('backend.cam.promoter')->with([
-            'arrPromoterData' => $arrPromoterData 
+        $arrCamData = Cam::where('biz_id','=',$attribute['biz_id'])->where('app_id','=',$attribute['app_id'])->first();
+        return view('backend.cam.promoter')->with([
+            'arrPromoterData' => $arrPromoterData, 
+            'attribute' => $attribute,
+            'arrCamData' => $arrCamData
             ]);;
     }
 
@@ -985,6 +1020,34 @@ class CamController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+
+    public function promoterCommentSave(Request $request){
+       try{
+            $arrCamData = $request->all();
+            //  dd($arrCamData);
+            $userId = Auth::user()->user_id;
+            if($arrCamData['cam_report_id'] != ''){
+                 $updateCamData = Cam::updatePromoterComment($arrCamData, $userId);
+                 if($updateCamData){
+                        Session::flash('message',trans('Management information updated sauccessfully'));
+                 }else{
+                       Session::flash('message',trans('Management information not updated successfully'));
+                 }
+            }else{
+                $saveCamData = Cam::savePromoterComment($arrCamData, $userId);
+                if($saveCamData){
+                        Session::flash('message',trans('Management information saved successfully'));
+                 }else{
+                       Session::flash('message',trans('Management information not saved successfully'));
+                 }
+            }    
+            return redirect()->route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
 
 
 }

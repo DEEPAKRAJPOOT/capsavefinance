@@ -9070,3 +9070,8 @@ table.dataTable.no-footer {
 .font12{
   font-size: 12px;
 }
+.block-div .form-check-input {
+    position: absolute;
+    margin-top: 0.25rem;
+    margin-left: -1.25rem;
+}

@@ -9,9 +9,7 @@
           <div class=" form-fields">
            <div class="col-md-12">
               <h5 class="card-title form-head-h5">Notes  
-              @if(request()->get('view_only'))    
-              <a data-toggle="modal" data-target="#noteFrame" data-url ="{{route('backend_notes_from',['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right"><i class="fa fa-plus">&nbsp;</i>Add Note</a>
-              @endif
+              <a data-toggle="modal" data-target="#pdNoteFrame" data-url ="{{route('backend_pd_notes_from',['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right"><i class="fa fa-plus">&nbsp;</i>Add Note</a>
             </h5>
                     <div class="col-md-12-cls">
                             <div class="prtm-full-block">       
@@ -19,17 +17,20 @@
                                     <div class="table-responsive">
                                         <table class="table text-center table-striped table-hover">
                                             <thead class="thead-primary">
-                                                <tr>
-                                                    <th class="text-left" conspan="2">Case Note</th>
-                                                </tr>
+                                               
                                             </thead>
                                             <tbody>
                                                 <tr>
+                                                    <th class="text-left">Title</th>
                                                     <th class="text-left">Note Details</th>
-                                                    <td class="text-right">Added By</td>                                 </tr> 
+                                                    <th class="text-left">Type</th>
+                                                    <th class="text-right">Added By</th>   
+                                                </tr> 
                                                 @foreach($arrData as $data)
                                                 <tr>
-                                                    <th class="text-left">{{$data->note_data}}</th>
+                                                    <td class="text-left">{{ $data->title }}</td>
+                                                    <td class="text-left">{!! $data->comments !!}</td>
+                                                    <td class="text-left">@if($data->type==1) physical @elseif($data->type==2) Tele  @endif</td>
                                                     <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>                                                                        
                                                 </tr>
                                                 @endforeach
@@ -47,6 +48,6 @@
 </div>
 </div>
 
-{!!Helpers::makeIframePopup('noteFrame','Add Note', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('pdNoteFrame','Add PD Note', 'modal-lg')!!}
 
 @endsection
