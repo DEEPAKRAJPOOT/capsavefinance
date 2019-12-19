@@ -30,9 +30,75 @@ class KarzaController extends Controller
      */
     public function checkPanVerification(KarzaApi $KarzaApi, Request $request)
     {
-          $requestPan   = $request->all();
-          return $KarzaApi->panVerificationRequest($requestPan);
+           $requestPan   = $request->all();
+          try{
+          $result =  $KarzaApi->panVerificationRequest($requestPan);
+          $get_dec = json_decode($result,1);
+          $status =  $get_dec['status-code'];
+          if($status==101) { 
+              $status =1; 
+              
+          } else { 
+              $status =0; 
+              
+          }
+          $req =   json_encode(array('fileNo' => $requestPan['name'],'requestId' => $requestPan['pan'],'dob' => $requestPan['dob']));
+          $createApiLog = BizApiLog::create(['req_file' =>$req, 'res_file' => json_encode($get_dec['result']),'status' => $status]);
+          if ($createApiLog) {
+               if($status==1)
+               {
+                   $userData  =  User::getUserByAppId($requestPan['app_id']);
+                   $user_id    =  $userData->user_id;
+                   $createBizApi= BizApi::create(['user_id' =>$user_id, 
+                                            'biz_id' =>   $requestPan['biz_id'],
+                                            'biz_owner_id' => $requestPan['ownerid'],
+                                            'type' => 9,
+                                            'verify_doc_no' => 1,
+                                            'status' => 1,
+                                           'biz_api_log_id' => $createApiLog['biz_api_log_id'],
+                                           'created_by' => Auth::user()->user_id,
+                                          ]);
+                            if($createBizApi){
+
+                                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+                           } 
+                           else 
+                          {
+                                 return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+                           }
+                  }
+               return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 0, 'value' => $createApiLog['biz_api_log_id']]);
+          
+               } 
+            else {
+               return response()->json(['message' =>trans('success_messages.oops_something_went_wrong'),'status' => 0]);
+            }
+        }
+         catch (Exception $e) 
+        {
+             return false;
+        }
     }
+    
+    
+     public function checkPanVerificationAddMore(KarzaApi $KarzaApi, Request $request)
+    {
+           $requestPan   = $request->all();
+           $result =  $KarzaApi->panVerificationRequest($requestPan);
+           $get_dec = json_decode($result,1);
+           $status =  $get_dec['status-code'];
+            if($status==101) { 
+              
+              return response()->json(['status' => 1, 'value' => json_encode($get_dec['result'])]);
+                       
+          } else { 
+            return response()->json(['status' => 0, 'value' =>  json_encode($get_dec['result'])]);
+            
+              
+          }
+     
+    }
+    
 
     /**
      * Pan status verification API

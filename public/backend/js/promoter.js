@@ -24,6 +24,13 @@ function uploadFile(uploadId, ownerId, docId)
      else if(docId == 34) { 
         var file  = $("#aadharfile"+uploadId)[0].files[0];
     }
+    else if(docId == 37) { 
+        var file  = $("#electricityfile"+uploadId)[0].files[0];
+    }
+    else if(docId == 38) { 
+        var file  = $("#telephonefile"+uploadId)[0].files[0];
+    }
+
    
     var extension = file.name.split('.').pop().toLowerCase();
     var datafile = new FormData();
@@ -75,6 +82,14 @@ function uploadFile(uploadId, ownerId, docId)
             else if(docId == 34) { 
                  $("#aadhardown"+uploadId).css({'display':'inline'});
                 $("#aadhardown"+uploadId).attr('href',r.file_path);
+            }
+             else if(docId == 37) { 
+                 $("#electricitydown"+uploadId).css({'display':'inline'});
+                $("#electricitydown"+uploadId).attr('href',r.file_path);
+            }
+             else if(docId == 38) { 
+                 $("#telephonedown"+uploadId).css({'display':'inline'});
+                $("#telephonedown"+uploadId).attr('href',r.file_path);
             }
              
            }

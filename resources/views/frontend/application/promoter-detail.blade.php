@@ -707,7 +707,7 @@
         var is_promoter = $("#is_promoter" + promoCount).val();
         if (is_promoter == 1)
         {
-           //// $("#share_per"+promoCount).attr("readonly","readonly");
+         
             var shareHolder = $("#share_per" + promoCount).val();
             if (shareHolder == '')
             {
@@ -731,7 +731,7 @@
         }
         else
         {
-                $("#share_per"+promoCount).removeAttr("readonly");
+                
                 $("#shareCheck" + promoCount).text('');
                 return true;
         }
@@ -858,9 +858,6 @@
         }
         else
         {
-               
-               
-                $("#share_per" + promoCount).val('');
                 $("#shareCheck" + promoCount).text('');
                 return true;
         }
@@ -875,17 +872,13 @@
         { 
                 $(this).val(0);
                 $("#isShareCheck"+count).val(0);
-                $("#share_per"+count).attr("readonly","readonly");
                 $("#shareCheck"+count).text('');
-                $("#share_per"+count).val('');
                 return true;
         }
         else
         {
                 $(this).val(1);
                 $("#isShareCheck"+count).val(1);
-                $("#share_per"+count).removeAttr("readonly");
-                $("#share_per"+count).val('');
                 $("#shareCheck"+count).text('This field is required.');
                 return true;
         }

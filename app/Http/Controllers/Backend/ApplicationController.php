@@ -868,8 +868,17 @@ class ApplicationController extends Controller
                 ->with('offerData', $offerData);          
     }
 
-   /* For Promoter pan iframe model    */
+   /* For Promoter pan verify iframe model    */
     
+    public function showPanVerifyResponseData(Request $request)
+    {
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_pan_verify_data')->with('res', $res);
+        
+    } 
+       /* For Promoter pan iframe model    */
     public function showPanResponseData(Request $request)
     {
         $request =  $request->all();

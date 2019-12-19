@@ -97,10 +97,10 @@ class CibilApi {
                               <ADDRESS-SEGMENT>
                                  <ADDRESS>
                                         <TYPE>D01</TYPE>
-                                        <ADDRESS-1>'.$arrOwnerData->owner_addr.'</ADDRESS-1>
-                                        <CITY>BANGALORE</CITY>
-                                        <STATE>KA</STATE>
-                                        <PIN>600053</PIN>
+                                        <ADDRESS-1>'.$arrOwnerData->address.'</ADDRESS-1>
+                                        <CITY>'.$arrOwnerData->city.'</CITY>
+                                        <STATE>'.$arrOwnerData->state.'</STATE>
+                                        <PIN>'.$arrOwnerData->pin.'</PIN>
                                  </ADDRESS>
                               </ADDRESS-SEGMENT>
                               <APPLICATION-SEGMENT>

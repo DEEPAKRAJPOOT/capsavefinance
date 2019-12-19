@@ -24,6 +24,15 @@ Route::group(
         'uses' => 'Karza\KarzaController@checkPanStatusVerification'
         ]
     );
+    
+    //////////////////Pan card authontication//////////////////////////
+    Route::post(
+        'chk_user_pan_karza_add_more',
+        [
+        'as' => 'chk_user_pan_karza_add_more',
+        'uses' => 'Karza\KarzaController@checkPanVerificationAddMore'
+        ]
+    ); 
     //////Voter ID Verification
     
     Route::post(
