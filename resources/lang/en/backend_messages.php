@@ -12,5 +12,10 @@ return [
     'upload_sanction_letter_fail' => 'Something went wrong',
     'accept_offer_success' => 'Offer accepted successfully',
     'reject_offer_success' => 'Offer rejected successfully',
+    'agency_registration_success' => 'Agency registration successfully',
+    'agency_registration_updated' => 'Agency information successfully updated..',
+    'something_went_wrong' => 'Something went wrong, Try again later.',
+    'agency_user_registration_success' => 'Agency user registration successfully',
+    'agency_user_registration_updated' => 'Agency user information successfully updated..',
 ];
 

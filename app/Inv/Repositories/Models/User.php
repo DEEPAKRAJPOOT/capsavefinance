@@ -44,6 +44,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'anchor_id',
+        'agency_id',
         'anchor_user_id',
         'f_name',
         'm_name',
@@ -577,11 +578,15 @@ class User extends Authenticatable
         return ($arrUser ?: false);
     }
 
-        public static function getBankData(){
+    public static function getBankData(){
         $result = self::select('*')
                 ->from('mst_bank')
                 ->where('is_active', '1')
                 ->get();
         return ($result ?? null);
+    }
+
+    public function agency(){
+        return $this->hasOne('App\Inv\Repositories\Models\Agency', 'agency_id', 'agency_id');
     }
 }

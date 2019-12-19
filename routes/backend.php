@@ -479,7 +479,61 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
         });
- 
+
+        Route::group(['prefix' => 'agency'], function () {
+            Route::get('/', [
+                'as' => 'get_agency_list',
+                'uses' => 'Backend\AgencyController@allAgencyList'
+            ]);
+            Route::get('manage-agency-user', [
+                'as' => 'get_agency_user_list',
+                'uses' => 'Backend\AgencyController@getAgencyUserList'
+            ]);
+            Route::get('add-agency', [
+                'as' => 'add_agency_reg',
+                'uses' => 'Backend\AgencyController@addAgencyReg'
+            ]);
+
+            Route::post('add-agency', [
+                'as' => 'save_agency_reg',
+                'uses' => 'Backend\AgencyController@saveAgencyReg'
+            ]);
+
+            Route::get('update-agency', [
+                'as' => 'edit_agency_reg',
+                'uses' => 'Backend\AgencyController@editAgencyReg'
+            ]);
+
+            Route::post('update-agency', [
+                'as' => 'update_agency_reg',
+                'uses' => 'Backend\AgencyController@updateAgencyReg'
+            ]);
+
+            Route::get('/users', [
+                'as' => 'get_agency_user_list',
+                'uses' => 'Backend\AgencyController@getAgencyUserList'
+            ]);
+
+            Route::get('add-agency-user', [
+                'as' => 'add_agency_user_reg',
+                'uses' => 'Backend\AgencyController@addAgencyUserReg'
+            ]);
+
+            Route::post('add-agency-user', [
+                'as' => 'save_agency_user_reg',
+                'uses' => 'Backend\AgencyController@saveAgencyUserReg'
+            ]);
+
+            Route::get('update-agency-user', [
+                'as' => 'edit_agency_user_reg',
+                'uses' => 'Backend\AgencyController@editAgencyUserReg'
+            ]);
+
+            Route::post('update-agency-user', [
+                'as' => 'update_agency_user_reg',
+                'uses' => 'Backend\AgencyController@updateAgencyUserReg'
+            ]);        
+        });
     });
 });
 

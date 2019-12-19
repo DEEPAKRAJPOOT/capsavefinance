@@ -357,7 +357,7 @@ class Application extends BaseModel
                 ->join('users', 'app.user_id', '=', 'users.user_id')
                 ->where('app.user_id', \Auth::user()->user_id);
         //$appData->groupBy('app.app_id');
-        $appData = $appData->orderBy('app.app_id', 'DESC')->get();
+        $appData = $appData->orderBy('app.app_id', 'DESC');
         return $appData;
     }
 

@@ -2755,4 +2755,16 @@ if ($err) {
       $status = $this->application->changeCmRcuStatus($request);
       return $status;
     }
+
+    public function getAgencyLists(DataProviderInterface $dataProvider) { 
+     $agencyList = $this->userRepo->getAllAgency();
+     $agency = $dataProvider->getAgencyList($this->request, $agencyList);
+     return $agency;
+    }
+
+    public function getAgencyUserLists(DataProviderInterface $dataProvider) { 
+     $agencyUserList = $this->userRepo->getAgencyUserLists();
+     $agencyUsers = $dataProvider->getAgencyUserLists($this->request, $agencyUserList);
+     return $agencyUsers;
+    }
 }

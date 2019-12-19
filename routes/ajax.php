@@ -321,5 +321,21 @@ Route::group(
         'uses' => 'AjaxController@changeCmRcuStatus'
         ]
     );
+    /*agency route*/
+    Route::post(
+        'get-agency-list',
+        [
+        'as' => 'get_ajax_agency_list',
+        'uses' => 'AjaxController@getAgencyLists'
+        ]
+    );
+    Route::post(
+        'get-agency-user-list',
+        [
+        'as' => 'get_ajax_agency_user_list',
+        'uses' => 'AjaxController@getAgencyUserLists'
+        ]
+    );
+    /*agency route*/
 
 });

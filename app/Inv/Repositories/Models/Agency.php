@@ -16,6 +16,8 @@ class Agency extends BaseModel
      * @var string
      */
     protected $table = 'agency';
+    public $timestamps = false;
+    public $userstamps = false;
 
     /**
      * Custom primary key is set for the table
