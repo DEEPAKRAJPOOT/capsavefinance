@@ -24,7 +24,7 @@
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
                             @can('add_anchor_user_reg')
-                            <a data-toggle="modal" data-target="#addAgencyUserFrame" data-url="{{route('add_agency_user_reg')}}" data-height="375px" data-width="100%" data-placement="top" >
+                            <a data-toggle="modal" data-target="#addAgencyUserFrame" data-url="{{route('add_agency_user_reg')}}" data-height="350px" data-width="100%" data-placement="top" >
                                 <button class="btn  btn-success btn-sm" type="button">
                                     <span class="btn-label">
                                         <i class="fa fa-plus"></i>
@@ -73,7 +73,7 @@
 </div>
 </div>
 {!!Helpers::makeIframePopup('addAgencyUserFrame','Add Agency User', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('editAgencyUserFrame','Edit Agency User Detail', 'modal-md')!!}
+{!!Helpers::makeIframePopup('editAgencyUserFrame','Edit Agency User Detail', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

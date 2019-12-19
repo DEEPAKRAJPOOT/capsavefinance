@@ -495,15 +495,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\AgencyController@saveAgencyUserReg'
             ]);
 
-            /*Route::get('update-agency', [
-                'as' => 'edit_agency_reg',
-                'uses' => 'Backend\AgencyController@editAgencyReg'
+            Route::get('update-agency-user', [
+                'as' => 'edit_agency_user_reg',
+                'uses' => 'Backend\AgencyController@editAgencyUserReg'
             ]);
 
-            Route::post('update-agency', [
-                'as' => 'update_agency_reg',
-                'uses' => 'Backend\AgencyController@updateAgencyReg'
-            ]);*/        
+            Route::post('update-agency-user', [
+                'as' => 'update_agency_user_reg',
+                'uses' => 'Backend\AgencyController@updateAgencyUserReg'
+            ]);        
         });
     });
 });

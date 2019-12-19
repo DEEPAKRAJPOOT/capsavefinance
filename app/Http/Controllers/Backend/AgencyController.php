@@ -34,7 +34,7 @@ class AgencyController extends Controller {
     }
 
     /**
-     * Display anchor listing
+     * Display agency listing
      *
      * @return \Illuminate\Http\Response
      */
@@ -43,13 +43,17 @@ class AgencyController extends Controller {
     }
 
     /**
-    * 
-    * @return type
+    * Display agency user listing
+     *
+     * @return \Illuminate\Http\Response
     */
      public function getAgencyUserList() {
         return view('backend.agency.agency_user_list');
     }
 
+    /**
+    * Add agency view page
+    */
     public function addAgencyReg(Request $request) {
         try {
             $states = State::getStateList()->get();
@@ -60,7 +64,7 @@ class AgencyController extends Controller {
     }
 
     /**
-     * function for save anchor info and also create anchor user
+     * function for save agency info
      * @param Request $request
      * @return type
      */
@@ -83,7 +87,7 @@ class AgencyController extends Controller {
 
 
     /**
-     * function for update anchor info
+     * function for update agency page info
      * @param Request $request
      * @return type
      */
@@ -102,7 +106,7 @@ class AgencyController extends Controller {
     }
 
     /**
-     * function for update anchor information
+     * function for update agency information
      * @param Request $request
      * @return type
      */
@@ -132,6 +136,9 @@ class AgencyController extends Controller {
         }
     }
 
+    /**
+    * Add agency user view page
+    */
     public function addAgencyUserReg(Request $request) {
         try {
             $agencies = Agency::where('is_active',1)->get();
@@ -142,7 +149,7 @@ class AgencyController extends Controller {
     }
 
     /**
-     * function for save anchor info and also create anchor user
+     * function for create agency user info
      * @param Request $request
      * @return type
      */
@@ -188,70 +195,46 @@ class AgencyController extends Controller {
         }
     }
 
-    /*------------------------------------------------------*/   
-    public function addManualAnchorLead() {
-      try{
-          $roleData = Helpers::getUserRole();
-          $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
-       $anchLeadList = $this->userRepo->getAllAnchor($orderBy='comp_name');
-        return view('backend.anchor.anchor_manual_lead')
-       ->with('anchDropUserList',$anchLeadList)
-        ->with('is_superadmin',$is_superadmin);
-         } catch (Exception $ex) {
-            dd($ex);
+
+    /**
+     * function for update agency user page info
+     * @param Request $request
+     * @return type
+     */
+    public function editAgencyUserReg(Request $request) {
+        try {
+            $agencies = Agency::where('is_active',1)->get();
+            $agencyUser = $this->userRepo->getUserDetail($request->get('user_id'));
+            return view('backend.agency.edit_agency_user_reg')->with(['agencyUser'=>$agencyUser, 'agencies'=>$agencies]);
+        } catch (Exception $ex) {
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
   
     /**
-     * function for save manual anchor lead
+     * function for update agency user info
+     * @param Request $request
      * @return type
      */
-    public function saveManualAnchorLead(Request $request){
-       try {
-             
-            $arrAnchorVal = $request->all();            
-             $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
-             $arrUpdateAnchor =[];
-             if(!$anchUserInfo){
-              $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
-                $token = md5($hashval);
-             $arrAnchorData = [
-                'name' => trim($arrAnchorVal['f_name']),
-                 'l_name' => trim($arrAnchorVal['l_name']),
-                'biz_name' => $arrAnchorVal['comp_name'],
-                'email' => trim($arrAnchorVal['email']),
-                'phone' => $arrAnchorVal['phone'],
-                'user_type' => $arrAnchorVal['anchor_user_type'],
-                 'is_registered'=>0,
-                 'registered_type'=>0,
-                'created_by' => Auth::user()->user_id,
-                 'created_at' => \Carbon\Carbon::now(),
-                 'token' => $token,
+    public function updateAgencyUserReg(Request $request){
+        try {
+            $arrAgencyData = $request->all();
+            $user_id = $request->get('user_id');
+            //$user_info = $this->userRepo->getUserByEmail($arrAgencyData['email']);
+            $arrAgencyUserData = [
+                'agency_id' => $arrAgencyData['agency_id'],
+                'f_name' => $arrAgencyData['f_name'],
+                'l_name' => $arrAgencyData['l_name'],
+                //'email' => $arrAgencyData['email'],
+                'mobile_no' => $arrAgencyData['mobile_no'],
+                'biz_name' => '',
+                //'is_active' => 1,
             ];
+            $current_user_info = $this->userRepo->save($arrAgencyUserData, $user_id);
             
-             $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
-            $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
-            if($getAnchorId && $getAnchorId->anchor_id!=''){
-                $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
-            }else{
-                 $arrUpdateAnchor ['anchor_id'] =$arrAnchorVal['assigned_anchor'];
-            }
-            
-            $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
-            if ($anchor_lead) {
-                $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
-                $anchLeadMailArr['name'] = trim($arrAnchorData['name']);
-                $anchLeadMailArr['email'] =  trim($arrAnchorData['email']);
-                $anchLeadMailArr['url'] = $mailUrl;
-                Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
-                Session::flash('message', trans('backend_messages.anchor_registration_success'));
-                return redirect()->route('get_anchor_lead_list');
-            }
-            }else{
-            Session::flash('error', trans('error_messages.email_already_exists'));
-            return redirect()->route('get_anchor_lead_list');
-            }
+            Session::flash('message', trans('backend_messages.agency_user_registration_updated'));
+            return redirect()->route('get_agency_user_list');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
