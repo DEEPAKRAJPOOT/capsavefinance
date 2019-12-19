@@ -462,9 +462,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_agency_user_list',
                 'uses' => 'Backend\AgencyController@getAgencyUserList'
             ]);
+
             Route::get('add-agency-user', [
                 'as' => 'add_agency_user_reg',
                 'uses' => 'Backend\AgencyController@addAgencyUserReg'
+            ]);
+
+            Route::post('add-agency-user', [
+                'as' => 'save_agency_user_reg',
+                'uses' => 'Backend\AgencyController@saveAgencyUserReg'
             ]);
 
             /*Route::get('/add-anchor-lead',

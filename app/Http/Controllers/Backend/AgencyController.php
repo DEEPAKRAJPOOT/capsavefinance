@@ -9,6 +9,7 @@ use Helpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\Agency;
 use App\Http\Requests\AgencyRegistrationFormRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
@@ -38,14 +39,14 @@ class AgencyController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function allAgencyList() {
-        return view('backend.agency.index');
+        return view('backend.agency.agency_list');
     }
 
     /**
     * 
     * @return type
     */
-     public function getAgencyUserList() {        
+     public function getAgencyUserList() {
         return view('backend.agency.agency_user_list');
     }
 
@@ -131,16 +132,40 @@ class AgencyController extends Controller {
         }
     }
 
+    public function addAgencyUserReg(Request $request) {
+        try {
+            $agencies = Agency::where('is_active',1)->get();
+            return view('backend.agency.add_agency_user_reg')->with(['agencies'=>$agencies]);
+        } catch (Exception $ex) {
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    /**
+     * function for save anchor info and also create anchor user
+     * @param Request $request
+     * @return type
+     */
+    public function saveAgencyUserReg(Request $request) {
+        dd(1);--------------------------
+        try {
+            $arrAgencyData = $request->all();
+            $arrAgencyData['created_at'] = \carbon\Carbon::now();
+            $status = $this->userRepo->saveAgencyUser($arrAgencyData);
+            if($status){
+                Session::flash('message', trans('backend_messages.agency_registration_success'));
+                return redirect()->route('get_agency_list');
+            }else{
+                Session::flash('message', trans('backend_messages.something_went_wrong'));
+                return redirect()->route('get_agency_list');
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 
     /*------------------------------------------------------*/
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index() {
-        return view('backend.agency.index');
-    }
+    
 
     /**
      * Display a listing of the resource.
