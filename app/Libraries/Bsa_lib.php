@@ -128,7 +128,7 @@ class Bsa_lib{
 		 	return $resp;
 	     }
 
-	      if ($method == SELF::GET_REP && 'json' == strtolower($params['reportType'])) {
+	      if ($method == SELF::GET_REP && 'json' == strtolower($params['types'])) {
 	     	$xml = @simplexml_load_string($response['result']);
 	     	if(!$xml){
 	     		$update_log['status'] = "success";

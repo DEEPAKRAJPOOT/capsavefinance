@@ -2,6 +2,7 @@
 @section('content')
 @include('layouts.backend.partials.admin-sidebar')
 @include('layouts.backend.partials.admin-subnav')
+
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
    <div class="inner-container">
@@ -50,12 +51,12 @@
                            </tr>
                            <tr>
                               <td style="border-right:0px;">
-                                 <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Name :</b></p>
-                                 <p style="margin-bottom: 0.5rem;"><b>Bank Name :</b> </p>
+                                 <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Name :</b> &nbsp; {{ !empty($customers_info) ? $customers_info[0]['name'] : '' }}</p>
+                                 <p style="margin-bottom: 0.5rem;"><b>Bank Name :</b>  &nbsp; {{ !empty($customers_info) ? $customers_info[0]['bank'] : '' }}</p>
                               </td>
                               <td  style="border-left:0px;">
-                                 <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Account Number :</b></p>
-                                 <p style="margin-bottom: 0.5rem;"><b>Account Type :</b> </p>
+                                 <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Account Number :</b>  &nbsp; {{ !empty($customers_info) ? $customers_info[0]['account_no'] : '' }}</p>
+                                 <p style="margin-bottom: 0.5rem;"><b>Email :</b>  &nbsp; {{ !empty($customers_info) ? strtolower($customers_info[0]['email']) : '' }}</p>
                               </td>
                            </tr>
                            <tr>
