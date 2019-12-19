@@ -328,7 +328,7 @@ class BizOwner extends BaseModel
            'user_id' => $userId, 
            'biz_id' => $biz_id,    
            'type' => 1,
-           'pan_gst_hash' =>  $attributes['pan_no'][$i], 
+           'pan_gst_hash' => isset($attributes['pan_no'][$i]) ? $attributes['pan_no'][$i] : 'N/a', 
            'status' => 1,
            'parent_pan_gst_id' =>0,    
            'biz_pan_gst_api_id' => $res->biz_pan_gst_api_id,
