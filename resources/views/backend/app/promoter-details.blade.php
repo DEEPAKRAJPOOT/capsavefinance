@@ -690,72 +690,67 @@
         });
         if(button=='next')
       { 
-        $('select.gender').each(function () {
-        $(this).rules("add",
-        {
-        required: true
-        })
-        });
-        
-        $('input.pan_no').each(function () {
-        $(this).rules("add",
-        {
-        required: true
-        })
-        });
-        /*  $('input.share_per').each(function () {
-         $(this).rules("add",
-         {
-         required: true,
-         number: true,
-         range: [0, 100]
-         })
-         });   */
+                $('select.gender').each(function () {
+                $(this).rules("add",
+                {
+                required: true
+                })
+                });
+
+                $('input.pan_no').each(function () {
+                $(this).rules("add",
+                {
+                required: true
+                })
+                });
+
+                $('input.mobileveri').each(function () {
+                $(this).rules("add",
+                {
+                required: true,
+                        number: true,
+                })
+                });
+
+                $('textarea.address').each(function () {
+                $(this).rules("add",
+                {
+                required: true
+                })
+                });
+       } 
+       else
+       {
+           $('select.gender').each(function () {
+                $(this).rules("add",
+                {
+                required: false
+                })
+                });
+
+                $('input.pan_no').each(function () {
+                $(this).rules("add",
+                {
+                required: false
+                })
+                });
+
+                $('input.mobileveri').each(function () {
+                $(this).rules("add",
+                {
+                required: false,
+                        number: false,
+                })
+                });
+
+                $('textarea.address').each(function () {
+                $(this).rules("add",
+                {
+                required: false
+                })
+                });
+       }
       
-        $('input.mobileveri').each(function () {
-        $(this).rules("add",
-        {
-        required: true,
-                number: true,
-        })
-        });
-     
-        /*  $('input.edu_qualification').each(function () {
-         $(this).rules("add",
-         {
-         required: true
-         })
-         });
-     
-         $('input.other_ownership').each(function () {
-         $(this).rules("add",
-         {
-         required: true
-         })
-         });
-         $('input.networth').each(function () {
-         $(this).rules("add",
-         {
-         required: true,
-         number: true
-         })
-         });  
-         */
-        
-        $('textarea.address').each(function () {
-        $(this).rules("add",
-        {
-        required: true
-        })
-        });
-       }  
-        /* $('.privacy_chk').each(function () {
-         $(this).rules("add",
-         {
-         required: true
-         })
-         }); */
-        // test if form is valid 
         if ($('form#signupForm').validate().form()) {
         var panCount = 0;
         var promoCount = 0;
@@ -814,7 +809,36 @@
         
         });
       
-        
+               ///// validation for where is checked then shareholder is mandaterory/////
+        $(".is_promoter").each(function (k, v) {
+        promoCount++;
+        var is_promoter = $("#is_promoter" + promoCount).val();
+        if (is_promoter == 1)
+        {
+           
+            var shareHolder = $("#share_per" + promoCount).val();
+            if (shareHolder == '')
+            {
+                $("#shareCheck" + promoCount).text('This field is required.');
+                e.preventDefault();
+                return false;
+            }
+            else if (shareHolder == 0 || shareHolder > 100)
+            {
+                $("#shareCheck" + promoCount).text('Enter correct value 1 to 100 range');
+                e.preventDefault();
+                return false;
+            }
+
+            else
+            {
+                $("#shareCheck" + promoCount).text('');
+                return true;
+            }
+
+        }
+       
+        });
       
 
         ////// Combination of Shareholding (%) should  not exceed more than 100 %///////////
@@ -964,6 +988,7 @@
                 $(this).val(0);
                 $("#isShareCheck"+count).val(0);
                 $("#shareCheck"+count).text('');
+                $("#shareCheck"+count).text('This field is required.');
                 return true;
         }
         else
@@ -973,7 +998,7 @@
                  return true;
         }
         });
-        
+       
         
        ////////////////// new form create by add promoter/////////////////
        
