@@ -534,6 +534,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\AgencyController@updateAgencyUserReg'
             ]);        
         });
+
+        Route::group(['prefix' => 'document'], function () {
+            Route::get('/list', [
+                'as' => 'document_list',
+                'uses' => 'Backend\DocumentController@list'
+            ]);
+            
+        });
     });
 });
 
