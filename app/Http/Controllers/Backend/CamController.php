@@ -330,7 +330,7 @@ class CamController extends Controller
         $req_arr = array(
             'txnId' => $prolitus_txn, //'bharatSTmt',
             'loanAmount' => $loanAmount,
-            'loanDuration' => '6',
+            'loanDuration' => '12',
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
             'acceptancePolicy' => 'atLeastOneTransactionInRange',
