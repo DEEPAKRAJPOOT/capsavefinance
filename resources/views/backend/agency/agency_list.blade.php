@@ -23,7 +23,7 @@
                 <div class="col-sm-12">
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
-                            @can('add_anchor_reg')
+                            @can('add_agency_reg')
                             <a data-toggle="modal" data-target="#addAgencyFrame" data-url ="{{route('add_agency_reg')}}" data-height="400px" data-width="100%" data-placement="top" >
                                 <button class="btn  btn-success btn-sm" type="button">
                                     <span class="btn-label">
