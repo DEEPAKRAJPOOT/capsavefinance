@@ -584,7 +584,7 @@ class CamController extends Controller
               $final_res['api_type'] = Perfios_lib::GET_STMT;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
-              return $final_res;
+              return response()->json(['message' => $final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
           }else{
             $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
             \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
@@ -627,7 +627,7 @@ class CamController extends Controller
         }
         $perfiostransactionid = $perfios_data['perfios_log_id'];
         $prolitus_txn = $perfios_data['prolitus_txn_id'];
-        $perfios = new Perfios_lib();
+        $bsa = new Bsa_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
         $file_name = $appId.'_banking.xlsx';
@@ -641,8 +641,8 @@ class CamController extends Controller
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Bsa_lib::GET_REP;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
-              $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
-              return $final_res;
+              $final_res['perfiosTransactionId'] = $perfiostransactionid;
+              return response()->json(['message' => $final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
           }else{
              $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
              \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
