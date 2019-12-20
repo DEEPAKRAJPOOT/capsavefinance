@@ -130,7 +130,7 @@ Route::group(
         'uses' => 'Backend\CamController@getFinanceReport'
     ]);
 
-    Route::get('process_banking', [
+    Route::post('process_banking', [
         'as' => 'process_banking_statement',
         'uses' => 'Backend\CamController@getBankReport'
     ]);
