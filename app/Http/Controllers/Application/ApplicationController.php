@@ -611,7 +611,16 @@ class ApplicationController extends Controller
         return response()->json(['message' => $response['message'] ?? 'Something went wrong','status' => 0]);
       }
     }
-
+  /* For Promoter pan verify iframe model    */
+    
+    public function showPanVerifyResponseData(Request $request)
+    {
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_pan_verify_data')->with('res', $res);
+        
+    }
      /* For Promoter pan iframe model    */
     
     public function showPanResponseData(Request $request)
