@@ -597,7 +597,8 @@
                 chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
                 chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
                 chk_user_pan_status_karza: "{{ URL::route('chk_user_pan_status_karza') }}",
-                get_user_pan_response_karza: "{{ URL::route('get_user_pan_response_karza') }}",
+                chk_user_pan_karza_add_more: "{{ URL::route('chk_user_pan_karza_add_more') }}",
+                chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
                 get_user_pan_response_karza: "{{ URL::route('get_user_pan_response_karza') }}",
         };
       
