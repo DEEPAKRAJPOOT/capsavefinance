@@ -19,6 +19,7 @@ td, th{padding: 5px;}
              <table width="100%" border="0">
                  <tbody>
                     <tr>
+                        {{dd($response)}}
                         <td width="50%">Address </td>
                         <td width="50%"><strong>{{$response['contact']['address']}}</strong></td>
                     </tr>
