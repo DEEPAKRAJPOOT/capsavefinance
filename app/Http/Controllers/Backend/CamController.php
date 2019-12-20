@@ -174,7 +174,7 @@ class CamController extends Controller
         $customers_info = [];
         if (!empty($contents)) {
           foreach ($contents['statementdetails'] as $key => $value) {
-            $account_no = $contents['accountXns'][$key]['accountNo'];
+            $account_no = $contents['accountXns'][0]['accountNo'];
             $customer_data = $value['customerInfo'];
             $customers_info[] = array(
               'name' => $customer_data['name'],
@@ -335,7 +335,7 @@ class CamController extends Controller
             'processingType' => 'STATEMENT',
             'acceptancePolicy' => 'atLeastOneTransactionInRange',
             'yearMonthFrom' => '2019-05',
-            'yearMonthTo' => '2019-10',
+            'yearMonthTo' => date('Y-m'),
             'transactionCompleteCallbackUrl' => route('api_perfios_bsa_callback'),
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
