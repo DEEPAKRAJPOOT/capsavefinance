@@ -334,6 +334,8 @@ class CamController extends Controller
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
             'acceptancePolicy' => 'atLeastOneTransactionInRange',
+            'yearMonthFrom' => '2019-05',
+            'yearMonthTo' => '2019-10',
             'transactionCompleteCallbackUrl' => route('api_perfios_bsa_callback'),
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
