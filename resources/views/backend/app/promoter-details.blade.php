@@ -964,6 +964,7 @@
                 $(this).val(0);
                 $("#isShareCheck"+count).val(0);
                 $("#shareCheck"+count).text('');
+                $("#shareCheck"+count).text('This field is required.');
                 return true;
         }
         else
@@ -973,7 +974,7 @@
                  return true;
         }
         });
-        
+       
         
        ////////////////// new form create by add promoter/////////////////
        
