@@ -40,9 +40,9 @@ class CibilController extends Controller
             $ex =  explode(' ',$arrOwnerAddr->address->addr_1);
             $count  = count( $ex); 
             $arrOwnerData->address  = $arrOwnerAddr->address->addr_1;
-            $arrOwnerData->city =  $ex[$count-2];
-                $arrOwnerData->pin =  $ex[$count-3];
-            $arrOwnerData->state =  $ex[$count-4];
+            $arrOwnerData->state =  $ex[$count-2];
+            $arrOwnerData->city =  $ex[$count-4];
+            $arrOwnerData->pin =  $ex[$count-3];
         }
      else {
             $arrOwnerData->address  = "";
