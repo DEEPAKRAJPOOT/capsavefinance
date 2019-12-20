@@ -316,7 +316,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\NotesController@savePdNotes'
             ]);
        
+            Route::get('query-management', [
+                'as' => 'query_management_list',
+                'uses' => 'Backend\QmsController@index'
+            ]);
 
+            Route::get('query-management-from', [
+                'as' => 'query_management_from',
+                'uses' => 'Backend\QmsController@showQueryForm'
+            ]);
 
        
             //start section cam
