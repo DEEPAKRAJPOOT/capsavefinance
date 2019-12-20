@@ -51,6 +51,14 @@
                                                 $aadharFilePath[$key] = $row2->userFile->file_path;
                                                 $aadharFileName[$key] =   $row2->userFile->file_name;
                                             }
+                                            if ($row2->doc_id == 37) {
+                                                $electricityFilePath[$key] = $row2->userFile->file_path;
+                                                $electricityFileName[$key] =   $row2->userFile->file_name;
+                                            }
+                                            if ($row2->doc_id == 38) {
+                                                $telephoneFilePath[$key] = $row2->userFile->file_path;
+                                                $telephoneFileName[$key] =   $row2->userFile->file_name;
+                                            }
                            
                                          } 
 
@@ -250,6 +258,27 @@
                                                 <td>{{isset($aadharFileName[$j]) ? $aadharFileName[$j] : '' }}</td>
                                                 <td>
                                                 <a  href="{{ isset($aadharFilePath[$j]) ? Storage::url($aadharFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($aadharFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                   
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>7</td>
+                                                <td>Electricity Bill    </td>
+                                                <td></td>
+                                                <td>{{isset($electricityFileName[$j]) ? $electricityFileName[$j] : '' }}</td>
+                                                <td>
+                                                <a  href="{{ isset($electricityFilePath[$j]) ? Storage::url($electricityFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($electricityFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>8</td>
+                                                <td>Telephone Bill</td>
+                                                <td></td>
+                                                <td>{{isset($telephoneFileName[$j]) ? $telephoneFileName[$j] : '' }}</td>
+                                                <td>
+                                                <a  href="{{ isset($telephoneFilePath[$j]) ? Storage::url($telephoneFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($telephoneFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                    
                                                 </td>
                                             </tr>
