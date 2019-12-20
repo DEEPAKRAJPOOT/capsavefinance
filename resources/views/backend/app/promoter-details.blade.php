@@ -561,39 +561,7 @@
                                     </div>
                                 </div>	
 
-
-                                <div class="modal" id="myModal">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <!-- Modal Header -->
-                                            <!-- Modal body -->
-                                            <div class="modal-body">
-                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                <br/>
-                                                <div class="form-group password-input">
-                                                    <label for="txtPassword"><b>Select Promoter Type</b>
-                                                        <span class="mandatory">*</span>
-                                                    </label>
-                                                    <select class="form-control ">
-                                                        <option> Select</option>
-                                                        <option> Co-Applicant</option>
-                                                        <option>Guarantor </option>
-                                                    </select>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="text-right mt-3">
-                                                            <button type="button" id="btnAddMore" class="btn btn-primary">
-
-                                                                Submit
-                                                            </button>
-                                                        </div>
-                                                    </div>						
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>					
+				
                             </div>	
                         </div>	
                         @php ($j++)
@@ -988,13 +956,17 @@
                 $(this).val(0);
                 $("#isShareCheck"+count).val(0);
                 $("#shareCheck"+count).text('');
-                $("#shareCheck"+count).text('This field is required.');
+              
                 return true;
         }
         else
         {
                 $(this).val(1);
                 $("#isShareCheck"+count).val(1);
+                if($("#share_per"+count).val()=='')
+                {
+                  $("#shareCheck"+count).text('This field is required.');
+                 }
                  return true;
         }
         });
