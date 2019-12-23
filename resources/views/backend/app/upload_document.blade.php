@@ -10,29 +10,11 @@
         <div class="modal-body text-left">
 
             <div id="is_required_addl_info">
-            <div class="form-group">
-                <label for="email">Select Bank Name</label>
-                <select class="form-control" name="file_bank_id">
-                    <option disabled value="" selected>Select Bank Name</option>
-                    @foreach($bankdata as $bank)
-                        <option value="{{$bank['id']}}">{{$bank['bank_name']}}</option>
-                     @endforeach
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="email">Select Financial  Year</label>
-                <select class="form-control" name="finc_year">
-                   <option value=''>Select Year</option>
-                   @for($i=-10;$i<=0;$i++)
-                        <option>{{date('Y')+$i}}</option>
-                   @endfor;
-                </select>
-             </div>
-            <div class="row">
+              <div class="row" id="bank_dates">
                 <div class="col-6">
                    <div class="form-group">
-                      <label for="email">Select GST Month</label>
-                      <select class="form-control" name="gst_month">
+                      <label for="email">Select Month</label>
+                      <select class="form-control" name="bank_month">
                          <option selected diabled value=''>Select Month</option>
                          @for($i=1;$i<=12;$i++)
                               <option value="{{$i}}">{{date('F', strtotime("2019-$i-01"))}}</option>
@@ -42,8 +24,8 @@
                 </div>
                 <div class="col-6">
                    <div class="form-group">
-                      <label for="email">Select GST Year</label>
-                      <select class="form-control" name="gst_year">
+                      <label for="email">Select Year</label>
+                      <select class="form-control" name="bank_year">
                          <option value=''>Select Year</option>
                         @for($i=-10;$i<=0;$i++)
                             <option>{{date('Y')+$i}}</option>
@@ -52,6 +34,48 @@
                    </div>
                 </div>
              </div>
+              <div class="form-group">
+                  <label for="email">Select Bank Name</label>
+                  <select class="form-control" name="file_bank_id">
+                      <option disabled value="" selected>Select Bank Name</option>
+                      @foreach($bankdata as $bank)
+                          <option value="{{$bank['id']}}">{{$bank['bank_name']}}</option>
+                       @endforeach
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label for="email">Select Financial  Year</label>
+                  <select class="form-control" name="finc_year">
+                     <option value=''>Select Year</option>
+                     @for($i=-10;$i<=0;$i++)
+                          <option>{{date('Y')+$i}}</option>
+                     @endfor;
+                  </select>
+               </div>
+              <div class="row">
+                  <div class="col-6">
+                     <div class="form-group">
+                        <label for="email">Select GST Month</label>
+                        <select class="form-control" name="gst_month">
+                           <option selected diabled value=''>Select Month</option>
+                           @for($i=1;$i<=12;$i++)
+                                <option value="{{$i}}">{{date('F', strtotime("2019-$i-01"))}}</option>
+                           @endfor
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-6">
+                     <div class="form-group">
+                        <label for="email">Select GST Year</label>
+                        <select class="form-control" name="gst_year">
+                           <option value=''>Select Year</option>
+                          @for($i=-10;$i<=0;$i++)
+                              <option>{{date('Y')+$i}}</option>
+                         @endfor;
+                        </select>
+                     </div>
+                  </div>
+               </div>
             </div>
 
             <div class="custom-file upload-btn-cls mb-3 mt-2">
@@ -125,9 +149,11 @@
         if (docId != 6 && $('input[name="is_pwd_protected"]').is(':checked') && $('input[name="is_pwd_protected"]:checked').val() == '1') {
             $('#password_file_div').show();
         }
+        $('#bank_dates').hide();
         
         if(docId == 4) {
             $('select[name=file_bank_id]').parent('div').show();
+            $('#bank_dates').show();
         } else if (docId == 5) {
             $('select[name=finc_year]').parent('div').show();
         } else if (docId == 6) {    
@@ -140,6 +166,7 @@
         } else {            
             $('#is_not_for_gst').hide();
             $('#is_required_addl_info').hide();       
+            $('#bank_dates').hide();       
         }
         
     });
