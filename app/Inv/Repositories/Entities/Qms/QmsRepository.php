@@ -7,6 +7,7 @@ use Session;
 use App\Inv\Repositories\Contracts\QmsInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
+use App\Inv\Repositories\Models\Qms;
 
 
 /**
@@ -65,5 +66,14 @@ class QmsRepository extends BaseRepositories implements QmsInterface {
 
 
 
+    public function saveQuery($attr, $id = null)
+    {
+        return Qms::saveQuery($attr, $id);
+    }
 
+
+    public function showQueryList($id = null)
+    {
+        return Qms::showQueryList($id);
+    }
 }

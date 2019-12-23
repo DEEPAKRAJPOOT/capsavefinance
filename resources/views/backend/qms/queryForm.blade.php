@@ -3,9 +3,10 @@
 @section('content')
 {{ 
     Form::open([
-    'url'=>route('save_pd_notes'),
+    'url'=>route('save_query_management'),
     'autocomplete'=>'off',
-    'name' => 'pdNotesForm',
+    'name' => 'queryManagementForm',
+    'enctype' => 'multipart/form-data',
         ]) 
 }}
 
@@ -13,25 +14,28 @@
     <div class="col-md-12">
         <div class="form-group" style="">
             <label for="email">Assign To Role</label>
-            <select class="form-control" name="file_bank_id">
+            <select class="form-control" name="assignRoleId" >
                  <option disabled="" value="" selected="">Select Name</option>
-                 <option value="1">ADCB</option>
-                 <option value="386">Yes Bank</option>
-                 <option value="387">Yeshwant Urban Co-Op Bank Ltd.</option>
-                 <option value="388">Zoroastrian Bank</option>
+
+                 @foreach($arrRole as $key=>$arr)
+                    <option {{old('assignRoleId') == $key ? 'selected' : ''}} value="{{$key}}">{{$arr}}</option>
+                 @endforeach
+                
             </select>
+            {!! $errors->first('assignRoleId', '<span class="error">:message</span>') !!}
         </div>
-       <div class="custom-file upload-btn-cls mb-3 mt-2">
-            <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]" multiple="">
-            <label class="custom-file-label" for="customFile">Choose file</label>
-        </div>
+
         <div class="form-group">
             <label class="">Comment : </label> 
-            {!!Form::textarea('comments', '', [ 'class'=>'form-control summernote', 'row'=>'3']) !!}
-            <textarea class="form-control summernote"  name="qms_cmnt" rows="3"></textarea>
-            {!! $errors->first('comments', '<span class="error">:message</span>') !!}
+            <textarea class="form-control summernote"  name="qms_cmnt" rows="3">{{old('qms_cmnt')}}</textarea>
+            {!! $errors->first('qms_cmnt', '<span class="error">:message</span>') !!}
         </div> 
 
+        <div class="custom-file upload-btn-cls mb-3 mt-2">
+            <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]" multiple="">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+            {!! $errors->first('doc_file', '<span class="error">:message</span>') !!}
+        </div>
 
         <button type="submit" class="btn btn-primary float-right">Submit</button>
     </div>
@@ -44,7 +48,7 @@
 @section('jscript')
 @php 
 $operation_status = session()->get('operation_status', false);
-$messages = trans('success_messages.pd_notes_saved')
+$messages = trans('success_messages.query_management_saved')
 @endphp
 @if( $operation_status == config('common.YES'))
     
@@ -72,23 +76,39 @@ $messages = trans('success_messages.pd_notes_saved')
         $(".note-popover").hide();
     });
 
-    // $(function() {
-    //   $("form[name='pdNotesForm']").validate({
-    //     rules: {
-    //       type: "required",
-    //       title: "required",
-    //       comments: "required",
-    //     },
-    //     messages: {
-    //       type: "Type is required",
-    //       title: "Title is required",
-    //       comments: "Comment is required",
-    //      },
-    //     submitHandler: function(form) {
-    //       form.submit();
-    //     }
-    //   });
-    // });
+    $(function() {
+      $("form[name='queryManagementForm']").validate({
+        rules: {
+          'assignRoleId' : {
+                    required : true,
+                },
+          'qms_cmnt' : {
+                    required : true,
+                },
+          'doc_file[]': {
+                    required: true,
+                    extension: "jpg,png,pdf,doc,dox,xls,xlsx",
+                    filesize : 200000000,
+                },
+        },
+        messages: {
+         'assignRoleId': {
+                    required: "Please select role.",
+                },
+        'qms_cmnt': {
+                    required: "Please enter query.",
+                },
+          'doc_file[]': {
+                    required: "Please select file",
+                    extension:"Please select jpg,png,pdf,doc,dox,xls,xlsx type format only.",
+                    filesize:"maximum size for upload 20 MB.",
+                },
+         },
+        submitHandler: function(form) {
+          form.submit();
+        }
+      });
+    });
     
 </script>
 

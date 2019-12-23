@@ -326,7 +326,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\QmsController@showQueryForm'
             ]);
 
-       
+            
+            Route::post('save-query-management', [
+                'as' => 'save_query_management',
+                'uses' => 'Backend\QmsController@saveQueryManagement'
+            ]);
+
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 

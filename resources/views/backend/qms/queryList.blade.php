@@ -21,17 +21,19 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <th class="text-left">Title</th>
-                                                    <th class="text-left">Note Details</th>
-                                                    <th class="text-left">Type</th>
+                                                    <th class="text-left">Assign To</th>
+                                                    <th class="text-left">Query Details</th>
                                                     <th class="text-right">Added By</th>   
+                                                    <th class="text-right">Action</th>   
                                                 </tr> 
                                                 @foreach($arrData as $data)
                                                 <tr>
-                                                    <td class="text-left">{{ $data->title }}</td>
-                                                    <td class="text-left">{!! $data->comments !!}</td>
-                                                    <td class="text-left">@if($data->type==1) physical @elseif($data->type==2) Tele  @endif</td>
-                                                    <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>                                                                        
+                                                    <td class="text-left">{{ $arrRole[$data->assign_role_id] }}</td>
+                                                    <td class="text-left">{!! $data->qms_cmnt !!}</td>
+                                                    <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>      <td>
+                                                        <a data-toggle="modal" data-target="#queryFrame" data-url ="{{route('query_management_from',['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right"><i class="fa fa-plus">&nbsp;</i>Add Query</a>
+                                                    </td>                                                                 
+                                                   <!--  <td class="text-right">View Attachment</td>   -->                                                                      
                                                 </tr>
                                                 @endforeach
                                             </tbody>
