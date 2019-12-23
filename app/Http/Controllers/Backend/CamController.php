@@ -134,6 +134,28 @@ class CamController extends Controller
         }
     }
 
+    private function getRangeFromdates(array $array=[]){
+       if (empty($array)) {
+         return array(
+          'from' => date('Y-m-01', strtotime('-6 months', strtotime(date('Y-m-01')))),
+          'to' => date("Y-m-d", strtotime('Last day of Last month')),
+         ); 
+       }
+       $temp=[];
+       foreach ($array as $key => $value) {
+        $no = preg_replace('#[^0-9]+#', '', $value);
+        $temp[] = strlen($no) >= 8 ? substr($no, 0, 8) : substr($no, 0, 6).'01';
+       }
+       $x = str_split(min($temp), 2);
+       $y = str_split(max($temp), 2);
+       $min_date = $x[0].$x[1].'-'.$x[2].'-'.$x[3];
+       $max_date = $y[0].$y[1].'-'.$y[2].'-'.$y[3];
+      return array(
+        'from' => $min_date,
+        'to' => $max_date,
+       );
+    }
+
     public function finance(Request $request, FinanceModel $fin){
     	  $appId = $request->get('app_id');
         $pending_rec = $fin->getPendingFinanceStatement($appId);
@@ -290,6 +312,7 @@ class CamController extends Controller
     	$fin = new FinanceModel();
         $financedocs = $fin->getFinanceStatements($appId);
         $files = [];
+        $dates = [];
         foreach ($financedocs as $doc) {
           $files[] = array(
             'app_id' => $doc->app_id,
@@ -299,7 +322,11 @@ class CamController extends Controller
             'is_scanned' => $doc->is_scanned == 1 ? 'true' : 'false',
             'file_password' => $doc->pwd_txt ?? NULL,
           );
+           if (!empty($doc->gst_year) && !empty($doc->gst_month)) {
+              $dates[] = $doc->gst_year .'-'.sprintf('%02d',$doc->gst_month);
+           }
         }
+        $files[] = $dates;
         return $files;
     }
 
@@ -307,6 +334,7 @@ class CamController extends Controller
         $fin = new FinanceModel();
         $bankdocs = $fin->getBankStatements($appId);
         $files = [];
+        $dates = [];
         foreach ($bankdocs as $doc) {
            $files[] = array(
             'app_id' => $doc->app_id,
@@ -316,13 +344,19 @@ class CamController extends Controller
             'is_scanned' => $doc->is_scanned == 1 ? 'true' : 'false',
             'file_password' => $doc->pwd_txt ?? NULL,
           );
+           if (!empty($doc->gst_year) && !empty($doc->gst_month)) {
+              $dates[] = $doc->gst_year .'-'. sprintf('%02d',$doc->gst_month);
+           }
         }
+        $files[] = $dates;
         return $files;
     }
 
     private function _callBankApi($filespath, $appId){
-    	$user = FinanceModel::getUserByAPP($appId);
-    	$loanAmount = (int)$user['loan_amt'];
+    	  $user = FinanceModel::getUserByAPP($appId);
+    	  $loanAmount = (int)$user['loan_amt'];
+        $dates = array_pop($filespath);
+        $ranges = $this->getRangeFromdates($dates);
         $bsa = new Bsa_lib();
         $reportType = 'json';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
@@ -334,6 +368,8 @@ class CamController extends Controller
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
             'acceptancePolicy' => 'atLeastOneTransactionInRange',
+            'yearMonthFrom' => date('Y-m',strtotime($ranges['from'])),
+            'yearMonthTo' => date('Y-m',strtotime($ranges['to'])),
             'transactionCompleteCallbackUrl' => route('api_perfios_bsa_callback'),
          );
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
@@ -432,8 +468,9 @@ class CamController extends Controller
     }
 
     public function _callFinanceApi($filespath, $appId) {
-    	$user = FinanceModel::getUserByAPP($appId);
-    	$loanAmount = (int)$user['loan_amt'];
+    	  $user = FinanceModel::getUserByAPP($appId);
+    	  $loanAmount = (int)$user['loan_amt'];
+        $dates = array_pop($filespath);
         $perfios = new Perfios_lib();
         $reportType = 'json';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
