@@ -589,4 +589,18 @@ class User extends Authenticatable
     public function agency(){
         return $this->hasOne('App\Inv\Repositories\Models\Agency', 'agency_id', 'agency_id');
     }
+
+    /**
+     * Get Backend Users
+     * 
+     * @return type
+     */
+    public static function getBackendUsers(){
+        $result = self::select('*')
+                ->from('users')
+                ->where('user_type', '2')
+                ->where('is_active', '1')
+                ->get();
+        return ($result ? $result : []);
+    }    
 }

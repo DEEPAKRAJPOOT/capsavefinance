@@ -98,13 +98,26 @@
                 </label>
                 {!!
                 Form::select('role_id',
-                [''=>'Select Role']+Helpers::getAllRole()->toArray(),
+                [''=>'Select Role']+$rolesList,
                 null,
                 array('id' => 'role',
                 'class'=>'form-control'))
                 !!}
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="txtMobile">Reporting Manager                    
+                </label>
+                {!!
+                Form::select('parent_id',
+                [''=>'Select Reporting Manager'],
+                null,
+                array('id' => 'parent_user_id',
+                'class'=>'form-control'))
+                !!}
+            </div>
+        </div>        
     </div>
 
 
@@ -128,7 +141,7 @@ var messages = {
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     is_accept: "{{ Session::get('is_accept') }}",
-
+    get_backend_users_url : "{{ route('ajax_get_backend_user_list') }}"
 };
 </script>
 <script type="text/javascript">
@@ -180,6 +193,31 @@ var messages = {
         parent.oTables1.draw();
        //window.parent.location.href = messages.paypal_gatway;
     }
+    
+        $(document).on('change', '#role', function(){            
+            $.ajax({
+                url  : messages.get_backend_users_url,
+                type :'POST',
+                data : {role_id : $(this).val(), _token : messages.token},
+                beforeSend: function() {
+                    //$(".isloader").show();
+                },
+                dataType : 'json',
+                success:function(result) {
+                    var optionList = result;
+                    $("#parent_user_id").empty().append('<option>Select Reporting Manager</option>');
+                    $.each(optionList, function (index, data) {
+                        $("#parent_user_id").append('<option  value="' + data.user_id + '"  >' + data.f_name + '' + data.l_name+  '</option>');
+                    }); 
+                },
+                error:function(error) {
+                },
+                complete: function() {
+                    //$(".isloader").hide();
+                },
+            })        
+        })
+        
     });
 
 </script>

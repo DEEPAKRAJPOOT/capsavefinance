@@ -2767,4 +2767,15 @@ if ($err) {
      $agencyUsers = $dataProvider->getAgencyUserLists($this->request, $agencyUserList);
      return $agencyUsers;
     }
+    
+    /**
+     * Get Backend User List By Role Id
+     * 
+     */
+    public function getBackendUserList(Request $request)
+    {
+        $roleId = $request->get('role_id');
+        $backendUserList = $this->userRepo->getBackendUsersByRoleId($roleId);
+        return \Response()->json($backendUserList);
+    }
 }

@@ -168,4 +168,20 @@ class RoleUser extends BaseModel
                 return $arr;
     }
     
+     /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function getBackendUsersByRoleId($role_id)
+    {
+         $arr = self::select('users.*')
+                 ->join('users', 'role_user.user_id', '=', 'users.user_id')
+                 ->where('role_user.role_id',$role_id)
+                 ->where('users.is_active', 1)
+                 ->get();
+                return $arr;
+    }    
 }

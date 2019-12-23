@@ -615,8 +615,8 @@ class Helper extends PaypalHelper
      *      * 
      * @param integer $user_id | default
      */
-    public static function getAllRole() {
-        $data = Role::getAllRole();
+    public static function getAllRole() {        
+        $data = Role::getAllRole();        
                 return $data;
                 
     }
@@ -722,5 +722,16 @@ class Helper extends PaypalHelper
         }
         return $isViewOnly ? 1 : 0;
     }
+    
+    /**
+     * Get Roles By role_type
+     *      
+     * @param integer $role_type
+     */
+    public static function getRolesByType($role_type) 
+    {        
+        $data = Role::getRolesByType($role_type);        
+        return $data;                
+    }    
     
 }

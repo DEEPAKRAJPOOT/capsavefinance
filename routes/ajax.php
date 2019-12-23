@@ -338,4 +338,11 @@ Route::group(
     );
     /*agency route*/
 
+    Route::post(
+        'get-backend-user-list',
+        [
+        'as' => 'ajax_get_backend_user_list',
+        'uses' => 'AjaxController@getBackendUserList'
+        ]
+    );    
 });

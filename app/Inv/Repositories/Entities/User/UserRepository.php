@@ -1329,5 +1329,35 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getAgencyUserLists(){
         $result = UserModel::orderBy('user_id', 'DESC')->where('agency_id','<>', null);
         return $result ?: false;
-    }   
+    }
+    
+    /**
+     * Get Backend Users
+     * 
+     * @return type
+     */
+    public function getBackendUsers(){
+        return UserModel::getBackendUsers();
+    }
+    
+    /**
+     * Get Backend Users By Role Id
+     * 
+     * @param integer $role_id
+     * @return array
+     */
+    public function getBackendUsersByRoleId($role_id)
+    {
+        return RoleUser::getBackendUsersByRoleId($role_id);
+    }
+    
+    /**
+     * Get Roles By role_type
+     *      
+     * @param integer $role_type
+     */
+    public function getRolesByType($role_type) 
+    { 
+        return Role::getRolesByType($role_type);
+    }    
 }

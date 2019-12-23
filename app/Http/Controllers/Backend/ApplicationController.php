@@ -398,14 +398,9 @@ class ApplicationController extends Controller
                 //Add/Update application workflow stages    
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 $wf_status = $response->count() < 1 ? 1 : 2;
+                                
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
-                $currentStage = Helpers::getCurrentWfStage($appId);            
-                $curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
-                if ($curr_wf_stage_code == 'doc_upload') {
-                    Helpers::updateWfStage('doc_upload', $appId, $wf_status);
-                } else if($curr_wf_stage_code == 'upload_exe_doc') {
-                    Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status);
-                }
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
