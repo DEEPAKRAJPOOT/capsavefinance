@@ -410,7 +410,7 @@ class ApplicationController extends Controller
                 return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status=2);
             
                 return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             }

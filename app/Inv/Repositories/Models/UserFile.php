@@ -108,7 +108,7 @@ class UserFile extends BaseModel
             $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
             $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
             $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getClientSize();
-            $inputArr[$i]['file_encp_key'] =  md5('2');
+            $inputArr[$i]['file_encp_key'] = !empty($path) ? md5(basename($path)) : md5('2');
             $inputArr[$i]['created_by'] = 1;
             $inputArr[$i]['updated_by'] = 1;
         }

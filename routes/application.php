@@ -104,6 +104,13 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'as' => 'document',
                 'uses' => 'Application\ApplicationController@showDocument'
             ]);
+
+
+            Route::get('documents/upload-document', [
+                'as' => 'front_show_upload_document',
+                'uses' => 'Application\ApplicationController@uploadDocument'
+            ]);
+            
             
             Route::post('document-save',
                 [

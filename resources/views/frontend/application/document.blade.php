@@ -75,7 +75,7 @@
                             </div>
                             <div class="action-btn">
                                 <div class="upload-btn-wrapper setupload-btn pos">
-                                    <button class="btn" data-toggle="modal" data-target="#myModal{{ $data->app_doc_id }}">Upload</button>
+                                    <button class="btn upload-btn openModal"  data-id="{{ $data->doc_id }}">Upload</button>
                                     <!--<input type="file" name="myfile">-->
                                 </div>
 
@@ -115,23 +115,6 @@
                                                 <a title="Delete Document" href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
                                             </td>
                                         </tr>
-                                        <div class="modal" id="confirm">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                        <h4 class="modal-title">Delete Confirmation</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Are you sure you, want to delete?</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-sm btn-primary" id="delete-btn">Delete</button>
-                                                        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -139,114 +122,6 @@
                             </div>
                         </div>
 
-                        <!--modal-->
-                        <div class="modal" id="myModal{{ $data->app_doc_id }}">
-                            <div class="modal-dialog">
-                                <div class="modal-content pb-3">
-                                    <!-- Modal Header -->
-                                    <div class="modal-header">
-                                        <button type="button" class="close close-btns" data-dismiss="modal">&times;</button>
-                                    </div>
-                                    <form id="bank-document" method="POST" action="{{ Route('document-save') }}" enctype="multipart/form-data">
-                                        <!-- Modal body -->
-                                        @csrf
-                                        <input type="hidden" name="dir" value="{{ $data->document->doc_name }}">
-                                        <input type="hidden" name="docId" value="{{ $data->doc_id }}">
-                                        <input type="hidden" name="bizId" value="{{ request()->get('biz_id') }}">
-                                        <input type="hidden" name="appId" value="{{ request()->get('app_id') }}">
-                                        <div class="modal-body text-left">
-                                            @if($data->doc_id == '4')
-                                            <div class="form-group">
-                                                <label for="email">Select Bank Name</label>
-                                                <select class="form-control" name="file_bank_id">
-                                                    <option>Select Bank Name</option>
-                                                   @foreach($bankdata as $bank)
-                                                        <option value="{{$bank['id']}}">{{$bank['bank_name']}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            @endif
-                                            @if($data->doc_id == '5')
-                                            <div class="form-group">
-                                                <label for="email">Select Financial  Year</label>
-                                                <select class="form-control" name="finc_year">
-                                                   <option value=''>Select Year</option>
-                                                   @for($i=-10;$i<=0;$i++)
-                                                        <option>{{date('Y')+$i}}</option>
-                                                   @endfor;
-                                                </select>
-                                             </div>
-                                            @endif
-                                            @if($data->doc_id == '6')
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                   <div class="form-group">
-                                                      <label for="email">Select GST Month</label>
-                                                      <select class="form-control" name="gst_month">
-                                                         <option selected value=''>Select Month</option>
-                                                          @for($i=1;$i<=12;$i++)
-                                                              <option value="{{$i}}">{{date('F', strtotime("2019-$i-01"))}}</option>
-                                                          @endfor
-                                                      </select>
-                                                   </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                   <div class="form-group">
-                                                      <label for="email">Select GST Year</label>
-                                                      <select class="form-control" name="gst_year">
-                                                         <option value=''>Select Year</option>
-                                                         @for($i=-10;$i<=0;$i++)
-                                                              <option>{{date('Y')+$i}}</option>
-                                                         @endfor;
-                                                      </select>
-                                                   </div>
-                                                </div>
-                                             </div>
-                                            @endif
-                                            <div class="custom-file upload-btn-cls mb-3 mt-2">
-                                                <label for="email">Upload Document</label>
-                                                <input type="file" class="custom-file-input" id="customFile{{$data->doc_id}}" name="doc_file[]" multiple="" required>
-                                                <label class="custom-file-label" for="customFile{{$data->doc_id}}">Choose file</label>
-                                                <span class="fileUpload"></span>
-                                            </div>
-                                            <div class="row" id="is_not_for_gst">
-                                              <div class="col-md-6">
-                                                 <label>Is Password Protected</label>
-                                                 <div class="form-group">
-                                                    <label for="is_password_y">
-                                                      <input type="radio" name="is_pwd_protected" id="is_password_y" value="1"> Yes
-                                                    </label>
-                                                    <label for="is_password_n">
-                                                      <input type="radio" name="is_pwd_protected" id="is_password_n" checked value="0"> No
-                                                    </label>
-                                                 </div>
-                                              </div>
-                                              <div class="col-md-6">
-                                                 <label>Is Scanned</label>
-                                                 <div class="form-group">
-                                                    <label for="is_scanned_y">
-                                                      <input type="radio" name="is_scanned" id="is_scanned_y" value="1"> Yes
-                                                    </label>
-                                                    <label for="is_scanned_n">
-                                                      <input type="radio" name="is_scanned" id="is_scanned_n" value="0" checked> No
-                                                    </label>
-                                                 </div>
-                                              </div>
-                                            </div>
-                                            <div class="row" style="display: none" id="password_file_div">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="pwd_txt">Enter File Password</label>
-                                                        <input type="password" placeholder="Enter File Password" class="form-control" name="pwd_txt" id="pwd_txt">
-                                                     </div>
-                                                </div>
-                                            </div>
-                                            <button type="submit" class="btn btn-success float-right btn-sm">Submit</button>  
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                         @endforeach
 
                         <div class="d-flex btn-section ">
@@ -263,18 +138,33 @@
 
                     </div>
                     @endif
-                </div>
-            </div>
+                     <a data-toggle="modal" data-target="#uploadDocument" data-url ="{{route('front_show_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
+                    <input type="hidden" name="uploadDocId" id="uploadDocId" value="" >
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
+</div>
+</div>
+
+{!!Helpers::makeIframePopup('uploadDocument','Upload Document', 'modal-md')!!}
+    
 @endsection
 
 @section('scripts')
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script src="{{ url('frontend/js/document.js?v=1') }}"></script>
+<script>
+    var messages = {
+        
+    };
+    
+    $('.openModal').on('click', function(){
+        $('#uploadDocId').val($(this).attr('data-id'));
+        $('#openUploadDocument').trigger('click');
+    });
+</script> 
 <script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
