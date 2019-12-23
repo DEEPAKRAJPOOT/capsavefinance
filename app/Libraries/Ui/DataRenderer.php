@@ -277,7 +277,7 @@ class DataRenderer implements DataProviderInterface
                     function ($app) use ($request) {
                         $act = '';
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
-                        if ($view_only) {
+                        if ($view_only && $app->status == 1) {
                             if(Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                             }
