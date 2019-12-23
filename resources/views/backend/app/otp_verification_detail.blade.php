@@ -19,6 +19,7 @@ td, th{padding: 5px;}
              <table width="100%" border="0">
                  <tbody>
                     <tr>
+                       
                         <td width="50%">Address </td>
                         <td width="50%"><strong>{{$response['contact']['address']}}</strong></td>
                     </tr>
@@ -50,7 +51,8 @@ td, th{padding: 5px;}
                         <td width="50%">Model</td>
                         <td width="50%"><strong>{{$response['device']['model']}}</strong></td>
                     </tr>
-                    
+                @if($response['history']!=null)
+               
                 @foreach($response['history'] as $history)
                 
                      <tr>
@@ -67,6 +69,7 @@ td, th{padding: 5px;}
                     </tr>
                
                    @endforeach 
+                    @endif 
                     <tr>
                         <td width="50%">Date of birth</td>
                         <td width="50%"><strong>{{$response['identity']['date_of_birth']}}</strong></td>

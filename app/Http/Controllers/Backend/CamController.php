@@ -174,7 +174,7 @@ class CamController extends Controller
         $customers_info = [];
         if (!empty($contents)) {
           foreach ($contents['statementdetails'] as $key => $value) {
-            $account_no = $contents['accountXns'][$key]['accountNo'];
+            $account_no = $contents['accountXns'][0]['accountNo'];
             $customer_data = $value['customerInfo'];
             $customers_info[] = array(
               'name' => $customer_data['name'],
@@ -330,7 +330,7 @@ class CamController extends Controller
         $req_arr = array(
             'txnId' => $prolitus_txn, //'bharatSTmt',
             'loanAmount' => $loanAmount,
-            'loanDuration' => '6',
+            'loanDuration' => '12',
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
             'acceptancePolicy' => 'atLeastOneTransactionInRange',
