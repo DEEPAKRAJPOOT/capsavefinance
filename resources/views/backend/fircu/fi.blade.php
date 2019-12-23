@@ -49,7 +49,7 @@
                                         </td>
                                         <td>
                                             <div class="btn-group ml-2 mb-1">
-                                                @if($fiList->fiAddress->count() && request()->get('view_only'))
+                                                @if($fiList->fiAddress->count() && request()->get('view_only') && Auth::user()->agency_id == null)
                                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
@@ -77,6 +77,7 @@
                                                     <td width="15%"><b>Action</b></td>
                                                  </tr>
                                                  @forelse($fiList->fiAddress as $fiAdd)
+                                                 @if(Auth::user()->agency_id == null || $fiAdd->agency_id == Auth::user()->agency_id)
                                                  <tr>
                                                     <td width="20%">{{$fiAdd->agency->comp_name}}</td>
                                                     <td width="20%">{{ucwords($fiAdd->user->f_name.' '.$fiAdd->user->l_name)}}</td>
@@ -109,6 +110,7 @@
 
                                                     </td>
                                                  </tr>
+                                                 @endif
                                                  @empty
                                                  <tr style="text-align: center;">
                                                     <td width="100%" colspan="5">No data found</td>
