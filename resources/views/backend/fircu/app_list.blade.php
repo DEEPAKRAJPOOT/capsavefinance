@@ -68,17 +68,16 @@
                                     <table id="appList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                                <th>{{ trans('backend.app_list_head.app_id') }}</th>
-                                                <th>{{ trans('backend.app_list_head.biz_name') }}</th>
-                                                <th>{{ trans('backend.app_list_head.name') }}</th>
-                                                <th>{{ trans('backend.app_list_head.email') }}</th>
-                                                <th>{{ trans('backend.app_list_head.mobile_no') }}</th>
-                                                <th>{{ trans('backend.app_list_head.anchor') }}</th>
-                                                <th>{{ trans('backend.app_list_head.user_type') }}</th>
-                                                <th>{{ trans('backend.app_list_head.assignee') }}</th>
-                                                <th>{{ trans('backend.app_list_head.assigned_by') }}</th>
-                                                <th>{{ trans('backend.app_list_head.shared_detail') }}</th>
-                                                <th>{{ trans('backend.app_list_head.status') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.app_id') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.business_name') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.user_name') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.user_email') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.user_phone') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.anchor') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.applied_loan_amount') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.created_date') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.status') }}</th>
+                                                <!-- <th>{{ trans('frontend.app_list_head.action') }}</th> -->
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -104,12 +103,11 @@
 <script>
 
     var messages = {
-        get_applications: "{{ URL::route('ajax_fircu_app_list') }}",
+        get_agency_applications: "{{ URL::route('ajax_fircu_app_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
     };
 </script>
-<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/fircu.js') }}" type="text/javascript"></script>
 @endsection

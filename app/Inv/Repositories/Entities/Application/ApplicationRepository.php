@@ -312,6 +312,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /**
+     * Get Agency Applications for Application list data tables for frontend
+     */
+    public function getAgencyApplications() 
+    {
+        return Application::getAgencyApplications();
+    }
+
+    /**
      * function for get all FI lists
      * @return type
      */

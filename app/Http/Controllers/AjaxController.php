@@ -2658,7 +2658,7 @@ if ($err) {
      * @return json user data
      */
     public function getFiRcuAppList(DataProviderInterface $dataProvider) {
-        $appList = $this->application->getApplications();
+        $appList = $this->application->getAgencyApplications();
         $applications = $dataProvider->getFiRcuAppList($this->request, $appList);
         return $applications;
     }
