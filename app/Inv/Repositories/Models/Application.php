@@ -363,7 +363,7 @@ class Application extends BaseModel
 
     protected static function getAgencyApplications() 
     {  
-        $appData = self::distinct()->whereHas('address.activeFiAddress')->select('app.user_id','app.app_id','app.loan_amt', 'users.agency_id', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
+        $appData = self::distinct()->whereHas('address.activeFiAddress')->orWhereHas('rcuDocument')->select('app.user_id','app.app_id','app.loan_amt', 'users.agency_id', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id');
                 //->where('users.agency_id', \Auth::user()->agency_id);
@@ -374,6 +374,10 @@ class Application extends BaseModel
 
     public function address(){
         return $this->hasMany('App\Inv\Repositories\Models\BusinessAddress','biz_id','biz_id');
+    }
+
+    public function rcuDocument(){
+        return $this->hasMany('App\Inv\Repositories\Models\RcuDocument','app_id','app_id')->where(['is_active' => 1, 'agency_id' => \Auth::user()->agency_id]);
     }
 
     /**
