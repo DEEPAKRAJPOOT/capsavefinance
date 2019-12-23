@@ -26,7 +26,7 @@ class QueryManagementRequest extends Request
         return [
             'assignRoleId' => 'required',
             'qms_cmnt' => 'required',
-            'doc_file' => 'required|mimes:txt'
+            'doc_file' => 'required'
         ];
     }
 
