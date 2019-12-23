@@ -286,6 +286,14 @@ Route::group(
         'uses' => 'AjaxController@getSubIndustry'
         ]
     );
+      
+      Route::post(
+        'get-program-list',
+        [
+        'as' => 'get_program_list',
+        'uses' => 'AjaxController@getProgramList'
+        ]
+    );
     
     
     

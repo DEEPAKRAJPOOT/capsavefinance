@@ -518,5 +518,42 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Program::saveProgram($attr);
     }
+    
+    
+    /**
+     * program list by id
+     * 
+     * @param type $id int
+     * @return type mixed
+     */
+    public function getProgramListById($id)
+    {
+        return Program::getProgramListById($id);
+    }
+    
+    
+    /**
+     * get selected program data
+     * 
+     * @param type $attr array
+     * @param type $selected array
+     * @return type mixed
+     */
+    public function getSelectedProgramData($attr, $selected = null)
+    {
+        return Program::getSelectedProgramData($attr, $selected);
+    }
+    
+    
+    /**
+     * get document list 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getDocumentList($where)
+    {
+        return DocumentMaster::getDocumentList($where);
+    }
 
 }

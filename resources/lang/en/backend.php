@@ -20,7 +20,20 @@ return [
         'manage_program' => 'Manage Program',
         'program_list' => 'Program List',
         'home' => 'Home',
-        'add_program' => 'Add Program'
+        'add_program' => 'Add Program',
+        'program_id'=>'Program ID',
+        'anchor_name'=>'Anchor Name',
+        'program_mame'=>'Program Name',
+        'program_type'=>'Program Type',
+        'anchor_limit'=>'Anchor Limit',
+        'anchor_sub_limit'=>'Anchor Sub Limit',
+        'loan_size'=>'Loan Size',
+        'status'=>'Status',
+        'action'=>'Action',
+        'add_sub_program'=>'Add Sub Program',
+        'manage_sub_program'=>'Manage Sub Program',
+        'program_sub_list' => 'Sub Program List',
+        'add_sub_program'=>'Add Sub Program'
     ],
     'add_program' => [
         'add_program' => ' Add Master Program',
@@ -35,8 +48,8 @@ return [
         'enter_anchor_limit'=>'Enter Anchor Limit',
         'anchor_limit'=>'Anchor Limit',
         'fldf_applicable'=>' FLDG Applicable'
-        
     ],
+    
     
     'please_select'=>'Please Select'
 ];

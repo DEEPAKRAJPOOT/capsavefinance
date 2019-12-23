@@ -9,12 +9,12 @@
         </div>
         <div class="header-title">
             <h3>
-                {{ trans('backend.mange_program.manage_program') }} </h3>
-            <small>{{ trans('backend.mange_program.program_list') }}</small>
+                {{ trans('backend.mange_program.manage_sub_program') }} </h3>
+            <small>{{ trans('backend.mange_program.program_sub_list') }}</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;">  {{ trans('backend.mange_program.home') }} </li>
                 <li style="color:#374767;"> {{ trans('backend.mange_program.manage_program') }}</li>
-                <li class="active"> {{ trans('backend.mange_program.program_list') }}</li>
+                <li class="active"> {{ trans('backend.mange_program.program_sub_list') }}</li>
             </ol>
         </div>
     </section>
@@ -27,12 +27,12 @@
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
                             @can('add_program')
-                            <a href="{{route('add_program',['anchor_id'=>$anchor_id])}}" >
+                            <a href="{{route('add_sub_program',['anchor_id'=>$anchor_id ,'program_id'=>$program_id])}}" >
                                 <button class="btn  btn-success btn-sm" type="button">
                                     <span class="btn-label">
                                         <i class="fa fa-plus"></i>
                                     </span>
-                                   {{ trans('backend.mange_program.add_program') }}
+                                    {{ trans('backend.mange_program.add_sub_program') }}
                                 </button>
 
                             </a>
@@ -44,16 +44,19 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">
-                        <table id="anchUserList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                        <table id="program_list" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>Anchor ID</th>
-                                    <th>Anchor Name</th>
-                                    <th>Business Name</th>
-                                    <th>Email ID</th>
-                                    <th>Mobile</th>
-                                    <th>Created At</th>
-                                    <th>Action</th>
+                                    <th>{{ trans('backend.mange_program.program_id') }}</th>
+                                    <th>{{ trans('backend.mange_program.anchor_name') }}</th>
+                                    <th>{{ trans('backend.mange_program.program_mame') }}</th>
+                                    <th>{{ trans('backend.mange_program.program_type') }}</th>
+                                    <th>{{ trans('backend.mange_program.anchor_limit') }}</th>
+                                    <th>{{ trans('backend.mange_program.anchor_sub_limit') }}</th>
+                                    <th>{{ trans('backend.mange_program.loan_size') }}</th>
+                                    <th>{{ trans('backend.mange_program.status') }}</th>
+                                    <th>{{ trans('backend.mange_program.action') }}</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -73,21 +76,21 @@
 </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor', 'modal-md')!!}
-{!!Helpers::makeIframePopup('editAnchorFrm','Edit Anchor Detail', 'modal-md')!!}
+
 @endsection
 
 @section('jscript')
 <script>
 
     var messages = {
-        get_anch_user_list: "{{ URL::route('get_anch_user_list') }}",
+        get_program_list: "{{ URL::route('get_program_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
+        anchor_id: "{{ isset($anchor_id) ? $anchor_id : null }}"
 
     };
 </script>
 
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/lms/program.js') }}" type="text/javascript"></script>
 @endsection

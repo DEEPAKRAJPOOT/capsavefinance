@@ -26,7 +26,7 @@ class ProgramRequest extends FormRequest {
         return [
             'anchor_user_id' => 'required',
             'prgm_name' => "required",
-            'prgm_detail' => 'required',
+            'prgm_type' => 'required',
             'industry_id' => "required",
             'sub_industry_id' => "required",
             'anchor_limit' => "required|Numeric",
@@ -38,7 +38,7 @@ class ProgramRequest extends FormRequest {
     {
         $messages['anchor_user_id.required'] = trans('error_messages.required', ['field' => 'Anchor Name']);
         $messages['prgm_name.required'] = trans('error_messages.required', ['field' => 'Program Name']);
-        $messages['prgm_detail.required'] = trans('error_messages.required', ['field' => 'Program Detail']);
+        $messages['prgm_type.required'] = trans('error_messages.required', ['field' => 'Program Detail']);
         $messages['industry_id.required'] = trans('error_messages.required', ['field' => 'Industry']);
         $messages['sub_industry_id.required'] = trans('error_messages.required', ['field' => 'Sub Industry']);
         $messages['anchor_limit.required'] = trans('error_messages.required', ['field' => 'Anchor Limit']);

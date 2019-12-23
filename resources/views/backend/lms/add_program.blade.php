@@ -57,7 +57,7 @@
                                     <div class="block-div clearfix mb-3 mt-3">
                                        <div class="form-check-inline float-left">
                                           <label class="form-check-label fnt">
-                                          {!! Form::radio('prgm_detail','1','', ['class'=>'form-check-input'])   !!}
+                                          {!! Form::radio('prgm_type','1','', ['class'=>'form-check-input'])   !!}
                                           <strong>
                                           {{ trans('backend.add_program.vendor_finance') }}   
                                           </strong>
@@ -65,7 +65,7 @@
                                        </div>
                                        <div class="form-check-inline float-left">
                                           <label class="form-check-label fnt">
-                                          {!! Form::radio('prgm_detail','2','', ['class'=>'form-check-input'])!!}<strong>
+                                          {!! Form::radio('prgm_type','2','', ['class'=>'form-check-input'])!!}<strong>
                                           {{ trans('backend.add_program.channel_finance') }}    
                                           </strong>
                                           </label>

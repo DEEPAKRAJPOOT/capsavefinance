@@ -415,6 +415,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             'as' => 'save_program',
             'uses' => 'Backend\ProgramController@saveProgram'
            ]);
+            
+            
+            Route::get('add-sub-program', [
+            'as' => 'add_sub_program',
+            'uses' => 'Backend\ProgramController@addSubProgram'
+           ]);
+            
+            Route::get('manage-sub-program', [
+            'as' => 'manage_sub_program',
+            'uses' => 'Backend\ProgramController@mangeSubProgram'
+           ]);
+            
+             Route::post('save-sub-program', [
+            'as' => 'save_sub_program',
+            'uses' => 'Backend\ProgramController@saveSubProgram'
+           ]);
+            
+            
+            
+            
+            
     });
     });
 

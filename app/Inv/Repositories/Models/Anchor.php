@@ -198,6 +198,7 @@ public static function saveAnchor($arrAnchor = [])
      */
     public static function getAnchorDataById($id)
     {
+       
          if (empty($id)) {
             throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }

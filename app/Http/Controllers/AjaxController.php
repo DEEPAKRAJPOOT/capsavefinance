@@ -2746,5 +2746,19 @@ if ($err) {
         $result = $this->application->getSubIndustryByWhere(['industry_id' => $id]);
         return response()->json($result);
     }
+    
+    
+    /**
+     * get program list
+     * 
+     * @param Request $request
+     * @param DataProviderInterface $dataProvider
+     * @return type mixed
+     */
+    public function getProgramList(Request $request, DataProviderInterface $dataProvider)
+    {
+        $anchor_id = (int) $request->get('anchor_id');
+        return $dataProvider->getPromgramList($request, $this->application->getProgramListById($anchor_id));
+    }
 
 }

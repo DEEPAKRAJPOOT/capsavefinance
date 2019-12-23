@@ -9,8 +9,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class DocumentMaster extends BaseModel
-{
+class DocumentMaster extends BaseModel {
 
     /**
      * The database table used by the model.
@@ -25,8 +24,8 @@ class DocumentMaster extends BaseModel
      * @var integer
      */
     protected $primaryKey = 'id';
-    
-     /**
+
+    /**
      * Maintain created_at and updated_at automatically
      *
      * @var boolean
@@ -39,7 +38,7 @@ class DocumentMaster extends BaseModel
      * @var boolean
      */
     public $userstamps = false;
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -50,6 +49,33 @@ class DocumentMaster extends BaseModel
         'is_active',
         'created_by',
         'updated_by'
-     ];
-}
+    ];
 
+    
+    /**
+     * get Document list
+     * 
+     * @param type $where array
+     * @return type Mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getDocumentList($where)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        $res = self::where($where)->pluck('doc_name', 'id');
+        return $res ?: false;
+    }
+
+}

@@ -4,6 +4,8 @@ namespace App\Inv\Repositories\Models;
 
 use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
 class Program extends BaseModel {
     /* The database table used by the model.
@@ -43,7 +45,7 @@ class Program extends BaseModel {
         'anchor_id',
         'anchor_user_id',
         'prgm_name',
-        'prgm_detail',
+        'prgm_type',
         'industry_id',
         'sub_industry_id',
         'cibil_score',
@@ -156,6 +158,56 @@ class Program extends BaseModel {
         $arrAnchorVal = self::create($attr);
 
         return ($arrAnchorVal->prgm_id ?: false);
+    }
+
+    /**
+     * get Program list by id 
+     * 
+     * @param type $id int
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getProgramListById($id)
+    {
+        if (empty($id)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        if (!is_int($id)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+
+        $res = self::select('prgm.*', 'u.f_name')
+                ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
+                ->where(['u.user_type' => 2, 'prgm.anchor_id' => $id]);
+        
+        return ($res ?: false);
+    }
+
+    /**
+     * get program data
+     * 
+     * @param type $where 
+     * @param string $selected
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getSelectedProgramData($where, $selected = null)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+
+        if (empty($selected)) {
+            $selected = '*';
+        }
+        $res = self::select($selected)->where($where)->get();
+        return ($res ?: false);
     }
 
 }

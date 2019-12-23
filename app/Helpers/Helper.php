@@ -683,5 +683,23 @@ class Helper extends PaypalHelper
                 return $data;
                 
     }
+    
+    
+    /**
+     * get program type
+     * 
+     * @param type $type int
+     * @return type mixed
+     */
+    public static function getProgramType($type)
+    {
+        $out = null;
+        switch ($type) {
+            case 1: $out = 'Vendor Finance';  break;               
+            case 2: $out = 'Channel Finance';break;
+            default:$out = null;  break;               
+        }
+        return $out;
+    }
 
 }
