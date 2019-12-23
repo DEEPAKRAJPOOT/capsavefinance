@@ -21,15 +21,15 @@ td, th{padding: 5px;}
                  <tbody>
                     <tr>
                         <td width="50%">Mobile Number is Valid?</td>
-                        <td width="50%"><strong>{{$response['isValid'] ? 'YES' : 'NO'}} </strong></td>
+                        <td width="50%"><strong>{{(isset($response['isValid'])) ? 'YES' : 'NO'}} </strong></td>
                     </tr>
                     <tr>
                         <td width="50%">Connection Type</td>
-                        <td width="50%">{{$response['connectionType']}}</td>
+                        <td width="50%">{{(isset($response['connectionType'])) ? $response['connectionType'] : 'NO' }}</td>
                     </tr>
                     <tr>
                         <td width="50%">Subscriber Status</td>
-                        <td width="50%">{{$response['subscriberStatus']}}</td>
+                        <td width="50%">{{(isset($response['subscriberStatus'])) ? $response['subscriberStatus'] : 'NO'}}}}</td>
                     </tr>
                     <tr>
                         <td width="50%">ID</td>
@@ -37,57 +37,57 @@ td, th{padding: 5px;}
                     </tr>
                     <tr>
                         <td width="50%">Is Ported</td>
-                        <td width="50%">{{$response['isPorted'] ? 'YES' : 'NO'}}</td>
+                        <td width="50%">{{(isset($response['isPorted'])) ? $response['isPorted'] : 'NO'}}</td>
                     </tr>
                     <tr>
                         <td colspan="2"><strong>Connection Status</strong></td>
                     </tr>
                     <tr>
                         <td width="50%">Status Code</td>
-                        <td width="50%">{{$response['connectionStatus']['statusCode'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['connectionStatus']['statusCode'])) ? $response['connectionStatus']['statusCode'] : '--'}}</td>
                     </tr>
                     <tr>
                         <td width="50%">Serving HLR</td>
-                        <td width="50%">{{$response['connectionStatus']['servingHlr'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['connectionStatus']['servingHlr'])) ? $response['connectionStatus']['servingHlr'] : '--'}}</td>
                     </tr>
                     <tr>
                         <td width="50%">Error Code ID</td>
-                        <td width="50%">{{$response['connectionStatus']['errorCodeId'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['connectionStatus']['errorCodeId'])) ? $response['connectionStatus']['errorCodeId'] : '--'}}</td>
                     </tr>
                     <tr>
                         <td colspan="2"><strong>MSISDN Details</strong></td>
                     </tr>
                     <tr>
                         <td width="50%">MSISDN</td>
-                        <td width="50%">{{$response['msisdn']['msisdn'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['msisdn']['msisdn'])) ? $response['msisdn']['msisdn'] : '--'}}</td>
                     </tr>
                     <tr>
                         <td width="50%">MCC</td>
-                        <td width="50%">{{$response['msisdn']['mcc'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['msisdn']['mcc'])) ? $response['msisdn']['mcc'] : '--' }}</td>
                     </tr>
                     <tr>
                         <td width="50%">MCCMNC</td>
-                        <td width="50%">{{$response['msisdn']['mccMnc'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['msisdn']['mccMnc'])) ? $response['msisdn']['mccMnc'] : '--'}}</td>
                     </tr>
                     <tr>
                         <td width="50%">MSIN</td>
-                        <td width="50%">{{$response['msisdn']['msin'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['msisdn']['msin'])) ? $response['msisdn']['msin'] : '--'}}</td>
                     </tr>
                     <tr>
                         <td width="50%">MSISDN Country Code</td>
-                        <td width="50%">{{$response['msisdn']['msisdnCountryCode'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['msisdn']['msisdnCountryCode'])) ? $response['msisdn']['msisdnCountryCode'] : '--' }}</td>
                     </tr>
                     <tr>
                         <td width="50%">Serving MSC</td>
-                        <td width="50%">{{$response['msisdn']['servingMsc'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['msisdn']['servingMsc'])) ? $response['msisdn']['servingMsc'] : '--'}}</td>
                     </tr>
                     <tr>
                         <td width="50%">MNC</td>
-                        <td width="50%">{{$response['msisdn']['mnc'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['msisdn']['mnc'])) ? $response['msisdn']['mnc'] : '--' }}</td>
                     </tr>
                     <tr>
                         <td width="50%">IMSI</td>
-                        <td width="50%">{{$response['msisdn']['imsi'] ?? '--'}}</td>
+                        <td width="50%">{{(isset($response['msisdn']['imsi'])) ? $response['msisdn']['imsi'] : '--' }}</td>
                     </tr>
                     <tr>
                         <td colspan="2" style="">
@@ -101,33 +101,33 @@ td, th{padding: 5px;}
                                 </tr>
                                 <tr>
                                     <td style="padding-left: 0;">Country Name</td>
-                                    <td>{{$response['originalServiceProvider']['countryName'] ?? '--'}}</td>
-                                    <td>{{$response['currentServiceProvider']['countryName'] ?? '--'}}</td>
-                                    <td>{{$response['roamingServiceProvider']['countryName'] ?? '--'}}</td>
+                                    <td>{{(isset($response['originalServiceProvider']['countryName'])) ? $response['originalServiceProvider']['countryName'] : '--'}}</td>
+                                    <td>{{(isset($response['currentServiceProvider']['countryName'])) ? $response['currentServiceProvider']['countryName'] : '--'}}</td>
+                                    <td>{{(isset($response['roamingServiceProvider']['countryName'])) ? $response['roamingServiceProvider']['countryName'] : '--'}}</td>
                                 </tr>
                                 <tr>
                                     <td style="padding-left: 0;">network Prefix</td>
-                                    <td>{{$response['originalServiceProvider']['networkPrefix'] ?? '--'}}</td>
-                                    <td>{{$response['currentServiceProvider']['networkPrefix'] ?? '--'}}</td>
-                                    <td>{{$response['roamingServiceProvider']['networkPrefix'] ?? '--'}}</td>
+                                    <td>{{(isset($response['originalServiceProvider']['networkPrefix'])) ? $response['originalServiceProvider']['networkPrefix'] : '--'}}</td>
+                                    <td>{{(isset($response['currentServiceProvider']['networkPrefix'])) ? $response['currentServiceProvider']['networkPrefix'] : '--'}}</td>
+                                    <td>{{(isset($response['roamingServiceProvider']['networkPrefix'])) ? $response['roamingServiceProvider']['networkPrefix'] : '--'}}</td>
                                 </tr>
                                 <tr>
                                     <td style="padding-left: 0;">Network Name</td>
-                                    <td>{{$response['originalServiceProvider']['networkName'] ?? '--'}}</td>
-                                    <td>{{$response['currentServiceProvider']['networkName'] ?? '--'}}</td>
-                                    <td>{{$response['roamingServiceProvider']['networkName'] ?? '--'}}</td>
+                                    <td>{{(isset($response['originalServiceProvider']['networkName'])) ? $response['originalServiceProvider']['networkName'] : '--'}}</td>
+                                    <td>{{(isset($response['currentServiceProvider']['networkName'])) ? $response['currentServiceProvider']['networkName'] : '--'}}</td>
+                                    <td>{{(isset($response['roamingServiceProvider']['networkName'])) ? $response['roamingServiceProvider']['networkName'] : '--'}}</td>
                                 </tr>
                                 <tr>
                                     <td style="padding-left: 0;">Country Code</td>
-                                    <td>{{$response['originalServiceProvider']['countryCode'] ?? '--'}}</td>
-                                    <td>{{$response['currentServiceProvider']['countryCode'] ?? '--'}}</td>
-                                    <td>{{$response['roamingServiceProvider']['countryCode'] ?? '--'}}</td>
+                                    <td>{{(isset($response['originalServiceProvider']['countryCode'])) ? $response['originalServiceProvider']['countryCode'] : '--'}}</td>
+                                    <td>{{(isset($response['currentServiceProvider']['countryCode'])) ? $response['currentServiceProvider']['countryCode'] : '--'}}</td>
+                                    <td>{{(isset($response['roamingServiceProvider']['countryCode'])) ? $response['roamingServiceProvider']['countryCode'] : '--'}}</td>
                                 </tr>
                                 <tr>
                                     <td style="padding-left: 0;">Country Prefix</td>
-                                    <td>{{$response['originalServiceProvider']['countryPrefix'] ?? '--'}}</td>
-                                    <td>{{$response['currentServiceProvider']['countryPrefix'] ?? '--'}}</td>
-                                    <td>{{$response['roamingServiceProvider']['countryPrefix'] ?? '--'}}</td>
+                                    <td>{{(isset($response['originalServiceProvider']['countryPrefix'])) ? $response['originalServiceProvider']['countryPrefix'] : '--'}}</td>
+                                    <td>{{(isset($response['currentServiceProvider']['countryPrefix'])) ? $response['currentServiceProvider']['countryPrefix'] : '--'}}</td>
+                                    <td>{{(isset($response['roamingServiceProvider']['countryPrefix'])) ? $response['roamingServiceProvider']['countryPrefix'] : '--'}}</td>
                                 </tr>
                              </tbody>
                             </table>
