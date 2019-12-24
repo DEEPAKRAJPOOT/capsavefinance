@@ -537,7 +537,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
         Route::group(['prefix' => 'document'], function () {
             Route::get('/list', [
-                'as' => 'document_list',
+                'as' => 'pp_document_list',
                 'uses' => 'Backend\DocumentController@list'
             ]);
             

@@ -90,6 +90,23 @@ class DocumentRepository implements DocumentInterface
         
         return $result ?: false;
     }
+
+    /**
+     * find application pre and post santioned required documents
+     *
+     * @param mixed $ids
+     */
+    
+    public function findPPRequiredDocs($userId, $appId){
+        
+        $result = AppDocument::where('user_id', $userId)
+                ->where('app_id', $appId)
+                ->with('ppDocument')
+                ->whereHas('ppDocument')
+                ->get();
+        
+        return $result ?: false;
+    }
     
     
     /**

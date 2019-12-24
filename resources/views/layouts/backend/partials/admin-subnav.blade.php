@@ -30,7 +30,7 @@
     </li>
     
      <li>
-        <a href="{{ route('document_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('document/list') ? 'active' : '' }}"> Documents </a>
+        <a href="{{ route('pp_document_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('document/list') ? 'active' : '' }}"> Documents </a>
     </li>
      <li>
         <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/pd-notes') ? 'active' : '' }}"> Personal Discussion </a>

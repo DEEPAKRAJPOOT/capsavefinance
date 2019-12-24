@@ -36,7 +36,7 @@ class DocumentController extends Controller
             $userData = User::getUserByAppId($appId);
             
             if ($appId > 0) {
-                $requiredDocs = $this->docRepo->findRequiredDocs($userData->user_id, $appId);
+                $requiredDocs = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId);
                 if($requiredDocs->count() != 0){
                     $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
                 }
