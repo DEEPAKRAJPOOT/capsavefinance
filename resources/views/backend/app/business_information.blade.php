@@ -503,5 +503,6 @@ var messages = {
 	token: "{{ csrf_token() }}"
 };
 </script>
-<script src="{{url('common/js/business_information.js?v=1')}}"></script>
+<!-- <script src="{{url('common/js/business_information.js?v=1')}}"></script> -->
+<script src="{{url('common/js/business_info.js?v=1')}}"></script>
 @endsection
