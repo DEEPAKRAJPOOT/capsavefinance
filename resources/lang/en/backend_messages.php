@@ -17,5 +17,7 @@ return [
     'something_went_wrong' => 'Something went wrong, Try again later.',
     'agency_user_registration_success' => 'Agency user registration successfully',
     'agency_user_registration_updated' => 'Agency user information successfully updated..',
+    'charges_add_success' => 'Charges added successfully',
+    'charges_edit_success' => 'Charges updated successfully',
 ];
 

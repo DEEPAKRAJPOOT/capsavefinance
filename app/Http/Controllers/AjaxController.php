@@ -2767,4 +2767,11 @@ if ($err) {
      $agencyUsers = $dataProvider->getAgencyUserLists($this->request, $agencyUserList);
      return $agencyUsers;
     }
+
+
+    public function getChargeLists(DataProviderInterface $dataProvider) { 
+     $chargesList = $this->userRepo->getAllCharges();
+     $charges = $dataProvider->getChargesList($this->request, $chargesList);
+     return $charges;
+    }
 }
