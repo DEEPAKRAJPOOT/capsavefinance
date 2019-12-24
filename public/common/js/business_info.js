@@ -159,10 +159,11 @@ function checkValidation(){
 	if(biz_gst_number == ''){
 		setError('select[name=biz_gst_number]', 'Please select GST Number');
 		flag = false;
-	}else if($('input[name=biz_cin]').val()  == ''){
+	}
+	/*else if($('input[name=biz_cin]').val()  == ''){
 		setError('select[name=biz_gst_number]', 'Service unavailable!');
 		flag = false;	
-	}
+	}*/
 
 	if(biz_entity_name.length == ''){
 		setError('input[name=biz_entity_name]', 'Enter valid Entity Name');
