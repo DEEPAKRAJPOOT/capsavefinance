@@ -124,7 +124,7 @@
 
 
     {!! Form::hidden('_token',csrf_token()) !!}
-    {!! Form::hidden('user_id',$userData->user_id) !!}
+    {!! Form::hidden('user_id',$userData->user_id, ['id'=>'user_id']) !!}
    
 
     {!!
@@ -190,7 +190,7 @@ var messages = {
             $.ajax({
                 url  : messages.get_backend_users_url,
                 type :'POST',
-                data : {role_id : $(this).val(), _token : messages.token},
+                data : {role_id : $(this).val(), user_id : $("#user_id").val(), _token : messages.token},
                 beforeSend: function() {
                     //$(".isloader").show();
                 },
@@ -199,7 +199,7 @@ var messages = {
                     var optionList = result;
                     $("#parent_user_id").empty().append('<option>Select Reporting Manager</option>');
                     $.each(optionList, function (index, data) {
-                        $("#parent_user_id").append('<option  value="' + data.user_id + '"  >' + data.f_name + '' + data.l_name+  '</option>');
+                        $("#parent_user_id").append('<option  value="' + data.user_id + '"  >' + data.f_name + ' ' + data.l_name+  '</option>');
                     }); 
                 },
                 error:function(error) {

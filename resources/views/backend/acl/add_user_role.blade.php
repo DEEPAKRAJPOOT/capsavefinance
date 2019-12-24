@@ -207,7 +207,7 @@ var messages = {
                     var optionList = result;
                     $("#parent_user_id").empty().append('<option>Select Reporting Manager</option>');
                     $.each(optionList, function (index, data) {
-                        $("#parent_user_id").append('<option  value="' + data.user_id + '"  >' + data.f_name + '' + data.l_name+  '</option>');
+                        $("#parent_user_id").append('<option  value="' + data.user_id + '"  >' + data.f_name + ' ' + data.l_name+  '</option>');
                     }); 
                 },
                 error:function(error) {

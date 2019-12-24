@@ -246,7 +246,7 @@ class AclController extends Controller {
         $data = $request->all();
         $userDataArray = $this->userRepo->find($data['user_id']);
         $roleData = $this->userRepo->getRoleDataById($data['user_id']);
-        $parentUserData = $this->userRepo->getBackendUsersByRoleId($roleData->role_id);
+        $parentUserData = $this->userRepo->getBackendUsersByRoleId($roleData->role_id, [$data['user_id']]);
         $parentUserDataArr = [];
         foreach($parentUserData as $user) {
             $parentUserDataArr[$user->user_id] = $user->f_name . ' ' . $user->l_name;

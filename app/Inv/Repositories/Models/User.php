@@ -602,5 +602,29 @@ class User extends Authenticatable
                 ->where('is_active', '1')
                 ->get();
         return ($result ? $result : []);
-    }    
+    }
+
+    /**
+     * Get child users
+     * 
+     * @return type
+     */
+    public function children() { 
+        return $this->hasMany('App\Inv\Repositories\Models\User', 'parent_id', 'user_id'); 
+    }
+
+    /**
+     * 
+     * @param type $parentUserId
+     * @return type
+     */
+    public static function getChildUsers($parentUserId)
+    {
+        return self::with('children')
+                ->where('parent_id', $parentUserId)
+                ->where('is_active', 1)
+                ->get();
+        
+    }
+    
 }

@@ -1346,9 +1346,9 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param integer $role_id
      * @return array
      */
-    public function getBackendUsersByRoleId($role_id)
+    public function getBackendUsersByRoleId($role_id, $usersNotIn=[])
     {
-        return RoleUser::getBackendUsersByRoleId($role_id);
+        return RoleUser::getBackendUsersByRoleId($role_id, $usersNotIn);
     }
     
     /**
@@ -1359,5 +1359,16 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getRolesByType($role_type) 
     { 
         return Role::getRolesByType($role_type);
+    }
+
+    /**
+     * Get Child users of parent User Id
+     * 
+     * @param integer $parentUserId
+     * @return mixed
+     */
+    public function getChildUsers($parentUserId)
+    {
+        return UserModel::getChildUsers($parentUserId);
     }    
 }

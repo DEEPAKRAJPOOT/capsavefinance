@@ -2775,7 +2775,13 @@ if ($err) {
     public function getBackendUserList(Request $request)
     {
         $roleId = $request->get('role_id');
-        $backendUserList = $this->userRepo->getBackendUsersByRoleId($roleId);
+        $usersNotIn = [];
+        if ($request->has('user_id')) {
+            $userId = $request->get('user_id');
+            $usersNotIn = [$userId];
+        }
+        
+        $backendUserList = $this->userRepo->getBackendUsersByRoleId($roleId, $usersNotIn);
         return \Response()->json($backendUserList);
     }
 }
