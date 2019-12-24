@@ -47,7 +47,8 @@ class InvServiceProvider extends ServiceProvider
         $this->app->bind(
             'App\Inv\Repositories\Contracts\QmsInterface',
             'App\Inv\Repositories\Entities\Qms\QmsRepository'
-
+        );
+        
         $this->app->bind(
             'App\Inv\Repositories\Contracts\InvoiceInterface',
             'App\Inv\Repositories\Entities\Invoice\InvoiceRepository'
