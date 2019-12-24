@@ -1367,8 +1367,20 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param integer $parentUserId
      * @return mixed
      */
-    public function getChildUsers($parentUserId)
+    public function getChildUsers($parentUserId, &$usersIds=[])
     {
-        return UserModel::getChildUsers($parentUserId);
-    }    
+        $result = UserModel::getChildUsers($parentUserId);             
+        $children = array();
+        $i = 0;
+        foreach($result as $row) {
+            $children[$i] = array();
+            $children[$i]['name'] = $row->f_name . ' ' . $row->l_name;
+            $children[$i]['user_id'] = $row->user_id;
+            $usersIds[] = $row->user_id;
+            $children[$i]['children'] = $this->getChildUsers($row->user_id, $usersIds);      
+            
+            $i++;            
+        }
+        return $usersIds;
+    }
 }

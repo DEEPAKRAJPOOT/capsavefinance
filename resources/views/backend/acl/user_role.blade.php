@@ -74,7 +74,8 @@
                                        <th>Email</th>
                                        <th>Mobile</th>
                                        <th>Role</th>
-                                        <th>Active</th>
+                                       <th>Reporting Manager</th>
+                                       <th>Active</th>
                                        <th>Created On</th>
                                        <th>Action</th>
                                     </tr>

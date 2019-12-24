@@ -141,7 +141,7 @@
                                  </label>
                                    {!!
                                 Form::select('assigned_sale_mgr',
-                                [''=>'Please Select']+Helpers::getAllUsersByRoleId(4)->toArray(),
+                                [''=>'Please Select']+Helpers::getAllUsersByRoleId(4),
                                 $anchorData->sales_user_id,
                                 array('id' => 'assigned_sale_mgr',
                                 'class'=>'form-control'))

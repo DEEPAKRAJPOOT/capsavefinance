@@ -75,7 +75,7 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {                    
                     if($user->UserAnchorId){
                       $userInfo=User::getUserByAnchorId($user->UserAnchorId);
-                       $achorId= $userInfo->f_name.''.$userInfo->l_name;
+                       $achorId= $userInfo->f_name.' '.$userInfo->l_name;
                     }else{
                       $achorId='';  
                     }
@@ -100,7 +100,7 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     if($user->to_id){
                     $userInfo=Helpers::getUserInfo($user->to_id);                    
-                       $saleName=$userInfo->f_name. ''.$userInfo->l_name;  
+                       $saleName=$userInfo->f_name. ' '.$userInfo->l_name;  
                     }else{
                        $saleName=''; 
                     } 
@@ -894,9 +894,16 @@ class DataRenderer implements DataProviderInterface
 
                 })
                 ->editColumn(
+                    'reporting_mgr',
+                    function ($role) {
+                    $reporting_mgr = $role->reporting_mgr; 
+                    return $reporting_mgr;
+
+                })                                
+                ->editColumn(
                     'active',
                     function ($role) {
-                    $disc = ($role->u_active == 1)?'Active':'Not Active'; 
+                    $disc = ($role->is_active == 1)?'Active':'Not Active'; 
                     return $disc;
 
                 })

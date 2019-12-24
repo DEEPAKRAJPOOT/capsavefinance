@@ -663,7 +663,12 @@ class Helper extends PaypalHelper
      * @param integer $user_id | default
      */
     public static function getAllUsersByRoleId($role_id) {
-        $data = RoleUser::getAllUsersByRoleId($role_id);
+        //$data = RoleUser::getAllUsersByRoleId($role_id);
+        $users = RoleUser::getBackendUsersByRoleId($role_id);
+        $data = [];
+        foreach($users as $user) {
+            $data[$user->user_id] = $user->f_name . ' ' . $user->l_name;
+        }
                 return $data;
                 
     }
@@ -718,7 +723,8 @@ class Helper extends PaypalHelper
         if (!$isWfStageCompleted) {
             $isViewOnly = 1;
         } else {
-            $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $to_id);            
+            $userArr = self::getChildUsersWithParent($to_id);
+            $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr);            
         }
         return $isViewOnly ? 1 : 0;
     }
@@ -732,6 +738,20 @@ class Helper extends PaypalHelper
     {        
         $data = Role::getRolesByType($role_type);        
         return $data;                
-    }    
+    } 
+    
+    /**
+     * Get Child Users with Parent User
+     * 
+     * @param integer $parentId
+     * @return array
+     */
+    public static function getChildUsersWithParent($parentId)
+    {
+        $userRepo = \App::make('App\Inv\Repositories\Contracts\UserInterface');   
+        $childs = $userRepo->getChildUsers($parentId);
+        $childs = array_unique($childs);
+        return array_merge($childs, array($parentId));
+    }
     
 }

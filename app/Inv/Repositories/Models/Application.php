@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Models;
 
 use DB;
+use Helpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -72,6 +73,7 @@ class Application extends BaseModel
     {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $curUserId = \Auth::user()->user_id;
+        $userArr = Helpers::getChildUsersWithParent($curUserId);
         $appData = self::select('app.user_id','app.app_id', 'biz.biz_entity_name', 'biz.biz_id', 
                 'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type',
                 DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
@@ -84,10 +86,12 @@ class Application extends BaseModel
                 'app_assign.app_assign_id')
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')                                               
-                ->join('app_assign', function ($join) use($roleData, $curUserId) {
+                ->join('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
                     if ($roleData[0]->is_superadmin != 1) {
-                        $join->on('app_assign.to_id', '=', DB::raw($curUserId));
+                        //$join->on('app_assign.to_id', '=', DB::raw($curUserId));
+                        $join->whereIn('app_assign.to_id', $userArr);
+                        
                     } else {
                         $join->on('app_assign.is_owner', '=', DB::raw("1"));
                         $join->whereNotNull('app_assign.to_id');
@@ -103,11 +107,7 @@ class Application extends BaseModel
                 //$appData->where('users.anchor_user_id', \Auth::user()->user_id);            
                 $appData->where('users.anchor_id', \Auth::user()->anchor_id);            
         }
-//        else if ($roleData[0]->is_superadmin != 1) {
-//                $appData->where('app_assign.to_id', \Auth::user()->user_id);            
-//        } else {
-//           $appData->whereNotNull('app_assign.to_id'); 
-//        }
+
         $appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC');
         return $appData;
