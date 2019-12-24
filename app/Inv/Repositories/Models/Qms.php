@@ -69,4 +69,20 @@ class Qms extends BaseModel {
         return $appNote ?: false;
     }
 
+
+    public static function getQueryData($id)
+    {
+        $arrData = self::where('qms_req_id','=',$id)->with('userFile')->first();
+        return $arrData ?: false;
+    }
+
+
+    public function userFile()
+   {
+       return $this->hasMany('App\Inv\Repositories\Models\UserFile', 'file_id', 'file_id');
+   }
+   
+ 
+
+
 }

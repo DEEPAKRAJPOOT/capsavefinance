@@ -76,4 +76,11 @@ class QmsRepository extends BaseRepositories implements QmsInterface {
     {
         return Qms::showQueryList($id);
     }
+
+    public function getQueryData($id = null)
+    {
+        return Qms::getQueryData($id);
+    }
+
+    
 }

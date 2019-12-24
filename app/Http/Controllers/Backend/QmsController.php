@@ -84,4 +84,22 @@ class QmsController extends Controller {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+
+    public function showQmsDetails(Request $request)
+    {
+        try {
+            
+            $qms_req_id = $request->get('qms_req_id');
+            $arrData = $this->qmsRepo->getQueryData($qms_req_id);
+            $arrFileId = explode(',', $arrData->file_id);
+            
+            $arrFileData = $this->docRepo->getMultipleFileByFileId($arrFileId);
+
+
+            return view('backend.qms.queryDetails', compact('arrData','arrFileData'));
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

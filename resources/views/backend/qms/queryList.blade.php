@@ -26,16 +26,19 @@
                                                     <th class="text-right">Added By</th>   
                                                     <th class="text-right">Action</th>   
                                                 </tr> 
-                                                @foreach($arrData as $data)
+                                                @forelse($arrData as $data)
                                                 <tr>
                                                     <td class="text-left">{{ $arrRole[$data->assign_role_id] }}</td>
-                                                    <td class="text-left">{!! $data->qms_cmnt !!}</td>
+                                                    <td class="text-left">{!!  \Illuminate\Support\Str::limit($data->qms_cmnt,150, $end='....') !!}</td>
                                                     <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>      <td>
-                                                        <a data-toggle="modal" data-target="#queryFrame" data-url ="{{route('query_management_from',['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right"><i class="fa fa-plus">&nbsp;</i>Add Query</a>
+                                                        <a data-toggle="modal" data-target="#queryDeatailsFrame" data-url ="{{route('show_qms_details',['qms_req_id' => $data->qms_req_id ])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right" title=""><i class="fa fa-eye">&nbsp;</i></a>
                                                     </td>                                                                 
-                                                   <!--  <td class="text-right">View Attachment</td>   -->                                                                      
                                                 </tr>
-                                                @endforeach
+                                                @empty
+                                                    <tr>
+                                                         <td class="text-center" colspan="4">No record found</td>
+                                                    </tr>
+                                                @endforelse
                                             </tbody>
                                         </table>
                                     </div>
@@ -51,5 +54,7 @@
 </div>
 
 {!!Helpers::makeIframePopup('queryFrame','Add Query', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('queryDeatailsFrame','Query Details', 'modal-lg')!!}
+
 
 @endsection

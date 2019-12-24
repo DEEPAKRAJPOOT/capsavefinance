@@ -293,5 +293,18 @@ class DocumentRepository implements DocumentInterface
     public function isAppDocFound($app_id, $doc_id) 
     {
         return AppDocument::isAppDocFound($app_id, $doc_id);
-    }    
+    }  
+
+
+    public function getMultipleFileByFileId(array $arrFileId){
+        
+        /**
+         * Check Valid Array
+         */
+        if (!is_array($arrFileId)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        return UserFile::whereIn('file_id', $arrFileId)->get();
+    }  
 }
