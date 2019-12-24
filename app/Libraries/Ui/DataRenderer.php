@@ -1068,6 +1068,72 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
 
+     public function getChargesList(Request $request, $charges){
+        $this->chrg_applicable_ids = array(
+            '1' => 'Limit Amount',
+            '2' => 'Outstanding Amount',
+            '3' => 'Outstanding Principal',
+            '4' => 'Outstanding Interest',
+            '5' => 'Overdue Amount'
+        );
+        return DataTables::of($charges)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'chrg_name',
+                    function ($charges) {
+                    return $charges->chrg_name;
+                })
+                ->addColumn(
+                    'chrg_type',
+                    function ($charges) {
+                    return ($charges->chrg_type == '1') ? 'Auto' : 'Manual';
+                })
+                ->addColumn(
+                    'chrg_calculation_amt',
+                    function ($charges) {
+                    return $charges->chrg_calculation_amt;
+                })              
+                ->addColumn(
+                    'is_gst_applicable',
+                    function ($charges) {
+                    return ($charges->is_gst_applicable == 1) ? 'Yes' : 'No'; 
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($charges) {
+                    return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
+                })
+                ->addColumn(
+                    'chrg_applicable_id',
+                    function ($charges) {
+                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'Invalid Id'; 
+                }) 
+                ->addColumn(
+                    'chrg_desc',
+                    function ($charges) {
+                     return $charges->chrg_desc;
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($charges) {
+                       $act = $charges->is_active;
+                       $edit = '<a style="color:#FFFFFF" class="badge badge-dark current-status" data-toggle="modal" data-target="#editChargesFrame" data-url ="'.route('edit_charges',[$charges->id]).'" data-height="400px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('chrg_desc', 'like',"%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
     public function getAgencyUserLists(Request $request, $user)
     {
         return DataTables::of($user)
