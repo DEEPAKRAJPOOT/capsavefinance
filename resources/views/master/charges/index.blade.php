@@ -19,28 +19,18 @@
     </section>
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="head-sec">
-                        <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
-                            @can('add_agency_reg')
-                            <a data-toggle="modal" data-target="#addChargesFrame" data-url ="{{route('add_charges')}}" data-height="400px" data-width="100%" data-placement="top" >
-                                <button class="btn  btn-success btn-sm" type="button">
-                                    <span class="btn-label"><i class="fa fa-plus"></i></span>
-                                    Add Charges
-                                </button>
-                            </a>
-                            @endcan
-                        </div>
-                    </div>
-                </div>     
-            </div>
-
             <div class="row" style="margin-bottom: 25px;">
                 <div class="col-md-4">
                     <input class="form-control" placeholder="Search by Charge Calculation or Description" id="by_name" name="search_keyword" type="text">
                 </div>
-                <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+                <div class="col-md-1">
+                    <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+                </div>
+                <div class="col-md-7 text-right">
+                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesFrame" data-url ="{{route('add_charges')}}" data-height="400px" data-width="100%" data-placement="top" >
+                            <i class="fa fa-plus"></i>Add Charges
+                    </a>
+                </div>
            </div>
 
             <div class="row">
