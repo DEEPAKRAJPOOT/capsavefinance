@@ -460,6 +460,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $result ?: false;
     }
 
+    /**
+     * get address for Agency FI
+     * 
+     * @param integer $biz_id
+     * @return all address result
+     */
+    public function getAddressforAgencyFI($biz_id){
+        $result = BusinessAddress::getAddressforAgencyFI($biz_id);
+        return $result ?: false;
+    }
+
 
     /**
      * get address for FI

@@ -91,6 +91,11 @@ class BusinessAddress extends BaseModel
         return $address;
     }
 
+    public static function getAddressforAgencyFI($biz_id){
+        $address = BusinessAddress::whereHas('activeFiAddress')->where('biz_id', $biz_id)->where('addr_1', '<>', null)->get();
+        return $address;
+    }
+
     public function cmFiStatus(){
         return $this->hasOne('App\Inv\Repositories\Models\FiAddress','biz_addr_id','biz_addr_id')->where('is_active',1);
     }
