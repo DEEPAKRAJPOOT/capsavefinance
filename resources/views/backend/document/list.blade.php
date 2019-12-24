@@ -34,7 +34,7 @@
                     <div class="card card-color mb-0">
                         <div class="card-header" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
                             <a class="card-title ">
-                                <b>{{ $data->document->doc_name }}</b>
+                                <b>{{ $data->ppDocument->doc_name }}</b>
                             </a>
 
                         </div>
@@ -67,7 +67,7 @@
                                         <td width="20%">Download</td>
                                         <td align="center" width="20%">Action</td>
                                     </tr>
-                                    @foreach($documentData[$data->document->doc_name] as $value)
+                                    @foreach($documentData[$data->ppDocument->doc_name] as $value)
                                     <tr>
                                         @if($data->doc_id == '4')
                                         <td width="20%">{{ $value->doc_name }}</td>

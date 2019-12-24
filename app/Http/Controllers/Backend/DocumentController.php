@@ -38,7 +38,7 @@ class DocumentController extends Controller
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId);
                 if($requiredDocs->count() != 0){
-                    $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
+                    $docData = $this->docRepo->appPPDocuments($requiredDocs, $appId);
                 }
                 else {
                     Session::flash('message',trans('error_messages.document'));

@@ -92,6 +92,23 @@ class DocumentRepository implements DocumentInterface
     }
 
     /**
+     * application pre and post document
+     *
+     * @param mixed $ids
+     */
+    
+    public function appPPDocuments($requiredDocs, $appId){
+        foreach ($requiredDocs as $key => $value) {
+            $result[$value->ppDocument->doc_name] = AppDocumentFile::where('doc_id', $value->doc_id)
+                    ->where('app_id', $appId)
+                    ->where('is_active', 1)
+                    ->with('userFile')
+                    ->get();
+        }
+        
+        return (!empty($result)) ? $result : false;
+    }
+    /**
      * find application pre and post santioned required documents
      *
      * @param mixed $ids
