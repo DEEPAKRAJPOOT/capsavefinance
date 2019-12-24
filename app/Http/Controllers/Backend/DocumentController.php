@@ -83,7 +83,6 @@ class DocumentController extends Controller
     public function saveDocument(DocumentRequest $request)
     {
         try {
-            // dd($request->all());
             $arrFileData = $request->all();
             $docId = (int)$request->doc_id; //  fetch document id
             $appId = (int)$request->app_id; //  fetch app id
@@ -125,7 +124,6 @@ class DocumentController extends Controller
                     $arrFileData['pwd_txt'] = NULL;                                        
                     break;
             }
-            // dd($arrFileData);
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 //Add/Update application workflow stages    
