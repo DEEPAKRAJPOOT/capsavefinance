@@ -1,12 +1,12 @@
-@extends('layouts.backend.admin_popup_layout')
+@extends('layouts.popup_layout')
 @section('content')
-<form id="documentForm" style="width: 100%" method="POST" action="{{ Route('document_save') }}" enctype="multipart/form-data" target="_top">
+<form id="documentForm" style="width: 100%" method="POST" action="{{ Route('document-save') }}" enctype="multipart/form-data" target="_top">
         <!-- Modal body -->
         @csrf
-        <input type="hidden" name="doc_id" id="doc_id" value="">
-        <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
-        <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
-
+        <input type="hidden" name="docId" id="docId" value="">
+        <input type="hidden" name="bizId" value="{{ request()->get('biz_id') }}">
+        <input type="hidden" name="appId" value="{{ request()->get('app_id') }}">
+        
         <div class="modal-body text-left">
 
             <div id="is_required_addl_info">

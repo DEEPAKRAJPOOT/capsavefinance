@@ -15,6 +15,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\User;
 use App\Libraries\KarzaTxn_lib;
 use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Models\BizApi;
@@ -296,7 +297,19 @@ class ApplicationController extends Controller
         }
     }
     
+    /**
+    * showing form for uploading document
+    */
     
+    public function uploadDocument()
+    {
+        $bankdata = User::getBankData();
+        
+        return view('frontend.application.upload_document', [
+                    'bankdata' => $bankdata
+                ]);   
+    }
+
     /**
      * Handle a Business documents for the application.
      *
@@ -312,6 +325,7 @@ class ApplicationController extends Controller
 
             $docId = (int)$request->docId; //  fetch document id
             $appId = (int)$request->appId; //  fetch document id
+            $bizId = (int)$request->bizId; //  fetch document id
             $userId = Auth::user()->user_id;
 
             switch ($docId) {
@@ -359,18 +373,19 @@ class ApplicationController extends Controller
                 Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
                 Session::flash('message',trans('success_messages.uploaded'));
-                return redirect()->back();
+
+                return redirect()->route('document', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
                 //Add application workflow stages
                 Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
-            
-                return redirect()->back();
+
+                return redirect()->route('document', ['app_id' => $appId, 'biz_id' => $bizId]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
             Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
-                
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        
+            return redirect()->route('document', ['app_id' => $appId, 'biz_id' => $bizId])->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
     
