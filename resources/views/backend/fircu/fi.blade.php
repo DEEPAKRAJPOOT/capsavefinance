@@ -49,7 +49,7 @@
                                         </td>
                                         <td>
                                             <div class="btn-group ml-2 mb-1">
-                                                @if($fiList->fiAddress->count() && request()->get('view_only'))
+                                                @if($fiList->fiAddress->count() && request()->get('view_only') && Auth::user()->agency_id == null)
                                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
                                                     <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
@@ -77,6 +77,7 @@
                                                     <td width="15%"><b>Action</b></td>
                                                  </tr>
                                                  @forelse($fiList->fiAddress as $fiAdd)
+                                                 @if(Auth::user()->agency_id == null || $fiAdd->agency_id == Auth::user()->agency_id)
                                                  <tr>
                                                     <td width="20%">{{$fiAdd->agency->comp_name}}</td>
                                                     <td width="20%">{{ucwords($fiAdd->user->f_name.' '.$fiAdd->user->l_name)}}</td>
@@ -91,7 +92,7 @@
 
                                                         @if($fiList->cmFiStatus && $fiList->cmFiStatus->cmStatus->status_name == 'Positive')
                                                         <!-- Take Rest -->
-                                                        @elseif($fiAdd->is_active)
+                                                        @elseif($fiAdd->is_active && Auth::user()->agency_id !=null)
                                                         <button class="btn-upload btn-sm trigger-for-fi-doc" style="padding: 1px 8px;" type="button" data-fiadd_id="{{$fiAdd->fi_addr_id}}"> <i class="fa fa-upload"></i></button>
                                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                         @else
@@ -109,6 +110,7 @@
 
                                                     </td>
                                                  </tr>
+                                                 @endif
                                                  @empty
                                                  <tr style="text-align: center;">
                                                     <td width="100%" colspan="5">No data found</td>
@@ -132,10 +134,9 @@
                            @if(request()->get('view_only')) 
                            <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for FI</button>
                            <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
+                           @endif
                            <a data-toggle="modal" data-target="#uploadFiDocFrame" data-url ="{{route('fi_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="200px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiDocModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
                            <input type="hidden" id="fiaid4upload" value="">
-                           <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
-                           @endif
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->
                         </div>
                      </div>

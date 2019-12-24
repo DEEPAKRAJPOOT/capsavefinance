@@ -8,6 +8,28 @@
  * @author Prolitus Dev Team
  */
 Route::domain(config('proin.frontend_uri'))->group(function () {
+
+
+    Route::any('api/perfios/fsa-callback',[
+        'as' => 'api_perfios_fsa_callback',
+        'uses' => 'Auth\ApiController@fsa_callback'
+        ]
+    );
+
+    Route::any('api/perfios/bsa-callback',[
+        'as' => 'api_perfios_bsa_callback',
+        'uses' => 'Auth\ApiController@bsa_callback'
+        ]
+    );
+
+    Route::any('api/karza/webhook',[
+        'as' => 'api_karza_webhook',
+        'uses' => 'Auth\ApiController@karza_webhook'
+        ]
+    );
+
+
+
      Route::group(
         ['prefix' => 'dashboard'],
         function () {
@@ -67,6 +89,10 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
             
             
 //////////////// For Promoter Iframe////////////////////////
+            Route::get('front_show-pan-verify-data', [
+                'as' => 'front_show_pan_verify_data',
+                'uses' => 'Application\ApplicationController@showPanVerifyResponseData'
+            ]);
 
             Route::get('front_show-pan-data', [
                 'as' => 'front_show_pan_data',

@@ -48,7 +48,7 @@
                                             <td>
                                                 @if($value['agencies']->count())
                                                 <div class="btn-group ml-2 mb-1">
-                                                    @if(request()->get('view_only'))
+                                                    @if(request()->get('view_only') && Auth::user()->agency_id == null)
                                                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Action
                                                     </button>

@@ -13,7 +13,7 @@
             </a>
 
       </li>             
-<!--        
+        
     <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
@@ -22,12 +22,14 @@
             </a>
             <div class="collapse" id="layoutsSubmenu1">
                 <ul class="nav flex-column sub-menu">
+                    @can('applicaiton_list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('applicaiton_list') }}">Applications</a>
                     </li>
+                    @endcan
                 </ul>
             </div>
-     </li>-->
+     </li>
         
     <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
@@ -71,12 +73,12 @@
         </li>    
 
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
                 <span class="menu-title">Manage Anchor</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenu">
+            <div class="collapse" id="layoutsSubmenu12">
                 <ul class="nav flex-column sub-menu">
                 @can('get_anchor_list')
                 
@@ -90,6 +92,29 @@
                         <a class="nav-link" href="{{ route('get_anchor_lead_list') }}">Anchor Uploaded Lead</a>
                     </li>                     
                     @endcan      
+                </ul>
+            </div>
+        </li>
+        
+         <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu123" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <span class="menu-title">Manage Invoice</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu123">
+                <ul class="nav flex-column sub-menu">
+               
+                
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('upload_invoice') }}">Invoice Upload</a>
+
+                    </li>
+                   
+                        <li class="nav-item">
+                        <a class="nav-link" href="#">Manage Invoices</a>
+                    </li>                     
+                 
                 </ul>
             </div>
         </li>

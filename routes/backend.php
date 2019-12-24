@@ -550,8 +550,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('update-agency-user', [
                 'as' => 'update_agency_user_reg',
                 'uses' => 'Backend\AgencyController@updateAgencyUserReg'
-            ]);        
+            ]);   
+            
+          
         });
+        
+          ///////////////////////// Route for invoice controller///////////////////////
+           Route::group(['prefix' => 'invoice'], function () {
+               Route::get('upload_invoice', [
+                 'as' => 'upload_invoice',
+                'uses' => 'Backend\InvoiceController@getInvoice'
+            ]); 
+          });
+           Route::group(['prefix' => 'invoice'], function () {
+               Route::POST('save_invoice', [
+                 'as' => 'save_invoice',
+                'uses' => 'Backend\InvoiceController@saveInvoice'
+            ]); 
+          });
+          
     });
 });
 

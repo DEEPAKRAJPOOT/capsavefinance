@@ -94,4 +94,8 @@ class BusinessAddress extends BaseModel
     public function cmFiStatus(){
         return $this->hasOne('App\Inv\Repositories\Models\FiAddress','biz_addr_id','biz_addr_id')->where('is_active',1);
     }
+
+    public function activeFiAddress(){
+        return $this->hasOne('App\Inv\Repositories\Models\FiAddress','biz_addr_id','biz_addr_id')->where(['is_active'=>1, 'agency_id'=>\Auth::user()->agency_id]);
+    }
 }

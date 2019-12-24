@@ -59,7 +59,6 @@ class BizOwner extends BaseModel
     protected $fillable = [
         'biz_id',
         'user_id',
-        'biz_pan_gst_id',
         'is_pan_verified',
         'first_name',
         'is_promoter',
@@ -71,6 +70,12 @@ class BizOwner extends BaseModel
         'comment',
         'other_ownership',
         'networth',
+        'pan_number',
+        'mobile',
+        'pan_card',
+        'driving_license',
+        'voter_id',
+        'passport',
         'created_by',
         'created_at',
         'updated_by',
@@ -171,42 +176,6 @@ class BizOwner extends BaseModel
                 $getRes =  self::savePanApiRes($attributes, $attributes['biz_id']); 
             }
          
-          /*  
-          $appDocCheck = AppDocument::where('user_id', $uid)
-                    ->where('app_id', $attributes['app_id'])
-                    ->count();
-          if($appDocCheck == 0){
-            $owner = AppDocument::insert([
-              [
-              'rcu_status' => 0,
-              'user_id' => $uid,
-              'app_id' => (int) $attributes['app_id'],
-              'doc_id' => 4,
-              'is_upload' => 0,
-              'created_by' => Auth::user()->user_id,
-              'updated_by' => Auth::user()->user_id
-              ],
-              [
-              'rcu_status' => 0,
-              'user_id' => $uid,
-              'app_id' => (int) $attributes['app_id'],
-              'doc_id' => 5,
-              'is_upload' => 0,
-              'created_by' => Auth::user()->user_id,
-              'updated_by' => Auth::user()->user_id
-              ],
-              [
-              'rcu_status' => 0,
-              'user_id' => $uid,
-              'app_id' => (int) $attributes['app_id'],
-              'doc_id' => 6,
-              'is_upload' => 0,
-              'created_by' => Auth::user()->user_id,
-              'updated_by' => Auth::user()->user_id
-              ]
-              ]);
-          }
-          */
           return true;
 
     }
@@ -222,25 +191,8 @@ class BizOwner extends BaseModel
     $mytime = Carbon::now();
     $dateTime = $mytime->toDateTimeString();
      for ($i=0;$i<$count;$i++) 
-     {  /* save response api data */
+     {  
          
-         $res = BizPanGstApi::create(['file_name' => $attributes['response'][$i],
-         'created_at' => $dateTime,
-         'created_by' => Auth::user()->user_id]); 
-//         dd($attributes);
-         /* save Owner api data */
-        if($res->biz_pan_gst_api_id > 0){
-            $bizPanRes =  BizPanGst::create( [   
-           'user_id' => $userId, 
-           'biz_id' => $biz_id,    
-           'type' => 1,
-           'pan_gst_hash' => isset($attributes['pan_no'][$i]) ? $attributes['pan_no'][$i] : 'N/a', 
-           'status' => 1,
-           'parent_pan_gst_id' =>0,    
-           'biz_pan_gst_api_id' => $res->biz_pan_gst_api_id,
-           'created_by' =>  Auth::user()->user_id]);
-        }
-        if($bizPanRes->biz_pan_gst_id > 0){
            if($i < $updateCount)
            {
              $biz_owner_id =   $attributes['ownerid'][$i];
@@ -253,11 +205,16 @@ class BizOwner extends BaseModel
             'gender' => $attributes['gender'][$i],
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1, 
-            'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
             'share_per' => $attributes['share_per'][$i],
             'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
             'networth' => $attributes['networth'][$i],
+            'pan_number' => isset($attributes['pan_no'][$i]) ? $attributes['pan_no'][$i] : null,
+            'mobile'  =>  isset($attributes['mobile_no'][$i]) ? $attributes['mobile_no'][$i] : null,
+            'pan_card'  =>isset($attributes['veripan'][$i]) ? $attributes['veripan'][$i] : null,
+            'driving_license'  => isset($attributes['verifydl'][$i]) ? $attributes['verifydl'][$i] : null,
+            'voter_id'  => isset($attributes['verifyvoter'][$i]) ? $attributes['verifyvoter'][$i] : null,
+            'passport'  => isset($attributes['verifypassport'][$i]) ? $attributes['verifypassport'][$i] : null,
             'created_by' =>  Auth::user()->user_id]);
              ////////////////adress update
              
@@ -275,11 +232,16 @@ class BizOwner extends BaseModel
             'gender' => $attributes['gender'][$i],
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1, 
-            'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
             'share_per' => $attributes['share_per'][$i],
             'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
             'networth' => $attributes['networth'][$i],
+            'pan_number' => isset($attributes['pan_no'][$i]) ? $attributes['pan_no'][$i] : null,
+            'mobile'  =>  isset($attributes['mobile_no'][$i]) ? $attributes['mobile_no'][$i] : null,
+            'pan_card'  =>isset($attributes['veripan'][$i]) ? $attributes['veripan'][$i] : null,
+            'driving_license'  => isset($attributes['verifydl'][$i]) ? $attributes['verifydl'][$i] : null,
+            'voter_id'  => isset($attributes['verifyvoter'][$i]) ? $attributes['verifyvoter'][$i] : null,
+            'passport'  => isset($attributes['verifypassport'][$i]) ? $attributes['verifypassport'][$i] : null,
             'created_by' =>  Auth::user()->user_id]);
             $biz_owner_id  = $ownerInputArr->biz_owner_id;
             //////////////////////////////save address //////////////////
@@ -294,15 +256,11 @@ class BizOwner extends BaseModel
                 }
              
             }
-        }
         
-        if($biz_owner_id > 0){
-             $ownerUpdate =  BizPanGst::where('biz_pan_gst_id',$bizPanRes->biz_pan_gst_id)
-                            ->update(['biz_owner_id' => $biz_owner_id ]);
-        }
+      
      }
 
-     return $ownerUpdate;
+     return $ownerInputArr;
   }
   
   
@@ -316,26 +274,7 @@ class BizOwner extends BaseModel
     $mytime = Carbon::now();
     $dateTime = $mytime->toDateTimeString();
      for ($i=0;$i<$count;$i++) 
-     {  /* save response api data */
-         
-         $res = BizPanGstApi::create(['file_name' => $attributes['response'][$i],
-         'created_at' => $dateTime,
-         'created_by' => Auth::user()->user_id]); 
-//         dd($attributes);
-         /* save Owner api data */
-        if($res->biz_pan_gst_api_id > 0){
-            $bizPanRes =  BizPanGst::create( [   
-           'user_id' => $userId, 
-           'biz_id' => $biz_id,    
-           'type' => 1,
-           'pan_gst_hash' => isset($attributes['pan_no'][$i]) ? $attributes['pan_no'][$i] : 'N/a', 
-           'status' => 1,
-           'parent_pan_gst_id' =>0,    
-           'biz_pan_gst_api_id' => $res->biz_pan_gst_api_id,
-           'created_by' =>  Auth::user()->user_id]);
-        }
-        if($bizPanRes->biz_pan_gst_id > 0){
-          
+     {  
             $ownerInputArr =  BizOwner::create( ['biz_id' => $biz_id,   
             'user_id' => $userId, 
             'first_name' => $attributes['first_name'][$i],
@@ -345,7 +284,6 @@ class BizOwner extends BaseModel
             'gender' => $attributes['gender'][$i],
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1, 
-            'biz_pan_gst_id' => $bizPanRes->biz_pan_gst_id,	
             'share_per' => $attributes['share_per'][$i],
             'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
@@ -362,7 +300,6 @@ class BizOwner extends BaseModel
                         'created_by'  => Auth::user()->user_id,
                         'biz_owner_id'  =>  $biz_owner_id]);
                 }
-          }
        
      }
 
