@@ -42,5 +42,9 @@ class InvServiceProvider extends ServiceProvider
             'App\Inv\Repositories\Contracts\AclInterface',
             'App\Inv\Repositories\Entities\Acl\AclRepository'
         );
+          $this->app->bind(
+            'App\Inv\Repositories\Contracts\InvoiceInterface',
+            'App\Inv\Repositories\Entities\Invoice\InvoiceRepository'
+        );
     }
 }
