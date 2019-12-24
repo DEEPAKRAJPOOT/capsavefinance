@@ -90,7 +90,7 @@ class AppDocumentFile extends BaseModel
                     ->update(['is_upload' => 1]);
         }
         
-        return $result;
+        return true;
     }
     
     /**
