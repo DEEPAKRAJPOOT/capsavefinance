@@ -32,7 +32,7 @@ $(document).ready(function(){
     			alert(errorThrown);
 			},
 			success: function(res){
-				res = res.response
+				res = res.response;
 			    if(res['statusCode'] == 101){
 			    	$('#pan-msg').show();
 			    	$('.pan-verify').text('Verified');
@@ -78,7 +78,7 @@ function fillEntity(gstinId){
     			alert(errorThrown);
 			},
 			success: function(res){
-				res = res.response
+				res = res.response;
 			    if(res['statusCode'] == 101){
 			    	$('input[name=biz_entity_name]').val(res.result.lgnm);
 			    	getCIN(res.result.lgnm);

@@ -247,7 +247,7 @@ class KarzaApi {
         try {
             $api_url = '/prod/v1/search';
             $baseUrl = 'https://gst.karza.in'; //config('proin.karza_auth_api_url');
-            $apiKey = 'NX1nBICr7TNEisJ';//config('proin.karza_auth_api_key');
+            $apiKey = config('proin.karza_auth_api_key');
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
@@ -277,7 +277,7 @@ class KarzaApi {
         try {
             $api_url = '/prod/v1/gst-verification';
             $baseUrl = 'https://gst.karza.in'; //config('proin.karza_auth_api_url');
-            $apiKey = 'NX1nBICr7TNEisJ';//config('proin.karza_auth_api_key');
+            $apiKey = config('proin.karza_auth_api_key');
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
@@ -307,7 +307,7 @@ class KarzaApi {
         try {
             $api_url = '/v2/compsearch-lite';
             $baseUrl = 'https://api.karza.in'; //config('proin.karza_auth_api_url');
-            $apiKey = 'NX1nBICr7TNEisJ';//config('proin.karza_auth_api_key');
+            $apiKey = config('proin.karza_auth_api_key');
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
