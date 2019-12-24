@@ -620,9 +620,10 @@ class User extends Authenticatable
      */
     public static function getChildUsers($parentUserId)
     {
-        return self::where('parent_id', $parentUserId)
+        $result = self::where('parent_id', $parentUserId)
                 ->where('is_active', 1)
                 ->get();        
+        return $result ? $result : [];
     }
     
 }

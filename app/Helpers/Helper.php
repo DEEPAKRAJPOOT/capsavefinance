@@ -714,19 +714,23 @@ class Helper extends PaypalHelper
      */
     public static function isAccessViewOnly($app_id, $to_id=null)
     {
-        if (is_null($to_id)) {
-            $to_id = \Auth::user()->user_id;            
+        try {
+            if (is_null($to_id)) {
+                $to_id = \Auth::user()->user_id;            
+            }
+            $roleData = self::getUserRole();
+            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;        
+            $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);        
+            if (!$isWfStageCompleted) {
+                $isViewOnly = 1;
+            } else {                
+                $userArr = self::getChildUsersWithParent($to_id);                
+                $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr);            
+            }
+            return $isViewOnly ? 1 : 0;
+        } catch (Exception $e) {            
+            return 0;
         }
-        $roleData = self::getUserRole();
-        if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;        
-        $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);        
-        if (!$isWfStageCompleted) {
-            $isViewOnly = 1;
-        } else {
-            $userArr = self::getChildUsersWithParent($to_id);
-            $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr);            
-        }
-        return $isViewOnly ? 1 : 0;
     }
     
     /**
