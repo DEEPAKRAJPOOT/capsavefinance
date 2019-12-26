@@ -266,6 +266,10 @@ class Bsa_lib{
 
 	    foreach ($resp as $key => $value) {
 	    	if ($value['type'] == 'complete' && (!empty($value['value']) || strtolower($value['tag']) == 'success')) {
+	    		if (!empty($result[strtolower($value['tag'])])) {
+	    			$result[strtolower($value['tag'])] = $result[strtolower($value['tag'])]. ' & ' .$value['value'] ?? 'success';
+	    			continue;
+	    		}
 	    		$result[strtolower($value['tag'])] = $value['value'] ?? 'success';
 	    	}
 	    }
