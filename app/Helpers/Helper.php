@@ -615,8 +615,8 @@ class Helper extends PaypalHelper
      *      * 
      * @param integer $user_id | default
      */
-    public static function getAllRole() {
-        $data = Role::getAllRole();
+    public static function getAllRole() {        
+        $data = Role::getAllRole();        
                 return $data;
                 
     }
@@ -663,7 +663,12 @@ class Helper extends PaypalHelper
      * @param integer $user_id | default
      */
     public static function getAllUsersByRoleId($role_id) {
-        $data = RoleUser::getAllUsersByRoleId($role_id);
+        //$data = RoleUser::getAllUsersByRoleId($role_id);
+        $users = RoleUser::getBackendUsersByRoleId($role_id);
+        $data = [];
+        foreach($users as $user) {
+            $data[$user->user_id] = $user->f_name . ' ' . $user->l_name;
+        }
                 return $data;
                 
     }
@@ -709,18 +714,48 @@ class Helper extends PaypalHelper
      */
     public static function isAccessViewOnly($app_id, $to_id=null)
     {
-        if (is_null($to_id)) {
-            $to_id = \Auth::user()->user_id;            
+        try {
+            if (is_null($to_id)) {
+                $to_id = \Auth::user()->user_id;            
+            }
+            $roleData = self::getUserRole();
+            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;        
+            $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);        
+            if (!$isWfStageCompleted) {
+                $isViewOnly = 1;
+            } else {                
+                $userArr = self::getChildUsersWithParent($to_id);                
+                $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr);            
+            }
+            return $isViewOnly ? 1 : 0;
+        } catch (Exception $e) {            
+            return 0;
         }
-        $roleData = self::getUserRole();
-        if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;        
-        $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);        
-        if (!$isWfStageCompleted) {
-            $isViewOnly = 1;
-        } else {
-            $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $to_id);            
-        }
-        return $isViewOnly ? 1 : 0;
+    }
+    
+    /**
+     * Get Roles By role_type
+     *      
+     * @param integer $role_type
+     */
+    public static function getRolesByType($role_type) 
+    {        
+        $data = Role::getRolesByType($role_type);        
+        return $data;                
+    } 
+    
+    /**
+     * Get Child Users with Parent User
+     * 
+     * @param integer $parentId
+     * @return array
+     */
+    public static function getChildUsersWithParent($parentId)
+    {
+        $userRepo = \App::make('App\Inv\Repositories\Contracts\UserInterface');   
+        $childs = $userRepo->getChildUsers($parentId);
+        $childs = array_unique($childs);
+        return array_merge($childs, array($parentId));
     }
     
 }

@@ -75,7 +75,7 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {                    
                     if($user->UserAnchorId){
                       $userInfo=User::getUserByAnchorId($user->UserAnchorId);
-                       $achorId= $userInfo->f_name.''.$userInfo->l_name;
+                       $achorId= $userInfo->f_name.' '.$userInfo->l_name;
                     }else{
                       $achorId='';  
                     }
@@ -100,7 +100,7 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     if($user->to_id){
                     $userInfo=Helpers::getUserInfo($user->to_id);                    
-                       $saleName=$userInfo->f_name. ''.$userInfo->l_name;  
+                       $saleName=$userInfo->f_name. ' '.$userInfo->l_name;  
                     }else{
                        $saleName=''; 
                     } 
@@ -277,7 +277,7 @@ class DataRenderer implements DataProviderInterface
                     function ($app) use ($request) {
                         $act = '';
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
-                        if ($view_only) {
+                        if ($view_only && $app->status == 1) {
                             if(Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                             }
@@ -884,9 +884,16 @@ class DataRenderer implements DataProviderInterface
 
                 })
                 ->editColumn(
+                    'reporting_mgr',
+                    function ($role) {
+                    $reporting_mgr = $role->reporting_mgr; 
+                    return $reporting_mgr;
+
+                })                                
+                ->editColumn(
                     'active',
                     function ($role) {
-                    $disc = ($role->u_active == 1)?'Active':'Not Active'; 
+                    $disc = ($role->is_active == 1)?'Active':'Not Active'; 
                     return $disc;
 
                 })

@@ -35,11 +35,12 @@ try {
                     {data: 'email'},
                     {data: 'mobile'},
                     {data: 'rolename'},
+                    {data: 'reporting_mgr'},
                     {data: 'active'},
                     {data: 'created_at'},
                     {data: 'action'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7,8]}]
 
         }); 
         

@@ -327,5 +327,16 @@ class DocumentRepository implements DocumentInterface
     public function isAppDocFound($app_id, $doc_id) 
     {
         return AppDocument::isAppDocFound($app_id, $doc_id);
+    } 
+    
+    /**
+     * find application required documents
+     *
+     * @param mixed $ids
+     */  
+    public function findRequiredDocsByStage($userId, $appId, $wfStageCode='doc_upload'){
+        
+        $result = AppDocument::findRequiredDocsByStage($userId, $appId, $wfStageCode);        
+        return $result ?: [];
     }    
 }

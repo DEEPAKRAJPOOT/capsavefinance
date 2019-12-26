@@ -18,8 +18,9 @@
             <div class="row">                
                <div class="col-md-12">
                     
-
-                   
+                   @if (Session::has('cur_stage_code') && Session::get('cur_stage_code') == 'approver')
+                   <label class='error'>Please fill limit assessment data before move to next stage</label><br>
+                   @endif
                   
                    @if ($assign_case)
                     <label for="txtCreditPeriod">Please select Assignee
@@ -88,6 +89,7 @@
    
 var messages = {
     is_accept: "{{ Session::get('is_accept') }}",
+    is_message: "{{ Session::get('is_message') }}",
  };
      $(document).ready(function(){
         var assign_case = $("input[name=assign_case]").val(); 

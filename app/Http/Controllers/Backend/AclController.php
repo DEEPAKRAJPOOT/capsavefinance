@@ -168,8 +168,14 @@ class AclController extends Controller {
      */
 
     public function addUserRole(Request $request) {
-        try {
-            return view('backend.acl.add_user_role');
+        try {             
+            $roles = $this->userRepo->getRolesByType(2);
+            $rolesDataArray = [];
+            foreach($roles as $role) {
+                $rolesDataArray[$role->id] = $role->name;
+            }
+            return view('backend.acl.add_user_role')
+                    ->with('rolesList', $rolesDataArray);
         } catch (Exception $ex) {
             
         }
@@ -200,7 +206,7 @@ class AclController extends Controller {
             $arrData['is_pwd_changed'] = 1;
             $arrData['is_email_verified'] = 1;
             $arrData['is_otp_verified'] = 1;
-            $arrData['parent_id'] = 0;
+            $arrData['parent_id'] = !empty($data['parent_id']) ? $data['parent_id'] : 0;
             $arrData['is_active'] = (int)$data['is_active'];
             $userId = null;
             $existData = $this->userRepo->getUserByemail($data['email']);
@@ -240,9 +246,23 @@ class AclController extends Controller {
         $data = $request->all();
         $userDataArray = $this->userRepo->find($data['user_id']);
         $roleData = $this->userRepo->getRoleDataById($data['user_id']);
+        $parentUserData = $this->userRepo->getBackendUsersByRoleId($roleData->role_id, [$data['user_id']]);
+        $parentUserDataArr = [];
+        foreach($parentUserData as $user) {
+            $parentUserDataArr[$user->user_id] = $user->f_name . ' ' . $user->l_name;
+        }
+        
+        $roles = $this->userRepo->getRolesByType(2);
+        $rolesDataArray = [];
+        foreach($roles as $role) {
+            $rolesDataArray[$role->id] = $role->name;
+        }
+            
         return view('backend.acl.edit_user_role')
                 ->with('userData', $userDataArray)
-                ->with('roleData', $roleData);
+                ->with('roleData', $roleData)
+                ->with('parentUserData', $parentUserDataArr)
+                ->with('rolesList', $rolesDataArray);
     }
 
     /*
@@ -270,7 +290,7 @@ class AclController extends Controller {
 //            $arrData['is_pwd_changed'] = 1;
 //            $arrData['is_email_verified'] = 1;
 //            $arrData['is_otp_verified'] = 1;
-//            $arrData['parent_id'] = 0;
+            $arrData['parent_id'] = !empty($data['parent_id']) ? $data['parent_id'] : 0;
             $arrData['is_active'] = (int)$data['is_active'];
             
             $userId = $data['user_id'];

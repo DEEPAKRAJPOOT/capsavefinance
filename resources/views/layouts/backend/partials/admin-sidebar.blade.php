@@ -142,6 +142,30 @@
         </li>   
         
         @php $roleData = \Helpers::getUserRole() @endphp
+        
+        @if($roleData[0]->is_superadmin == 1)
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-bandcamp" aria-hidden="true"></i>
+                <span class="menu-title">Access Management</span>
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_role') }}">Manage Roles</a>
+                    </li>
+<!--                    <li class="nav-item">
+                        <a class="nav-link" href="#">Manage Permissions</a>
+                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_role_user') }}">Manage Users</a>
+                    </li>                                   
+                </ul>
+            </div>
+        </li>
+        @endif
+              
         @if($roleData[0]->is_superadmin == 1)
         <li class="nav-item">
            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu10" aria-expanded="false" aria-controls="collapseExample">

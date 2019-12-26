@@ -210,4 +210,15 @@ class Role extends BaseModel
         $arrRoles = Role::where('is_active', 1)->pluck('name','id');
         return ($arrRoles ? $arrRoles: []);
     }
+    
+    /**
+     * Get Roles By Role Type
+     * 
+     * @param integer $role_type  | 1=>Frontend User, 2=>Admin User, 3=>Anchor User 
+     */
+    public static function getRolesByType($role_type)
+    {
+        $arrRoles = self::where('role_type', $role_type)->get();
+        return $arrRoles ? $arrRoles : [];
+    }
 }

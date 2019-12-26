@@ -50,11 +50,7 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-//       if($currStage){
-//        Helpers::updateWfStage($currStage->stage_code, 1, $wf_status = 1);
-//      }
-       return view('backend.app.index');   
-              
+       return view('backend.app.index');              
     }
 
     /**
@@ -399,14 +395,9 @@ class ApplicationController extends Controller
                 //Add/Update application workflow stages    
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 $wf_status = $response->count() < 1 ? 1 : 2;
+                                
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
-                $currentStage = Helpers::getCurrentWfStage($appId);            
-                $curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
-                if ($curr_wf_stage_code == 'doc_upload') {
-                    Helpers::updateWfStage('doc_upload', $appId, $wf_status);
-                } else if($curr_wf_stage_code == 'upload_exe_doc') {
-                    Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status);
-                }
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
@@ -643,8 +634,7 @@ class ApplicationController extends Controller
                 }
             } else {
                 $roleDropDown = $this->userRepo->getAllRole()->toArray();
-            }
-            //dd($roleDropDown);
+            }            
             return view('backend.app.next_stage_confirmBox')
                 ->with('app_id', $app_id)
                 ->with('roles', $roleDropDown)
@@ -685,6 +675,16 @@ class ApplicationController extends Controller
                 Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
             } else {                
                 $currStage = Helpers::getCurrentWfStage($app_id);
+                //Validate the stage
+                if ($currStage->stage_code == 'approver') {
+                    $whereCondition = ['app_id' => $app_id];                    
+                    $offerData = $this->appRepo->getOfferData($whereCondition);                    
+                    if (!$offerData) {                        
+                        Session::flash('cur_stage_code', $currStage->stage_code);
+                        return redirect()->back();
+                    }
+                }
+                
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];
@@ -803,7 +803,7 @@ class ApplicationController extends Controller
                 $message = trans('backend_messages.accept_offer_success');
                 
                 //Update workflow stage
-                Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1);                
+                Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true);                
                 
             } else if($request->has('btn_reject_offer') && $request->get('btn_reject_offer') == 'Reject') {
                 $offerData['status'] = 2; 
