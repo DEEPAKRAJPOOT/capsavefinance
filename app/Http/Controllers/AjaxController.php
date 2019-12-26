@@ -2658,7 +2658,7 @@ if ($err) {
      * @return json user data
      */
     public function getFiRcuAppList(DataProviderInterface $dataProvider) {
-        $appList = $this->application->getApplications();
+        $appList = $this->application->getAgencyApplications();
         $applications = $dataProvider->getFiRcuAppList($this->request, $appList);
         return $applications;
     }
@@ -2783,5 +2783,12 @@ if ($err) {
         
         $backendUserList = $this->userRepo->getBackendUsersByRoleId($roleId, $usersNotIn);
         return \Response()->json($backendUserList);
+    }
+
+
+    public function getChargeLists(DataProviderInterface $dataProvider) { 
+     $chargesList = $this->userRepo->getAllCharges();
+     $charges = $dataProvider->getChargesList($this->request, $chargesList);
+     return $charges;
     }
 }

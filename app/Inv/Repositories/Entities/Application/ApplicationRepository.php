@@ -312,6 +312,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /**
+     * Get Agency Applications for Application list data tables for frontend
+     */
+    public function getAgencyApplications() 
+    {
+        return Application::getAgencyApplications();
+    }
+
+    /**
      * function for get all FI lists
      * @return type
      */
@@ -449,6 +457,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getAddressforFI($biz_id){
         $result = BusinessAddress::getAddressforFI($biz_id);
+        return $result ?: false;
+    }
+
+    /**
+     * get address for Agency FI
+     * 
+     * @param integer $biz_id
+     * @return all address result
+     */
+    public function getAddressforAgencyFI($biz_id){
+        $result = BusinessAddress::getAddressforAgencyFI($biz_id);
         return $result ?: false;
     }
 

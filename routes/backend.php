@@ -480,6 +480,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);  
         });
 
+         Route::group(['prefix' => 'manage'], function () {
+            Route::get('/charges', [
+                'as' => 'get_charges_list',
+                'uses' => 'Master\ChargeController@index'
+            ]);
+            Route::get('/add_charges', [
+                'as' => 'add_charges',
+                'uses' => 'Master\ChargeController@addCharges'
+            ]); 
+            Route::get('/edit_charges', [
+                'as' => 'edit_charges',
+                'uses' => 'Master\ChargeController@editCharges'
+            ]);
+
+            Route::post('/save_charges', [
+                'as' => 'save_charges',
+                'uses' => 'Master\ChargeController@saveCharges'
+            ]);       
+        });
+
         Route::group(['prefix' => 'agency'], function () {
             Route::get('/', [
                 'as' => 'get_agency_list',
@@ -532,7 +552,31 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('update-agency-user', [
                 'as' => 'update_agency_user_reg',
                 'uses' => 'Backend\AgencyController@updateAgencyUserReg'
-            ]);        
+            ]);   
+            
+          
+        });
+        
+          ///////////////////////// Route for invoice controller///////////////////////
+           Route::group(['prefix' => 'invoice'], function () {
+               Route::get('upload_invoice', [
+                 'as' => 'upload_invoice',
+                'uses' => 'Backend\InvoiceController@getInvoice'
+            ]); 
+          });
+           Route::group(['prefix' => 'invoice'], function () {
+               Route::POST('save_invoice', [
+                 'as' => 'save_invoice',
+                'uses' => 'Backend\InvoiceController@saveInvoice'
+            ]); 
+          });
+          
+        Route::group(['prefix' => 'document'], function () {
+            Route::get('/list', [
+                'as' => 'pp_document_list',
+                'uses' => 'Backend\DocumentController@list'
+            ]);
+            
         });
     });
 });

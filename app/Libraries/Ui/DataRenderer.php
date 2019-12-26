@@ -321,11 +321,11 @@ class DataRenderer implements DataProviderInterface
     public function getFiRcuAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by'])
+                ->rawColumns(['app_id', 'action', 'status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
-                        $link = route('backend_agency_fi', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        $link = route('backend_fi', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
                     }
                 )
@@ -335,67 +335,57 @@ class DataRenderer implements DataProviderInterface
                         return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
-                    'name',
+                    'user_name',
                     function ($app) {                        
-                        return $app->name ? $app->name : '';
+                        return $app->f_name.' '.$app->m_name.' '.$app->l_name;
                 })
                 ->addColumn(
-                    'email',
+                    'user_email',
                     function ($app) {                        
-                        return $app->email ? $app->email : '';
+                        return $app->email;
                 })
                 ->addColumn(
-                    'mobile_no',
+                    'user_phone',
                     function ($app) {                        
-                        return $app->mobile_no ? $app->mobile_no : '';
-                })                
+                        return $app->mobile_no;
+                })
                 ->addColumn(
                     'assoc_anchor',
-                    function ($app) {
-                    return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
-                })
-                ->addColumn(
-                    'user_type',
-                    function ($app) {
-                    if($app->user_type && $app->user_type==1){
-                       $anchorUserType='Supplier'; 
-                    }else if($app->user_type && $app->user_type==2){
-                        $anchorUserType='Buyer';
+                    function ($app) {                        
+                     if($app->anchor_id){
+                    $userInfo=User::getUserByAnchorId($app->anchor_id);
+                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                     }else{
-                        $anchorUserType='';
-                    }
-                       return $anchorUserType;
-                })                
-                ->addColumn(
-                    'assignee',
-                    function ($app) {
-                    $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
-                    if($userInfo){
-                        return $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
-                    }
-                    return '';
+                      $achorName='';  
+                    }                    
+                    return $achorName;
                 })
                 ->addColumn(
-                    'assigned_by',
+                    'applied_loan_amount',
                     function ($app) {
-                        if ($app->from_role && !empty($app->from_role)) {
-                            return $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
-                        } else {
-                            return $app->assigned_by ? $app->assigned_by : '';
-                        }
+                    return $app->loan_amt ? number_format($app->loan_amt) : '';
                 })                
                 ->addColumn(
-                    'shared_detail',
-                    function ($app) {
-                    return $app->sharing_comment ? $app->sharing_comment : '';
-
+                    'created_at',
+                    function ($app) {                    
+                    return $app->created_at ? date('d/m/Y', strtotime($app->created_at)) : '';
                 })
                 ->addColumn(
                     'status',
                     function ($app) {
-                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(($app->status == 1)? "Completed":"Incomplete").'</label>';
 
                 })
+                /*->addColumn(
+                    'action',
+                    function ($app) use ($request) {
+                        return '<div class="d-flex inline-action-btn">
+                                <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View</a>
+                                <a href="'.route('front_gstin', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Pull GST Detail" class="btn btn-action-btn btn-sm">Pull Gst</a>
+                            </div>';
+                    }
+                )*/
                 ->filter(function ($query) use ($request) {
                     
                     if ($request->get('search_keyword') != '') {                        
@@ -405,10 +395,10 @@ class DataRenderer implements DataProviderInterface
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
                         });                        
                     }
-                    if ($request->get('is_assign') != '') {
+                    if ($request->get('is_status') != '') {
                         $query->where(function ($query) use ($request) {
-                            $is_assigned = $request->get('is_assign');
-                            $query->where('app.is_assigned', $is_assigned);
+                            $is_assigned = $request->get('is_status');
+                            $query->where('app.status', $is_assigned);
                         });
                     }
                     
@@ -1079,6 +1069,72 @@ class DataRenderer implements DataProviderInterface
                             $search_keyword = trim($request->get('by_name'));
                             $query->where('agency.comp_name', 'like',"%$search_keyword%")
                             ->orWhere('agency.comp_email', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+     public function getChargesList(Request $request, $charges){
+        $this->chrg_applicable_ids = array(
+            '1' => 'Limit Amount',
+            '2' => 'Outstanding Amount',
+            '3' => 'Outstanding Principal',
+            '4' => 'Outstanding Interest',
+            '5' => 'Overdue Amount'
+        );
+        return DataTables::of($charges)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'chrg_name',
+                    function ($charges) {
+                    return $charges->chrg_name;
+                })
+                ->addColumn(
+                    'chrg_type',
+                    function ($charges) {
+                    return ($charges->chrg_type == '1') ? 'Auto' : 'Manual';
+                })
+                ->addColumn(
+                    'chrg_calculation_amt',
+                    function ($charges) {
+                    return $charges->chrg_calculation_amt;
+                })              
+                ->addColumn(
+                    'is_gst_applicable',
+                    function ($charges) {
+                    return ($charges->is_gst_applicable == 1) ? 'Yes' : 'No'; 
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($charges) {
+                    return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
+                })
+                ->addColumn(
+                    'chrg_applicable_id',
+                    function ($charges) {
+                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'Invalid Id'; 
+                }) 
+                ->addColumn(
+                    'chrg_desc',
+                    function ($charges) {
+                     return $charges->chrg_desc;
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($charges) {
+                       $act = $charges->is_active;
+                       $edit = '<a style="color:#FFFFFF" class="badge badge-dark current-status" data-toggle="modal" data-target="#editChargesFrame" data-url ="'.route('edit_charges',[$charges->id]).'" data-height="400px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('chrg_desc', 'like',"%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
                         });
                     }
                 })

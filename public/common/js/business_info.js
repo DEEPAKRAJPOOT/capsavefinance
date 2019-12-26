@@ -32,7 +32,7 @@ $(document).ready(function(){
     			alert(errorThrown);
 			},
 			success: function(res){
-				res = res.response
+				res = res.response;
 			    if(res['statusCode'] == 101){
 			    	$('#pan-msg').show();
 			    	$('.pan-verify').text('Verified');
@@ -78,7 +78,7 @@ function fillEntity(gstinId){
     			alert(errorThrown);
 			},
 			success: function(res){
-				res = res.response
+				res = res.response;
 			    if(res['statusCode'] == 101){
 			    	$('input[name=biz_entity_name]').val(res.result.lgnm);
 			    	getCIN(res.result.lgnm);
@@ -159,10 +159,11 @@ function checkValidation(){
 	if(biz_gst_number == ''){
 		setError('select[name=biz_gst_number]', 'Please select GST Number');
 		flag = false;
-	}else if($('input[name=biz_cin]').val()  == ''){
+	}
+	/*else if($('input[name=biz_cin]').val()  == ''){
 		setError('select[name=biz_gst_number]', 'Service unavailable!');
 		flag = false;	
-	}
+	}*/
 
 	if(biz_entity_name.length == ''){
 		setError('input[name=biz_entity_name]', 'Enter valid Entity Name');

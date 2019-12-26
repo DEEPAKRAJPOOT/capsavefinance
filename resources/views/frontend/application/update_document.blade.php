@@ -109,113 +109,12 @@
 
                 </div>
                 @endif
+                <a data-toggle="modal" data-target="#uploadDocument" data-url ="{{route('front_show_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
+                <input type="hidden" name="uploadDocId" id="uploadDocId" value="" >
             </div>
         </div>
     </div>
-     <!--modal-->
-    <div class="modal" id="myModal">
-        <div class="modal-dialog">
-            <div class="modal-content pb-3">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <button type="button" class="close close-btns" data-dismiss="modal">&times;</button>
-                </div>
-                <form id="documentForm" method="POST" action="{{ Route('document-save') }}" enctype="multipart/form-data">
-                    <!-- Modal body -->
-                    @csrf
-                    <input type="hidden" name="docId" id="docId" value="">
-                    <input type="hidden" name="bizId" value="{{ request()->get('biz_id') }}">
-                    <input type="hidden" name="appId" value="{{ request()->get('app_id') }}">
-
-                    <div class="modal-body text-left">
-                        
-                        <div id="is_required_addl_info">
-                        <div class="form-group">
-                            <label for="email">Select Bank Name</label>
-                            <select class="form-control" name="file_bank_id">
-                                <option value="" selected disabled>Select Bank Name</option>
-                                 @foreach($bankdata as $bank)
-                                    <option value="{{$bank['id']}}">{{$bank['bank_name']}}</option>
-                                 @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Select Financial  Year</label>
-                            <select class="form-control" name="finc_year">
-                               <option value='' selected disabled>Select Year</option>
-                               @for($i=-10;$i<=0;$i++)
-                                 <option>{{date('Y')+$i}}</option>
-                               @endfor
-                            </select>
-                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                               <div class="form-group">
-                                  <label for="email">Select GST Month</label>
-                                  <select class="form-control" name="gst_month">
-                                     <option selected value='' disabled>Select Month</option>
-                                     @for($i=1;$i<=12;$i++)
-                                        <option value="{{$i}}">{{date('F', strtotime("2019-$i-01"))}}</option>
-                                    @endfor
-                                  </select>
-                               </div>
-                            </div>
-                            <div class="col-md-6">
-                               <div class="form-group">
-                                  <label for="email">Select GST Year</label>
-                                  <select class="form-control" name="gst_year">
-                                     <option value=''>Select Year</option>
-                                     @for($i=-10;$i<=0;$i++)
-                                        <option>{{date('Y')+$i}}</option>
-                                     @endfor
-                                  </select>
-                               </div>
-                            </div>
-                         </div>
-                        </div>
-                        
-                        <div class="custom-file upload-btn-cls mb-3 mt-2">
-                            <input type="file" class="custom-file-input getFileName" id="customFile" name="doc_file[]" multiple="">
-                            <label class="custom-file-label" for="customFile">Choose file</label>
-                        </div>
-                        <div class="row" id="is_not_for_gst">
-                          <div class="col-md-6">
-                             <label>Is Password Protected</label>
-                             <div class="form-group">
-                                <label for="is_password_y">
-                                  <input type="radio" name="is_pwd_protected" id="is_password_y" value="1"> Yes
-                                </label>
-                                <label for="is_password_n">
-                                  <input type="radio" name="is_pwd_protected" checked id="is_password_n" value="0"> No
-                                </label>
-                             </div>
-                          </div>
-                          <div class="col-md-6">
-                             <label>Is Scanned</label>
-                             <div class="form-group">
-                                <label for="is_scanned_y">
-                                  <input type="radio" name="is_scanned" id="is_scanned_y" value="1"> Yes
-                                </label>
-                                <label for="is_scanned_n">
-                                  <input type="radio" name="is_scanned" checked id="is_scanned_n" value="0"> No
-                                </label>
-                             </div>
-                          </div>
-                        </div>
-                        <div class="row" style="display: none" id="password_file_div">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="pwd_txt">Enter File Password</label>
-                                    <input type="password" placeholder="Enter File Password" class="form-control" name="pwd_txt" id="pwd_txt">
-                                 </div>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-success float-right  btn-sm" id="savedocument" >Submit</button>  
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    
 </div>
 
 
@@ -253,6 +152,7 @@
    </div>
 </div>
 
+{!!Helpers::makeIframePopup('uploadDocument','Upload Document', 'modal-md')!!}
 
 @endsection
 @section('jscript')
@@ -260,7 +160,16 @@
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script src="{{ url('frontend/js/document.js?v=1') }}"></script>
 
-
+<script>
+    var messages = {
+        
+    };
+    
+    $('.openModal').on('click', function(){
+        $('#uploadDocId').val($(this).attr('data-id'));
+        $('#openUploadDocument').trigger('click');
+    });
+</script> 
 <script type="text/javascript">
    appurl = '{{URL::route("gstAnalysis") }}';
    _token = "{{ csrf_token() }}";

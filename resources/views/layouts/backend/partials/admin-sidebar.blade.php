@@ -73,12 +73,12 @@
         </li>    
 
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
                 <span class="menu-title">Manage Anchor</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenu">
+            <div class="collapse" id="layoutsSubmenu12">
                 <ul class="nav flex-column sub-menu">
                 @can('get_anchor_list')
                 
@@ -92,6 +92,29 @@
                         <a class="nav-link" href="{{ route('get_anchor_lead_list') }}">Anchor Uploaded Lead</a>
                     </li>                     
                     @endcan      
+                </ul>
+            </div>
+        </li>
+        
+         <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu123" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <span class="menu-title">Manage Invoice</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu123">
+                <ul class="nav flex-column sub-menu">
+               
+                
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('upload_invoice') }}">Invoice Upload</a>
+
+                    </li>
+                   
+                        <li class="nav-item">
+                        <a class="nav-link" href="#">Manage Invoices</a>
+                    </li>                     
+                 
                 </ul>
             </div>
         </li>
@@ -121,25 +144,61 @@
         @php $roleData = \Helpers::getUserRole() @endphp
         @if($roleData[0]->is_superadmin == 1)
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-bandcamp" aria-hidden="true"></i>
-                <span class="menu-title">Access Management</span>
-                <i class="fa fa-angle-right" aria-hidden="true"></i>
-            </a>
-            <div class="collapse" id="layoutsSubmenu">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('get_role') }}">Manage Roles</a>
-                    </li>
-<!--                    <li class="nav-item">
-                        <a class="nav-link" href="#">Manage Permissions</a>
-                    </li> -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('get_role_user') }}">Manage Users</a>
-                    </li>                                   
-                </ul>
-            </div>
+           <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu10" aria-expanded="false" aria-controls="collapseExample">
+           <i class="fa fa-tasks" aria-hidden="true"></i>
+           <span class="menu-title">Masters</span>
+           <i class="fa fa-angle-right" aria-hidden="true"></i>
+           </a>
+           <div class="collapse" id="layoutsSubmenu10">
+              <ul class="nav flex-column sub-menu">
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Manage Program</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_charges_list') }}">Manage Charges</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Manage Document</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Manage Constitution</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Manage Industry</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Manage State</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Risk Category </a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Business Segment</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="bank-master-list.php">Bank Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Industry Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="fi-master-list.php">FI agency Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="holiday-list.php">Holiday Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Email Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">SMS Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="baserate-list.php">Base Rate Master</a>
+                 </li>
+              </ul>
+           </div>
         </li>
-              @endif
+        @endif
     </ul>
 </nav>

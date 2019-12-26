@@ -361,8 +361,8 @@ class ApplicationController extends Controller
                     $bankData = State::getBankName($file_bank_id);
                     $arrFileData['doc_name'] = $bankData['bank_name'] ?? NULL;
                     $arrFileData['finc_year'] = NULL;
-                    $arrFileData['gst_month'] = NULL;
-                    $arrFileData['gst_year'] = NULL;
+                    $arrFileData['gst_month'] = $arrFileData['bank_month'];
+                    $arrFileData['gst_year'] = $arrFileData['bank_year'];
                     $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
                     break;
                 case '5':
@@ -389,6 +389,7 @@ class ApplicationController extends Controller
                     $arrFileData['pwd_txt'] = NULL;                                        
                     break;
             }
+
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 //Add/Update application workflow stages    
@@ -401,8 +402,7 @@ class ApplicationController extends Controller
                 return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
-            
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status=2);
                 return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             }
         } catch (Exception $ex) {
