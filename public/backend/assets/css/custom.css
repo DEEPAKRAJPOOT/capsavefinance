@@ -657,13 +657,6 @@ span.mandatory {
     line-height: 28px;
 }
 
-
-
-
-
-
-
-
 .wizards ul{    display: flex;
     justify-content: space-around;
     padding: 0;}
@@ -817,4 +810,3 @@ ul.listing.listing1 li{float:left; width:33.33%;}
     width: 40%;
     float: left;
 }
-
