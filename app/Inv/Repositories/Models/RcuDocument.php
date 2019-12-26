@@ -55,6 +55,15 @@ class RcuDocument extends BaseModel {
                 ->get();
         
     }
+
+    public static function getRcuActiveAgencies($appId, $docId)
+    {
+        return RcuDocument::with('status')->where('app_id', $appId)
+                ->where('doc_id', $docId)
+                ->where(['is_active' => 1, 'agency_id' => \Auth::user()->agency_id])
+                ->get();
+        
+    }
     
     public function agency(){
         return $this->belongsTo('App\Inv\Repositories\Models\Agency','agency_id','agency_id');

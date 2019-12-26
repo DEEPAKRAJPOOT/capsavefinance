@@ -338,7 +338,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getRcuLists($appId)
     {
       $result = AppDocumentFile::getRcuLists($appId);
-//      dd($result);
+      return $result ?: false;
+    }
+
+    public function getRcuActiveLists($appId)
+    {
+      $result = AppDocumentFile::getRcuActiveLists($appId);
       return $result ?: false;
     }
     
@@ -376,6 +381,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getRcuAgencies($appId, $docId)
     {
       $result = RcuDocument::getRcuAgencies($appId, $docId);
+      return $result ?: false;
+    }
+
+    public function getRcuActiveAgencies($appId, $docId)
+    {
+      $result = RcuDocument::getRcuActiveAgencies($appId, $docId);
       return $result ?: false;
     }
     
