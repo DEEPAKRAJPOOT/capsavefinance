@@ -42,7 +42,7 @@ class DocumentController extends Controller
                     $docData = $this->docRepo->appPPDocuments($requiredDocs, $appId);
                 }
                 else {
-                    Session::flash('message',trans('error_messages.document'));
+                    Session::flash('message',trans('error_messages.documentExRequire'));
                     return redirect()->back();
                 }
             }
