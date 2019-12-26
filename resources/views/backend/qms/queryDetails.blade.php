@@ -11,7 +11,7 @@
                 @foreach($arrFileData as $arr)
                 <tr>
                     <td>{{$arr->file_name}}</td>
-                    <td> <a  href="{{ isset($arr->file_path) ? Storage::url($arr->file_path) : '' }}" class="btn-upload btn-sm" type="button" download><i class="fa fa-download"></i></a></td>
+                    <td> <a  href="{{ isset($arr->file_path) ? Storage::url($arr->file_path) : '' }}" class="btn-upload btn-sm" type="button" download="{{$arr->file_name}}"><i class="fa fa-download"></i></a></td>
                 </tr>
                 @endforeach
             </tbody>    
