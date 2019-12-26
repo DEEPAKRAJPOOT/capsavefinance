@@ -21,10 +21,15 @@
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
                    <label class='error'>Please fill limit assessment data before move to next stage</label><br>
                    @endif
+                   
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_approved')
                    <label class='error'>Application is not approved by all approval authority to move the next stage.</label><br>                   
                    @endif
-                  
+                                     
+                   @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_accepted')
+                   <label class='error'>Still, offer is not accepted by sales queue to move the next stage.</label><br>                   
+                   @endif
+                   
                    @if ($assign_case)
                     <label for="txtCreditPeriod">Please select Assignee
                       <span class="mandatory">*</span>
