@@ -185,9 +185,6 @@
                     <a class="nav-link" href="#">Manage Document</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="#">Manage Constitution</a>
-                 </li>
-                 <li class="nav-item">
                     <a class="nav-link" href="#">Manage Industry</a>
                  </li>
                  <li class="nav-item">
@@ -199,17 +196,23 @@
                  <li class="nav-item">
                     <a class="nav-link" href="#">Business Segment</a>
                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Business Entity</a>
+                 </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="bank-master-list.php">Bank Master</a>
+                    <a class="nav-link" href="#">Business Constitution</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Bank Master</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Industry Master</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="fi-master-list.php">FI agency Master</a>
+                    <a class="nav-link" href="#">FI agency Master</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="holiday-list.php">Holiday Master</a>
+                    <a class="nav-link" href="#">Holiday Master</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Email Master</a>
@@ -218,7 +221,7 @@
                     <a class="nav-link" href="#">SMS Master</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="baserate-list.php">Base Rate Master</a>
+                    <a class="nav-link" href="#">Base Rate Master</a>
                  </li>
               </ul>
            </div>

@@ -28,14 +28,19 @@
     <li>
         <a href="#">Submit Commercial</a>
     </li>
-    <!-- 
+    
      <li>
         <a href="{{ route('pp_document_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('document/list') ? 'active' : '' }}"> Documents </a>
-    </li> -->
+    </li>
      <li>
         <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/pd-notes') ? 'active' : '' }}"> Personal Discussion </a>
     </li>
     
+    <li>
+        <a href="{{ route('query_management_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/query-management') ? 'active' : '' }}"> QMS</a>
+    </li>
+
+
     @php
     $wfStageData = \Helpers::getWfStageToProcess(request()->get('app_id'));
     $wfStageToProcess = $wfStageData ? $wfStageData->stage_code : '';

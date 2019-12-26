@@ -86,6 +86,7 @@ class DocumentRepository implements DocumentInterface
         $result = AppDocument::where('user_id', $userId)
                 ->where('app_id', $appId)
                 ->with('document')
+                ->whereHas('document')
                 ->get();
         
         return $result ?: false;
@@ -243,7 +244,6 @@ class DocumentRepository implements DocumentInterface
      */
     
     public function appDocuments($requiredDocs, $appId){
-        
         foreach ($requiredDocs as $key => $value) {
             $result[$value->document->doc_name] = AppDocumentFile::where('doc_id', $value->doc_id)
                     ->where('app_id', $appId)
@@ -327,16 +327,30 @@ class DocumentRepository implements DocumentInterface
     public function isAppDocFound($app_id, $doc_id) 
     {
         return AppDocument::isAppDocFound($app_id, $doc_id);
-    } 
-    
+    }  
+
+
+    public function getMultipleFileByFileId(array $arrFileId){
+        
+        /**
+         * Check Valid Array
+         */
+        if (!is_array($arrFileId)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        return UserFile::whereIn('file_id', $arrFileId)->get();
+    }  
+
     /**
      * find application required documents
      *
      * @param mixed $ids
      */  
-    public function findRequiredDocsByStage($userId, $appId, $wfStageCode='doc_upload'){
-        
+    public function findRequiredDocsByStage($userId, $appId, $wfStageCode='doc_upload')
+    {
         $result = AppDocument::findRequiredDocsByStage($userId, $appId, $wfStageCode);        
         return $result ?: [];
     }    
+
 }

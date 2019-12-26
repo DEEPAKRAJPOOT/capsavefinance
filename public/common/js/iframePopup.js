@@ -552,13 +552,27 @@ $(document).ready(function () {
                         }
                 );
         });
-        
+
         $("#editChargesFrame").on('show.bs.modal', function (e) {
                 var parent = $(e.relatedTarget);
                 var height = parent.attr('data-height');
                 var url = parent.attr('data-url');
                 var width = parent.attr('data-width');
                 $("#editChargesFrame iframe").attr(
+                    {
+                        'src': url,
+                        'height': height,
+                        'width': width
+                    }
+                );
+        });
+                
+        $("#ppUploadDocument").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#ppUploadDocument iframe").attr(
                         {
                             'src': url,
                             'height': height,
@@ -566,5 +580,32 @@ $(document).ready(function () {
                         }
                 );
         });
-      
+
+        $("#queryFrame").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#queryFrame iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
+
+        $("#queryDeatailsFrame").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#queryDeatailsFrame iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
 });

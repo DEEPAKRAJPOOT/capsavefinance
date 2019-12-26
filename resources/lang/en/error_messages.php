@@ -70,6 +70,7 @@ return [
         'minlen_confirm_password' => 'Confirm passwords must be at least 6 characters.',
     ],
     'document' => 'Please save promoter details for futher process.',
+    'documentExRequire' => 'No Document required for this application.',
     //Common error messages
     'data_not_found' => 'No data found.',
     'noAppDoucment' => 'No documents found for your application.',
@@ -97,4 +98,10 @@ return [
     'req_spouse_professional_status'=>'Spouse professional status is required.',
     'req_this_field'=>'This field is required',
     'contain_this_alpha_num'=>'This may only contain letters and numbers.',
+    
+     'addProduct'=> [
+         'anchor_user_id'=>'Anchor Name is required',
+         'anchor_limit_number'=>'Anchor limit must be a number.'
+     ],
+     'required'=>':field is required.',
     ];

@@ -23,10 +23,13 @@ use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Offer;
 use App\Inv\Repositories\Models\Agency;
+use App\Inv\Repositories\Models\Master\Industry;
 use App\Inv\Repositories\Models\AppPdNote;
 use App\Inv\Repositories\Models\AnchorRelation;
 use App\Inv\Repositories\Models\AppApprover;
-
+use App\Inv\Repositories\Models\Master\Charges;
+use App\Inv\Repositories\Models\ProgramDoc;
+use App\Inv\Repositories\Models\ProgramCharges;
 /**
  * Application repository class
  */
@@ -339,7 +342,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getRcuLists($appId)
     {
       $result = AppDocumentFile::getRcuLists($appId);
-//      dd($result);
+      return $result ?: false;
+    }
+
+    public function getRcuActiveLists($appId)
+    {
+      $result = AppDocumentFile::getRcuActiveLists($appId);
       return $result ?: false;
     }
     
@@ -379,6 +387,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       $result = RcuDocument::getRcuAgencies($appId, $docId);
       return $result ?: false;
     }
+
+    public function getRcuActiveAgencies($appId, $docId)
+    {
+      $result = RcuDocument::getRcuActiveAgencies($appId, $docId);
+      return $result ?: false;
+    }
     
     /**
      * Get Program Data
@@ -392,7 +406,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $prgmData = Program::getProgramData($whereCondition);
         return $prgmData ? $prgmData : [];
     }
-        
+         
     /**
      * Get Anchor Data By Application Id
      * 
@@ -658,6 +672,80 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
       }
     }
+    
+    
+    
+    /**
+     * Get industry 
+     * 
+     * @return type mixed
+     */
+    public function getIndustryDropDown()
+    {
+        return Industry::getIndustryDropDown();
+    }
+    
+    
+    /**
+     * Get sub industry 
+     * 
+     * @param type $where Array
+     * @return type mixed
+     */
+    public function getSubIndustryByWhere($where)
+    {
+        return \App\Inv\Repositories\Models\Master\SubIndustry::getSubIndustryByWhere($where);
+    }
+    
+    
+    
+    /**
+     * Save program
+     * 
+     * @param type $attr array
+     * @return type mixed
+     */
+    public function saveProgram($attr)
+    {
+        return Program::saveProgram($attr);
+    }
+    
+    
+    /**
+     * program list by id
+     * 
+     * @param type $id int
+     * @return type mixed
+     */
+    public function getProgramListById($id)
+    {
+        return Program::getProgramListById($id);
+    }
+    
+    
+    /**
+     * get selected program data
+     * 
+     * @param type $attr array
+     * @param type $selected array
+     * @return type mixed
+     */
+    public function getSelectedProgramData($attr, $selected = null)
+    {
+        return Program::getSelectedProgramData($attr, $selected);
+    }
+    
+    
+    /**
+     * get document list 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getDocumentList($where)
+    {
+        return DocumentMaster::getDocumentList($where);
+    }
 
     public function changeCmRcuStatus($request){
       $status = RcuDocument::changeCmRcuStatus($request);
@@ -699,5 +787,75 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function saveAppApprovers($attributes)
     {
         return AppApprover::saveAppApprovers(($attributes));
+    }
+    
+    /**
+     * get charges list
+     * 
+     * @param type $where Array 
+     * @return type mixed
+     */
+    public function getChargesList()
+    {
+        return Charges::getCharagesList();
+    }    
+    
+    /**
+     * get charge 
+     * 
+     * @return type mixed
+     */
+    
+    public function getChargeData($where)
+    {
+        return Charges::getChargeData($where);
+    }
+        
+    /**
+     * Save program doc
+     * 
+     * @param type $attr Array
+     * @return type mixed 
+     */
+    public function saveProgramDoc($attr)
+    {
+        return ProgramDoc::saveDoc($attr);
+    }
+    
+    
+    /**
+     * save program charge
+     * 
+     * @param type $attr Array
+     * @return type mixed
+     */
+    public function saveProgramChrgData($attr)
+    {
+        return ProgramCharges::saveProgramChrgData($attr);
+    }
+    
+    
+    /**
+     * delete program Data
+     * 
+     * @param type $where
+     * @return type mixed
+     */
+    public function deleteProgramData($where)
+    {
+        return ProgramCharges::deleteProgramData($where);
+    }
+    
+    
+    
+    /**
+     * get sub program data 
+     * 
+     * @param type $id
+     * @return type mixed
+     */
+    public function getSubProgramListByParentId($anchor_id , $program_id)
+    {
+        return Program::getSubProgramListByParentId($anchor_id , $program_id);
     }
 }

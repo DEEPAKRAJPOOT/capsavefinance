@@ -17,7 +17,6 @@ use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\Agency;
-use App\Inv\Repositories\Models\Master\Charges;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
@@ -1285,6 +1284,19 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $users ?: false;
     }
     
+
+    
+    /**
+     * get all anchor list
+     * 
+     * @param type $id int
+     * @return type mixed
+     */
+    public function getAnchorDataById($id)
+    {
+        return Anchor::getAnchorDataById($id);
+    }
+
     /**
      * Get Backend Roles          
      * 
@@ -1330,6 +1342,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getAgencyUserLists(){
         $result = UserModel::orderBy('user_id', 'DESC')->where('agency_id','<>', null);
         return $result ?: false;
+
     }
     
     /**
@@ -1385,6 +1398,7 @@ class UserRepository extends BaseRepositories implements UserInterface
         }
         return $usersIds;
     }
+
 
      /**
     * function for get all charges register user detail

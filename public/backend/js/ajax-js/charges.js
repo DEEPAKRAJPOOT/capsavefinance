@@ -24,13 +24,15 @@ try {
                 }
             },
            columns: [
-                    // {data: 'chrg_name'},
+                    {data: 'chrg_name'},
                     {data: 'chrg_type'},
+                    {data: 'chrg_calculation_type'},
                     {data: 'chrg_calculation_amt'},
                     {data: 'is_gst_applicable'},
-                    {data: 'created_at'},
                     {data: 'chrg_applicable_id'},
                     {data: 'chrg_desc'},
+                    {data: 'created_at'},
+                    {data: 'created_by'},
                     {data: 'is_active'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6]}]

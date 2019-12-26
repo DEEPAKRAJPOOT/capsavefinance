@@ -38,13 +38,25 @@ class InvServiceProvider extends ServiceProvider
             'App\Inv\Repositories\Contracts\DocumentInterface',
             'App\Inv\Repositories\Entities\Document\DocumentRepository'
         );
-         $this->app->bind(
+         
+        $this->app->bind(
             'App\Inv\Repositories\Contracts\AclInterface',
             'App\Inv\Repositories\Entities\Acl\AclRepository'
         );
-          $this->app->bind(
+
+        $this->app->bind(
+            'App\Inv\Repositories\Contracts\QmsInterface',
+            'App\Inv\Repositories\Entities\Qms\QmsRepository'
+        );
+        
+        $this->app->bind(
             'App\Inv\Repositories\Contracts\InvoiceInterface',
             'App\Inv\Repositories\Entities\Invoice\InvoiceRepository'
+        );
+
+        $this->app->bind(
+            'App\Inv\Repositories\Contracts\MasterInterface',
+            'App\Inv\Repositories\Entities\Master\MasterRepository'
         );
     }
 }

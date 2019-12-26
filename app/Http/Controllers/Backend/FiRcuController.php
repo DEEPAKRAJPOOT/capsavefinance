@@ -103,14 +103,22 @@ class FiRcuController extends Controller
     public function listRCU(Request $request)
     {
         $appId = $request->get('app_id');
-        $rcuResult = $this->appRepo->getRcuLists($appId);
+        if(Auth::user()->agency_id != null)
+            $rcuResult = $this->appRepo->getRcuActiveLists($appId);
+        else
+            $rcuResult = $this->appRepo->getRcuLists($appId);
+
         foreach ($rcuResult as $key => $value) {
             $currentRcuDoc = $this->appRepo->getCurrentRcuDoc($appId, $value->doc_id);
             $value->current_rcu =  (isset($currentRcuDoc)) ? $currentRcuDoc : '';
             $value->current_agency =  (isset($currentRcuDoc->agency)) ? $currentRcuDoc->agency : '';
             $value->cm_status =  (isset($currentRcuDoc->cmStatus->status_name)) ? $currentRcuDoc->cmStatus->status_name : '';
             $rcuResult[$key]['documents'] = $this->appRepo->getRcuDocuments($appId, $value->doc_id);
-            $rcuResult[$key]['agencies'] = $this->appRepo->getRcuAgencies($appId, $value->doc_id);
+
+            if(Auth::user()->agency_id != null)
+                $rcuResult[$key]['agencies'] = $this->appRepo->getRcuActiveAgencies($appId, $value->doc_id);
+            else
+                $rcuResult[$key]['agencies'] = $this->appRepo->getRcuAgencies($appId, $value->doc_id);        
         }
 
         return view('backend.fircu.rcu', [

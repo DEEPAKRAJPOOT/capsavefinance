@@ -305,6 +305,34 @@ Route::group(
         'uses' => 'AjaxController@changeCmFiStatus'
         ]
     );
+    
+      Route::post(
+        'get-sub-industry',
+        [
+        'as' => 'get_sub_industry',
+        'uses' => 'AjaxController@getSubIndustry'
+        ]
+    );
+      
+      Route::post(
+        'get-program-list',
+        [
+        'as' => 'get_program_list',
+        'uses' => 'AjaxController@getProgramList'
+        ]
+    );
+      
+      Route::post(
+        'get-sub-program-list',
+        [
+        'as' => 'get_sub_program_list',
+        'uses' => 'AjaxController@getSubProgramList'
+        ]
+    );
+    
+    
+    
+    
 
     Route::post(
         'change_agent_rcu_status',
@@ -345,6 +373,18 @@ Route::group(
         ]
     );
     /*agency route*/
+    
+    
+    
+     Route::post(
+        'get-charges-html',
+        [
+        'as' => 'get_charges_html',
+        'uses' => 'AjaxController@getCharagesHtml'
+        ]
+    );
+    
+   
 
     Route::post(
         'get-backend-user-list',

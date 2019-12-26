@@ -5,9 +5,12 @@ namespace App\Inv\Repositories\Models\Master;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\User;
+
 
 class Charges extends BaseModel
 {
+
     /**
      * The database table used by the model.
      *
@@ -27,7 +30,9 @@ class Charges extends BaseModel
      *
      * @var boolean
      */
+
     public $timestamps = false;
+
 
     /**
      * Maintain created_by and updated_by automatically
@@ -49,10 +54,54 @@ class Charges extends BaseModel
         'chrg_calculation_amt',
         'chrg_applicable_id',
         'is_gst_applicable',
+        'gst_percentage',
         'chrg_tiger_id',
         'is_active',
         'created_at',
         'created_by'
     ];
+
     
+
+
+
+    /**
+     * get Charge list
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getCharagesList()
+    {
+        $res = self::where('is_active', '1')->pluck('chrg_name', 'id');
+        return $res ?: false;
+    }
+
+
+    /**
+     * get charge Data
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getChargeData($where)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        $res = self::where($where)->where('is_active', '1')->get();
+        return $res ?: false;
+    }
+
+    public function userDetail(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

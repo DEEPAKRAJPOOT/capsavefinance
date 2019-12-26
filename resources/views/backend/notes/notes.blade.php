@@ -24,14 +24,15 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
+                                                  <tr>
                                                     <th class="text-left">Note Details</th>
-                                                    <td class="text-right">Added By</td>                                 </tr> 
+                                                    <td class="text-right">Created By</td>
+                                                  </tr> 
                                                 @foreach($arrData as $data)
-                                                <tr>
-                                                    <th class="text-left">{{$data->note_data}}</th>
-                                                    <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>                                                                        
-                                                </tr>
+                                                  <tr>
+                                                      <th class="text-left">{{$data->note_data}}</th>
+                                                      <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>
+                                                  </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>

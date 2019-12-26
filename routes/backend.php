@@ -316,9 +316,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\NotesController@savePdNotes'
             ]);
        
+            Route::get('query-management', [
+                'as' => 'query_management_list',
+                'uses' => 'Backend\QmsController@index'
+            ]);
 
+            Route::get('query-management-from', [
+                'as' => 'query_management_from',
+                'uses' => 'Backend\QmsController@showQueryForm'
+            ]);
 
-       
+            
+            Route::post('save-query-management', [
+                'as' => 'save_query_management',
+                'uses' => 'Backend\QmsController@saveQueryManagement'
+            ]);
+
+            Route::get('show-qms-details', [
+                'as' => 'show_qms_details',
+                'uses' => 'Backend\QmsController@showQmsDetails'
+
+            ]);    
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 
@@ -478,8 +496,45 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
-        });
+            
+            
+            
+            
+             
+            Route::get('manage-program', [
+                'as' => 'manage_program',
+                'uses' => 'Backend\ProgramController@mangeProgramList'
+            ]);
+            
+             Route::get('add-program', [
+                'as' => 'add_program',
+                'uses' => 'Backend\ProgramController@addProgram'
+            ]);
+             
+             
+            Route::post('save-program', [
+            'as' => 'save_program',
+            'uses' => 'Backend\ProgramController@saveProgram'
+           ]);
+            
+            
+            Route::get('add-sub-program', [
+            'as' => 'add_sub_program',
+            'uses' => 'Backend\ProgramController@addSubProgram'
+           ]);
+            
+            Route::get('manage-sub-program', [
+            'as' => 'manage_sub_program',
+            'uses' => 'Backend\ProgramController@mangeSubProgram'
+           ]);
+            
+             Route::post('save-sub-program', [
+            'as' => 'save_sub_program',
+            'uses' => 'Backend\ProgramController@saveSubProgram'
+           ]);
 
+        });
+            // All master routes
          Route::group(['prefix' => 'manage'], function () {
             Route::get('/charges', [
                 'as' => 'get_charges_list',
@@ -499,6 +554,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\ChargeController@saveCharges'
             ]);       
         });
+
+
+            
+            
+           
+            
+            
+            
+            
+            
+    });
+   
+
+
 
         Route::group(['prefix' => 'agency'], function () {
             Route::get('/', [
@@ -576,8 +645,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'pp_document_list',
                 'uses' => 'Backend\DocumentController@list'
             ]);
+
+            Route::get('/upload-document', [
+                'as' => 'pp_upload_document',
+                'uses' => 'Backend\DocumentController@uploadDocument'
+            ]);
+
+            Route::post('documents-save', [
+                'as' => 'pp_document_save',
+                'uses' => 'Backend\DocumentController@saveDocument'
+            ]);
             
         });
     });
-});
+
 
