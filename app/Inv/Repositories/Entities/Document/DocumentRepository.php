@@ -139,7 +139,6 @@ class DocumentRepository implements DocumentInterface
         if (empty($attributes)) {
             throw new BlankDataExceptions('No Data Found');
         }
-        
         return UserFile::creates($attributes, $docId, $userId);
     }
     

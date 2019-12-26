@@ -17,6 +17,23 @@
     <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
+                <span class="menu-title">Manage FI/RCU</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu1">
+                <ul class="nav flex-column sub-menu">
+                    @can('applicaiton_list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('applicaiton_list') }}">Applications</a>
+                    </li>
+                    @endcan
+                </ul>
+            </div>
+     </li>
+        
+    <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-files-o" aria-hidden="true"></i>
                 <span class="menu-title">Manage Leads</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -73,6 +90,28 @@
                     @can('get_anchor_lead_list')
                         <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_anchor_lead_list') }}">Anchor Uploaded Lead</a>
+                    </li>                     
+                    @endcan      
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-user-secret" aria-hidden="true"></i>
+                <span class="menu-title">Manage Agency</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu">
+                <ul class="nav flex-column sub-menu">
+                @can('get_agency_list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_agency_list') }}">Agency List</a>
+                    </li>
+                    @endcan
+                    @can('get_agency_user_list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_agency_user_list') }}">Add Agency User</a>
                     </li>                     
                     @endcan      
                 </ul>

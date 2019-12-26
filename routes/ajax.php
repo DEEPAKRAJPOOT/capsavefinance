@@ -24,6 +24,15 @@ Route::group(
         'uses' => 'Karza\KarzaController@checkPanStatusVerification'
         ]
     );
+    
+    //////////////////Pan card authontication//////////////////////////
+    Route::post(
+        'chk_user_pan_karza_add_more',
+        [
+        'as' => 'chk_user_pan_karza_add_more',
+        'uses' => 'Karza\KarzaController@checkPanVerificationAddMore'
+        ]
+    ); 
     //////Voter ID Verification
     
     Route::post(
@@ -72,6 +81,16 @@ Route::group(
         'as' => 'gstAnalysis',
         'uses' => 'Application\ApplicationController@analyse_gst'
     ]);
+
+    Route::post('send_gst_otp', [
+        'as' => 'send_gst_otp',
+        'uses' => 'Application\ApplicationController@send_gst_otp'
+    ]);
+    
+    Route::post('verify_gst_otp', [
+        'as' => 'verify_gst_otp',
+        'uses' => 'Application\ApplicationController@verify_gst_otp'
+    ]);
   
     Route::post('sent_otp_mobile', [
         'as' => 'sent_otp_mobile',
@@ -111,7 +130,7 @@ Route::group(
         'uses' => 'Backend\CamController@getFinanceReport'
     ]);
 
-    Route::get('process_banking', [
+    Route::post('process_banking', [
         'as' => 'process_banking_statement',
         'uses' => 'Backend\CamController@getBankReport'
     ]);
@@ -192,6 +211,14 @@ Route::group(
         'uses' => 'AjaxController@getApplications'
         ]
     );
+
+    Route::post(
+         'get-app-fircu',
+         [
+         'as' => 'ajax_fircu_app_list',
+         'uses' => 'AjaxController@getFiRcuAppList'
+         ]
+     );
     Route::post(
         'get-anchor-user-list',
         [
@@ -294,9 +321,61 @@ Route::group(
         'uses' => 'AjaxController@getProgramList'
         ]
     );
+      
+      Route::post(
+        'get-sub-program-list',
+        [
+        'as' => 'get_sub_program_list',
+        'uses' => 'AjaxController@getSubProgramList'
+        ]
+    );
     
     
     
     
+
+    Route::post(
+        'change_agent_rcu_status',
+        [
+        'as' => 'change_agent_rcu_status',
+        'uses' => 'AjaxController@changeAgentRcuStatus'
+        ]
+    );
+
+    Route::post(
+        'change_cm_rcu_status',
+        [
+        'as' => 'change_cm_rcu_status',
+        'uses' => 'AjaxController@changeCmRcuStatus'
+        ]
+    );
+    /*agency route*/
+    Route::post(
+        'get-agency-list',
+        [
+        'as' => 'get_ajax_agency_list',
+        'uses' => 'AjaxController@getAgencyLists'
+        ]
+    );
+    Route::post(
+        'get-agency-user-list',
+        [
+        'as' => 'get_ajax_agency_user_list',
+        'uses' => 'AjaxController@getAgencyUserLists'
+        ]
+    );
+    /*agency route*/
+    
+    
+    
+     Route::post(
+        'get-charges-html',
+        [
+        'as' => 'get_charges_html',
+        'uses' => 'AjaxController@getCharagesHtml'
+        ]
+    );
+    
+   
 
 });

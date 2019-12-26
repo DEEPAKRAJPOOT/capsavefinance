@@ -64,6 +64,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@showDocuments'
             ]);
             
+            
+            Route::get('documents/upload-document', [
+                'as' => 'show_upload_document',
+                'uses' => 'Backend\ApplicationController@uploadDocument'
+            ]);
+            
             Route::post('documents-save', [
                 'as' => 'document_save',
                 'uses' => 'Backend\ApplicationController@saveDocument'
@@ -92,9 +98,29 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@listFI'
             ]);
 
+            Route::get('fircu/fiupload', [
+                'as' => 'fi_upload',
+                'uses' => 'Backend\FiRcuController@FiUpload'
+            ]);
+
+            Route::post('fircu/fiupload', [
+                'as' => 'save_fi_upload',
+                'uses' => 'Backend\FiRcuController@saveFiUpload'
+            ]);
+
             Route::get('fircu/rcu', [
                 'as' => 'backend_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'
+            ]);
+            
+            Route::get('fircu/rcuupload', [
+                'as' => 'rcu_upload',
+                'uses' => 'Backend\FiRcuController@RcuUpload'
+            ]);
+
+            Route::post('fircu/rcuupload', [
+                'as' => 'save_rcu_upload',
+                'uses' => 'Backend\FiRcuController@saveRcuUpload'
             ]);
 
             Route::get('notes-from', [
@@ -208,6 +234,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]); 
            
             //////////////// For Promoter Iframe///////////////////
+             Route::get('show-pan-verify-data', [
+                'as' => 'show_pan_verify_data',
+                'uses' => 'Backend\ApplicationController@showPanVerifyResponseData'
+            ]);
+
 
             Route::get('show-pan-data', [
                 'as' => 'show_pan_data',
@@ -248,7 +279,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@viewCibilReport'
             ]);
 
-            //////////////for Assign FI Iframe////////////////////
+            //////////////for Assign FI RCU Iframe////////////////////
             Route::get('fircu/assign-fi', [
                 'as' => 'show_assign_fi',
                 'uses' => 'Backend\FiRcuController@showAssignFi'
@@ -259,7 +290,32 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@saveAssignFi'
             ]);
 
-        });
+            Route::post('fircu/assign-rcu', [
+                'as' => 'save_assign_rcu',
+                'uses' => 'Backend\FiRcuController@saveAssignRcu'
+            ]);
+            
+
+             Route::get('fircu/assign-rcu', [
+                'as' => 'show_assign_rcu',
+                'uses' => 'Backend\FiRcuController@showAssignRcu'
+            ]);
+
+            Route::get('pd-notes', [
+                'as' => 'pd_notes_list',
+                'uses' => 'Backend\NotesController@pdNotesList'
+            ]);
+            
+            Route::get('pd-notes-from', [
+                'as' => 'backend_pd_notes_from',
+                'uses' => 'Backend\NotesController@showPdNotesForm'
+            ]);
+
+            Route::post('save-pd-notes', [
+                'as' => 'save_pd_notes',
+                'uses' => 'Backend\NotesController@savePdNotes'
+            ]);
+       
 
 
        
@@ -327,6 +383,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@camHygieneSave'
                 ]);
 
+
+                Route::post('cam-promoter-comment-save', [
+                    'as' => 'cam_promoter_comment_save',
+                    'uses' => 'Backend\CamController@promoterCommentSave'
+                ]);
+
             }); //end of cam   
         });//end of application
 
@@ -345,6 +407,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lead_detail',
                 'uses' => 'Backend\LeadController@leadDetail'
             ]);        
+        });
+        
+        Route::group(['prefix' => 'fircu'], function () {
+            Route::get('/applications', [
+                'as' => 'applicaiton_list',
+                'uses' => 'Backend\FiRcuController@appList'
+            ]);
+            
+            Route::get('/fi', [
+                'as' => 'backend_agency_fi',
+                'uses' => 'Backend\FiRcuController@listFI'
+            ]);
+
+            Route::get('/rcu', [
+                'as' => 'backend_agency_rcu',
+                'uses' => 'Backend\FiRcuController@listRCU'
+            ]);
+            
         });
         
         Route::group(['prefix' => 'anchor'], function () {
@@ -388,6 +468,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'add_manual_anchor_lead',
                 'uses' => 'Backend\LeadController@addManualAnchorLead'
             ]);
+
             Route::post('add-manual-anchor-lead', [
                'as' => 'add_manual_anchor_lead',
                'uses' => 'Backend\LeadController@saveManualAnchorLead'
@@ -397,6 +478,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
+
             
             
             
@@ -437,6 +519,63 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             
     });
-    });
+   
 
+
+        Route::group(['prefix' => 'agency'], function () {
+            Route::get('/', [
+                'as' => 'get_agency_list',
+                'uses' => 'Backend\AgencyController@allAgencyList'
+            ]);
+            Route::get('manage-agency-user', [
+                'as' => 'get_agency_user_list',
+                'uses' => 'Backend\AgencyController@getAgencyUserList'
+            ]);
+            Route::get('add-agency', [
+                'as' => 'add_agency_reg',
+                'uses' => 'Backend\AgencyController@addAgencyReg'
+            ]);
+
+            Route::post('add-agency', [
+                'as' => 'save_agency_reg',
+                'uses' => 'Backend\AgencyController@saveAgencyReg'
+            ]);
+
+            Route::get('update-agency', [
+                'as' => 'edit_agency_reg',
+                'uses' => 'Backend\AgencyController@editAgencyReg'
+            ]);
+
+            Route::post('update-agency', [
+                'as' => 'update_agency_reg',
+                'uses' => 'Backend\AgencyController@updateAgencyReg'
+            ]);
+
+            Route::get('/users', [
+                'as' => 'get_agency_user_list',
+                'uses' => 'Backend\AgencyController@getAgencyUserList'
+            ]);
+
+            Route::get('add-agency-user', [
+                'as' => 'add_agency_user_reg',
+                'uses' => 'Backend\AgencyController@addAgencyUserReg'
+            ]);
+
+            Route::post('add-agency-user', [
+                'as' => 'save_agency_user_reg',
+                'uses' => 'Backend\AgencyController@saveAgencyUserReg'
+            ]);
+
+            Route::get('update-agency-user', [
+                'as' => 'edit_agency_user_reg',
+                'uses' => 'Backend\AgencyController@editAgencyUserReg'
+            ]);
+
+            Route::post('update-agency-user', [
+                'as' => 'update_agency_user_reg',
+                'uses' => 'Backend\AgencyController@updateAgencyUserReg'
+            ]);        
+        });
+    });
+});
 

@@ -235,5 +235,13 @@ class FinanceModel extends BaseModel
         return ($result ?? null);
     }
 
+
+    public static function getGstData($request_id){
+       $result = self::select('*')
+                ->from('biz_gst_log')
+                ->where('request_id', $request_id)
+                ->first();
+       return ($result ?? null);
+    }
    
 }

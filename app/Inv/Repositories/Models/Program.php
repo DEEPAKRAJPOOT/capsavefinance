@@ -44,6 +44,7 @@ class Program extends BaseModel {
     protected $fillable = [
         'anchor_id',
         'anchor_user_id',
+        'parent_prgm_id',
         'prgm_name',
         'prgm_type',
         'industry_id',
@@ -52,8 +53,13 @@ class Program extends BaseModel {
         'product_name',
         'is_fldg_applicable',
         'anchor_limit',
+        'anchor_sub_limit',
         'min_loan_size',
         'max_loan_size',
+        'interest_rate',
+        'invoice_upload',
+        'bulk_invoice_upload',
+        'invoice_approval',
         'min_interest_rate',
         'max_interest_rate',
         'min_tenor',
@@ -181,7 +187,7 @@ class Program extends BaseModel {
         $res = self::select('prgm.*', 'u.f_name')
                 ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
                 ->where(['u.user_type' => 2, 'prgm.anchor_id' => $id]);
-        
+
         return ($res ?: false);
     }
 
@@ -207,6 +213,40 @@ class Program extends BaseModel {
             $selected = '*';
         }
         $res = self::select($selected)->where($where)->get();
+        return ($res ?: false);
+    }
+
+    /**
+     * get sub program data 
+     * 
+     * @param type $id
+     * @return type
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getSubProgramListByParentId($anchor_id, $program_id)
+    {
+        if (empty($anchor_id)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        if (!is_int($anchor_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+
+        if (empty($program_id)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        if (!is_int($program_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+
+        $res = self::select('prgm.*', 'u.f_name')
+                ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
+                ->where(['u.user_type' => 2, 'prgm.anchor_id' => $anchor_id])
+                ->where('prgm.parent_prgm_id', $program_id);
+
         return ($res ?: false);
     }
 

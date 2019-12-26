@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\Master\PermissionRole as PermissionRole;
 use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
@@ -1283,6 +1284,7 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $users ?: false;
     }
     
+
     
     /**
      * get all anchor list
@@ -1294,4 +1296,52 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         return Anchor::getAnchorDataById($id);
     }
+
+    /**
+     * Get Backend Roles          
+     * 
+     * @return mixed
+     */
+    public function getAllRole()
+    {
+        $role = Role::getAllRole();
+        return $role;
+    }
+
+    /**
+    * function for get all anchor register user detail
+    * @return type
+    */
+     
+    public function getAllAgency()
+    {
+      $result = Agency::orderBy('agency_id', 'DESC');
+      return $result ?: false;
+    }
+
+    /**
+    * function for get all anchor register user detail
+    * @return type
+    */
+    public function getAgencyById($agency_id)
+    {
+      $result = Agency::find($agency_id);
+      return $result ?: false;
+    }
+
+    public function saveAgency($attributes){
+        $status = Agency::create($attributes);
+        return $status ?: false;
+    }
+
+    public function updateAgency($attributes, $agency_id){
+        $status = Agency::whereAgencyId($agency_id)->update($attributes);
+        return $status ?: false;
+    }
+
+    public function getAgencyUserLists(){
+        $result = UserModel::orderBy('user_id', 'DESC')->where('agency_id','<>', null);
+        return $result ?: false;
+    }   
+
 }

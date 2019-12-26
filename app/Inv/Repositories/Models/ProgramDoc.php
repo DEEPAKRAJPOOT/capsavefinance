@@ -27,14 +27,14 @@ class ProgramDoc extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -82,5 +82,31 @@ class ProgramDoc extends BaseModel {
                 ->where($whereCondition)
                 ->get();
         return $prgmDocs;
-    }    
+    }
+
+
+    
+    /**
+     * save Doc
+     * 
+     * @param type $attributes
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function saveDoc($attributes)
+    {
+
+        if (empty($attributes)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $result = self::insert($attributes);
+        return $result ?: false;
+    }
+
 }

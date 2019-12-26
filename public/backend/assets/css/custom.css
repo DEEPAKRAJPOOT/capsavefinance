@@ -636,7 +636,7 @@ select.form-control{/*color:#c5c5c5;*/ font-size:14px; letter-spacing:1px;}
 }
 
 .btn-success {
-    color: #fff;
+    color: #fff!important;
     background-color: #30878e;
     border-color: #30878e;
 } 
@@ -817,3 +817,4 @@ ul.listing.listing1 li{float:left; width:33.33%;}
     width: 40%;
     float: left;
 }
+

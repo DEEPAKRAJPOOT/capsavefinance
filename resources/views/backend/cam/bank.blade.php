@@ -2,6 +2,7 @@
 @section('content')
 @include('layouts.backend.partials.admin-sidebar')
 @include('layouts.backend.partials.admin-subnav')
+
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
    <div class="inner-container">
@@ -14,10 +15,10 @@
                <div class="pl-4 pr-4 pb-4 pt-2">
                   @if($bankdocs->count() > 0)
                      @foreach($bankdocs as $bankdoc)
-                  <div class="doc">
+                  <div class="doc"  style="text-align: center;">
                      <small>{{ $bankdoc->doc_name }}</small>
                      <ul>
-                        <li><span class="icon"><i class="fa fa-file-excel-o"></i></span></li>
+                        <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
                         <li><a href="{{ Storage::url($bankdoc->file_path) }}" download target="_blank">Download Bank Statement</a></li>
                         <li><a href="javascript:void(0)"></a></li>
                      </ul>
@@ -25,10 +26,12 @@
                      @endforeach
                   @endif
                   <div class="clearfix"></div>
-                  <div style="text-align: right;">
-                  @if($bankdocs->count() > 0)
+
+                  <div style="text-align: right;">                  
+                  @if(request()->get('view_only') && $bankdocs->count() > 0)
                      <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
-                  @endif 
+                  @endif                   
+
                   @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
                      <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download</a>
                   @endif 
@@ -44,16 +47,20 @@
                      <table cellspacing="0" cellpadding="0" class="table overview-table">
                         <tbody>
                            <tr bgcolor="#f2f2f2">
-                              <td colspan="2" style="font-size:18px;">Bank Summary </td>
+                              <td colspan="3" style="font-size:18px;">Bank Summary </td>
                            </tr>
                            <tr>
                               <td style="border-right:0px;">
-                                 <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Name :</b></p>
-                                 <p style="margin-bottom: 0.5rem;"><b>Bank Name :</b> </p>
+                                 <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Name :</b> &nbsp; {{ !empty($customers_info) ? $customers_info[0]['name'] : '' }}</p>
+                                  <p style="margin-bottom: 0.5rem;"><b>Email :</b>  &nbsp; {{ !empty($customers_info) ? strtolower($customers_info[0]['email']) : '' }}</p>
                               </td>
                               <td  style="border-left:0px;">
-                                 <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Account Number :</b></p>
-                                 <p style="margin-bottom: 0.5rem;"><b>Account Type :</b> </p>
+                                 <p style="margin-bottom: 0.5rem;margin-top: 0.5rem;"><b>Account Number :</b>  &nbsp; {{ !empty($customers_info) ? $customers_info[0]['account_no'] : '' }}</p>
+                                 <p style="margin-bottom: 0.5rem;"><b>Mobile :</b>  &nbsp; {{ !empty($customers_info) ? strtolower($customers_info[0]['mobile']) : '' }}</p>
+                              </td>
+                               <td  style="border-left:0px;">
+                                  <p style="margin-bottom: 0.5rem;"><b>Bank Name :</b>  &nbsp; {{ !empty($customers_info) ? $customers_info[0]['bank'] : '' }}</p>
+                                 <p style="margin-bottom: 0.5rem;"><b>Pan :</b>  &nbsp; {{ !empty($customers_info) ? strtolower($customers_info[0]['pan']) : '' }}</p>
                               </td>
                            </tr>
                            <tr>
@@ -333,7 +340,9 @@
                               </tr>
                            </thead>
                         </table>
+                        @if(request()->get('view_only'))
                         <button class="btn btn-success pull-right btn-sm mt-3"> + Add Row</button>
+                        @endif
                         <div class="clearfix"></div>
                         <p class="mt-3">
                            <b>B. Term Loans &amp; Business Loans: </b>
@@ -362,7 +371,9 @@
                               </tr>
                            </thead>
                         </table>
+                        @if(request()->get('view_only'))
                         <button class="btn btn-success pull-right btn-sm mt-3"> + Add Row</button>
+                        @endif
                         <div class="clearfix"></div>
                      </div>
                   </div>
@@ -388,14 +399,18 @@
                            <tbody id="inter_group_transaction">
                            </tbody>
                         </table>
+                        @if(request()->get('view_only'))
                         <button class="btn btn-success pull-right btn-sm mt-3"> + Add Row</button>
+                        @endif
                         <div class="clearfix"></div>
                      </div>
                   </div>
                   <div class="row">
                      <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
+                           @if(request()->get('view_only')) 
                            <button  class="btn btn-success btn-sm btn-ext submitBtnBank" data-toggle="modal" data-target="#myModal">Submit</button>                                        
+                           @endif
                         </div>
                      </div>
                   </div>
@@ -457,11 +472,10 @@
          },
          dataType : 'json',
          success:function(result) {
-            console.log(result);
             let mclass = result['status'] ? 'success' : 'danger';
             var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
             $("#pullMsg").html(html);
-            $(".isloader").show();
+            $(".isloader").hide();
             if (result['status']) {
              window.open(result['value']['file_url'], '_blank');
             }

@@ -9,13 +9,11 @@
                             
 
             <div class="content-wrap height-auto">
-                <div class="login-section">
-                   
-
-               <div class="thanks-conent marT50">
-                      <p class="p-conent">{{trans('master.otpForm.enter_otp_below')}}</p>
-                    </div>  
-              </div>
+                <div class="login-section">  
+	               <div class="thanks-conent text-center marT50">
+	                      <p class="p-conent">{{trans('master.otpForm.enter_mobile_otp_below')}}</p>
+	                </div>  
+              	</div>
             </div>    
                             
 				 <form class="registerForm" autocomplete="off" enctype="multipart/form-data" method="POST" action="{{ route('verify_otp') }}" id="registerForm">

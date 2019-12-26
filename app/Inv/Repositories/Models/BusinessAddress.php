@@ -45,6 +45,7 @@ class BusinessAddress extends BaseModel
         'state_id',
         'pin_code',
         'address_type',
+        'rcu_status',
         'created_by',
         'created_at',
         'updated_at',
@@ -88,5 +89,9 @@ class BusinessAddress extends BaseModel
     public static function getAddressforFI($biz_id){
         $address = BusinessAddress::where('biz_id', $biz_id)->where('addr_1', '<>', null)->get();
         return $address;
+    }
+
+    public function cmFiStatus(){
+        return $this->hasOne('App\Inv\Repositories\Models\FiAddress','biz_addr_id','biz_addr_id')->where('is_active',1);
     }
 }

@@ -11,7 +11,7 @@
                         <h4 class="section-title"> Recover Your Password</h4>
                     </div>
                     <div class="failed">
-                        <div>
+                        <div class="text-center">
                             @if(Session::has("messages"))
                             <strong class="erro-sms text-success">
                                 {{ Session::get('messages') }}
@@ -40,6 +40,7 @@
                                         @error('email')
                                             <span class="text-danger"> {{$message}} </span>
                                         @enderror
+                                        <input type="hidden" class="form-control" name="user_type" value="1">
                                     </div>
                                 </div>
                                 

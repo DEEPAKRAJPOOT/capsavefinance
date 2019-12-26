@@ -359,7 +359,8 @@ use RegistersUsers,
      */
     protected function sendVerificationLinkold($userId) {
 
-        $Otpstring = Helpers::randomOTP();
+       // $Otpstring = Helpers::randomOTP();
+        $Otpstring = mt_rand(1000, 9999);
         $userArr['otp'] = $Otpstring;
         $this->userRepo->save($userArr, $userId);
 
@@ -433,13 +434,13 @@ use RegistersUsers,
                     $userMailArr['otp'] = $Otpstring;
                     $gupshup = new Gupshup_lib();
                     $mobile_no = $userCheckArr->mobile_no;
-                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on rentalpha.\r\n Regards";
+                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
                     // Send OTP mobile to User
                     $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
-                    if ($otp_resp['status'] != 'success') {
+                    //if ($otp_resp['status'] != 'success') {
                        // Send OTP mail to User
                        Event::dispatch("user.sendotp", serialize($userMailArr));
-                    }
+                    //}
                     Session::flash('message_div', trans('success_messages.email_verified_please_login'));
 
                     $alluserData = $this->userRepo->getUserDetail((int) $userId);
@@ -523,7 +524,8 @@ use RegistersUsers,
         $date->modify('+30 minutes');
         $formatted_date = $date->format('Y-m-d H:i:s');
         $otpArr = [];
-        $Otpstring = Helpers::randomOTP();
+        //$Otpstring = Helpers::randomOTP();
+        $Otpstring = mt_rand(1000, 9999);
         $countOtp = $this->userRepo->getOtps($userId)->toArray();
         //dd($countOtp);
         if (isset($countOtp)) {
@@ -547,9 +549,15 @@ use RegistersUsers,
                 $otpArr['otp_exp_time'] = $currentDate;
                 $otpArr['is_verified'] = 1;
                 $this->userRepo->saveOtp($otpArr);
-                $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
+                $userMailArr['name'] = $name =$userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                 $userMailArr['email'] = $userCheckArr->email;
                 $userMailArr['otp'] = $Otpstring;
+                $gupshup = new Gupshup_lib();
+                $mobile_no = $userCheckArr->mobile_no;
+                $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
+
+                $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
+
                 Event::dispatch("user.sendotp", serialize($userMailArr));
                 return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
             } else {

@@ -455,6 +455,111 @@ class ApplicationController extends Controller
      return view('frontend.application.gstin',compact('gst_no','all_gst_details','appId'));   
     }
 
+    public function send_gst_otp(Request $request) {
+     if ($request->session()->exists('request_id')) {
+        $request->session()->forget(['request_id','request_gstin']);
+      }
+      $post_data = $request->all();
+      $gst_no = trim($request->get('gst_no'));
+      $gst_usr = trim($request->get('gst_usr'));
+      $appId = trim($request->get('appId'));
+      $user_id = Auth::user()->user_id;
+      $app_user = State::getUserByAPP($appId);
+      $app_userId = $app_user['user_id'];
+      if ($app_userId != $user_id) {
+        return response()->json(['message' =>'Data can not be manipulated','status' => 0]);
+      }
+
+      if(file_exists(public_path("storage/user/".$appId.'_'.$gst_no.".pdf"))){
+        return response()->json(['message' =>'GST Report already pulled.','status' => 0]);
+      }
+
+      if (empty($gst_no)) {
+        return response()->json(['message' =>'GST Number can\'t be empty.','status' => 0]);
+      }
+      if (empty($gst_usr)) {
+        return response()->json(['message' =>'GST Username can\'t be empty.','status' => 0]);
+      }
+
+      $karza = new KarzaTxn_lib();
+        $req_arr = array(
+            'gstin' => $gst_no,//'09AALCS4138B1ZE',
+            'username' => $gst_usr,//'prolitus27',
+            'app_id' => $appId,
+        );
+
+      $response = $karza->api_call($req_arr);
+      if (empty($response['requestId'])) {
+         return response()->json(['message' =>'Unable to send OTP. Please try again later.','status' => 0]);
+      }
+
+      $request_id = $response['requestId'];
+      $result = json_decode($response['result'],true);
+
+      if (empty($result['status_cd']) || $result['status_cd'] != 1) {
+         return response()->json(['message' =>'Unable to send OTP. Please try again later.','status' => 0]);
+      }
+
+     $request->session()->put('request_id', $request_id);
+     $request->session()->put('request_gstin', $gst_no);
+     return response()->json(['message' =>'OTP Send successfully to registered email ID.','status' => 1]);
+    }
+
+    public function verify_gst_otp(Request $request) {
+      $post_data = $request->all();
+      $gst_no = trim($request->get('gst_no'));
+      $gst_usr = trim($request->get('gst_usr'));
+      $appId = trim($request->get('appId'));
+      $otp = trim($request->get('otp'));
+      $user_id = Auth::user()->user_id;
+      $app_user = State::getUserByAPP($appId);
+      $app_userId = $app_user['user_id'];
+      if ($app_userId != $user_id) {
+        return response()->json(['message' =>'Data can not be manipulated','status' => 0]);
+      }
+
+      $request_id = $request->session()->get('request_id');
+      $request_gstin = $request->session()->get('request_gstin');
+
+
+      if ($request_gstin != $gst_no) {
+        return response()->json(['message' =>'Provided GST Number is not valid.','status' => 0]);
+      }
+
+      if(file_exists(public_path("storage/user/".$appId.'_'.$gst_no.".pdf"))){
+        return response()->json(['message' =>'GST Report already pulled.','status' => 0]);
+      }
+
+      if (empty($gst_no)) {
+        return response()->json(['message' =>'GST Number can\'t be empty.','status' => 0]);
+      }
+      if (empty($gst_usr)) {
+        return response()->json(['message' =>'GST Username can\'t be empty.','status' => 0]);
+      }
+
+      $karza = new KarzaTxn_lib();
+        $req_arr = array(
+            'gstin' => $gst_no,//'09AALCS4138B1ZE',
+            'app_id' => $appId,
+            'requestId' => $request_id,
+            'otp' => $otp,
+        );
+
+      $response = $karza->api_call($req_arr, true);
+      if (empty($response['requestId'])) {
+         return response()->json(['message' =>'Invalid OTP. Please try again later.','status' => 0]);
+      }
+
+      $request_id = $response['requestId'];
+      $result = json_decode($response['result'],true);
+      if (empty($result['status_cd']) || $result['status_cd'] != 1) {
+         return response()->json(['message' =>'Invalid OTP. Please try again later.','status' => 0]);
+      }
+      $request->session()->forget(['request_id','request_gstin']);
+      return response()->json(['message' =>'OTP verified successfully.','status' => 1]);
+    }
+
+
     public function analyse_gst(Request $request){
       $post_data = $request->all();
       $gst_no = trim($request->get('gst_no'));
@@ -488,13 +593,14 @@ class ApplicationController extends Controller
             'gstin' => $gst_no,//'09AALCS4138B1ZE',
             'username' => $gst_usr,//'prolitus27',
             'password' => $gst_pass,//'Prolitus@1234',
+            'app_id' => $appId,
         );
 
 
       $response = $karza->api_call($req_arr);
       if ($response['status'] == 'success') {
           $fname = $appId.'_'.$gst_no;
-          $this->logdata($response, 'F', $fname.'.txt');
+          $this->logdata($response['result'], 'F', $fname.'.json');
           $json_decoded = json_decode($response['result'], TRUE);
           $file_name = $fname.'.pdf';
           $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
@@ -505,7 +611,16 @@ class ApplicationController extends Controller
         return response()->json(['message' => $response['message'] ?? 'Something went wrong','status' => 0]);
       }
     }
-
+  /* For Promoter pan verify iframe model    */
+    
+    public function showPanVerifyResponseData(Request $request)
+    {
+        $request =  $request->all();
+        $result   = $this->userRepo->getOwnerAppRes($request);
+        $res = json_decode($result->karza->res_file);
+        return view('backend.app.promoter_pan_verify_data')->with('res', $res);
+        
+    }
      /* For Promoter pan iframe model    */
     
     public function showPanResponseData(Request $request)

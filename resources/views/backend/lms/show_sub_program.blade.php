@@ -44,13 +44,13 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">
-                        <table id="program_list" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                        <table id="sub_program_list" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
                                     <th>{{ trans('backend.mange_program.program_id') }}</th>
                                     <th>{{ trans('backend.mange_program.anchor_name') }}</th>
                                     <th>{{ trans('backend.mange_program.program_mame') }}</th>
-                                    <th>{{ trans('backend.mange_program.program_type') }}</th>
+                                 
                                     <th>{{ trans('backend.mange_program.anchor_limit') }}</th>
                                     <th>{{ trans('backend.mange_program.anchor_sub_limit') }}</th>
                                     <th>{{ trans('backend.mange_program.loan_size') }}</th>
@@ -83,14 +83,15 @@
 <script>
 
     var messages = {
-        get_program_list: "{{ URL::route('get_program_list') }}",
+        get_sub_program_list: "{{ URL::route('get_sub_program_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-        anchor_id: "{{ isset($anchor_id) ? $anchor_id : null }}"
+        anchor_id: "{{ isset($anchor_id) ? $anchor_id : null }}",
+        program_id : "{{ isset($program_id) ? $program_id : null  }}"
 
     };
 </script>
-
+<script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/lms/program.js') }}" type="text/javascript"></script>
 @endsection

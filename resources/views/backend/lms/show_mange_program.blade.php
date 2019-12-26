@@ -51,9 +51,8 @@
                                     <th>{{ trans('backend.mange_program.anchor_name') }}</th>
                                     <th>{{ trans('backend.mange_program.program_mame') }}</th>
                                     <th>{{ trans('backend.mange_program.program_type') }}</th>
-                                    <th>{{ trans('backend.mange_program.anchor_limit') }}</th>
-                                    <th>{{ trans('backend.mange_program.anchor_sub_limit') }}</th>
-                                    <th>{{ trans('backend.mange_program.loan_size') }}</th>
+                                    <th>{{ trans('backend.mange_program.anchor_limit') }}</th>                               
+
                                     <th>{{ trans('backend.mange_program.status') }}</th>
                                     <th>{{ trans('backend.mange_program.action') }}</th>
 
@@ -90,7 +89,7 @@
 
     };
 </script>
-
+<script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/lms/program.js') }}" type="text/javascript"></script>
 @endsection

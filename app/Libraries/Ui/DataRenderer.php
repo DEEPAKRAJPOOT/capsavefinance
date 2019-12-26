@@ -235,26 +235,34 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'assignee',
                     function ($app) {                    
-                    //if($app->to_id){
-                    //$userInfo=Helpers::getUserInfo($app->to_id);                    
-                    //   $assignName=$userInfo->f_name. ''.$userInfo->l_name;  
-                    //}else{
-                    //   $assignName=''; 
+                    //if ($app->to_id){
+                    //    $userInfo = Helpers::getUserInfo($app->to_id);                    
+                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
+                    //} else {
+                    //    $assignName=''; 
                     //} 
-                    //    return $assignName;
-                    return $app->assignee ? $app->assignee . '<br><small>(' . $app->assignee_role . ')</small>' : '';
+                    //return $assignName;
+                    $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
+                    if($userInfo){
+                        return $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
+                    }
+                    return '';
                 })
                 ->addColumn(
                     'assigned_by',
                     function ($app) {
-                        //return $app->assigned_by ? $app->assigned_by . '<br>(' . $app->from_role . ')' : '';
-                        $fromData = AppAssignment::getOrgFromUser($app->app_id);
-                        return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
+                        if ($app->from_role && !empty($app->from_role)) {
+                            return $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
+                        } else {
+                            return $app->assigned_by ? $app->assigned_by : '';
+                        }
+                        //$fromData = AppAssignment::getOrgFromUser($app->app_id);
+                        //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
                 })                
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
-                    return '';
+                    return $app->sharing_comment ? $app->sharing_comment : '';
 
                 })
                 ->addColumn(
@@ -268,17 +276,126 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($app) use ($request) {
                         $act = '';
-                        if(Helpers::checkPermission('add_app_note')){
-                            $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
-                        }
-                        if(Helpers::checkPermission('send_case_confirmBox')){
-                            $act = $act . '&nbsp;<a href="#" title="Assign Case" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="300px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
-                           
+                        $view_only = Helpers::isAccessViewOnly($app->app_id);
+                        if ($view_only) {
+                            if(Helpers::checkPermission('add_app_note')){
+                                $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
+                            }
+                            if(Helpers::checkPermission('send_case_confirmBox')){
+                                $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                $roleData = Helpers::getUserRole();
+                                $currentStage = Helpers::getCurrentWfStage($app->app_id);
+                                if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
+                                    $act = $act . '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                }
+                            }
+                            
                         }
                         return $act;
                                       
                     }
                 )
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    if ($request->get('is_assign') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_assign');
+                            $query->where('app.is_assigned', $is_assigned);
+                        });
+                    }
+                    
+                })
+                ->make(true);
+    }
+    
+    /*      
+     * Get application list
+     */
+    public function getFiRcuAppList(Request $request, $app)
+    {
+        return DataTables::of($app)
+                ->rawColumns(['app_id','assignee', 'assigned_by'])
+                ->addColumn(
+                    'app_id',
+                    function ($app) {
+                        $link = route('backend_agency_fi', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                    }
+                )
+                ->addColumn(
+                    'biz_entity_name',
+                    function ($app) {                        
+                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                })
+                ->addColumn(
+                    'name',
+                    function ($app) {                        
+                        return $app->name ? $app->name : '';
+                })
+                ->addColumn(
+                    'email',
+                    function ($app) {                        
+                        return $app->email ? $app->email : '';
+                })
+                ->addColumn(
+                    'mobile_no',
+                    function ($app) {                        
+                        return $app->mobile_no ? $app->mobile_no : '';
+                })                
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($app) {
+                    return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
+                })
+                ->addColumn(
+                    'user_type',
+                    function ($app) {
+                    if($app->user_type && $app->user_type==1){
+                       $anchorUserType='Supplier'; 
+                    }else if($app->user_type && $app->user_type==2){
+                        $anchorUserType='Buyer';
+                    }else{
+                        $anchorUserType='';
+                    }
+                       return $anchorUserType;
+                })                
+                ->addColumn(
+                    'assignee',
+                    function ($app) {
+                    $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
+                    if($userInfo){
+                        return $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
+                    }
+                    return '';
+                })
+                ->addColumn(
+                    'assigned_by',
+                    function ($app) {
+                        if ($app->from_role && !empty($app->from_role)) {
+                            return $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
+                        } else {
+                            return $app->assigned_by ? $app->assigned_by : '';
+                        }
+                })                
+                ->addColumn(
+                    'shared_detail',
+                    function ($app) {
+                    return $app->sharing_comment ? $app->sharing_comment : '';
+
+                })
+                ->addColumn(
+                    'status',
+                    function ($app) {
+                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+
+                })
                 ->filter(function ($query) use ($request) {
                     
                     if ($request->get('search_keyword') != '') {                        
@@ -403,8 +520,14 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'app_id',
                     function ($app) {
+                        //$roleData = User::getBackendUser(\Auth::user()->user_id);
+                        //if ($roleData[0]->is_superadmin == 1) {
+                        //    $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);                                                            
+                        //} else {
+                            $link = '#';
+                        //}                        
                         //$link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\">" . 'CAPS000'.$app->app_id . "</a> ";
+                        return '<a id="app-id-' . $app->app_id . ' rel="tooltip" href="' . $link . '">' . 'CAPS000'.$app->app_id . '</a>';
                     }
                 )
                 ->addColumn(
@@ -897,6 +1020,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+
     
     
     /**
@@ -983,8 +1107,8 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($program) {
                         $action = '';
-                      if(Helpers::checkPermission('add_sub_program')){
-                          $action .='<a title="Show Sub program" href="'.route('manage_sub_program',['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-plus" aria-hidden="true"></i></a>';
+                      if(Helpers::checkPermission('manage_sub_program')){
+                          $action .='<a title="Show Sub program" href="'.route('manage_sub_program',['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
                       }
                     
                     //add_sub_program
@@ -995,4 +1119,199 @@ class DataRenderer implements DataProviderInterface
                     })
                     ->make(true);
     }
+
+
+    public function getAgencyList(Request $request, $agency)
+    {
+        
+        return DataTables::of($agency)
+                ->rawColumns(['agency_id', 'action'])
+                ->addColumn(
+                    'agency_id',
+                    function ($agency) {
+                    $link = '000'.$agency->agency_id;
+                    return $link;
+                      // return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        
+                    } )
+                ->editColumn(
+                    'agency_name',
+                    function ($agency) {
+                    return $agency->comp_name;
+                })              
+                ->editColumn(
+                    'address',
+                    function ($agency) {
+                    return $agency->comp_addr; 
+                })
+                ->editColumn(
+                    'email',
+                    function ($agency) {
+                    return $agency->comp_email  ;
+
+                })
+                ->editColumn(
+                    'phone',
+                    function ($agency) {
+                    return $agency->comp_phone; 
+                }) 
+                ->editColumn(
+                    'created_at',
+                    function ($agency) {
+                    return ($agency->created_at)? date('d-M-Y',strtotime($agency->created_at)) : '---';
+                })
+                ->addColumn(
+                    'action',
+                    function ($agency) {
+                       $act = '';
+                     //if(Helpers::checkPermission('edit_anchor_reg')){
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyFrame\" data-url =\"" . route('edit_agency_reg', ['agency_id' => $agency->agency_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency Detail\"><i class=\"fa fa-edit\"></a>";
+                     //}
+                     return $act;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_name') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('by_name'));
+                            $query->where('agency.comp_name', 'like',"%$search_keyword%")
+                            ->orWhere('agency.comp_email', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+    public function getAgencyUserLists(Request $request, $user)
+    {
+        return DataTables::of($user)
+                ->rawColumns(['user_id', 'action'])
+                ->addColumn(
+                    'user_id',
+                    function ($user) {
+                    $link = '000'.$user->user_id;
+                    return $link;
+                    } )             
+                ->editColumn(
+                    'user_name',
+                    function ($user) {
+                    return $user->f_name.' '.$user->l_name; 
+                })
+                ->editColumn(
+                    'agency_name',
+                    function ($user) {
+                    return $user->agency->comp_name;
+                }) 
+                ->editColumn(
+                    'email',
+                    function ($user) {
+                    return $user->email  ;
+
+                })
+                ->editColumn(
+                    'phone',
+                    function ($user) {
+                    return $user->mobile_no; 
+                }) 
+                ->editColumn(
+                    'created_at',
+                    function ($user) {
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+                })
+                ->addColumn(
+                    'action',
+                    function ($user) {
+                       $act = '';
+                     //if(Helpers::checkPermission('edit_anchor_reg')){
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyUserFrame\" data-url =\"" . route('edit_agency_user_reg', ['user_id' => $user->user_id]) . "\" data-height=\"350px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency User Detail\"><i class=\"fa fa-edit\"></a>";
+                     //}
+                     return $act;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_name') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('by_name'));
+                            $query->where('users.f_name', 'like',"%$search_keyword%")
+                            ->orWhere('users.email', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+    
+    
+    
+    /**
+     * sub program 
+     * 
+     * @param type $request
+     * @param type $program
+     * @return type mixed 
+     */
+    function getSubProgramList($request, $program)
+    {
+        return DataTables::of($program)
+                        ->rawColumns(['user_id','status', 'action'])
+                        
+                        ->editColumn(
+                                'prgm_id',
+                                function ($program) {
+                            return $program->prgm_id;
+                        })
+                        ->editColumn(
+                                'product_name',
+                                function ($program) {
+                            return $program->product_name;
+                        })
+                        ->editColumn(
+                                'anchor_sub_limit',
+                                function ($program) {
+                            return $program->anchor_sub_limit;
+                        })
+                        ->addColumn(
+                                'loan_size',
+                                function ($program) {
+                            return $program->min_loan_size . '-' . $program->max_loan_size;
+                        })
+                        ->editColumn(
+                                'status',
+                                function ($program) {
+                            return '  <div class="d-flex inline-action-btn">
+									  
+									   <div class="dropdown">
+												<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+												 Active
+												</button>
+											   <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 25px, 0px); top: 0px; left: 0px; will-change: transform;">
+												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Active</a>
+												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Inactive</a>
+												</div>
+											  </div>
+									   
+									   </div>';
+                        })
+                        
+                         ->addColumn(
+                    'action',
+                    function ($user) {
+                       $act = '';
+                     //if(Helpers::checkPermission('edit_anchor_reg')){
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyUserFrame\" data-url =\"" . route('edit_agency_user_reg', ['user_id' => $user->user_id]) . "\" data-height=\"350px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency User Detail\"><i class=\"fa fa-edit\"></a>";
+                     //}
+                     return $act;
+                    }
+                )
+                        ->filter(function ($query) use ($request) {
+//                    if ($request->get('by_name') != '') {
+//                        $query->where(function ($query) use ($request) {
+//                            $search_keyword = trim($request->get('by_name'));
+//                            $query->where('users.f_name', 'like',"%$search_keyword%")
+//                            ->orWhere('users.email', 'like', "%$search_keyword%");
+//                        });
+//                    }
+                        })
+                        ->make(true);
+    }
+
 }

@@ -3,6 +3,7 @@
 return [
     //Application List Head
     'app_list_head' => [
+
         'app_id' => 'App Id',
         'biz_name' => 'Entity Name',
         'name' => 'Name',

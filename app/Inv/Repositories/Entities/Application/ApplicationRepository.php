@@ -14,6 +14,8 @@ use App\Inv\Repositories\Models\LiftingDetail;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\FiAddress;
+use App\Inv\Repositories\Models\RcuDocument;
+use App\Inv\Repositories\Models\RcuStatusLog;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -22,7 +24,11 @@ use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Offer;
 use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\Master\Industry;
-
+use App\Inv\Repositories\Models\AppPdNote;
+use App\Inv\Repositories\Models\AnchorRelation;
+use App\Inv\Repositories\Models\Master\Charges;
+use App\Inv\Repositories\Models\ProgramDoc;
+use App\Inv\Repositories\Models\ProgramCharges;
 /**
  * Application repository class
  */
@@ -342,6 +348,32 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
       return $result ?: false;
     }
     
+     /**
+     * function for get all RCU documents filess list
+     * @return type
+     */
+     
+    public function getCurrentRcuDoc($appId, $docId)
+    {
+      return RcuDocument::where('app_id', $appId)
+                ->with('cmStatus')
+                ->where('doc_id', $docId)
+                ->where('is_active', 1)
+                ->first();
+      
+    }
+    
+     /**
+     * function for get all RCU documents filess list
+     * @return type
+     */
+     
+    public function getRcuAgencies($appId, $docId)
+    {
+      $result = RcuDocument::getRcuAgencies($appId, $docId);
+      return $result ?: false;
+    }
+    
     /**
      * Get Program Data
      * 
@@ -458,6 +490,73 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $result = FiAddress::insertFiAddress($data);
         return $result ?: false;
     }
+    
+    /**
+     * insert into RCU documents
+     * 
+     * @param array $data
+     * @return status
+     */
+    public function assignRcuDocument($data){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($data)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        $assignData = RcuDocument::where('agency_id', $data['agency_id'])
+                ->where('to_id', $data['to_id'])
+                ->where('app_id', $data['app_id'])
+                ->where('doc_id', $data['doc_id'])
+                ->first();
+        if(!$assignData) {
+            $resp = RcuDocument::where('app_id', $data['app_id'])
+                    ->where('doc_id', $data['doc_id'])
+                    ->update(['is_active' => 0]);
+            if($resp == true || !$assignData) {
+                $result = RcuDocument::create($data);
+                return $result ?: false;
+            }
+        }
+        else {
+            return "Assigned";
+        }
+        
+    }
+    
+    /**
+     * insert into RCU documents
+     * 
+     * @param array $data
+     * @return status
+     */
+    public function saveRcuStatusLog($data){
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($data)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        $result = RcuStatusLog::insert($data);
+        
+        return $result ?: false;
+    }
 
     /**
      * get all agency list
@@ -467,6 +566,30 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $agency = Agency::get();
         return $agency ?: false;
     }
+
+    /**
+     * Get Application assign data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     */
+    public function getAppAssignmentData ($whereCondition=[])
+    {
+        return AppAssignment::getAppAssignmentData ($whereCondition);
+    }
+
+    /**
+     * Get Back stages users to assign the application
+     * 
+     * @param integer $app_id
+     * @param array $roles
+     * 
+     * @return mixed
+     */
+    public function getBackStageUsers($app_id, $roles=[])
+    {
+        return AppAssignment::getBackStageUsers ($app_id, $roles);
+    }    
 
     public function changeAgentFiStatus($request){
       $status = FiAddress::changeAgentFiStatus($request);
@@ -478,8 +601,45 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function changeCmFiStatus($request){
-      $status = $this->application->changeAgentFiStatus($request);
-      return $status;
+      $status = FiAddress::changeCmFiStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function updateFiFile($data, $fiAddrId){
+        return FiAddress::updateFiFile($data, $fiAddrId);
+    }
+    
+    
+    
+    /**
+     * Save pd notes 
+     * 
+     * @param type $attr Array
+     * @param type $id Int
+     * @return type mixed
+     */
+    public function savePdNotes($attr, $id = null)
+    {
+        return AppPdNote::savePdNotes($attr, $id);
+    }
+
+
+    public function showData($id = null)
+    {
+        return AppPdNote::showData($id);
+    }
+
+    public function changeAgentRcuStatus($request){
+      $status = RcuDocument::changeAgentRcuStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
     }
     
     
@@ -554,6 +714,112 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getDocumentList($where)
     {
         return DocumentMaster::getDocumentList($where);
+    }
+
+    public function changeCmRcuStatus($request){
+      $status = RcuDocument::changeCmRcuStatus($request);
+      if($status){
+        return response()->json(['status'=>$status, 'message'=>'Status changed successfully']);
+      }else{
+        return response()->json(['status'=>0, 'message'=>'Something went wrong, Try again later.']);
+      }
+    }
+
+    public function updateRcuFile($data, $rcuDocId){
+        return RcuDocument::updateRcuFile($data, $rcuDocId);
+    }
+
+
+
+    public function saveAnchorRelationDetails($attributes){
+        $result =  AnchorRelation::creates(($attributes));
+        return $result ?: false;
+    }
+
+    public function getAnchorRelationDetails($appId){
+        $result =  AnchorRelation::where('app_id',$appId)->first();
+        return $result;
+    }
+
+     public function updateAnchorRelationDetails($attributes, $anchor_relation_id){
+        $anchor =  AnchorRelation::where('anchor_relation_id',$anchor_relation_id)->first();
+        $updateAnchorData = $anchor->update($attributes);
+        return $updateAnchorData ? true : false;
+    }
+    
+    
+    
+    
+    /**
+     * get charges list
+     * 
+     * @param type $where Array 
+     * @return type mixed
+     */
+    public function getChargesList()
+    {
+        return Charges::getCharagesList();
+    }
+    
+    
+    /**
+     * get charge 
+     * 
+     * @return type mixed
+     */
+    
+    public function getChargeData($where)
+    {
+        return Charges::getChargeData($where);
+    }
+    
+    
+    /**
+     * Save program doc
+     * 
+     * @param type $attr Array
+     * @return type mixed 
+     */
+    public function saveProgramDoc($attr)
+    {
+        return ProgramDoc::saveDoc($attr);
+    }
+    
+    
+    /**
+     * save program charge
+     * 
+     * @param type $attr Array
+     * @return type mixed
+     */
+    public function saveProgramChrgData($attr)
+    {
+        return ProgramCharges::saveProgramChrgData($attr);
+    }
+    
+    
+    /**
+     * delete program Data
+     * 
+     * @param type $where
+     * @return type mixed
+     */
+    public function deleteProgramData($where)
+    {
+        return ProgramCharges::deleteProgramData($where);
+    }
+    
+    
+    
+    /**
+     * get sub program data 
+     * 
+     * @param type $id
+     * @return type mixed
+     */
+    public function getSubProgramListByParentId($anchor_id , $program_id)
+    {
+        return Program::getSubProgramListByParentId($anchor_id , $program_id);
     }
 
 }

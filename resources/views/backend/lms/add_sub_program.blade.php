@@ -51,6 +51,8 @@
 
                                             {{ Form::open(['url'=>route('save_sub_program'),'id'=>'add_sub_program']) }}
                                             {!! Form::hidden('parent_prgm_id',$program_id) !!}
+                                            {!! Form::hidden('anchor_limit',isset($programData) ? $programData->anchor_limit : null) !!}
+                                           
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
                                             <div class="sub-form renew-form" id="subform">
@@ -60,7 +62,7 @@
                                                         <a href="javascript:void(0);" class="verify-owner-no" style="top:42px;">
                                                             <i class="fa fa-inr" aria-hidden="true"></i>
                                                         </a>   
-                                                        {!! Form::text('anchor_limit','',['class'=>'form-control'])   !!}
+                                                        {!! Form::text('anchor_limit_re',isset($remaningAmount) ? $remaningAmount : null,['class'=>'form-control' ,'readonly'=>true ,'id'=>'anchor_limit'])   !!}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -76,7 +78,7 @@
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <label for="txtCreditPeriod">Limit<span class="error_message_label">*</span> </label>
-                                                                {!! Form::text('limit','',['class'=>'form-control'])   !!}
+                                                                {!! Form::text('anchor_sub_limit','',['class'=>'form-control'])   !!}
 
                                                             </div>
                                                         </div>
@@ -108,16 +110,28 @@
                                                             <div class="form-check-inline">
                                                                 <label class="form-check-label fnt">
 
-                                                                    {!! Form::radio('interest_rate','fixed','',  ['class'=>'form-check-input int-checkbox'])    !!} 
+                                                                    {!! Form::radio('interest_rate','1','',  ['class'=>'form-check-input int-checkbox'])    !!} 
                                                                     Fixed
                                                                 </label>
                                                             </div>
                                                             <div class="form-check-inline">
                                                                 <label class="form-check-label fnt">
-                                                                    {!! Form::radio('interest_rate','floating','',  ['class'=>'form-check-input int-checkbox']) !!} 
+                                                                    {!! Form::radio('interest_rate','2','',  ['class'=>'form-check-input int-checkbox']) !!} 
                                                                     Floating
                                                                 </label>
                                                             </div>
+                                                        </div>
+                                                        <div class="row floating " style="display:none;">
+                                                            <div class="col-md-4">
+                                                                <select  name="interest_linkage" class="form-control">
+                                                                    <option>Linkage</option>
+                                                                    <option value="12" >12%</option>
+                                                                    <option value="15">15%</option>
+                                                                    <option value="20">20%</option>
+                                                                    <option value="25">25%</option>
+                                                                </select>
+                                                            </div>
+
                                                         </div>
                                                         <div class="row fixed" style="display:none;">
                                                             <div class="col-md-6">
@@ -127,23 +141,7 @@
                                                                 <input type="text" name="max_interest_rate" class="form-control" placeholder="Max" >
                                                             </div>
                                                         </div>
-                                                        <div class="row floating" style="display:none;">
-                                                            <div class="col-md-4">
-                                                                <select class="form-control">
-                                                                    <option>Linkage</option>
-                                                                    <option value="12" >12%</option>
-                                                                    <option value="15">15%</option>
-                                                                    <option value="20">20%</option>
-                                                                    <option value="25">25%</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <input type="text" name="employee" class="form-control" placeholder="Min " >
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <input type="text" name="employee" class="form-control" placeholder="Max" >
-                                                            </div>
-                                                        </div>
+
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -188,7 +186,7 @@
                                                                 <div class="mt-3">
                                                                     <div id="facility1" class="desc" style="display:none;">
                                                                         <label for="txtCreditPeriod">Max. Interset Rate (%) <span class="error_message_label">*</span></label>
-                                                                        <input type="text" name="employee" id="employee" value="" class="form-control" placeholder="Max interset rate" >
+                                                                        <input type="text" name="adhoc_interest_rate" id="employee" value="" class="form-control" placeholder="Max interset rate" >
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -238,13 +236,16 @@
                                                         <label for="txtPassword">Invoice Upload <span class="error_message_label">*</span></label>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="1"  id="admin" name="admin"><label for="admin"> Admin</label>
+                                                                <input type="checkbox" value="1"  id="invoice_upload_0" name="invoice_upload[]">
+                                                                <label for="invoice_upload_0"> Admin</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="2"  id="anchor" name="anchor"><label for="anchor"> Anchor</label>
+                                                                <input type="checkbox" value="2"  id="invoice_upload_1" name="invoice_upload[]">
+                                                                <label for="invoice_upload_1"> Anchor</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="3"  id="customer-supplier" name="customer-supplier"><label for="customer-supplier"> Customer/Supplier</label>
+                                                                <input type="checkbox" value="3"  id="invoice_upload_2" name="invoice_upload[]">
+                                                                <label for="invoice_upload_2"> Customer/Supplier</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -254,32 +255,35 @@
                                                         <label for="txtPassword">Bulk Invoice Upload <span class="error_message_label">*</span></label>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="1" id="admin" name="admin"><label for="admin"> Admin</label>
+                                                                <input type="checkbox" value="1" id="bulk_invoice_upload_0" 
+                                                                       name="bulk_invoice_upload[]"><label for="bulk_invoice_upload_0"> Admin</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="2"  id="anchor" name="anchor"><label for="anchor"> Anchor</label>
+                                                                <input type="checkbox" value="2"  id="bulk_invoice_upload_1" name="bulk_invoice_upload[]">
+                                                                <label for="bulk_invoice_upload_1"> Anchor</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox"  value="3"   id="customer-supplier" name="customer-supplier"><label for="customer-supplier"> Customer/Supplier</label>
+                                                                <input type="checkbox"  value="3"   id="bulk_invoice_upload_2" name="bulk_invoice_upload[]">
+                                                                <label for="bulk_invoice_upload_2"> Customer/Supplier</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group password-input">
-                                                        <label for="txtPassword">Invoive Approval <span class="error_message_label">*</span></label>
+                                                        <label for="txtPassword">Invoice Approval <span class="error_message_label">*</span></label>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="1"  id="admin1" name="admin1"><label for="admin1"> Admin</label>
+                                                                <input type="checkbox" value="1"  id="invoice_approval_0" name="invoice_approval[]"><label for="invoice_approval_0"> Admin</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="2" id="anchor1" name="anchor1"><label for="anchor1"> Anchor</label>
+                                                                <input type="checkbox" value="2" id="invoice_approval_1" name="invoice_approval[]"><label for="invoice_approval_1"> Anchor</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="3" id="customer-supplier1" name="customer-supplier1"><label for="customer-supplier1"> Customer/Supplier</label>
+                                                                <input type="checkbox" value="3" id="invoice_approval_2" name="invoice_approval[]"><label for="invoice_approval_2"> Customer/Supplier</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox"  value="4" id="auto-approval" name="auto-approval"><label for="auto-approval"> Auto Approval</label>
+                                                                <input type="checkbox"  value="4" id="invoice_approval_4" name="invoice_approval[]"><label for="invoice_approval_4"> Auto Approval</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -294,7 +298,7 @@
                                                                 <h5>Pre Sanction </h5>
 
                                                                 {!!
-                                                                Form::select('pre_sanction',
+                                                                Form::select('pre_sanction[]',
                                                                 [''=>'Please select']+$preSanction,
                                                                 null,
                                                                 ['id' => 'pre_sanction',
@@ -308,7 +312,7 @@
                                                             <div class="col-md-6">
                                                                 <h5>Post Sanction </h5>
                                                                 {!!
-                                                                Form::select('post_sanction',
+                                                                Form::select('post_sanction[]',
                                                                 [''=>'Please select']+$postSanction,
                                                                 null,
                                                                 ['id' => 'post_sanction',
@@ -322,64 +326,48 @@
                                                 <div class="col-md-12">
                                                     <h5 class="card-title">Charges</h5>
                                                 </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group password-input">
-                                                        <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
-                                                        </label>
-                                                        <select class="form-control">
-                                                            <option> Select</option>
-                                                            <option> Cheque Bounce</option>
-                                                            <option>NACH Bounce</option>
-                                                            <option> Overdue Interest</option>
-                                                            <option>Statament of Account</option>
-                                                            <option> Processing Fees</option>
-                                                            <option>Facility Amendement fees</option>
-                                                            <option> Prepayment Charge</option>
-                                                            <option>Prepayment Interest</option>
-                                                            <option>Documentation </option>
-                                                            <option> Covenant Penal</option>
-                                                            <option>CERSAI </option>
-                                                            <option> NOC Issuance</option>
-                                                            <option>Any Other</option>
-                                                        </select>
+
+                                                <div class="charge_parent_div">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group password-input">
+                                                            <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
+                                                            </label>
+                                                            {!!
+                                                            Form::select('charge[1]',
+                                                            [''=>'Please select']+$charges,
+                                                            null,
+                                                            ['id' => 'charge_1',
+                                                            'class'=>'form-control charges',
+                                                            'required'=>'required'
+                                                            ])
+                                                            !!}
+
+
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-12">
+                                                    <div class="html_append"></div>
                                                     <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group password-input">
-                                                                <label for="txtPassword">Charge Calculation <span class="error_message_label">*</span>
-                                                                </label>
-                                                                <div class="block-div">
-                                                                    <p>Flat</p>
-                                                                </div>
+                                                        <div class="col-6 col-sm-6">
+                                                            <div class="text-left mt-3">           
+                                                                <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"> Delete</button>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group password-input">
-                                                                <label for="txtPassword">Charge Amount <span class="error_message_label">*</span></label>
-                                                                <div class="block-div">
-                                                                    <p><i class="fa fa-inr" aria-hidden="true"></i> 500</p>
-                                                                </div>
+                                                        <div class="col-6 col-sm-6">
+                                                            <div class="text-right mt-3">           
+                                                                <button type="button" class="btn btn-primary ml-2 btn-sm add_more"> Add More</button>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group password-input">
-                                                                <label for="txtPassword">GST <span class="error_message_label">*</span></label>
-                                                                <div class="block-div">
-                                                                    <p>18%</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="text-right mt-3">
-                                                        <button type="button" id="" class="btn btn-secondary btn-sm"> Cancel</button>
-                                                        <button type="submit" class="btn btn-primary ml-2 btn-sm"> Save</button>
+
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-md-12">
+                                                <div class="text-right mt-3">
+                                                    <button type="button" id="" class="btn btn-secondary btn-sm"> Cancel</button>
+                                                    <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
+                                                </div>
+                                            </div>
+
                                             {{ Form::close()}}
                                         </div>
                                     </div>
@@ -395,13 +383,14 @@
 @endsection
 @section('additional_css')
 <link rel="stylesheet" href="{{ url('backend/assets/css/bootstrap-multiselect.css') }}" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 @endsection
 @section('jscript')
 
 <script>
 
     var messages = {
-        get_sub_industry: "{{ URL::route('get_sub_industry') }}",
+        get_charges_html: "{{ URL::route('get_charges_html') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
         please_select: "{{ trans('backend.please_select') }}"
@@ -413,6 +402,7 @@
 </script>
 <script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+<script src="{{ asset('backend/js/common.js') }}" type="text/javascript"></script>
 <script src="{{ asset('backend/js/lms/program.js') }}" type="text/javascript"></script>
 @endsection

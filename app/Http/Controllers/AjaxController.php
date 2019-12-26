@@ -2653,6 +2653,17 @@ if ($err) {
         return $applications;
     }
     
+    /**
+     * Get all Application list
+     *
+     * @return json user data
+     */
+    public function getFiRcuAppList(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getApplications();
+        $applications = $dataProvider->getFiRcuAppList($this->request, $appList);
+        return $applications;
+    }
+    
     
     public function getAnchorLists(DataProviderInterface $dataProvider) { 
      $anchUsersList = $this->userRepo->getAllAnchor();
@@ -2724,10 +2735,10 @@ if ($err) {
      * @param Request $request
      */
     public function changeCmFiStatus(Request $request){
-      $status = $this->application->changeAgentFiStatus($request);
+      $status = $this->application->changeCmFiStatus($request);
       return $status;
     }
-    
+
     
     
     /**
@@ -2759,6 +2770,85 @@ if ($err) {
     {
         $anchor_id = (int) $request->get('anchor_id');
         return $dataProvider->getPromgramList($request, $this->application->getProgramListById($anchor_id));
+    }
+
+
+
+    /**
+     * change Rcu status by agent
+     * @param Request $request
+     */
+    public function changeAgentRcuStatus(Request $request){
+      $status = $this->application->changeAgentRcuStatus($request);
+      return $status;
+    }
+
+    /**
+     * change FI status by Credit manager
+     * @param Request $request
+     */
+    public function changeCmRcuStatus(Request $request){
+      $status = $this->application->changeCmRcuStatus($request);
+      return $status;
+    }
+
+    public function getAgencyLists(DataProviderInterface $dataProvider) { 
+     $agencyList = $this->userRepo->getAllAgency();
+     $agency = $dataProvider->getAgencyList($this->request, $agencyList);
+     return $agency;
+    }
+
+    public function getAgencyUserLists(DataProviderInterface $dataProvider) { 
+     $agencyUserList = $this->userRepo->getAgencyUserLists();
+     $agencyUsers = $dataProvider->getAgencyUserLists($this->request, $agencyUserList);
+     return $agencyUsers;
+    }
+    
+    
+    /**
+     * get charges  html
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function getCharagesHtml(Request $request)
+    {
+
+        try {
+            $id = $request->get('id');
+            $len = (int) $request->get('len');
+           // dd($len);
+            $returns = [];
+            $chargeData = $this->application->getChargeData(['id' => $id])->first();
+            $chrg_applicable_data = [
+                1 => 'Limit Amount', 
+                2 => ' Outstanding Amount',
+                3 => 'Oustanding Principal',
+                4 => 'Outstanding Interest',
+                5 => 'Overdue Amount'
+            ];
+            $returns['contents'] = \View::make('backend.lms.charges_html', 
+                    ['data' => $chargeData ,'applicable_data'=>$chrg_applicable_data,'len'=>$len])
+                    ->render();
+            return ($returns ? \Response::json($returns) : $returns);
+        } catch (Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+    
+    
+    /**
+     * get sub program list
+     * 
+     * @param Request $request
+     * @param DataProviderInterface $dataProvider
+     * @return type mixed
+     */
+    public function getSubProgramList(Request $request, DataProviderInterface $dataProvider)
+    {
+        $program_id = (int) $request->get('program_id');
+        $anchor_id = (int) $request->get('anchor_id');
+        return $dataProvider->getSubProgramList($request, $this->application->getSubProgramListByParentId($anchor_id, $program_id));
     }
 
 }
