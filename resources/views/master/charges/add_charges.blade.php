@@ -56,7 +56,7 @@
          <div class="form-group col-md-6" id="approved_limit_div">
              <label for="chrg_type">Charge Applicable On</label>
               <select class="form-control" name="chrg_applicable_id" id="chrg_applicable_id">
-                  <option disabled value="" selected>Select</option>
+                  <option value="" selected>Select</option>
                   <option value="1">Limit Amount</option>
                   <option value="2">Outstanding Amount</option>
                   <option value="3">Outstanding Principal</option>
@@ -88,7 +88,7 @@
          <div class="form-group col-md-6">
              <label for="chrg_type">Charge Trigger</label>
              <select class="form-control" name="chrg_tiger_id" id="chrg_tiger_id">
-                  <option disabled value="" selected>Select</option>
+                  <option value="" selected>Select</option>
                   <option value="1">Limit Assignment</option>
                   <option value="2">First Invoice Disbursement</option>
               </select>
@@ -96,7 +96,7 @@
         <div class="form-group col-md-6">
              <label for="chrg_type">Status</label><br />
              <select class="form-control" name="is_active" id="is_active">
-                  <option disabled value="" selected>Select</option>
+                  <option value="" selected>Select</option>
                   <option value="1">Active</option>
                   <option value="2">In-Active</option>
               </select>

@@ -57,7 +57,7 @@
          <div class="form-group col-md-6" id="approved_limit_div">
              <label for="chrg_type">Charge Applicable On</label>
               <select class="form-control" name="chrg_applicable_id" id="chrg_applicable_id">
-                  <option disabled value="" selected>Select</option>
+                  <option value="" selected>Select</option>
                   <option {{$charge_data->chrg_applicable_id == 1 ? 'selected' : ''}} value="1">Limit Amount</option>
                   <option {{$charge_data->chrg_applicable_id == 2 ? 'selected' : ''}} value="2">Outstanding Amount</option>
                   <option {{$charge_data->chrg_applicable_id == 3 ? 'selected' : ''}} value="3">Outstanding Principal</option>
@@ -89,7 +89,7 @@
          <div class="form-group col-md-6">
              <label for="chrg_type">Charge Trigger</label>
              <select class="form-control" name="chrg_tiger_id" id="chrg_tiger_id">
-                  <option disabled value="" selected>Select</option>
+                  <option value="" selected>Select</option>
                   <option {{$charge_data->chrg_tiger_id == 1 ? 'selected' : ''}} value="1">Limit Assignment</option>
                   <option {{$charge_data->chrg_tiger_id == 2 ? 'selected' : ''}} value="2">First Invoice Disbursement</option>
               </select>
@@ -97,7 +97,7 @@
         <div class="form-group col-md-6">
              <label for="chrg_type">Status</label><br />
              <select class="form-control" name="is_active" id="is_active">
-                  <option disabled value="" selected>Select</option>
+                  <option value="" selected>Select</option>
                   <option {{$charge_data->is_active == 1 ? 'selected' : ''}} value="1">Active</option>
                   <option {{$charge_data->is_active == 2 ? 'selected' : ''}} value="2">In-Active</option>
               </select>
@@ -119,6 +119,7 @@
              $('#approved_limit_div').show();
           }
           else {
+            $('#chrg_applicable_id option:selected').removeAttr('selected');
             $('#approved_limit_div').hide();
           }
      })
