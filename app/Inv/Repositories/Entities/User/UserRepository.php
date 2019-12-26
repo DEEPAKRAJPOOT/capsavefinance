@@ -1384,3 +1384,4 @@ class UserRepository extends BaseRepositories implements UserInterface
         }
         return $usersIds;
     }
+}
