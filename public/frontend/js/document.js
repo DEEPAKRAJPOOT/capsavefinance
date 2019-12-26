@@ -27,6 +27,12 @@
                 'gst_year' : {
                     required : true,
                 },
+                'bank_month' : {
+                    required : true,
+                },
+                'bank_year' : {
+                    required : true,
+                },
                 'pwd_txt' : {
                     required : function() {
                         if ($('input[name="is_pwd_protected"]').is(':checked') && $('input[name="is_pwd_protected"]:checked').val() == '1') {
