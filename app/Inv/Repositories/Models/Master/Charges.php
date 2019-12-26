@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Models\Master;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\User;
 
 class Charges extends BaseModel
 {
@@ -55,5 +56,8 @@ class Charges extends BaseModel
         'created_at',
         'created_by'
     ];
-    
+
+    public function userDetail(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

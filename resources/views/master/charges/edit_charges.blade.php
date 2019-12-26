@@ -146,6 +146,7 @@
       if (chrg_calculation_type.val() == 2) {
         $('#approved_limit_div').show();
       }else{
+        $('#chrg_applicable_id option:selected').removeAttr('selected');
        $('#approved_limit_div').hide();
      }
 

@@ -1096,6 +1096,11 @@ class DataRenderer implements DataProviderInterface
                     return ($charges->chrg_type == '1') ? 'Auto' : 'Manual';
                 })
                 ->addColumn(
+                    'chrg_calculation_type',
+                    function ($charges) {
+                    return $charges->chrg_calculation_type == 1 ? 'Fixed' : 'Percent';
+                })  
+                ->addColumn(
                     'chrg_calculation_amt',
                     function ($charges) {
                     return $charges->chrg_calculation_amt;
@@ -1106,19 +1111,24 @@ class DataRenderer implements DataProviderInterface
                     return ($charges->is_gst_applicable == 1) ? 'Yes' : 'No'; 
                 })
                 ->addColumn(
-                    'created_at',
-                    function ($charges) {
-                    return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
-                })
-                ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'Invalid Id'; 
+                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
                 }) 
                 ->addColumn(
                     'chrg_desc',
                     function ($charges) {
                      return $charges->chrg_desc;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($charges) {
+                    return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
+                })
+                ->addColumn(
+                    'created_by',
+                    function ($charges) {
+                    return $charges->userDetail->f_name.' '.$charges->userDetail->l_name;
                 })
                 ->addColumn(
                     'is_active',
