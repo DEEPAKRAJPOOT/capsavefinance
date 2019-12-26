@@ -13,7 +13,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="form-group" style="">
-            <label for="email">Assign To Role</label>
+            <label for="email">Requested To</label>
             <select class="form-control" name="assignRoleId" >
                  <option disabled="" value="" selected="">Select Name</option>
 
@@ -26,7 +26,7 @@
         </div>
 
         <div class="form-group">
-            <label class="">Comment : </label> 
+            <label class="">Query Description: </label> 
             <textarea class="form-control summernote"  name="qms_cmnt" rows="3">{{old('qms_cmnt')}}</textarea>
             {!! $errors->first('qms_cmnt', '<span class="error">:message</span>') !!}
         </div> 

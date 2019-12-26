@@ -8,7 +8,7 @@
         <div class="card-body">
           <div class=" form-fields">
            <div class="col-md-12">
-              <h5 class="card-title form-head-h5">Query  
+              <h5 class="card-title form-head-h5">QMS  
               <a data-toggle="modal" data-target="#queryFrame" data-url ="{{route('query_management_from',['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right"><i class="fa fa-plus">&nbsp;</i>Add Query</a>
             </h5>
                     <div class="col-md-12-cls">
@@ -21,18 +21,20 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <th class="text-left">Assign To</th>
-                                                    <th class="text-left">Query Details</th>
-                                                    <th class="text-right">Added By</th>   
-                                                    <th class="text-right">Action</th>   
+                                                    <th class="text-left" width="20%">Requested To</th>
+                                                    <th class="text-left" width="30%">Query Description</th>
+                                                    <th class="text-right" width="20%">Requested By</th>
+                                                    <th class="text-right" width="15%">Requested Date</th> 
+                                                    <th class="text-right" width="15%">Action</th>   
                                                 </tr> 
                                                 @forelse($arrData as $data)
                                                 <tr>
                                                     <td class="text-left">{{ $arrRole[$data->assign_role_id] }}</td>
                                                     <td class="text-left"><div style="max-height: 100px; max-width: 1000px; overflow:auto;">{!! $data->qms_cmnt !!}</div></td>
                                                     <td class="text-right">{{ucwords($data->f_name.' '.$data->l_name)}}</td>
+                                                    <td class="text-right">{{ucwords($data->f_name.' '.$data->l_name)}}</td>
                                                     <td>
-                                                        <a data-toggle="modal" data-target="#queryDeatailsFrame" data-url ="{{route('show_qms_details',['qms_req_id' => $data->qms_req_id ])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right" title=""><i class="fa fa-eye">&nbsp;</i></a>
+                                                        <a data-toggle="modal" data-target="#queryDeatailsFrame" data-url ="{{route('show_qms_details',['qms_req_id' => $data->qms_req_id ])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right" title="Download File(s)"><i class="fa fa-download">&nbsp;</i></a>
                                                 </tr>
                                                 @empty
                                                     <tr>
@@ -54,7 +56,7 @@
 </div>
 
 {!!Helpers::makeIframePopup('queryFrame','Add Query', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('queryDeatailsFrame','Query Details', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('queryDeatailsFrame','Download File(s)', 'modal-md')!!}
 
 
 @endsection

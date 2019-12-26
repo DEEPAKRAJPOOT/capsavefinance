@@ -20,22 +20,14 @@
         <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
         <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
         <link href="{{url('common/js/summernote/dist/summernote.css')}}" rel="stylesheet">
-
-
     </head>
 
-    <body class="sidebar-icon-only">
-        <div class=" container-scroller">
-            <div class="container-fluid page-body-wrapper">
-                <div class="row row-offcanvas row-offcanvas-right">
-                    <!-- partial -->
-                    @yield('content')
-
-
-                </div>
-            </div>
+    <body class="sidebar-icon-only"> 
+        <div class=" row-offcanvas row-offcanvas-right">
+            <!-- partial -->
+            @yield('content')
         </div>
-
+          
         <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
         <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
         <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
