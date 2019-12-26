@@ -49,6 +49,7 @@ class Charges extends BaseModel
         'chrg_calculation_amt',
         'chrg_applicable_id',
         'is_gst_applicable',
+        'gst_percentage',
         'chrg_tiger_id',
         'is_active',
         'created_at',

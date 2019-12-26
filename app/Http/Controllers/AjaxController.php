@@ -19,6 +19,7 @@ use App\Inv\Repositories\Models\Rights;
 use App\Inv\Repositories\Models\RightCommission;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
@@ -37,7 +38,7 @@ class AjaxController extends Controller {
     protected $user;
     protected $application;
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master) {
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -45,6 +46,7 @@ class AjaxController extends Controller {
         $this->request = $request;
         $this->userRepo = $user;
         $this->application = $application;
+        $this->masterRepo = $master;
     }
 
     /**
@@ -2770,7 +2772,7 @@ if ($err) {
 
 
     public function getChargeLists(DataProviderInterface $dataProvider) { 
-     $chargesList = $this->userRepo->getAllCharges();
+     $chargesList = $this->masterRepo->getAllCharges();
      $charges = $dataProvider->getChargesList($this->request, $chargesList);
      return $charges;
     }
