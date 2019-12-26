@@ -60,6 +60,7 @@
                                         @if($data->doc_id == '6')
                                         <td width="20%"><b>GST Month-Year</b></td>
                                         @endif
+                                        <td width="20%"><b>File Name </b></td>
                                         <td width="20%"><b>Upload On </b></td>
                                         @if($data->doc_id == '35' || $data->doc_id == '36')
                                         <td width="20%"><b>Comment </b></td>
@@ -78,11 +79,12 @@
                                         @if($data->doc_id == '6')
                                         <td width="20%">{{ ($value->gst_month != '') ? date('M',$value->gst_month) : '' }}-{{ ($value->gst_year != '') ? $value->gst_year : '' }}</td>
                                         @endif
+                                        <td width="20%"> {{ (isset($value->userFile->file_name)) ? $value->userFile->file_name : ''}} </td>
                                         <td width="20%"> {{ (isset($value->created_at)) ? date('d-m-Y', strtotime($value->created_at)) : ''}} </td>
                                         @if($data->doc_id == '35' || $data->doc_id == '36')
                                         <td width="20%"> {{ (isset($value->comment)) ? $value->comment : ''}} </td>
                                         @endif
-                                        <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download><i class="fa fa-download"></i></a></td>
+                                        <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download="{{ $value->userFile->file_name }}"><i class="fa fa-download"></i></a></td>
                                         <td align="center" width="20%">
                                             @if(request()->get('view_only'))
                                             <a title="Delete Document" href="{{ Route('document_delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
@@ -97,21 +99,6 @@
                     </div>
 
                     @endforeach
-
-                    <div class="d-flex btn-section ">
-                        <div class="col-md-4 ml-auto text-right">
-                            <form method="POST" action="{{ Route('application_save') }}">
-                                @csrf
-                                <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
-                                <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
-                                <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
-                                @if(request()->get('view_only'))
-                                <input type="submit" value="Submit" class="btn btn-success btn-sm">
-                                @endif
-                            </form>
-                        </div>
-                    </div>
-
                 </div>
                 @endif
                 <a data-toggle="modal" data-target="#ppUploadDocument" data-url ="{{route('pp_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
