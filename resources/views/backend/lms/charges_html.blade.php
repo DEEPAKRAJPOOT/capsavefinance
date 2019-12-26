@@ -36,13 +36,17 @@
         <div class=" mt-3 rate row" style="">
             <div class="col-md-3">
 
-                {!! Form::text('chrg_calc_min_rate['.$len.']','',['class'=>'form-control clsRequired pl-2','placeholder'=>"Min Rate" ,'required'=>'required']) !!}
+                {!! Form::text('chrg_calc_min_rate['.$len.']',
+                 isset($data->chrg_calc_min_rate)  ?   $data->chrg_calc_min_rate  : null
+                 ,['class'=>'form-control clsRequired pl-2','placeholder'=>"Min Rate" ,'required'=>'required']) !!}
 
             </div>
             <div class="col-md-1">
             </div>
             <div class="col-md-3">
-                {!! Form::text('chrg_calc_max_rate['.$len.']','',['class'=>'form-control clsRequired  pl-2','placeholder'=>"Max Rate" , 'required'=>'required']) !!}
+                {!! Form::text('chrg_calc_max_rate['.$len.']',
+                 isset($data->chrg_calc_max_rate)  ?   $data->chrg_calc_max_rate  : null
+                 ,['class'=>'form-control clsRequired  pl-2','placeholder'=>"Max Rate" , 'required'=>'required']) !!}
 
             </div>
 
@@ -54,7 +58,7 @@
                         {!!
                         Form::select('chrg_tiger_id['.$len.']',
                         [''=>'Please select'] +$applicable_data,
-                        null,
+                        isset($data->chrg_tiger_id)  ?   $data->chrg_tiger_id  : null,
                         ['id' => 'chrg_tiger_id_'.$len,
                         'class'=>'form-control clsRequired ',
                         'required'=>'required'
