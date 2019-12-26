@@ -496,6 +496,43 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
+            
+            
+            
+            
+             
+            Route::get('manage-program', [
+                'as' => 'manage_program',
+                'uses' => 'Backend\ProgramController@mangeProgramList'
+            ]);
+            
+             Route::get('add-program', [
+                'as' => 'add_program',
+                'uses' => 'Backend\ProgramController@addProgram'
+            ]);
+             
+             
+            Route::post('save-program', [
+            'as' => 'save_program',
+            'uses' => 'Backend\ProgramController@saveProgram'
+           ]);
+            
+            
+            Route::get('add-sub-program', [
+            'as' => 'add_sub_program',
+            'uses' => 'Backend\ProgramController@addSubProgram'
+           ]);
+            
+            Route::get('manage-sub-program', [
+            'as' => 'manage_sub_program',
+            'uses' => 'Backend\ProgramController@mangeSubProgram'
+           ]);
+            
+             Route::post('save-sub-program', [
+            'as' => 'save_sub_program',
+            'uses' => 'Backend\ProgramController@saveSubProgram'
+           ]);
+
         });
             // All master routes
          Route::group(['prefix' => 'manage'], function () {
@@ -517,6 +554,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\ChargeController@saveCharges'
             ]);       
         });
+
+
+            
+            
+           
+            
+            
+            
+            
+            
+    });
+   
+
+
 
         Route::group(['prefix' => 'agency'], function () {
             Route::get('/', [
@@ -607,5 +658,5 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
         });
     });
-});
+
 

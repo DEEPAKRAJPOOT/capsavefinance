@@ -1284,6 +1284,19 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $users ?: false;
     }
     
+
+    
+    /**
+     * get all anchor list
+     * 
+     * @param type $id int
+     * @return type mixed
+     */
+    public function getAnchorDataById($id)
+    {
+        return Anchor::getAnchorDataById($id);
+    }
+
     /**
      * Get Backend Roles          
      * 
@@ -1329,6 +1342,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getAgencyUserLists(){
         $result = UserModel::orderBy('user_id', 'DESC')->where('agency_id','<>', null);
         return $result ?: false;
+
     }
     
     /**
@@ -1385,3 +1399,4 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $usersIds;
     }
 }
+

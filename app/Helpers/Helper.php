@@ -675,6 +675,23 @@ class Helper extends PaypalHelper
     
     
     /**
+     *
+     * get program type
+     * 
+     * @param type $type int
+     * @return type mixed
+     */
+    public static function getProgramType($type)
+    {
+        $out = null;
+        switch ($type) {
+            case 1: $out = 'Vendor Finance';  break;               
+            case 2: $out = 'Channel Finance';break;
+            default:$out = null;  break;               
+        }
+        return $out;
+    }
+         /**
      * Create bootstrap alert box
      *
      * @param  string $languageKey
@@ -691,6 +708,7 @@ class Helper extends PaypalHelper
                 e(trans($languageKey)) .
                 '</div>';
         return $html;
+
     }
 
     /**

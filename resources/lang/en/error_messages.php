@@ -98,4 +98,10 @@ return [
     'req_spouse_professional_status'=>'Spouse professional status is required.',
     'req_this_field'=>'This field is required',
     'contain_this_alpha_num'=>'This may only contain letters and numbers.',
+    
+     'addProduct'=> [
+         'anchor_user_id'=>'Anchor Name is required',
+         'anchor_limit_number'=>'Anchor limit must be a number.'
+     ],
+     'required'=>':field is required.',
     ];

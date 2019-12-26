@@ -24,6 +24,10 @@ return [
     'update_company_detail_successfully' => 'Company details updated successfully!',
     'save_company_detail_successfully' => 'Company details saved successfully!',
     'promoter_saved_successfully' => 'Promoter details saved successfully!',
+
     'pd_notes_saved'=>'Personal Discussion  details save successfully!',
     'query_management_saved'=>'Query save successfully!',
+    'program_save_successfully'=>'Program details saved successfully!',
+   
+    'sub_program_save_successfully'=>'Sub program details saved successfully!',
 ];

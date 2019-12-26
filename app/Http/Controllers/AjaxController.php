@@ -25,6 +25,7 @@ use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
 use Illuminate\Support\Facades\Validator;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 
 
 class AjaxController extends Controller {
@@ -2740,6 +2741,41 @@ if ($err) {
       return $status;
     }
 
+    
+    
+    /**
+     * Get sub industry
+     * 
+     * @param Request $request
+     * @return type Mixed
+     * @throws BlankDataExceptions 
+     */
+    public function getSubIndustry(Request $request)
+    {
+        $id = $request->get('id');
+        if (is_null($id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $result = $this->application->getSubIndustryByWhere(['industry_id' => $id]);
+        return response()->json($result);
+    }
+    
+    
+    /**
+     * get program list
+     * 
+     * @param Request $request
+     * @param DataProviderInterface $dataProvider
+     * @return type mixed
+     */
+    public function getProgramList(Request $request, DataProviderInterface $dataProvider)
+    {
+        $anchor_id = (int) $request->get('anchor_id');
+        return $dataProvider->getPromgramList($request, $this->application->getProgramListById($anchor_id));
+    }
+
+
+
     /**
      * change Rcu status by agent
      * @param Request $request
@@ -2770,6 +2806,7 @@ if ($err) {
      return $agencyUsers;
     }
     
+
     /**
      * Get Backend User List By Role Id
      * 
@@ -2793,4 +2830,53 @@ if ($err) {
      $charges = $dataProvider->getChargesList($this->request, $chargesList);
      return $charges;
     }
+
+    
+    /**
+     * get charges  html
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function getCharagesHtml(Request $request)
+    {
+
+        try {
+            $id = $request->get('id');
+            $len = (int) $request->get('len');
+           // dd($len);
+            $returns = [];
+            $chargeData = $this->application->getChargeData(['id' => $id])->first();
+            $chrg_applicable_data = [
+                1 => 'Limit Amount', 
+                2 => ' Outstanding Amount',
+                3 => 'Oustanding Principal',
+                4 => 'Outstanding Interest',
+                5 => 'Overdue Amount'
+            ];
+            $returns['contents'] = \View::make('backend.lms.charges_html', 
+                    ['data' => $chargeData ,'applicable_data'=>$chrg_applicable_data,'len'=>$len])
+                    ->render();
+            return ($returns ? \Response::json($returns) : $returns);
+        } catch (Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+    
+    
+    /**
+     * get sub program list
+     * 
+     * @param Request $request
+     * @param DataProviderInterface $dataProvider
+     * @return type mixed
+     */
+    public function getSubProgramList(Request $request, DataProviderInterface $dataProvider)
+    {
+        $program_id = (int) $request->get('program_id');
+        $anchor_id = (int) $request->get('anchor_id');
+        return $dataProvider->getSubProgramList($request, $this->application->getSubProgramListByParentId($anchor_id, $program_id));
+    }
+
+
 }

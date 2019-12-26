@@ -643,8 +643,12 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($users) {
                        $act = '';
-                     if(Helpers::checkPermission('edit_anchor_reg')){
-                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></a>";
+                      
+                     if(Helpers::checkPermission('manage_program')){                        
+                        $act.=  '<a title="Manage Program" href="'.route('manage_program',['anchor_id' => $users->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
+                     }
+                     if(Helpers::checkPermission('edit_anchor_reg')){                        
+                        $act .= "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></a>";
                      }
                      return $act;
                     }
@@ -1014,6 +1018,106 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
 
+    
+    
+    /**
+     * 
+     * @param type $request
+     * @param type $program
+     * @return type
+     * 
+     * 
+     * 
+     *  {data: 'program_id'},
+                {data: 'anchor_name'},
+                {data: 'program_type'},
+                {data: 'anchor_limit'},
+                {data: 'anchor_sub_limit'},
+                {data: 'status'},
+                {data: 'action'}
+     */
+    
+    
+    function getPromgramList($request , $program)
+    {
+         return DataTables::of($program)
+                ->rawColumns([ 'action', 'active','status'])                
+                ->editColumn(
+                    'prgm_id',
+                    function ($program) {                   
+                      return $program->prgm_id;
+                    })
+                ->editColumn(
+                    'f_name',
+                    function ($program) {                   
+                      return $program->f_name;
+                    })
+                ->editColumn(
+                    'prgm_name',
+                    function ($program) {                   
+                      return $program->prgm_name;
+                    })
+                ->editColumn(
+                    'prgm_type',
+                    function ($program) {                   
+                      return ($program->prgm_type==1) ? 'Vendor Finance' : 'Channel Finance';
+                    })
+                ->editColumn(
+                    'anchor_limit',
+                    function ($program) {                   
+                      return $program->anchor_limit;
+                    })
+                ->addColumn(
+                    'anchor_sub_limit',
+                    function ($program) {                   
+                      return '-';
+                    })
+                ->addColumn(
+                    'loan_size',
+                    function ($program) {                   
+                      return '-';
+                    })
+                ->editColumn(
+                    'status',
+                    function ($program) {                   
+                      return '  <div class="d-flex inline-action-btn">
+									  
+									   <div class="dropdown">
+												<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+												 Active
+												</button>
+											   <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 25px, 0px); top: 0px; left: 0px; will-change: transform;">
+												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Active</a>
+												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Inactive</a>
+												</div>
+											  </div>
+									   
+									   </div>';
+                    })
+                    
+                    
+                    
+                    
+              
+                
+                ->addColumn(
+                    'action',
+                    function ($program) {
+                        $action = '';
+                      if(Helpers::checkPermission('manage_sub_program')){
+                          $action .='<a title="Show Sub program" href="'.route('manage_sub_program',['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
+                      }
+                    
+                    //add_sub_program
+                    return $action.'<a title="Add App Note" href="program-view.php" class="btn btn-action-btn btn-sm "><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                    })
+                    ->filter(function ($query) use ($request) {
+                        
+                    })
+                    ->make(true);
+    }
+
+
     public function getAgencyList(Request $request, $agency)
     {
         
@@ -1197,6 +1301,80 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->make(true);
+    }
+    
+    
+    
+    /**
+     * sub program 
+     * 
+     * @param type $request
+     * @param type $program
+     * @return type mixed 
+     */
+    function getSubProgramList($request, $program)
+    {
+        return DataTables::of($program)
+                        ->rawColumns(['user_id','status', 'action'])
+                        
+                        ->editColumn(
+                                'prgm_id',
+                                function ($program) {
+                            return $program->prgm_id;
+                        })
+                        ->editColumn(
+                                'product_name',
+                                function ($program) {
+                            return $program->product_name;
+                        })
+                        ->editColumn(
+                                'anchor_sub_limit',
+                                function ($program) {
+                            return $program->anchor_sub_limit;
+                        })
+                        ->addColumn(
+                                'loan_size',
+                                function ($program) {
+                            return $program->min_loan_size . '-' . $program->max_loan_size;
+                        })
+                        ->editColumn(
+                                'status',
+                                function ($program) {
+                            return '  <div class="d-flex inline-action-btn">
+									  
+									   <div class="dropdown">
+												<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+												 Active
+												</button>
+											   <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 25px, 0px); top: 0px; left: 0px; will-change: transform;">
+												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Active</a>
+												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Inactive</a>
+												</div>
+											  </div>
+									   
+									   </div>';
+                        })
+                        
+                         ->addColumn(
+                    'action',
+                    function ($user) {
+                       $act = '';
+                     //if(Helpers::checkPermission('edit_anchor_reg')){
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyUserFrame\" data-url =\"" . route('edit_agency_user_reg', ['user_id' => $user->user_id]) . "\" data-height=\"350px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency User Detail\"><i class=\"fa fa-edit\"></a>";
+                     //}
+                     return $act;
+                    }
+                )
+                        ->filter(function ($query) use ($request) {
+//                    if ($request->get('by_name') != '') {
+//                        $query->where(function ($query) use ($request) {
+//                            $search_keyword = trim($request->get('by_name'));
+//                            $query->where('users.f_name', 'like',"%$search_keyword%")
+//                            ->orWhere('users.email', 'like', "%$search_keyword%");
+//                        });
+//                    }
+                        })
+                        ->make(true);
     }
 
 }

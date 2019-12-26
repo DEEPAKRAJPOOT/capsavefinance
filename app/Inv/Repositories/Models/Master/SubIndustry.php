@@ -1,22 +1,19 @@
 <?php
 
-namespace App\Inv\Repositories\Models;
+namespace App\Inv\Repositories\Models\Master;
 
-use DB;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
-use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class DocumentMaster extends BaseModel {
+class SubIndustry extends BaseModel {
 
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'mst_doc';
+    protected $table = 'mst_sub_industry';
 
     /**
      * Custom primary key is set for the table
@@ -30,7 +27,7 @@ class DocumentMaster extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
@@ -45,36 +42,32 @@ class DocumentMaster extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'doc_name',
+        'industry_id',
+        'name',
         'is_active',
         'created_by',
+        'created_at',
+        'updated_at',
         'updated_by'
     ];
 
-    
     /**
-     * get Document list
+     * get sub industry 
      * 
-     * @param type $where array
-     * @return type Mixed
+     * @param type $where Array
+     * @return type mixed
      * @throws BlankDataExceptions
-     * @throws InvalidDataTypeExceptions
+     * @throws InvalidDataTypeExceptions 
      */
-    public static function getDocumentList($where)
+    public static function getSubIndustryByWhere($where)
     {
         if (empty($where)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-
-
-        /**
-         * Check Data is Array
-         */
         if (!is_array($where)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
-
-        $res = self::where($where)->pluck('doc_name', 'id');
+        $res = self::select('name', 'id')->where($where)->where('is_active', 1)->get();
         return $res ?: false;
     }
 
