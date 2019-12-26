@@ -539,9 +539,36 @@ $(document).ready(function () {
                 );
         });
 
+        $("#addChargesFrame").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#addChargesFrame iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
+
+        $("#editChargesFrame").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#editChargesFrame iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
 
         $("#queryFrame").on('show.bs.modal', function (e) {
-                var parent = $(e.relatedTarget);
+            var parent = $(e.relatedTarget);
                 var height = parent.attr('data-height');
                 var url = parent.attr('data-url');
                 var width = parent.attr('data-width');
@@ -553,7 +580,7 @@ $(document).ready(function () {
                         }
                 );
         });
-      
+
         $("#queryDeatailsFrame").on('show.bs.modal', function (e) {
                 var parent = $(e.relatedTarget);
                 var height = parent.attr('data-height');

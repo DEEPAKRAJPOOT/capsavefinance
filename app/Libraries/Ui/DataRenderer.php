@@ -75,7 +75,7 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {                    
                     if($user->UserAnchorId){
                       $userInfo=User::getUserByAnchorId($user->UserAnchorId);
-                       $achorId= $userInfo->f_name.''.$userInfo->l_name;
+                       $achorId= $userInfo->f_name.' '.$userInfo->l_name;
                     }else{
                       $achorId='';  
                     }
@@ -100,7 +100,7 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     if($user->to_id){
                     $userInfo=Helpers::getUserInfo($user->to_id);                    
-                       $saleName=$userInfo->f_name. ''.$userInfo->l_name;  
+                       $saleName=$userInfo->f_name. ' '.$userInfo->l_name;  
                     }else{
                        $saleName=''; 
                     } 
@@ -277,7 +277,7 @@ class DataRenderer implements DataProviderInterface
                     function ($app) use ($request) {
                         $act = '';
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
-                        if ($view_only) {
+                        if ($view_only && $app->status == 1) {
                             if(Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                             }
@@ -884,9 +884,16 @@ class DataRenderer implements DataProviderInterface
 
                 })
                 ->editColumn(
+                    'reporting_mgr',
+                    function ($role) {
+                    $reporting_mgr = $role->reporting_mgr; 
+                    return $reporting_mgr;
+
+                })                                
+                ->editColumn(
                     'active',
                     function ($role) {
-                    $disc = ($role->u_active == 1)?'Active':'Not Active'; 
+                    $disc = ($role->is_active == 1)?'Active':'Not Active'; 
                     return $disc;
 
                 })
@@ -1062,6 +1069,72 @@ class DataRenderer implements DataProviderInterface
                             $search_keyword = trim($request->get('by_name'));
                             $query->where('agency.comp_name', 'like',"%$search_keyword%")
                             ->orWhere('agency.comp_email', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+     public function getChargesList(Request $request, $charges){
+        $this->chrg_applicable_ids = array(
+            '1' => 'Limit Amount',
+            '2' => 'Outstanding Amount',
+            '3' => 'Outstanding Principal',
+            '4' => 'Outstanding Interest',
+            '5' => 'Overdue Amount'
+        );
+        return DataTables::of($charges)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'chrg_name',
+                    function ($charges) {
+                    return $charges->chrg_name;
+                })
+                ->addColumn(
+                    'chrg_type',
+                    function ($charges) {
+                    return ($charges->chrg_type == '1') ? 'Auto' : 'Manual';
+                })
+                ->addColumn(
+                    'chrg_calculation_amt',
+                    function ($charges) {
+                    return $charges->chrg_calculation_amt;
+                })              
+                ->addColumn(
+                    'is_gst_applicable',
+                    function ($charges) {
+                    return ($charges->is_gst_applicable == 1) ? 'Yes' : 'No'; 
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($charges) {
+                    return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
+                })
+                ->addColumn(
+                    'chrg_applicable_id',
+                    function ($charges) {
+                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'Invalid Id'; 
+                }) 
+                ->addColumn(
+                    'chrg_desc',
+                    function ($charges) {
+                     return $charges->chrg_desc;
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($charges) {
+                       $act = $charges->is_active;
+                       $edit = '<a style="color:#FFFFFF" class="badge badge-dark current-status" data-toggle="modal" data-target="#editChargesFrame" data-url ="'.route('edit_charges',[$charges->id]).'" data-height="400px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('chrg_desc', 'like',"%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
                         });
                     }
                 })

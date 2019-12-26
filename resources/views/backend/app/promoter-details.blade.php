@@ -5,7 +5,7 @@
         font-size: inherit;
         width: 75px;
         position: absolute;
-        margin-left: 0px;t
+        margin-left: 0px;
     }
     .setupload-btn > .error {
         position: absolute;

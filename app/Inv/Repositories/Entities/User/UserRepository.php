@@ -17,6 +17,7 @@ use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\Agency;
+use App\Inv\Repositories\Models\Master\Charges;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
@@ -1329,5 +1330,73 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getAgencyUserLists(){
         $result = UserModel::orderBy('user_id', 'DESC')->where('agency_id','<>', null);
         return $result ?: false;
-    }   
+    }
+    
+    /**
+     * Get Backend Users
+     * 
+     * @return type
+     */
+    public function getBackendUsers(){
+        return UserModel::getBackendUsers();
+    }
+    
+    /**
+     * Get Backend Users By Role Id
+     * 
+     * @param integer $role_id
+     * @return array
+     */
+    public function getBackendUsersByRoleId($role_id, $usersNotIn=[])
+    {
+        return RoleUser::getBackendUsersByRoleId($role_id, $usersNotIn);
+    }
+    
+    /**
+     * Get Roles By role_type
+     *      
+     * @param integer $role_type
+     */
+    public function getRolesByType($role_type) 
+    { 
+        return Role::getRolesByType($role_type);
+    }
+
+    /**
+     * Get Child users of parent User Id
+     * 
+     * @param integer $parentUserId
+     * @return mixed
+     */
+    public function getChildUsers($parentUserId, &$usersIds=[])
+    {
+        $result = UserModel::getChildUsers($parentUserId);        
+        $children = array();
+        $i = 0;
+        if (count($result) > 0) {
+            foreach($result as $row) {
+                $children[$i] = array();
+                $children[$i]['name'] = $row->f_name . ' ' . $row->l_name;
+                $children[$i]['user_id'] = $row->user_id;
+                $usersIds[] = $row->user_id;                
+                $children[$i]['children'] = $this->getChildUsers($row->user_id, $usersIds);
+                $i++;            
+            }
+        }
+        return $usersIds;
+    }
+
+     /**
+    * function for get all charges register user detail
+    * @return type
+    */   
+    public function getAllCharges(){
+      $result = Charges::orderBy('id', 'DESC');
+      return $result ?: false;
+    }
+
+    public function saveCharges($attributes){
+        $status = Charges::create($attributes);
+        return $status ?: false;
+    }
 }

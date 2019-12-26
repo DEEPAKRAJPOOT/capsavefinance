@@ -142,6 +142,7 @@
         </li>   
         
         @php $roleData = \Helpers::getUserRole() @endphp
+        
         @if($roleData[0]->is_superadmin == 1)
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
@@ -163,6 +164,68 @@
                 </ul>
             </div>
         </li>
-              @endif
+        @endif
+              
+        @if($roleData[0]->is_superadmin == 1)
+        <li class="nav-item">
+           <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu10" aria-expanded="false" aria-controls="collapseExample">
+           <i class="fa fa-tasks" aria-hidden="true"></i>
+           <span class="menu-title">Masters</span>
+           <i class="fa fa-angle-right" aria-hidden="true"></i>
+           </a>
+           <div class="collapse" id="layoutsSubmenu10">
+              <ul class="nav flex-column sub-menu">
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Manage Program</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_charges_list') }}">Manage Charges</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Manage Document</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Manage Industry</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Manage State</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Risk Category </a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Business Segment</a>
+                 </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Business Entity</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Business Constitution</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Bank Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Industry Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">FI agency Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Holiday Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Email Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">SMS Master</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Base Rate Master</a>
+                 </li>
+              </ul>
+           </div>
+        </li>
+        @endif
     </ul>
 </nav>

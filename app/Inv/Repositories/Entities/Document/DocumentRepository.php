@@ -90,6 +90,40 @@ class DocumentRepository implements DocumentInterface
         
         return $result ?: false;
     }
+
+    /**
+     * application pre and post document
+     *
+     * @param mixed $ids
+     */
+    
+    public function appPPDocuments($requiredDocs, $appId){
+        foreach ($requiredDocs as $key => $value) {
+            $result[$value->ppDocument->doc_name] = AppDocumentFile::where('doc_id', $value->doc_id)
+                    ->where('app_id', $appId)
+                    ->where('is_active', 1)
+                    ->with('userFile')
+                    ->get();
+        }
+        
+        return (!empty($result)) ? $result : false;
+    }
+    /**
+     * find application pre and post santioned required documents
+     *
+     * @param mixed $ids
+     */
+    
+    public function findPPRequiredDocs($userId, $appId){
+        
+        $result = AppDocument::where('user_id', $userId)
+                ->where('app_id', $appId)
+                ->with('ppDocument')
+                ->whereHas('ppDocument')
+                ->get();
+        
+        return $result ?: false;
+    }
     
     
     /**
@@ -307,4 +341,16 @@ class DocumentRepository implements DocumentInterface
         
         return UserFile::whereIn('file_id', $arrFileId)->get();
     }  
+
+    /**
+     * find application required documents
+     *
+     * @param mixed $ids
+     */  
+    public function findRequiredDocsByStage($userId, $appId, $wfStageCode='doc_upload')
+    {
+        $result = AppDocument::findRequiredDocsByStage($userId, $appId, $wfStageCode);        
+        return $result ?: [];
+    }    
+
 }

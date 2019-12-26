@@ -497,6 +497,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
         });
+            // All master routes
+         Route::group(['prefix' => 'manage'], function () {
+            Route::get('/charges', [
+                'as' => 'get_charges_list',
+                'uses' => 'Master\ChargeController@index'
+            ]);
+            Route::get('/add_charges', [
+                'as' => 'add_charges',
+                'uses' => 'Master\ChargeController@addCharges'
+            ]); 
+            Route::get('/edit_charges', [
+                'as' => 'edit_charges',
+                'uses' => 'Master\ChargeController@editCharges'
+            ]);
+
+            Route::post('/save_charges', [
+                'as' => 'save_charges',
+                'uses' => 'Master\ChargeController@saveCharges'
+            ]);       
+        });
 
         Route::group(['prefix' => 'agency'], function () {
             Route::get('/', [
@@ -569,6 +589,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]); 
           });
           
+        Route::group(['prefix' => 'document'], function () {
+            Route::get('/list', [
+                'as' => 'pp_document_list',
+                'uses' => 'Backend\DocumentController@list'
+            ]);
+            
+        });
     });
 });
 

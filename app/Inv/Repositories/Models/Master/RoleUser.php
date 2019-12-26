@@ -119,9 +119,11 @@ class RoleUser extends BaseModel
      */
     public static function getAllData()
     {
-         $arr = self::select('users.*','users.is_active as u_active','roles.*')
+         $arr = self::select('users.*','users.is_active as u_active','roles.*', 
+                 DB::raw("CONCAT_WS(' ', rta_rptmgr.f_name, rta_rptmgr.l_name) AS reporting_mgr"))
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                 ->leftJoin('users as rptmgr', 'users.parent_id', '=', 'rptmgr.user_id')
                  ->where('roles.is_editable','!=',0);
                 return $arr;
     }
@@ -164,8 +166,27 @@ class RoleUser extends BaseModel
          $arr = self::select('users.*')
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
                  ->where('role_user.role_id',$role_id)
-                 ->where('users.is_active', 1)->pluck('f_name','user_id');  //DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS full_name")
+                 ->where('users.is_active', 1)->pluck('f_name','user_id');  //DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS f_name")
                 return $arr;
     }
     
+     /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public static function getBackendUsersByRoleId($role_id, $usersNotIn=[])
+    {
+         $query = self::select('users.*')
+                 ->join('users', 'role_user.user_id', '=', 'users.user_id')
+                 ->where('role_user.role_id',$role_id)
+                 ->where('users.is_active', 1);
+         if (count($usersNotIn) > 0) {
+             $query->whereNotIn('users.user_id', $usersNotIn);
+         }
+         $arr =   $query->get();
+         return $arr;
+    }    
 }

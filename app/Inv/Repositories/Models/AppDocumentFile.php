@@ -90,7 +90,7 @@ class AppDocumentFile extends BaseModel
                     ->update(['is_upload' => 1]);
         }
         
-        return $result;
+        return true;
     }
     
     /**
@@ -182,10 +182,27 @@ class AppDocumentFile extends BaseModel
                 ->groupBy('doc_id')
                 ->get();
     }
+
+    public static function getRcuActiveLists($appId)
+    {  
+       return AppDocumentFile::select(['doc_id'])
+                ->with('activeRcuDoc')
+                ->whereHas('activeRcuDoc')
+                ->where('app_id', $appId)
+                ->where('is_active', 1)
+                ->groupBy('doc_id')
+                ->get();
+    }
     
     public function rcuDoc()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')->where('is_rcu', 1);
+    }
+    
+    public function activeRcuDoc()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\RcuDocument', 'doc_id', 'doc_id')
+                ->where(['is_active' => 1, 'agency_id' => \Auth::user()->agency_id]);
     }
     
     public static function getRcuDocuments($appId, $docId)

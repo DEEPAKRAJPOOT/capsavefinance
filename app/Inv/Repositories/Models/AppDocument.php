@@ -62,7 +62,12 @@ class AppDocument extends BaseModel
     
     public function document()
     {
-        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')->whereIn('doc_type_id', [1]);;
+    }
+    public function ppDocument()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')
+            ->whereIn('doc_type_id', [2,3]);
     }
     
     /**
@@ -114,7 +119,26 @@ class AppDocument extends BaseModel
                 ->count();
         
         return $appDocCheck > 0 ? true : false;
-    }    
+    } 
+    
+    /**
+     * Find application required documents
+     *
+     * @param mixed $ids
+     */  
+    public static function findRequiredDocsByStage($userId, $appId, $wfStageCode='doc_upload')
+    {
+        
+        $result = AppDocument::join('prgm_doc', 'prgm_doc.doc_id', '=', 'app_doc.doc_id')
+                ->join('wf_stage', 'prgm_doc.wf_stage_id', '=', 'wf_stage.wf_stage_id') 
+                ->where('app_doc.user_id', $userId)
+                ->where('app_doc.app_id', $appId)        
+                ->where('wf_stage.stage_code', $wfStageCode)        
+                ->with('document')
+                ->get();
+        
+        return $result ?: false;
+    }      
 }
   
 

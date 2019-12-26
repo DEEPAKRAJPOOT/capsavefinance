@@ -4,10 +4,6 @@
 
 <!-- partial dasboard content -->
 <div class="content-wrapper">
-    @if(session()->has('message'))
-    <p class="alert alert-info">{{ Session::get('message') }}</p>
-    @endif
-
     <h3 class="page-title">CapSave - Frontend Dashboard</h3>
     <div class="row  grid-margin">
         <div class="col-12 col-lg-6">

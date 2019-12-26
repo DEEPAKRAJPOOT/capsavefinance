@@ -2767,4 +2767,28 @@ if ($err) {
      $agencyUsers = $dataProvider->getAgencyUserLists($this->request, $agencyUserList);
      return $agencyUsers;
     }
+    
+    /**
+     * Get Backend User List By Role Id
+     * 
+     */
+    public function getBackendUserList(Request $request)
+    {
+        $roleId = $request->get('role_id');
+        $usersNotIn = [];
+        if ($request->has('user_id')) {
+            $userId = $request->get('user_id');
+            $usersNotIn = [$userId];
+        }
+        
+        $backendUserList = $this->userRepo->getBackendUsersByRoleId($roleId, $usersNotIn);
+        return \Response()->json($backendUserList);
+    }
+
+
+    public function getChargeLists(DataProviderInterface $dataProvider) { 
+     $chargesList = $this->userRepo->getAllCharges();
+     $charges = $dataProvider->getChargesList($this->request, $chargesList);
+     return $charges;
+    }
 }

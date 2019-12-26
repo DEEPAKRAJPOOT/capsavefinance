@@ -81,10 +81,10 @@ class Offer extends BaseModel {
         
         $whereCondition['is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
         
-        $appNote = self::select('offer.*')
+        $offerData = self::select('offer.*')
                 ->where($whereCondition)
                 ->first();      
-        return $appNote;
+        return $offerData ? $offerData : null;
     }
 
     /**

@@ -338,7 +338,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getRcuLists($appId)
     {
       $result = AppDocumentFile::getRcuLists($appId);
-//      dd($result);
+      return $result ?: false;
+    }
+
+    public function getRcuActiveLists($appId)
+    {
+      $result = AppDocumentFile::getRcuActiveLists($appId);
       return $result ?: false;
     }
     
@@ -376,6 +381,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getRcuAgencies($appId, $docId)
     {
       $result = RcuDocument::getRcuAgencies($appId, $docId);
+      return $result ?: false;
+    }
+
+    public function getRcuActiveAgencies($appId, $docId)
+    {
+      $result = RcuDocument::getRcuActiveAgencies($appId, $docId);
       return $result ?: false;
     }
     
@@ -457,6 +468,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getAddressforFI($biz_id){
         $result = BusinessAddress::getAddressforFI($biz_id);
+        return $result ?: false;
+    }
+
+    /**
+     * get address for Agency FI
+     * 
+     * @param integer $biz_id
+     * @return all address result
+     */
+    public function getAddressforAgencyFI($biz_id){
+        $result = BusinessAddress::getAddressforAgencyFI($biz_id);
         return $result ?: false;
     }
 

@@ -28,7 +28,10 @@
     <li>
         <a href="#">Submit Commercial</a>
     </li>
-    
+    <!-- 
+     <li>
+        <a href="{{ route('pp_document_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('document/list') ? 'active' : '' }}"> Documents </a>
+    </li> -->
      <li>
         <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/pd-notes') ? 'active' : '' }}"> Personal Discussion </a>
     </li>
@@ -45,18 +48,18 @@
 
         $currentStage = \Helpers::getCurrentWfStage(request()->get('app_id'));   
         $roleData = \Helpers::getUserRole();        
-        $isNavAccessible = $currentStage->role_id == $roleData[0]->id ? 1 : 0;    
+        $isNavAccessible = $currentStage->role_id == $roleData[0]->id ? 1 : 0;            
     @endphp
     
-    @if ($currentStage->stage_code == 'sanction_letter' && $isNavAccessible)
-    @can('view_offer')
+    @if ($currentStage->stage_code == 'sales_queue' && $isNavAccessible)    
+    @can('view_offer')    
     <li>
         <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('view-offer') ? 'active' : '' }}">View Offer</a>
     </li>
     @endcan
     @endif
     
-    @if ($currentStage->stage_code == 'download_sanction_letter' && $isNavAccessible)
+    @if ($currentStage->stage_code == 'sanction_letter' && $isNavAccessible)
     @can('view_offer')
     <li>
         <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('view-offer') ? 'active' : '' }}">Sanction Letter</a>
