@@ -87,7 +87,7 @@ $messages = trans('success_messages.query_management_saved')
                 },
           'doc_file[]': {
                     required: true,
-                    extension: "jpg,png,pdf,doc,dox,xls,xlsx",
+                    extension: "jpg,jpeg,png,pdf,doc,dox,xls,xlsx",
                     filesize : 200000000,
                 },
         },
@@ -100,7 +100,7 @@ $messages = trans('success_messages.query_management_saved')
                 },
           'doc_file[]': {
                     required: "Please select file",
-                    extension:"Please select jpg,png,pdf,doc,dox,xls,xlsx type format only.",
+                    extension:"Please select jpg,jpeg,png,pdf,doc,dox,xls,xlsx type format only.",
                     filesize:"maximum size for upload 20 MB.",
                 },
          },
@@ -108,6 +108,11 @@ $messages = trans('success_messages.query_management_saved')
           form.submit();
         }
       });
+    });
+
+    $('.getFileName').change(function(e) {
+        var fileName = e.target.files[0].name;
+        $(this).parent('div').children('.custom-file-label').html(fileName);
     });
     
 </script>

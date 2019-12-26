@@ -30,9 +30,9 @@
                                                 <tr>
                                                     <td class="text-left">{{ $arrRole[$data->assign_role_id] }}</td>
                                                     <td class="text-left">{!!  \Illuminate\Support\Str::limit($data->qms_cmnt,150, $end='....') !!}</td>
-                                                    <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>      <td>
-                                                        <a data-toggle="modal" data-target="#queryDeatailsFrame" data-url ="{{route('show_qms_details',['qms_req_id' => $data->qms_req_id ])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right" title=""><i class="fa fa-eye">&nbsp;</i></a>
-                                                    </td>                                                                 
+                                                    <td class="text-right">{{ucwords($data->f_name.' '.$data->l_name)}}</td>
+                                                    <td>
+                                                        <a data-toggle="modal" data-target="#queryDeatailsFrame" data-url ="{{route('show_qms_details',['qms_req_id' => $data->qms_req_id ])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right" title=""><i class="fa fa-eye">&nbsp;</i></a>
                                                 </tr>
                                                 @empty
                                                     <tr>
