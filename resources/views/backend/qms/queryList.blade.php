@@ -29,7 +29,7 @@
                                                 @forelse($arrData as $data)
                                                 <tr>
                                                     <td class="text-left">{{ $arrRole[$data->assign_role_id] }}</td>
-                                                    <td class="text-left"><div style="max-height: 100px; max-width: 500px; overflow:auto;">{!! $data->qms_cmnt !!}</div></td>
+                                                    <td class="text-left"><div style="max-height: 100px; max-width: 600px; overflow:auto;">{!! $data->qms_cmnt !!}</div></td>
                                                     <td class="text-right">{{ucwords($data->f_name.' '.$data->l_name)}}</td>
                                                     <td>
                                                         <a data-toggle="modal" data-target="#queryDeatailsFrame" data-url ="{{route('show_qms_details',['qms_req_id' => $data->qms_req_id ])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right" title=""><i class="fa fa-eye">&nbsp;</i></a>

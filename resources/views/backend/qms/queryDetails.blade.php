@@ -5,7 +5,7 @@
             <tbody>
                 <tr>
                     <td>Query Details</td>
-                    <td><div style="max-height: 200px; max-width: 500px; overflow:auto;">{!! $arrData->qms_cmnt !!}</div></td>
+                    <td><div style="max-height: 200px; max-width: 1000px; overflow:auto;">{!! $arrData->qms_cmnt !!}</div></td>
                 </tr>
                 
                 @foreach($arrFileData as $arr)
