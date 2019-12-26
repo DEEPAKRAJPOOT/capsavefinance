@@ -1399,4 +1399,15 @@ class UserRepository extends BaseRepositories implements UserInterface
         $status = Charges::create($attributes);
         return $status ?: false;
     }
+    
+    /**
+     * Get Approval Authority Users
+     *
+     * @return mixed
+     */
+    public function getApprAuthorityUsers()
+    {
+        $result = UserModel::getApprAuthorityUsers();
+        return $result ? $result : [];
+    }    
 }

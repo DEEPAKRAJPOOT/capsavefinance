@@ -793,13 +793,18 @@ class CamController extends Controller
         if ($offerStatus == 2) {
             $offerId = 0;
         }
+        
+        $currStage = Helpers::getCurrentWfStage($appId);                
+        $currStageCode = $currStage->stage_code;                    
+                
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
                 ->with('offerId', $offerId)
                 ->with('loanAmount', $loanAmount)
                 ->with('prgmData', $prgmData)
-                ->with('offerData', $offerData);
+                ->with('offerData', $offerData)
+                ->with('currStageCode', $currStageCode);
     }
     
     /**
@@ -827,8 +832,14 @@ class CamController extends Controller
             
             if ($savedOfferData) {
                 //Update workflow stage
-                Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);
-            
+                //Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);
+                $appApprData = [
+                    'app_id' => $appId,
+                    'approver_user_id' => \Auth::user()->user_id,
+                    'status' => 1
+                ];
+                $this->appRepo->saveAppApprovers($appApprData);
+                
                 Session::flash('message',trans('backend_messages.limit_assessment_success'));
                 return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             } else {

@@ -847,7 +847,7 @@ class DataRenderer implements DataProviderInterface
     {
         
         return DataTables::of($role)
-                ->rawColumns(['role_id', 'checkbox', 'action', 'active','assigned'])
+                ->rawColumns(['role_id', 'name', 'checkbox', 'action', 'active','assigned'])
                 
                 ->addColumn(
                     'srno',
@@ -859,6 +859,9 @@ class DataRenderer implements DataProviderInterface
                         'name',
                         function ($role) {
                     $name = $role->f_name.' '.$role->l_name ;
+                    if ($role->is_appr_required == 1) {
+                        $name .= '<br><small>(Approval Authority)</small>';
+                    }
                     return $name;
                     
                 })              

@@ -18,8 +18,11 @@
             <div class="row">                
                <div class="col-md-12">
                     
-                   @if (Session::has('cur_stage_code') && Session::get('cur_stage_code') == 'approver')
+                   @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
                    <label class='error'>Please fill limit assessment data before move to next stage</label><br>
+                   @endif
+                   @if (Session::has('error_code') && Session::get('error_code') == 'no_approved')
+                   <label class='error'>Application is not approved by all approval authority to move the next stage.</label><br>                   
                    @endif
                   
                    @if ($assign_case)
@@ -88,8 +91,7 @@
 <script>
    
 var messages = {
-    is_accept: "{{ Session::get('is_accept') }}",
-    is_message: "{{ Session::get('is_message') }}",
+    is_accept: "{{ Session::get('is_accept') }}",    
  };
      $(document).ready(function(){
         var assign_case = $("input[name=assign_case]").val(); 

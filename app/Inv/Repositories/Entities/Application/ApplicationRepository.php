@@ -25,6 +25,7 @@ use App\Inv\Repositories\Models\Offer;
 use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\AppPdNote;
 use App\Inv\Repositories\Models\AnchorRelation;
+use App\Inv\Repositories\Models\AppApprover;
 
 /**
  * Application repository class
@@ -689,5 +690,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $updateAnchorData ? true : false;
     }
 
-
+    /**
+     * Save Approval Authority Users against application
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */    
+    public function saveAppApprovers($attributes)
+    {
+        return AppApprover::saveAppApprovers(($attributes));
+    }
 }

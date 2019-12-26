@@ -677,20 +677,43 @@ class ApplicationController extends Controller
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 //Validate the stage
                 if ($currStage->stage_code == 'approver') {
-                    $whereCondition = ['app_id' => $app_id];                    
-                    $offerData = $this->appRepo->getOfferData($whereCondition);                    
-                    if (!$offerData) {                        
-                        Session::flash('cur_stage_code', $currStage->stage_code);
+                    $whereCondition = ['app_id' => $app_id];
+                    $offerData = $this->appRepo->getOfferData($whereCondition);
+                    if (!$offerData) {
+                        Session::flash('error_code', 'no_offer_found');
                         return redirect()->back();
+                    } else {
+                        $isAppApprByAuthority = Helpers::isAppApprByAuthority($app_id);
+                        if (!$isAppApprByAuthority) {
+                            Session::flash('error_code', 'no_approved');
+                            return redirect()->back();
+                        }
                     }
-                }
-                
+                }                
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];
-                $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
-                $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
-                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign = true, $addl_data);
+                
+                if ($nextStage->stage_code == 'approver') {
+                    $apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id);
+                    //$addl_data['to_id'] = isset($apprAuthUsers[0]) ? $apprAuthUsers[0]->user_id : null;
+                    //dd('uuuuuuuuuuuuuuuuuuuuu', $apprAuthUsers);
+                    foreach($apprAuthUsers as $approver) {
+                        $appAssignData = [
+                            'app_id' => $app_id,
+                            'to_id' => $approver->user_id,
+                            'assigned_user_id' => $user_id,
+                            'sharing_comment' => '',
+                        ];
+                        Helpers::assignAppUser($appAssignData);
+                    }
+                    $assign = false;
+                } else {
+                    $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
+                    $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
+                    $assign = true;
+                }
+                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign, $addl_data);
             }
 
 
