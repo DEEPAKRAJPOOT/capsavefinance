@@ -479,7 +479,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]);  
         });
-
+            // All master routes
          Route::group(['prefix' => 'manage'], function () {
             Route::get('/charges', [
                 'as' => 'get_charges_list',
