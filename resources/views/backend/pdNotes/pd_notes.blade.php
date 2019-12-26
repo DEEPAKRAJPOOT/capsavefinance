@@ -8,7 +8,7 @@
         <div class="card-body">
           <div class=" form-fields">
            <div class="col-md-12">
-              <h5 class="card-title form-head-h5">Notes  
+              <h5 class="card-title form-head-h5">Personal Discussion Note  
               <a data-toggle="modal" data-target="#pdNoteFrame" data-url ="{{route('backend_pd_notes_from',['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right"><i class="fa fa-plus">&nbsp;</i>Add Note</a>
             </h5>
                     <div class="col-md-12-cls">
@@ -21,17 +21,19 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
+                                                    <th class="text-left">Type</th>
                                                     <th class="text-left">Title</th>
                                                     <th class="text-left">Note Details</th>
-                                                    <th class="text-left">Type</th>
-                                                    <th class="text-right">Added By</th>   
+                                                    <th class="text-right">Created By</th>   
+                                                    <th class="text-right">Created At</th>   
                                                 </tr> 
                                                 @foreach($arrData as $data)
                                                 <tr>
+                                                    <td class="text-left">@if($data->type==1) physical @elseif($data->type==2) Tele  @endif</td>
                                                     <td class="text-left">{{ $data->title }}</td>
                                                     <td class="text-left">{!! $data->comments !!}</td>
-                                                    <td class="text-left">@if($data->type==1) physical @elseif($data->type==2) Tele  @endif</td>
-                                                    <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>                                                                        
+                                                    <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>  
+                                                    <td class="text-right">{{$data->created_at }}</td>                                                                        
                                                 </tr>
                                                 @endforeach
                                             </tbody>
@@ -48,6 +50,6 @@
 </div>
 </div>
 
-{!!Helpers::makeIframePopup('pdNoteFrame','Add PD Note', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('pdNoteFrame','Add Personal Discussion Note', 'modal-lg')!!}
 
 @endsection

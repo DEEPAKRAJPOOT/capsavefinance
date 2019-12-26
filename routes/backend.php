@@ -316,9 +316,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\NotesController@savePdNotes'
             ]);
        
+            Route::get('query-management', [
+                'as' => 'query_management_list',
+                'uses' => 'Backend\QmsController@index'
+            ]);
 
+            Route::get('query-management-from', [
+                'as' => 'query_management_from',
+                'uses' => 'Backend\QmsController@showQueryForm'
+            ]);
 
-       
+            
+            Route::post('save-query-management', [
+                'as' => 'save_query_management',
+                'uses' => 'Backend\QmsController@saveQueryManagement'
+            ]);
+
+            Route::get('show-qms-details', [
+                'as' => 'show_qms_details',
+                'uses' => 'Backend\QmsController@showQmsDetails'
+
+            ]);    
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 

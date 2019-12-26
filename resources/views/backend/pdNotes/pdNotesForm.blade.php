@@ -11,7 +11,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <label for="txtCreditPeriod">Type: <span class="error_message_label">*</span></label>
+            <label for="txtCreditPeriod"> Personal Discussion Type: <span class="error_message_label">*</span></label>
             <div class="block-div clearfix">
               <div class="form-check-inline float-left">
                   <label class="form-check-label fnt">
