@@ -253,9 +253,11 @@ class ProgramController extends Controller {
              * Save program charges data 
              */
             $this->saveProgramCharges($request, $lastInsertId);
+            $pre = !empty($request->get('pre_sanction')) ? $request->get('pre_sanction') : [];
+            $post = !empty($request->get('post_sanction')) ? $request->get('post_sanction') : [];
 
-            $pre_sanction = array_filter($request->get('pre_sanction'));
-            $post_sanction = array_filter($request->get('post_sanction'));
+            $pre_sanction = array_filter($pre);
+            $post_sanction = array_filter($post);
 
             $preSanctionData = array_reduce($pre_sanction, function($outinvoice_upload, $element) use($lastInsertId, $user_id) {
                 $out[] = [
