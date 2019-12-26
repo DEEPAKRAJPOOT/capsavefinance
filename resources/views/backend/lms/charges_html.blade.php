@@ -76,7 +76,7 @@
             <div class="form-group password-input">
                 <label for="txtPassword">GST <span class="error_message_label">*</span></label>
                 <div class="block-div">
-                    {!! Form::text('gst_rate['.$len.']',isset($data->gst_percentage) &&  $data->gst_percentage,['class'=>'form-control clsRequired pl-2','placeholder'=>"Rate" ,'required'=>'required']) !!}
+                    {!! Form::text('gst_rate['.$len.']',isset($data->gst_percentage) ?  $data->gst_percentage : null ,['class'=>'form-control clsRequired pl-2','placeholder'=>"Rate" ,'required'=>'required']) !!}
                 </div>
             </div>
         </div>
