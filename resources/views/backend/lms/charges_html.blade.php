@@ -22,10 +22,10 @@
         @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 1)
         <div class="col-md-4">
             <div class="form-group password-input">
-                <label for="txtPassword">Charge Amount <span class="error_message_label">*</span></label>
+                <label for="txtPassword">Charge Amount <span class="error_message_label">* </span></label>
                 <div class="block-div">
 
-                    {!! Form::text('chrg_calculation_amt['.$len.']','',['class'=>'form-control clsRequired col-md-6','placeholder'=>"Enter  Amount" ,'required'=>'required']) !!}
+                    {!! Form::text('chrg_calculation_amt['.$len.']',isset($data->chrg_calculation_amt)  ?   $data->chrg_calculation_amt  : null, ['class'=>'form-control clsRequired col-md-6','placeholder'=>"Enter  Amount" ,'required'=>'required']) !!}
 
                 </div>
             </div>
@@ -72,7 +72,7 @@
             <div class="form-group password-input">
                 <label for="txtPassword">GST <span class="error_message_label">*</span></label>
                 <div class="block-div">
-                    {!! Form::text('gst_rate['.$len.']','',['class'=>'form-control clsRequired pl-2','placeholder'=>"Rate" ,'required'=>'required']) !!}
+                    {!! Form::text('gst_rate['.$len.']',isset($data->gst_percentage) &&  $data->gst_percentage,['class'=>'form-control clsRequired pl-2','placeholder'=>"Rate" ,'required'=>'required']) !!}
                 </div>
             </div>
         </div>
