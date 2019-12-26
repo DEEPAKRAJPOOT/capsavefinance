@@ -70,7 +70,7 @@
                                         <td width="20%"><b>Comment </b></td>
                                         @endif
                                         <td width="20%">Download</td>
-                                        <td align="center" width="20%">Action</td>
+                                        <td align="center" width="20%">Action</td> 
                                     </tr>
                                     @foreach($documentData[$data->document->doc_name] as $value)
                                     <tr>
