@@ -55,7 +55,7 @@
              <input type="text" class="form-control" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$charge_data->chrg_calculation_amt}}" maxlength="10">
          </div>
          <div class="form-group col-md-6" id="approved_limit_div">
-             <label for="chrg_type">Approved Limit</label>
+             <label for="chrg_type">Charge Applicable On</label>
               <select class="form-control" name="chrg_applicable_id" id="chrg_applicable_id">
                   <option disabled value="" selected>Select</option>
                   <option {{$charge_data->chrg_applicable_id == 1 ? 'selected' : ''}} value="1">Limit Amount</option>
@@ -127,23 +127,23 @@
       if ($(this).val() == '1'){ 
         $('#gst_div').show();
       }else{ 
-        $('#gst_div').hide();
         $('input[name="gst_percentage"]').val('');
+        $('#gst_div').hide();
       }
     })
 
     $(document).ready(function () {
-      var is_gst_applicable = $('input[name="is_gst_applicable"]');
-      var chrg_calculation_type = $('input[name="chrg_calculation_type"]');
+      var is_gst_applicable = $('input[name="is_gst_applicable"]:checked');
+      var chrg_calculation_type = $('input[name="chrg_calculation_type"]:checked');
 
-      if (is_gst_applicable.is(':checked') && is_gst_applicable.val() == 1){
+      if (is_gst_applicable.val() == 1){
        $('#gst_div').show();
       }else{
-       $('#gst_div').hide();
        $('input[name="gst_percentage"]').val('');
+       $('#gst_div').hide();
       }
 
-      if (chrg_calculation_type.is(':checked') && chrg_calculation_type.val() == 2) {
+      if (chrg_calculation_type.val() == 2) {
         $('#approved_limit_div').show();
       }else{
        $('#approved_limit_div').hide();

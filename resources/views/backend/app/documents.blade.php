@@ -143,7 +143,7 @@
     
 </div>
 
-{!!Helpers::makeIframePopup('uploadDocument','Upload Document', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('uploadDocument','Upload Document', 'modal-md')!!}
 
 @endsection
 @section('jscript')

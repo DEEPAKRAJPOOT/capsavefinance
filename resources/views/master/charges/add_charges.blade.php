@@ -54,7 +54,7 @@
              <input type="text" class="form-control" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" maxlength="10">
          </div>
          <div class="form-group col-md-6" id="approved_limit_div">
-             <label for="chrg_type">Approved Limit</label>
+             <label for="chrg_type">Charge Applicable On</label>
               <select class="form-control" name="chrg_applicable_id" id="chrg_applicable_id">
                   <option disabled value="" selected>Select</option>
                   <option value="1">Limit Amount</option>
