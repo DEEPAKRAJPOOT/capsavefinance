@@ -48,7 +48,7 @@
                   <select class="form-control" name="finc_year">
                      <option value=''>Select Year</option>
                      @for($i=-10;$i<=0;$i++)
-                          <option>{{date('Y')+$i}}</option>
+                          <option>{{ (date('Y') + ($i-1)).'-'.(date('y') + $i) }}</option>
                      @endfor;
                   </select>
                </div>
