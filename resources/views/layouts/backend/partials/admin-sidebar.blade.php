@@ -175,9 +175,11 @@
            </a>
            <div class="collapse" id="layoutsSubmenu10">
               <ul class="nav flex-column sub-menu">
+                  @can('manage_program')
                  <li class="nav-item">
-                    <a class="nav-link" href="#">Manage Program</a>
+                    <a class="nav-link" href="{{ route('manage_program') }} ">Manage Program</a>
                  </li>
+                   @endcan
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_charges_list') }}">Manage Charges</a>
                  </li>

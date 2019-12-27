@@ -176,17 +176,17 @@ class Program extends BaseModel {
      */
     public static function getProgramListById($id)
     {
-        if (empty($id)) {
-            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
-        }
-
         if (!is_int($id)) {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
         $res = self::select('prgm.*', 'u.f_name')
                 ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
-                ->where(['u.user_type' => 2, 'prgm.anchor_id' => $id]);
+                ->where(['u.user_type' => 2])
+                ->where('prgm.parent_prgm_id' ,null);
+        if (!empty($id)) {
+            $res = $res->where('prgm.anchor_id', $id);
+        }
 
         return ($res ?: false);
     }
