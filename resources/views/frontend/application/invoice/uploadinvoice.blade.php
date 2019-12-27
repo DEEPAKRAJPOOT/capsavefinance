@@ -48,11 +48,7 @@
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Anchor Name <!-- from enchor table --> <span class="error_message_label">*</span></label>
                                              <select readonly="readonly" class="form-control changeAnchor" id="anchor_id" name="anchor_id">
-                                               @if($get_anchor->anchor_id)
-                                                 <option value="{{{$get_anchor->anchor_id}}}">{{{$get_anchor->comp_name}}}</option>
-                                             @else
-                                                  <option value="">No data found</option>
-                                             @endif
+                                              
                                              </select>
                                                   
                                         </div>
