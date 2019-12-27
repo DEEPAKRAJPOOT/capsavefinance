@@ -535,7 +535,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
         });
             // All master routes
-         Route::group(['prefix' => 'manage'], function () {
+        Route::group(['prefix' => 'manage'], function () {
+
             Route::get('/charges', [
                 'as' => 'get_charges_list',
                 'uses' => 'Master\ChargeController@index'
@@ -572,20 +573,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\DocumentController@saveDocuments'
             ]);       
         });
-
-
-            
-            
-           
-            
-            
-            
-            
-            
-    });
-   
-
-
 
         Route::group(['prefix' => 'agency'], function () {
             Route::get('/', [
@@ -640,12 +627,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'update_agency_user_reg',
                 'uses' => 'Backend\AgencyController@updateAgencyUserReg'
             ]);   
-            
-          
+             
         });
         
           ///////////////////////// Route for invoice controller///////////////////////
-           Route::group(['prefix' => 'invoice'], function () {
+        Route::group(['prefix' => 'invoice'], function () {
                Route::get('upload_invoice', [
                  'as' => 'upload_invoice',
                 'uses' => 'Backend\InvoiceController@getInvoice'
