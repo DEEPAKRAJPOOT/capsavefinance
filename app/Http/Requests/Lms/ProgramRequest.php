@@ -24,7 +24,7 @@ class ProgramRequest extends FormRequest {
     public function rules()
     {
         return [
-            'anchor_user_id' => 'required',
+            'anchor_id' => 'required',
             'prgm_name' => "required",
             'prgm_type' => 'required',
             'industry_id' => "required",
@@ -36,7 +36,7 @@ class ProgramRequest extends FormRequest {
 
     public function messages()
     {
-        $messages['anchor_user_id.required'] = trans('error_messages.required', ['field' => 'Anchor Name']);
+        $messages['anchor_id.required'] = trans('error_messages.required', ['field' => 'Anchor Name']);
         $messages['prgm_name.required'] = trans('error_messages.required', ['field' => 'Program Name']);
         $messages['prgm_type.required'] = trans('error_messages.required', ['field' => 'Program Detail']);
         $messages['industry_id.required'] = trans('error_messages.required', ['field' => 'Industry']);

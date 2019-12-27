@@ -13,7 +13,7 @@
             <small>{{ trans('backend.mange_program.program_sub_list') }}</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;">  {{ trans('backend.mange_program.home') }} </li>
-                <li style="color:#374767;"> <a href='{{ route('manage_program',['anchor_id'=>$anchor_id])}}'>  {{ trans('backend.mange_program.manage_program') }} </a></li>
+                <li style="color:#374767;"> <a href='{{ $redirectUrl }}'>  {{ trans('backend.mange_program.manage_program') }} </a></li>
                 <li class="active"> {{ trans('backend.mange_program.program_sub_list') }}</li>
             </ol>
         </div>
