@@ -128,7 +128,7 @@ try {
                 {
                     data: 'anchor_limit'
                 },
-               
+
                 {
                     data: 'status'
                 },
@@ -145,7 +145,9 @@ try {
 
         $('.multi-select-demo').multiselect({
             maxHeight: 400,
-            enableFiltering: true
+            enableFiltering: true,
+            numberDisplayed: 2,
+            selectAll: true,
         });
 
 

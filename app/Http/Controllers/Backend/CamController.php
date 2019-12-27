@@ -793,13 +793,18 @@ class CamController extends Controller
         if ($offerStatus == 2) {
             $offerId = 0;
         }
+        
+        $currStage = Helpers::getCurrentWfStage($appId);                
+        $currStageCode = $currStage->stage_code;                    
+                
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
                 ->with('offerId', $offerId)
                 ->with('loanAmount', $loanAmount)
                 ->with('prgmData', $prgmData)
-                ->with('offerData', $offerData);
+                ->with('offerData', $offerData)
+                ->with('currStageCode', $currStageCode);
     }
     
     /**
@@ -827,8 +832,14 @@ class CamController extends Controller
             
             if ($savedOfferData) {
                 //Update workflow stage
-                Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);
-            
+                //Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);
+                $appApprData = [
+                    'app_id' => $appId,
+                    'approver_user_id' => \Auth::user()->user_id,
+                    'status' => 1
+                ];
+                $this->appRepo->saveAppApprovers($appApprData);
+                
                 Session::flash('message',trans('backend_messages.limit_assessment_success'));
                 return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             } else {
@@ -851,18 +862,18 @@ class CamController extends Controller
         $offerData = [
             'app_id' => $addlData['app_id'],
             'prgm_id' => $requestData['prgm_id'],
-            'loan_amount' => $addlData['loan_amount'],
-            'loan_offer' => $requestData['loan_offer'],        
-            'interest_rate' => $requestData['interest_rate'],        
-            'tenor' => $requestData['tenor'],        
-            'tenor_old_invoice' => $requestData['tenor_old_invoice'],        
-            'margin' => $requestData['margin'],
-            'overdue_interest_rate'=> $requestData['overdue_interest_rate'],        
-            'adhoc_interest_rate'=> $requestData['adhoc_interest_rate'],        
-            'grace_period' => $requestData['grace_period'],        
-            'processing_fee' => $requestData['processing_fee'],
-            'check_bounce_fee' => $requestData['check_bounce_fee'],
-            'comment' => $requestData['comment'],
+            'loan_amount' => isset($addlData['loan_amount']) ? $addlData['loan_amount'] : null,
+            'loan_offer' => isset($requestData['loan_offer']) ? $requestData['loan_offer'] : null,        
+            'interest_rate' => isset($requestData['interest_rate']) ? $requestData['interest_rate'] : null,        
+            'tenor' => isset($requestData['tenor']) ? $requestData['tenor'] : null,        
+            'tenor_old_invoice' => isset($requestData['tenor_old_invoice']) ? $requestData['tenor_old_invoice'] : null,        
+            'margin' => isset($requestData['margin']) ? $requestData['margin'] : null,
+            'overdue_interest_rate'=> isset($requestData['overdue_interest_rate']) ? $requestData['overdue_interest_rate'] : null,        
+            'adhoc_interest_rate'=> isset($requestData['adhoc_interest_rate']) ? $requestData['adhoc_interest_rate'] : null,        
+            'grace_period' => isset($requestData['grace_period']) ? $requestData['grace_period'] : null,        
+            'processing_fee' => isset($requestData['processing_fee']) ? $requestData['processing_fee'] : null,
+            'check_bounce_fee' => isset($requestData['check_bounce_fee']) ? $requestData['check_bounce_fee'] : null,
+            'comment' => isset($requestData['comment']) ? $requestData['comment'] : null,
             'is_active' => 1,
         ];
         return $offerData;

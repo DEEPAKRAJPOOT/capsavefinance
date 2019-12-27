@@ -300,7 +300,7 @@
 
                                                                 {!!
                                                                 Form::select('pre_sanction[]',
-                                                                [''=>'Please select']+$preSanction,
+                                                                $preSanction,
                                                                 null,
                                                                 ['id' => 'pre_sanction',
                                                                 'class'=>'form-control multi-select-demo ',
@@ -314,7 +314,7 @@
                                                                 <h5>Post Sanction </h5>
                                                                 {!!
                                                                 Form::select('post_sanction[]',
-                                                                [''=>'Please select']+$postSanction,
+                                                                $postSanction,
                                                                 null,
                                                                 ['id' => 'post_sanction',
                                                                 'class'=>'form-control multi-select-demo ',

@@ -112,7 +112,8 @@
                                 {!! Form::hidden('loan_amount', $loanAmount) !!}
 
                                 @if(request()->get('view_only'))
-                                @if(!in_array($offer_status, [1,2]))                                
+                                @if(!in_array($offer_status, [1,2]))
+                                {{--
                                 {!! 
                                 Form::submit(
                                 'Reject', 
@@ -122,6 +123,7 @@
                                 ]
                                 )
                                 !!} 
+                                --}}
                                 
                                 {!! 
                                 Form::submit(

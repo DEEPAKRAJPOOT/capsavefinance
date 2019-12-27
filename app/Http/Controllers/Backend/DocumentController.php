@@ -12,9 +12,11 @@ use App\Inv\Repositories\Models\User;
 use Session;
 use Helpers;
 use Auth;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
 class DocumentController extends Controller
 {
+    use ApplicationTrait;
     protected $appRepo;
     protected $userRepo;
 
@@ -35,7 +37,7 @@ class DocumentController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userData = User::getUserByAppId($appId);
-            
+                        
             if ($appId > 0) {
                 $requiredDocs = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId);
                 if($requiredDocs->count() != 0){

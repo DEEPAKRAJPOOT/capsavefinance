@@ -27,17 +27,18 @@
                      
                      <div class="form-sections">
                         <div class="col-md-8 col-md-offset-2">
-                           <div class="form-head">
+                           
                               <h3 class="pull-left"><small>
                                  {{ trans('backend.add_program.add_program') }}
                                  </small>
                               </h3>
                               <div class="pull-right">
-                                 <button type="button" id="" class="btn btn-secondry btn-sm"><img src="images/draft.png" alt="draft"> 
+                                 <button type="button" id="" class="btn btn-secondry btn-sm">
+                                     <img src="{{ asset('backend/assets/images/draft.png') }}" alt="draft"> 
                                  {{ trans('backend.add_program.save_as_draft') }}
                                  </button>
                               </div>
-                           </div>
+                          
                            <div class="clearfix"></div>
                            <div class="row">
                               <div class="col-md-12">
@@ -53,7 +54,7 @@
                                     <label for="txtCreditPeriod">
                                     {{ trans('backend.add_program.program_detail') }}   
                                     <span class="error_message_label">*</span></label>
-                                    <div class="block-div clearfix mb-3 mt-3">
+                                    <div class="block-div clearfix ">
                                        <div class="form-check-inline float-left">
                                           <label class="form-check-label fnt">
                                           {!! Form::radio('prgm_type','1','', ['class'=>'form-check-input'])   !!}
@@ -70,7 +71,9 @@
                                           </label>
                                        </div>
                                     </div>
+                                      <label id="prgm_type-error" class="error mb-0" for="prgm_type"></label>
                                  </div>
+                                  
                               </div>
                               <div class="col-md-12">
                                  <div class="form-group">
@@ -131,6 +134,7 @@
                                           </label>
                                        </div>
                                     </div>
+                                      <label id="is_fldg_applicable-error" class="error" for="is_fldg_applicable"></label>
                                  </div>
                               </div>
                            </div>

@@ -105,6 +105,8 @@
                 !!}
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-md-6">
             <div class="form-group">
                 <label for="txtMobile">Reporting Manager                    
@@ -117,7 +119,22 @@
                 'class'=>'form-control'))
                 !!}
             </div>
-        </div>        
+        </div> 
+        <div class="col-md-6 is-apprv-req" style="display:none;">
+            <div class="form-group">
+                <label for="txtMobile">
+                {!! 
+                    Form::checkbox('is_appr_required', 1, true, 
+                    array(
+                        'id' => 'is_appr_required',
+                        'class'=>'form-control'
+                        )
+                    ) 
+                !!}                    
+                is approval required?                    
+                </label>
+            </div>
+        </div>          
     </div>
 
 
@@ -194,7 +211,14 @@ var messages = {
        //window.parent.location.href = messages.paypal_gatway;
     }
     
-        $(document).on('change', '#role', function(){            
+        $(document).on('change', '#role', function(){
+            var role_id = $(this).val();
+            if (role_id == 8) {
+                $(".is-apprv-req").show();
+            } else {
+                $("#is_appr_required").prop("checked", false);
+                $(".is-apprv-req").hide(); 
+            }
             $.ajax({
                 url  : messages.get_backend_users_url,
                 type :'POST',
