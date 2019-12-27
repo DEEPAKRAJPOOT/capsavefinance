@@ -134,6 +134,7 @@ class Program extends BaseModel {
                 ->leftJoin('mst_industry', 'prgm.industry_id', '=', 'mst_industry.id')
                 ->leftJoin('mst_sub_industry', 'prgm.sub_industry_id', '=', 'mst_sub_industry.id')
                 ->where($whereCondition)
+                ->orderBy('prgm.prgm_id', 'DESC')
                 ->first();
         return $appNote;
     }

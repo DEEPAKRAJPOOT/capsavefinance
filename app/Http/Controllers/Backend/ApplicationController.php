@@ -714,11 +714,13 @@ class ApplicationController extends Controller
                         ];
                         Helpers::assignAppUser($appAssignData);
                     }
-                    $assign = false;                
+                    $assign = false;
+                    $wf_status = 2;
                 } else {
                     $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
                     $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
                     $assign = true;
+                    $wf_status = 1;
                 }
                 
                 if ($nextStage->stage_code == 'upload_exe_doc') {
@@ -727,7 +729,7 @@ class ApplicationController extends Controller
                     $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id);                    
                 }
                 
-                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status = 1, $assign, $addl_data);
+                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
             }
 
 
@@ -847,7 +849,7 @@ class ApplicationController extends Controller
                 $message = trans('backend_messages.reject_offer_success');
                 
                 //Update workflow stage
-                Helpers::updateWfStage('approver', $appId, $wf_status = 2);
+                //Helpers::updateWfStage('approver', $appId, $wf_status = 2);
                 Helpers::updateWfStage('sales_queue', $appId, $wf_status = 2);
                 //Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 2);
                 //Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
