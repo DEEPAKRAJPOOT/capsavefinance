@@ -105,6 +105,8 @@
                 !!}
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-md-6">
             <div class="form-group">
                 <label for="txtMobile">Reporting Manager                    
@@ -117,7 +119,31 @@
                 'class'=>'form-control'))
                 !!}
             </div>
-        </div>         
+        </div>
+
+            @php 
+            if($roleData->role_id == 8) {
+                $disp = 'block;'; 
+            } else {
+                $disp = 'none;';
+            }
+            @endphp
+        
+        <div class="col-md-6 is-apprv-req" style="display:{{ $disp }}">
+            <div class="form-group">
+                <label for="txtMobile">
+                {!! 
+                    Form::checkbox('is_appr_required', 1, $userData->is_appr_required,
+                    array(
+                        'id' => 'is_appr_required',
+                        'class'=>'form-control'
+                        )
+                    ) 
+                !!}                    
+                is approval required?                    
+                </label>
+            </div>
+        </div>        
     </div>
 
     <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>  
@@ -186,7 +212,14 @@ var messages = {
             }
         });
         
-        $(document).on('change', '#role', function(){            
+        $(document).on('change', '#role', function(){   
+            var role_id = $(this).val();
+            if (role_id == 8) {
+                $(".is-apprv-req").show();
+            } else {
+                $("#is_appr_required").prop("checked", false);
+                $(".is-apprv-req").hide(); 
+            }            
             $.ajax({
                 url  : messages.get_backend_users_url,
                 type :'POST',

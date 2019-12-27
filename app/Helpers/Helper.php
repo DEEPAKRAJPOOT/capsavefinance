@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use DB;
 use Mail;
 use Auth;
 use Exception;
@@ -18,7 +19,7 @@ use App\Inv\Repositories\Models\Master\Permission;
 use App\Inv\Repositories\Models\Master\PermissionRole;
 use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\Role;
-use DB;
+use App\Inv\Repositories\Models\AppApprover;
 
 class Helper extends PaypalHelper
 {
@@ -522,8 +523,11 @@ class Helper extends PaypalHelper
         $dataArr['is_owner'] = 1;
                         
         $assignData = AppAssignment::getAppAssignmentData ($whereCondition);
+        
         if (!$assignData) {
             AppAssignment::saveData($dataArr);
+        } else {            
+            AppAssignment::updateData(['is_owner' => 1], $assignData->app_assign_id);
         }
         
         $application = Application::updateAppDetails($app_id, ['is_assigned'=>1]); 
@@ -775,5 +779,75 @@ class Helper extends PaypalHelper
         $childs = array_unique($childs);
         return array_merge($childs, array($parentId));
     }
+
+    /**
+     * Save Approval Authority Users against application
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function saveApprAuthorityUsers($app_id)
+    {
+        $approvers = User::getApprAuthorityUsers();
+        $data = [];
+        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        
+        AppApprover::updateAppApprActiveFlag($app_id); //update rows with is_active => 0
+        foreach($approvers as $approver) {
+            $data[] = [
+                'app_id' => $app_id,
+                'approver_user_id' => $approver->user_id,
+                'created_by' => Auth::user()->user_id,
+                'created_at' => $curData,
+                'updated_by' => Auth::user()->user_id,                   
+                'updated_at' => $curData,                 
+            ];
+        }
+        AppApprover::insert($data);
+        return $approvers;
+    }
     
+    /**
+     * Check Approval Authority Users against application
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function isAppApprByAuthority($app_id)
+    {
+        $appApprData = AppApprover::getAppApprovers($app_id);
+        $totalApprover = count($appApprData);
+        $apprCount = 0;
+        foreach($appApprData as $data) {
+            if ($data->status == 1) {
+                $apprCount++;
+            }
+        }
+        if ($totalApprover == $apprCount) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Assign application user
+     * 
+     * @param array $data
+     */
+    public static function assignAppUser ($data) 
+    {                        
+        AppAssignment:: updateAppAssignById((int)$data['app_id'], ['is_owner' => 0]);
+        //update assign table
+        $dataArr = []; 
+        $dataArr['from_id'] = \Auth::user()->user_id;
+        $dataArr['to_id'] = $data['to_id'];
+        $dataArr['role_id'] = null;
+        $dataArr['assigned_user_id'] = $data['assigned_user_id'];
+        $dataArr['app_id'] = $data['app_id'];
+        $dataArr['assign_status'] = '0';
+        $dataArr['sharing_comment'] = isset($data['sharing_comment']) ? $data['sharing_comment'] : '';
+        $dataArr['is_owner'] = 1;
+        AppAssignment::saveData($dataArr);            
+    }
 }

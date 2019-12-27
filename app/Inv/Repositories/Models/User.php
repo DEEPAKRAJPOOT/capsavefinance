@@ -65,6 +65,7 @@ class User extends Authenticatable
         'block_status_id',
         'block_status_updatetime',
         'parent_id',
+        'is_appr_required',
         'created_by',
         'created_at',
         'updated_at',
@@ -621,6 +622,20 @@ class User extends Authenticatable
     public static function getChildUsers($parentUserId)
     {
         $result = self::where('parent_id', $parentUserId)
+                ->where('is_active', 1)
+                ->get();        
+        return $result ? $result : [];
+    }
+    
+    /**
+     * Get Approval Authority Users
+     *
+     * @return mixed
+     */
+    public static function getApprAuthorityUsers()
+    {
+        $result = self::select('user_id')
+                ->where('is_appr_required', 1)
                 ->where('is_active', 1)
                 ->get();        
         return $result ? $result : [];

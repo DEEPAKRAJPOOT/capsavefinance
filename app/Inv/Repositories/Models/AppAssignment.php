@@ -231,6 +231,36 @@ class AppAssignment extends BaseModel
                 ->get();
         return $assignData ? $assignData : [];
     }
+    
+    /**
+     * Validating and parsing data passed thos this method
+     *
+     * @param array $attributes
+     * @param mixed $user_id
+     *
+     * @return New record ID that was added
+     *
+     * @since 0.1
+     */
+    public static function updateData($attributes = [], $app_assign_id)
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        $status =  self::where('app_assign_id', $app_assign_id)->update($attributes);        
+        return true;
+    }    
 }
   
 
