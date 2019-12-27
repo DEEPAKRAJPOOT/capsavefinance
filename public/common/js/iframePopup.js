@@ -594,14 +594,6 @@ $(document).ready(function () {
                     }
                 );
         });
-
-           // Entity
-           $("#addEntityFrame").on('show.bs.modal', function (e) {
-            var parent = $(e.relatedTarget);
-            var height = parent.attr('data-height');
-            var url = parent.attr('data-url');
-            var width = parent.attr('data-width');
-            $("#addEntityFrame iframe").attr(
         
         $("#addIndustriesFrame").on('show.bs.modal', function (e) {
                 var parent = $(e.relatedTarget);
@@ -628,26 +620,37 @@ $(document).ready(function () {
                         'height': height,
                         'width': width
                     }
-<<<<<<< HEAD
-            );
-    });
-    $("#editEntityFrame").on('show.bs.modal', function (e) {
-        var parent = $(e.relatedTarget);
-        var height = parent.attr('data-height');
-        var url = parent.attr('data-url');
-        var width = parent.attr('data-width');
-        $("#editEntityFrame iframe").attr(
-            {
-                'src': url,
-                'height': height,
-                'width': width
-            }
-        );
-});
-=======
                 );
         });
->>>>>>> ab5a52aed2781bc6338461ff2918b0479b24b5ad
+        
+           // Entity
+        $("#addEntityFrame").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            $("#addEntityFrame iframe").attr(
+                    {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                    }
+                );
+         });
+           
+        $("#editEntityFrame").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            $("#editEntityFrame iframe").attr(
+                {
+                    'src': url,
+                    'height': height,
+                    'width': width
+                }
+            );
+        });
                 
         $("#ppUploadDocument").on('show.bs.modal', function (e) {
                 var parent = $(e.relatedTarget);
