@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\Master\Charges;
 use App\Inv\Repositories\Models\Master\Documents;
 use App\Inv\Repositories\Models\Master\Entity;
 
+use App\Inv\Repositories\Models\Master\Industry;
 /**
  * 
  */
@@ -110,6 +111,7 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     return $result ?: false;
   }
 
+<<<<<<< HEAD
   public function saveEntity($attributes)
   {
     $status = Entity::create($attributes);
@@ -124,3 +126,31 @@ class MasterRepository extends BaseRepositories implements MasterInterface
 
  
 }
+=======
+    }
+
+     public function findIndustryById($industryId){
+      if (empty($industryId) || !ctype_digit($industryId)) {
+            throw new BlankDataExceptions('No Data Found');
+      }
+      $result = Industry::find($industryId);
+      return $result ?: false;
+    }
+
+    public function getAllIndustries(){
+      $result = Industry::orderBy('id', 'DESC');
+      return $result ?: false;
+    }
+
+    public function saveIndustries($attributes){
+        $status = Industry::create($attributes);
+        return $status ?: false;
+    }
+
+    public function updateIndustries($attributes, $industryId){
+        $status = Industry::where('id', $industryId)->first()->update($attributes);
+        return $status ?: false;
+
+    }
+}
+>>>>>>> ab5a52aed2781bc6338461ff2918b0479b24b5ad

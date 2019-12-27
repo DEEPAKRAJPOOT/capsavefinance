@@ -8,5 +8,7 @@ return [
     'documents_edit_success' => 'Documents updated successfully',
     'entity_add_success' => 'Entity added successfully',
     'entity_edit_success' => 'Entity updated successfully',
+    'industry_add_success' => 'Industry added successfully',
+    'industry_edit_success' => 'Industry updated successfully',
 ];
 

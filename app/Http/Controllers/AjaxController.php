@@ -2832,10 +2832,17 @@ if ($err) {
     }
 
 
-     public function getDocLists(DataProviderInterface $dataProvider) { 
+    public function getDocLists(DataProviderInterface $dataProvider) { 
      $documentsList = $this->masterRepo->getAllDocuments();
-     $charges = $dataProvider->getDocumentsList($this->request, $documentsList);
-     return $charges;
+     $documents = $dataProvider->getDocumentsList($this->request, $documentsList);
+     return $documents;
+    }
+
+
+    public function getIndustryLists(DataProviderInterface $dataProvider) { 
+     $industriesList = $this->masterRepo->getAllIndustries();
+     $industries = $dataProvider->getIndustriesList($this->request, $industriesList);
+     return $industries;
     }
 
     // Entities List

@@ -602,11 +602,33 @@ $(document).ready(function () {
             var url = parent.attr('data-url');
             var width = parent.attr('data-width');
             $("#addEntityFrame iframe").attr(
+        
+        $("#addIndustriesFrame").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#addIndustriesFrame iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
+
+        $("#editIndustriesFrame").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#editIndustriesFrame iframe").attr(
                     {
                         'src': url,
                         'height': height,
                         'width': width
                     }
+<<<<<<< HEAD
             );
     });
     $("#editEntityFrame").on('show.bs.modal', function (e) {
@@ -622,6 +644,10 @@ $(document).ready(function () {
             }
         );
 });
+=======
+                );
+        });
+>>>>>>> ab5a52aed2781bc6338461ff2918b0479b24b5ad
                 
         $("#ppUploadDocument").on('show.bs.modal', function (e) {
                 var parent = $(e.relatedTarget);

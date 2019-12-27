@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Models\Master;
 
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\User;
 
 class Industry extends BaseModel {
 
@@ -57,6 +58,10 @@ class Industry extends BaseModel {
     {
         $res = self::where('is_active', 1)->pluck('name', 'id');
         return $res ?: [];
+    }
+
+    public function userDetail(){
+        return $this->belongsTo(User::class, 'created_by');
     }
 
 }
