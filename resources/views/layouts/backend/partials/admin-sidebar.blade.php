@@ -187,7 +187,7 @@
                     <a class="nav-link" href="{{ route('get_documents_list') }}">Manage Document</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="#">Manage Industry</a>
+                    <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Manage State</a>

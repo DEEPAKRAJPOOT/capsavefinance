@@ -570,6 +570,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save_documents', [
                 'as' => 'save_documents',
                 'uses' => 'Master\DocumentController@saveDocuments'
+            ]);
+
+            Route::get('/industries', [
+                'as' => 'get_industries_list',
+                'uses' => 'Master\IndustryController@index'
+            ]);
+            Route::get('/add_industries', [
+                'as' => 'add_industries',
+                'uses' => 'Master\IndustryController@addIndustry'
+            ]); 
+            Route::get('/edit_industries', [
+                'as' => 'edit_industries',
+                'uses' => 'Master\IndustryController@editIndustry'
+            ]);
+
+            Route::post('/save_industries', [
+                'as' => 'save_industries',
+                'uses' => 'Master\IndustryController@saveIndustries'
             ]);       
         });
 

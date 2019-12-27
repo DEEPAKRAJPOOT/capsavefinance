@@ -1289,8 +1289,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'created_by',
                     function ($documents) {
-                    return $documents->created_by;
-                    //return $documents->userDetail->f_name.' '.$documents->userDetail->l_name;
+                    return $documents->userDetail->f_name.' '.$documents->userDetail->l_name;
                 })
                 ->addColumn(
                     'is_active',
@@ -1305,8 +1304,46 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('chrg_desc', 'like',"%$search_keyword%")
-                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                            $query->where('doc_name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+    public function getIndustriesList(Request $request, $industries){
+
+        return DataTables::of($industries)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'name',
+                    function ($industries) {
+                    return $industries->name;
+                }) 
+                ->addColumn(
+                    'created_at',
+                    function ($industries) {
+                    return ($industries->created_at) ? date('d-M-Y',strtotime($industries->created_at)) : '---';
+                })
+                ->addColumn(
+                    'created_by',
+                    function ($industries) {
+                    return $industries->userDetail->f_name.' '.$industries->userDetail->l_name;
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($industries) {
+                       $act = $industries->is_active;
+                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editIndustriesFrame" title="Edit Industry Detail" data-url ="'.route('edit_industries',['id' => $industries->id]).'" data-height="400px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('name', 'like',"%$search_keyword%");
                         });
                     }
                 })

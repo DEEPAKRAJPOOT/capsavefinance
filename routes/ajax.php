@@ -374,6 +374,16 @@ Route::group(
         'uses' => 'AjaxController@getDocLists'
         ]
     );
+
+     /*Master Document route*/
+    Route::post(
+        'get-master-industries-list',
+        [
+        'as' => 'get_ajax_master_industry_list',
+        'uses' => 'AjaxController@getIndustryLists'
+        ]
+    );
+
     Route::post(
         'get-agency-user-list',
         [
