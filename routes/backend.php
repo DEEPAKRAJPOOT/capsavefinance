@@ -9,6 +9,7 @@
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
     Route::group(['middleware' => 'auth'], function () {
+
         Route::group(['prefix' => 'dashboard'], function () {
             Route::get('/', [
                 'as' => 'backend_dashboard',
@@ -441,8 +442,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/rcu', [
                 'as' => 'backend_agency_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'
-            ]);
-            
+            ]);   
         });
         
         Route::group(['prefix' => 'anchor'], function () {
@@ -532,7 +532,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             'as' => 'save_sub_program',
             'uses' => 'Backend\ProgramController@saveSubProgram'
            ]);
-
         });
             // All master routes
         Route::group(['prefix' => 'manage'], function () {
@@ -626,23 +625,23 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('update-agency-user', [
                 'as' => 'update_agency_user_reg',
                 'uses' => 'Backend\AgencyController@updateAgencyUserReg'
-            ]);   
-             
+            ]);        
         });
         
           ///////////////////////// Route for invoice controller///////////////////////
         Route::group(['prefix' => 'invoice'], function () {
-               Route::get('upload_invoice', [
+            Route::get('upload_invoice', [
                  'as' => 'upload_invoice',
                 'uses' => 'Backend\InvoiceController@getInvoice'
             ]); 
-          });
-           Route::group(['prefix' => 'invoice'], function () {
-               Route::POST('save_invoice', [
+        });
+
+        Route::group(['prefix' => 'invoice'], function () {
+            Route::POST('save_invoice', [
                  'as' => 'save_invoice',
                 'uses' => 'Backend\InvoiceController@saveInvoice'
             ]); 
-          });
+        });
           
         Route::group(['prefix' => 'document'], function () {
             Route::get('/list', [
@@ -659,8 +658,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'pp_document_save',
                 'uses' => 'Backend\DocumentController@saveDocument'
             ]);
-            
         });
     });
+});
 
 
