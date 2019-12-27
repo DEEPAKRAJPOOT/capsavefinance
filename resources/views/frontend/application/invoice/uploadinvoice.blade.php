@@ -54,7 +54,7 @@
                                                 @else
                                                   <option value="">No data found</option>
                                              @endif
-                                                  
+                                                </select>   
                                         </div>
                                     </div>
                     <div class="col-md-12">
@@ -62,7 +62,7 @@
                                             <label for="txtCreditPeriod">Supplier Name <span class="error_message_label">*</span></label>
                                             <select readonly="readonly" class="form-control sn" id="supplier_id" name="supplier_id">
                                                @if($get_user->user_id)
-                                                 <option value="{{{$get_user->user_id}}}">{{{$get_user->f_name}}} {{{$get_user->l_name}}}</option>
+                                                 <option value="{{$get_user->user_id}}">{{$get_user->f_name}} {{$get_user->l_name}}</option>
                                              @else
                                                   <option value="">No data found</option>
                                              @endif
