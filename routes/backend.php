@@ -665,37 +665,42 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         });
         
           ///////////////////////// Route for invoice controller///////////////////////
-        Route::group(['prefix' => 'invoice'], function () {
-            Route::get('upload_invoice', [
-                 'as' => 'upload_invoice',
+
+
+           Route::group(['prefix' => 'invoice'], function () {
+               Route::get('backend_upload_invoice', [
+                 'as' => 'backend_upload_invoice',
                 'uses' => 'Backend\InvoiceController@getInvoice'
             ]); 
-        });
-
-        Route::group(['prefix' => 'invoice'], function () {
-            Route::POST('save_invoice', [
-                 'as' => 'save_invoice',
+        
+            Route::get('backend_get_invoice', [
+                 'as' => 'backend_get_invoice',
+                'uses' => 'Backend\InvoiceController@viewInvoice'
+            ]); 
+          
+           Route::get('backend_get_approve_invoice', [
+                 'as' => 'backend_get_approve_invoice',
+                'uses' => 'Backend\InvoiceController@viewApproveInvoice'
+            ]); 
+           
+            Route::get('backend_get_disbursed_invoice', [
+                 'as' => 'backend_get_disbursed_invoice',
+                'uses' => 'Backend\InvoiceController@viewDisbursedInvoice'
+            ]); 
+            
+             Route::get('backend_get_repaid_invoice', [
+                 'as' => 'backend_get_repaid_invoice',
+                'uses' => 'Backend\InvoiceController@viewRepaidInvoice'
+            ]); 
+        
+           Route::POST('backend_save_invoice', [
+                 'as' => 'backend_save_invoice',
                 'uses' => 'Backend\InvoiceController@saveInvoice'
             ]); 
-        });
+     
           
-        Route::group(['prefix' => 'document'], function () {
-            Route::get('/list', [
-                'as' => 'pp_document_list',
-                'uses' => 'Backend\DocumentController@list'
-            ]);
-
-            Route::get('/upload-document', [
-                'as' => 'pp_upload_document',
-                'uses' => 'Backend\DocumentController@uploadDocument'
-            ]);
-
-            Route::post('documents-save', [
-                'as' => 'pp_document_save',
-                'uses' => 'Backend\DocumentController@saveDocument'
-            ]);
-        });
-    });
+         });
 });
 
+  });
 

@@ -6,6 +6,7 @@ use DataTables;
 use Helpers;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
@@ -411,6 +412,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getUserAppList(Request $request, $app)
     {
+      
         return DataTables::of($app)
                 ->rawColumns(['app_id', 'action', 'status'])
                 ->addColumn(
@@ -473,6 +475,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($app) use ($request) {
                         return '<div class="d-flex inline-action-btn">
+                            <a href="'.route('front_upload_invoice', ['anchor_id' =>$app->anchor_id, 'user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Upload Invoice" class="btn btn-action-btn btn-sm">Invoice</a>
                                 <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View</a>
                                 <a href="'.route('front_gstin', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Pull GST Detail" class="btn btn-action-btn btn-sm">Pull Gst</a>
                             </div>';
@@ -498,6 +501,65 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }  
     
+    
+     /*      
+     * Get Invoice list for frontend
+     */
+    public function getInvoiceList(Request $request,$invoice)
+    { 
+        return DataTables::of($invoice)
+                ->rawColumns(['status'])
+                ->addColumn(
+                    'anchor_name',
+                    function ($invoice) {                        
+                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                })
+                ->addColumn(
+                    'supplier_name',
+                    function ($invoice) {                        
+                        return $invoice->supplier->f_name ? $invoice->supplier->f_name.' '.$invoice->supplier->l_name : '';
+                })
+                 ->addColumn(
+                    'program_name',
+                    function ($invoice) {                        
+                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
+                })
+                ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {                        
+                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })
+                 ->addColumn(
+                    'invoice_approve_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                })
+                
+               ->addColumn(
+                    'status',
+                    function ($invoice) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<label class="badge '.(($invoice->status == 1)? "badge-primary":"badge-warning").'">'.(($invoice->status == 1)? "Completed":"Incomplete").'</label>';
+
+                })
+               /* ->filter(function ($query) use ($request) {   
+                 
+                    if ($request->get('anchor_id') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $anchor_id = trim($request->get('anchor_id'));
+                            $query->where('invoice.anchor_id',$anchor_id);
+                        });                        
+                    }
+                    if ($request->get('supplier_id') != '') {
+                        $query->where(function ($query) use ($request) {
+                           $supplier_id = $request->get('supplier_id');
+                               $query->where('invoice.supplier_id', $supplier_id);
+                       });
+                    }
+                    
+                }) */
+                        ->make(true);
+    }  
     /*
      * get application pool
      * 

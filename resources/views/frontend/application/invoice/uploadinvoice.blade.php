@@ -1,7 +1,6 @@
-@extends('layouts.backend.admin-layout')
-@section('additional_css')
-@endsection
+@extends('layouts.app')
 @section('content')
+
 <div class="content-wrapper">
         
         
@@ -27,7 +26,9 @@
          <div class="card-body">
             
            <div class="form-fields">
-               <form id="signupForm" method="post" action="{{Route('backend_save_invoice')}}" enctype= multipart/form-data>
+               <form id="signupForm" method="post" action="{{Route('front_save_invoice')}}" enctype= multipart/form-data>
+                   <input type="hidden" name="app_id" value="{{($app_id) ? $app_id :  ' '}}">
+                  <input type="hidden" name="biz_id" value="{{($biz_id) ? $biz_id :  ' '}}">
                    @csrf
                     <div class="active" id="details">
                         <div class="form-sections">
@@ -46,19 +47,25 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Anchor Name <!-- from enchor table --> <span class="error_message_label">*</span></label>
-                                             <select class="form-control changeAnchor" id="anchor_id" name="anchor_id">
-                                                 <option value=""> Select</option>
-                                               @foreach($get_anchor as $val)    
-                                                <option value="{{{$val->anchor_id}}}">{{{$val->comp_name}}}</option>
-                                               @endforeach
+                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id" name="anchor_id">
+                                               @if($get_anchor->anchor_id)
+                                                 <option value="{{{$get_anchor->anchor_id}}}">{{{$get_anchor->comp_name}}}</option>
+                                             @else
+                                                  <option value="">No data found</option>
+                                             @endif
                                              </select>
+                                                  
                                         </div>
                                     </div>
                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Supplier Name <span class="error_message_label">*</span></label>
                                             <select readonly="readonly" class="form-control sn" id="supplier_id" name="supplier_id">
-                                              
+                                               @if($get_user->user_id)
+                                                 <option value="{{{$get_user->user_id}}}">{{{$get_user->f_name}}} {{{$get_user->l_name}}}</option>
+                                             @else
+                                                  <option value="">No data found</option>
+                                             @endif
                                             </select>
                                         </div>
                                     </div>
@@ -69,7 +76,13 @@
                                                 <span class="error_message_label">*</span>
                                             </label>
                                             <select readonly="readonly" class="form-control" id="program_id" name="program_id">
-                                             
+                                               @if(count($get_program) > 0)
+                                                @foreach($get_program as $row)
+                                              <option value="{{{$row->prgm_id}}}">{{{$row->prgm_name}}}</option>
+                                              @endforeach
+                                              @else
+                                               <option value="{{{$row->prgm_id}}}">No data found</option>
+                                              @endif
                                             </select>
                                         </div>
                                     </div>
@@ -89,14 +102,14 @@
                   
                   <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice Approve Amount <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Invoice  Amount <span class="error_message_label">*</span> </label>
                                             <input type="text" class="form-control" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                         </div>
                                     </div>
                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label">*</span></label>
-                                            <input type="file" name="employee" name="invoice_file" id="invoice_copy">
+                                            <input type="file" name="doc_file" name="invoice_file" id="invoice_copy">
                                         </div>
                                     </div>
                   
@@ -142,6 +155,8 @@
 <script type="text/javascript"> 
 var messages = {
     token: "{{ csrf_token() }}",
+
+ 
           
    };
  $(document).ready(function () {
@@ -195,10 +210,10 @@ var messages = {
         required: "Please upload Invoice Copy",
         }
         }); 
-       
+          
          
         } else {
-         alert('Not validate');
+         alert();
         }  
      });         
   });  
@@ -260,8 +275,8 @@ var messages = {
                     }
                   
                 }
-        });  */
-  });
-  </script>
+        }); }); */
+  
+  </script> 
 @endsection
  
