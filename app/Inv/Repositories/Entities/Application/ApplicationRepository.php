@@ -858,4 +858,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Program::getSubProgramListByParentId($anchor_id , $program_id);
     }
+    
+    /**
+     * Check any one post sanction document is uploaded or not
+     * 
+     * @param integer $appId
+     * @return boolean
+     */
+    public function isPostSancDocsUpload($appId, $docIds=[])
+    {
+        return AppDocument::isPostSancDocsUpload($appId, $docIds);
+    }    
 }

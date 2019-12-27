@@ -30,6 +30,10 @@
                    <label class='error'>Still, offer is not accepted by sales queue to move the next stage.</label><br>                   
                    @endif
                    
+                   @if (Session::has('error_code') && Session::get('error_code') == 'no_post_docs_uploaded')
+                   <label class='error'>No any post sanctions documents are uploaded.</label><br>                   
+                   @endif
+                   
                    @if ($assign_case)
                     <label for="txtCreditPeriod">Please select Assignee
                       <span class="mandatory">*</span>

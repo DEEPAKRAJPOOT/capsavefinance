@@ -523,8 +523,11 @@ class Helper extends PaypalHelper
         $dataArr['is_owner'] = 1;
                         
         $assignData = AppAssignment::getAppAssignmentData ($whereCondition);
+        
         if (!$assignData) {
             AppAssignment::saveData($dataArr);
+        } else {            
+            AppAssignment::updateData(['is_owner' => 1], $assignData->app_assign_id);
         }
         
         $application = Application::updateAppDetails($app_id, ['is_assigned'=>1]); 

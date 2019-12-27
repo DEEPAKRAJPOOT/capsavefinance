@@ -68,7 +68,7 @@ class ProgramDoc extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        $whereCondition['prgm.prgm_id'] = isset($whereCondition['prgm_id']) ? $whereCondition['prgm_id'] : 1;
+        //$whereCondition['prgm.prgm_id'] = isset($whereCondition['prgm_id']) ? $whereCondition['prgm_id'] : 1;
         $whereCondition['prgm_doc.is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
         $whereCondition['prgm.status'] = isset($whereCondition['status']) ? $whereCondition['status'] : 1;
         

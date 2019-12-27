@@ -696,6 +696,18 @@ class ApplicationController extends Controller
                         Session::flash('error_code', 'no_offer_accepted');
                         return redirect()->back();
                     }
+                } else if ($currStage->stage_code == 'upload_exe_doc') {
+                    
+                    $requiredDocs = $this->getProgramDocs(['stage_code' => 'upload_exe_doc']);
+                    $docIds = [];
+                    foreach($requiredDocs as $doc) {
+                        $docIds[] = $doc->doc_id;
+                    }
+                    $uploadDocStatus = $this->appRepo->isPostSancDocsUpload($app_id, $docIds);                    
+                    if(!$uploadDocStatus)  {                    
+                        Session::flash('error_code', 'no_post_docs_uploaded');
+                        return redirect()->back();                                            
+                    }                  
                 }
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
@@ -715,7 +727,7 @@ class ApplicationController extends Controller
                         Helpers::assignAppUser($appAssignData);
                     }
                     $assign = false;
-                    $wf_status = 2;
+                    $wf_status = 1;
                 } else {
                     $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
                     $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
@@ -726,7 +738,7 @@ class ApplicationController extends Controller
                 if ($nextStage->stage_code == 'upload_exe_doc') {
                     $prgmDocsWhere = [];
                     $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
-                    $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id);                    
+                    $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id);                     
                 }
                 
                 Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
@@ -841,8 +853,16 @@ class ApplicationController extends Controller
                 $offerData['status'] = 1;           
                 $message = trans('backend_messages.accept_offer_success');
                 
+                $addl_data = [];
+                $currStage = Helpers::getCurrentWfStage($appId);
+                $wf_order_no = $currStage->order_no;
+                $nextStage = Helpers::getNextWfStage($wf_order_no);
+                $roleArr = [$nextStage->role_id];
+                $roles = $this->appRepo->getBackStageUsers($appId, $roleArr);
+                $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
+                
                 //Update workflow stage
-                Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true);                
+                Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);                
                 
             } else if($request->has('btn_reject_offer') && $request->get('btn_reject_offer') == 'Reject') {
                 $offerData['status'] = 2; 
