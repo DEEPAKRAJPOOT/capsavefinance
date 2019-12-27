@@ -19,6 +19,8 @@ class ApiController
 	}
 
   public function karza_webhook(Request $request){
+    print_r($request, $abc)
+    \File::put(storage_path('app/public/user/abcd.txt'), $abc);
     \File::put(storage_path('app/public/user/abc.txt'), $request);
     $response = array(
       'status' => 'failure',
