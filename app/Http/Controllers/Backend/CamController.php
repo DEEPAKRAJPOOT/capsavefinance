@@ -491,7 +491,7 @@ class CamController extends Controller
         $start_txn = $perfios->api_call(Perfios_lib::STRT_TXN, $req_arr);
          if ($start_txn['status'] == 'success') {
          	foreach ($filespath as $file_doc) {
-            $financial_year = $file_doc['fin_year'];
+            $financial_year = substr($file_doc['fin_year'], 0, 4);
             $filepath = $file_doc['file_path'];
             $file_password = $file_doc['file_password'];
          		$req_arr = array(
