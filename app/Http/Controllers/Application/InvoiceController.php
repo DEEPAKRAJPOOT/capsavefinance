@@ -33,7 +33,6 @@ class InvoiceController extends Controller {
         $user_id = $request->user_id;
         $app_id = $request->app_id;
         $biz_id = $request->biz_id;
-        dd($request);
         $get_user = $this->invRepo->getUser($user_id);
         $get_anchor = $this->invRepo->getAnchor($anchor_id);
         $get_program = $this->invRepo->getProgram($anchor_id);
