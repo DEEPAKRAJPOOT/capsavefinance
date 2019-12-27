@@ -142,9 +142,6 @@
                 'chrg_applicable_id' : {
                     required : true,
                 },
-                'chrg_tiger_id' : {
-                    required : true,
-                },
                 'is_active' : {
                     required : true,
                 },
@@ -164,9 +161,6 @@
                 },
                 'chrg_applicable_id': {
                     required: "Please Select Approved limit",
-                },
-                'chrg_tiger_id': {
-                    required: "Please select Charge trigger",
                 },
                 'is_active': {
                     required: "Please select charge Status",
