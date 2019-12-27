@@ -109,6 +109,13 @@ Route::group(
         'uses' => 'Application\ApplicationController@verify_mobile'
     ]);
     
+      Route::post('get_program_supplier', [
+        'as' => 'get_program_supplier',
+        'uses' => 'Application\InvoiceController@getProgramSupplier'
+    ]);
+    
+    
+    
      Route::post('verify-otp-mobile', [
         'as' => 'verify_otp_mobile',
         'uses' => 'Backend\ApplicationController@verify_otp_mobile'
@@ -239,6 +246,14 @@ Route::group(
         [
         'as' => 'ajax_user_app_list',
         'uses' => 'AjaxController@getUserApplications'
+        ]
+    );
+    
+    Route::post(
+        'get_invoice_list',
+        [
+        'as' => 'get_invoice_list',
+        'uses' => 'AjaxController@getInvoiceList'
         ]
     );
     

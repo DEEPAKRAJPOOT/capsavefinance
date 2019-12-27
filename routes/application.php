@@ -172,5 +172,40 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
             ]);
         });
     });
+    
+    
+     ///////////////////////// Route for invoice controller///////////////////////
+           Route::group(['prefix' => 'invoice'], function () {
+               Route::get('front_upload_invoice', [
+                 'as' => 'front_upload_invoice',
+                'uses' => 'Application\InvoiceController@getInvoice'
+            ]); 
+          
+          Route::get('get_invoice', [
+                 'as' => 'get_invoice',
+                'uses' => 'Application\InvoiceController@viewInvoice'
+            ]); 
+          
+           Route::get('get_approve_invoice', [
+                 'as' => 'get_approve_invoice',
+                'uses' => 'Application\InvoiceController@viewApproveInvoice'
+            ]); 
+           
+            Route::get('get_disbursed_invoice', [
+                 'as' => 'get_disbursed_invoice',
+                'uses' => 'Application\InvoiceController@viewDisbursedInvoice'
+            ]); 
+            
+             Route::get('get_repaid_invoice', [
+                 'as' => 'get_repaid_invoice',
+                'uses' => 'Application\InvoiceController@viewRepaidInvoice'
+            ]); 
+     
+           Route::POST('front_save_invoice', [
+                 'as' => 'front_save_invoice',
+                'uses' => 'Application\InvoiceController@saveInvoice'
+            ]); 
+          });
+          
      
 });    

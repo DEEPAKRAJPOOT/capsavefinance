@@ -627,7 +627,7 @@
 
     <script type="text/javascript">
         var messages = {
-        promoter_document_save: "{{ URL::route('promoter_document_save') }}",
+             promoter_document_save: "{{ URL::route('promoter_document_save') }}",
                 data_not_found: "{{ trans('error_messages.data_not_found') }}",
                 token: "{{ csrf_token() }}",
                 data_not_found: "{{ trans('error_messages.data_not_found') }}",
