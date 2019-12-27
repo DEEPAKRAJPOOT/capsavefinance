@@ -110,8 +110,7 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     $result = Entity::orderBy('id', 'DESC');
     return $result ?: false;
   }
-
-<<<<<<< HEAD
+  
   public function saveEntity($attributes)
   {
     $status = Entity::create($attributes);
@@ -124,12 +123,7 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     return $status ?: false;
   }
 
- 
-}
-=======
-    }
-
-     public function findIndustryById($industryId){
+    public function findIndustryById($industryId){
       if (empty($industryId) || !ctype_digit($industryId)) {
             throw new BlankDataExceptions('No Data Found');
       }
@@ -153,4 +147,3 @@ class MasterRepository extends BaseRepositories implements MasterInterface
 
     }
 }
->>>>>>> ab5a52aed2781bc6338461ff2918b0479b24b5ad
