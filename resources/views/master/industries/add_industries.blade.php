@@ -43,10 +43,10 @@
             },
             messages: {
                 'name': {
-                    required: "Please enter Document Name",
+                    required: "Please enter Industry Name",
                 },
                 'is_active': {
-                    required: "Please Select Status of Document",
+                    required: "Please Select Status of Industry",
                 },
             }
         });

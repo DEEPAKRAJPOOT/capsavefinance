@@ -33,7 +33,7 @@
 @section('jscript')
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#documetsForm').validate({ // initialize the plugin
+        $('#industriesForm').validate({ // initialize the plugin
             rules: {
                 'name' : {
                     required : true,
@@ -44,10 +44,10 @@
             },
             messages: {
                 'name': {
-                    required: "Please enter Document Name",
+                    required: "Please enter Industry Name",
                 },
                 'is_active': {
-                    required: "Please Select Status of Document",
+                    required: "Please Select Status of Industry",
                 },
             }
         });

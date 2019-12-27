@@ -8,12 +8,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Documents</h3>
-            <small>Documents List</small>
+            <h3>Manage Industries</h3>
+            <small>Industries List</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li style="color:#374767;">Manage Documents</li>
-                <li class="active">Documents List</li>
+                <li style="color:#374767;">Manage Industries</li>
+                <li class="active">Industries List</li>
             </ol>
         </div>
     </section>
@@ -27,8 +27,8 @@
                     <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
                 </div>
                 <div class="col-md-7 text-right">
-                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addIndustriesFrame" data-url ="{{route('add_industries')}}" data-height="400px" data-width="100%" data-placement="top" >
-                            <i class="fa fa-plus"></i>Add Documents
+                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addIndustriesFrame" data-url ="{{route('add_industries')}}" data-height="250px" data-width="100%" data-placement="top" >
+                            <i class="fa fa-plus"></i>Add Industry
                     </a>
                 </div>
            </div>

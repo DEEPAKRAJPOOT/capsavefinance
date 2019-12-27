@@ -1334,7 +1334,7 @@ class DataRenderer implements DataProviderInterface
                     'is_active',
                     function ($industries) {
                        $act = $industries->is_active;
-                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editIndustriesFrame" title="Edit Industry Detail" data-url ="'.route('edit_industries',['id' => $industries->id]).'" data-height="400px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editIndustriesFrame" title="Edit Industry Detail" data-url ="'.route('edit_industries',['id' => $industries->id]).'" data-height="250px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
                        $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
                      return $status;
                     }
