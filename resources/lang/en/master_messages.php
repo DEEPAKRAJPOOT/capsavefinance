@@ -8,5 +8,5 @@ return [
     'documents_edit_success' => 'Documents updated successfully',
     'industry_add_success' => 'Industry added successfully',
     'industry_edit_success' => 'Industry updated successfully',
-]; 
+];
 
