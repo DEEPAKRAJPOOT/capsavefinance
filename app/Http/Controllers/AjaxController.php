@@ -38,7 +38,7 @@ class AjaxController extends Controller {
     protected $request;
     protected $user;
     protected $application;
-
+   protected $invRepo;
 
     function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo) {
 
