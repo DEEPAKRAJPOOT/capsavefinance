@@ -700,6 +700,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
      
           
          });
+         
+        Route::group(['prefix' => 'document'], function () {
+            Route::get('/list', [
+                'as' => 'pp_document_list',
+                'uses' => 'Backend\DocumentController@list'
+            ]);
+
+            Route::get('/upload-document', [
+                'as' => 'pp_upload_document',
+                'uses' => 'Backend\DocumentController@uploadDocument'
+            ]);
+
+            Route::post('documents-save', [
+                'as' => 'pp_document_save',
+                'uses' => 'Backend\DocumentController@saveDocument'
+            ]);
+            
+        });         
 });
 
   });
