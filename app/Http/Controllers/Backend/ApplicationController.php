@@ -717,6 +717,10 @@ class ApplicationController extends Controller
                     $apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id);
                     //$addl_data['to_id'] = isset($apprAuthUsers[0]) ? $apprAuthUsers[0]->user_id : null;
                     //dd('uuuuuuuuuuuuuuuuuuuuu', $apprAuthUsers);
+                    if (count($apprAuthUsers) == 0) {
+                        Session::flash('error_code', 'no_approval_users_found');
+                        return redirect()->back();                           
+                    }
                     foreach($apprAuthUsers as $approver) {
                         $appAssignData = [
                             'app_id' => $app_id,

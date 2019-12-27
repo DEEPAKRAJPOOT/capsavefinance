@@ -34,6 +34,11 @@
                    <label class='error'>No any post sanctions documents are uploaded.</label><br>                   
                    @endif
                    
+                   
+                   @if (Session::has('error_code') && Session::get('error_code') == 'no_approval_users_found')
+                   <label class='error'>No members found in approval authority team.</label><br>                   
+                   @endif                   
+                   
                    @if ($assign_case)
                     <label for="txtCreditPeriod">Please select Assignee
                       <span class="mandatory">*</span>
