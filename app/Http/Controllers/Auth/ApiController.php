@@ -19,6 +19,7 @@ class ApiController
 	}
 
   public function karza_webhook(Request $request){
+    \File::put(storage_path('app/public/user/abc.txt'), $request);
     $response = array(
       'status' => 'failure',
       'message' => 'Request method not allowed',
