@@ -11,7 +11,7 @@
          </h3>
          <ol class="breadcrumb">
             <li style="color:#374767;">  {{ trans('backend.mange_program.home') }} </li>
-            <li style="color:#374767;"> {{ trans('backend.mange_program.manage_program') }}</li>
+           <li style="color:#374767;"> <a href='{{ $redirectUrl }}'>  {{ trans('backend.mange_program.manage_program') }} </a></li>
             <li class="active"> {{ trans('backend.mange_program.add_program') }}</li>
          </ol>
       </div>
@@ -24,8 +24,7 @@
                   <div class="active" id="details">
                       
                     {{ Form::open(array('url' => route('save_program') ,'id'=>'addProgram')) }}
-                      {!! Form::hidden('anchor_id', isset($anchor_id) ? $anchor_id : null)   !!}
-                      
+                     
                      <div class="form-sections">
                         <div class="col-md-8 col-md-offset-2">
                            <div class="form-head">
@@ -46,7 +45,7 @@
                                     <label for="txtCreditPeriod">
                                     {{ trans('backend.add_program.anchor_name') }} 
                                     <span class="error_message_label">*</span></label>
-                                    {!! Form::select('anchor_user_id', $anchorList,'',['class'=>'form-control'])!!}
+                                    {!! Form::select('anchor_id', $anchorList,'',['class'=>'form-control'])!!}
                                  </div>
                               </div>
                               <div class="col-md-12">
@@ -169,7 +168,7 @@
        get_sub_industry: "{{ URL::route('get_sub_industry') }}",
        data_not_found: "{{ trans('error_messages.data_not_found') }}",
        token: "{{ csrf_token() }}",
-       please_select: "{{ trans('backend.please_select') }}"
+       please_select: "{{ trans('backend.please_select') }}",
    
    };
 </script>

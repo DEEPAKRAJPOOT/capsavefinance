@@ -37,8 +37,9 @@ class ProgramController extends Controller {
     public function mangeProgramList(Request $request)
     {
         $anchor_id = (int) $request->get('anchor_id');
+        \Session::forget('is_mange_program');
         if (empty($anchor_id)) {
-            abort(400);
+            \Session::put('is_mange_program', 1);
         }
         return view('backend.lms.show_mange_program')
                         ->with(['anchor_id' => $anchor_id]);
@@ -54,16 +55,19 @@ class ProgramController extends Controller {
     {
         try {
             $anchor_id = (int) $request->get('anchor_id');
-            if (empty($anchor_id)) {
-                abort(400);
+            if ($anchor_id) {
+                $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->toArray();
+            } else {
+                $anchorData = $this->userRepo->getAllAnchor('comp_name')->toArray();
             }
-            $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->toArray();
+
             $anchorList = array_reduce($anchorData, function ($output, $element) {
-                $output[$element['user_id']] = $element['f_name'];
+                $output[$element['anchor_id']] = $element['f_name'];
                 return $output;
             }, []);
+            $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
             $industryList = $this->appRepo->getIndustryDropDown()->toArray();
-            return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id'));
+            return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id','redirectUrl'));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -81,7 +85,7 @@ class ProgramController extends Controller {
             $anchor_id = $request->get('anchor_id');
             $prepareDate = [
                 'anchor_id' => $anchor_id,
-                'anchor_user_id' => $request->get('anchor_user_id'),
+                //   'anchor_user_id' => $request->get('anchor_user_id'),
                 'prgm_name' => $request->get('prgm_name'),
                 'prgm_type' => $request->get('prgm_type'),
                 'industry_id' => $request->get('industry_id'),
@@ -92,7 +96,11 @@ class ProgramController extends Controller {
             ];
             $this->appRepo->saveProgram($prepareDate);
             \Session::flash('message', trans('success_messages.program_save_successfully'));
-            return redirect()->route('manage_program', ['anchor_id' => $anchor_id]);
+            $redirect = redirect()->route('manage_program', ['anchor_id' => $anchor_id]);
+            if (\Session::has('is_mange_program')) {
+                $redirect = redirect()->route('manage_program');
+            }
+            return $redirect;
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
@@ -109,7 +117,9 @@ class ProgramController extends Controller {
         try {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
-            return view('backend.lms.show_sub_program', compact('anchor_id', 'program_id'));
+            $is_prg_list =
+            $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
+            return view('backend.lms.show_sub_program', compact('anchor_id', 'program_id', 'redirectUrl'));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -132,13 +142,15 @@ class ProgramController extends Controller {
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 1, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
             $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
-
+            
             $remaningAmount = null;
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal;
             }
-
-
+            
+           
+            $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
+          
             return view('backend.lms.add_sub_program',
                     compact(
                             'anchor_id',
@@ -148,7 +160,8 @@ class ProgramController extends Controller {
                             'postSanction',
                             'preSanction',
                             'charges',
-                            'remaningAmount'
+                            'remaningAmount',
+                            'redirectUrl'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
