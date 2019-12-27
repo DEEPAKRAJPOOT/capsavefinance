@@ -10,6 +10,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Charges;
 use App\Inv\Repositories\Models\Master\Documents;
+use App\Inv\Repositories\Models\Master\Industry;
 /**
  * 
  */
@@ -76,6 +77,30 @@ class MasterRepository extends BaseRepositories implements MasterInterface{
 
     public function updateDocuments($attributes, $documentId){
         $status = Documents::where('id', $documentId)->first()->update($attributes);
+        return $status ?: false;
+
+    }
+
+     public function findIndustryById($industryId){
+      if (empty($industryId) || !ctype_digit($industryId)) {
+            throw new BlankDataExceptions('No Data Found');
+      }
+      $result = Industry::find($industryId);
+      return $result ?: false;
+    }
+
+    public function getAllIndustries(){
+      $result = Industry::orderBy('id', 'DESC');
+      return $result ?: false;
+    }
+
+    public function saveIndustries($attributes){
+        $status = Industry::create($attributes);
+        return $status ?: false;
+    }
+
+    public function updateIndustries($attributes, $industryId){
+        $status = Industry::where('id', $industryId)->first()->update($attributes);
         return $status ?: false;
 
     }

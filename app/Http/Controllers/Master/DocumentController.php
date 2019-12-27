@@ -35,17 +35,17 @@ class DocumentController extends Controller {
     public function saveDocuments(Request $request) {
         try {
             $arrDocumentsData = $request->all();
-            $arrDocumentsData['created_at'] = \carbon\Carbon::now();
-            $arrDocumentsData['created_by'] = Auth::user()->user_id;
             $status = false;
             $document_id = false;
             if(!empty($request->get('id'))){
                 $document_id = preg_replace('#[^0-9]#', '', $request->get('id'));
                 $document_data = $this->masterRepo->findDocumentById($document_id);
                 if (!empty($document_data)) {
+                    $arrDocumentsData['updated_by'] = Auth::user()->user_id;
                     $status = $this->masterRepo->updateDocuments($arrDocumentsData, $document_id);
                 }
             }else{
+               $arrDocumentsData['created_by'] = Auth::user()->user_id;
                $status = $this->masterRepo->saveDocuments($arrDocumentsData); 
             }
             if($status){
