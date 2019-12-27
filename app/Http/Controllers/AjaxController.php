@@ -2831,6 +2831,14 @@ if ($err) {
      return $charges;
     }
 
+
+     public function getDocLists(DataProviderInterface $dataProvider) { 
+     $documentsList = $this->masterRepo->getAllDocuments();
+     $charges = $dataProvider->getDocumentsList($this->request, $documentsList);
+     return $charges;
+    }
+    
+
     
     /**
      * get charges  html

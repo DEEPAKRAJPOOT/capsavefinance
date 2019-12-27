@@ -4,38 +4,34 @@
 try {
     var oTable, otable1;
     jQuery(document).ready(function ($) {
-        //Charges Listing code
-        oTable = $('#chargesList').DataTable({
+        //Documents Listing code
+        oTable = $('#documentsList').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 25,
             searching: false,
             bSort: true,
             ajax: {
-               "url": messages.get_charges_list, // json datasource
+               "url": messages.get_documents_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.search_keyword = $('input[name=search_keyword]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
-                    $("#chargesList").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#documentsList").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
                     $("#leadMaster_processing").css("display", "none");
                 }
             },
            columns: [
-                    {data: 'chrg_name'},
-                    {data: 'chrg_type'},
-                    {data: 'chrg_calculation_type'},
-                    {data: 'chrg_calculation_amt'},
-                    {data: 'is_gst_applicable'},
-                    {data: 'chrg_applicable_id'},
-                    {data: 'chrg_desc'},
+                    {data: 'doc_type_id'},
+                    {data: 'doc_name'},
+                    {data: 'is_rcu'},
                     {data: 'created_at'},
                     {data: 'created_by'},
                     {data: 'is_active'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4]}]
         });
         //Search
         $('#searchbtn').on('click', function (e) {

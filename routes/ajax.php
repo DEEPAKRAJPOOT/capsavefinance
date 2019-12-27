@@ -365,6 +365,15 @@ Route::group(
         'uses' => 'AjaxController@getChargeLists'
         ]
     );
+
+     /*Master Document route*/
+    Route::post(
+        'get-master-document-list',
+        [
+        'as' => 'get_ajax_master_document_list',
+        'uses' => 'AjaxController@getDocLists'
+        ]
+    );
     Route::post(
         'get-agency-user-list',
         [

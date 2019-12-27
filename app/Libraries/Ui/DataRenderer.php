@@ -1255,6 +1255,61 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
 
+     public function getDocumentsList(Request $request, $documents){
+         $this->doc_type_ids = array(
+            '1' => 'Onboarding',
+            '2' => 'Pre Sanction',
+            '3' => 'Post Sanction',
+        );
+        return DataTables::of($documents)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'doc_type_id',
+                    function ($documents) {
+                    return $this->doc_type_ids[$documents->doc_type_id] ?? 'N/A'; 
+                })
+                ->addColumn(
+                    'doc_name',
+                    function ($documents) {
+                    return $documents->doc_name;
+                })
+                ->addColumn(
+                    'is_rcu',
+                    function ($documents) {
+                    return $documents->is_rcu == 1 ? 'Enabled' : 'Disabled';
+                })  
+                ->addColumn(
+                    'created_at',
+                    function ($documents) {
+                    return ($documents->created_at) ? date('d-M-Y',strtotime($documents->created_at)) : '---';
+                })
+                ->addColumn(
+                    'created_by',
+                    function ($documents) {
+                    return $documents->created_by;
+                    //return $documents->userDetail->f_name.' '.$documents->userDetail->l_name;
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($documents) {
+                       $act = $documents->is_active;
+                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editDocumentsFrame" title="Edit Document Detail" data-url ="'.route('edit_documents',['id' => $documents->id]).'" data-height="400px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('chrg_desc', 'like',"%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
     public function getAgencyUserLists(Request $request, $user)
     {
         return DataTables::of($user)

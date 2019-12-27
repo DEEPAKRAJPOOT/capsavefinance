@@ -552,6 +552,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save_charges', [
                 'as' => 'save_charges',
                 'uses' => 'Master\ChargeController@saveCharges'
+            ]); 
+
+            Route::get('/documents', [
+                'as' => 'get_documents_list',
+                'uses' => 'Master\DocumentController@index'
+            ]);
+            Route::get('/add_documents', [
+                'as' => 'add_documents',
+                'uses' => 'Master\DocumentController@addDocument'
+            ]); 
+            Route::get('/edit_documents', [
+                'as' => 'edit_documents',
+                'uses' => 'Master\DocumentController@editDocument'
+            ]);
+
+            Route::post('/save_documents', [
+                'as' => 'save_documents',
+                'uses' => 'Master\DocumentController@saveDocuments'
             ]);       
         });
 

@@ -49,10 +49,10 @@ class ChargeController extends Controller {
                $status = $this->masterRepo->saveCharges($arrChargesData); 
             }
             if($status){
-                Session::flash('message', $charge_id ? trans('backend_messages.charges_edit_success') :trans('backend_messages.charges_add_success'));
+                Session::flash('message', $charge_id ? trans('master_messages.charges_edit_success') :trans('master_messages.charges_add_success'));
                 return redirect()->route('get_charges_list');
             }else{
-                Session::flash('error', trans('backend_messages.something_went_wrong'));
+                Session::flash('error', trans('master_messages.something_went_wrong'));
                 return redirect()->route('get_charges_list');
             }
         } catch (Exception $ex) {

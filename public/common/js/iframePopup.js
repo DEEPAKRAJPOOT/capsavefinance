@@ -566,6 +566,34 @@ $(document).ready(function () {
                     }
                 );
         });
+
+        $("#addDocumentsFrame").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#addDocumentsFrame iframe").attr(
+                        {
+                            'src': url,
+                            'height': height,
+                            'width': width
+                        }
+                );
+        });
+
+        $("#editDocumentsFrame").on('show.bs.modal', function (e) {
+                var parent = $(e.relatedTarget);
+                var height = parent.attr('data-height');
+                var url = parent.attr('data-url');
+                var width = parent.attr('data-width');
+                $("#editDocumentsFrame iframe").attr(
+                    {
+                        'src': url,
+                        'height': height,
+                        'width': width
+                    }
+                );
+        });
                 
         $("#ppUploadDocument").on('show.bs.modal', function (e) {
                 var parent = $(e.relatedTarget);

@@ -9,6 +9,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Charges;
+use App\Inv\Repositories\Models\Master\Documents;
 /**
  * 
  */
@@ -51,6 +52,30 @@ class MasterRepository extends BaseRepositories implements MasterInterface{
 
     public function updateCharges($attributes, $chargeId){
         $status = Charges::where('id', $chargeId)->first()->update($attributes);
+        return $status ?: false;
+
+    }
+
+    public function findDocumentById($documentId){
+      if (empty($documentId) || !ctype_digit($documentId)) {
+            throw new BlankDataExceptions('No Data Found');
+      }
+      $result = Documents::find($documentId);
+      return $result ?: false;
+    }
+
+    public function getAllDocuments(){
+      $result = Documents::orderBy('id', 'DESC');
+      return $result ?: false;
+    }
+
+    public function saveDocuments($attributes){
+        $status = Documents::create($attributes);
+        return $status ?: false;
+    }
+
+    public function updateDocuments($attributes, $documentId){
+        $status = Documents::where('id', $documentId)->first()->update($attributes);
         return $status ?: false;
 
     }
