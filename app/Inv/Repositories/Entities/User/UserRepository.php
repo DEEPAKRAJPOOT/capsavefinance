@@ -1398,5 +1398,30 @@ class UserRepository extends BaseRepositories implements UserInterface
         }
         return $usersIds;
     }
-}
 
+
+     /**
+    * function for get all charges register user detail
+    * @return type
+    */   
+    public function getAllCharges(){
+      $result = Charges::orderBy('id', 'DESC');
+      return $result ?: false;
+    }
+
+    public function saveCharges($attributes){
+        $status = Charges::create($attributes);
+        return $status ?: false;
+    }
+    
+    /**
+     * Get Approval Authority Users
+     *
+     * @return mixed
+     */
+    public function getApprAuthorityUsers()
+    {
+        $result = UserModel::getApprAuthorityUsers();
+        return $result ? $result : [];
+    }    
+}

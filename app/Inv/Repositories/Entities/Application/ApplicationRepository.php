@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\Master\Industry;
 use App\Inv\Repositories\Models\AppPdNote;
 use App\Inv\Repositories\Models\AnchorRelation;
+use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\Master\Charges;
 use App\Inv\Repositories\Models\ProgramDoc;
 use App\Inv\Repositories\Models\ProgramCharges;
@@ -776,9 +777,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $updateAnchorData = $anchor->update($attributes);
         return $updateAnchorData ? true : false;
     }
-    
-    
-    
+
+    /**
+     * Save Approval Authority Users against application
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */    
+    public function saveAppApprovers($attributes)
+    {
+        return AppApprover::saveAppApprovers(($attributes));
+    }
     
     /**
      * get charges list
@@ -789,8 +798,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getChargesList()
     {
         return Charges::getCharagesList();
-    }
-    
+    }    
     
     /**
      * get charge 
@@ -802,8 +810,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Charges::getChargeData($where);
     }
-    
-    
+        
     /**
      * Save program doc
      * 
@@ -851,5 +858,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Program::getSubProgramListByParentId($anchor_id , $program_id);
     }
-
+    
+    /**
+     * Check any one post sanction document is uploaded or not
+     * 
+     * @param integer $appId
+     * @return boolean
+     */
+    public function isPostSancDocsUpload($appId, $docIds=[])
+    {
+        return AppDocument::isPostSancDocsUpload($appId, $docIds);
+    }    
 }

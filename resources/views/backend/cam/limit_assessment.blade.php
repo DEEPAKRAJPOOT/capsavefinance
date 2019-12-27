@@ -439,10 +439,14 @@
                                 } else {
                                     $btnAttr = [];
                                     $noteStr = '';
-                                    $btnLabel = 'Save';
+                                    if (isset($offerData->offer_id)) {
+                                        $btnLabel = 'Approve';
+                                    } else {
+                                        $btnLabel = 'Save & Approve';
+                                    }
                                 }
                                 @endphp
-                                @if(request()->get('view_only'))
+                                @if(request()->get('view_only') || $currStageCode == 'approver')
                                 {!! 
                                     Form::submit(
                                         $btnLabel, 

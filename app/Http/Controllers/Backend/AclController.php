@@ -207,6 +207,7 @@ class AclController extends Controller {
             $arrData['is_email_verified'] = 1;
             $arrData['is_otp_verified'] = 1;
             $arrData['parent_id'] = !empty($data['parent_id']) ? $data['parent_id'] : 0;
+            $arrData['is_appr_required'] = isset($data['is_appr_required']) && !empty($data['is_appr_required']) ? $data['is_appr_required'] : null;
             $arrData['is_active'] = (int)$data['is_active'];
             $userId = null;
             $existData = $this->userRepo->getUserByemail($data['email']);
@@ -292,6 +293,9 @@ class AclController extends Controller {
 //            $arrData['is_otp_verified'] = 1;
             $arrData['parent_id'] = !empty($data['parent_id']) ? $data['parent_id'] : 0;
             $arrData['is_active'] = (int)$data['is_active'];
+            $arrData['is_appr_required'] = isset($data['is_appr_required']) && !empty($data['is_appr_required']) ? $data['is_appr_required'] : null;
+            
+            //dd('oooooooooooo', $arrData);
             
             $userId = $data['user_id'];
             $existData = $this->userRepo->getUserByemail($data['email']);
