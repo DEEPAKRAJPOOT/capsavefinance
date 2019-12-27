@@ -570,7 +570,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save_documents', [
                 'as' => 'save_documents',
                 'uses' => 'Master\DocumentController@saveDocuments'
-            ]);       
+            ]);
+            
+             // business
+             Route::get('/business', [
+                'as' => 'get_entity_list',
+                'uses' => 'Master\EntityController@index'
+            ]);
+            Route::get('/add_entity', [
+                'as' => 'add_entity',
+                'uses' => 'Master\EntityController@addEntity'
+            ]);
+            Route::post('/save_entity', [
+                'as' => 'save_entity',
+                'uses' => 'Master\EntityController@saveEntity'
+            ]);
+            Route::get('/edit_entity', [
+                'as' => 'edit_entity',
+                'uses' => 'Master\EntityController@editEntity'
+            ]);
         });
 
         Route::group(['prefix' => 'agency'], function () {

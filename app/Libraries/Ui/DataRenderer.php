@@ -1310,6 +1310,48 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
 
+    // Entities
+    public function getAllEntity(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'id',
+                    function ($data) {
+                        return $data->id;
+                })
+                ->addColumn(
+                    'entity_name',
+                    function ($data) {
+                    return $data->entity_name;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                       $act = $data->is_active;
+                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editEntityFrame" title="Edit Entitry Detail" data-url ="'.route('edit_entity',['id' => $data->id]).'" data-height="400px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('chrg_desc', 'like',"%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+       
+    }
+
     public function getAgencyUserLists(Request $request, $user)
     {
         return DataTables::of($user)

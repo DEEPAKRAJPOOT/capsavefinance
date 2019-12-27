@@ -2837,6 +2837,13 @@ if ($err) {
      $charges = $dataProvider->getDocumentsList($this->request, $documentsList);
      return $charges;
     }
+
+    // Entities List
+    public function getEntityLists(DataProviderInterface $dataProvider) {
+        $entities = $this->masterRepo->getAllEntities();
+        $data = $dataProvider->getAllEntity($this->request, $entities);
+        return $data;
+     }
     
 
     

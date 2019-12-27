@@ -6,5 +6,7 @@ return [
     'charges_edit_success' => 'Charges updated successfully',
     'documents_add_success' => 'Documents added successfully',
     'documents_edit_success' => 'Documents updated successfully',
+    'entity_add_success' => 'Entity added successfully',
+    'entity_edit_success' => 'Entity updated successfully',
 ];
 

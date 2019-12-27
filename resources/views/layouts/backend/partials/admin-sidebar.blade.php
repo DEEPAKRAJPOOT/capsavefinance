@@ -199,7 +199,7 @@
                     <a class="nav-link" href="#">Business Segment</a>
                  </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#">Business Entity</a>
+                    <a class="nav-link" href="{{ route('get_entity_list') }}">Business Entity</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Business Constitution</a>

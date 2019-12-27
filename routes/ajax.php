@@ -374,6 +374,16 @@ Route::group(
         'uses' => 'AjaxController@getDocLists'
         ]
     );
+
+    /*Entities route*/
+    Route::post(
+        'get-entities-list',
+        [
+        'as' => 'get_ajax_entity_list',
+        'uses' => 'AjaxController@getEntityLists'
+        ]
+    );
+    
     Route::post(
         'get-agency-user-list',
         [
