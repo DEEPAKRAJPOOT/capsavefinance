@@ -29,7 +29,7 @@
                     [
                     'class' => 'form-control',
                     'placeholder' => 'Search by First name, Last name and Email',
-                    'id'=>'by_name'
+                    'id'=>'by_email'
                     ])
                     !!}
                 </div>

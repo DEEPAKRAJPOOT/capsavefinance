@@ -1427,17 +1427,13 @@ class UserRepository extends BaseRepositories implements UserInterface
     } 
 
     /**
-     * Get a user model by id
+     * Get all customer from lms_users
      *
-     * @param integer $userId
-     *
-     * @return boolean
-     *
-     * @since 0.1
+     * @return query data
      */
     public function lmsGetCustomers()
     {
-        $result = LmsUser::get();
+        $result = LmsUser::with('user');
         return $result ?: false;
     }
        

@@ -1646,7 +1646,7 @@ class DataRenderer implements DataProviderInterface
                     return 12;
                 })
                 ->editColumn(
-                    'tendor_days',
+                    'tenor_days',
                     function ($customer) {
                     return 12;
                 })
@@ -1679,21 +1679,20 @@ class DataRenderer implements DataProviderInterface
                 ->filter(function ($query) use ($request) {
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {
-                            $query->where(function ($query) use ($request) {
+                            $query->whereHas('user', function($query) use ($request) {
                                 $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('email', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
                     if ($request->get('is_assign') != '') {
                         if ($request->has('is_assign')) {
-                            $query->where(function ($query) use ($request) {
+                            $query->whereHas('user', function($query) use ($request) {
                                 $by_status = (int) trim($request->get('is_assign'));
                                 
-                                $query->where('users.is_assigned', 'like',
+                                $query->where('is_assigned', 'like',
                                         "%$by_status%");
                             });
                         }

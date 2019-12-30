@@ -31,7 +31,7 @@ try {
                 {data: 'interest_rate'},
                 {data: 'consume_limit'},
                 {data: 'available_limit'},
-                {data: 'tendor_days'},
+                {data: 'tenor_days'},
                 {data: 'assignee'},
                 {data: 'assigned_by'},
                 {data: 'status'},
@@ -41,6 +41,11 @@ try {
                     'bSortable': false,
                     'aTargets': []
                 }]
+
+        });
+        
+        $('#searchB').on('click', function (e) {
+            oTables.draw();
 
         });
 
