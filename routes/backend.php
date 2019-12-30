@@ -620,7 +620,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             Route::get('/edit-doa-level', [
                 'as' => 'edit_doa_level',
-                'uses' => 'Master\DoaController@editDoaLevel'
+                'uses' => 'Master\DoaController@addDoaLevel'
             ]);            
             
             Route::post('/save_doa-level', [

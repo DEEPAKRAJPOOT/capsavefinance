@@ -443,4 +443,11 @@ Route::group(
             'uses' => 'AjaxController@getDoaLevelsList'
         ]
     );
+        
+    Route::post(
+        'ajax-get-city', [
+            'as' => 'ajax_get_city',
+            'uses' => 'AjaxController@getCityList'
+        ]
+    );    
 });

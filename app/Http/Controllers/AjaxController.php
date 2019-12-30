@@ -2925,4 +2925,17 @@ if ($err) {
         $levelList = $this->masterRepo->getDoaLevels();
         return $dataProvider->getDoaLevelsList($request, $levelList);
     }
+        
+    /**
+     * Get City List By State Id
+     * 
+     * @param Request $request   
+     * @return json
+     */
+    public function getCityList(Request $request)
+    {
+        $stateId = $request->get('state_id');               
+        $cityList = $this->masterRepo->getCity($stateId);
+        return \Response()->json($cityList);
+    }
 }

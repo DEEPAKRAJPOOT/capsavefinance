@@ -14,6 +14,9 @@ use App\Inv\Repositories\Models\Master\Documents;
 use App\Inv\Repositories\Models\Master\Entity;
 use App\Inv\Repositories\Models\Master\DoaLevel;
 use App\Inv\Repositories\Models\Master\Industry;
+use App\Inv\Repositories\Models\Master\State as StateModel;
+use App\Inv\Repositories\Models\Master\City as CityModel;
+
 /**
  * 
  */
@@ -166,7 +169,53 @@ class MasterRepository extends BaseRepositories implements MasterInterface
      */
     public function getDoaLevelById($doa_level_id)
     {
-        $result = DoaLevel::getDoaLevelById($doa_level_id);
+        $result = DoaLevel::getDoaLevelById((int) $doa_level_id);
         return $result;
     }
+    
+    /**
+     * Get all State
+     * 
+     * @param integer $countryId | optional
+     * @return mixed
+     */
+    public function getState($countryId=101)
+    {
+        $result = StateModel::getStateList($countryId)->orderBy('name')->get();
+        return $result;        
+    }
+    
+    /**
+     * Get City By State Id
+     * 
+     * @param integer $stateId
+     * @return mixed
+     */
+    public function getCity($stateId)
+    {
+        $result = CityModel::getCity($stateId);
+        return $result;        
+    }
+    
+    /**
+     * Get Latest DoA Data
+     * 
+     * @return mixed
+     */
+    public function getLatestDoaData()
+    {
+        $result = DoaLevel::getLatestDoaData();
+        return $result;
+    }
+        
+    /**
+     * Save DoA Data
+     * 
+     * @return mixed
+     */
+    public function saveDoaLevelData($data, $doa_level_id=null)
+    {
+        $result = DoaLevel::saveDoaLevelData($data, $doa_level_id);
+        return $result;
+    }    
 }

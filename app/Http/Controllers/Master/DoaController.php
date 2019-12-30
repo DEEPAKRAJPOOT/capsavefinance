@@ -17,27 +17,76 @@ class DoaController extends Controller {
         $this->masterRepo = $master;
     }
 
+    /**
+     * List DoA Levels
+     * 
+     * @return response
+     */
     public function index()
     {
         return view('master.doa.index');
     }
 
-    public function addDoaLevel()
+    /**
+     * Add DoA Level
+     * 
+     * @param Request $request
+     * @return response
+     */
+    public function addDoaLevel(Request $request)
     {
-    	return view('master.doa.add_doa_level');
+        $states = $this->masterRepo->getState();
+        $stateList = [];
+        foreach($states as $state) {
+            $stateList[$state->id] = $state->name;
+        }
+            
+        if ($request->has('doa_level_id')) {
+            $doa_level_id = preg_replace('#[^0-9]#', '', $request->get('doa_level_id'));
+            $doa_level = $this->masterRepo->getDoaLevelById($doa_level_id);
+            $level_code = $doa_level->level_code;
+        } else {
+            $doa_level = new \stdClass();
+            $level_code = $this->getDoaLevelCode();
+        }
+        
+        $data = ['doaLevel' => $doa_level, 'stateList' => $stateList, 'levelCode' => $level_code];
+    	return view('master.doa.add_doa_level', $data);
+    }
+    
+    /**
+     * Generate DoA Level Code
+     * 
+     */
+    protected function getDoaLevelCode()
+    {
+        $doa_level = $this->masterRepo->getLatestDoaData();
+        $doa_level_id = $doa_level ? $doa_level->doa_level_id : 1;
+        $level_code = "LEVEL_" . $doa_level_id;
+        return $level_code;
     }
 
-    public function editDoaLevel(Request $request)
-    {
-        $doa_level_id = preg_replace('#[^0-9]#', '', $request->get('doa_level_id'));
-        $doa_level = $this->masterRepo->getDoaLevelById($doa_level_id);
-    	return view('master.doa.edit_doa_level', ['doa_level' => $doa_level]);
-    }
-
+    /**
+     * Save DoA Level
+     * 
+     * @param Request $request
+     * @return response
+     */
     public function saveDoaLevel(Request $request) 
     {
         try {
-            
+            $level_code = $this->getDoaLevelCode();
+            $reqData = $request->all();
+            $data = [
+                'level_code' => $level_code,
+                'level_name' => $reqData['level_name'],
+                'state_id' => $reqData['state_id'],
+                'city_id' => $reqData['city_id'],
+                'min_amount' => $reqData['min_amount'],
+                'max_amount' => $reqData['max_amount'],
+            ];
+            $doa_level_id = $reqData['doa_level_id'] ? $reqData['doa_level_id'] : null;
+            $this->masterRepo->saveDoaLevelData($data, $doa_level_id);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
