@@ -27,7 +27,7 @@
          <div class="card-body">
             
            <div class="form-fields">
-               <form id="signupForm" method="post" action="{{Route('save_invoice')}}">
+               <form id="signupForm" method="post" action="{{Route('backend_save_invoice')}}" enctype= multipart/form-data>
                    @csrf
                     <div class="active" id="details">
                         <div class="form-sections">
@@ -46,20 +46,19 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Anchor Name <!-- from enchor table --> <span class="error_message_label">*</span></label>
-                                             <select class="form-control" id="anchor_id" name="anchor_id">
-                                                <option value=""> Select</option>
-                                                <option value="progran1"> Program 1</option>
-                                                <option value="program2"> Program 2 </option>
-                                            </select>
+                                             <select class="form-control changeAnchor" id="anchor_id" name="anchor_id">
+                                                 <option value=""> Select</option>
+                                               @foreach($get_anchor as $val)    
+                                                <option value="{{{$val->anchor_id}}}">{{{$val->comp_name}}}</option>
+                                               @endforeach
+                                             </select>
                                         </div>
                                     </div>
                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Supplier Name <span class="error_message_label">*</span></label>
-                                            <select class="form-control sn" id="supplier_id" name="supplier_id">
-                                                <option value=""> Select</option>
-                                                <option value="Supplier1"> Supplier 1</option>
-                                                <option value="Supplier2">Supplier 2 </opion>
+                                            <select readonly="readonly" class="form-control sn" id="supplier_id" name="supplier_id">
+                                              
                                             </select>
                                         </div>
                                     </div>
@@ -69,10 +68,8 @@
                                             <label for="txtCreditPeriod">Product Program Name
                                                 <span class="error_message_label">*</span>
                                             </label>
-                                            <select class="form-control" id="program_id" name="program_id">
-                                                <option value=""> Select</option>
-                                                <option value="progran1"> Program 1</option>
-                                                <option value="program2"> Program 2 </option>
+                                            <select readonly="readonly" class="form-control" id="program_id" name="program_id">
+                                             
                                             </select>
                                         </div>
                                     </div>
@@ -120,7 +117,7 @@
                                <div class="row">
                                     <div class="col-md-12">
                                         <div class="text-right mt-3">
-                                            <button type="button" id="pre3" class="btn btn-secondary btn-sm"> Cancel</button>
+                                            <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
                                             <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
                                         </div>
                                     </div>
@@ -143,6 +140,10 @@
     @endsection
     @section('jscript')
 <script type="text/javascript"> 
+var messages = {
+    token: "{{ csrf_token() }}",
+          
+   };
  $(document).ready(function () {
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
@@ -197,10 +198,70 @@
        
          
         } else {
-         alert();
+         alert('Not validate');
         }  
      });         
   });  
+  
+  //////////////////// onchange anchor  id get data /////////////////
+ /* $(document).on('change','.changeAnchor',function(){
+      var anchor_id =  $(this).val(); 
+      $("#supplier_id").empty();
+       $("#program_id").empty();
+      var postData =  ({'anchor_id':anchor_id,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.get_program_supplier,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
+                },
+                success: function (data) {
+                    if(data.status==1)
+                    {
+                        var obj1  = data.userList;
+                        var obj2  = data.programList;
+                      ///////////////////// for suppllier array///////////////  
+                     
+                      if(obj1.length > 0)
+                      {
+                            $(obj1).each(function(i,v){
+
+                                   $("#supplier_id").append("<option value='"+v.user_id+"'>"+v.f_name+"</option>");  
+                            });
+                        }
+                        else
+                        {
+                             $("#supplier_id").append("<option value=''>No data found</option>");  
+                           
+                        }
+                        
+                         ///////////////////// for program array///////////////  
+                      if(obj2.length > 0)
+                      {
+                         
+                            $(obj2).each(function(i,v){
+
+                                   $("#program_id").append("<option value='"+v.prgm_id+"'>"+v.prgm_name+"</option>");  
+                            });
+                        }
+                        else
+                        {  
+                             
+                             $("#program_id").append("<option value=''>No data found</option>");  
+                           
+                        }
+                    }
+                    else
+                    {
+                        
+                    }
+                  
+                }
+        });  */
+  });
   </script>
 @endsection
  

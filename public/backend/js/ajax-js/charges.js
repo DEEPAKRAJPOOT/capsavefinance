@@ -4,7 +4,7 @@
 try {
     var oTable, otable1;
     jQuery(document).ready(function ($) {
-        //Agency Listing code
+        //Charges Listing code
         oTable = $('#chargesList').DataTable({
             processing: true,
             serverSide: true,

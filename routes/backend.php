@@ -9,6 +9,7 @@
  */
 Route::domain(config('proin.backend_uri'))->group(function () {
     Route::group(['middleware' => 'auth'], function () {
+
         Route::group(['prefix' => 'dashboard'], function () {
             Route::get('/', [
                 'as' => 'backend_dashboard',
@@ -441,8 +442,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/rcu', [
                 'as' => 'backend_agency_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'
-            ]);
-            
+            ]);   
         });
         
         Route::group(['prefix' => 'anchor'], function () {
@@ -532,10 +532,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             'as' => 'save_sub_program',
             'uses' => 'Backend\ProgramController@saveSubProgram'
            ]);
-
         });
             // All master routes
-         Route::group(['prefix' => 'manage'], function () {
+        Route::group(['prefix' => 'manage'], function () {
+
             Route::get('/charges', [
                 'as' => 'get_charges_list',
                 'uses' => 'Master\ChargeController@index'
@@ -552,22 +552,62 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save_charges', [
                 'as' => 'save_charges',
                 'uses' => 'Master\ChargeController@saveCharges'
+            ]); 
+
+            Route::get('/documents', [
+                'as' => 'get_documents_list',
+                'uses' => 'Master\DocumentController@index'
+            ]);
+            Route::get('/add_documents', [
+                'as' => 'add_documents',
+                'uses' => 'Master\DocumentController@addDocument'
+            ]); 
+            Route::get('/edit_documents', [
+                'as' => 'edit_documents',
+                'uses' => 'Master\DocumentController@editDocument'
+            ]);
+
+            Route::post('/save_documents', [
+                'as' => 'save_documents',
+                'uses' => 'Master\DocumentController@saveDocuments'
+            ]);
+            
+             // business
+             Route::get('/business', [
+                'as' => 'get_entity_list',
+                'uses' => 'Master\EntityController@index'
+            ]);
+            Route::get('/add_entity', [
+                'as' => 'add_entity',
+                'uses' => 'Master\EntityController@addEntity'
+            ]);
+            Route::post('/save_entity', [
+                'as' => 'save_entity',
+                'uses' => 'Master\EntityController@saveEntity'
+            ]);
+            Route::get('/edit_entity', [
+                'as' => 'edit_entity',
+                'uses' => 'Master\EntityController@editEntity'
+            ]);
+
+            Route::get('/industries', [
+                'as' => 'get_industries_list',
+                'uses' => 'Master\IndustryController@index'
+            ]);
+            Route::get('/add_industries', [
+                'as' => 'add_industries',
+                'uses' => 'Master\IndustryController@addIndustry'
+            ]); 
+            Route::get('/edit_industries', [
+                'as' => 'edit_industries',
+                'uses' => 'Master\IndustryController@editIndustry'
+            ]);
+
+            Route::post('/save_industries', [
+                'as' => 'save_industries',
+                'uses' => 'Master\IndustryController@saveIndustries'
             ]);       
         });
-
-
-            
-            
-           
-            
-            
-            
-            
-            
-    });
-   
-
-
 
         Route::group(['prefix' => 'agency'], function () {
             Route::get('/', [
@@ -621,25 +661,46 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('update-agency-user', [
                 'as' => 'update_agency_user_reg',
                 'uses' => 'Backend\AgencyController@updateAgencyUserReg'
-            ]);   
-            
-          
+            ]);        
         });
         
           ///////////////////////// Route for invoice controller///////////////////////
+
+
            Route::group(['prefix' => 'invoice'], function () {
-               Route::get('upload_invoice', [
-                 'as' => 'upload_invoice',
+               Route::get('backend_upload_invoice', [
+                 'as' => 'backend_upload_invoice',
                 'uses' => 'Backend\InvoiceController@getInvoice'
             ]); 
-          });
-           Route::group(['prefix' => 'invoice'], function () {
-               Route::POST('save_invoice', [
-                 'as' => 'save_invoice',
+        
+            Route::get('backend_get_invoice', [
+                 'as' => 'backend_get_invoice',
+                'uses' => 'Backend\InvoiceController@viewInvoice'
+            ]); 
+          
+           Route::get('backend_get_approve_invoice', [
+                 'as' => 'backend_get_approve_invoice',
+                'uses' => 'Backend\InvoiceController@viewApproveInvoice'
+            ]); 
+           
+            Route::get('backend_get_disbursed_invoice', [
+                 'as' => 'backend_get_disbursed_invoice',
+                'uses' => 'Backend\InvoiceController@viewDisbursedInvoice'
+            ]); 
+            
+             Route::get('backend_get_repaid_invoice', [
+                 'as' => 'backend_get_repaid_invoice',
+                'uses' => 'Backend\InvoiceController@viewRepaidInvoice'
+            ]); 
+        
+           Route::POST('backend_save_invoice', [
+                 'as' => 'backend_save_invoice',
                 'uses' => 'Backend\InvoiceController@saveInvoice'
             ]); 
-          });
+     
           
+         });
+         
         Route::group(['prefix' => 'document'], function () {
             Route::get('/list', [
                 'as' => 'pp_document_list',
@@ -656,7 +717,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@saveDocument'
             ]);
             
-        });
-    });
+        });         
+});
 
+  });
 

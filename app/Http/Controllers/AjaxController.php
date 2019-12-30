@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Auth;
 use Helpers;
 use Session;
@@ -21,6 +20,7 @@ use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
@@ -38,8 +38,10 @@ class AjaxController extends Controller {
     protected $request;
     protected $user;
     protected $application;
+   protected $invRepo;
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo) {
+
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -48,6 +50,8 @@ class AjaxController extends Controller {
         $this->userRepo = $user;
         $this->application = $application;
         $this->masterRepo = $master;
+        $this->invRepo   =    $invRepo;
+
     }
 
     /**
@@ -2696,7 +2700,16 @@ if ($err) {
         $applications = $dataProvider->getUserAppList($this->request, $appList);
         return $applications;
     }
+  
+    //////////////////// use for invoice list/////////////////
+     public function getInvoiceList(DataProviderInterface $dataProvider) {
+      
+        $invoice_data = $this->invRepo->getAllInvoice($this->request);
+        $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
+        return $invoice;
+    }
 
+    
     public function getFiLists(DataProviderInterface $dataProvider, Request $request){
         $fiLists = $this->application->getFiLists($request);
         $fis = $dataProvider->getFiListsList($this->request, $fiLists);
@@ -2830,6 +2843,28 @@ if ($err) {
      $charges = $dataProvider->getChargesList($this->request, $chargesList);
      return $charges;
     }
+
+
+    public function getDocLists(DataProviderInterface $dataProvider) { 
+     $documentsList = $this->masterRepo->getAllDocuments();
+     $documents = $dataProvider->getDocumentsList($this->request, $documentsList);
+     return $documents;
+    }
+
+
+    public function getIndustryLists(DataProviderInterface $dataProvider) { 
+     $industriesList = $this->masterRepo->getAllIndustries();
+     $industries = $dataProvider->getIndustriesList($this->request, $industriesList);
+     return $industries;
+    }
+
+    // Entities List
+    public function getEntityLists(DataProviderInterface $dataProvider) {
+        $entities = $this->masterRepo->getAllEntities();
+        $data = $dataProvider->getAllEntity($this->request, $entities);
+        return $data;
+     }
+    
 
     
     /**

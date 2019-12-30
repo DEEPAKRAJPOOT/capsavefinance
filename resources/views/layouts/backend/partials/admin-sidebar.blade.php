@@ -106,13 +106,13 @@
                 <ul class="nav flex-column sub-menu">
                
                 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('upload_invoice') }}">Invoice Upload</a>
+                   <!-- <li class="nav-item">
+                        <a class="nav-link" href="{{ route('backend_upload_invoice') }}">Invoice Upload</a>
 
-                    </li>
+                    </li> -->
                    
                         <li class="nav-item">
-                        <a class="nav-link" href="#">Manage Invoices</a>
+                        <a class="nav-link" href="{{ route('backend_get_invoice') }}">Manage Invoices</a>
                     </li>                     
                  
                 </ul>
@@ -184,10 +184,10 @@
                     <a class="nav-link" href="{{ route('get_charges_list') }}">Manage Charges</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="#">Manage Document</a>
+                    <a class="nav-link" href="{{ route('get_documents_list') }}">Manage Document</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="#">Manage Industry</a>
+                    <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Manage State</a>
@@ -199,7 +199,7 @@
                     <a class="nav-link" href="#">Business Segment</a>
                  </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#">Business Entity</a>
+                    <a class="nav-link" href="{{ route('get_entity_list') }}">Business Entity</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Business Constitution</a>

@@ -138,7 +138,23 @@ class AppDocument extends BaseModel
                 ->get();
         
         return $result ?: false;
-    }      
+    }
+    
+    /**
+     * Check any one post sanction document is uploaded or not
+     * 
+     * @param integer $appId
+     * @return boolean
+     */
+    public static function isPostSancDocsUpload($appId, $docIds=[])
+    {
+        $appDocCheck = self::where('app_id', $appId)
+                ->where('is_upload', 1)
+                ->whereIn('doc_id', $docIds)
+                ->count();
+        
+        return $appDocCheck > 0 ? true : false;        
+    }
 }
   
 

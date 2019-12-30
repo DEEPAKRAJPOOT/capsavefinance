@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
+use Event;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\FinanceModel;
 
@@ -19,6 +20,15 @@ class ApiController
 	}
 
   public function karza_webhook(Request $request){
+     print_r($request, $abc)
+    \File::put(storage_path('app/public/user/abcd.txt'), $abc);
+    \File::put(storage_path('app/public/user/abc.txt'), $request);
+
+     $karzaMailArr['name'] = "Ravi Prakash";
+     $karzaMailArr['email'] = 'ravi.awasthi93@gmail.com';
+     $karzaMailArr['otp'] = base64_encode(json_encode($request));
+     Event::dispatch("user.sendotp", serialize($userMailArr));
+
     $response = array(
       'status' => 'failure',
       'message' => 'Request method not allowed',

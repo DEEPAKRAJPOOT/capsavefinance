@@ -109,6 +109,13 @@ Route::group(
         'uses' => 'Application\ApplicationController@verify_mobile'
     ]);
     
+      Route::post('get_program_supplier', [
+        'as' => 'get_program_supplier',
+        'uses' => 'Application\InvoiceController@getProgramSupplier'
+    ]);
+    
+    
+    
      Route::post('verify-otp-mobile', [
         'as' => 'verify_otp_mobile',
         'uses' => 'Backend\ApplicationController@verify_otp_mobile'
@@ -243,6 +250,14 @@ Route::group(
     );
     
     Route::post(
+        'get_invoice_list',
+        [
+        'as' => 'get_invoice_list',
+        'uses' => 'AjaxController@getInvoiceList'
+        ]
+    );
+    
+    Route::post(
         'get-role-list',
         [
         'as' => 'get_role_list',
@@ -365,6 +380,34 @@ Route::group(
         'uses' => 'AjaxController@getChargeLists'
         ]
     );
+
+     /*Master Document route*/
+    Route::post(
+        'get-master-document-list',
+        [
+        'as' => 'get_ajax_master_document_list',
+        'uses' => 'AjaxController@getDocLists'
+        ]
+    );
+
+    /*Entities route*/
+    Route::post(
+        'get-entities-list',
+        [
+        'as' => 'get_ajax_entity_list',
+        'uses' => 'AjaxController@getEntityLists'
+        ]
+    );
+    
+     /*Master Document route*/
+    Route::post(
+        'get-master-industries-list',
+        [
+        'as' => 'get_ajax_master_industry_list',
+        'uses' => 'AjaxController@getIndustryLists'
+        ]
+    );
+
     Route::post(
         'get-agency-user-list',
         [
