@@ -17,8 +17,8 @@
             <select class="form-control" name="assignRoleId" >
                  <option disabled="" value="" selected="">Select Name</option>
 
-                 @foreach($arrRole as $key=>$arr)
-                    <option {{old('assignRoleId') == $key ? 'selected' : ''}} value="{{$key}}">{{$arr}}</option>
+                 @foreach($arrRole as $key => $arr)
+                    <option {{old('assignRoleId') == $key ? 'selected' : ''}} value="{{$arr->id}}">{{$arr->name}}</option>
                  @endforeach
                 
             </select>
