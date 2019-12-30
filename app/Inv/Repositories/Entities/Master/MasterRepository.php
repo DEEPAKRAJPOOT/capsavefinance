@@ -12,7 +12,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Charges;
 use App\Inv\Repositories\Models\Master\Documents;
 use App\Inv\Repositories\Models\Master\Entity;
-
+use App\Inv\Repositories\Models\Master\DoaLevel;
 use App\Inv\Repositories\Models\Master\Industry;
 /**
  * 
@@ -145,5 +145,28 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         $status = Industry::where('id', $industryId)->first()->update($attributes);
         return $status ?: false;
 
+    }
+    
+    /**
+     * Get DoA Levels
+     * 
+     * @return mixed
+     */
+    public function getDoaLevels()
+    {
+        $result = DoaLevel::getDoaLevels();
+        return $result;
+    }
+    
+    /**
+     * Get DoA Level Data by doa_level_id
+     * 
+     * @param mixed $doa_level_id
+     * @return mixed
+     */
+    public function getDoaLevelById($doa_level_id)
+    {
+        $result = DoaLevel::getDoaLevelById($doa_level_id);
+        return $result;
     }
 }

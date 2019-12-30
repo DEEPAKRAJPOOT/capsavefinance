@@ -2913,5 +2913,16 @@ if ($err) {
         return $dataProvider->getSubProgramList($request, $this->application->getSubProgramListByParentId($anchor_id, $program_id));
     }
 
-
+    /**
+     * Get DoA Levels List
+     * 
+     * @param Request $request
+     * @param DataProviderInterface $dataProvider
+     * @return mixed
+     */
+    public function getDoaLevelsList(Request $request, DataProviderInterface $dataProvider)
+    {        
+        $levelList = $this->masterRepo->getDoaLevels();
+        return $dataProvider->getDoaLevelsList($request, $levelList);
+    }
 }

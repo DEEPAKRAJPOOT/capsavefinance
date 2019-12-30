@@ -435,5 +435,12 @@ Route::group(
         'as' => 'ajax_get_backend_user_list',
         'uses' => 'AjaxController@getBackendUserList'
         ]
-    );    
+    ); 
+    
+    Route::post(
+        'ajax-doa-levels-list', [
+            'as' => 'ajax_doa_levels_list',
+            'uses' => 'AjaxController@getDoaLevelsList'
+        ]
+    );
 });

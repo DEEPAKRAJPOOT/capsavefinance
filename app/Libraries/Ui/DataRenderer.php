@@ -1584,6 +1584,62 @@ class DataRenderer implements DataProviderInterface
 //                    }
                         })
                         ->make(true);
-    }
+    }    
+    
+    /**
+     * List Doa Levels  
+     * 
+     * @param Request $request
+     * @param mixed $doa
+     * @return mixed 
+     */
+    function getDoaLevelsList($request, $doa)
+    {
+        return DataTables::of($doa)
+                        ->rawColumns(['action'])
+                        
+                        ->editColumn(
+                                'level_code',
+                                function ($doa) {
+                            return $doa->level_code;
+                        })
+                        ->editColumn(
+                                'level_name',
+                                function ($doa) {
+                            return $doa->level_name;
+                        })
+                        ->editColumn(
+                                'city',
+                                function ($doa) {
+                            return $doa->city;
+                        })
+                        ->addColumn(
+                                'amount',
+                                function ($doa) {
+                            return $doa->min_amount . '-' . $doa->max_amount;
+                        })
+                        ->editColumn(
+                                'role',
+                                function ($doa) {
+                            return '';
+                        })                        
+                         ->addColumn(
+                                'action',
+                        function ($doa) {
+                            $act = '';
+                            //$act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyUserFrame\" data-url =\"" . route('edit_agency_user_reg', ['user_id' => $user->user_id]) . "\" data-height=\"350px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency User Detail\"><i class=\"fa fa-edit\"></a>";
+                            return $act;
+                        })
+                        ->filter(function ($query) use ($request) {
+                            //                    if ($request->get('by_name') != '') {
+                            //                        $query->where(function ($query) use ($request) {
+                            //                            $search_keyword = trim($request->get('by_name'));
+                            //                            $query->where('users.f_name', 'like',"%$search_keyword%")
+                            //                            ->orWhere('users.email', 'like', "%$search_keyword%");
+                            //                        });
+                            //                    }
+                        })
+                        ->make(true);
+    }    
 
 }

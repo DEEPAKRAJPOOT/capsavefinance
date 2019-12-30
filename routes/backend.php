@@ -606,7 +606,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save_industries', [
                 'as' => 'save_industries',
                 'uses' => 'Master\IndustryController@saveIndustries'
-            ]);       
+            ]); 
+            
+            Route::get('/doa-levels', [
+                'as' => 'manage_doa',
+                'uses' => 'Master\DoaController@index'
+            ]);
+
+            Route::get('/add-doa-level', [
+                'as' => 'add_doa_level',
+                'uses' => 'Master\DoaController@addDoaLevel'
+            ]);
+            
+            Route::get('/edit-doa-level', [
+                'as' => 'edit_doa_level',
+                'uses' => 'Master\DoaController@editDoaLevel'
+            ]);            
+            
+            Route::post('/save_doa-level', [
+                'as' => 'save_doa_level',
+                'uses' => 'Master\IndustryController@saveDoaLevel'
+            ]);
         });
 
         Route::group(['prefix' => 'agency'], function () {
