@@ -16,14 +16,14 @@ class AgencyRegistrationFormRequest extends Request
     {
       ///dd($this->request);
         return $rules = [
-            'employee' => 'required|min:2|max:50|alpha_dash|alpha',
-            'comp_name' => 'required',
-            'email'  => 'required|email|max:50|unique:users',
-            'phone' => 'required|digits:10|min:0',
-            'state'   => 'required',
-            'city' => 'required',
-            'pin_code' => 'required', 
-            'comp_addr'=>'required',
+            //'employee' => 'required|min:2|max:50|alpha_dash|alpha',
+            'comp_name' => 'required|min:5|max:50|unique:agency',
+            'comp_email'  => 'required|email|max:50',
+            'comp_phone' => 'required|numeric|digits:10',
+            'comp_addr'   => 'required|min:5|max:50',
+            'comp_state'   => 'required',
+            'comp_city' => 'required|min:3|max:50|alpha',
+            'comp_zip' => 'required|numeric|digits:6', 
             ];
     }
 
@@ -46,13 +46,9 @@ class AgencyRegistrationFormRequest extends Request
             'email.email' => trans('error_messages.invalid_email'),
             'email.unique' => trans('error_messages.email_already_exists'),
             'mobile_no.required'=>trans('error_messages.req_phone'),
-            'password.required'=>trans('error_messages.req_password'),
-            'password.min'=>trans('error_messages.minlen_password'),
-            'password_confirm.required'=>trans('error_messages.req_confirm_password'),
-            'mobile_no.min'=>trans('error_messages.phone_minlength'),
-            'mobile_no.max'=>trans('error_messages.phone_maxlength'),
-            'mobile_no.numeric'=>trans('error_messages.invalid_phone'),
-            'g-recaptcha-response.required'=>'Recaptcha is required',  
+
+            'comp_phone.numeric'=>trans('error_messages.invalid_phone'), 
+            'comp_zip.numeric'=>trans('error_messages.invalid_zip') 
         ];
     }
 }
