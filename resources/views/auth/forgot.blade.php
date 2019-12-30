@@ -6,7 +6,7 @@
 
             <div id="reg-box">
                 <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ url('password/email') }}" id="forgotPassFrm">
-                {{ csrf_field() }} 
+                    {{ csrf_field() }} 
                     <div class="section-header">
                         <h4 class="section-title"> Recover Your Password</h4>
                     </div>
@@ -38,7 +38,7 @@
                                         <input type="hidden" name="send_otp" id="send-otp" value="">
                                         <input type="email" class="form-control" placeholder="{{trans('master.loginForm.email')}}" name="email" value="{{ old('email') ? old('email') : '' }}" id="email" >
                                         @error('email')
-                                            <span class="text-danger"> {{$message}} </span>
+                                        <span class="text-danger"> {{$message}} </span>
                                         @enderror
                                         <input type="hidden" class="form-control" name="user_type" value="1">
                                     </div>
@@ -50,12 +50,12 @@
                             </div>
                             <div class="form-group">
                                 <p class=" have-account marB15">
-                                <a class="lnk-toggler have-account marB15" data-panel=".panel-login" href="{{url('login')}}">Already have an account?</a>
+                                    <a class="lnk-toggler have-account marB15" data-panel=".panel-login" href="{{url('login')}}">Already have an account?</a>
                                 </p>
                             </div>
                             <div class="form-group">
                                 <p class=" have-account marB15">
-                                <a  class=" marB15" href="{{url('/sign-up')}}">Don’t have an account?</a>
+                                    <a  class=" marB15" href="{{url('/sign-up')}}">Don’t have an account?</a>
                                 </p>
                             </div>
                         </div>
@@ -66,12 +66,12 @@
     </div>
 </div>
 <script>
-   var messages = {
-        req_email: "{{ trans('error_messages.req_email') }}",
-        req_password: "{{ trans('error_messages.req_password') }}",
-        req_confirm_password: "{{ trans('error_messages.req_confirm_password') }}"
+ var messages = {
+    req_email: "{{ trans('error_messages.req_email') }}",
+    req_password: "{{ trans('error_messages.req_password') }}",
+    req_confirm_password: "{{ trans('error_messages.req_confirm_password') }}"
 
-    };
+};
 </script>
 <script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script>
 @endsection

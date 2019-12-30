@@ -102,7 +102,7 @@
                 <div class="dropdown-menu navbar-dropdown notification-drop-down" aria-labelledby="settingDropdown">
                     <a class="dropdown-item" href="javascript:void(0);">
                         <i class="fa fa-user"></i>
-                        <span class="notification-text">Change Password</span>
+                        <span class="notification-text">My Profile</span>
                     </a>
                     <a class="dropdown-item" href="{{ route('backend_logout') }}" onclick="event.preventDefault();
                        document.getElementById('logout-form').submit();">
