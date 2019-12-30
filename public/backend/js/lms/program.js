@@ -63,7 +63,8 @@ try {
                         required: true
                     },
                     prgm_name: {
-                        required: true
+                        required: true,
+                        lettersonly: true
                     },
                     industry_id: {
                         required: true
@@ -72,12 +73,13 @@ try {
                         required: true
                     },
                     anchor_limit: {
-                        required: true
+                        required: true,
+                        number: true
                     },
                     is_fldg_applicable: {
                         required: true
                     },
-                    anchor_user_id: {
+                    anchor_id: {
                         required: true
                     },
                 },
@@ -176,7 +178,7 @@ try {
         $(".adhoc").change(function () {
 
             var v = $(this).val();
-            if (v == "yes") {
+            if (v == 1) {
                 $("#facility1").show();
 
             } else {
@@ -186,7 +188,7 @@ try {
 
         });
 
-
+        $(".adhoc").trigger('change');
 
 
         $(".int-checkbox").change(function () {
@@ -218,12 +220,12 @@ try {
         });
 
 
-
+        $(".int-checkbox").trigger('change');
 
         $(".grace").change(function () {
 
             var v = $(this).val();
-            if (v == "yes") {
+            if (v == 1) {
                 $("#facility2").show();
 
             } else {
@@ -232,7 +234,7 @@ try {
             }
 
         });
-
+        $(".grace").trigger('change');
 
 
 
@@ -419,39 +421,48 @@ try {
             let validationRules = {
                 rules: {
                     product_name: {
-                        required: true
+                        required: true,
+                        lettersonly: true
                     },
                     anchor_sub_limit: {
                         required: true,
                         lessThan: "#anchor_limit",
-                        min: 1
+                        min: 1,
+                        number: true
                     },
                     min_loan_size: {
-                        required: true
+                        required: true,
+                        number: true
                     },
                     max_loan_size: {
-                        required: true
+                        required: true,
+                        number: true
                     },
                     interest_rate: {
                         required: true
                     },
                     overdue_interest_rate: {
-                        required: true
+                        required: true,
+                        number: true
                     },
                     interest_borne_by: {
                         required: true
                     },
                     margin: {
-                        required: true
+                        required: true,
+                        number: true,
+                        max: 100
                     },
                     is_adhoc_facility: {
                         required: true
                     },
                     adhoc_interest_rate: {
-                        required: true
+                        required: true,
+                        number: true
                     },
                     grace_period: {
-                        required: true
+                        required: true,
+                        number: true
                     },
                     disburse_method: {
                         required: true
@@ -469,6 +480,12 @@ try {
                     'charge[1]': {
                         required: true
                     },
+                    min_interest_rate: {
+                        number: true
+                    },
+                    max_interest_rate: {
+                        number: true
+                    }
                 },
                 messages: {
 
@@ -479,6 +496,13 @@ try {
                 $(this).removeClass('error');
                 rules[value.name] = {
                     required: true
+                };
+            });
+            $('.valid_perc ').each(function (index, value) {
+                $(this).removeClass('error');
+                rules[value.name] = {
+                    number: true,
+                    max: 100
                 };
             });
 

@@ -137,7 +137,7 @@ class ProgramController extends Controller {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
-            $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['anchor_limit', 'prgm_type', 'anchor_user_id'])->first();
+            $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'])->first();
             $preSanction = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 1, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();

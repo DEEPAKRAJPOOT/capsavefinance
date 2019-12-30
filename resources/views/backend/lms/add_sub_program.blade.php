@@ -53,7 +53,7 @@
                                             {{ Form::open(['url'=>route('save_sub_program'),'id'=>'add_sub_program']) }}
                                             {!! Form::hidden('parent_prgm_id',$program_id) !!}
                                             {!! Form::hidden('anchor_limit',isset($programData) ? $programData->anchor_limit : null) !!}
-                                           
+
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
                                             <div class="sub-form renew-form" id="subform">
@@ -74,12 +74,16 @@
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <label for="txtCreditPeriod">Product line<span class="error_message_label">*</span> </label>
-                                                                {!! Form::text('product_name','',['class'=>'form-control'])   !!}
+                                                                {!! Form::text('product_name',
+                                                                isset($programData->product_name) ? $programData->product_name : null,
+                                                                ['class'=>'form-control'])   !!}
 
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <label for="txtCreditPeriod">Limit<span class="error_message_label">*</span> </label>
-                                                                {!! Form::text('anchor_sub_limit','',['class'=>'form-control'])   !!}
+                                                                {!! Form::text('anchor_sub_limit',
+                                                                isset($programData->anchor_sub_limit) ? $programData->anchor_sub_limit : null,
+                                                                ['class'=>'form-control'])   !!}
 
                                                             </div>
                                                         </div>
@@ -92,12 +96,16 @@
                                                             <div class="col-md-6">
                                                                 <a href="javascript:void(0);" class="verify-owner-no" style="top:12px;">
                                                                     <i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                                {!! Form::text('min_loan_size','',['class'=>'form-control','placeholder'=>'Min'])   !!}
+                                                                {!! Form::text('min_loan_size',
+                                                                isset($programData->min_loan_size) ? $programData->min_loan_size : null,
+                                                                ['class'=>'form-control','placeholder'=>'Min'])   !!}
 
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <a href="javascript:void(0);" class="verify-owner-no" style="top:12px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                                {!! Form::text('max_loan_size','',['class'=>'form-control','placeholder'=>'Max'])   !!}
+                                                                {!! Form::text('max_loan_size',
+                                                                isset($programData->max_loan_size) ? $programData->max_loan_size : null,
+                                                                ['class'=>'form-control','placeholder'=>'Max'])   !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -111,35 +119,50 @@
                                                             <div class="form-check-inline">
                                                                 <label class="form-check-label fnt">
 
-                                                                    {!! Form::radio('interest_rate','1','',  ['class'=>'form-check-input int-checkbox'])    !!} 
+                                                                    {!! Form::radio('interest_rate','1',
+                                                                    isset($programData->interest_rate) ? $programData->interest_rate : null,
+                                                                    ['class'=>'form-check-input int-checkbox'])    !!} 
                                                                     Fixed
                                                                 </label>
                                                             </div>
                                                             <div class="form-check-inline">
                                                                 <label class="form-check-label fnt">
-                                                                    {!! Form::radio('interest_rate','2','',  ['class'=>'form-check-input int-checkbox']) !!} 
+                                                                    {!! Form::radio('interest_rate','2',
+                                                                    isset($programData->interest_rate) ? $programData->interest_rate : null,
+                                                                    ['class'=>'form-check-input int-checkbox']) !!} 
                                                                     Floating
                                                                 </label>
                                                             </div>
                                                         </div>
                                                         <div class="row floating " style="display:none;">
                                                             <div class="col-md-4">
-                                                                <select  name="interest_linkage" class="form-control">
-                                                                    <option>Linkage</option>
-                                                                    <option value="12" >12%</option>
-                                                                    <option value="15">15%</option>
-                                                                    <option value="20">20%</option>
-                                                                    <option value="25">25%</option>
-                                                                </select>
+                                                                {!!
+                                                                Form::select('interest_linkage',
+                                                                [
+                                                                ''=>'Linkage', '12'=>'12%',   '15'=>'15%','20'=>'20%','25'=>'25%',
+                                                                ],
+                                                                isset($programData->interest_linkage) ? $programData->interest_linkage : null,
+                                                                ['id' => 'interest_linkage',
+                                                                'class'=>'form-control',
+                                                                ])
+                                                                !!}
                                                             </div>
 
                                                         </div>
                                                         <div class="row fixed" style="display:none;">
                                                             <div class="col-md-6">
-                                                                <input type="text" name="min_interest_rate" class="form-control" placeholder="Min " >
+
+                                                                {!! Form::text('min_interest_rate',
+                                                                isset($programData->min_interest_rate) ? $programData->min_interest_rate : null,
+                                                                ['class'=>'form-control','placeholder'=>'Min'])   !!}
+
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <input type="text" name="max_interest_rate" class="form-control" placeholder="Max" >
+                                                                {!! Form::text('max_interest_rate',
+                                                                isset($programData->max_interest_rate) ? $programData->max_interest_rate : null,
+                                                                ['class'=>'form-control','placeholder'=>'Max'])   
+                                                                !!}
+
                                                             </div>
                                                         </div>
 
@@ -148,46 +171,81 @@
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label for="txtCreditPeriod">Overdue Interest Rate (%) <span class="error_message_label">*</span> </label>
-                                                        <input type="text" name="overdue_interest_rate" id="overdue_interest_rate" value="" class="form-control" placeholder="Overdue interest rate" >
+
+                                                        {!! Form::text('overdue_interest_rate',
+                                                        isset($programData->overdue_interest_rate) ? $programData->overdue_interest_rate : null,
+                                                        ['class'=>'form-control valid_perc','placeholder'=>'Overdue interest rate',
+                                                        'id'=>'overdue_interest_rate'])   
+                                                        !!}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label for="txtCreditPeriod"> Interest Borne By <span class="error_message_label">*</span> </label>
-                                                        <select name="interest_borne_by" class="form-control">
-                                                            <option> Select</option>
-                                                            <option value="1">Anchor</option>
-                                                            <option value="2">Customer/Supplier </option>
-                                                        </select>
+                                                        {!!
+                                                        Form::select('interest_borne_by',
+                                                        [
+                                                        ''=>'Select', '1'=>'Anchor',   '2'=>'Customer/Supplier',
+                                                        ],
+                                                        isset($programData->interest_borne_by) ? $programData->interest_borne_by : null,
+                                                        ['id' => 'interest_borne_by',
+                                                        'class'=>'form-control',
+                                                        ])
+                                                        !!}
+
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label for="txtCreditPeriod">Margin (%) <span class="error_message_label">*</span></label>
-                                                        <input type="text" name="margin" id="margin" value="" class="form-control" placeholder="Margin" >
+                                                        {!! Form::text('margin',
+                                                        isset($programData->margin) ? $programData->margin : null,
+                                                        ['class'=>'form-control valid_perc','placeholder'=>'Margin',
+                                                        'id'=>'margin'])   
+                                                        !!}
+
+
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="txtCreditPeriod">Adhoc Facility<span class="error_message_label">*</span> </label>
+                                                                <label for="txtCreditPeriod">Adhoc Facility<span class="error_message_label">*</span></label>
                                                                 <div class="">
                                                                     <div class="form-check-inline">
                                                                         <label class="form-check-label fnt">
-                                                                            <input type="radio" class="form-check-input adhoc" name="is_adhoc_facility" value="yes">Yes
+                                                                            {!! Form::radio('is_adhoc_facility',
+                                                                            1,
+                                                                            isset($programData->is_adhoc_facility) && ($programData->is_adhoc_facility == 1) ? true : false,
+                                                                            ['class'=>'form-check-input adhoc',
+                                                                            'id'=>'is_adhoc_facility'])   
+                                                                            !!}
+
+                                                                            Yes
                                                                         </label>
                                                                     </div>
                                                                     <div class="form-check-inline">
                                                                         <label class="form-check-label fnt">
-                                                                            <input type="radio" class="form-check-input adhoc" name="is_adhoc_facility" value="no">No
+                                                                            {!! Form::radio('is_adhoc_facility',
+                                                                            0,
+                                                                            isset($programData->is_adhoc_facility) && ($programData->is_adhoc_facility == 0) ? true : false,
+                                                                            ['class'=>'form-check-input adhoc',
+                                                                            'id'=>'is_adhoc_facility'])   
+                                                                            !!}No
                                                                         </label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="mt-3">
                                                                     <div id="facility1" class="desc" style="display:none;">
                                                                         <label for="txtCreditPeriod">Max. Interset Rate (%) <span class="error_message_label">*</span></label>
-                                                                        <input type="text" name="adhoc_interest_rate" id="employee" value="" class="form-control" placeholder="Max interset rate" >
+
+                                                                        {!! Form::text('adhoc_interest_rate',
+                                                                        isset($programData->adhoc_interest_rate) ? $programData->adhoc_interest_rate : null,
+                                                                        ['class'=>'form-control valid_perc','placeholder'=>'Max interset rate',
+                                                                        'id'=>'employee'])   
+                                                                        !!}
+
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -199,19 +257,43 @@
                                                                 <div class="">
                                                                     <div class="form-check-inline">
                                                                         <label class="form-check-label fnt">
-                                                                            <input type="radio" class="form-check-input grace" name="is_grace_period" value="yes">Yes
+
+
+                                                                            {!! Form::radio('is_grace_period',
+                                                                            '1',
+                                                                            isset($programData->is_grace_period) && ($programData->is_grace_period == 1) ? true : false,
+                                                                            ['class'=>'form-check-input grace',
+                                                                            'id'=>'is_grace_period'])   
+                                                                            !!}
+
+                                                                            Yes
                                                                         </label>
                                                                     </div>
                                                                     <div class="form-check-inline ">
                                                                         <label class="form-check-label fnt">
-                                                                            <input type="radio" class="form-check-input grace" name="is_grace_period" value="no">No
+                                                                            {!! Form::radio('is_grace_period',
+                                                                            '0',
+                                                                            isset($programData->is_grace_period) && ($programData->is_grace_period == 0) ? true : false,
+                                                                            ['class'=>'form-check-input grace',
+                                                                            'id'=>'is_grace_period'])   
+                                                                            !!}
+
+                                                                            No
                                                                         </label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="mt-3">
                                                                     <div id="facility2" class="desc" style="display:none;">
                                                                         <label for="txtCreditPeriod">Grace Period (In Days) <span class="error_message_label">*</span></label>
-                                                                        <input type="text" name="grace_period" id="grace_period" value="" class="form-control " placeholder="Max interset rate" >
+
+                                                                        {!! Form::text('grace_period',
+                                                                        isset($programData->adhoc_interest_rate) ? $programData->adhoc_interest_rate : null,
+                                                                        ['class'=>'form-control numberOnly','placeholder'=>'Max interset rate',
+                                                                        'id'=>'grace_period'])   
+                                                                        !!}
+
+
+
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -224,11 +306,18 @@
                                                 <div class="col-md-12">
                                                     <div class="form-group password-input">
                                                         <label for="txtPassword">Disbursement Method <span class="error_message_label">*</span></label>
-                                                        <select  name="disburse_method" class="form-control">
-                                                            <option> Select</option>
-                                                            <option value="1"> To Anchor</option>
-                                                            <option value="2"> To Customer/Supplier </option>
-                                                        </select>
+
+                                                        {!!
+                                                        Form::select('disburse_method',
+                                                        [
+                                                        ''=>'Select', '1'=>'To Anchor',   '2'=>'To Customer/Supplier ',
+                                                        ],
+                                                        isset($programData->disburse_method) ? $programData->disburse_method : null,
+                                                        ['id' => 'disburse_method',
+                                                        'class'=>'form-control',
+                                                        ])
+                                                        !!}
+
                                                     </div>
                                                 </div>
 
@@ -237,15 +326,46 @@
                                                         <label for="txtPassword">Invoice Upload <span class="error_message_label">*</span></label>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="1"  id="invoice_upload_0" name="invoice_upload[]">
+
+                                                                @php   
+                                                                $invoice_upload = explode(',',$programData->invoice_upload);
+                                                                $admin_checked = in_array(1 , $invoice_upload) ;
+                                                                $anchor_checked = in_array(2 , $invoice_upload) ;
+                                                                $customer_checked = in_array(3 , $invoice_upload) ;
+                                                                @endphp
+                                                                {!!
+                                                                Form::checkbox('invoice_upload[]',
+                                                                1,
+                                                                $admin_checked ,
+
+                                                                ['id' => 'invoice_upload_0',
+
+                                                                ])
+                                                                !!}
                                                                 <label for="invoice_upload_0"> Admin</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="2"  id="invoice_upload_1" name="invoice_upload[]">
+                                                                {!!
+                                                                Form::checkbox('invoice_upload[]',
+                                                                2,
+                                                                $anchor_checked ,
+
+                                                                ['id' => 'invoice_upload_1',
+
+                                                                ])
+                                                                !!}
                                                                 <label for="invoice_upload_1"> Anchor</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="3"  id="invoice_upload_2" name="invoice_upload[]">
+                                                                {!!
+                                                                Form::checkbox('invoice_upload[]',
+                                                                3,
+                                                                $customer_checked ,
+
+                                                                ['id' => 'invoice_upload_2',
+
+                                                                ])
+                                                                !!}
                                                                 <label for="invoice_upload_2"> Customer/Supplier</label>
                                                             </div>
                                                         </div>
@@ -254,17 +374,57 @@
                                                 <div class="col-md-12">
                                                     <div class="form-group password-input">
                                                         <label for="txtPassword">Bulk Invoice Upload <span class="error_message_label">*</span></label>
+
+                                                        @php   
+                                                        $bulk_invoice_upload = explode(',',$programData->bulk_invoice_upload);
+                                                        $admin_checked = in_array(1 , $bulk_invoice_upload) ;
+                                                        $anchor_checked = in_array(2 , $bulk_invoice_upload) ;
+                                                        $customer_checked = in_array(3 , $bulk_invoice_upload) ;
+                                                        @endphp
+
+
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="1" id="bulk_invoice_upload_0" 
-                                                                       name="bulk_invoice_upload[]"><label for="bulk_invoice_upload_0"> Admin</label>
+
+
+                                                                {!!
+                                                                Form::checkbox('bulk_invoice_upload[]',
+                                                                1,
+                                                                $invoice_upload ,
+
+                                                                ['id' => 'bulk_invoice_upload_0',
+
+                                                                ])
+                                                                !!}
+
+                                                                <label for="bulk_invoice_upload_0"> Admin</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="2"  id="bulk_invoice_upload_1" name="bulk_invoice_upload[]">
+                                                                {!!
+                                                                Form::checkbox('bulk_invoice_upload[]',
+                                                                2,
+                                                                $anchor_checked ,
+
+                                                                ['id' => 'bulk_invoice_upload_1',
+
+                                                                ])
+                                                                !!}
+
+
+
                                                                 <label for="bulk_invoice_upload_1"> Anchor</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox"  value="3"   id="bulk_invoice_upload_2" name="bulk_invoice_upload[]">
+                                                                {!!
+                                                                Form::checkbox('bulk_invoice_upload[]',
+                                                                3,
+                                                                $customer_checked ,
+
+                                                                ['id' => 'bulk_invoice_upload_2',
+
+                                                                ])
+                                                                !!}
+
                                                                 <label for="bulk_invoice_upload_2"> Customer/Supplier</label>
                                                             </div>
                                                         </div>
@@ -273,18 +433,64 @@
                                                 <div class="col-md-12">
                                                     <div class="form-group password-input">
                                                         <label for="txtPassword">Invoice Approval <span class="error_message_label">*</span></label>
+
+                                                        @php   
+                                                        $invoice_approval = explode(',',$programData->invoice_approval);
+                                                        $admin_checked = in_array(1 , $invoice_approval) ;
+                                                        $anchor_checked = in_array(2 , $invoice_approval) ;
+                                                        $customer_checked = in_array(3 , $invoice_approval) ;
+                                                        $auto_approval = in_array(4 , $invoice_approval) ;
+                                                        @endphp
+
+
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="1"  id="invoice_approval_0" name="invoice_approval[]"><label for="invoice_approval_0"> Admin</label>
+                                                                {!!
+                                                                Form::checkbox('invoice_approval[]',
+                                                                1,
+                                                                $admin_checked ,
+
+                                                                ['id' => 'invoice_approval_0',
+
+                                                                ])
+                                                                !!}
+                                                                <label for="invoice_approval_0"> Admin</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="2" id="invoice_approval_1" name="invoice_approval[]"><label for="invoice_approval_1"> Anchor</label>
+                                                                {!!
+                                                                Form::checkbox('invoice_approval[]',
+                                                                2,
+                                                                $anchor_checked ,
+
+                                                                ['id' => 'invoice_approval_1',
+
+                                                                ])
+                                                                !!}
+                                                                <label for="invoice_approval_1"> Anchor</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox" value="3" id="invoice_approval_2" name="invoice_approval[]"><label for="invoice_approval_2"> Customer/Supplier</label>
+                                                                {!!
+                                                                Form::checkbox('invoice_approval[]',
+                                                                3,
+                                                                $customer_checked ,
+
+                                                                ['id' => 'invoice_approval_2',
+
+                                                                ])
+                                                                !!}
+                                                                <label for="invoice_approval_2"> Customer/Supplier</label>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <input type="checkbox"  value="4" id="invoice_approval_4" name="invoice_approval[]"><label for="invoice_approval_4"> Auto Approval</label>
+                                                                {!!
+                                                                Form::checkbox('invoice_approval[]',
+                                                                4,
+                                                                $auto_approval ,
+
+                                                                ['id' => 'invoice_approval_4',
+
+                                                                ])
+                                                                !!}
+                                                                <label for="invoice_approval_4"> Auto Approval</label>
                                                             </div>
                                                         </div>
                                                     </div>

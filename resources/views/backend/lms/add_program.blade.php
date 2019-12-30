@@ -176,6 +176,8 @@
    
    };
 </script>
+<script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script src="{{ asset('backend/js/common.js') }}" type="text/javascript"></script>
 <script src="{{ asset('backend/js/lms/program.js') }}" type="text/javascript"></script>
 @endsection

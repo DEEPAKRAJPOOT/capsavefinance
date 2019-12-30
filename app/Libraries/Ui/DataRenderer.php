@@ -1325,8 +1325,7 @@ class DataRenderer implements DataProviderInterface
     function getSubProgramList($request, $program)
     {
         return DataTables::of($program)
-                        ->rawColumns(['user_id','status', 'action'])
-                        
+                        ->rawColumns(['user_id', 'status', 'action'])
                         ->editColumn(
                                 'prgm_id',
                                 function ($program) {
@@ -1351,40 +1350,25 @@ class DataRenderer implements DataProviderInterface
                                 'status',
                                 function ($program) {
                             return '  <div class="d-flex inline-action-btn">
-									  
-									   <div class="dropdown">
-												<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-												 Active
-												</button>
-											   <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 25px, 0px); top: 0px; left: 0px; will-change: transform;">
-												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Active</a>
-												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Inactive</a>
-												</div>
-											  </div>
-									   
-									   </div>';
+					 <div class="dropdown">
+                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
+					</button><div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 25px, 0px); top: 0px; left: 0px; will-change: transform;">
+					<a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Active</a>
+					 <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Inactive</a>
+					</div>
+					 </div>
+					 </div>';
                         })
-                        
-                         ->addColumn(
-                    'action',
-                    function ($user) {
-                       $act = '';
-                     //if(Helpers::checkPermission('edit_anchor_reg')){
-                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyUserFrame\" data-url =\"" . route('edit_agency_user_reg', ['user_id' => $user->user_id]) . "\" data-height=\"350px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency User Detail\"><i class=\"fa fa-edit\"></a>";
-                     //}
-                     return $act;
-                    }
-                )
-                        ->filter(function ($query) use ($request) {
-//                    if ($request->get('by_name') != '') {
-//                        $query->where(function ($query) use ($request) {
-//                            $search_keyword = trim($request->get('by_name'));
-//                            $query->where('users.f_name', 'like',"%$search_keyword%")
-//                            ->orWhere('users.email', 'like', "%$search_keyword%");
-//                        });
-//                    }
-                        })
-                        ->make(true);
+                        ->addColumn(
+                                'action',
+                                function ($program) {
+                            $act = '';
+                            //if(Helpers::checkPermission('edit_anchor_reg')){
+                            $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id , 'program_id' => $program->prgm_id] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit sub program\"><i class=\"fa fa-edit\"></a>";
+                            //}
+                            return $act;
+                        }
+                        )->make(true);
     }
 
 }
