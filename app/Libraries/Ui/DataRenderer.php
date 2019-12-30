@@ -1586,4 +1586,121 @@ class DataRenderer implements DataProviderInterface
                         ->make(true);
     }
 
+
+    /*
+     * 
+     * get all lms customer list
+     */
+    public function lmsGetCustomers(Request $request, $customer)
+    {
+        return DataTables::of($customer)
+                ->rawColumns(['status', 'action'])
+                ->addColumn(
+                    'customer_id',
+                    function ($customer) {
+                        return $customer->customer_id;
+                        
+                    }
+                )
+                ->editColumn(
+                        'customer_name',
+                        function ($customer) {
+                    $full_name = $customer->user->f_name.' '.$customer->user->l_name;
+                    return $full_name;
+                    
+                })
+                ->editColumn(
+                        'customer_email',
+                        function ($customer) {
+                    $email = $customer->user->email;
+                    return $email;
+                    
+                })
+                ->editColumn(
+                        'customer_mobile',
+                        function ($customer) {
+                    $mobile_no = $customer->user->mobile_no;
+                    return $mobile_no;
+                    
+                })
+                ->editColumn(
+                    'limit',
+                    function ($customer) {
+                    return 12;
+
+                })
+                ->editColumn(
+                    'interest_rate',
+                    function ($customer) {                    
+                    return 12;
+                })
+                ->editColumn(
+                    'consume_limit',
+                    function ($customer) {
+                    return 12;
+                })
+                ->editColumn(
+                    'available_limit',
+                    function ($customer) {
+                    
+                    return 12;
+                })
+                ->editColumn(
+                    'tendor_days',
+                    function ($customer) {
+                    return 12;
+                })
+                ->editColumn(
+                    'assignee',
+                    function ($customer) {
+                    return 'xyz';
+                })
+                ->editColumn(
+                    'assigned_by',
+                    function ($customer) {
+                    return 'xyz';
+
+                })
+                ->editColumn(
+                    'status',
+                    function ($customer) {
+                    if ($customer->is_assign == 0) {
+                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                    } else {
+                        return "<span style='color:green'>Assigned</span>";
+                    }
+                })
+                ->addColumn(
+                    'action',
+                    function ($customers) {
+                    return  "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['customer_id' => $customers->customer_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
+                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                
+                                $query->where('users.is_assigned', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }
+                })
+                ->make(true);
+    }
+    
+
 }
