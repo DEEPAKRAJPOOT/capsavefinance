@@ -56,31 +56,19 @@ class DoaLevel extends BaseModel {
     ];
 
     /**
-     * Get DoA Levels
-     * 
-     * @param array $where
+     * Get DoA Levels for Data Render
+     *      
      * @return type mixed
-     * @throws BlankDataExceptions
-     * @throws InvalidDataTypeExceptions 
      */
-    public static function getDoaLevels($where=[])
+    public static function getDoaLevels()
     {
-        //if (empty($where)) {
-        //    throw new BlankDataExceptions(trans('error_message.no_data_found'));
-        //}
-        //if (!is_array($where)) {
-        //    throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
-        //}
         $groupBy = ['doa_level.city_id', 'doa_level.min_amount', 'doa_level.max_amount'];
-        $query = self::select('doa_level.*', 'mst_city.name as city')
+        $res = self::select('doa_level.*', 'mst_city.name as city')
                 ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')                
-                ->where('doa_level.is_active', 1);
-        if (count($where) > 0) {
-            $query->where($where);
-        }
-        $res  = $query->groupBy($groupBy)
-                ->orderBy('doa_level.doa_level_id', 'DESC')
-                ->get();
+                ->where('doa_level.is_active', 1)
+                ->groupBy($groupBy)
+                ->orderBy('doa_level.doa_level_id', 'DESC');
+                //->get();
         return $res ? : [];
     }
     
@@ -99,7 +87,7 @@ class DoaLevel extends BaseModel {
         }
         
         if (!is_int($doa_level_id)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         $res = self::select('doa_level.*', 'mst_city.name as city')
                 ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')  
