@@ -66,6 +66,8 @@ class User extends Authenticatable
         'block_status_updatetime',
         'parent_id',
         'is_appr_required',
+        'state_id',
+        'city_id',
         'created_by',
         'created_at',
         'updated_at',
