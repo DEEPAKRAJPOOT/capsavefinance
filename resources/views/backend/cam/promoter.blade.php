@@ -110,7 +110,7 @@
                                              </tr>
                                              <tr>
                                                 <td><b>PAN Number</b></td>
-                                                <td>{{ (isset($row->pan->pan_gst_hash)) ? $row->pan->pan_gst_hash : '' }}</td>
+                                                <td>{{  $row->pan_number }}</td>
                                                 <td><b>Shareholding (%)</b></td>
                                                 <td>{{$row->share_per}}</td>
                                              </tr>
@@ -124,7 +124,7 @@
                                                 <td><b>Networth</b></td>
                                                 <td>{{$row->networth}}</td>
                                                 <td><b>Address</b></td>
-                                                <td>{{$row->owner_addr}}</td>
+                                                <td>{{$row->address->addr_1}}</td>
                                              </tr> 
                                              <tr>
                                                 <td><b>Mobile</b></td>
