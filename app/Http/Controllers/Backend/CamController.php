@@ -468,16 +468,17 @@ class CamController extends Controller
     }
 
     public function _callFinanceApi($filespath, $appId) {
-    	  $user = FinanceModel::getUserByAPP($appId);
-    	  $loanAmount = (int)$user['loan_amt'];
+    	$user = FinanceModel::getUserByAPP($appId);
+    	$loanAmount = (int)$user['loan_amt'];
         $dates = array_pop($filespath);
         $perfios = new Perfios_lib();
         $reportType = 'json';
         $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
         $process_txn_cnt = 0;
+        $transactionId = '';
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-
+        $uploaded_files_cnt =0;
         $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
@@ -488,7 +489,9 @@ class CamController extends Controller
             'loanType' => 'Home',
             'transactionCompleteCallbackUrl' => route('api_perfios_fsa_callback'),
         );
+      
         $start_txn = $perfios->api_call(Perfios_lib::STRT_TXN, $req_arr);
+        //$start_txn['status'] ='success';
          if ($start_txn['status'] == 'success') {
          	foreach ($filespath as $file_doc) {
             
@@ -510,17 +513,21 @@ class CamController extends Controller
                     'financialYear' => $financial_year,
                   );
                   $upl_stmt = $perfios->api_call(Perfios_lib::UPL_STMT, $req_arr);
-                  if ($upl_stmt['status'] == 'success') {
-                     $req_arr = array(
-                        'apiVersion' => $apiVersion,
-                        'vendorId' => $vendorId,
-                        'perfiosTransactionId' => $start_txn['perfiostransactionid'],
-                     );
-                     $cmplt_txn = $perfios->api_call(Perfios_lib::CMPLT_TXN, $req_arr);
-                      if ($cmplt_txn['status'] == 'success') {
-                          $process_txn_cnt++;
-                      }
-                  }
+                   if ($upl_stmt['status'] == 'success') {
+                       $uploaded_files_cnt = $uploaded_files_cnt + 1;
+                       $process_txn_cnt++;
+                   }
+//                  if ($upl_stmt['status'] == 'success') {
+//                     $req_arr = array(
+//                        'apiVersion' => $apiVersion,
+//                        'vendorId' => $vendorId,
+//                        'perfiosTransactionId' => $start_txn['perfiostransactionid'],
+//                     );
+//                     $cmplt_txn = $perfios->api_call(Perfios_lib::CMPLT_TXN, $req_arr);
+//                      if ($cmplt_txn['status'] == 'success') {
+//                          $process_txn_cnt++;
+//                      }
+//                  }
              	}else{
                 $upl_stmt = $add_year;
                 $upl_stmt['prolitusTransactionId'] = $prolitus_txn;
@@ -528,6 +535,20 @@ class CamController extends Controller
                 $upl_stmt['api_type'] = Perfios_lib::ADD_YEAR;
               }
           }
+          
+          if ($uploaded_files_cnt == 3) {
+                     $req_arr = array(
+                        'apiVersion' => $apiVersion,
+                        'vendorId' => $vendorId,
+                        'perfiosTransactionId' => $start_txn['perfiostransactionid'],
+                     );
+                     $cmplt_txn = $perfios->api_call(Perfios_lib::CMPLT_TXN, $req_arr);
+                      if ($cmplt_txn['status'] == 'success') {
+                          //$process_txn_cnt++;
+                      }
+                  }
+          
+          
           if ($process_txn_cnt == count($filespath)) {
             $final_res = $cmplt_txn;
             $final_res['prolitusTransactionId'] = $prolitus_txn;
