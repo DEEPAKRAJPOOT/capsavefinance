@@ -61,6 +61,7 @@
 </div>
 {!!Helpers::makeIframePopup('addDoaLevelFrame','Add Level', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('editDoaLevelFrame','Edit Level', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('assignRoleLevelFrame','Assign Role', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

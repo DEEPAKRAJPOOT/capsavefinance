@@ -625,8 +625,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             Route::post('/save_doa-level', [
                 'as' => 'save_doa_level',
-                'uses' => 'Master\IndustryController@saveDoaLevel'
+                'uses' => 'Master\DoaController@saveDoaLevel'
             ]);
+                        
+            Route::get('/assign-role-level', [
+                'as' => 'assign_role_level',
+                'uses' => 'Master\DoaController@assignRoleLevel'
+            ]);
+            
+            Route::post('/save-assign-role-level', [
+                'as' => 'save_assign_role_level',
+                'uses' => 'Master\DoaController@saveAssignRoleLevel'
+            ]);            
         });
 
         Route::group(['prefix' => 'agency'], function () {

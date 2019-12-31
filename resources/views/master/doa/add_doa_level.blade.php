@@ -57,7 +57,7 @@ Form::open(
                 <span class="mandatory">*</span>
             </label>                                                
             {!!
-                Form::select('state_state',
+                Form::select('state_id',
                 [''=>'Select State'] + $stateList,
                 isset($doaLevel->state_id) ? $doaLevel->state_id : '',
                 [
@@ -74,7 +74,7 @@ Form::open(
             </label>                                                
             {!!
                 Form::select('city_id',
-                [''=>'Select City'],
+                [''=>'Select City'] + $cityList,
                 isset($doaLevel->city_id) ? $doaLevel->city_id : '',
                 [
                 'class' => 'form-control',                
@@ -127,13 +127,40 @@ Form::close()
 @endsection
 
 @section('jscript')
-<script>
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script>    
 var messages = {    
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",    
     ajax_get_city_url : "{{ route('ajax_get_city') }}"
 };
 $(document).ready(function () {
+    
+    $('#frm_doa_level').validate({
+        rules: {
+            level_code: {
+               required: true
+            },
+            level_name: {
+               required: true
+            },
+            state_id: {
+               required: true
+            },
+            city_id: {
+               required: true
+            },
+            min_amount: {
+               required: true
+            },
+            max_amount: {
+               required: true
+            }
+        },
+        messages: {
+        }
+    });
+            
     $(document).on('change', '#state_id', function(){
         var state_id = $(this).val();       
         $.ajax({

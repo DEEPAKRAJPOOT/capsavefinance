@@ -177,7 +177,7 @@
               <ul class="nav flex-column sub-menu">
                  @can('manage_doa')
                  <li class="nav-item">
-                    <a class="nav-link" href="{{ route('manage_doa') }} ">Manage Doa</a>
+                    <a class="nav-link" href="{{ route('manage_doa') }} ">Manage Doa Level</a>
                  </li>
                  @endcan
                   @can('manage_program')

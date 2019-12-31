@@ -71,9 +71,15 @@ class DoaLevel extends BaseModel {
         //if (!is_array($where)) {
         //    throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         //}
-        $res = self::select('*')
-                ->where('is_active', 1)
-                ->orderBy('doa_level_id', 'DESC')
+        $groupBy = ['doa_level.city_id', 'doa_level.min_amount', 'doa_level.max_amount'];
+        $query = self::select('doa_level.*', 'mst_city.name as city')
+                ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')                
+                ->where('doa_level.is_active', 1);
+        if (count($where) > 0) {
+            $query->where($where);
+        }
+        $res  = $query->groupBy($groupBy)
+                ->orderBy('doa_level.doa_level_id', 'DESC')
                 ->get();
         return $res ? : [];
     }
@@ -95,9 +101,10 @@ class DoaLevel extends BaseModel {
         if (!is_int($doa_level_id)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
-        $res = self::select('*')
-                ->where('is_active', 1)
-                ->where('doa_level_id', $doa_level_id)
+        $res = self::select('doa_level.*', 'mst_city.name as city')
+                ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')  
+                ->where('doa_level.is_active', 1)
+                ->where('doa_level.doa_level_id', $doa_level_id)
                 ->first();
         return $res ? : false;
     }
@@ -126,9 +133,42 @@ class DoaLevel extends BaseModel {
         if (is_null($doa_level_id)) {
             return self::create($data);
         } else {
-            return self::update($data)->where('doa_level_id', $doa_level_id);
-        }
-        
-    }    
+            return self::where('doa_level_id', $doa_level_id)->update($data);
+        }        
+    }
+    
+    /**
+     * Update DoA Data
+     * 
+     * @param array $data
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function updateDoaLevelData($data, $whereCond=[])
+    {
+        return self::where($whereCond)->update($data);
+    }
 
+    /**
+     * Get DoA Levels
+     * 
+     * @param array $where
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getDoaLevelData($where)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }        
+        $res = self::select('*')                
+                ->where('is_active', 1)
+                ->where($where)
+                ->first();
+        return $res ? : null;
+    }
 }
