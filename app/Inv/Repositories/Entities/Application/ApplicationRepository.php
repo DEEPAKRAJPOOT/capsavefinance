@@ -868,5 +868,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function isPostSancDocsUpload($appId, $docIds=[])
     {
         return AppDocument::isPostSancDocsUpload($appId, $docIds);
+    }
+
+
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getCustomerApplications($user_id) 
+    {
+        return Application::where('user_id', $user_id)->with('business')->get();
     }    
 }

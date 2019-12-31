@@ -34,8 +34,7 @@ try {
                 {data: 'tenor_days'},
                 {data: 'assignee'},
                 {data: 'assigned_by'},
-                {data: 'status'},
-                {data: 'action'}
+                {data: 'status'}
             ],
             aoColumnDefs: [{
                     'bSortable': false,

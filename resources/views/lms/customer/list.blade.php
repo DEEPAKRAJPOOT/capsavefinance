@@ -66,7 +66,6 @@
 													<th >Assignee</th>
 													<th >Assigned By</th>
 													<th >Status</th>
-													<th >Action</th>	
 												</tr>
 	                                        </thead>
 	                                        <tbody>

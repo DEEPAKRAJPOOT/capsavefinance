@@ -1594,12 +1594,12 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetCustomers(Request $request, $customer)
     {
         return DataTables::of($customer)
-                ->rawColumns(['status', 'action'])
+                ->rawColumns(['customer_id', 'status', 'action'])
                 ->addColumn(
                     'customer_id',
                     function ($customer) {
-                        return $customer->customer_id;
-                        
+                        $link = $customer->customer_id;
+                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                     }
                 )
                 ->editColumn(
@@ -1670,12 +1670,6 @@ class DataRenderer implements DataProviderInterface
                         return "<span style='color:green'>Assigned</span>";
                     }
                 })
-                ->addColumn(
-                    'action',
-                    function ($customers) {
-                    return  "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['customer_id' => $customers->customer_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
-                    }
-                )
                 ->filter(function ($query) use ($request) {
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {

@@ -12,8 +12,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
         Route::group(['prefix' => 'lms'], function () {
             Route::get('/', [
-                'as' => 'lms.get_customer_list',
+                'as' => 'lms_get_customer_list',
                 'uses' => 'Lms\CustomerController@list'
+            ]);
+
+            Route::get('/applications', [
+                'as' => 'lms_get_customer_applications',
+                'uses' => 'Lms\CustomerController@listAppliction'
             ]);
 
         });//end of application

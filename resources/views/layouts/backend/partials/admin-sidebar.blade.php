@@ -104,7 +104,7 @@
             <div class="collapse show" id="layoutsSubmenu20" style="">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('lms.get_customer_list') }}">Manage Sanction Cases</a>
+                        <a class="nav-link" href="{{ route('lms_get_customer_list') }}">Manage Sanction Cases</a>
                     </li>
                                                      
                 </ul>
