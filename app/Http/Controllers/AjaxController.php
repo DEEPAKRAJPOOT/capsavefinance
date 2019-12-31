@@ -2913,5 +2913,31 @@ if ($err) {
         return $dataProvider->getSubProgramList($request, $this->application->getSubProgramListByParentId($anchor_id, $program_id));
     }
 
+    /**
+     * get anchors by product id
+     * 
+     * @param product_id
+     * @return anchors
+     */
+    public function getAnchorsByProduct(Request $request)
+    {
+        $product_id = (int)$request->product_id;
+        $anchors =  $this->application->getAnchorsByProduct($product_id);
+        return json_encode($anchors);
+    }
+    /**
+     * get programs by anchor id
+     * 
+     * @param anchor_id
+     * @return programs
+     */
+    public function getProgramsByAnchor(Request $request)
+    {
+        $anchor_id = (int)$request->anchor_id;
+        $programs =  $this->application->getProgramsByAnchor($anchor_id);
+        return json_encode($programs);
+    }
+    
+
 
 }

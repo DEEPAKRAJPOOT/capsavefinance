@@ -251,4 +251,32 @@ class Program extends BaseModel {
         return ($res ?: false);
     }
 
+    public static function getAnchorsByProduct($product_id){
+        if (empty($product_id)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        if (!is_int($product_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+
+        return Program::with('anchors')->where(['product_id'=> $product_id, 'status'=>1])->get(['prgm_id','product_id','anchor_id']);
+    }
+
+    public function anchors(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id')->where('is_active',1);
+    }
+
+    public static function getProgramsByAnchor($anchor_id){
+        if (empty($anchor_id)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        if (!is_int($anchor_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+
+        return Program::where(['anchor_id'=> $anchor_id, 'status'=>1])->get(['prgm_id','product_id','anchor_id','prgm_name']);
+    }
+
 }
