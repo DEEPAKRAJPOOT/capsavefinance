@@ -155,5 +155,28 @@ class AppProgramOffer extends BaseModel {
         $rowUpdate = self::where('app_id',(int) $app_id)->update($arr);
 
         return ($rowUpdate ? $rowUpdate : false);
-    }    
+    }
+
+    public static function getProgramOffer($app_prgm_limit_id){
+        if(empty($app_prgm_limit_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }else if(!is_int($app_prgm_limit_id)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else{
+            return AppProgramOffer::where('app_prgm_limit_id', $app_prgm_limit_id)->where('is_active', 1)->first();
+        }
+    }
+
+    public static function updateProgramOffer($data, $app_prgm_limit_id){
+        if(empty($app_prgm_limit_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }else if(!is_int($app_prgm_limit_id)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else if(!is_array($data)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else{
+            $prgmOffer = AppProgramOffer::where('app_prgm_limit_id', $app_prgm_limit_id)->where('is_active', 1)->first();
+            return $prgmOffer->update($data);
+        }
+    }
 }

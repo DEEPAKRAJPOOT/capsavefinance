@@ -66,13 +66,13 @@ class AppProgramLimit extends BaseModel {
         }
     }
 
-    public static function getProgramLimitData($where = null){
-        if(is_null($where)){
-            return AppProgramLimit::get();
-        }else if(!is_array($where)){
+    public static function getProgramLimitData($appId){
+        if(empty($appId)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }else if(!is_int($appId)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            return AppProgramLimit::where($where)->get();
+            return AppProgramLimit::where('app_id', $appId)->get();
         }
     }
 

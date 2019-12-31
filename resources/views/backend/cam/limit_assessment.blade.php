@@ -86,12 +86,11 @@
                                     </table>
                                 </div>
 
-                                <!-- --------------------- -->
                                 @forelse($prgmLimitData as $key=>$prgmLimit)
                                 <div class="accordion">
                                     <div class="card card-color mb-0">
                                         <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
-                                            <table cellspacing="0" cellpadding="0" width="100%" class="table-i">
+                                            <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <tr role="row" class="odd">
                                                        <td width="17%">{{($key+1)}}</td>
@@ -99,7 +98,7 @@
                                                        <td width="17%">{{$prgmLimit->anchor->comp_name}}</td>
                                                        <td width="17%">{{$prgmLimit->program->prgm_name}}</td>
                                                        <td width="16%">{{$prgmLimit->limit_amt}}</td>
-                                                       <td width="16%"><button href="#" data-toggle="modal" data-target="#myModal" class="btn btn-success btn-sm">+ Add</button></td>
+                                                       <td width="16%"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">+ Add</button></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -119,26 +118,31 @@
                                 @empty
                                 <div class="card card-color mb-0">
                                         <div class="card-header pl-0 pr-0 collapsed">
-                                            <table cellspacing="0" cellpadding="0" width="100%" class="table-i">
+                                            <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <tr role="row" class="odd">
-                                                       <td width="100%" colspan="6">{{($key+1)}}</td>
+                                                       <td width="100%" style="text-align: center;" colspan="6">No record found</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 @endforelse
-                                <!-- ------------ -->
                             </div>
                         </div>
                         <div class="clearfix"></div>
+                        <div>
+                            <a data-toggle="modal" data-target="#limitOfferFrame" data-url ="" data-height="700px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openOfferModal" style="display: none;"><i class="fa fa-plus"></i>Add Offer</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>    
 </div>
+
+{!!Helpers::makeIframePopup('limitOfferFrame','Add Offer', 'modal-lg')!!}
+
 @endsection
 @section('jscript')
 <script>
@@ -189,6 +193,13 @@ $(document).ready(function(){
             }
         })
     });
+
+    $('.add-offer').on('click', function(){
+        let data_url = $(this).data('url');
+        $('#openOfferModal').attr('data-url', data_url);
+        $('#openOfferModal').trigger('click');
+    });
+
 });
 
 function fillAnchors(programs){
