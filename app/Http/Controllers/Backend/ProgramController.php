@@ -67,7 +67,7 @@ class ProgramController extends Controller {
             }, []);
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
             $industryList = $this->appRepo->getIndustryDropDown()->toArray();
-            return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id','redirectUrl'));
+            return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id', 'redirectUrl'));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -90,7 +90,7 @@ class ProgramController extends Controller {
                 'prgm_type' => $request->get('prgm_type'),
                 'industry_id' => $request->get('industry_id'),
                 'sub_industry_id' => $request->get('sub_industry_id'),
-                'anchor_limit' => $request->get('anchor_limit'),
+                'anchor_limit' => ($request->get('anchor_limit')) ? str_replace(',', '', $request->get('anchor_limit')) : null,
                 'is_fldg_applicable' => $request->get('is_fldg_applicable'),
                 'status' => 1
             ];
@@ -117,8 +117,8 @@ class ProgramController extends Controller {
         try {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
-            $is_prg_list =
-            $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
+            \Session::put('list_program_id', $program_id);
+            $is_prg_list = $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
             return view('backend.lms.show_sub_program', compact('anchor_id', 'program_id', 'redirectUrl'));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -136,21 +136,44 @@ class ProgramController extends Controller {
         try {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
+            $action = $request->get('action');
+            $subProgramData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
+            //   dd($subProgramData , $program_id);
+            $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
-            $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['anchor_limit', 'prgm_type', 'anchor_user_id'])->first();
+            $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
             $preSanction = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 3, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
-            $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
-            
+
             $remaningAmount = null;
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal;
             }
-            
-           
+            $programDoc = $programCharges = $sanctionData = [];
+            if (isset($subProgramData->programDoc)) {
+                $programDoc = $subProgramData->programDoc->toArray();
+                $sanctionData = array_reduce($programDoc, function ($out, $elem) {
+                    if ($elem['doc_type_id'] == 2) {
+                        $out['pre'][] = $elem['id'];
+                    } else if ($elem['doc_type_id'] == 3) {
+                        $out['post'][] = $elem['id'];
+                    }
+                    return $out;
+                }, []);
+            }
+
+            /**
+             * program charges 
+             */
+            if (isset($subProgramData->programCharges)) {
+                $programCharges = $subProgramData->programCharges->toArray();
+            }
+
+
+
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
-          
+
             return view('backend.lms.add_sub_program',
                     compact(
                             'anchor_id',
@@ -161,7 +184,11 @@ class ProgramController extends Controller {
                             'preSanction',
                             'charges',
                             'remaningAmount',
-                            'redirectUrl'
+                            'redirectUrl',
+                            'sanctionData',
+                            'programCharges',
+                            'subProgramData',
+                            'action'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -182,10 +209,10 @@ class ProgramController extends Controller {
             'anchor_user_id' => $request->get('anchor_user_id'),
             'product_name' => $request->get('product_name'),
             'interest_rate' => $request->get('interest_rate'),
-            'anchor_sub_limit' => $request->get('anchor_sub_limit'),
+            'anchor_sub_limit' => ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : null,
             'anchor_limit' => $request->get('anchor_limit'),
-            'min_loan_size' => $request->get('min_loan_size'),
-            'max_loan_size' => $request->get('max_loan_size'),
+            'min_loan_size' => ($request->get('min_loan_size')) ? str_replace(',', '', $request->get('min_loan_size')) : null,
+            'max_loan_size' => ($request->get('max_loan_size')) ? str_replace(',', '', $request->get('max_loan_size')) : null,
             'interest_linkage' => $request->get('interest_linkage'),
             'interest_borne_by' => $request->get('interest_borne_by'),
             'margin' => $request->get('margin'),
@@ -200,7 +227,7 @@ class ProgramController extends Controller {
             'invoice_upload' => !empty($request->get('invoice_upload')) ? implode(',', $request->get('invoice_upload')) : null,
             'bulk_invoice_upload' => !empty($request->get('bulk_invoice_upload')) ? implode(',', $request->get('bulk_invoice_upload')) : null,
             'invoice_approval' => !empty($request->get('invoice_approval')) ? implode(',', $request->get('invoice_approval')) : null,
-            'status' => 1,
+            'status' => $request->get('status'),
         ];
     }
 
@@ -223,13 +250,19 @@ class ProgramController extends Controller {
             $chrg_calc_min_rate = $request->get('chrg_calc_min_rate');
             $chrg_calc_max_rate = $request->get('chrg_calc_max_rate');
             $chrg_tiger_id = $request->get('chrg_tiger_id');
+            $chrg_calculation_type = $request->get('chrg_calculation_type');
+            $chrg_type = $request->get('chrg_type');
             $gst_rate = $request->get('gst_rate');
+            $is_gst_applicable = $request->get('is_gst_applicable');
             foreach ($charge as $keys => $values) {
                 $out[] = [
                     'prgm_id' => $program_id,
                     'chrg_applicable_id' => $values,
-                    'chrg_calculation_amt' => isset($chrg_calculation_amt[$keys]) ? $chrg_calculation_amt[$keys] : null,
-                    'gst_rate' => isset($gst_rate[$keys]) ? $gst_rate[$keys] : null,
+                    'chrg_calculation_type' => isset($chrg_calculation_type[$keys]) ?$chrg_calculation_type[$keys] : null,
+                    'chrg_type' => isset($chrg_type[$keys]) ? $chrg_type[$keys] : null,
+                    'chrg_calculation_amt' => isset($chrg_calculation_amt[$keys]) ? str_replace(',', '', $chrg_calculation_amt[$keys])   : null,
+                    'is_gst_applicable' => isset($is_gst_applicable[$keys]) ? $is_gst_applicable[$keys] : null,
+                    'gst_percentage' => isset($gst_rate[$keys]) ? $gst_rate[$keys] : null,
                     'chrg_calc_min_rate' => isset($chrg_calc_min_rate[$keys]) ? $chrg_calc_min_rate[$keys] : null,
                     'chrg_calc_max_rate' => isset($chrg_calc_max_rate[$keys]) ? $chrg_calc_max_rate[$keys] : null,
                     'chrg_tiger_id' => isset($chrg_calc_max_rate[$keys]) ? $chrg_tiger_id[$keys] : null,
@@ -256,11 +289,22 @@ class ProgramController extends Controller {
         try {
             $user_id = \Auth::user()->user_id;
             $dataForProgram = $this->prepareSubProgramData($request);
+            $pkeys = $request->get('program_id');
+
 
             /**
              * save program data
              */
-            $lastInsertId = $this->appRepo->saveProgram($dataForProgram);
+            if (!empty($pkeys)) {
+                unset($dataForProgram['parent_prgm_id']);
+                // dd($dataForProgram);
+                $this->appRepo->updateProgramData($dataForProgram, ['prgm_id' => $pkeys]);
+                $lastInsertId = $pkeys;
+            } else {
+                $lastInsertId = $this->appRepo->saveProgram($dataForProgram);
+            }
+
+
 
             /**
              * Save program charges data 
@@ -271,8 +315,8 @@ class ProgramController extends Controller {
 
             $pre_sanction = array_filter($pre);
             $post_sanction = array_filter($post);
-
-            $preSanctionData = array_reduce($pre_sanction, function($outinvoice_upload, $element) use($lastInsertId, $user_id) {
+            $this->appRepo->deleteDoc(['prgm_id' => $lastInsertId]);
+            $preSanctionData = array_reduce($pre_sanction, function($out, $element) use($lastInsertId, $user_id) {
                 $out[] = [
                     'user_id' => \Auth::user()->user_id,
                     'prgm_id' => $lastInsertId,
@@ -308,7 +352,9 @@ class ProgramController extends Controller {
             }
 
             \Session::flash('message', trans('success_messages.sub_program_save_successfully'));
-            return redirect()->route('manage_sub_program', ['anchor_id' => $request->get('anchor_id'), 'program_id' => $request->get('parent_prgm_id')]);
+
+            $program_list_id = (\Session::has('list_program_id')) ? \Session::get('list_program_id') : $request->get('parent_prgm_id');
+            return redirect()->route('manage_sub_program', ['anchor_id' => $request->get('anchor_id'), 'program_id' => $program_list_id]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }

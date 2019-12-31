@@ -47,12 +47,12 @@
                         <table id="sub_program_list" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>{{ trans('backend.mange_program.program_id') }}</th>
+                                    <th>{{ trans('backend.mange_program.sub_program_id') }}</th>
                                     <th>{{ trans('backend.mange_program.anchor_name') }}</th>
-                                    <th>{{ trans('backend.mange_program.program_mame') }}</th>
+                                    <th>{{ trans('backend.mange_program.sub_program_name') }}</th>
                                  
-                                    <th>{{ trans('backend.mange_program.anchor_limit') }}</th>
-                                    <th>{{ trans('backend.mange_program.anchor_sub_limit') }}</th>
+                                    <th>{{ trans('backend.mange_program.total_anchor_limit') }}</th>
+                                    <th>{{ trans('backend.mange_program.sub_anchor_limit') }}</th>
                                     <th>{{ trans('backend.mange_program.loan_size') }}</th>
                                     <th>{{ trans('backend.mange_program.status') }}</th>
                                     <th>{{ trans('backend.mange_program.action') }}</th>
