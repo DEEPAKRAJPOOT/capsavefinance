@@ -21,7 +21,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
-use App\Inv\Repositories\Models\Offer;
+use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\Master\Industry;
 use App\Inv\Repositories\Models\AppPdNote;
@@ -430,7 +430,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getOfferData($whereCondition=[])
     {
-        $offerData = Offer::getOfferData($whereCondition);
+        $offerData = AppProgramOffer::getOfferData($whereCondition);
         return $offerData ? $offerData : [];
     }
 
@@ -446,7 +446,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function saveOfferData($offerData=[], $offerId=null)
     {
-        $offerData = Offer::saveOfferData($offerData, $offerId);
+        $offerData = AppProgramOffer::saveOfferData($offerData, $offerId);
         return $offerData ? $offerData : false;
     }
     
@@ -461,7 +461,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function updateOfferByAppId($app_id, $arr = [])
     {        
-        return Offer::updateOfferByAppId((int) $app_id, $arr);
+        return AppProgramOffer::updateOfferByAppId((int) $app_id, $arr);
     }    
 
     /**
@@ -868,5 +868,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function isPostSancDocsUpload($appId, $docIds=[])
     {
         return AppDocument::isPostSancDocsUpload($appId, $docIds);
+    }
+
+    public function getAnchorsByProduct($product_id)
+    {
+        return Program::getAnchorsByProduct($product_id);
+    }
+
+    public function getProgramsByAnchor($anchor_id)
+    {
+        return Program::getProgramsByAnchor($anchor_id);
     }    
 }

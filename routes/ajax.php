@@ -417,8 +417,6 @@ Route::group(
     );
     /*agency route*/
     
-    
-    
      Route::post(
         'get-charges-html',
         [
@@ -427,13 +425,27 @@ Route::group(
         ]
     );
     
-   
-
     Route::post(
         'get-backend-user-list',
         [
         'as' => 'ajax_get_backend_user_list',
         'uses' => 'AjaxController@getBackendUserList'
+        ]
+    );
+
+    Route::post(
+        'get-anchors-by-product',
+        [
+        'as' => 'ajax_get_anchors_by_product',
+        'uses' => 'AjaxController@getAnchorsByProduct'
+        ]
+    );
+
+    Route::post(
+        'get-programs-by-anchor',
+        [
+        'as' => 'ajax_get_programs_by_anchor',
+        'uses' => 'AjaxController@getProgramsByAnchor'
         ]
     );    
 });

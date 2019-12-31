@@ -7,20 +7,20 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
-class Offer extends BaseModel {
+class AppProgramOffer extends BaseModel {
     /* The database table used by the model.
      *
      * @var string
      */
 
-    protected $table = 'offer';
+    protected $table = 'app_prgm_offer';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'offer_id';
+    protected $primaryKey = 'prgm_offer_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -42,8 +42,10 @@ class Offer extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'offer_id',
+        'prgm_offer_id',
         'app_id',
+        'app_prgm_limit_id',
+        'prgm_limit_amt',
         'prgm_id',
         'loan_amount',
         'loan_offer',        
@@ -59,10 +61,10 @@ class Offer extends BaseModel {
         'comment',
         'status',
         'is_active',
-        'created_by',
         'created_at',
-        'updated_by',
+        'created_by',
         'updated_at',        
+        'updated_by',
     ];
 
     /**
@@ -81,7 +83,7 @@ class Offer extends BaseModel {
         
         $whereCondition['is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
         
-        $offerData = self::select('offer.*')
+        $offerData = self::select('app_prgm_offer.*')
                 ->where($whereCondition)
                 ->first();      
         return $offerData ? $offerData : null;
@@ -96,7 +98,7 @@ class Offer extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveOfferData($offerData=[], $offerId=null)
+    public static function saveOfferData($offerData=[], $prgmOfferId=null)
     {
         //Check $whereCondition is not an array
         if (!is_array($offerData)) {
@@ -104,8 +106,8 @@ class Offer extends BaseModel {
         }
         
         
-        if (!is_null($offerId)) {
-            return self::where('offer_id', $offerId)->update($offerData);
+        if (!is_null($prgmOfferId)) {
+            return self::where('prgm_offer_id', $prgmOfferId)->update($offerData);
         } else {
             return self::create($offerData);
         }
