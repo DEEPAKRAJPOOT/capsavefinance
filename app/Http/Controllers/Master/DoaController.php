@@ -74,7 +74,7 @@ class DoaController extends Controller {
      */
     protected function getDoaLevelCode($doa_level_id=null)
     {
-        if (is_null) {
+        if (is_null($doa_level_id)) {
             $doa_level = $this->masterRepo->getLatestDoaData();
             $doa_level_id = $doa_level ? $doa_level->doa_level_id : 0;
             $code_index = $doa_level_id + 1;
@@ -95,7 +95,7 @@ class DoaController extends Controller {
     public function saveDoaLevel(Request $request) 
     {
         $reqData = $request->all();
-        try {                        
+        try {
             $data = [
                 'level_code' => $reqData['level_code'],
                 'level_name' => $reqData['level_name'],
@@ -112,21 +112,25 @@ class DoaController extends Controller {
                     'min_amount' => $reqData['min_amount'],
                     'max_amount' => $reqData['max_amount']
                 ];
-                $doaData = $this->masterRepo->getDoaLevelData($whereCond);
-                $doa_level_id = $doaData ? $doaData->doa_level_id : null;
+                $doaData = $this->masterRepo->getDoaLevelData($whereCond);                
+                //$doa_level_id = $doaData ? $doaData->doa_level_id : null;
                 //$data['level_code'] = $this->getDoaLevelCode($doa_level_id);
+                if ($doaData) {
+                    Session::flash('is_data_found', '1');                    
+                    return redirect()->back();                    
+                }
             }
             
-            $res = $this->masterRepo->saveDoaLevelData($data, $doa_level_id);                        
-            if ($res) {
-                Session::flash('message', 'Doa Level saved successfully!');
-                return redirect()->route('manage_doa');
-            } else {
-                Session::flash('message', 'Something went wrong!!!!');
-                return redirect()->route('manage_doa');
-            }
+            $this->masterRepo->saveDoaLevelData($data, $doa_level_id);                        
+
+            //Session::flash('message', 'Doa Level saved successfully!');
+            //return redirect()->route('manage_doa');
+            Session::flash('is_data_saved', '1');   
+            return redirect()->back();
+            
             
         } catch (Exception $ex) {
+            Session::flash('is_data_saved', '1'); 
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }

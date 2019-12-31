@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
+use App\Inv\Repositories\Models\Master\DoaLevelRole;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -1596,7 +1597,7 @@ class DataRenderer implements DataProviderInterface
     function getDoaLevelsList($request, $doa)
     {
         return DataTables::of($doa)
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'role'])
 
             ->editColumn(
                     'level_code',
@@ -1621,7 +1622,12 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                     'role',
                     function ($doa) {
-                return '';
+                $roles = DoaLevelRole::getDoaLevelRoles($doa->doa_level_id);
+                $rolesName = '';
+                foreach($roles as $role) {
+                    $rolesName .= $role->role . ', ';
+                }
+                return rtrim($rolesName,', ');
             })                        
              ->addColumn(
                     'action',

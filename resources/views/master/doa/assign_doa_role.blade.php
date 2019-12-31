@@ -82,7 +82,7 @@ Form::close()
 
 @section('jscript')
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script>
+<script>  
 $(document).ready(function () {
     
     $('#frm_assign_role_level').validate({

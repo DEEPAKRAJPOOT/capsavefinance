@@ -1,6 +1,13 @@
 @extends('layouts.backend.admin_popup_layout')
 
 @section('content')
+@if(Session::get('is_data_found'))
+<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+    <span id="message"></span>
+</div>
+@endif
+
 <div class="modal-body text-left">
 {!!
 Form::open(
@@ -9,7 +16,7 @@ Form::open(
         'name' => 'save_doa_level',
         'autocomplete' => 'off', 
         'id' => 'frm_doa_level',
-        'target' => '_top'
+        //'target' => '_top'
     )
 )
 !!}
@@ -132,10 +139,19 @@ Form::close()
 var messages = {    
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",    
-    ajax_get_city_url : "{{ route('ajax_get_city') }}"
-};
-$(document).ready(function () {
-    
+    ajax_get_city_url : "{{ route('ajax_get_city') }}",
+    is_data_found: "{{ Session::get('is_data_found') }}",
+    is_data_saved: "{{ Session::get('is_data_saved') }}",
+    target_model : "{{ isset($doaLevel->doa_level_id) && !empty($doaLevel->doa_level_id) ? 'editDoaLevelFrame' : 'addDoaLevelFrame' }}"
+}; 
+$(document).ready(function () {    
+    var parent =  window.parent;
+    if(messages.is_data_found == 1){      
+       $("#message").html('Level is already exits.');
+    } else if (messages.is_data_saved == 1) {
+        parent.jQuery("#"+messages.target_model).modal('hide');       
+        parent.oTable.draw();        
+    }
     $('#frm_doa_level').validate({
         rules: {
             level_code: {
@@ -175,7 +191,7 @@ $(document).ready(function () {
                 var optionList = result;
                 $("#city_id").empty().append('<option>Select City</option>');
                 $.each(optionList, function (index, data) {
-                    $("#city_id").append('<option  value="' + data.city_id + '"  >' + data.name +  '</option>');
+                    $("#city_id").append('<option  value="' + data.id + '"  >' + data.name +  '</option>');
                 }); 
             },
             error:function(error) {

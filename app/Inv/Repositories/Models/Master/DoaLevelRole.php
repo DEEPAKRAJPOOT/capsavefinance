@@ -54,7 +54,8 @@ class DoaLevelRole extends BaseModel {
      */
     public static function getDoaLevelRoles($doa_level_id)
     {      
-        $res = self::select('*')                
+        $res = self::select('*', 'roles.name as role')                
+                ->join('roles', 'doa_level_role.role_id', '=', 'roles.id')  
                 ->where('doa_level_id', $doa_level_id)                
                 ->get();
         return $res ? : [];
