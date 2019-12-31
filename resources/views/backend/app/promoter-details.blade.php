@@ -618,7 +618,7 @@
     {!!Helpers::makeIframePopup('modalPromoter3','View Passport Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter7','Mobile Verify Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter8','OTP Verify Detail', 'modal-lg')!!}
-    {!!Helpers::makeIframePopup('modalPromoter9','OTP Verify Status Detail', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('modalPromoter9','PAN Verify Status Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter','Upload User List', 'modal-md')!!}
     {!!Helpers::makeIframePopup('modalMobile','Mobile Verification', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalOtp','OTP Verification', 'modal-lg')!!}
