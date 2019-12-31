@@ -909,9 +909,6 @@ class CamController extends Controller
         return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details]);
     }
 
-
-
-
     public function showPromoter(Request $request){
         $attribute['biz_id'] = $request->get('biz_id'); 
         $attribute['app_id'] = $request->get('app_id');
