@@ -776,7 +776,9 @@ class CamController extends Controller
     {
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-               
+
+        $prgmLimitData = $this->appRepo->getProgramLimitData();
+        //dd($prgmLimitData);  
         $anchorData = $this->appRepo->getAnchorDataByAppId($appId);
         $anchorId = $anchorData ? $anchorData->anchor_id : 0;
         $loanAmount = $anchorData ? $anchorData->loan_amt : 0;
@@ -801,10 +803,10 @@ class CamController extends Controller
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
-                ->with('offerId', $offerId)
-                ->with('loanAmount', $loanAmount)
-                ->with('prgmData', $prgmData)
-                ->with('offerData', $offerData)
+                //->with('offerId', $offerId)
+                //->with('loanAmount', $loanAmount)
+                ->with('prgmLimitData', $prgmLimitData)
+                //->with('offerData', $offerData)
                 ->with('currStageCode', $currStageCode);
     }
     
@@ -847,16 +849,6 @@ class CamController extends Controller
                           'created_by'=>\Auth::user()->user_id,
                           'created_at'=>\Carbon\Carbon::now(),
                           ]);
-
-            //$offerId = $request->get('offer_id') ? $request->get('offer_id') : null; 
-            //$loanAmount = $request->get('loan_amount') ? $request->get('loan_amount') : null; 
-            //$this->appRepo->updateOfferByAppId($appId, ['is_active' => 0]);
-            //$addlData = [];
-            //$addlData['app_id'] = $appId;
-            //$addlData['loan_amount'] = $loanAmount;
-            //$offerData = $this->prepareOfferData($request->all(), $addlData);
-            //$savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
-            
             if ($app_prgm_offer) {
                 //Update workflow stage
                 //Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);

@@ -279,4 +279,8 @@ class Program extends BaseModel {
         return Program::where(['anchor_id'=> $anchor_id, 'status'=>1])->get(['prgm_id','product_id','anchor_id','prgm_name']);
     }
 
+    public function product(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Product','product_id','id');
+    }
+
 }

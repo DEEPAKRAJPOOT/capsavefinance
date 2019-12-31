@@ -71,8 +71,8 @@
 
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="table-responsive ps ps--theme_default mt-2" data-ps-id="7e2fdaa3-dcfc-2f99-49b8-8cca4056cf70">
-                                    <table id="supplier-listing" class="table table-striped cell-border dataTable no-footer overview-table mb-0" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                <div class="table-responsive ps ps--theme_default mt-2">
+                                    <table id="supplier-listing" class="table table-striped cell-border  overview-table mb-0" cellspacing="0" width="100%">
                                         <thead>
                                             <tr role="row">
                                             <th width="17%">Sr. No.</th>
@@ -86,34 +86,50 @@
                                     </table>
                                 </div>
 
-                                <div id="accordion" class="accordion">
+                                <!-- --------------------- -->
+                                @forelse($prgmLimitData as $key=>$prgmLimit)
+                                <div class="accordion">
+                                    <div class="card card-color mb-0">
+                                        <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
+                                            <table cellspacing="0" cellpadding="0" width="100%" class="table-i">
+                                                <tbody>
+                                                    <tr role="row" class="odd">
+                                                       <td width="17%">{{($key+1)}}</td>
+                                                       <td width="17%">{{$prgmLimit->program->product->product_name}}</td>
+                                                       <td width="17%">{{$prgmLimit->anchor->comp_name}}</td>
+                                                       <td width="17%">{{$prgmLimit->program->prgm_name}}</td>
+                                                       <td width="16%">{{$prgmLimit->limit_amt}}</td>
+                                                       <td width="16%"><button href="#" data-toggle="modal" data-target="#myModal" class="btn btn-success btn-sm">+ Add</button></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse">
+                                            <ul class="row p-0 m-0">
+                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>10,000,00</b></li>
+                                                <li class="col-md-2">Interest(%)  <br> <b>12%</b></li>
+                                                <li class="col-md-2">Invoice Tenor(Days) <br> <b>30 Days</b></li>
+                                                <li class="col-md-2">Margin(%) <br> <b>10</b></li>
+                                                <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>1000</b></li>
+                                                <li class="col-md-2"><a href="#" data-toggle="modal" data-target="#myModal1"><br><i class="fa fa-edit"></i>Edit</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                @empty
                                 <div class="card card-color mb-0">
-                                    <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
-                                        <table cellspacing="0" cellpadding="0" width="100%" class="table-i">
-                                            <tbody>
-                                                <tr role="row" class="odd">
-                                                   <td width="17%">1.</td>
-                                                   <td width="17%">Supply Chain</td>
-                                                   <td width="17%">Anchor 1</td>
-                                                   <td width="17%">Program 1</td>
-                                                   <td width="16%">10,00,000</td>
-                                                   <td width="16%"><button href="#" data-toggle="modal" data-target="#myModal" class="btn btn-success btn-sm">+ Add</button></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        <div class="card-header pl-0 pr-0 collapsed">
+                                            <table cellspacing="0" cellpadding="0" width="100%" class="table-i">
+                                                <tbody>
+                                                    <tr role="row" class="odd">
+                                                       <td width="100%" colspan="6">{{($key+1)}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                    <div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse" data-parent="#accordion" style="">
-                                        <ul class="row p-0 m-0">
-                                            <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>10,000,00</b></li>
-                                            <li class="col-md-2">Interest(%)  <br> <b>12%</b></li>
-                                            <li class="col-md-2">Invoice Tenor(Days) <br> <b>30 Days</b></li>
-                                            <li class="col-md-2">Margin(%) <br> <b>10</b></li>
-                                            <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>1000</b></li>
-                                            <li class="col-md-2"><a href="#" data-toggle="modal" data-target="#myModal1"><br><i class="fa fa-edit"></i>Edit</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                </div>
+                                @endforelse
+                                <!-- ------------ -->
                             </div>
                         </div>
                         <div class="clearfix"></div>

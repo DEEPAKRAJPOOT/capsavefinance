@@ -890,6 +890,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppProgramLimit::saveProgramLimit($arr, $prgm_limit_id);
     }
 
+    public function getProgramLimitData($where = null)
+    {
+        $prgmLimitData = AppProgramLimit::getProgramLimitData($where);
+        return $prgmLimitData ? $prgmLimitData : [];
+    }
+
     
     /**************************not remove*****************************/   
 }
