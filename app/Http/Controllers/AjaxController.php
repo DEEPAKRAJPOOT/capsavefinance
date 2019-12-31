@@ -2913,6 +2913,7 @@ if ($err) {
         return $dataProvider->getSubProgramList($request, $this->application->getSubProgramListByParentId($anchor_id, $program_id));
     }
 
+
     /**
      * get anchors by product id
      * 
@@ -2938,6 +2939,21 @@ if ($err) {
         return json_encode($programs);
     }
     
+
+
+    /**
+     * change program status
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeProgramStatus(Request $request)
+    {
+        $program_id = $request->get('program_id');
+        $status = $request->get('status');
+        $result = $this->application->updateProgramData(['status' => $status], ['prgm_id' => $program_id]);
+        return \Response::json(['success' => $result]);
+    }
 
 
 }

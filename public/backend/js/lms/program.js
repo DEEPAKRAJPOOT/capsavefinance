@@ -4,10 +4,33 @@ try {
 
 
         $.validator.addMethod('lessThan', function (value, element, param) {
-            var i = parseInt(value);
-            var j = parseInt($(param).val());
+            var min = value.replace(/,/g, "");
+            var max = $(param).val().replace(/,/g, "");
+
+            var i = parseInt(min);
+            var j = parseInt(max);
             return i <= j;
         }, "Please enter value equal or less then Anchor Limit");
+
+
+        $.validator.addMethod('min_loan_size', function (value, element, param) {
+            var min = value.replace(/,/g, "");
+            var max = $(param).val().replace(/,/g, "");
+
+            var i = parseInt(min);
+            var j = parseInt(max);
+            return i <= j;
+        }, "Min loan size can not be greater than max loan size");
+
+
+        $.validator.addMethod('lessThanEquals', function (value, element, param) {
+            var min = value.replace(/,/g, "");
+            var max = $(param).val().replace(/,/g, "");
+
+            var i = parseInt(min);
+            var j = parseInt(max);
+            return i <= j;
+        }, "Interest Rate Min  can not be greater than interest rate max");
 
         /**
          * handle Industry Change evnet
@@ -63,7 +86,8 @@ try {
                         required: true
                     },
                     prgm_name: {
-                        required: true
+                        required: true,
+                        lettersonly: true
                     },
                     industry_id: {
                         required: true
@@ -72,14 +96,15 @@ try {
                         required: true
                     },
                     anchor_limit: {
-                        required: true
+                        required: true,
                     },
                     is_fldg_applicable: {
                         required: true
                     },
-                    anchor_user_id: {
+                    anchor_id: {
                         required: true
                     },
+
                 },
                 messages: {
 
@@ -176,7 +201,7 @@ try {
         $(".adhoc").change(function () {
 
             var v = $(this).val();
-            if (v == "yes") {
+            if (v == 1) {
                 $("#facility1").show();
 
             } else {
@@ -186,12 +211,12 @@ try {
 
         });
 
-
+        $(".adhoc").trigger('change');
 
 
         $(".int-checkbox").change(function () {
 
-            var v = $(this).val();
+            var v = $('input[name=' + $(this).attr('name') + ']' + ':checked').val();
             if (v == 1) {
                 $(".fixed").show();
 
@@ -204,7 +229,7 @@ try {
 
         $(".int-checkbox").change(function () {
 
-            var v = $(this).val();
+            var v = $('input[name=' + $(this).attr('name') + ']' + ':checked').val();
             if (v == 2) {
                 $(".floating").show();
                 $(".fixed").show();
@@ -218,12 +243,12 @@ try {
         });
 
 
-
+        $(".int-checkbox").trigger('change');
 
         $(".grace").change(function () {
 
             var v = $(this).val();
-            if (v == "yes") {
+            if (v == 1) {
                 $("#facility2").show();
 
             } else {
@@ -232,7 +257,7 @@ try {
             }
 
         });
-
+        $(".grace").trigger('change');
 
 
 
@@ -268,7 +293,7 @@ try {
             selector = $(this);
             currentValue = selector.val();
             parentDiv = selector.parents('.charge_parent_div');
-            parentDivLen = $('.charge_parent_div').length;
+            parentDivLen = selector.data('rel');
             targetDiv = parentDiv.find('.html_append');
             targetDiv.empty();
             if (!currentValue > 0) {
@@ -324,10 +349,10 @@ try {
             let parent_div = $('.charge_parent_div');
             let num = parent_div.length + 1;
 
-
+            console.log(num);
             let new_line = parent_div.first().clone();
             new_line.find('.add_more').show();
-            new_line.find('select[name="charge[1]"]').attr({id: 'charge_' + num, name: 'charge[' + num + '] '}).val('').removeClass('error')
+            new_line.find('select[name="charge[0]"]').attr({id: 'charge_' + num, name: 'charge[' + num + '] ', 'data-rel': num}).val('').removeClass('error')
             new_line.find("label[class='error']").remove();
             new_line.find('.delete_btn').show();
             new_line.find('.html_append').html('');
@@ -352,6 +377,7 @@ try {
         });
 
 
+        $('.delete_btn').showHideBtn();
 
         var subProgramList = $('#sub_program_list').DataTable({
             processing: true,
@@ -413,45 +439,57 @@ try {
             let form = $('#add_sub_program');
             var rules = {};
             var msg = {};
-
-
-
+            form.removeData('validator');
+            $("label[class='error']").remove();
+            var maxloan = $("input[name='max_loan_size']").val().replace(/,/g, "");
             let validationRules = {
                 rules: {
                     product_name: {
-                        required: true
+                        required: true,
+                        lettersonly: true
                     },
                     anchor_sub_limit: {
                         required: true,
                         lessThan: "#anchor_limit",
-                        min: 1
+                        // min: 1,
+                        // number: true
                     },
                     min_loan_size: {
-                        required: true
+                        required: true,
+                        // number: true,
+                        ///  min: maxloan
+                        min_loan_size: '.max_loan_size'
+
                     },
                     max_loan_size: {
-                        required: true
+                        required: true,
+                        // number: true
                     },
                     interest_rate: {
                         required: true
                     },
                     overdue_interest_rate: {
-                        required: true
+                        required: true,
+                        number: true
                     },
                     interest_borne_by: {
                         required: true
                     },
                     margin: {
-                        required: true
+                        required: true,
+                        number: true,
+                        max: 100
                     },
                     is_adhoc_facility: {
                         required: true
                     },
                     adhoc_interest_rate: {
-                        required: true
+                        required: true,
+                        number: true
                     },
                     grace_period: {
-                        required: true
+                        required: true,
+                        number: true
                     },
                     disburse_method: {
                         required: true
@@ -469,6 +507,17 @@ try {
                     'charge[1]': {
                         required: true
                     },
+                    min_interest_rate: {
+                        number: true,
+                        max: 100,
+                        lessThanEquals: 'input[name="max_interest_rate"]'
+                    },
+                    max_interest_rate: {
+                        number: true,
+                        max: 100
+                    }, status: {
+                        required: true
+                    }
                 },
                 messages: {
 
@@ -479,6 +528,13 @@ try {
                 $(this).removeClass('error');
                 rules[value.name] = {
                     required: true
+                };
+            });
+            $('.valid_perc ').each(function (index, value) {
+                $(this).removeClass('error');
+                rules[value.name] = {
+                    number: true,
+                    max: 100
                 };
             });
 
@@ -500,6 +556,44 @@ try {
         });
 
 
+
+        $(document).on('input', '.number_format', function (event) {
+            // skip for arrow keys
+            if (event.which >= 37 && event.which <= 40)
+                return;
+
+            // format number
+            $(this).val(function (index, value) {
+                return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            });
+        });
+
+        //$('.number_format').trigger('blue');
+
+
+
+        $(document).on('click', '.program_status', function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    _token: messages.token
+                },
+                success: function (data) {
+                   if(data.success){
+                      oTables.draw();
+                   }
+                },
+                error: function () {
+
+                }
+            });
+
+        });
 
 
 
