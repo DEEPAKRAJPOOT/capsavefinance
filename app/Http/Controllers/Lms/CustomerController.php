@@ -54,7 +54,6 @@ class CustomerController extends Controller
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getUserDetail($user_id);
             $application = $this->appRepo->getCustomerApplications($user_id)->toArray();
-            // dd($application);
             
             return view('lms.customer.list_applications')
 			  	->with('userInfo', $userInfo)

@@ -95,7 +95,7 @@
                 </ul>
             </div>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu20" aria-expanded="true" aria-controls="collapseExample">
               <i class="fa fa-user-plus" aria-hidden="true"></i>
                 <span class="menu-title">Manage Customer</span>
@@ -109,7 +109,7 @@
                                                      
                 </ul>
             </div>
-        </li>
+        </li> -->
          <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu123" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
