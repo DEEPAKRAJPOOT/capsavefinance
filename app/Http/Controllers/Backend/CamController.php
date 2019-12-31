@@ -504,7 +504,7 @@ class CamController extends Controller
 	                'perfiosTransactionId' => $start_txn['perfiostransactionid'],
 	                'financialYear' => $financial_year,
             	 );
-                        dd($req_arr);
+                        
              	$add_year = $perfios->api_call(Perfios_lib::ADD_YEAR, $req_arr);
              	if ($add_year['status'] == 'success') {
              	    $req_arr = array(
