@@ -151,6 +151,7 @@
    
   //////////////////// onchange anchor  id get data /////////////////
   $("#supplier_id").append("<option value=''>No data found</option>");  
+  $("#supplier_id").append("<option value=''>Select Supplier</option>");  
   $(document).on('change','.changeAnchor',function(){
       var anchor_id =  $(this).val(); 
        $("#supplier_id").empty();
