@@ -142,7 +142,10 @@ class ProgramController extends Controller {
             $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
-            $preSanction = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
+            $type_two = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
+            $type_one = $this->appRepo->getDocumentList(['doc_type_id' => 1, 'is_active' => 1])->toArray();
+            $preSanction = $type_two + $type_one;
+
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 3, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
 
@@ -154,7 +157,7 @@ class ProgramController extends Controller {
             if (isset($subProgramData->programDoc)) {
                 $programDoc = $subProgramData->programDoc->toArray();
                 $sanctionData = array_reduce($programDoc, function ($out, $elem) {
-                    if ($elem['doc_type_id'] == 2) {
+                    if (in_array($elem['doc_type_id'], [1, 2])) {
                         $out['pre'][] = $elem['id'];
                     } else if ($elem['doc_type_id'] == 3) {
                         $out['post'][] = $elem['id'];
@@ -258,9 +261,9 @@ class ProgramController extends Controller {
                 $out[] = [
                     'prgm_id' => $program_id,
                     'chrg_applicable_id' => $values,
-                    'chrg_calculation_type' => isset($chrg_calculation_type[$keys]) ?$chrg_calculation_type[$keys] : null,
+                    'chrg_calculation_type' => isset($chrg_calculation_type[$keys]) ? $chrg_calculation_type[$keys] : null,
                     'chrg_type' => isset($chrg_type[$keys]) ? $chrg_type[$keys] : null,
-                    'chrg_calculation_amt' => isset($chrg_calculation_amt[$keys]) ? str_replace(',', '', $chrg_calculation_amt[$keys])   : null,
+                    'chrg_calculation_amt' => isset($chrg_calculation_amt[$keys]) ? str_replace(',', '', $chrg_calculation_amt[$keys]) : null,
                     'is_gst_applicable' => isset($is_gst_applicable[$keys]) ? $is_gst_applicable[$keys] : null,
                     'gst_percentage' => isset($gst_rate[$keys]) ? $gst_rate[$keys] : null,
                     'chrg_calc_min_rate' => isset($chrg_calc_min_rate[$keys]) ? $chrg_calc_min_rate[$keys] : null,
