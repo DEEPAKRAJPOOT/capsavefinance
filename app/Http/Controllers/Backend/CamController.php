@@ -490,7 +490,7 @@ class CamController extends Controller
             'transactionCompleteCallbackUrl' => route('api_perfios_fsa_callback'),
         );
       
-        $start_txn = $perfios->api_call(Perfios_lib::STRT_TXN, $req_arr);
+        $start_txn = $perfios->api_call(Perfios_lib::STRT_TXN, $req_arr);dd($start_txn);
         //$start_txn['status'] ='success';
          if ($start_txn['status'] == 'success') {
          	foreach ($filespath as $file_doc) {
