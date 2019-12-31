@@ -63,7 +63,7 @@ Form::open(
                 $roleList,
                 $doaLevelRoles,
                 [
-                'class' => 'form-control',                
+                'class' => 'form-control multi-select-role',                
                 'id' => 'role',
                 'multiple'=>'multiple'
                 ])
@@ -80,7 +80,12 @@ Form::close()
 </div>
 @endsection
 
+@section('additional_css')
+<link rel="stylesheet" href="{{ url('backend/assets/css/bootstrap-multiselect.css') }}" />
+@endsection
+
 @section('jscript')
+<script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script>  
 $(document).ready(function () {
@@ -93,7 +98,14 @@ $(document).ready(function () {
         },
         messages: {
         }
-    });            
+    });
+    
+    $('.multi-select-role').multiselect({
+        maxHeight: 400,
+        enableFiltering: true,
+        numberDisplayed: 6,
+        selectAll: true,
+    });    
 });
 </script>        
 @endsection
