@@ -2912,6 +2912,21 @@ if ($err) {
         $anchor_id = (int) $request->get('anchor_id');
         return $dataProvider->getSubProgramList($request, $this->application->getSubProgramListByParentId($anchor_id, $program_id));
     }
-
+    
+    
+    
+    /**
+     * change program status
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeProgramStatus(Request $request)
+    {
+        $program_id = $request->get('program_id');
+        $status = $request->get('status');
+        $result = $this->application->updateProgramData(['status' => $status], ['prgm_id' => $program_id]);
+        return \Response::json(['success' => $result]);
+    }
 
 }

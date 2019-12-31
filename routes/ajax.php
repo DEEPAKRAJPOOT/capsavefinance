@@ -435,5 +435,13 @@ Route::group(
         'as' => 'ajax_get_backend_user_list',
         'uses' => 'AjaxController@getBackendUserList'
         ]
-    );    
+    );  
+    
+    Route::post(
+        'change-program-status',
+        [
+        'as' => 'change_program_status',
+        'uses' => 'AjaxController@changeProgramStatus'
+        ]
+    ); 
 });

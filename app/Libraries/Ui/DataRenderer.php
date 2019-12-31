@@ -1106,7 +1106,7 @@ class DataRenderer implements DataProviderInterface
     function getPromgramList($request , $program)
     {
          return DataTables::of($program)
-                ->rawColumns([ 'action', 'active','status'])                
+                ->rawColumns([ 'action', 'active','status' ,'anchor_limit'])                
                 ->editColumn(
                     'prgm_id',
                     function ($program) {                   
@@ -1130,7 +1130,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'anchor_limit',
                     function ($program) {                   
-                      return $program->anchor_limit;
+                      return  \Helpers::formatCurreny($program->anchor_limit);
                     })
                 ->addColumn(
                     'anchor_sub_limit',
@@ -1144,37 +1144,33 @@ class DataRenderer implements DataProviderInterface
                     })
                 ->editColumn(
                     'status',
-                    function ($program) {                   
-                      return '  <div class="d-flex inline-action-btn">
-									  
-									   <div class="dropdown">
-												<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-												 Active
-												</button>
-											   <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 25px, 0px); top: 0px; left: 0px; will-change: transform;">
-												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Active</a>
-												  <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Inactive</a>
-												</div>
-											  </div>
-									   
-									   </div>';
-                    })
-                    
-                    
-                    
-                    
-              
-                
-                ->addColumn(
+                    function ($program) {
+
+                          return ($program->status == '0')?'<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">In Active</label>
+                                             
+                                          </div></b>':'<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
+                        })
+                        ->addColumn(
                     'action',
                     function ($program) {
                         $action = '';
                       if(Helpers::checkPermission('manage_sub_program')){
-                          $action .='<a title="Show Sub program" href="'.route('manage_sub_program',['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
+                          $action .='<a title="View Sub-Program" href="'.route('manage_sub_program',['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
                       }
                     
                     //add_sub_program
-                    return $action.'<a title="Add App Note" href="program-view.php" class="btn btn-action-btn btn-sm "><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                    
+                      if($program->status){
+                           return $action.'<a title="In Active" href="'.route('change_program_status', [ 'program_id'=> $program->prgm_id , 'status'=>0 ]).'"  class="btn btn-action-btn btn-sm program_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                      }else{
+                           return $action.'<a title="Active" href="'.route('change_program_status', [ 'program_id'=> $program->prgm_id , 'status'=>1 ]).'"  class="btn btn-action-btn btn-sm  program_status"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>';
+                      }
+                      
+                   
                     })
                     ->filter(function ($query) use ($request) {
                         
@@ -1524,7 +1520,7 @@ class DataRenderer implements DataProviderInterface
     function getSubProgramList($request, $program)
     {
         return DataTables::of($program)
-                        ->rawColumns(['user_id', 'status', 'action'])
+                        ->rawColumns(['user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size'])
                         ->editColumn(
                                 'prgm_id',
                                 function ($program) {
@@ -1538,32 +1534,36 @@ class DataRenderer implements DataProviderInterface
                         ->editColumn(
                                 'anchor_sub_limit',
                                 function ($program) {
-                            return $program->anchor_sub_limit;
+                            return  \Helpers::formatCurreny($program->anchor_sub_limit);
+                        })
+                        ->editColumn(
+                                'anchor_limit',
+                                function ($program) {
+                            return  \Helpers::formatCurreny($program->anchor_limit);
                         })
                         ->addColumn(
                                 'loan_size',
                                 function ($program) {
-                            return $program->min_loan_size . '-' . $program->max_loan_size;
+                             return  \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
+                           
                         })
                         ->editColumn(
                                 'status',
                                 function ($program) {
-                            return '  <div class="d-flex inline-action-btn">
-					 <div class="dropdown">
-                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-					</button><div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 25px, 0px); top: 0px; left: 0px; will-change: transform;">
-					<a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Active</a>
-					 <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal-upload" href="#">Inactive</a>
-					</div>
-					 </div>
-					 </div>';
+                            return ($program->status == '0')?'<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">In Active</label>
+                                             
+                                          </div></b>':'<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
                         })
                         ->addColumn(
                                 'action',
                                 function ($program) {
                             $act = '';
                             //if(Helpers::checkPermission('edit_anchor_reg')){
-                            $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id , 'program_id' => $program->prgm_id] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit sub program\"><i class=\"fa fa-edit\"></a>";
+                            $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id ,'program_id' => $program->prgm_id ,  'action' => 'edit'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\"></a>";
                             //}
                             return $act;
                         }

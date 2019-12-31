@@ -730,12 +730,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $selected array
      * @return type mixed
      */
-    public function getSelectedProgramData($attr, $selected = null)
+    public function getSelectedProgramData($attr, $selected = null, $relations = [])
     {
-        return Program::getSelectedProgramData($attr, $selected);
+        return Program::getSelectedProgramData($attr, $selected, $relations);
     }
-    
-    
+
     /**
      * get document list 
      * 
@@ -868,5 +867,32 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function isPostSancDocsUpload($appId, $docIds=[])
     {
         return AppDocument::isPostSancDocsUpload($appId, $docIds);
-    }    
+    }
+
+
+  
+    /**
+     * update program data
+     * 
+     * @param type $attributes
+     * @param type $conditions 
+     * @return mixed
+     */
+    public function updateProgramData($attributes, $conditions)
+    {
+        return Program::updateProgramData($attributes, $conditions);
+    }
+    
+    
+    /**
+     * delete program doc
+     * 
+     * @param type $conditions
+     * @return type mixed
+     */
+    public function deleteDoc($conditions)
+    {
+        return ProgramDoc::deleteDoc($conditions);
+    }
+
 }
