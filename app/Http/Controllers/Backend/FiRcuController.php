@@ -120,7 +120,7 @@ class FiRcuController extends Controller
             else
                 $rcuResult[$key]['agencies'] = $this->appRepo->getRcuAgencies($appId, $value->doc_id);        
         }
-
+        // dd($rcuResult);
         return view('backend.fircu.rcu', [
                     'data' => $rcuResult
                 ]);   

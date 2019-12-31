@@ -19,6 +19,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\LeadAssign;
+use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -1423,5 +1424,17 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         $result = UserModel::getApprAuthorityUsers();
         return $result ? $result : [];
-    }    
+    } 
+
+    /**
+     * Get all customer from lms_users
+     *
+     * @return query data
+     */
+    public function lmsGetCustomers()
+    {
+        $result = LmsUser::with('user');
+        return $result ?: false;
+    }
+       
 }

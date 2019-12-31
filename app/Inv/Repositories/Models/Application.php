@@ -66,6 +66,12 @@ class Application extends BaseModel
         'updated_by'
     ];
 
+
+    public function business()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
+    }
+
     /**
      * Get Applications for Application list data tables
      */

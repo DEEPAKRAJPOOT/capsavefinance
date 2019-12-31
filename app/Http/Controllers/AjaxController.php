@@ -2913,6 +2913,17 @@ if ($err) {
         return $dataProvider->getSubProgramList($request, $this->application->getSubProgramListByParentId($anchor_id, $program_id));
     }
 
+    
+  /**
+   * Get all customer list
+   *
+   * @return json customer data
+   */
+  public function lmsGetCustomer(DataProviderInterface $dataProvider) {
+    $customersList = $this->userRepo->lmsGetCustomers();
+    $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
+    return $users;
+  }
 
     /**
      * get anchors by product id

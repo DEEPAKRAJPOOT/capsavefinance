@@ -431,7 +431,6 @@ Route::group(
         'as' => 'ajax_get_backend_user_list',
         'uses' => 'AjaxController@getBackendUserList'
         ]
-
     );
 
     Route::post(
@@ -459,5 +458,14 @@ Route::group(
         'uses' => 'AjaxController@changeProgramStatus'
         ]
     ); 
+
+    /*lms route*/
+    
+    Route::post('lms-get-customer', [
+        'as' => 'lms_get_customer',
+        'uses' => 'AjaxController@lmsGetCustomer'
+    ]);
+
+    /*lms route*/
 
 });

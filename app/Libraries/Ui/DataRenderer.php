@@ -1570,4 +1570,114 @@ class DataRenderer implements DataProviderInterface
                         )->make(true);
     }
 
+
+    /*
+     * 
+     * get all lms customer list
+     */
+    public function lmsGetCustomers(Request $request, $customer)
+    {
+        return DataTables::of($customer)
+                ->rawColumns(['customer_id', 'status', 'action'])
+                ->addColumn(
+                    'customer_id',
+                    function ($customer) {
+                        $link = $customer->customer_id;
+                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                    }
+                )
+                ->editColumn(
+                        'customer_name',
+                        function ($customer) {
+                    $full_name = $customer->user->f_name.' '.$customer->user->l_name;
+                    return $full_name;
+                    
+                })
+                ->editColumn(
+                        'customer_email',
+                        function ($customer) {
+                    $email = $customer->user->email;
+                    return $email;
+                    
+                })
+                ->editColumn(
+                        'customer_mobile',
+                        function ($customer) {
+                    $mobile_no = $customer->user->mobile_no;
+                    return $mobile_no;
+                    
+                })
+                ->editColumn(
+                    'limit',
+                    function ($customer) {
+                    return 12;
+
+                })
+                ->editColumn(
+                    'interest_rate',
+                    function ($customer) {                    
+                    return 12;
+                })
+                ->editColumn(
+                    'consume_limit',
+                    function ($customer) {
+                    return 12;
+                })
+                ->editColumn(
+                    'available_limit',
+                    function ($customer) {
+                    
+                    return 12;
+                })
+                ->editColumn(
+                    'tenor_days',
+                    function ($customer) {
+                    return 12;
+                })
+                ->editColumn(
+                    'assignee',
+                    function ($customer) {
+                    return 'xyz';
+                })
+                ->editColumn(
+                    'assigned_by',
+                    function ($customer) {
+                    return 'xyz';
+
+                })
+                ->editColumn(
+                    'status',
+                    function ($customer) {
+                    if ($customer->is_assign == 0) {
+                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                    } else {
+                        return "<span style='color:green'>Assigned</span>";
+                    }
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->whereHas('user', function($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('email', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->whereHas('user', function($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                
+                                $query->where('is_assigned', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }
+                })
+                ->make(true);
+    }
+    
+
 }

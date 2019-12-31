@@ -926,4 +926,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
 
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getCustomerApplications($user_id) 
+    {
+        return Application::where('user_id', $user_id)->with('business')->get();
+    }    
 }
