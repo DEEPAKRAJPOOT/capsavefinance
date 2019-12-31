@@ -54,5 +54,15 @@ class AppProgramLimit extends BaseModel {
         'updated_by',
     ];
 
-    //     
+    public static function saveProgramLimit($data, $prgm_limit_id){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        if (!is_null($prgm_limit_id)) {
+            return self::where('app_prgm_limit_id', $prgm_limit_id)->update($data);
+        } else {
+            return self::create($data);
+        }
+    }     
 }

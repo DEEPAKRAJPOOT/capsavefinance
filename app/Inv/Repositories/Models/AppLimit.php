@@ -51,5 +51,15 @@ class AppLimit extends BaseModel {
         'updated_by',
     ];
 
-    //    
+    public static function saveAppLimit($data, $limit_id){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        if (!is_null($limit_id)) {
+            return self::where('app_limit_id', $limit_id)->update($data);
+        } else {
+            return self::create($data);
+        }
+    }    
 }
