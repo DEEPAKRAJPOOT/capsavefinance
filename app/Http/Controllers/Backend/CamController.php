@@ -776,7 +776,9 @@ class CamController extends Controller
     {
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-               
+
+        $prgmLimitData = $this->appRepo->getProgramLimitData();
+        //dd($prgmLimitData);  
         $anchorData = $this->appRepo->getAnchorDataByAppId($appId);
         $anchorId = $anchorData ? $anchorData->anchor_id : 0;
         $loanAmount = $anchorData ? $anchorData->loan_amt : 0;
@@ -801,10 +803,10 @@ class CamController extends Controller
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
-                ->with('offerId', $offerId)
-                ->with('loanAmount', $loanAmount)
-                ->with('prgmData', $prgmData)
-                ->with('offerData', $offerData)
+                //->with('offerId', $offerId)
+                //->with('loanAmount', $loanAmount)
+                ->with('prgmLimitData', $prgmLimitData)
+                //->with('offerData', $offerData)
                 ->with('currStageCode', $currStageCode);
     }
     
@@ -820,18 +822,18 @@ class CamController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
 
-            $app_limit = $this->appRepo->addlimitAssessment([
+            $app_limit = $this->appRepo->saveAppLimit([
                           'app_id'=>$appId,
-                          'biz_id'=>$appId,
+                          'biz_id'=>$bizId,
                           'tot_limit_amt'=>$request->tot_limit_amt,
                           'created_by'=>\Auth::user()->user_id,
                           'created_at'=>\Carbon\Carbon::now(),
                           ]);
 
-            $savedLimitData = $this->appRepo->addProgramLimit([
+            $app_prgm_limit = $this->appRepo->saveProgramLimit([
                           'app_limit_id'=>$app_limit->app_limit_id,
                           'app_id'=>$appId,
-                          'biz_id'=>$appId,
+                          'biz_id'=>$bizId,
                           'anchor_id'=>$request->anchor_id,
                           'prgm_id'=>$request->prgm_id,
                           'limit_amt'=>$request->limit_amt,
@@ -839,16 +841,15 @@ class CamController extends Controller
                           'created_at'=>\Carbon\Carbon::now(),
                           ]);
 
-            //$offerId = $request->get('offer_id') ? $request->get('offer_id') : null; 
-            //$loanAmount = $request->get('loan_amount') ? $request->get('loan_amount') : null; 
-            //$this->appRepo->updateOfferByAppId($appId, ['is_active' => 0]);
-            //$addlData = [];
-            //$addlData['app_id'] = $appId;
-            //$addlData['loan_amount'] = $loanAmount;
-            //$offerData = $this->prepareOfferData($request->all(), $addlData);
-            //$savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
-            
-            if ($savedOfferData) {
+            $app_prgm_offer = $this->appRepo->saveOfferData([
+                          'app_id'=>$appId,
+                          'app_prgm_limit_id'=>$app_prgm_limit->app_prgm_limit_id,
+                          'prgm_limit_amt'=>$request->limit_amt,
+                          'prgm_id'=>$request->prgm_id,
+                          'created_by'=>\Auth::user()->user_id,
+                          'created_at'=>\Carbon\Carbon::now(),
+                          ]);
+            if ($app_prgm_offer) {
                 //Update workflow stage
                 //Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);
                 /*$appApprData = [
