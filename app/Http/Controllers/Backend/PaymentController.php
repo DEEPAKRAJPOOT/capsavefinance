@@ -216,8 +216,8 @@ class PaymentController extends Controller {
           $appId = null;
           if($request['trans_type']==17){
             //$this->paySettlement( $request['customer_id']);
-            $Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
-            $Obj->init($res->trans_id);
+            //$Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
+            //$Obj->init($res->trans_id);
           }
           Session::flash('message',trans('backend_messages.add_payment_manual'));
           return redirect()->route('payment_list');

@@ -50,7 +50,7 @@
     var messages = {
         url: "{{ URL::route('apport_settled_list') }}",
         trans_reversal_url: "{{ URL::route('apport_trans_reversal') }}",
-        user_id: "542",
+        user_id: "{{$userDetails['user_id']}}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
     };

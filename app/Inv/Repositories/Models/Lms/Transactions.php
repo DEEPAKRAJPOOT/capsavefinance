@@ -122,15 +122,15 @@ class Transactions extends BaseModel {
     }
 
     public function getRefundableAmtAttribute(){
-        return self::where('parent_trans_id','=',$this->trans_id)
-        ->where('entry_type','=',1)
-        ->where('trans_type','=',config('lms.TRANS_TYPE.REFUND'))
-        ->sum('amount');
-
-        // return self::where('link_trans_id','=',$this->trans_id)
-        // ->where('entry_type','=','0')
-        // ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')]) 
+        // return self::where('parent_trans_id','=',$this->trans_id)
+        // ->where('entry_type','=',1)
+        // ->where('trans_type','=',config('lms.TRANS_TYPE.REFUND'))
         // ->sum('amount');
+
+        return self::where('link_trans_id','=',$this->trans_id)
+        ->where('entry_type','=','0')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')]) 
+        ->sum('amount');
     }
 
     public function getRefundOutstandingAttribute(){

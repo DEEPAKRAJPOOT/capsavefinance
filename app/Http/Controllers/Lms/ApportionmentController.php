@@ -62,7 +62,7 @@ class ApportionmentController extends Controller
     public function viewSettledTrans(Request $request){
         try {
             $userId = $request->user_id;
-            $userDetails = $this->getUserDetails($userId); 
+            $userDetails = $this->getUserDetails($userId);
             return view('lms.apportionment.settledTransactions')
                 ->with('userDetails', $userDetails); 
 
