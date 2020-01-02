@@ -17,7 +17,7 @@ use App\Inv\Repositories\Models\Master\Industry;
 use App\Inv\Repositories\Models\Master\State as StateModel;
 use App\Inv\Repositories\Models\Master\City as CityModel;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
-
+use App\Inv\Repositories\Models\ProgramDoaLevel;
 /**
  * 
  */
@@ -282,4 +282,40 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         return DoaLevelRole::deleteDoaLevelRoles($doa_level_id);
     }     
+    
+    
+    
+    
+    /**
+     * get D0A level list 
+     * 
+     * @return type mixed
+     */
+    public function getDoaLevelList()
+    {
+        return DoaLevel::getDoaLevelList();
+    }
+
+    /**
+     * Insert D0A level
+     * 
+     * @param type $attr array
+     * @return type mixed
+     */
+    public function insertDoaLevel($attr)
+    {
+        return ProgramDoaLevel::insertDoaLevel($attr);
+    }
+
+    /**
+     * delete  DOA Level
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function deleteDoaLevelBywhere($where)
+    {
+        return ProgramDoaLevel::deleteDoaLevelBywhere($where);
+    }
+
 }

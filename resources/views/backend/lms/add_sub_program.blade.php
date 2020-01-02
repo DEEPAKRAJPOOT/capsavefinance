@@ -361,7 +361,12 @@
 
                                                     </div>
                                                 </div>
+                                                
+                                                 @include('backend.lms.doalevel' ,['doaLevelList'=>$doaLevelList])
                                             </div>
+                                            
+                                            
+                                           
                                             <div class="col-md-12">
                                                 <div class="text-right mt-3">
                                                     <button type="button" id="" class="btn btn-secondary btn-sm"> Cancel</button>
