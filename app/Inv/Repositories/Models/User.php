@@ -157,6 +157,26 @@ class User extends Authenticatable
 
         return ($arrUser ?: false);
     }
+
+    /**
+     * Get User Details base of user Id
+     *
+     * @param  integer $user_id
+     * @return array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     * Since 0.1
+     */
+    public static function getCustomerDetail($user_id)
+    {
+         $arrUser = self::from('users as u')
+            ->select('u.*')
+            ->where('u.user_id', (int) $user_id)
+            ->first();
+         
+
+        return ($arrUser ?: false);
+    }
 /**
      * Get User Details base of user Id
      *

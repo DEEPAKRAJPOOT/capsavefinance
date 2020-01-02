@@ -380,6 +380,22 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $result ?: false;
     }
 
+    /**
+     * Get a customer model by id
+     *
+     * @param integer $userId
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getCustomerDetail($userId)
+    {
+        $result = UserModel::getCustomerDetail((int) $userId);
+
+        return $result ?: false;
+    }
+
    
      /**
      * Get a user model by id
