@@ -426,5 +426,41 @@ class Application extends BaseModel
                 ->first();
                        
         return ($appData ? $appData : null);             
-    }    
+    }
+
+    /**
+     * Get DoA Users By $appId
+     * 
+     * @param type $appId
+     */
+    public static function getDoAUsersByAppId($appId)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($appId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($appId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $doaUsers = self::select('users.*')
+                ->join('users', 'users.user_id', '=', 'app.user_id')
+                //->join('prgm', 'prgm.anchor_id', '=', 'users.anchor_id')     
+                //->join('prgm_doa_level', 'prgm_doa_level.prgm_id', '=', 'prgm.prgm_id')  
+                //->join('doa_level', 'doa_level.doa_level_id', '=', 'prgm_doa_level.doa_level_id')
+                //->join('doa_level_role', 'doa_level_role.role_id', '=', 'doa_level.doa_level_id')
+                //->join('role_user', 'role_user.role_id', '=', 'doa_level_role.role_id')                 
+                ->where('app.app_id', $appId)
+                //->where('prgm.is_active', 1)
+                ->first();
+                       
+        return ($doaUsers ? $doaUsers : null);        
+    }
+            
 }
