@@ -12,11 +12,11 @@
 
                     <p>  
                         @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 1)
-                        Flat
+                        Charge Amount :
                         @endif 
 
                         @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 2)
-                        Percentage
+                        Charge Percentage:
                         @endif 
                     </p>
                 </div>
@@ -25,7 +25,7 @@
         @if(isset($data->chrg_calculation_type))
         <div class="col-md-4">
             <div class="form-group password-input">
-                <label for="txtPassword">Charge Amount <span class="error_message_label">* </span></label>
+<!--                <label for="txtPassword">Amount/Percent <span class="error_message_label">* </span></label>-->
                 <div class="block-div">
                     <a href="javascript:void(0);" class="verify-owner-no" style="top:12px;">
                                                                     <i class="fa fa-inr" aria-hidden="true"></i></a>

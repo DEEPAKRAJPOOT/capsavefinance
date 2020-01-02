@@ -295,7 +295,7 @@
                                                                         <label for="txtCreditPeriod">Grace Period (In Days) <span class="error_message_label">*</span></label>
 
                                                                         {!! Form::text('grace_period',
-                                                                        isset($subProgramData->adhoc_interest_rate) ? $subProgramData->adhoc_interest_rate : null,
+                                                                        isset($subProgramData->grace_period) ? $subProgramData->grace_period : null,
                                                                         ['class'=>'form-control numberOnly','placeholder'=>'Max interset rate',
                                                                         'id'=>'grace_period'])   
                                                                         !!}
