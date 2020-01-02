@@ -25,7 +25,7 @@ try {
 
 
     jQuery.validator.addMethod("numberOnly", function (value, element) {
-        var re = new RegExp(/^[\d\s]+$/s);
+        var re = new RegExp('^\\d+$');
         return this.optional(element) || re.test(value);
     }, "Please enter valid number."
             );
