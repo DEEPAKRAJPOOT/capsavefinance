@@ -11,6 +11,9 @@
                        <span class="mandatory">*</span>
                        </label>
                        <input type="text" name="comp_name" id="comp_name" value="" class="form-control employee" tabindex="1" placeholder="Agency Name" >
+                       @error('comp_name')
+                          <span class="text-danger error">{{ $message }}</span>
+                       @enderror
                     </div>
                  </div>
               </div>
@@ -21,6 +24,9 @@
                      <span class="mandatory">*</span>
                      </label>
                      <input type="email" name="comp_email" id="comp_email" value="" class="form-control email" tabindex="2" placeholder="Email" >
+                     @error('comp_email')
+                        <span class="text-danger error">{{ $message }}</span>
+                     @enderror
                   </div>
                </div>
 
@@ -30,6 +36,9 @@
                         <span class="mandatory">*</span>
                         </label>
                         <input class="form-control numbercls phone" name="comp_phone" id="comp_phone" tabindex="3" type="text" maxlength="10" placeholder="Mobile" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        @error('comp_phone')
+                          <span class="text-danger error">{{ $message }}</span>
+                       @enderror
                      </div>
                   </div>
             </div>
@@ -40,6 +49,9 @@
                       <span class="mandatory">*</span>
                       </label>
                       <input class="form-control comp_addr" name="comp_addr" id="comp_addr" tabindex="4" type="text"  placeholder="Address">
+                      @error('comp_addr')
+                        <span class="text-danger error">{{ $message }}</span>
+                     @enderror
                    </div>
                 </div>
                     
@@ -54,6 +66,9 @@
                           <option value="{{$state->id}}"> {{$state->name}} </option>
                           @endforeach
                         </select>
+                        @error('comp_state')
+                          <span class="text-danger error">{{ $message }}</span>
+                        @enderror
                     </div>
                  </div>
                 </div>
@@ -64,7 +79,10 @@
                           <label for="txtMobile">City
                           <span class="mandatory">*</span>
                           </label>
-                          <input class="form-control city" name="comp_city" id="comp_city" tabindex="6" type="text" maxlength="10" placeholder="City">
+                          <input class="form-control city" name="comp_city" id="comp_city" tabindex="6" type="text" maxlength="20" placeholder="City">
+                          @error('comp_city')
+                          <span class="text-danger error">{{ $message }}</span>
+                       @enderror
                        </div>
                     </div>
                    <div class="col-6">
@@ -73,6 +91,9 @@
                             <span class="mandatory">*</span>
                             </label>
                             <input class="form-control numbercls pin_code" name="comp_zip" id="comp_zip" tabindex="7" type="text" maxlength="6" placeholder="Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                            @error('comp_zip')
+                              <span class="text-danger error">{{ $message }}</span>
+                            @enderror
                          </div>
                       </div>
                   </div>

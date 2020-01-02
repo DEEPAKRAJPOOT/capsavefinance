@@ -417,8 +417,6 @@ Route::group(
     );
     /*agency route*/
     
-    
-    
      Route::post(
         'get-charges-html',
         [
@@ -427,15 +425,13 @@ Route::group(
         ]
     );
     
-   
-
     Route::post(
         'get-backend-user-list',
         [
         'as' => 'ajax_get_backend_user_list',
         'uses' => 'AjaxController@getBackendUserList'
         ]
-    ); 
+    );
     
     Route::post(
         'ajax-doa-levels-list', [
@@ -449,5 +445,56 @@ Route::group(
             'as' => 'ajax_get_city',
             'uses' => 'AjaxController@getCityList'
         ]
+    );
+
+    Route::post(
+        'get-anchors-by-product',
+        [
+        'as' => 'ajax_get_anchors_by_product',
+        'uses' => 'AjaxController@getAnchorsByProduct'
+        ]
+    );
+
+    Route::post(
+        'get-programs-by-anchor',
+        [
+        'as' => 'ajax_get_programs_by_anchor',
+        'uses' => 'AjaxController@getProgramsByAnchor'
+        ]
     );    
+
+     
+    
+    Route::post(
+        'change-program-status',
+        [
+        'as' => 'change_program_status',
+        'uses' => 'AjaxController@changeProgramStatus'
+        ]
+    ); 
+
+    /*lms route*/
+    
+    Route::post('lms-get-customer', [
+        'as' => 'lms_get_customer',
+        'uses' => 'AjaxController@lmsGetCustomer'
+    ]);
+
+    /*lms route*/
+
+
+    
+    
+    //////////////// ajax request for upload invoice///////////////////////
+      Route::POST('front_program_list', [
+                 'as' => 'front_program_list',
+                 'uses' => 'Application\InvoiceController@getProgramList'
+            ]); 
+               Route::POST('front_supplier_list', [
+                 'as' => 'front_supplier_list',
+                 'uses' => 'Application\InvoiceController@getSupplierList'
+            ]); 
+    
+    
+
 });

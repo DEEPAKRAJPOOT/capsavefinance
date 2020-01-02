@@ -727,7 +727,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'backend_save_invoice',
                 'uses' => 'Backend\InvoiceController@saveInvoice'
             ]); 
-     
+         Route::get('backend_upload_all_invoice', [
+                 'as' => 'backend_upload_all_invoice',
+                'uses' => 'Backend\InvoiceController@getAllInvoice'
+            ]);  
+          Route::POST('backend_save_invoice', [
+                 'as' => 'backend_save_invoice',
+                'uses' => 'Backend\InvoiceController@saveInvoice'
+            ]); 
           
          });
          

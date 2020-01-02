@@ -6,7 +6,7 @@
     @endcan
     @can('cam_overview')
     <li>
-        <a href="{{ route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('cam/*') ? 'active' : '' }}">CAM</a>
+        <a href="{{ route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/cam/*') ? 'active' : '' }}">CAM</a>
     </li>
     @endcan
     @can('backend_fi')

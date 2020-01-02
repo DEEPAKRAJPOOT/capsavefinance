@@ -67,8 +67,8 @@ class CamController extends Controller
             {
                $arrBizData['prgm_name'] = $prgmData['prgm_name'];
             }
-      			$arrBizData['email']  = $arrEntityData['email'];
-      			$arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
+            $arrBizData['email']  = $arrEntityData['email'];
+            $arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
             $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
            
             if(isset($arrCamData['t_o_f_security_check'])){
@@ -82,7 +82,7 @@ class CamController extends Controller
     }
 
     public function camInformationSave(Request $request){
-    	 try{
+       try{
             $arrCamData = $request->all();
             $userId = Auth::user()->user_id;
             if(!isset($arrCamData['rating_no'])){
@@ -157,7 +157,7 @@ class CamController extends Controller
     }
 
     public function finance(Request $request, FinanceModel $fin){
-    	  $appId = $request->get('app_id');
+        $appId = $request->get('app_id');
         $pending_rec = $fin->getPendingFinanceStatement($appId);
         $financedocs = $fin->getFinanceStatements($appId);
         $contents = array();
@@ -309,7 +309,7 @@ class CamController extends Controller
 
 
     public function getFinanceFilePath($appId){
-    	$fin = new FinanceModel();
+      $fin = new FinanceModel();
         $financedocs = $fin->getFinanceStatements($appId);
         $files = [];
         $dates = [];
@@ -353,8 +353,8 @@ class CamController extends Controller
     }
 
     private function _callBankApi($filespath, $appId){
-    	  $user = FinanceModel::getUserByAPP($appId);
-    	  $loanAmount = (int)$user['loan_amt'];
+        $user = FinanceModel::getUserByAPP($appId);
+        $loanAmount = (int)$user['loan_amt'];
         $dates = array_pop($filespath);
         $ranges = $this->getRangeFromdates($dates);
         $bsa = new Bsa_lib();
@@ -427,7 +427,7 @@ class CamController extends Controller
 
         if (!empty($is_scanned) && strtolower($is_scanned) == '1') {
            $final_res['api_type'] = Bsa_lib::REP_GEN;
-        	 return $final_res;
+           return $final_res;
         }
 
         $file_name = $appId.'_banking.xlsx';
@@ -468,8 +468,8 @@ class CamController extends Controller
     }
 
     public function _callFinanceApi($filespath, $appId) {
-    	  $user = FinanceModel::getUserByAPP($appId);
-    	  $loanAmount = (int)$user['loan_amt'];
+        $user = FinanceModel::getUserByAPP($appId);
+        $loanAmount = (int)$user['loan_amt'];
         $dates = array_pop($filespath);
         $perfios = new Perfios_lib();
         $reportType = 'json';
@@ -490,20 +490,19 @@ class CamController extends Controller
         );
         $start_txn = $perfios->api_call(Perfios_lib::STRT_TXN, $req_arr);
          if ($start_txn['status'] == 'success') {
-         	foreach ($filespath as $file_doc) {
-            
+          foreach ($filespath as $file_doc) {
             $financial_year = substr($file_doc['fin_year'], 0, 4);
             $filepath = $file_doc['file_path'];
             $file_password = $file_doc['file_password'];
-         		$req_arr = array(
-	                'apiVersion' => $apiVersion,
-	                'vendorId' => $vendorId,
-	                'perfiosTransactionId' => $start_txn['perfiostransactionid'],
-	                'financialYear' => $financial_year,
-            	 );
-             	$add_year = $perfios->api_call(Perfios_lib::ADD_YEAR, $req_arr);
-             	if ($add_year['status'] == 'success') {
-             	    $req_arr = array(
+            $req_arr = array(
+                  'apiVersion' => $apiVersion,
+                  'vendorId' => $vendorId,
+                  'perfiosTransactionId' => $start_txn['perfiostransactionid'],
+                  'financialYear' => $financial_year,
+               );
+              $add_year = $perfios->api_call(Perfios_lib::ADD_YEAR, $req_arr);
+              if ($add_year['status'] == 'success') {
+                  $req_arr = array(
                     'file_content' => $filepath,
                     'file_password' => $file_password,
                     'perfiosTransactionId' => $start_txn['perfiostransactionid'],
@@ -511,33 +510,43 @@ class CamController extends Controller
                   );
                   $upl_stmt = $perfios->api_call(Perfios_lib::UPL_STMT, $req_arr);
                   if ($upl_stmt['status'] == 'success') {
-                     $req_arr = array(
-                        'apiVersion' => $apiVersion,
-                        'vendorId' => $vendorId,
-                        'perfiosTransactionId' => $start_txn['perfiostransactionid'],
-                     );
-                     $cmplt_txn = $perfios->api_call(Perfios_lib::CMPLT_TXN, $req_arr);
-                      if ($cmplt_txn['status'] == 'success') {
-                          $process_txn_cnt++;
-                      }
+                       $process_txn_cnt++;
+                  }else{
+                      $upl_stmt_error = $upl_stmt;
+                      $upl_stmt_error['prolitusTransactionId'] = $prolitus_txn;
+                      $upl_stmt_error['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+                      $upl_stmt_error['api_type'] = Perfios_lib::UPL_STMT;
                   }
-             	}else{
-                $upl_stmt = $add_year;
-                $upl_stmt['prolitusTransactionId'] = $prolitus_txn;
-                $upl_stmt['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
-                $upl_stmt['api_type'] = Perfios_lib::ADD_YEAR;
+              }else{
+                $add_year_error = $add_year;
+                $add_year_error['prolitusTransactionId'] = $prolitus_txn;
+                $add_year_error['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+                $add_year_error['api_type'] = Perfios_lib::ADD_YEAR;
               }
           }
           if ($process_txn_cnt == count($filespath)) {
-            $final_res = $cmplt_txn;
-            $final_res['prolitusTransactionId'] = $prolitus_txn;
-            $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
-            $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
+             $req_arr = array(
+                'apiVersion' => $apiVersion,
+                'vendorId' => $vendorId,
+                'perfiosTransactionId' => $start_txn['perfiostransactionid'],
+             );
+             $cmplt_txn = $perfios->api_call(Perfios_lib::CMPLT_TXN, $req_arr);
+             if ($cmplt_txn['status'] == 'success') {
+                $final_res = $cmplt_txn;
+                $final_res['prolitusTransactionId'] = $prolitus_txn;
+                $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+                $final_res['api_type'] = Perfios_lib::CMPLT_TXN;        
+              }else{
+                $final_res = $cmplt_txn;
+                $final_res['prolitusTransactionId'] = $prolitus_txn;
+                $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+                $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
+              }
           }else{
-            $final_res = $cmplt_txn ?? $upl_stmt;
+            $final_res = $add_year_error ?? $upl_stmt_error;
             $final_res['prolitusTransactionId'] = $prolitus_txn;
             $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
-            $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
+            $final_res['api_type'] = !empty($add_year_error) ? Perfios_lib::ADD_YEAR : Perfios_lib::UPL_STMT;
           }
          }else{
              $final_res = $start_txn;
@@ -550,8 +559,8 @@ class CamController extends Controller
         }
 
         if (!empty($is_scanned) && strtolower($is_scanned) == 'yes') {
-          $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
-        	 return $final_res;
+           $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
+           return $final_res;
         }
         $file_name = $appId.'_finance.xlsx';
         $req_arr = array(
@@ -569,8 +578,8 @@ class CamController extends Controller
               $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
               return $final_res;
           }
-	        $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-	        \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
+          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
+          \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
         }
         $file= url('storage/user/'. $file_name);
         $req_arr['reportType'] = $reportType;
@@ -605,7 +614,7 @@ class CamController extends Controller
         $perfiostransactionid = $perfios_data['perfios_log_id'];
         $prolitus_txn = $perfios_data['prolitus_txn_id'];
 
-    	  $perfios = new Perfios_lib();
+        $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
         $file_name = $appId.'_finance.xlsx';
@@ -881,14 +890,14 @@ class CamController extends Controller
     }
 
     public function gstin(Request $request, FinanceModel $fin){
-    	$appId = $request->get('app_id');
+      $appId = $request->get('app_id');
       $biz_id = $request->get('biz_id');
       $gstdocs = $fin->getGSTStatements($appId);
-    	$user = $fin->getUserByAPP($appId);
-    	$user_id = $user['user_id'];
+      $user = $fin->getUserByAPP($appId);
+      $user_id = $user['user_id'];
       $gst_details = $fin->getSelectedGstForApp($user_id);
-	    $all_gst_details = $fin->getAllGstForApp($biz_id);
-	    $gst_no = $gst_details['pan_gst_hash'];
+      $all_gst_details = $fin->getAllGstForApp($biz_id);
+      $gst_no = $gst_details['pan_gst_hash'];
         return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details]);
     }
 

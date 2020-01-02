@@ -62,7 +62,6 @@ class ApplicationController extends Controller
     public function showCompanyDetails(Request $request){
         try {
             $arrFileData = $request->all();
-            
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userId = $request->get('user_id');

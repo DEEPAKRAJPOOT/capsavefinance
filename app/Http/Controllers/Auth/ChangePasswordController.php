@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 use Session;
 use Hash;
 use Auth;
+use Event;
 
 class ChangePasswordController extends Controller
 {

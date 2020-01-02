@@ -100,9 +100,9 @@
                     <i class="fa fa-cog" aria-hidden="true"></i>
                 </a>
                 <div class="dropdown-menu navbar-dropdown notification-drop-down" aria-labelledby="settingDropdown">
-                    <a class="dropdown-item" href="javascript:void(0);">
+                    <a class="dropdown-item" href="{{ route('changepassword') }}">
                         <i class="fa fa-user"></i>
-                        <span class="notification-text">My Profile</span>
+                        <span class="notification-text">Change Password</span>
                     </a>
                     <a class="dropdown-item" href="{{ route('frontend_logout') }}" onclick="event.preventDefault();
                        document.getElementById('logout-form').submit();">

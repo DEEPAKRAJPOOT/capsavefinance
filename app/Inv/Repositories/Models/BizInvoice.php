@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Models;
 
 use Carbon\Carbon;
 use DateTime;
+use Auth;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\User;
@@ -123,7 +124,7 @@ public static function saveInvoice($arrInvoice)
              $whr = [];
         }
        
-                    return self::where($whr)->with('anchor')->with('supplier')->with('program')->get();
+                    return self::where($whr)->with('anchor')->where(['created_by' => Auth::user()->user_id])->with('supplier')->with('program')->get();
      } 
      
      function anchor()
@@ -171,12 +172,13 @@ public static function saveInvoice($arrInvoice)
       
      public static function getAllAnchor()
     {
+         
        return self::with('anchorOne')->get();
     }  
      
      public static function getBusinessName()
      {
-        return self::with('business')->get();
+        return self::with('business')->where(['created_by' => Auth::user()->user_id])->get();
      }   
      
      function Business()

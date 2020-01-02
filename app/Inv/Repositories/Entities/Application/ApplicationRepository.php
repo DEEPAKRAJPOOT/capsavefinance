@@ -21,7 +21,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
-use App\Inv\Repositories\Models\Offer;
+use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\Master\Industry;
 use App\Inv\Repositories\Models\AppPdNote;
@@ -30,6 +30,8 @@ use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\Master\Charges;
 use App\Inv\Repositories\Models\ProgramDoc;
 use App\Inv\Repositories\Models\ProgramCharges;
+use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\AppProgramLimit;
 /**
  * Application repository class
  */
@@ -419,50 +421,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         $prgmData = Application::getAnchorDataByAppId($app_id);
         return $prgmData ? $prgmData : [];
-    }  
-    
-    /**
-     * Get Offer Data
-     * 
-     * @param array $whereCondition
-     * @return mixed
-     * @throws InvalidDataTypeExceptions
-     */
-    public function getOfferData($whereCondition=[])
-    {
-        $offerData = Offer::getOfferData($whereCondition);
-        return $offerData ? $offerData : [];
     }
-
-    /**
-     * Save Offer Data
-     * 
-     * @param array $offerData
-     * @param integer $offerId optional
-     * 
-     * @return mixed
-     * @throws BlankDataExceptions
-     * @throws InvalidDataTypeExceptions
-     */
-    public function saveOfferData($offerData=[], $offerId=null)
-    {
-        $offerData = Offer::saveOfferData($offerData, $offerId);
-        return $offerData ? $offerData : false;
-    }
-    
-    /**
-     * Update Offer Data By Application Id
-     * 
-     * @param integer $app_id
-     * @param array $arr
-     * @return mixed
-     * @throws BlankDataExceptions
-     * @throws InvalidDataTypeExceptions
-     */
-    public function updateOfferByAppId($app_id, $arr = [])
-    {        
-        return Offer::updateOfferByAppId((int) $app_id, $arr);
-    }    
 
     /**
      * get address for FI
@@ -730,12 +689,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $selected array
      * @return type mixed
      */
-    public function getSelectedProgramData($attr, $selected = null)
+    public function getSelectedProgramData($attr, $selected = null, $relations = [])
     {
-        return Program::getSelectedProgramData($attr, $selected);
+        return Program::getSelectedProgramData($attr, $selected, $relations);
     }
-    
-    
+
     /**
      * get document list 
      * 
@@ -846,8 +804,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ProgramCharges::deleteProgramData($where);
     }
     
-    
-    
+
     /**
      * get sub program data 
      * 
@@ -868,5 +825,112 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function isPostSancDocsUpload($appId, $docIds=[])
     {
         return AppDocument::isPostSancDocsUpload($appId, $docIds);
+    }
+
+
+    public function getAnchorsByProduct($product_id)
+    {
+        return Program::getAnchorsByProduct($product_id);
+    }
+
+    public function getProgramsByAnchor($anchor_id)
+    {
+        return Program::getProgramsByAnchor($anchor_id);
+    }
+    /***********************not remove*********************/
+    /**
+     * Get Offer Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getOfferData($whereCondition=[])
+    {
+        $offerData = AppProgramOffer::getOfferData($whereCondition);
+        return $offerData ? $offerData : [];
+    }
+
+    
+    /**
+     * Update Offer Data By Application Id
+     * 
+     * @param integer $app_id
+     * @param array $arr
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateOfferByAppId($app_id, $arr = [])
+    {        
+        return AppProgramOffer::updateOfferByAppId((int) $app_id, $arr);
+    }
+    /* ----------------------------------------- */
+    /**
+     * Save Offer Data
+     * 
+     * @param array $offerData
+     * @param integer $offerId optional
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveOfferData($offerData=[], $offerId=null)
+    {
+        $offerData = AppProgramOffer::saveOfferData($offerData, $offerId);
+        return $offerData ? $offerData : false;
+    }
+
+    public function saveAppLimit($arr, $limit_id=null){
+        return AppLimit::saveAppLimit($arr, $limit_id);
+    }
+
+    public function saveProgramLimit($arr, $prgm_limit_id=null){
+        return AppProgramLimit::saveProgramLimit($arr, $prgm_limit_id);
+    }
+
+    public function getProgramLimitData($where = null)
+    {
+        $prgmLimitData = AppProgramLimit::getProgramLimitData($where);
+        return $prgmLimitData ? $prgmLimitData : [];
+    }
+
+    
+    /**************************not remove*****************************/   
+
+
+  
+    /**
+     * update program data
+     * 
+     * @param type $attributes
+     * @param type $conditions 
+     * @return mixed
+     */
+    public function updateProgramData($attributes, $conditions)
+    {
+        return Program::updateProgramData($attributes, $conditions);
+    }
+    
+    
+    /**
+     * delete program doc
+     * 
+     * @param type $conditions
+     * @return type mixed
+     */
+    public function deleteDoc($conditions)
+    {
+        return ProgramDoc::deleteDoc($conditions);
+    }
+
+
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getCustomerApplications($user_id) 
+    {
+        return Application::where('user_id', $user_id)->with('business')->get();
     }    
 }

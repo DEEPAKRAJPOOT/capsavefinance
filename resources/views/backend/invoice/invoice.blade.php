@@ -151,6 +151,7 @@
    
   //////////////////// onchange anchor  id get data /////////////////
   $("#supplier_id").append("<option value=''>No data found</option>");  
+  $("#supplier_id").append("<option value=''>Select Supplier</option>");  
   $(document).on('change','.changeAnchor',function(){
       var anchor_id =  $(this).val(); 
        $("#supplier_id").empty();
@@ -175,7 +176,7 @@
                     
                       if(obj1.length > 0)
                       {
-                               $("#supplier_id").append("<option value=''>Please select </option>"); 
+                               $("#supplier_id").append("<option value=''> Select Supplier </option>"); 
                             $(obj1).each(function(i,v){
 
                                    $("#supplier_id").append("<option value='"+v.user_id+"'>"+v.f_name+"</option>");  

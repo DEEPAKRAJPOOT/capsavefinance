@@ -2938,4 +2938,57 @@ if ($err) {
         $cityList = $this->masterRepo->getCity($stateId);
         return \Response()->json($cityList);
     }
+    
+  /**
+   * Get all customer list
+   *
+   * @return json customer data
+   */
+  public function lmsGetCustomer(DataProviderInterface $dataProvider) {
+    $customersList = $this->userRepo->lmsGetCustomers();
+    $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
+    return $users;
+  }
+
+    /**
+     * get anchors by product id
+     * 
+     * @param product_id
+     * @return anchors
+     */
+    public function getAnchorsByProduct(Request $request)
+    {
+        $product_id = (int)$request->product_id;
+        $anchors =  $this->application->getAnchorsByProduct($product_id);
+        return json_encode($anchors);
+    }
+    /**
+     * get programs by anchor id
+     * 
+     * @param anchor_id
+     * @return programs
+     */
+    public function getProgramsByAnchor(Request $request)
+    {
+        $anchor_id = (int)$request->anchor_id;
+        $programs =  $this->application->getProgramsByAnchor($anchor_id);
+        return json_encode($programs);
+    }
+    
+
+
+    /**
+     * change program status
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeProgramStatus(Request $request)
+    {
+        $program_id = $request->get('program_id');
+        $status = $request->get('status');
+        $result = $this->application->updateProgramData(['status' => $status], ['prgm_id' => $program_id]);
+        return \Response::json(['success' => $result]);
+    }
+
 }

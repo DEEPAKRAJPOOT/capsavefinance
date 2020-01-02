@@ -95,7 +95,21 @@
                 </ul>
             </div>
         </li>
-        
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu20" aria-expanded="true" aria-controls="collapseExample">
+              <i class="fa fa-user-plus" aria-hidden="true"></i>
+                <span class="menu-title">Manage Customer</span>
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse show" id="layoutsSubmenu20" style="">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lms_get_customer_list') }}">Manage Sanction Cases</a>
+                    </li>
+                                                     
+                </ul>
+            </div>
+        </li>
          <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu123" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
@@ -106,13 +120,13 @@
                 <ul class="nav flex-column sub-menu">
                
                 
-                   <!-- <li class="nav-item">
-                        <a class="nav-link" href="{{ route('backend_upload_invoice') }}">Invoice Upload</a>
+                  <li class="nav-item">
+                        <a class="nav-link" href="{{ route('backend_upload_all_invoice') }}">Invoice Upload</a>
 
-                    </li> -->
+                    </li> 
                    
                         <li class="nav-item">
-                        <a class="nav-link" href="{{ route('backend_get_invoice') }}">Manage Invoices</a>
+                        <a class="nav-link" href="{{ route('backend_get_invoice') }}">Manage Invoice</a>
                     </li>                     
                  
                 </ul>

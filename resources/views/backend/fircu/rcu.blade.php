@@ -2,8 +2,17 @@
 
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
+
+@section('jscript')
+<style type="text/css">
+    a:hover {
+        text-decoration: none !important;
+    }
+    
+</style>
+@endsection
     <!-- partial -->
-    <div class="content-wrapper">
+<div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
         <li>
             <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">FI Residence</a>
@@ -73,17 +82,24 @@
                                                      <tr>
                                                         <td width="25%"><b>File Name</b></td>
                                                         <td width="25%"><b>Upload On </b></td>
-                                                        <td width="25%">Download</td>
+                                                        <td width="25%">Action</td>
                                                      </tr>
                                                     @foreach ($value->documents as $key1 => $document) 
                                                      <tr>
                                                       <td width="25%">{{ $document->userFile->file_name }}</td>
                                                       <td width="25%">{{\Carbon\Carbon::parse($document->created_at)->format('d/m/Y h:i A')}}</td>
-                                                      <td width="25%">
-                                                          <a title="Download Document" href="{{ Storage::url($document->userFile->file_path) }}" download>
-                                                                <i class="fa fa-download"></i>
-                                                          </a>
-                                                      </td>
+                                                    <td width="25%">
+                                                        <a class="btn-sm" title="Download Document" href="{{ Storage::url($document->userFile->file_path) }}" download>
+                                                            <button class="btn-upload btn-sm" type="button"> <i class="fa fa-download"></i>
+                                                            </button>
+                                                        </a>
+                                                        @if($document->doc_id == 2)
+                                                        <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_pan_data',['type'=>'3','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
+                                                            <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>
+                                                            </button>
+                                                        </a>
+                                                        @endif
+                                                    </td>
                                                      </tr>
                                                      @endforeach
                                                   </tbody>
@@ -165,6 +181,7 @@
 </div>
 {!!Helpers::makeIframePopup('assignRcuFrame','Assign RCU', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('uploadRcuDocFrame','Upload Rcu Document', 'modal-md')!!}
+{!!Helpers::makeIframePopup('modalPromoter','View PAN Card Detail', 'modal-lg')!!}
 @endsection
 
 @section('jscript')
