@@ -3,6 +3,10 @@
 @include('layouts.backend.partials.admin-sidebar')
 @include('layouts.backend.partials.admin-subnav')
 
+<?php 
+   $class_enable = 'getAnalysis';
+?>
+
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
    <div class="inner-container">
@@ -28,16 +32,16 @@
                   <div class="clearfix"></div>
 
                   <div style="text-align: right;">                  
-                  @if(request()->get('view_only') && $bankdocs->count() > 0)
-                     <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
-                  @endif                   
-
                   @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
                      <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download</a>
                   @endif 
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
+                     @php $class_enable="disabled"; @endphp
                      <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
                   @endif
+                  @if(request()->get('view_only') && $bankdocs->count() > 0)
+                     <a href="javascript:void(0)" class="btn btn-success btn-sm <?php echo $class_enable ?>">Get Analysis</a>
+                  @endif   
                   </div> 
                   <div class="clearfix"></div>
                   <br/>
