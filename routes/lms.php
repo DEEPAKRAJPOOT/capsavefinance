@@ -22,6 +22,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\CustomerController@listAppliction'
             ]);
 
+            Route::get('/invoices', [
+                'as' => 'lms_get_application_invoice',
+                'uses' => 'Lms\CustomerController@listInvoice'
+            ]);
+
         });//end of application
         
 	});
