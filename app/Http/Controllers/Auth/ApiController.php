@@ -20,13 +20,13 @@ class ApiController
 	}
 
   public function karza_webhook(Request $request){
-     print_r($request, $abc)
-    \File::put(storage_path('app/public/user/abcd.txt'), $abc);
-    \File::put(storage_path('app/public/user/abc.txt'), $request);
+    $allrequest = $request->all();
+    \File::put(storage_path('app/public/user/abcd.txt'), json_encode($allrequest));
+    \File::put(storage_path('app/public/user/abc.txt'), base64_encode(json_encode($allrequest)));
 
      $karzaMailArr['name'] = "Ravi Prakash";
      $karzaMailArr['email'] = 'ravi.awasthi93@gmail.com';
-     $karzaMailArr['otp'] = base64_encode(json_encode($request));
+     $karzaMailArr['otp'] = base64_encode(json_encode($allrequest));
      Event::dispatch("user.sendotp", serialize($userMailArr));
 
     $response = array(
