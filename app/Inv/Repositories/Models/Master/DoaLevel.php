@@ -64,14 +64,14 @@ class DoaLevel extends BaseModel {
     {
         $groupBy = ['doa_level.city_id', 'doa_level.min_amount', 'doa_level.max_amount'];
         $res = self::select('doa_level.*', 'mst_city.name as city')
-                ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')                
+                ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')
                 ->where('doa_level.is_active', 1)
                 ->groupBy($groupBy)
                 ->orderBy('doa_level.doa_level_id', 'DESC');
-                //->get();
-        return $res ? : [];
+        //->get();
+        return $res ?: [];
     }
-    
+
     /**
      * Get DoA Level Data By doa_level_id
      * 
@@ -85,18 +85,18 @@ class DoaLevel extends BaseModel {
         if (empty($doa_level_id)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-        
+
         if (!is_int($doa_level_id)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         $res = self::select('doa_level.*', 'mst_city.name as city')
-                ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')  
+                ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')
                 ->where('doa_level.is_active', 1)
                 ->where('doa_level.doa_level_id', $doa_level_id)
                 ->first();
-        return $res ? : false;
+        return $res ?: false;
     }
-    
+
     /**
      * Get Latest DoA Data
      * 
@@ -108,23 +108,23 @@ class DoaLevel extends BaseModel {
                 ->where('is_active', 1)
                 ->orderBy('doa_level_id', 'DESC')
                 ->first();
-        return $res ? : false;
+        return $res ?: false;
     }
-    
+
     /**
      * Save DoA Data
      * 
      * @return mixed
      */
-    public static function saveDoaLevelData($data, $doa_level_id=null)
+    public static function saveDoaLevelData($data, $doa_level_id = null)
     {
         if (is_null($doa_level_id)) {
             return self::create($data);
         } else {
             return self::where('doa_level_id', $doa_level_id)->update($data);
-        }        
+        }
     }
-    
+
     /**
      * Update DoA Data
      * 
@@ -132,7 +132,7 @@ class DoaLevel extends BaseModel {
      * @param array $whereCond
      * @return mixed
      */
-    public static function updateDoaLevelData($data, $whereCond=[])
+    public static function updateDoaLevelData($data, $whereCond = [])
     {
         return self::where($whereCond)->update($data);
     }
@@ -152,11 +152,23 @@ class DoaLevel extends BaseModel {
         }
         if (!is_array($where)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
-        }        
-        $res = self::select('*')                
+        }
+        $res = self::select('*')
                 ->where('is_active', 1)
                 ->where($where)
                 ->first();
-        return $res ? : null;
+        return $res ?: null;
     }
+
+    /**
+     * get DOA Level list
+     * 
+     * @return type mixed
+     */
+    public static function getDoaLevelList()
+    {
+        $res = self::where('is_active', 1)->pluck('level_name', 'doa_level_id');
+        return $res ?: false;
+    }
+
 }
