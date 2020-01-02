@@ -148,8 +148,6 @@ class ProgramController extends Controller {
             $program_id = (int) $request->get('program_id');
             $action = $request->get('action');
             $subProgramData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
-            //   dd($subProgramData , $program_id);
-            $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
             $type_two = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
@@ -192,7 +190,11 @@ class ProgramController extends Controller {
                 $programCharges = $subProgramData->programCharges->toArray();
             }
 
-
+            $getDoaLevel = $this->master->getProgramDoaLevelData(['prgm_id' => $subProgramData->prgm_id])->toArray();
+            $doaResult = array_reduce($getDoaLevel, function ($out, $elem) {
+                $out[] = $elem['doa_level_id'];
+                return $out;
+            }, []);
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
 
             return view('backend.lms.add_sub_program',
@@ -210,7 +212,8 @@ class ProgramController extends Controller {
                             'sanctionData',
                             'programCharges',
                             'subProgramData',
-                            'action'
+                            'action',
+                            'doaResult'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -397,15 +400,10 @@ class ProgramController extends Controller {
         try {
             $doa_level = !empty($request->get('doa_level')) ? $request->get('doa_level') : [];
             $prepareSaveDoa = [];
-            $is_required = $request->get('required');
-
             foreach ($doa_level as $key => $value) :
                 $prepareSaveDoa[$key] = [
                     'doa_level_id' => $value,
                     'prgm_id' => $program_id,
-                    'is_required' => isset($is_required) ? $is_required : null,
-                    'min_amount' => null,
-                    'max_amount' => null
                 ];
             endforeach;
 

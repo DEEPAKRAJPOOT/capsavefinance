@@ -90,4 +90,25 @@ class ProgramDoaLevel extends BaseModel {
         return self::where($where)->delete();
     }
 
+    /**
+     * get Program DOA level Data
+     * 
+     * @param type $where Array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getProgramDoaLevelData($where)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        $res = self::where($where)->get();
+        return $res ?: false;
+    }
+
 }

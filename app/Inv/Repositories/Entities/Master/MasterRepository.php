@@ -317,5 +317,16 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         return ProgramDoaLevel::deleteDoaLevelBywhere($where);
     }
+    
+    /**
+     * get program DOA level data
+     * 
+     * @param type $where Array
+     * @return type mixed
+     */
+    public function getProgramDoaLevelData($where)
+    {
+        return ProgramDoaLevel::getProgramDoaLevelData($where);
+    }
 
 }
