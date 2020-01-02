@@ -30,6 +30,14 @@
                    <label class='error'>Still, offer is not accepted by sales queue to move the next stage.</label><br>                   
                    @endif
                    
+                   @if (Session::has('error_code') && Session::get('error_code') == 'no_docs_found')
+                   <label class='error'>No required documents found.</label><br>                   
+                   @endif
+                   
+                   @if (Session::has('error_code') && Session::get('error_code') == 'no_pre_docs_uploaded')
+                   <label class='error'>No any pre sanctions documents are uploaded.</label><br>                   
+                   @endif
+                   
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_post_docs_uploaded')
                    <label class='error'>No any post sanctions documents are uploaded.</label><br>                   
                    @endif

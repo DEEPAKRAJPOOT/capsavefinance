@@ -822,9 +822,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param integer $appId
      * @return boolean
      */
-    public function isPostSancDocsUpload($appId, $docIds=[])
+    public function isDocsUploaded($appId, $docIds=[])
     {
-        return AppDocument::isPostSancDocsUpload($appId, $docIds);
+        return AppDocument::isDocsUploaded($appId, $docIds);
     }
 
 

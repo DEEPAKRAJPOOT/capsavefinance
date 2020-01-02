@@ -695,19 +695,31 @@ class ApplicationController extends Controller
                         Session::flash('error_code', 'no_offer_accepted');
                         return redirect()->back();
                     }
-                } else if ($currStage->stage_code == 'upload_exe_doc') {
+                } else if ($currStage->stage_code == 'upload_post_sanction_doc') {
                     
-                    $requiredDocs = $this->getProgramDocs(['stage_code' => 'upload_exe_doc']);
+                    $requiredDocs = $this->getProgramDocs(['stage_code' => 'upload_post_sanction_doc']);
                     $docIds = [];
                     foreach($requiredDocs as $doc) {
                         $docIds[] = $doc->doc_id;
                     }
-                    $uploadDocStatus = $this->appRepo->isPostSancDocsUpload($app_id, $docIds);                    
-                    if(!$uploadDocStatus)  {                    
+                    $uploadDocStatus = $this->appRepo->isDocsUploaded($app_id, $docIds);                    
+                    if(count($docIds) == 0 || !$uploadDocStatus)  {                    
                         Session::flash('error_code', 'no_post_docs_uploaded');
                         return redirect()->back();                                            
-                    }                  
-                }
+                    }                                  
+                } else if ($currStage->stage_code == 'upload_pre_sanction_doc') {
+                    
+                    $requiredDocs = $this->getProgramDocs(['stage_code' => 'upload_pre_sanction_doc']);
+                    $docIds = [];
+                    foreach($requiredDocs as $doc) {
+                        $docIds[] = $doc->doc_id;
+                    }
+                    $uploadDocStatus = $this->appRepo->isDocsUploaded($app_id, $docIds);                    
+                    if(count($docIds) == 0 || !$uploadDocStatus)  {                    
+                        Session::flash('error_code', 'no_pre_docs_uploaded');
+                        return redirect()->back();                                            
+                    }
+                }                
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];
@@ -738,10 +750,14 @@ class ApplicationController extends Controller
                     $wf_status = 1;
                 }
                 
-                if ($nextStage->stage_code == 'upload_exe_doc') {
+                if ($nextStage->stage_code == 'upload_pre_sanction_doc' || $nextStage->stage_code == 'upload_post_sanction_doc') {
                     $prgmDocsWhere = [];
-                    $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
-                    $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id);                     
+                    $prgmDocsWhere['stage_code'] = $nextStage->stage_code;
+                    $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id);
+                    if(count($reqdDocs) == 0)  {
+                        Session::flash('error_code', 'no_docs_found');
+                        return redirect()->back();                                            
+                    }                    
                 }
                 
                 Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);

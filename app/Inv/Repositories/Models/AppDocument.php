@@ -146,7 +146,7 @@ class AppDocument extends BaseModel
      * @param integer $appId
      * @return boolean
      */
-    public static function isPostSancDocsUpload($appId, $docIds=[])
+    public static function isDocsUploaded($appId, $docIds=[])
     {
         $appDocCheck = self::where('app_id', $appId)
                 ->where('is_upload', 1)
