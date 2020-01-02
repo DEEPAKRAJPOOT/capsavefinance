@@ -83,7 +83,7 @@ class AppProgramLimit extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
     }
 
-    public function program_new(){
+    public function program(){
         return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
     }     
 
@@ -108,12 +108,12 @@ class AppProgramLimit extends BaseModel {
      }
      
    
-         public  function program()
-     {
+    ///     public  function program()
+    /// {
          
-         return $this->hasOne('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');  
+       //  return $this->hasOne('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');  
 
-     }  
+    //// }  
      
      public static function getLimitAllAnchor()
      {
