@@ -37,7 +37,7 @@
                                                         <p class="float-left mr-3 mb-0">
                                                             <b>Total Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i> 
-                                                            {{ isset($programData) ? $programData->anchor_limit : null }}
+                                                          {!! isset($programData->anchor_limit) ?  \Helpers::formatCurreny($programData->anchor_limit )   : null !!}
                                                         </p>
 
 
@@ -66,7 +66,7 @@
                                                         <a href="javascript:void(0);" class="verify-owner-no" style="top:42px;">
                                                             <i class="fa fa-inr" aria-hidden="true"></i>
                                                         </a>   
-                                                        {!! Form::text('anchor_limit_re',isset($remaningAmount) ? $remaningAmount : null,['class'=>'form-control' ,'readonly'=>true ,'id'=>'anchor_limit'])   !!}
+                                                        {!! Form::text('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['class'=>'form-control' ,'readonly'=>true ,'id'=>'anchor_limit'])   !!}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">

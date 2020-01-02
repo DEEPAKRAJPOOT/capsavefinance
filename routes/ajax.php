@@ -447,6 +447,7 @@ Route::group(
         'as' => 'ajax_get_programs_by_anchor',
         'uses' => 'AjaxController@getProgramsByAnchor'
         ]
+
     );    
 
      
@@ -467,5 +468,20 @@ Route::group(
     ]);
 
     /*lms route*/
+
+
+    
+    
+    //////////////// ajax request for upload invoice///////////////////////
+      Route::POST('front_program_list', [
+                 'as' => 'front_program_list',
+                 'uses' => 'Application\InvoiceController@getProgramList'
+            ]); 
+               Route::POST('front_supplier_list', [
+                 'as' => 'front_supplier_list',
+                 'uses' => 'Application\InvoiceController@getSupplierList'
+            ]); 
+    
+    
 
 });

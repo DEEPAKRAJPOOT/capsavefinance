@@ -65,6 +65,11 @@ class ProgramController extends Controller {
                 $output[$element['anchor_id']] = $element['f_name'];
                 return $output;
             }, []);
+
+            if (\Session::has('is_mange_program')) {
+                $anchorList = ['' => 'Please Select'] + $anchorList;
+            }
+
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
             $industryList = $this->appRepo->getIndustryDropDown()->toArray();
             return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id', 'redirectUrl'));

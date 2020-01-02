@@ -29,17 +29,50 @@ class InvoiceController extends Controller {
     /* Invoice upload page  */
 
     public function getInvoice(Request $request) {
+       
+      
         $anchor_id = $request->anchor_id;
         $user_id = $request->user_id;
         $app_id = $request->app_id;
         $biz_id = $request->biz_id;
         $get_user = $this->invRepo->getUser($user_id);
-        $get_anchor = $this->invRepo->getAnchor($anchor_id);
-        $get_program = $this->invRepo->getProgram($anchor_id);
-        return view('frontend.application.invoice.uploadinvoice')
-                   ->with(['get_user' => $get_user, 'get_anchor' => $get_anchor, 'get_program' => $get_program, 'app_id' => $app_id,'biz_id' => $biz_id]);
-    }
+        $get_anchor = $this->invRepo->getLimitAnchor($app_id);
+        if(count($get_anchor)==1)
+        {
+              $getAid  = $get_anchor[0]->anchorList->anchor_id;
+              $get_program = $this->invRepo->getLimitProgram($getAid);
+            
+        }
+        else {
+             $get_program = [];
+        }
 
+         return view('frontend.application.invoice.uploadinvoice')
+                   ->with(['get_user' => $get_user,'get_program' => $get_program, 'get_anchor' => $get_anchor, 'app_id' => $app_id,'biz_id' => $biz_id]);
+    }
+    
+    public function getAllInvoice()
+    {
+        
+        $get_anchor = $this->invRepo->getLimitAllAnchor();
+        return view('frontend.application.invoice.upload_all_invoice')
+                   ->with(['get_anchor' => $get_anchor]);
+  
+    }
+  
+     public function getProgramList(Request $request)
+     {
+         $get_program = $this->invRepo->getLimitProgram($request['anchor_id']);
+         return response()->json(['status' => 1,'get_program' =>$get_program]);
+     }
+     
+      public function getSupplierList(Request $request)
+     {
+        
+        $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
+        return response()->json(['status' => 1,'get_supplier' =>$get_supplier]);
+     }
+           
       public function viewInvoice() {
         $getAllInvoice    =   $this->invRepo->getAllAnchor();
         $get_bus = $this->invRepo->getBusinessName();
@@ -81,15 +114,25 @@ class InvoiceController extends Controller {
         $attributes = $request->all();
         $date = Carbon::now();
         $id = Auth::user()->user_id;
-        $appId = $request->app_id;
+        
+        if(isset($attributes['app_id']))
+        {
+            $appId = $attributes['app_id']; 
+            $biz_id  = $attributes['biz_id'];
+        }
+        else {
+           $res =  $this->invRepo->getSingleLimit($attributes['anchor_id']);
+           $appId = $res->app_id; 
+           $biz_id  = $res->biz_id;
+        }
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
        
         $arr = array('anchor_id' => $attributes['anchor_id'],
             'supplier_id' => $attributes['supplier_id'],
             'program_id' => $attributes['program_id'],
-            'app_id'    => $attributes['app_id'],
-            'biz_id'  => $attributes['biz_id'],
+            'app_id'    => $appId,
+            'biz_id'  => $biz_id,
             'invoice_no' => $attributes['invoice_no'],
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
             'invoice_approve_amount' => $attributes['invoice_approve_amount'],

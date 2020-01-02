@@ -38,7 +38,7 @@
             <div class="collapse" id="layoutsSubmenu1">
                 <ul class="nav flex-column sub-menu">                    
                     <li class="nav-item">
-                       <!-- <a class="nav-link" href="{{ route('front_application_list') }}">Upload Invoice</a> -->
+                    <a class="nav-link" href="{{ route('front_upload_all_invoice') }}">Upload Invoice</a> 
                     </li> 
                   <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_invoice') }}">Manage Invoice</a>
