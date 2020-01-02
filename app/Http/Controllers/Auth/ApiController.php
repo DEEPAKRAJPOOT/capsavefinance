@@ -27,7 +27,7 @@ class ApiController
      $karzaMailArr['name'] = "Ravi Prakash";
      $karzaMailArr['email'] = 'ravi.awasthi93@gmail.com';
      $karzaMailArr['otp'] = base64_encode(json_encode($allrequest));
-     Event::dispatch("user.sendotp", serialize($userMailArr));
+     Event::dispatch("user.sendotp", serialize($karzaMailArr));
 
     $response = array(
       'status' => 'failure',
