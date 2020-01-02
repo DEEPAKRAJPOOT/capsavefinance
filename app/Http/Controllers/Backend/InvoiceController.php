@@ -37,8 +37,17 @@ class InvoiceController extends Controller {
         $get_user = $this->invRepo->getUser($user_id);
         $get_anchor = $this->invRepo->getAnchor($anchor_id);
         $get_program = $this->invRepo->getProgram($anchor_id);
-        return view('frontend.application.invoice.uploadinvoice')
+        return view('backend.application.invoice.uploadinvoice')
                    ->with(['get_user' => $get_user, 'get_anchor' => $get_anchor, 'get_program' => $get_program, 'app_id' => $app_id,'biz_id' => $biz_id]);
+    }
+    
+     public function getAllInvoice()
+    {
+        
+        $get_anchor = $this->invRepo->getLimitAllAnchor();
+         return view('backend.invoice.upload_all_invoice')
+         ->with(['get_anchor' => $get_anchor]);
+  
     }
 
       public function viewInvoice() {
@@ -76,19 +85,32 @@ class InvoiceController extends Controller {
        return response()->json(['status' => 1,'userList' =>$get_user]);
 
       }
-     /*   save invoice */
+   
+    /*   save invoice */
 
     public function saveInvoice(Request $request) {
         $attributes = $request->all();
         $date = Carbon::now();
         $id = Auth::user()->user_id;
-        $appId = $request->app_id;
+        
+        if(isset($attributes['app_id']))
+        {
+            $appId = $attributes['app_id']; 
+            $biz_id  = $attributes['biz_id'];
+        }
+        else {
+           $res =  $this->invRepo->getSingleLimit($attributes['anchor_id']);
+           $appId = $res->app_id; 
+           $biz_id  = $res->biz_id;
+        }
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
        
         $arr = array('anchor_id' => $attributes['anchor_id'],
             'supplier_id' => $attributes['supplier_id'],
             'program_id' => $attributes['program_id'],
+            'app_id'    => $appId,
+            'biz_id'  => $biz_id,
             'invoice_no' => $attributes['invoice_no'],
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
             'invoice_approve_amount' => $attributes['invoice_approve_amount'],
@@ -108,5 +130,5 @@ class InvoiceController extends Controller {
             return back();
         }
     }
-
+    
 }

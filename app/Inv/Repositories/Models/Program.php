@@ -86,6 +86,27 @@ class Program extends BaseModel {
     ];
 
     /**
+     * get program doc 
+     * 
+     * @return type mixed
+     */
+    public function programDoc()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\ProgramDoc', 'prgm_id', 'prgm_id')
+                        ->Join('mst_doc', 'prgm_doc.doc_id', 'mst_doc.id');
+    }
+
+    /**
+     * get program charges
+     * 
+     * @return type mixed
+     */
+    public function programCharges()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\ProgramCharges', 'prgm_id', 'prgm_id');
+    }
+
+    /**
      * Get Program Data
      * 
      * @param array $whereCondition
@@ -184,7 +205,7 @@ class Program extends BaseModel {
         $res = self::select('prgm.*', 'u.f_name')
                 ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
                 ->where(['u.user_type' => 2])
-                ->where('prgm.parent_prgm_id' ,null);
+                ->where('prgm.parent_prgm_id', null);
         if (!empty($id)) {
             $res = $res->where('prgm.anchor_id', $id);
         }
@@ -201,7 +222,7 @@ class Program extends BaseModel {
      * @throws BlankDataExceptions
      * @throws InvalidDataTypeExceptions 
      */
-    public static function getSelectedProgramData($where, $selected = null)
+    public static function getSelectedProgramData($where, $selected = null, $relations = [])
     {
         if (empty($where)) {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
@@ -213,7 +234,33 @@ class Program extends BaseModel {
         if (empty($selected)) {
             $selected = '*';
         }
-        $res = self::select($selected)->where($where)->get();
+
+        $res = self::select($selected);
+
+        if (isset($where['prgm_id']) && !empty($where['prgm_id'])) {
+            $res = $res->where('prgm_id', $where['prgm_id']);
+        }
+        if (isset($where['is_null_parent_prgm_id']) && !empty($where['is_null_parent_prgm_id'])) {
+            $res = $res->where('parent_prgm_id', '!=', null);
+        }
+
+
+        if (isset($where['parent_prgm_id']) && !empty($where['parent_prgm_id'])) {
+            $res = $res->where('parent_prgm_id', $where['parent_prgm_id']);
+        }
+
+
+        // dd($res->toSql());
+
+
+        if (!empty($relations)) {
+            $res = $res->with($relations);
+        }
+
+        $res = $res->get();
+
+
+
         return ($res ?: false);
     }
 
@@ -251,7 +298,8 @@ class Program extends BaseModel {
         return ($res ?: false);
     }
 
-    public static function getAnchorsByProduct($product_id){
+    public static function getAnchorsByProduct($product_id)
+    {
         if (empty($product_id)) {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
@@ -260,14 +308,16 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        return Program::with('anchors')->where(['product_id'=> $product_id, 'status'=>1])->get(['prgm_id','product_id','anchor_id']);
+        return Program::with('anchors')->where(['product_id' => $product_id, 'status' => 1])->get(['prgm_id', 'product_id', 'anchor_id']);
     }
 
-    public function anchors(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id')->where('is_active',1);
+    public function anchors()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id')->where('is_active', 1);
     }
 
-    public static function getProgramsByAnchor($anchor_id){
+    public static function getProgramsByAnchor($anchor_id)
+    {
         if (empty($anchor_id)) {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
@@ -276,11 +326,51 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        return Program::where(['anchor_id'=> $anchor_id, 'status'=>1])->get(['prgm_id','product_id','anchor_id','prgm_name']);
+        return Program::where(['anchor_id' => $anchor_id, 'status' => 1])->get(['prgm_id', 'product_id', 'anchor_id', 'prgm_name']);
     }
 
-    public function product(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Product','product_id','id');
+    public function product()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Product', 'product_id', 'id');
+    }
+
+    /**
+     * Update program 
+     * 
+     * @param type $attributes
+     * @param type $conditions
+     * @return type
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function updateProgramData($attributes = [], $conditions = [])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($conditions)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($conditions)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $res = self::where($conditions)->update($attributes);
+
+        return ($res ?: false);
     }
 
 }

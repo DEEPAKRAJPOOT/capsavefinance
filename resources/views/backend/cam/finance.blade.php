@@ -2,6 +2,7 @@
    $curr_year = date('Y');
    $year_count = 3;
    $start_year = date('Y')-$year_count + 1;
+   $class_enable = 'getAnalysis';
 ?>
 @extends('layouts.backend.admin-layout')
 @section('content')
@@ -33,15 +34,18 @@
                      @endif
                      <div class="clearfix"></div>
                      <div style="text-align: right;">
-                     @if(request()->get('view_only') && $financedocs->count() > 0)
-                        <a href="javascript:void(0)" class="btn btn-success btn-sm getAnalysis">Get Analysis</a>
-                     @endif
+                     
                      @if(file_exists(storage_path('app/public/user/'.$appId.'_finance.xlsx')))
                            <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_finance.xlsx') }}" download>Download</a>
                      @endif 
                      @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
+
+                     @php $class_enable="disabled"; @endphp
                            <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
                      @endif 
+                     @if(request()->get('view_only') && $financedocs->count() > 0)
+                        <a href="javascript:void(0)" class="btn btn-success btn-sm <?php echo $class_enable ?>">Get Analysis</a>
+                     @endif
                      </div>
                      <div class="clearfix"></div>
                      <br/>

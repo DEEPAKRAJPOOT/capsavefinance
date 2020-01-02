@@ -7,7 +7,7 @@ try {
         //Documents Listing code
         oTable = $('#documentsList').DataTable({
             processing: true,
-            serverSide: true,
+            serverSide: false,
             pageLength: 25,
             searching: false,
             bSort: true,
@@ -31,7 +31,7 @@ try {
                     {data: 'created_by'},
                     {data: 'is_active'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4]}]
+            aoColumnDefs: [{'bSortable': true, 'aTargets': [0,1,2,3,4]}]
         });
         //Search
         $('#searchbtn').on('click', function (e) {

@@ -27,8 +27,6 @@
             
            <div class="form-fields">
                <form id="signupForm" method="post" action="{{Route('front_save_invoice')}}" enctype= multipart/form-data>
-                   <input type="hidden" name="app_id" value="{{($app_id) ? $app_id :  ' '}}">
-                  <input type="hidden" name="biz_id" value="{{($biz_id) ? $biz_id :  ' '}}">
                    @csrf
                     <div class="active" id="details">
                         <div class="form-sections">
@@ -47,21 +45,16 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Anchor Name <!-- from enchor table --> <span class="error_message_label">*</span></label>
-      
-                                            <select readonly="readonly" class="form-control changeAnchor" id="anchor_id" name="anchor_id">
-                                              @if(count($get_anchor) > 1)
+                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id" name="anchor_id">
+                                             
+                                            @if(count($get_anchor) > 0)
                                                 <option value="">Please Select</option>
                                                 @foreach($get_anchor as $row)  
                                                 <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
                                                 @endforeach
-                                                @else
-                                           
-                                                 @foreach($get_anchor as $row)  
-                                                <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
-                                                @endforeach
-                                                
+                                               
                                                 @endif
-                                                </select>   
+                                             </select>
                                         </div>
                                     </div>
                    
@@ -70,16 +63,7 @@
                                             <label for="txtCreditPeriod">Product Program Name
                                                 <span class="error_message_label">*</span>
                                             </label>
-
-                                            <select readonly="readonly" class="form-control" id="program_id" name="program_id">
-                                            @if(count($get_program) > 1)
-                                                <option value="">Please Select</option>
-                                                @foreach($get_program as $row)  
-                                                <option value="{{{$row->program->prgm_id}}}">{{{$row->program->prgm_name}}}</option>
-                                                @endforeach
-                                              
-                                                @endif
-                                                
+                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
                                         </div>
                                     </div>
@@ -87,10 +71,9 @@
                                      <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Supplier Name <span class="error_message_label">*</span></label>
-                                            <input type="hidden"  class="form-control sn" id="supplier_id" name="supplier_id" value="{{ isset($get_user->user_id) ? $get_user->user_id : ''}}">
-                                             <input type="text" readonly="readonly" class="form-control text-capitalize" value="{{isset($get_user->f_name) ? $get_user->f_name : ''}} {{isset($get_user->l_name) ? $get_user->l_name : ''}}"> 
+                                             <select readonly="readonly" class="form-control" id="supplier_id" name="supplier_id">
                                              
-                                           
+                                            </select>
                                         </div>
                                     </div>
                                    
@@ -164,10 +147,12 @@ var messages = {
     token: "{{ csrf_token() }}",
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     front_program_list: "{{ URL::route('front_program_list') }}",
+    front_supplier_list: "{{ URL::route('front_supplier_list') }}",
    };
    
  $(document).ready(function () {
-    
+       $("#program_id").append("<option value=''>No data found</option>");  
+        $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
      if ($('form#signupForm').validate().form()) {     
@@ -228,6 +213,7 @@ var messages = {
   
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeAnchor',function(){
+      
       var anchor_id =  $(this).val(); 
       $("#program_id").empty();
       var postData =  ({'anchor_id':anchor_id,'_token':messages.token});
@@ -246,7 +232,7 @@ var messages = {
                       
                         var obj1  = data.get_program;
                      
-                         
+                           $("#program_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
                             
                                    $("#program_id").append("<option value='"+v.program.prgm_id+"'>"+v.program.prgm_name+"</option>");  
@@ -264,6 +250,46 @@ var messages = {
                 }
         }); }); 
   
+  //////////////////// onchange anchor  id get data /////////////////
+  $(document).on('change','.changeSupplier',function(){
+      
+      var program_id =  $(this).val(); 
+      $("#supplier_id").empty();
+      var postData =  ({'program_id':program_id,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.front_supplier_list,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
+                },
+                success: function (data) {
+                    if(data.status==1)
+                    {
+                      
+                        var obj1  = data.get_supplier;
+                     
+                           $("#supplier_id").append("<option value=''>Please Select</option>");  
+                            $(obj1).each(function(i,v){
+                            
+                                   $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
+                            });
+                       
+                    }
+                    else
+                    {
+                       
+                               $("#supplier_id").append("<option value=''>No data found</option>");  
+                           
+                      
+                    }
+                  
+                }
+        }); }); 
+    
+    
   </script> 
 @endsection
  

@@ -11,7 +11,6 @@
             
             <div class=" form-fields">
                <div class="form-sections">
-                 
                      <!-- <div id="js-grid-static"></div>    -->
                      <div class="data">
                         <h2 class="sub-title bg">Management Information</h2>
@@ -80,6 +79,8 @@
                                                 $arrMobileNo[$key] = json_decode($row1->karza->req_file);
                                             }else if ($row1->type == 8) {
                                                 $arrMobileOtpNo[$key] = json_decode($row1->karza->req_file);
+                                            }else if ($row1->type == 9) {
+                                                $arrPanVerifyNo[$key] = json_decode($row1->karza->req_file);
                                             }
                                         } 
                                        
@@ -110,7 +111,9 @@
                                              </tr>
                                              <tr>
                                                 <td><b>PAN Number</b></td>
-                                                <td>{{  $row->pan_number }}</td>
+                                                <td>{{  $row->pan_number }} 
+                                                     <a data-toggle="modal" data-target="#modalPromoter9" data-height="400px" data-width="100%" accesskey="" data-url ="{{route('show_pan_verify_data',['type'=>9,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrPanVerifyNo[$j]->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Verify Pan Status)" data-type="3"> <i class="fa fa-eye"></i></button></a>
+                                                </td>
                                                 <td><b>Shareholding (%)</b></td>
                                                 <td>{{$row->share_per}}</td>
                                              </tr>
@@ -122,7 +125,7 @@
                                              </tr>
                                              <tr>
                                                 <td><b>Networth</b></td>
-                                                <td>{{$row->networth}}</td>
+                                                <td> {!! $row->networth ? \Helpers::formatCurreny($row->networth) : '' !!}</td>
                                                 <td><b>Address</b></td>
                                                 <td>{{$row->address->addr_1}}</td>
                                              </tr> 
@@ -136,10 +139,10 @@
                                                 </td>
 
                                                 <td>
-                                                    <a data-toggle="modal"  data-target="#modalPromoter7" data-height="400px" data-width="100%" accesskey="" data-url ="{{ route('mobile_verify',['type' => 7,'ownerid' => $row->biz_owner_id]) }}" style="display:{{isset($arrMobileNo[$j]->mobile) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="Mobile Verify Detail" data-type="7"> <i class="fa fa-eye"></i></button></a>
+                                                    <a data-toggle="modal"  data-target="#modalPromoter7" data-height="400px" data-width="100%" accesskey="" data-url ="{{ route('mobile_verify',['type' => 7,'ownerid' => $row->biz_owner_id]) }}" style="display:{{isset($arrMobileNo[$j]->mobile) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Mobile Detail (Without OTP)" data-type="7"> <i class="fa fa-eye"></i></button></a>
                                                 </td>
                                                 <td>
-                                                    <a data-toggle="modal"  data-target="#modalPromoter8" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('mobile_otp_view',['type'=> 8,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrMobileOtpNo[$j]->request_id) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="OTP Verify Detail"  data-type="8"> <i class="fa fa-eye"></i></button></a>
+                                                    <a data-toggle="modal"  data-target="#modalPromoter8" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('mobile_otp_view',['type'=> 8,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrMobileOtpNo[$j]->request_id) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Mobile Detail (With OTP)"  data-type="8"> <i class="fa fa-eye"></i></button></a>
                                                 </td>
                                              </tr>
                                           </tbody>
@@ -168,7 +171,7 @@
                                                 <td>{{isset($panNoFileName[$j]) ? $panNoFileName[$j] : '' }}</td>
                                                 <td>
                                                     <div class="file-browse float-left position-seta">
-                                                        <a data-toggle="modal"  data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="Pan Card"  data-type="3"> <i class="fa fa-eye"></i></button>
+                                                        <a data-toggle="modal"  data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Pan Card Detail"  data-type="3"> <i class="fa fa-eye"></i></button>
                                                         </a>
                                                         <a  href="{{ isset($panNoFilePath[$j]) ? Storage::url($panNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                     </div>  
@@ -189,7 +192,7 @@
                                                 <td>{{isset($dlNoFileName[$j]) ? $dlNoFileName[$j] : '' }}</td>
                                                 <td>
                                                     <div class="file-browse float-left position-seta">
-                                                         <a data-toggle="modal" data-target="#modalPromoter1" data-height="400" data-width="100%" accesskey="" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $row->biz_owner_id ])}}" style="display:{{ (isset($arrDl[$j]->requestId)) ? 'inline' : 'none'}}">  <button class="btn-upload btn-sm" type="button" title="Driving License" data-type="5" > <i class="fa fa-eye"></i></button></a>
+                                                         <a data-toggle="modal" data-target="#modalPromoter1" data-height="400" data-width="100%" accesskey="" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $row->biz_owner_id ])}}" style="display:{{ (isset($arrDl[$j]->requestId)) ? 'inline' : 'none'}}">  <button class="btn-upload btn-sm" type="button" title="View Driving License Detail" data-type="5" > <i class="fa fa-eye"></i></button></a>
                                                         <a  href="{{ isset($dlNoFilePath[$j]) ? Storage::url($dlNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($dlNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                     </div>            
                                                    
@@ -211,7 +214,7 @@
                                                 <td>{{isset($voterNoFileName[$j]) ? $voterNoFileName[$j] : '' }}</td>
                                                 <td>
                                                     <div class="file-browse float-left position-seta">
-                                                        <a data-toggle="modal" data-target="#modalPromoter2" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_voter_data',['type'=>4,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrVoterNo[$j]->requestId) ? 'inline' : 'none'}}">   <button class="btn-upload btn-sm" type="button" title="Voter ID" data-type="4"> <i class="fa fa-eye"></i></button></a>
+                                                        <a data-toggle="modal" data-target="#modalPromoter2" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_voter_data',['type'=>4,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrVoterNo[$j]->requestId) ? 'inline' : 'none'}}">   <button class="btn-upload btn-sm" type="button" title="View Voter ID Detail" data-type="4"> <i class="fa fa-eye"></i></button></a>
                                                         <a  href="{{ isset($voterNoFilePath[$j]) ? Storage::url($voterNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($voterNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                     </div>                
                                                    
@@ -233,7 +236,7 @@
                                                 <td>{{isset($passNoFileName[$j]) ? $passNoFileName[$j] : '' }}</td>
                                                 <td>
                                                     <div class="file-browse float-left position-seta">
-                                                        <a data-toggle="modal"  data-target="#modalPromoter3" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pass_data',['type'=>6,'ownerid' => $row->biz_owner_id ])}}"  style="display:{{isset($arrPassNo[$j]->requestId) ? 'inline' : 'none'}}">     <button class="btn-upload btn-sm" type="button" title="Passport" data-type="6"> <i class="fa fa-eye"></i></button></a>
+                                                        <a data-toggle="modal"  data-target="#modalPromoter3" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pass_data',['type'=>6,'ownerid' => $row->biz_owner_id ])}}"  style="display:{{isset($arrPassNo[$j]->requestId) ? 'inline' : 'none'}}">     <button class="btn-upload btn-sm" type="button" title="View Passport Detail" data-type="6"> <i class="fa fa-eye"></i></button></a>
                                                         <a  href="{{ isset($passNoFilePath[$j]) ? Storage::url($passNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($passNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                     </div>               
                                                    
@@ -328,6 +331,8 @@
     {!!Helpers::makeIframePopup('modalPromoter3','View Passport Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter7','Mobile Verify Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter8','OTP Verify Detail', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('modalPromoter9','PAN Verify Status Detail', 'modal-lg')!!}
+
 
     
 @endsection

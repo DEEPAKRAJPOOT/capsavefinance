@@ -66,6 +66,12 @@ class Application extends BaseModel
         'updated_by'
     ];
 
+
+    public function business()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
+    }
+
     /**
      * Get Applications for Application list data tables
      */
@@ -394,6 +400,14 @@ class Application extends BaseModel
         return $appData ? $appData : [];
     }
     
+    
+        public  function user()
+     {
+  
+         return $this->hasOne('App\Inv\Repositories\Models\User','user_id','user_id');  
+     }
+     
+     
     /**
      * Get Anchor Data By Application Id
      * 

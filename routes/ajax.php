@@ -447,5 +447,41 @@ Route::group(
         'as' => 'ajax_get_programs_by_anchor',
         'uses' => 'AjaxController@getProgramsByAnchor'
         ]
+
     );    
+
+     
+    
+    Route::post(
+        'change-program-status',
+        [
+        'as' => 'change_program_status',
+        'uses' => 'AjaxController@changeProgramStatus'
+        ]
+    ); 
+
+    /*lms route*/
+    
+    Route::post('lms-get-customer', [
+        'as' => 'lms_get_customer',
+        'uses' => 'AjaxController@lmsGetCustomer'
+    ]);
+
+    /*lms route*/
+
+
+    
+    
+    //////////////// ajax request for upload invoice///////////////////////
+      Route::POST('front_program_list', [
+                 'as' => 'front_program_list',
+                 'uses' => 'Application\InvoiceController@getProgramList'
+            ]); 
+               Route::POST('front_supplier_list', [
+                 'as' => 'front_supplier_list',
+                 'uses' => 'Application\InvoiceController@getSupplierList'
+            ]); 
+    
+    
+
 });
