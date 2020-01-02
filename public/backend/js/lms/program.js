@@ -10,7 +10,7 @@ try {
             var i = parseInt(min);
             var j = parseInt(max);
             return i <= j;
-        }, "Please enter value equal or less then Anchor Limit");
+        }, "Please enter value equal or less then Remaining Anchor Limit");
 
 
         $.validator.addMethod('min_loan_size', function (value, element, param) {
@@ -104,6 +104,12 @@ try {
                     anchor_id: {
                         required: true
                     },
+                    'pre_sanction[]': {
+                        required: true
+                    },
+                    'post_sanction[]': {
+                        required: true
+                    }
 
                 },
                 messages: {
@@ -584,9 +590,9 @@ try {
                     _token: messages.token
                 },
                 success: function (data) {
-                   if(data.success){
-                      oTables.draw();
-                   }
+                    if (data.success) {
+                        oTables.draw();
+                    }
                 },
                 error: function () {
 

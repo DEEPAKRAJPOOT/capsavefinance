@@ -77,7 +77,7 @@
                                             </td>
                                             <td class="text-left">
 	                                            <div class="d-flex inline-action-btn">
-											  	 	<a title="View Application Details" href="company-details.php" class="btn btn-action-btn btn-sm"><i class="fa fa-eye" aria-hidden="true"></i></a>
+											  	 	<a title="View Application Details" href="{{ route('company_details', ['biz_id' => $app['biz_id'], 'app_id' => $app['app_id'] ]) }}" class="btn btn-action-btn btn-sm"><i class="fa fa-eye" aria-hidden="true"></i></a>
 												   
 											     	<a title="View Invoice" href="manage-invoice.php" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>
 			                                   </div>	           

@@ -11,6 +11,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
     Route::group(['middleware' => 'auth'], function () {
 
         Route::group(['prefix' => 'lms'], function () {
+        	
             Route::get('/', [
                 'as' => 'lms_get_customer_list',
                 'uses' => 'Lms\CustomerController@list'

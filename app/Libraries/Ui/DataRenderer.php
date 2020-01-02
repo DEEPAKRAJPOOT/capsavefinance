@@ -516,8 +516,8 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) {                        
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name.' '.$invoice->supplier->l_name : '';
+                    function ($invoice) { 
+                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
                  ->addColumn(
                     'program_name',
