@@ -1597,7 +1597,7 @@ class DataRenderer implements DataProviderInterface
     function getDoaLevelsList($request, $doa)
     {
         return DataTables::of($doa)
-            ->rawColumns(['action', 'role'])
+            ->rawColumns(['action', 'role', 'amount'])
 
             ->editColumn(
                     'level_code',
@@ -1617,7 +1617,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn(
                     'amount',
                     function ($doa) {
-                return $doa->min_amount . '-' . $doa->max_amount;
+                return \Helpers::formatCurreny($doa->min_amount) . ' - ' . \Helpers::formatCurreny($doa->max_amount);
             })
             ->editColumn(
                     'role',

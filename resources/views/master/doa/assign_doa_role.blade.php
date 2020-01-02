@@ -22,7 +22,7 @@ Form::open(
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="txtCreditPeriod">{{ $levelName }}</label>                                                            
+            <label for="txtCreditPeriod"><strong>{{ $levelName }}</strong></label>                                                            
         </div>
     </div>    
 </div>
@@ -35,7 +35,7 @@ Form::open(
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="txtCreditPeriod">{{ $city }}</label>                                                            
+            <label for="txtCreditPeriod"><strong>{{ $city }}</strong></label>                                                            
         </div>
     </div>    
 </div>
@@ -48,7 +48,7 @@ Form::open(
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="txtCreditPeriod">{{ $limitAmount }}</label>
+            <label for="txtCreditPeriod"><strong>{{ $limitAmount }}</strong></label>
         </div>
     </div>    
 </div>
