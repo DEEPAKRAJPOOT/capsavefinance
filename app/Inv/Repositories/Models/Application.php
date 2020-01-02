@@ -400,6 +400,14 @@ class Application extends BaseModel
         return $appData ? $appData : [];
     }
     
+    
+        public  function user()
+     {
+  
+         return $this->hasOne('App\Inv\Repositories\Models\User','user_id','user_id');  
+     }
+     
+     
     /**
      * Get Anchor Data By Application Id
      * 
