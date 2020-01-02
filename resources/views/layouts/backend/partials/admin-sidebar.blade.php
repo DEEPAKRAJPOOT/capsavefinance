@@ -126,7 +126,7 @@
                     </li> 
                    
                         <li class="nav-item">
-                        <a class="nav-link" href="{{ route('backend_get_invoice') }}">Manage Invoices</a>
+                        <a class="nav-link" href="{{ route('backend_get_invoice') }}">Manage Invoicesss</a>
                     </li>                     
                  
                 </ul>

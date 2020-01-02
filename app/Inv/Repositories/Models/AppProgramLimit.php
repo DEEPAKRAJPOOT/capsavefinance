@@ -83,7 +83,7 @@ class AppProgramLimit extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
     }
 
-    public function program(){
+    public function program_new(){
         return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
     }     
 
