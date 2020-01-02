@@ -11,7 +11,6 @@
             
             <div class=" form-fields">
                <div class="form-sections">
-                 
                      <!-- <div id="js-grid-static"></div>    -->
                      <div class="data">
                         <h2 class="sub-title bg">Management Information</h2>
