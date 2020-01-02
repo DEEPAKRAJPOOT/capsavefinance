@@ -14,7 +14,7 @@ trait ApplicationTrait
     protected function getProgramDocs($prgmDocsWhere)
     {
         if ($prgmDocsWhere['stage_code'] == 'doc_upload') {
-            $prgmDocs = $this->appRepo->getDocumentList(['doc_type_id' => 1]);
+            $prgmDocs = $this->appRepo->getRequiredDocs(['doc_type_id' => 1]);
         } else {
             $prgmDocs = $this->docRepo->getProgramDocs($prgmDocsWhere);
         }

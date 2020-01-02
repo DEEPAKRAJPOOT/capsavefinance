@@ -933,4 +933,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Application::where('user_id', $user_id)->with('business')->get();
     }    
+    
+    /**
+     * Get required documents
+     * 
+     * @param array $where
+     * @return mixed
+     */
+    public function getRequiredDocs($where)
+    {
+        return DocumentMaster::getRequiredDocs($where);
+    }    
 }

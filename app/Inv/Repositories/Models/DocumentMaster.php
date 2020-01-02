@@ -78,4 +78,27 @@ class DocumentMaster extends BaseModel {
         return $res ?: false;
     }
 
+    /**
+     * Get required documents
+     * 
+     * @param array $where
+     * @return mixed
+     */
+    public static function getRequiredDocs($where)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        $res = self::where($where)->get();
+        return $res ?: [];        
+    }    
 }
