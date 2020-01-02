@@ -97,7 +97,7 @@
                               <tr role="row" class="odd">
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->first_name." ".$arr->last_name}}</td>
-                                 <td width="20%">{{$arr->pan_gst_hash}}</td>
+                                 <td width="20%">{{$arr->pan_number}}</td>
                                  <td width="20%" id="cibilScore{{$arr->biz_owner_id}}">{{$arr->cibil_score}}</td>
                                  <td class=" numericCol" width="25%">
                                     <button class="btn btn-success btn-sm" id="cibilScoreBtn{{$arr->biz_owner_id}}" supplier="49" onclick="pull_cibil_promoterModal({{$arr->biz_owner_id}})">@if ($arr->is_cibil_pulled == 1) Re-Pull @else Pull @endif</button>
