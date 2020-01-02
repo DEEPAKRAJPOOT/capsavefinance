@@ -11,13 +11,7 @@
                 <div class="block-div">
 
                     <p>  
-                        @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 1)
-                        Charge Amount :
-                        @endif 
-
-                        @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 2)
-                        Charge Percentage:
-                        @endif 
+                       Charge Amount/Percentage:
                     </p>
                 </div>
             </div>
