@@ -173,7 +173,7 @@ public static function saveInvoice($arrInvoice)
      public static function getAllAnchor()
     {
          
-       return self::with('anchorOne')->where(['created_by' => Auth::user()->user_id])->get();
+       return self::with('anchorOne')->get();
     }  
      
      public static function getBusinessName()
