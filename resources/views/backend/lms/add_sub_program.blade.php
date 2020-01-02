@@ -572,7 +572,7 @@
                                                             {!!
                                                             Form::select('charge['.$keys.']',
                                                             [''=>'Please select']+$charges,
-                                                            $programChrg['chrg_applicable_id'],
+                                                            $programChrg['charge_id'],
                                                             ['id' => 'charge_'.$keys,
                                                             'class'=>'form-control charges',
                                                             'required'=>'required',
