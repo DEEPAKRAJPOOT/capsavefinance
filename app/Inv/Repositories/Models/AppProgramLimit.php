@@ -63,19 +63,37 @@ class AppProgramLimit extends BaseModel {
         }
         
         if (!is_null($prgm_limit_id)) {
-            return self::where('app_prgm_limit_id', $prgm_limit_id)->update($data);
+            return self::where('app_prgm_limit_id', $prgm_limit_id)->update(['limit_amt'=>$data['limit_amt']]);
         } else {
             return self::create($data);
         }
     }
 
-    public static function getProgramLimitData($where = null){
-        if(is_null($where)){
-            return AppProgramLimit::get();
-        }else if(!is_array($where)){
+    public static function checkduplicateProgram($data){
+        if(!is_array($data)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            return AppProgramLimit::where($where)->get();
+            return AppProgramLimit::where($data)->get();
+        }
+    }
+
+    public static function getProgramLimitData($appId){
+        if(empty($appId)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }else if(!is_int($appId)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else{
+            return AppProgramLimit::where('app_id', $appId)->get();
+        }
+    }
+
+    public static function getLimit($prgm_limit_id){
+        if(empty($prgm_limit_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }else if(!is_int($prgm_limit_id)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else{
+            return AppProgramLimit::where('app_prgm_limit_id', $prgm_limit_id)->first();
         }
     }
 
@@ -85,6 +103,10 @@ class AppProgramLimit extends BaseModel {
 
     public function program(){
         return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+    }
+
+    public function offer(){
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
     }     
 
    public static function getLimitAnchor($aid)
