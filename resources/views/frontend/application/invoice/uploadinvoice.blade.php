@@ -87,8 +87,8 @@
                                      <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Supplier Name <span class="error_message_label">*</span></label>
-                                            <input type="hidden"  class="form-control sn" id="supplier_id" name="supplier_id" value="{{$get_user->user_id}}">
-                                             <input type="text" readonly="readonly" class="form-control text-capitalize" value="{{$get_user->f_name}} {{$get_user->l_name}}"> 
+                                            <input type="hidden"  class="form-control sn" id="supplier_id" name="supplier_id" value="{{ ($get_user->user_id) ? $get_user->user_id : ''}}">
+                                             <input type="text" readonly="readonly" class="form-control text-capitalize" value="{{($get_user->f_name) ? $get_user->f_name : ''}} {{($get_user->l_name) ? $get_user->l_name : ''}}"> 
                                              
                                            
                                         </div>
