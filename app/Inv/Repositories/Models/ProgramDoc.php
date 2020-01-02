@@ -81,6 +81,7 @@ class ProgramDoc extends BaseModel {
                 
                 ->where($whereCondition)
                 ->orderBy('prgm.prgm_id', 'DESC')
+                ->groupBy('prgm_doc.doc_id')
                 ->get();
         return $prgmDocs;
     }
