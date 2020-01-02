@@ -94,12 +94,7 @@ class AppProgramLimit extends BaseModel {
      }
      
    
-         public  function anchorList()
-     {
-         
-         return $this->hasOne('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');  
-
-     }   
+    
      
       public static function getLimitProgram($aid)
      {
@@ -119,10 +114,16 @@ class AppProgramLimit extends BaseModel {
      {
   
         return AppProgramLimit::with('anchorList')->get();
-        // return AppProgramLimit::get();
+      
      }
      
-    
+         public  function anchorList()
+     {
+         
+         return $this->hasOne('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');  
+
+     }   
+     
     public static function getLimitSupplier($pid)
      {
   

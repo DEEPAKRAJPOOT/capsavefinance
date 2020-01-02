@@ -2706,6 +2706,7 @@ if ($err) {
       
         $invoice_data = $this->invRepo->getAllInvoice($this->request);
         $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
+        dd($invoice);
         return $invoice;
     }
 
