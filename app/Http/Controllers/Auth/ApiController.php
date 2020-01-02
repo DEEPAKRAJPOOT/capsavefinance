@@ -20,19 +20,20 @@ class ApiController
 	}
 
   public function karza_webhook(Request $request){
-    $allrequest = $request->all();
+   /* $allrequest = $request->all();
     \File::put(storage_path('app/public/user/abcd.txt'), json_encode($allrequest));
     \File::put(storage_path('app/public/user/abc.txt'), base64_encode(json_encode($allrequest)));
 
      $karzaMailArr['name'] = "Ravi Prakash";
      $karzaMailArr['email'] = 'ravi.awasthi93@gmail.com';
      $karzaMailArr['otp'] = base64_encode(json_encode($allrequest));
-     Event::dispatch("user.sendotp", serialize($karzaMailArr));
+     Event::dispatch("user.sendotp", serialize($karzaMailArr));*/
 
     $response = array(
       'status' => 'failure',
       'message' => 'Request method not allowed',
     );
+
     $headers = getallheaders();
     if ($request->method() === 'POST') {
        $content_type = $headers['Content-Type'] ?? '';
@@ -48,27 +49,34 @@ class ApiController
          return $this->_setResponse($response, 401);
        }
       $result = $request->all();
+      if (empty($result)) {
+        $response['message'] = "No data found. Server rejected the request";
+         return $this->_setResponse($response, 411);
+      }
+
       if (!empty($result['statusCode']) && $result['statusCode'] != '101') {
         $response['message'] = "We are getting statusCode with error.";
          return $this->_setResponse($response, 403);
       }
+
       if (!empty($result['status'])) {
-        $resp['message'] = $result['error'] ?? "Unable to get success response.";
+        $response['message'] = $result['error'] ?? "Unable to get success response.";
         return $this->_setResponse($response, 406);
       }
-      $result =    $result['result'] ?? $result;
+
       $request_id =    $result['requestId'] ?? '';
+      $result =    $result['result'];
+
       if (empty($request_id)) {
-        $resp['message'] = "Insufficiant data to update the report.";
+        $response['message'] = "Insufficiant data to update the report.";
         return $this->_setResponse($response, 417);
       }
 
       $gst_data = FinanceModel::getGstData($request_id);
       if (empty($gst_data)) {
-         $resp['message'] = "Unable to get record against the requestId.";
+         $response['message'] = "Unable to get record against the requestId.";
          return $this->_setResponse($response, 422);
       }
-
       $app_id = $gst_data['app_id'];
       $gst_no = $gst_data['gstin'];
       $fname = $app_id.'_'.$gst_no;
