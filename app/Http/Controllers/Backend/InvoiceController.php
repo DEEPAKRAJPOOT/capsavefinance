@@ -45,7 +45,6 @@ class InvoiceController extends Controller {
     {
         
         $get_anchor = $this->invRepo->getLimitAllAnchor();
-        dd( $get_anchor);
         return view('backend.invoice.upload_all_invoice')
                    ->with(['get_anchor' => $get_anchor]);
   

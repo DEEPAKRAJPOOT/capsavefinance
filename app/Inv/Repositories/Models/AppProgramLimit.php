@@ -118,8 +118,8 @@ class AppProgramLimit extends BaseModel {
      public static function getLimitAllAnchor()
      {
   
-       ///  return AppProgramLimit::with('anchorList')->get();
-         return AppProgramLimit::get();
+        return AppProgramLimit::with('anchorList')->get();
+        // return AppProgramLimit::get();
      }
      
     
