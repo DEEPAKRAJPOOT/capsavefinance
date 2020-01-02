@@ -84,10 +84,39 @@ class AppDocumentFile extends BaseModel
         $inputArr =  AppDocumentFile::arrayInputData($attributes, $fileId, $userId);
         $appDocFile = AppDocumentFile::create($inputArr);
         if($appDocFile){
-            $result = AppDocument::where('user_id', $userId)
-                    ->where('app_id', $appDocFile->app_id)
+            switch ($appDocFile->doc_id) {
+                case '4':
+                   $result = AppDocumentFile::where('app_id', $appDocFile->app_id)
                     ->where('doc_id', $appDocFile->doc_id)
-                    ->update(['is_upload' => 1]);
+                    ->where('gst_month', $appDocFile->gst_month)
+                    ->where('gst_year', $appDocFile->gst_year)
+                    ->where('app_doc_file_id', '!=', $appDocFile->app_doc_file_id)
+                    ->update(['is_active' => '0']);
+                    break;
+                case '5':
+                    $result = AppDocumentFile::where('app_id', $appDocFile->app_id)
+                    ->where('doc_id', $appDocFile->doc_id)
+                    ->where('finc_year', $appDocFile->finc_year)
+                    ->where('app_doc_file_id', '!=', $appDocFile->app_doc_file_id)
+                    ->update(['is_active' => '0']);
+                    break;
+                case '6':
+                    $result = AppDocumentFile::where('app_id', $appDocFile->app_id)
+                    ->where('doc_id', $appDocFile->doc_id)
+                    ->where('gst_month', $appDocFile->gst_month)
+                    ->where('gst_year', $appDocFile->gst_year)
+                    ->where('app_doc_file_id', '!=', $appDocFile->app_doc_file_id)
+                    ->update(['is_active' => '0']);
+                    break;
+                
+                default:
+                    /* code */
+                    break;
+            }
+            $result = AppDocument::where('user_id', $userId)
+                ->where('app_id', $appDocFile->app_id)
+                ->where('doc_id', $appDocFile->doc_id)
+                ->update(['is_upload' => 1]);
         }
         
         return true;

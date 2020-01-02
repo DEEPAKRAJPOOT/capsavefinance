@@ -20,14 +20,14 @@ class ApiController
 	}
 
   public function karza_webhook(Request $request){
-   /* $allrequest = $request->all();
-    \File::put(storage_path('app/public/user/abcd.txt'), json_encode($allrequest));
-    \File::put(storage_path('app/public/user/abc.txt'), base64_encode(json_encode($allrequest)));
+    $allrequest = $request->all();
+    \File::put(storage_path('app/public/user/gst_header.json'), json_encode(getallheaders()));
+    \File::put(storage_path('app/public/user/gst_data.json'), json_encode($allrequest));
 
      $karzaMailArr['name'] = "Ravi Prakash";
      $karzaMailArr['email'] = 'ravi.awasthi93@gmail.com';
      $karzaMailArr['otp'] = base64_encode(json_encode($allrequest));
-     Event::dispatch("user.sendotp", serialize($karzaMailArr));*/
+     Event::dispatch("user.sendotp", serialize($karzaMailArr));
 
     $response = array(
       'status' => 'failure',
@@ -263,7 +263,11 @@ class ApiController
     }
 
     private function _setResponse($response, $statusCode){
-       return response($response, $statusCode)
+      $result = $response;
+      $result['status_code'] = $statusCode;
+      $logdata = json_encode($result);
+      $this->logdata($logdata, 'F', 'error.log');
+      return response($response, $statusCode)
                   ->header('Content-Type', 'application/json');
     }
 
