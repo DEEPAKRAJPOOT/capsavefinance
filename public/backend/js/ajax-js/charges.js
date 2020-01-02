@@ -7,7 +7,7 @@ try {
         //Charges Listing code
         oTable = $('#chargesList').DataTable({
             processing: true,
-            serverSide: true,
+            serverSide: false,
             pageLength: 25,
             searching: false,
             bSort: true,
@@ -35,7 +35,7 @@ try {
                     {data: 'created_by'},
                     {data: 'is_active'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6]}]
+            aoColumnDefs: [{'aTargets': [0,1,3,4,5,6], 'bSortable': true}]
         });
         //Search
         $('#searchbtn').on('click', function (e) {

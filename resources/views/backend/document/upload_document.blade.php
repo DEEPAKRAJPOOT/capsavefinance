@@ -27,7 +27,7 @@
                       <label for="email">Select Year</label>
                       <select class="form-control" name="bank_year">
                          <option value=''>Select Year</option>
-                        @for($i=-10;$i<=0;$i++)
+                        @for($i=-3;$i<=0;$i++)
                             <option>{{date('Y')+$i}}</option>
                        @endfor;
                       </select>
@@ -45,7 +45,7 @@
                   <label for="email">Select Financial  Year</label>
                   <select class="form-control" name="finc_year">
                      <option value=''>Select Year</option>
-                     @for($i=-10;$i<=0;$i++)
+                     @for($i=-3;$i<=0;$i++)
                           <option>{{date('Y')+$i}}</option>
                      @endfor;
                   </select>
@@ -67,7 +67,7 @@
                         <label for="email">Select GST Year</label>
                         <select class="form-control" name="gst_year">
                            <option value=''>Select Year</option>
-                          @for($i=-10;$i<=0;$i++)
+                          @for($i=-3;$i<=0;$i++)
                               <option>{{date('Y')+$i}}</option>
                          @endfor;
                         </select>

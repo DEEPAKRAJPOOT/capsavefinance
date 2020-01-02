@@ -491,7 +491,6 @@ class CamController extends Controller
         $start_txn = $perfios->api_call(Perfios_lib::STRT_TXN, $req_arr);
          if ($start_txn['status'] == 'success') {
          	foreach ($filespath as $file_doc) {
-            
             $financial_year = substr($file_doc['fin_year'], 0, 4);
             $filepath = $file_doc['file_path'];
             $file_password = $file_doc['file_password'];
@@ -511,33 +510,43 @@ class CamController extends Controller
                   );
                   $upl_stmt = $perfios->api_call(Perfios_lib::UPL_STMT, $req_arr);
                   if ($upl_stmt['status'] == 'success') {
-                     $req_arr = array(
-                        'apiVersion' => $apiVersion,
-                        'vendorId' => $vendorId,
-                        'perfiosTransactionId' => $start_txn['perfiostransactionid'],
-                     );
-                     $cmplt_txn = $perfios->api_call(Perfios_lib::CMPLT_TXN, $req_arr);
-                      if ($cmplt_txn['status'] == 'success') {
-                          $process_txn_cnt++;
-                      }
+                       $process_txn_cnt++;
+                  }else{
+                      $upl_stmt_error = $upl_stmt;
+                      $upl_stmt_error['prolitusTransactionId'] = $prolitus_txn;
+                      $upl_stmt_error['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+                      $upl_stmt_error['api_type'] = Perfios_lib::UPL_STMT;
                   }
              	}else{
-                $upl_stmt = $add_year;
-                $upl_stmt['prolitusTransactionId'] = $prolitus_txn;
-                $upl_stmt['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
-                $upl_stmt['api_type'] = Perfios_lib::ADD_YEAR;
+                $add_year_error = $add_year;
+                $add_year_error['prolitusTransactionId'] = $prolitus_txn;
+                $add_year_error['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+                $add_year_error['api_type'] = Perfios_lib::ADD_YEAR;
               }
           }
           if ($process_txn_cnt == count($filespath)) {
-            $final_res = $cmplt_txn;
-            $final_res['prolitusTransactionId'] = $prolitus_txn;
-            $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
-            $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
+             $req_arr = array(
+                'apiVersion' => $apiVersion,
+                'vendorId' => $vendorId,
+                'perfiosTransactionId' => $start_txn['perfiostransactionid'],
+             );
+             $cmplt_txn = $perfios->api_call(Perfios_lib::CMPLT_TXN, $req_arr);
+             if ($cmplt_txn['status'] == 'success') {
+                $final_res = $cmplt_txn;
+                $final_res['prolitusTransactionId'] = $prolitus_txn;
+                $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+                $final_res['api_type'] = Perfios_lib::CMPLT_TXN;        
+              }else{
+                $final_res = $cmplt_txn;
+                $final_res['prolitusTransactionId'] = $prolitus_txn;
+                $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+                $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
+              }
           }else{
-            $final_res = $cmplt_txn ?? $upl_stmt;
+            $final_res = $add_year_error ?? $upl_stmt_error;
             $final_res['prolitusTransactionId'] = $prolitus_txn;
             $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
-            $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
+            $final_res['api_type'] = !empty($add_year_error) ? Perfios_lib::ADD_YEAR : Perfios_lib::UPL_STMT;
           }
          }else{
              $final_res = $start_txn;
@@ -550,7 +559,7 @@ class CamController extends Controller
         }
 
         if (!empty($is_scanned) && strtolower($is_scanned) == 'yes') {
-          $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
+           $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
         	 return $final_res;
         }
         $file_name = $appId.'_finance.xlsx';
