@@ -11,7 +11,7 @@
                 {!!
                 Form::select('doa_level[]',
                 $doaLevelList,
-                null,
+                $doaResult,
                 ['id' => 'doaLevelList',
                 'class'=>'form-control multi-select-demo',
                 'multiple'=>'multiple'
@@ -21,24 +21,6 @@
 
 
             </div>
-
-            <div class="col-md-6">
-                <h5>Required</h5>
-
-                {!!
-                Form::checkbox('required',
-                1,
-                '',
-                null,
-                ['id' => 'required',
-                'class'=>'form-control',
-                ])
-                !!}
-
-
-
-            </div>
-
         </div>
     </div>
 </div>
