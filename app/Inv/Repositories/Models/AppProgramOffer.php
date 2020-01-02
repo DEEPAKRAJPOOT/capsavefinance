@@ -167,7 +167,7 @@ class AppProgramOffer extends BaseModel {
         }
     }
 
-    public static function updateProgramOffer($data, $app_prgm_limit_id){
+    public static function addProgramOffer($data, $app_prgm_limit_id){
         if(empty($app_prgm_limit_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }else if(!is_int($app_prgm_limit_id)){
@@ -176,7 +176,10 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
             $prgmOffer = AppProgramOffer::where('app_prgm_limit_id', $app_prgm_limit_id)->where('is_active', 1)->first();
-            return $prgmOffer->update($data);
+            if($prgmOffer){
+                $prgmOffer->update(['is_active'=>0]);
+            }
+            return AppProgramOffer::create($data);
         }
     }
 }

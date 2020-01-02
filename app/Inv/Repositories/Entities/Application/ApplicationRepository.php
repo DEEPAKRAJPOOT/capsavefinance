@@ -837,7 +837,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Program::getProgramsByAnchor($anchor_id);
     }
-    /***********************not remove*********************/
+
     /**
      * Get Offer Data
      * 
@@ -865,7 +865,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {        
         return AppProgramOffer::updateOfferByAppId((int) $app_id, $arr);
     }
-    /* ----------------------------------------- */
+
     /**
      * Save Offer Data
      * 
@@ -901,11 +901,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $prgmLimitOfferData ? $prgmLimitOfferData : [];
     }
 
-    public function updateProgramOffer($data, $app_prgm_limit_id){
-        $prgmLimitOfferData = AppProgramOffer::updateProgramOffer($data, $app_prgm_limit_id);
+    public function addProgramOffer($data, $app_prgm_limit_id){
+        $prgmLimitOfferData = AppProgramOffer::addProgramOffer($data, $app_prgm_limit_id);
         return $prgmLimitOfferData ? $prgmLimitOfferData : [];
     }
 
-    
-    /**************************not remove*****************************/   
+    public function getLimit($app_prgm_limit_id){
+        $prgmLimitData = AppProgramLimit::getLimit($app_prgm_limit_id);
+        return $prgmLimitData ? $prgmLimitData : [];
+    }
+
+    public function checkduplicateProgram($data){
+        return AppProgramLimit::checkduplicateProgram($data);
+    }   
 }

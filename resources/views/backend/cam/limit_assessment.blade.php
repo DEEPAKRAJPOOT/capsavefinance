@@ -89,7 +89,7 @@
                                 @forelse($prgmLimitData as $key=>$prgmLimit)
                                 <div class="accordion">
                                     <div class="card card-color mb-0">
-                                        <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
+                                        <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#collapse{{$key+1}}" aria-expanded="false">
                                             <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <tr role="row" class="odd">
@@ -98,19 +98,24 @@
                                                        <td width="17%">{{$prgmLimit->anchor->comp_name}}</td>
                                                        <td width="17%">{{$prgmLimit->program->prgm_name}}</td>
                                                        <td width="16%">{{$prgmLimit->limit_amt}}</td>
-                                                       <td width="16%"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">+ Add</button></td>
+                                                       <td width="16%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse">
+                                        <div id="collapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
                                             <ul class="row p-0 m-0">
-                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>10,000,00</b></li>
-                                                <li class="col-md-2">Interest(%)  <br> <b>12%</b></li>
-                                                <li class="col-md-2">Invoice Tenor(Days) <br> <b>30 Days</b></li>
-                                                <li class="col-md-2">Margin(%) <br> <b>10</b></li>
-                                                <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>1000</b></li>
-                                                <li class="col-md-2"><a href="#" data-toggle="modal" data-target="#myModal1"><br><i class="fa fa-edit"></i>Edit</a></li>
+                                            @if($prgmLimit->offer)
+                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{$prgmLimit->offer->loan_offer}}</b></li>
+                                                <li class="col-md-2">Interest(%)  <br> <b>{{$prgmLimit->offer->interest_rate}}</b></li>
+                                                <li class="col-md-2">Invoice Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
+                                                <li class="col-md-2">Margin(%) <br> <b>{{$prgmLimit->offer->margin}}</b></li>
+                                                <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>{{$prgmLimit->offer->processing_fee}}</b></li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">+ Add</button></li>
+                                            @else
+                                                <li class="col-md-10">No Record found</li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">+ Add</button></li>
+                                            @endif
                                             </ul>
                                         </div>
                                     </div>
@@ -133,6 +138,7 @@
                         <div class="clearfix"></div>
                         <div>
                             <a data-toggle="modal" data-target="#limitOfferFrame" data-url ="" data-height="700px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openOfferModal" style="display: none;"><i class="fa fa-plus"></i>Add Offer</a>
+                            <a data-toggle="modal" data-target="#editLimitFrame" data-url ="" data-height="350px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openLimitModal" style="display: none;"><i class="fa fa-plus"></i>Edit Limit</a>
                         </div>
                     </div>
                 </div>
@@ -142,6 +148,7 @@
 </div>
 
 {!!Helpers::makeIframePopup('limitOfferFrame','Add Offer', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editLimitFrame','Edit Limit', 'modal-lg')!!}
 
 @endsection
 @section('jscript')
@@ -198,6 +205,12 @@ $(document).ready(function(){
         let data_url = $(this).data('url');
         $('#openOfferModal').attr('data-url', data_url);
         $('#openOfferModal').trigger('click');
+    });
+
+    $('.edit-limit').on('click', function(){
+        let data_url = $(this).data('url');
+        $('#openLimitModal').attr('data-url', data_url);
+        $('#openLimitModal').trigger('click');
     });
 
 });

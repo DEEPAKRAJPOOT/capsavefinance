@@ -800,6 +800,16 @@ class CamController extends Controller
         try {
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
+            $checkProgram = $this->appRepo->checkduplicateProgram([
+              'app_id'=>$appId,
+              'anchor_id'=>$request->anchor_id,
+              'prgm_id'=>$request->prgm_id
+              ]);
+
+            if($checkProgram->count()){
+              Session::flash('message',trans('backend_messages.already_exist'));
+              return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+            }
 
             $app_limit = $this->appRepo->saveAppLimit([
                           'app_id'=>$appId,
@@ -820,15 +830,7 @@ class CamController extends Controller
                           'created_at'=>\Carbon\Carbon::now(),
                           ]);
 
-            $app_prgm_offer = $this->appRepo->saveOfferData([
-                          'app_id'=>$appId,
-                          'app_prgm_limit_id'=>$app_prgm_limit->app_prgm_limit_id,
-                          'prgm_limit_amt'=>$request->limit_amt,
-                          'prgm_id'=>$request->prgm_id,
-                          'created_by'=>\Auth::user()->user_id,
-                          'created_at'=>\Carbon\Carbon::now(),
-                          ]);
-            if ($app_prgm_offer) {
+            if ($app_prgm_limit) {
                 //Update workflow stage
                 //Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);
                 /*$appApprData = [
@@ -860,11 +862,39 @@ class CamController extends Controller
     public function updateLimitOffer(Request $request){
       try{
         $appId = $request->get('app_id');
-        $biz_id = $request->get('biz_id');
+        $bizId = $request->get('biz_id');
         $aplid = (int)$request->get('app_prgm_limit_id');
-        $offerData= $this->appRepo->updateProgramOffer($request->all(), $aplid);
+        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
 
         if($offerData){
+          Session::flash('message',trans('backend_messages.limit_assessment_success'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }else{
+          Session::flash('message',trans('backend_messages.limit_assessment_fail'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }
+      }catch(\Exception $ex){
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+      }
+    }
+
+    public function showLimit(Request $request){
+      $appId = $request->get('app_id');
+      $biz_id = $request->get('biz_id');
+      $aplid = $request->get('app_prgm_limit_id');
+      $limitData= $this->appRepo->getLimit($aplid);
+      //dd($limitData);
+      return view('backend.cam.limit', ['limitData'=>$limitData]);
+    }
+
+    public function updateLimit(Request $request){
+      try{
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        $aplid = (int)$request->get('app_prgm_limit_id');
+        $limitData= $this->appRepo->saveProgramLimit($request->all(), $aplid);
+
+        if($limitData){
           Session::flash('message',trans('backend_messages.limit_assessment_success'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }else{
