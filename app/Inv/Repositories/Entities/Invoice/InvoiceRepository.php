@@ -8,6 +8,9 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\BizInvoice as InvoiceModel;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
+use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\BizInvoice;
 
 //
 
@@ -160,18 +163,71 @@ use CommonRepositoryTraits;
         } 
     }
     
-    
-    
-    public function getProgram($aid)
+     public function getLimitAnchor($aid)
     {
        
         try
         {
-          return InvoiceModel::getProgram($aid);
+          return AppProgramLimit::getLimitAnchor($aid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
+    
+    public function getProgram($aid)
+    {
+     
+        try
+        {
+          return BizInvoice::getProgram($aid);
         } catch (Exception $ex) {
            return $ex;
         } 
     }
 
-
+ public function getLimitProgram($aid)
+    {
+     
+        try
+        {
+          return AppProgramLimit::getLimitProgram($aid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
+    
+   public function getLimitAllAnchor()
+    {
+     
+        try
+        {
+          return AppProgramLimit::getLimitAllAnchor();
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }  
+    
+   public function getLimitSupplier($pid)
+    {
+     
+        try
+        {
+          return AppProgramLimit::getLimitSupplier($pid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }    
+     public function getSingleLimit($aid)
+    {
+     
+        try
+        {
+          return AppProgramLimit::getSingleLimit($aid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }    
+    
+    
+    
 }

@@ -106,10 +106,10 @@
                 <ul class="nav flex-column sub-menu">
                
                 
-                   <!-- <li class="nav-item">
-                        <a class="nav-link" href="{{ route('backend_upload_invoice') }}">Invoice Upload</a>
+                  <li class="nav-item">
+                        <a class="nav-link" href="{{ route('backend_upload_all_invoice') }}">Invoice Upload</a>
 
-                    </li> -->
+                    </li> 
                    
                         <li class="nav-item">
                         <a class="nav-link" href="{{ route('backend_get_invoice') }}">Manage Invoices</a>
