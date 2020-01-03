@@ -206,7 +206,7 @@ try {
 
         $(".adhoc").change(function () {
 
-            var v = $(this).val();
+            var v = $('input[name=' + $(this).attr('name') + ']' + ':checked').val();
             if (v == 1) {
                 $("#facility1").show();
 
@@ -253,7 +253,7 @@ try {
 
         $(".grace").change(function () {
 
-            var v = $(this).val();
+           var v = $('input[name=' + $(this).attr('name') + ']' + ':checked').val();
             if (v == 1) {
                 $("#facility2").show();
 

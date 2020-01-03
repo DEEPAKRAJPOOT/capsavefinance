@@ -257,6 +257,14 @@ Route::group(
         ]
     );
     
+      Route::post(
+        'backend_get_invoice_list',
+        [
+        'as' => 'backend_get_invoice_list',
+        'uses' => 'AjaxController@getBackendInvoiceList'
+        ]
+    );
+      
     Route::post(
         'get-role-list',
         [

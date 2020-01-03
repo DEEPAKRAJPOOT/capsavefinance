@@ -265,7 +265,8 @@ class ProgramController extends Controller {
             foreach ($charge as $keys => $values) {
                 $out[] = [
                     'prgm_id' => $program_id,
-                    'chrg_applicable_id' => $values,
+                    'charge_id'=>$values,
+                   // 'chrg_applicable_id' => ,
                     'chrg_calculation_type' => isset($chrg_calculation_type[$keys]) ? $chrg_calculation_type[$keys] : null,
                     'chrg_type' => isset($chrg_type[$keys]) ? $chrg_type[$keys] : null,
                     'chrg_calculation_amt' => isset($chrg_calculation_amt[$keys]) ? str_replace(',', '', $chrg_calculation_amt[$keys]) : null,
@@ -273,7 +274,7 @@ class ProgramController extends Controller {
                     'gst_percentage' => isset($gst_rate[$keys]) ? $gst_rate[$keys] : null,
                     'chrg_calc_min_rate' => isset($chrg_calc_min_rate[$keys]) ? $chrg_calc_min_rate[$keys] : null,
                     'chrg_calc_max_rate' => isset($chrg_calc_max_rate[$keys]) ? $chrg_calc_max_rate[$keys] : null,
-                    'chrg_tiger_id' => isset($chrg_calc_max_rate[$keys]) ? $chrg_tiger_id[$keys] : null,
+                    'chrg_applicable_id' => isset($chrg_tiger_id[$keys]) ? $chrg_tiger_id[$keys] : null,
                     'created_at' => \carbon\Carbon::now(),
                     'created_by' => \Auth::user()->user_id
                 ];

@@ -491,7 +491,7 @@ class CamController extends Controller
         $start_txn = $perfios->api_call(Perfios_lib::STRT_TXN, $req_arr);
          if ($start_txn['status'] == 'success') {
           foreach ($filespath as $file_doc) {
-            $financial_year = substr($file_doc['fin_year'], 0, 4);
+            $financial_year = substr($file_doc['fin_year'], -4);
             $filepath = $file_doc['file_path'];
             $file_password = $file_doc['file_password'];
             $req_arr = array(
@@ -785,24 +785,8 @@ class CamController extends Controller
     {
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-               
-        $anchorData = $this->appRepo->getAnchorDataByAppId($appId);
-        $anchorId = $anchorData ? $anchorData->anchor_id : 0;
-        $loanAmount = $anchorData ? $anchorData->loan_amt : 0;
-                
-        $whereCondition = [];
-        //$whereCondition['anchor_id'] = $anchorId;
-        $prgmData = $this->appRepo->getProgramData($whereCondition);
-        
-        $offerWhereCond = [];
-        $offerWhereCond['app_id'] = $appId;        
-        $offerData = $this->appRepo->getOfferData($offerWhereCond);
-        $offerId = $offerData ? $offerData->offer_id : 0;
-        $offerStatus = $offerData ? $offerData->status : 0;
-        
-        if ($offerStatus == 2) {
-            $offerId = 0;
-        }
+
+        $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
         
         $currStage = Helpers::getCurrentWfStage($appId);                
         $currStageCode = $currStage->stage_code;                    
@@ -810,10 +794,7 @@ class CamController extends Controller
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
-                ->with('offerId', $offerId)
-                ->with('loanAmount', $loanAmount)
-                ->with('prgmData', $prgmData)
-                ->with('offerData', $offerData)
+                ->with('prgmLimitData', $prgmLimitData)
                 ->with('currStageCode', $currStageCode);
     }
     
@@ -827,28 +808,47 @@ class CamController extends Controller
     {   
         try {
             $appId = $request->get('app_id');
-            $bizId = $request->get('biz_id'); 
-            $offerId = $request->get('offer_id') ? $request->get('offer_id') : null; 
-            $loanAmount = $request->get('loan_amount') ? $request->get('loan_amount') : null; 
-                                  
-            $this->appRepo->updateOfferByAppId($appId, ['is_active' => 0]);
-                        
-            $addlData = [];
-            $addlData['app_id'] = $appId;
-            $addlData['loan_amount'] = $loanAmount;
-            $offerData = $this->prepareOfferData($request->all(), $addlData);
-            
-            $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
-            
-            if ($savedOfferData) {
+
+            $bizId = $request->get('biz_id');
+            $checkProgram = $this->appRepo->checkduplicateProgram([
+              'app_id'=>$appId,
+              'anchor_id'=>$request->anchor_id,
+              'prgm_id'=>$request->prgm_id
+              ]);
+
+            if($checkProgram->count()){
+              Session::flash('message',trans('backend_messages.already_exist'));
+              return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+            }
+
+            $app_limit = $this->appRepo->saveAppLimit([
+                          'app_id'=>$appId,
+                          'biz_id'=>$bizId,
+                          'tot_limit_amt'=>$request->tot_limit_amt,
+                          'created_by'=>\Auth::user()->user_id,
+                          'created_at'=>\Carbon\Carbon::now(),
+                          ]);
+
+            $app_prgm_limit = $this->appRepo->saveProgramLimit([
+                          'app_limit_id'=>$app_limit->app_limit_id,
+                          'app_id'=>$appId,
+                          'biz_id'=>$bizId,
+                          'anchor_id'=>$request->anchor_id,
+                          'prgm_id'=>$request->prgm_id,
+                          'limit_amt'=>$request->limit_amt,
+                          'created_by'=>\Auth::user()->user_id,
+                          'created_at'=>\Carbon\Carbon::now(),
+                          ]);
+
+            if ($app_prgm_limit) {
                 //Update workflow stage
                 //Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);
-                $appApprData = [
+                /*$appApprData = [
                     'app_id' => $appId,
                     'approver_user_id' => \Auth::user()->user_id,
                     'status' => 1
                 ];
-                $this->appRepo->saveAppApprovers($appApprData);
+                $this->appRepo->saveAppApprovers($appApprData);*/
                 
                 Session::flash('message',trans('backend_messages.limit_assessment_success'));
                 return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
@@ -860,33 +860,60 @@ class CamController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-    
-    /**
-     * Prepare Offer Data to save
-     * 
-     * @param array $requestData
-     * @return array
-     */
-    protected function prepareOfferData($requestData, $addlData=[])
-    {
-        $offerData = [
-            'app_id' => $addlData['app_id'],
-            'prgm_id' => $requestData['prgm_id'],
-            'loan_amount' => isset($addlData['loan_amount']) ? $addlData['loan_amount'] : null,
-            'loan_offer' => isset($requestData['loan_offer']) ? $requestData['loan_offer'] : null,        
-            'interest_rate' => isset($requestData['interest_rate']) ? $requestData['interest_rate'] : null,        
-            'tenor' => isset($requestData['tenor']) ? $requestData['tenor'] : null,        
-            'tenor_old_invoice' => isset($requestData['tenor_old_invoice']) ? $requestData['tenor_old_invoice'] : null,        
-            'margin' => isset($requestData['margin']) ? $requestData['margin'] : null,
-            'overdue_interest_rate'=> isset($requestData['overdue_interest_rate']) ? $requestData['overdue_interest_rate'] : null,        
-            'adhoc_interest_rate'=> isset($requestData['adhoc_interest_rate']) ? $requestData['adhoc_interest_rate'] : null,        
-            'grace_period' => isset($requestData['grace_period']) ? $requestData['grace_period'] : null,        
-            'processing_fee' => isset($requestData['processing_fee']) ? $requestData['processing_fee'] : null,
-            'check_bounce_fee' => isset($requestData['check_bounce_fee']) ? $requestData['check_bounce_fee'] : null,
-            'comment' => isset($requestData['comment']) ? $requestData['comment'] : null,
-            'is_active' => 1,
-        ];
-        return $offerData;
+
+    public function showLimitOffer(Request $request){
+      $appId = $request->get('app_id');
+      $biz_id = $request->get('biz_id');
+      $aplid = $request->get('app_prgm_limit_id');
+      $offerData= $this->appRepo->getProgramOffer($aplid);
+      return view('backend.cam.limit_offer', ['offerData'=>$offerData]);
+    }
+
+    public function updateLimitOffer(Request $request){
+      try{
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        $aplid = (int)$request->get('app_prgm_limit_id');
+        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
+
+        if($offerData){
+          Session::flash('message',trans('backend_messages.limit_assessment_success'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }else{
+          Session::flash('message',trans('backend_messages.limit_assessment_fail'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }
+      }catch(\Exception $ex){
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+      }
+    }
+
+    public function showLimit(Request $request){
+      $appId = $request->get('app_id');
+      $biz_id = $request->get('biz_id');
+      $aplid = $request->get('app_prgm_limit_id');
+      $limitData= $this->appRepo->getLimit($aplid);
+      //dd($limitData);
+      return view('backend.cam.limit', ['limitData'=>$limitData]);
+    }
+
+    public function updateLimit(Request $request){
+      try{
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        $aplid = (int)$request->get('app_prgm_limit_id');
+        $limitData= $this->appRepo->saveProgramLimit($request->all(), $aplid);
+
+        if($limitData){
+          Session::flash('message',trans('backend_messages.limit_assessment_success'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }else{
+          Session::flash('message',trans('backend_messages.limit_assessment_fail'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }
+      }catch(\Exception $ex){
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+      }
     }
 
     public function gstin(Request $request, FinanceModel $fin){

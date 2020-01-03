@@ -173,12 +173,12 @@ public static function saveInvoice($arrInvoice)
      public static function getAllAnchor()
     {
          
-       return self::with('anchorOne')->get();
+       return self::distinct('anchor_id')->with('anchorOne')->get(['anchor_id']);
     }  
      
      public static function getBusinessName()
      {
-        return self::with('business')->where(['created_by' => Auth::user()->user_id])->get();
+        return self::distinct('biz_id')->with('business')->where(['created_by' => Auth::user()->user_id])->get(['biz_id']);
      }   
      
      function Business()

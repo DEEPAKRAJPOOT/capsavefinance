@@ -171,7 +171,7 @@ $(document).ready(function(){
         let status = $(this).attr('value');
         let token = '{{ csrf_token() }}';
         $('.isloader').show();
-        /*--------------------------------------*/
+
         $.ajax({
             url: "{{route('change_cm_fi_status')}}",
             type: "POST",
@@ -190,10 +190,6 @@ $(document).ready(function(){
                 $('.isloader').hide();
               }
         });
-        /*------------------------------------------------------*/
-
-        
-        //hit ajax to save data to log table and update status of fi address and status in biz_addr table
     });
 
     $(document).on('click', '.change-agent-status', function(){
