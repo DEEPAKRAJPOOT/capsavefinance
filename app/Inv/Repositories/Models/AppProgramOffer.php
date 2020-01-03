@@ -179,7 +179,13 @@ class AppProgramOffer extends BaseModel {
             if($prgmOffer){
                 $prgmOffer->update(['is_active'=>0]);
             }
+
+            AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
             return AppProgramOffer::create($data);
         }
+    }
+
+    public function programLimit(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');
     }
 }

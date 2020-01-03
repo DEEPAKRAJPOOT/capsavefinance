@@ -13,7 +13,7 @@
         <label for="txtPassword" class="col-md-4"><b>Loan Offer:</b></label> 
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="prgm_limit_amt" class="form-control" value="{{isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: ''}}" placeholder="Loan Offer " maxlength="15">
+        <input type="text" name="prgm_limit_amt" class="form-control" value="{{isset($offerData->programLimit->limit_amt)? $offerData->programLimit->limit_amt: $limit_amt}}" placeholder="Loan Offer " maxlength="15">
         <span class="s_value"><i class="fa fa-inr"></i>10,00,000 - <i class="fa fa-inr"></i>50,00,000</span>
         </div>
       </div>

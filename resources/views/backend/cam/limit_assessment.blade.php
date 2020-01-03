@@ -13,12 +13,13 @@
                         @csrf
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
+                        <input type="hidden" name="app_limit_id" value="{{$limitData->app_limit_id}}">
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group INR">
                                     <label>Total Limit</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm" name="tot_limit_amt">
+                                    <input type="text" class="form-control form-control-sm" name="tot_limit_amt" value="{{$limitData->tot_limit_amt}}" disabled>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +107,7 @@
                                         <div id="collapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
                                             <ul class="row p-0 m-0">
                                             @if($prgmLimit->offer)
-                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{$prgmLimit->offer->loan_offer}}</b></li>
+                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{$prgmLimit->offer->prgm_limit_amt}}</b></li>
                                                 <li class="col-md-2">Interest(%)  <br> <b>{{$prgmLimit->offer->interest_rate}}</b></li>
                                                 <li class="col-md-2">Invoice Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
                                                 <li class="col-md-2">Margin(%) <br> <b>{{$prgmLimit->offer->margin}}</b></li>

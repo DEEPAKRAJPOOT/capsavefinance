@@ -787,13 +787,15 @@ class CamController extends Controller
         $bizId = $request->get('biz_id');
 
         $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
-        
+        $limitData = $this->appRepo->getAppLimit($appId);
+
         $currStage = Helpers::getCurrentWfStage($appId);                
         $currStageCode = $currStage->stage_code;                    
                 
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
+                ->with('limitData', $limitData)
                 ->with('prgmLimitData', $prgmLimitData)
                 ->with('currStageCode', $currStageCode);
     }
@@ -821,16 +823,17 @@ class CamController extends Controller
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             }
 
-            $app_limit = $this->appRepo->saveAppLimit([
+            // ******** do not delete ***********
+            /*$app_limit = $this->appRepo->saveAppLimit([
                           'app_id'=>$appId,
                           'biz_id'=>$bizId,
                           'tot_limit_amt'=>$request->tot_limit_amt,
                           'created_by'=>\Auth::user()->user_id,
                           'created_at'=>\Carbon\Carbon::now(),
-                          ]);
+                          ]);*/
 
             $app_prgm_limit = $this->appRepo->saveProgramLimit([
-                          'app_limit_id'=>$app_limit->app_limit_id,
+                          'app_limit_id'=>$request->app_limit_id,
                           'app_id'=>$appId,
                           'biz_id'=>$bizId,
                           'anchor_id'=>$request->anchor_id,
@@ -866,7 +869,8 @@ class CamController extends Controller
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
       $offerData= $this->appRepo->getProgramOffer($aplid);
-      return view('backend.cam.limit_offer', ['offerData'=>$offerData]);
+      $limitData= $this->appRepo->getLimit($aplid);
+      return view('backend.cam.limit_offer', ['offerData'=>$offerData,'limit_amt'=>$limitData->limit_amt]);
     }
 
     public function updateLimitOffer(Request $request){
