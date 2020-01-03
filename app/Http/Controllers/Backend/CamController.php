@@ -810,8 +810,19 @@ class CamController extends Controller
     {   
         try {
             $appId = $request->get('app_id');
-
             $bizId = $request->get('biz_id');
+
+            if($request->has('btn_save_offer')){
+              $appApprData = [
+                  'app_id' => $appId,
+                  'approver_user_id' => \Auth::user()->user_id,
+                  'status' => 1
+                ];
+              $this->appRepo->saveAppApprovers($appApprData);
+              Session::flash('message',trans('backend_messages.offer_approved'));
+              return redirect()->back();
+            }
+
             $checkProgram = $this->appRepo->checkduplicateProgram([
               'app_id'=>$appId,
               'anchor_id'=>$request->anchor_id,
@@ -845,14 +856,7 @@ class CamController extends Controller
 
             if ($app_prgm_limit) {
                 //Update workflow stage
-                //Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);
-                /*$appApprData = [
-                    'app_id' => $appId,
-                    'approver_user_id' => \Auth::user()->user_id,
-                    'status' => 1
-                ];
-                $this->appRepo->saveAppApprovers($appApprData);*/
-                
+                //Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);  
                 Session::flash('message',trans('backend_messages.limit_assessment_success'));
                 return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             } else {
