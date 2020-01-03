@@ -687,9 +687,9 @@ class ApplicationController extends Controller
                             Session::flash('error_code', 'no_approved');
                             return redirect()->back();
                         } else {
-                            $whereCondition = ['app_id' => $app_id];
-                            $offerData = $this->appRepo->getOfferData($whereCondition);
-                            $this->appRepo->saveOfferData(['is_approve' => 1], $offerData->prgm_offer_id);
+                            //$whereCondition = ['app_id' => $app_id];
+                            //$offerData = $this->appRepo->getOfferData($whereCondition);
+                            $this->appRepo->updateActiveOfferByAppId($app_id, ['is_approve' => 1]);
                         }
                     }
                 } else if ($currStage->stage_code == 'sales_queue') {
@@ -925,10 +925,10 @@ class ApplicationController extends Controller
             $offerWhereCond['is_active'] = 1; 
             $offerWhereCond['status'] = 1;  
             $offerData = $this->appRepo->getOfferData($offerWhereCond);
-            $offerId = $offerData ? $offerData->offer_id : 0;
+            $offerId = $offerData ? $offerData->prgm_offer_id : 0;
         }
         $offerWhereCond = [];
-        $offerWhereCond['offer_id'] = $offerId;        
+        $offerWhereCond['prgm_offer_id'] = $offerId;        
         $offerData = $this->appRepo->getOfferData($offerWhereCond);
         
         //Update workflow stage
@@ -1175,7 +1175,7 @@ class ApplicationController extends Controller
         
         try {
             $offerWhereCond = [];
-            $offerWhereCond['offer_id'] = $offerId;
+            $offerWhereCond['prgm_offer_id'] = $offerId;
             $offerData = $this->appRepo->getOfferData($offerWhereCond);
 
             $fileName = 'sanction_letter_'. time() . '.pdf';
