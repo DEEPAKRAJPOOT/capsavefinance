@@ -217,6 +217,7 @@ class ProgramController extends Controller {
             'anchor_id' => $request->get('anchor_id'),
             'anchor_user_id' => $request->get('anchor_user_id'),
             'product_name' => $request->get('product_name'),
+            'prgm_name' => $request->get('product_name'),
             'interest_rate' => $request->get('interest_rate'),
             'anchor_sub_limit' => ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : null,
             'anchor_limit' => $request->get('anchor_limit'),
