@@ -334,8 +334,8 @@ class ApplicationController extends Controller
                     $bankData = State::getBankName($file_bank_id);
                     $arrFileData['doc_name'] = $bankData['bank_name'] ?? NULL;
                     $arrFileData['finc_year'] = NULL;
-                    $arrFileData['gst_month'] = NULL;
-                    $arrFileData['gst_year'] = NULL;
+                    $arrFileData['gst_month'] = $arrFileData['bank_month'];
+                    $arrFileData['gst_year'] = $arrFileData['bank_year'];
                     $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
                     break;
                 case '5':
