@@ -51,15 +51,24 @@ class CustomerController extends Controller
 	public function listAppliction(Request $request)
 	{
 		try {
-			$totalAppLimit = 0;
+			$totalLimit = 0;
+			$consumeLimit = 0;
 			$user_id = $request->get('user_id');
 			$userInfo = $this->userRepo->getCustomerDetail($user_id);
-			$application = $this->appRepo->getCustomerApplications($user_id)->toArray();
+			$application = $this->appRepo->getCustomerApplications($user_id);
+			$anchor = $this->appRepo->getCustomerAnchors($user_id);
 
 			foreach ($application as $key => $value) {
-				$totalAppLimit += ($value['app_limit']['tot_limit_amt']) ? $value['app_limit']['tot_limit_amt'] : 0;
+				$totalLimit += (isset($value->appLimit->tot_limit_amt)) ? $value->appLimit->tot_limit_amt : 0;
 			}
-			// dd(number_format($totalAppLimit));
+			foreach ($application as $key => $value) {
+				$consumeLimit += (isset($value->appPrgmOffer->loan_offer)) ? $value->appPrgmOffer->loan_offer : 0;
+			}
+
+			$userInfo->total_limit = number_format($totalLimit);
+			$userInfo->consume_limit = number_format($consumeLimit);
+			$userInfo->avail_limit = number_format($totalLimit- $consumeLimit);
+			
 			return view('lms.customer.list_applications')
 				->with('userInfo', $userInfo)
 				->with('application', $application);

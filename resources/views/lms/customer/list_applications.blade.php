@@ -6,7 +6,7 @@
 		<a href="" class="active">Summary</a>
 	</li>
 	<li>
-		<a href="{{ route('lms_get_application_invoice', ['user_id' => $userInfo->user_id]) }}">View Invoices</a>
+		<a href="{{ route('lms_get_application_invoice', [ 'user_id' => $userInfo->user_id ]) }}">View Invoices</a>
 	</li>
 	<li>
 		<a href="">Repayment History</a>
@@ -41,15 +41,15 @@
 								</tr>
 								<tr>
 									<td class="text-left" width="30%"><b>Total Limit</b></td>
-									<td>1,000,000	</td> 
+									<td>{{ $userInfo->total_limit }} </td> 
 									<td class="text-left" width="30%"><b>Avialable Limit</b></td>
-									<td>70,000,00 </td> 
+									<td>{{ $userInfo->avail_limit }} </td> 
 								</tr>
 								<tr>
 									<td class="text-left" width="30%"><b>Consume Limit</b></td>
-									<td> 30,000,000	</td> 
+									<td>{{ $userInfo->consume_limit }} </td> 
 									<td class="text-left" width="30%"><b>Sales Manager</b></td>
-									<td>Chandan </td>
+									<td>{{ $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name }} </td>
 								</tr>
 							</tbody>
 						</table>
@@ -100,15 +100,13 @@
 									</thead>
 									<tbody>
 
-										@if(count($application)>0)
+										@if($application->count() >0)
 										@foreach ($application AS $app)
 										<tr>
+											<td class="text-left">{{$app->app_id}}</td>
+											<td class="text-left">{{$app->business->biz_entity_name}}</td>
 											<td class="text-left">
-												<a href="">{{$app['app_id']}}</a>
-											</td>
-											<td class="text-left">{{$app['business']['biz_entity_name']}}</td>
-											<td class="text-left">
-												@if($app['status'] == 1)
+												@if($app->status == 1)
 												<button type="button" class="btn btn-success btn-sm">Complete</button>
 												@else
 												<button type="button" class="btn btn-info btn-sm">Not Complete</button>
@@ -116,7 +114,7 @@
 											</td>
 											<td class="text-left">
 												<div class="d-flex inline-action-btn">
-													<a title="View Application Details" href="{{ route('company_details', ['biz_id' => $app['biz_id'], 'app_id' => $app['app_id'] ]) }}" class="btn btn-action-btn btn-sm"><i class="fa fa-eye" aria-hidden="true"></i></a>
+													<a title="View Application Details" href="{{ route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id ]) }}" class="btn btn-action-btn btn-sm"><i class="fa fa-eye" aria-hidden="true"></i></a>
 												   
 											   </div>	           
 											</td>  

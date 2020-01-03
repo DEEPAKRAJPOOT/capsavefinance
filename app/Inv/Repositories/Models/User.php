@@ -169,9 +169,8 @@ class User extends Authenticatable
      */
     public static function getCustomerDetail($user_id)
     {
-         $arrUser = self::from('users as u')
-            ->select('u.*')
-            ->where('u.user_id', (int) $user_id)
+         $arrUser = self::where('user_id', (int) $user_id)
+            ->with('anchor.salesUser')
             ->first();
          
 
@@ -609,6 +608,10 @@ class User extends Authenticatable
 
     public function agency(){
         return $this->hasOne('App\Inv\Repositories\Models\Agency', 'agency_id', 'agency_id');
+    }
+
+    public function anchor(){
+        return $this->hasOne('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
     }
 
     /**

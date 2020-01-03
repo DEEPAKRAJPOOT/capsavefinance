@@ -71,6 +71,10 @@ class Anchor extends BaseModel
 
     
    
+    public function salesUser(){
+        return $this->hasOne('App\Inv\Repositories\Models\User', 'user_id', 'sales_user_id');
+    }
+
      
     /**
      * update user details

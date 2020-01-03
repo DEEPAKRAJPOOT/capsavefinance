@@ -70,12 +70,21 @@ class Application extends BaseModel
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
     }
+    
      /**
      * join with app limit table to get limit amount for application
      */
     public function appLimit()
     {
         return $this->hasOne('App\Inv\Repositories\Models\AppLimit', 'app_id');
+    }
+
+     /**
+     * join with app limit table to get limit amount for application
+     */
+    public function appPrgmOffer()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where('is_active', 1);
     }
 
     /**
