@@ -84,11 +84,12 @@ class DocumentController extends Controller
     
     public function saveDocument(DocumentRequest $request)
     {
-        try {
+        
             $arrFileData = $request->all();
             $docId = (int)$request->doc_id; //  fetch document id
             $appId = (int)$request->app_id; //  fetch app id
             $bizId = (int)$request->biz_id; //  fetch biz id
+        try {
             $userData = $this->userRepo->getUserByAppId($appId);
             $userId = $userData->user_id;
 
@@ -128,28 +129,12 @@ class DocumentController extends Controller
             }
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
-                //Add/Update application workflow stages    
-                $response = $this->docRepo->isUploadedCheck($userId, $appId);            
-                $wf_status = $response->count() < 1 ? 1 : 2;
-                
-                $currentStage = Helpers::getCurrentWfStage($appId);            
-                $curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
-                if ($curr_wf_stage_code == 'doc_upload') {
-                    Helpers::updateWfStage('doc_upload', $appId, $wf_status);
-                } else if($curr_wf_stage_code == 'upload_exe_doc') {
-                    Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status);
-                }
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId]);
-            } else {
-                //Add application workflow stages
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status=2);
+            } else {                                
                 return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId]);
             }
-        } catch (Exception $ex) {
-            //Add application workflow stages
-            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
-                
+        } catch (Exception $ex) {                
             return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId])->withErrors(Helpers::getExceptionMessage($ex));
         }
     }

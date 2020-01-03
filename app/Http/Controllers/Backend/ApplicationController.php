@@ -1205,13 +1205,14 @@ class ApplicationController extends Controller
         $appId = $request->get('app_id');
         $offerId = $request->get('offer_id');
         $bizId = $request->get('biz_id');
-        $prgmDocsWhere = [];
-        $prgmDocsWhere['app_id'] = $appId;
-        $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
-        $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere);    //33;
+        //$prgmDocsWhere = [];
+        //$prgmDocsWhere['app_id'] = $appId;
+        //$prgmDocsWhere['stage_code'] = 'upload_exe_doc';
+        //$prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere);    //33;
         
-        $docId = $prgmDocs ? $prgmDocs[0]->doc_id : null;
-       
+        //$docId = $prgmDocs ? $prgmDocs[0]->doc_id : null;
+        $docId = 33;
+        
         return view('backend.app.upload_sanction_letter')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
