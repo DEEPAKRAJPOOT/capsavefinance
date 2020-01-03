@@ -50,8 +50,6 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-       $res = $this->appRepo->getDoAUsersByAppId(156);
-       dd('jjjjjjjjjjjjjjjjjjjj', $res);
        return view('backend.app.index');              
     }
 
