@@ -11,21 +11,15 @@
                 <div class="block-div">
 
                     <p>  
-                        @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 1)
-                        Flat
-                        @endif 
-
-                        @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 2)
-                        Percentage
-                        @endif 
+                       Charge Amount/Percentage:
                     </p>
                 </div>
             </div>
         </div>
-        @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 1)
+        @if(isset($data->chrg_calculation_type))
         <div class="col-md-4">
             <div class="form-group password-input">
-                <label for="txtPassword">Charge Amount <span class="error_message_label">* </span></label>
+<!--                <label for="txtPassword">Amount/Percent <span class="error_message_label">* </span></label>-->
                 <div class="block-div">
                     <a href="javascript:void(0);" class="verify-owner-no" style="top:12px;">
                                                                     <i class="fa fa-inr" aria-hidden="true"></i></a>
@@ -41,7 +35,7 @@
 
         @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 2)
         <div class=" mt-3 rate row" style="">
-            <div class="col-md-3">
+<!--            <div class="col-md-3">
 
                 {!! Form::text('chrg_calc_min_rate['.$len.']',
                 isset($data->chrg_calc_min_rate)  ?   $data->chrg_calc_min_rate  : null
@@ -55,10 +49,10 @@
                 isset($data->chrg_calc_max_rate)  ?   $data->chrg_calc_max_rate  : null
                 ,['class'=>'form-control clsRequired  pl-2','placeholder'=>"Max Rate" , 'required'=>'required']) !!}
 
-            </div>
+            </div>-->
 
 
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <div class="form-group password-input">
 
                     <div class="block-div">
@@ -69,7 +63,7 @@
                         3 => 'Oustanding Principal',
                         4 => 'Outstanding Interest',
                         5 => 'Overdue Amount'],
-                        isset($data->chrg_tiger_id)  ?   $data->chrg_tiger_id  : null,
+                        isset($data->chrg_applicable_id)  ?   $data->chrg_applicable_id  : null,
                         ['id' => 'chrg_tiger_id_'.$len,
                         'class'=>'form-control clsRequired ',
                         'required'=>'required'
