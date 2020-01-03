@@ -2708,6 +2708,13 @@ if ($err) {
         $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
         return $invoice;
     }
+   //////////////////// use for invoice list/////////////////
+     public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
+      
+        $invoice_data = $this->invRepo->getAllInvoice($this->request);
+        $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
+        return $invoice;
+    } 
 
     
     public function getFiLists(DataProviderInterface $dataProvider, Request $request){

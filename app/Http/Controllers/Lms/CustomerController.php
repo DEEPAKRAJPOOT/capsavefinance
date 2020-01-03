@@ -65,4 +65,14 @@ class CustomerController extends Controller
 
 	}
 
+	/**
+	 * Display a listing of the invoices.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function listInvoice()
+	{
+	   	return view('lms.customer.list_invoices');              
+	}
+
 }

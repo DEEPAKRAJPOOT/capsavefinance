@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lms\ProgramRequest;
+use App\Http\Requests\Lms\SubProgramRequest;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
@@ -282,7 +283,8 @@ class ProgramController extends Controller {
             foreach ($charge as $keys => $values) {
                 $out[] = [
                     'prgm_id' => $program_id,
-                    'chrg_applicable_id' => $values,
+                    'charge_id'=>$values,
+                   // 'chrg_applicable_id' => ,
                     'chrg_calculation_type' => isset($chrg_calculation_type[$keys]) ? $chrg_calculation_type[$keys] : null,
                     'chrg_type' => isset($chrg_type[$keys]) ? $chrg_type[$keys] : null,
                     'chrg_calculation_amt' => isset($chrg_calculation_amt[$keys]) ? str_replace(',', '', $chrg_calculation_amt[$keys]) : null,
@@ -290,7 +292,7 @@ class ProgramController extends Controller {
                     'gst_percentage' => isset($gst_rate[$keys]) ? $gst_rate[$keys] : null,
                     'chrg_calc_min_rate' => isset($chrg_calc_min_rate[$keys]) ? $chrg_calc_min_rate[$keys] : null,
                     'chrg_calc_max_rate' => isset($chrg_calc_max_rate[$keys]) ? $chrg_calc_max_rate[$keys] : null,
-                    'chrg_tiger_id' => isset($chrg_calc_max_rate[$keys]) ? $chrg_tiger_id[$keys] : null,
+                    'chrg_applicable_id' => isset($chrg_tiger_id[$keys]) ? $chrg_tiger_id[$keys] : null,
                     'created_at' => \carbon\Carbon::now(),
                     'created_by' => \Auth::user()->user_id
                 ];
@@ -308,7 +310,7 @@ class ProgramController extends Controller {
      * Save sub program data
      * @param Request $request
      */
-    public function saveSubProgram(Request $request)
+    public function saveSubProgram(SubProgramRequest $request)
     {
         try {
             $user_id = \Auth::user()->user_id;
@@ -381,7 +383,6 @@ class ProgramController extends Controller {
             $this->saveDoaLevel($request, $lastInsertId);
 
             \Session::flash('message', trans('success_messages.sub_program_save_successfully'));
-
             $program_list_id = (\Session::has('list_program_id')) ? \Session::get('list_program_id') : $request->get('parent_prgm_id');
             return redirect()->route('manage_sub_program', ['anchor_id' => $request->get('anchor_id'), 'program_id' => $program_list_id]);
         } catch (Exception $ex) {

@@ -837,7 +837,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Program::getProgramsByAnchor($anchor_id);
     }
-    /***********************not remove*********************/
+
     /**
      * Get Offer Data
      * 
@@ -865,7 +865,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {        
         return AppProgramOffer::updateOfferByAppId((int) $app_id, $arr);
     }
-    /* ----------------------------------------- */
+
     /**
      * Save Offer Data
      * 
@@ -890,16 +890,30 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppProgramLimit::saveProgramLimit($arr, $prgm_limit_id);
     }
 
-    public function getProgramLimitData($where = null)
+    public function getProgramLimitData($appId)
     {
-        $prgmLimitData = AppProgramLimit::getProgramLimitData($where);
+        $prgmLimitData = AppProgramLimit::getProgramLimitData($appId);
         return $prgmLimitData ? $prgmLimitData : [];
     }
 
-    
-    /**************************not remove*****************************/   
+    public function getProgramOffer($app_prgm_limit_id){
+        $prgmLimitOfferData = AppProgramOffer::getProgramOffer($app_prgm_limit_id);
+        return $prgmLimitOfferData ? $prgmLimitOfferData : [];
+    }
 
+    public function addProgramOffer($data, $app_prgm_limit_id){
+        $prgmLimitOfferData = AppProgramOffer::addProgramOffer($data, $app_prgm_limit_id);
+        return $prgmLimitOfferData ? $prgmLimitOfferData : [];
+    }
 
+    public function getLimit($app_prgm_limit_id){
+        $prgmLimitData = AppProgramLimit::getLimit($app_prgm_limit_id);
+        return $prgmLimitData ? $prgmLimitData : [];
+    }
+
+    public function checkduplicateProgram($data){
+        return AppProgramLimit::checkduplicateProgram($data);
+    }
   
     /**
      * update program data
@@ -913,7 +927,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Program::updateProgramData($attributes, $conditions);
     }
     
-    
     /**
      * delete program doc
      * 
@@ -925,13 +938,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ProgramDoc::deleteDoc($conditions);
     }
 
-
     /**
      * Get Applications for Application list data tables
      */
     public function getCustomerApplications($user_id) 
     {
-        return Application::where('user_id', $user_id)->with('business')->get();
+        return Application::where(['user_id' => $user_id, 'status' => 1])->with('business')->get();
     }    
     
     /**

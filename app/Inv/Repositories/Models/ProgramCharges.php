@@ -42,7 +42,7 @@ class ProgramCharges extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'prgm_id', 'chrg_name', 'chrg_desc', 'chrg_type', 'chrg_calculation_type', 'chrg_calc_min_rate', 'chrg_calc_max_rate', 'chrg_calculation_amt', 'gst_percentage', 'chrg_applicable_id', 'is_gst_applicable', 'chrg_tiger_id', 'is_active', 'created_at', 'created_by'
+        'prgm_id', 'charge_id', 'chrg_name', 'chrg_desc', 'chrg_type', 'chrg_calculation_type', 'chrg_calc_min_rate', 'chrg_calc_max_rate', 'chrg_calculation_amt', 'gst_percentage', 'chrg_applicable_id', 'is_gst_applicable', 'chrg_tiger_id', 'is_active', 'created_at', 'created_by'
     ];
     
     

@@ -543,24 +543,58 @@ class DataRenderer implements DataProviderInterface
                     return '<label class="badge '.(($invoice->status == 1)? "badge-primary":"badge-warning").'">'.(($invoice->status == 1)? "Completed":"Incomplete").'</label>';
 
                 })
-               /* ->filter(function ($query) use ($request) {   
-                 
-                    if ($request->get('anchor_id') != '') {                        
-                        $query->where(function ($query) use ($request) {
-                            $anchor_id = trim($request->get('anchor_id'));
-                            $query->where('invoice.anchor_id',$anchor_id);
-                        });                        
-                    }
-                    if ($request->get('supplier_id') != '') {
-                        $query->where(function ($query) use ($request) {
-                           $supplier_id = $request->get('supplier_id');
-                               $query->where('invoice.supplier_id', $supplier_id);
-                       });
-                    }
-                    
-                }) */
-                        ->make(true);
+              ->make(true);
     }  
+    
+    /*      
+     * Get Invoice list for backend
+     */
+    public function getBackendInvoiceList(Request $request,$invoice)
+    { 
+      
+        return DataTables::of($invoice)
+               ->rawColumns(['status','anchor_id'])
+                ->addColumn(
+                    'anchor_id',
+                    function ($invoice) {                        
+                        return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
+                })
+                ->addColumn(
+                    'anchor_name',
+                    function ($invoice) {                        
+                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                })
+                ->addColumn(
+                    'supplier_name',
+                    function ($invoice) { 
+                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                })
+                 ->addColumn(
+                    'program_name',
+                    function ($invoice) {                        
+                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
+                })
+                ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {                        
+                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })
+                 ->addColumn(
+                    'invoice_approve_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                })
+                
+               ->addColumn(
+                    'status',
+                    function ($invoice) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<label class="badge '.(($invoice->status == 1)? "badge-primary":"badge-warning").'">'.(($invoice->status == 1)? "Completed":"Incomplete").'</label>';
+
+                })
+              ->make(true);
+    } 
+    
     /*
      * get application pool
      * 

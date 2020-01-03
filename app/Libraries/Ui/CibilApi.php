@@ -88,7 +88,7 @@ class CibilApi {
                                  <IDS>
                                     <ID>
                                        <TYPE>ID01</TYPE>
-                                       <VALUE>'.$arrOwnerData->pan_gst_hash.'</VALUE>
+                                       <VALUE>'.$arrOwnerData->pan_number.'</VALUE>
                                     </ID>
                                  </IDS>
                               </APPLICANT-SEGMENT>

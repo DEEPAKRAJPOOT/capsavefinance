@@ -11,7 +11,6 @@
             
             <div class=" form-fields">
                <div class="form-sections">
-                 
                      <!-- <div id="js-grid-static"></div>    -->
                      <div class="data">
                         <h2 class="sub-title bg">Management Information</h2>
@@ -128,7 +127,7 @@
                                                 <td><b>Networth</b></td>
                                                 <td> {!! $row->networth ? \Helpers::formatCurreny($row->networth) : '' !!}</td>
                                                 <td><b>Address</b></td>
-                                                <td>{{$row->address->addr_1}}</td>
+                                                <td>{{($row->address->addr_1) ? $row->address->addr_1 : ''}}</td>
                                              </tr> 
                                              <tr>
                                                 <td><b>Mobile</b></td>

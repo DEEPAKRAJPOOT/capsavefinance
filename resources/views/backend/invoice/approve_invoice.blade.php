@@ -44,6 +44,7 @@
   </ul>
 
 
+
   <div class="tab-content">
     
     <div id="menu1" class=" active tab-pane "><br>
@@ -100,7 +101,7 @@
                                     <table id="invoiceList" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                               
+                                                <th><input type="checkbox" id="chkAll"></th> 
                                                <th>Anchor Name</th>
                                                 <th>Supplier Name</th>
                                                 <th>Program Name</th>
@@ -143,15 +144,28 @@
 <script>
 
     var messages = {
-            get_invoice_list: "{{ URL::route('get_invoice_list') }}",
+            backend_get_invoice_list: "{{ URL::route('backend_get_invoice_list') }}",
             get_program_supplier: "{{ URL::route('get_program_supplier') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
  };
  
-   
+   //////////////// for checked & unchecked////////////////
+     $(document).on('click','#chkAll',function(){
+        var isChecked =  $("#chkAll").is(':checked');
+        if(isChecked)
+       {
+         $('input:checkbox').attr('checked','checked');
+       }
+       else
+       {
+              $('input:checkbox').removeAttr('checked');
+       }     
+     });
+     
   //////////////////// onchange anchor  id get data /////////////////
   $("#supplier_id").append("<option value=''>No data found</option>");  
+  $("#supplier_id").append("<option value=''>Select Supplier</option>");  
   $(document).on('change','.changeAnchor',function(){
       var anchor_id =  $(this).val(); 
        $("#supplier_id").empty();
@@ -176,7 +190,7 @@
                     
                       if(obj1.length > 0)
                       {
-                               $("#supplier_id").append("<option value=''>Please select </option>"); 
+                               $("#supplier_id").append("<option value=''> Select Supplier </option>"); 
                             $(obj1).each(function(i,v){
 
                                    $("#supplier_id").append("<option value='"+v.user_id+"'>"+v.f_name+"</option>");  
@@ -196,7 +210,7 @@
   
   
 </script>
-<script src="{{ asset('frontend/js/ajax-js/invoice_list.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
 
 @endsection
  
