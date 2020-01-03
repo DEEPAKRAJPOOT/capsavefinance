@@ -292,17 +292,6 @@ class DocumentRepository implements DocumentInterface
         return UserFile::find($FileId);;
     }
     
-    /**
-     * Get Program Documents
-     * 
-     * @param array $whereCondition
-     * @return mixed
-     * @throws InvalidDataTypeExceptions
-     */
-    public function getProgramDocs($whereCondition=[])
-    {
-        return ProgramDoc::getProgramDocs($whereCondition);
-    }
     
     /**
      * Save Required Documents for Application

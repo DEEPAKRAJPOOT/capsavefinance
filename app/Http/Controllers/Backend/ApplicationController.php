@@ -50,6 +50,8 @@ class ApplicationController extends Controller
      */
     public function index()
     {
+       $res = $this->appRepo->getDoAUsersByAppId(156);
+       dd('jjjjjjjjjjjjjjjjjjjj', $res);
        return view('backend.app.index');              
     }
 
@@ -691,13 +693,13 @@ class ApplicationController extends Controller
                 } else if ($currStage->stage_code == 'sales_queue') {
                     $whereCondition = ['app_id' => $app_id];
                     $offerData = $this->appRepo->getOfferData($whereCondition);
-                    if (isset($offerData->status) && $offerData->status != 1) {
+                    if (isset($offerData->is_approve) && $offerData->is_approve != 1) {
                         Session::flash('error_code', 'no_offer_accepted');
                         return redirect()->back();
                     }
                 } else if ($currStage->stage_code == 'upload_post_sanction_doc') {
                     
-                    $requiredDocs = $this->getProgramDocs(['stage_code' => 'upload_post_sanction_doc']);
+                    $requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_post_sanction_doc']);
                     $docIds = [];
                     foreach($requiredDocs as $doc) {
                         $docIds[] = $doc->doc_id;
@@ -709,7 +711,7 @@ class ApplicationController extends Controller
                     }                                  
                 } else if ($currStage->stage_code == 'upload_pre_sanction_doc') {
                     
-                    $requiredDocs = $this->getProgramDocs(['stage_code' => 'upload_pre_sanction_doc']);
+                    $requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_pre_sanction_doc']);
                     $docIds = [];
                     foreach($requiredDocs as $doc) {
                         $docIds[] = $doc->doc_id;
@@ -726,8 +728,6 @@ class ApplicationController extends Controller
                 
                 if ($nextStage->stage_code == 'approver') {
                     $apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id);
-                    //$addl_data['to_id'] = isset($apprAuthUsers[0]) ? $apprAuthUsers[0]->user_id : null;
-                    //dd('uuuuuuuuuuuuuuuuuuuuu', $apprAuthUsers);
                     if (count($apprAuthUsers) == 0) {
                         Session::flash('error_code', 'no_approval_users_found');
                         return redirect()->back();                           
@@ -1203,9 +1203,10 @@ class ApplicationController extends Controller
         $appId = $request->get('app_id');
         $offerId = $request->get('offer_id');
         $bizId = $request->get('biz_id');
-        $prgmDocsWhere = [];        
+        $prgmDocsWhere = [];
+        $prgmDocsWhere['app_id'] = $appId;
         $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
-        $prgmDocs = $this->docRepo->getProgramDocs($prgmDocsWhere);    //33;
+        $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere);    //33;
         
         $docId = $prgmDocs ? $prgmDocs[0]->doc_id : null;
        

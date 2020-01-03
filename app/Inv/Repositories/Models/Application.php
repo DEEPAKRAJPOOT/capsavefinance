@@ -463,18 +463,58 @@ class Application extends BaseModel
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        $doaUsers = self::select('users.*')
-                ->join('users', 'users.user_id', '=', 'app.user_id')
-                //->join('prgm', 'prgm.anchor_id', '=', 'users.anchor_id')     
-                //->join('prgm_doa_level', 'prgm_doa_level.prgm_id', '=', 'prgm.prgm_id')  
-                //->join('doa_level', 'doa_level.doa_level_id', '=', 'prgm_doa_level.doa_level_id')
-                //->join('doa_level_role', 'doa_level_role.role_id', '=', 'doa_level.doa_level_id')
-                //->join('role_user', 'role_user.role_id', '=', 'doa_level_role.role_id')                 
+        $doaUsers = self::select('role_user.user_id')
+                ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
+                ->join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
+                ->join('prgm_doa_level', 'prgm_doa_level.prgm_id', '=', 'app_prgm_limit.prgm_id')                
+                ->join('doa_level', function ($join) {
+                    $join->on('doa_level.doa_level_id', '=', 'prgm_doa_level.doa_level_id');
+                    $join->on('app_prgm_offer.prgm_limit_amt', '>=', 'doa_level.min_amount');
+                    $join->on('app_prgm_offer.prgm_limit_amt', '<=', 'doa_level.max_amount');
+                })
+                ->join('doa_level_role', 'doa_level_role.doa_level_id', '=', 'doa_level.doa_level_id')
+                ->join('role_user', 'role_user.role_id', '=', 'doa_level_role.role_id')
+                ->join('users', function ($join) {
+                    $join->on('role_user.user_id', '=', 'users.user_id');
+                    $join->on('doa_level.city_id', '=', 'users.city_id');
+                })
                 ->where('app.app_id', $appId)
-                //->where('prgm.is_active', 1)
-                ->first();
+                ->where('app_prgm_offer.is_active', 1)
+                ->groupBy('role_user.user_id1')
+                ->get();
                        
-        return ($doaUsers ? $doaUsers : null);        
+        return ($doaUsers ? $doaUsers : []);
+    }
+    
+    /**
+     * Get Program Documents
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getProgramDocs($whereCondition = [])
+    {
+        //Check $whereCondition is not an array
+        if (!is_array($whereCondition)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $whereCondition['app.app_id']  = $whereCondition['app_id'];
+        $whereCondition['wf_stage.stage_code']  = $whereCondition['stage_code'];
+        $whereCondition['prgm_doc.is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
+        $whereCondition['app_prgm_offer.is_active'] = 1;
+        $whereCondition['app_prgm_offer.is_approve'] = 1;
+        
+        $prgmDocs = self::select('prgm_doc.*')
+                ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
+                ->join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
+                ->join('wf_stage', 'prgm_doc.wf_stage_id', '=', 'wf_stage.wf_stage_id')
+                ->where($whereCondition)
+                ->orderBy('prgm_doc.doc_id')
+                ->groupBy('prgm_doc.doc_id')
+                ->get();
+        return $prgmDocs;
     }
             
 }

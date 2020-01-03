@@ -943,5 +943,27 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getRequiredDocs($where)
     {
         return DocumentMaster::getRequiredDocs($where);
-    }    
+    }
+
+    /**
+     * Get DoA Users By $appId
+     * 
+     * @param type $appId
+     */
+    public function getDoAUsersByAppId($appId)
+    {
+        return Application::getDoAUsersByAppId((int) $appId);
+    }
+
+    /**
+     * Get Program Documents
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getProgramDocs($whereCondition=[])
+    {
+        return ProgramDoc::getProgramDocs($whereCondition);
+    }
 }

@@ -150,9 +150,9 @@ class ProgramController extends Controller {
             $subProgramData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
-            $type_two = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
-            $type_one = $this->appRepo->getDocumentList(['doc_type_id' => 1, 'is_active' => 1])->toArray();
-            $preSanction = $type_two + $type_one;
+            $preSanction = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
+            //$type_one = $this->appRepo->getDocumentList(['doc_type_id' => 1, 'is_active' => 1])->toArray();
+            //$preSanction = $type_two + $type_one;
 
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 3, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
@@ -174,7 +174,7 @@ class ProgramController extends Controller {
             if (isset($subProgramData->programDoc)) {
                 $programDoc = $subProgramData->programDoc->toArray();
                 $sanctionData = array_reduce($programDoc, function ($out, $elem) {
-                    if (in_array($elem['doc_type_id'], [1, 2])) {
+                    if (in_array($elem['doc_type_id'], [2])) {
                         $out['pre'][] = $elem['id'];
                     } else if ($elem['doc_type_id'] == 3) {
                         $out['post'][] = $elem['id'];
@@ -345,7 +345,7 @@ class ProgramController extends Controller {
                     'user_id' => \Auth::user()->user_id,
                     'prgm_id' => $lastInsertId,
                     'doc_id' => (int) $element,
-                    'wf_stage_id' => 10,
+                    'wf_stage_id' => 49,
                     'created_by' => $user_id,
                     'updated_by' => $user_id,
                     'created_at' => \carbon\Carbon::now(),

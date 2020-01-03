@@ -786,9 +786,10 @@ class Helper extends PaypalHelper
      * @param integer $app_id
      * @return mixed
      */
-    public static function saveApprAuthorityUsers($app_id)
+    public static function saveApprAuthorityUsers($app_id=null)
     {
-        $approvers = User::getApprAuthorityUsers();
+        //$approvers = User::getApprAuthorityUsers();
+        $approvers = Application::getDoAUsersByAppId($app_id);
         $data = [];
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         

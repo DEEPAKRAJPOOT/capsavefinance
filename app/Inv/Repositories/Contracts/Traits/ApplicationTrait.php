@@ -16,7 +16,7 @@ trait ApplicationTrait
         if ($prgmDocsWhere['stage_code'] == 'doc_upload') {
             $prgmDocs = $this->appRepo->getRequiredDocs(['doc_type_id' => 1]);
         } else {
-            $prgmDocs = $this->docRepo->getProgramDocs($prgmDocsWhere);
+            $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere);
         }
         return $prgmDocs ;
     }
@@ -30,7 +30,8 @@ trait ApplicationTrait
      * @return mixed
      */
     protected function createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id)
-    {        
+    {   
+        $prgmDocsWhere['app_id'] = $app_id;
         $reqDocs = $this->getProgramDocs($prgmDocsWhere);
                         
         if($reqDocs && count($reqDocs) == 0) {
