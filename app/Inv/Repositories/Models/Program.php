@@ -205,7 +205,7 @@ class Program extends BaseModel {
         $res = self::select('prgm.*', 'u.f_name')
                 ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
                 ->where(['u.user_type' => 2])
-                ->where('prgm.parent_prgm_id', null);
+                ->where('prgm.parent_prgm_id', '0');
         if (!empty($id)) {
             $res = $res->where('prgm.anchor_id', $id);
         }
@@ -241,7 +241,7 @@ class Program extends BaseModel {
             $res = $res->where('prgm_id', $where['prgm_id']);
         }
         if (isset($where['is_null_parent_prgm_id']) && !empty($where['is_null_parent_prgm_id'])) {
-            $res = $res->where('parent_prgm_id', '!=', null);
+            $res = $res->where('parent_prgm_id', '!=', '0');
         }
 
 
