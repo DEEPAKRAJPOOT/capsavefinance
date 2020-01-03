@@ -40,7 +40,7 @@ class CustomerController extends Controller
 	 */
 	public function list()
 	{
-	   	return view('lms.customer.list');              
+		return view('lms.customer.list');              
 	}
 
 	/**
@@ -51,17 +51,22 @@ class CustomerController extends Controller
 	public function listAppliction(Request $request)
 	{
 		try {
-            $user_id = $request->get('user_id');
-            $userInfo = $this->userRepo->getUserDetail($user_id);
-            $application = $this->appRepo->getCustomerApplications($user_id)->toArray();
-            
-            return view('lms.customer.list_applications')
-			  	->with('userInfo', $userInfo)
-			  	->with('application', $application);
+			$totalAppLimit = 0;
+			$user_id = $request->get('user_id');
+			$userInfo = $this->userRepo->getCustomerDetail($user_id);
+			$application = $this->appRepo->getCustomerApplications($user_id)->toArray();
 
-        } catch (Exception $ex) {
-            dd($ex);
-        }
+			foreach ($application as $key => $value) {
+				$totalAppLimit += ($value['app_limit']['tot_limit_amt']) ? $value['app_limit']['tot_limit_amt'] : 0;
+			}
+			// dd(number_format($totalAppLimit));
+			return view('lms.customer.list_applications')
+				->with('userInfo', $userInfo)
+				->with('application', $application);
+
+		} catch (Exception $ex) {
+			dd($ex);
+		}
 
 	}
 
@@ -72,7 +77,7 @@ class CustomerController extends Controller
 	 */
 	public function listInvoice()
 	{
-	   	return view('lms.customer.list_invoices');              
+		return view('lms.customer.list_invoices');              
 	}
 
 }

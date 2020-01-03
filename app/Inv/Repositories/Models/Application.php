@@ -66,10 +66,16 @@ class Application extends BaseModel
         'updated_by'
     ];
 
-
     public function business()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
+    }
+     /**
+     * join with app limit table to get limit amount for application
+     */
+    public function appLimit()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppLimit', 'app_id');
     }
 
     /**

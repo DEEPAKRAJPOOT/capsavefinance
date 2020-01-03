@@ -39,13 +39,9 @@
 									<td class="text-left" width="30%"><b>Mobile</b></td>
 									<td>{{$userInfo->mobile_no}} </td> 
 								</tr>
-								
-							</tbody>
-						</table><table class="table  table-td-right">
-							<tbody>
 								<tr>
 									<td class="text-left" width="30%"><b>Total Limit</b></td>
-									<td>1,000,0000	</td> 
+									<td>1,000,000	</td> 
 									<td class="text-left" width="30%"><b>Avialable Limit</b></td>
 									<td>70,000,00 </td> 
 								</tr>

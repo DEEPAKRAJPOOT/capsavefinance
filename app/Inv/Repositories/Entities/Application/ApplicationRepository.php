@@ -943,7 +943,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getCustomerApplications($user_id) 
     {
-        return Application::where(['user_id' => $user_id, 'status' => 1])->with('business')->get();
+        return Application::where(['user_id' => $user_id, 'status' => 1])->with('business')->with('appLimit')->get();
     }    
 
 }
