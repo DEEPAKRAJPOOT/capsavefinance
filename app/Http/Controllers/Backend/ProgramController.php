@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lms\ProgramRequest;
+use App\Http\Requests\Lms\SubProgramRequest;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -292,7 +293,7 @@ class ProgramController extends Controller {
      * Save sub program data
      * @param Request $request
      */
-    public function saveSubProgram(Request $request)
+    public function saveSubProgram(SubProgramRequest $request)
     {
 
         try {
@@ -361,7 +362,6 @@ class ProgramController extends Controller {
             }
 
             \Session::flash('message', trans('success_messages.sub_program_save_successfully'));
-
             $program_list_id = (\Session::has('list_program_id')) ? \Session::get('list_program_id') : $request->get('parent_prgm_id');
             return redirect()->route('manage_sub_program', ['anchor_id' => $request->get('anchor_id'), 'program_id' => $program_list_id]);
         } catch (Exception $ex) {
