@@ -686,6 +686,10 @@ class ApplicationController extends Controller
                         if (!$isAppApprByAuthority) {
                             Session::flash('error_code', 'no_approved');
                             return redirect()->back();
+                        } else {
+                            $whereCondition = ['app_id' => $app_id];
+                            $offerData = $this->appRepo->getOfferData($whereCondition);
+                            $this->appRepo->saveOfferData(['is_approve' => 1], $offerData->prgm_offer_id);
                         }
                     }
                 } else if ($currStage->stage_code == 'sales_queue') {
