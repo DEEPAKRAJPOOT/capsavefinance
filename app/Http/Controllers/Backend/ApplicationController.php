@@ -836,22 +836,20 @@ class ApplicationController extends Controller
         //$appData = $this->appRepo->getAppDataByAppId($appId);        
         //$loanAmount = $appData ? $appData->loan_amt : 0;
         
-        $offerWhereCond = [];
-        $offerWhereCond['app_id'] = $appId;        
-        $offerData = $this->appRepo->getOfferData($offerWhereCond);
-        $offerId = $offerData ? $offerData->offer_id : 0;
-        $prgmId = $offerData ? $offerData->prgm_id : 0;
-        $loanAmount = $offerData ? $offerData->loan_amount : 0;
+        $offerData = $this->appRepo->getAllOffers($appId);
+        //$offerId = $offerData ? $offerData->offer_id : 0;
+        //$prgmId = $offerData ? $offerData->prgm_id : 0;
+        //$loanAmount = $offerData ? $offerData->loan_amount : 0;
         $currentStage = Helpers::getCurrentWfStage($appId);   
         $roleData = Helpers::getUserRole();        
         $viewGenSancLettertBtn = $currentStage->role_id == $roleData[0]->id ? 1 : 0;
-        
+        //dd($offerData);
         return view('backend.app.offer')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
-                ->with('loanAmount', $loanAmount)
-                ->with('prgm_id', $prgmId)
-                ->with('offerId', $offerId)                
+                //->with('loanAmount', $loanAmount)
+                //->with('prgm_id', $prgmId)
+                //->with('offerId', $offerId)                
                 ->with('offerData', $offerData)
                 ->with('currentStage', $currentStage)
                 ->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
@@ -870,7 +868,7 @@ class ApplicationController extends Controller
         
         try {
             $offerData = [];
-            if ($request->has('btn_accept_offer') && $request->get('btn_accept_offer') == 'Accept') {
+            if ($request->has('btn_accept_offer')) {
                 $offerData['status'] = 1;           
                 $message = trans('backend_messages.accept_offer_success');
                 
@@ -885,7 +883,7 @@ class ApplicationController extends Controller
                 //Update workflow stage
                 Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);                
                 
-            } else if($request->has('btn_reject_offer') && $request->get('btn_reject_offer') == 'Reject') {
+            } else if($request->has('btn_reject_offer')) {
                 $offerData['status'] = 2; 
                 $message = trans('backend_messages.reject_offer_success');
                 
@@ -896,7 +894,8 @@ class ApplicationController extends Controller
                 //Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
             }
             
-            $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
+            // $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
+            $savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData);
             if ($savedOfferData) {
                 Session::flash('message', $message);
                 //return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);

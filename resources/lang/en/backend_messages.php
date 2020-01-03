@@ -18,5 +18,6 @@ return [
     'agency_user_registration_success' => 'Agency user registration successfully',
     'agency_user_registration_updated' => 'Agency user information successfully updated..',
     'already_exist' => 'Already Exist..',
+    'offer_approved' => 'Offer approved successfully.',
 ];
 

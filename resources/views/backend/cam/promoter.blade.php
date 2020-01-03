@@ -113,7 +113,7 @@
                                                 <td><b>PAN Number</b></td>
                                                 <td>{{  $row->pan_number }} 
                                                      <a data-toggle="modal" data-target="#modalPromoter9" data-height="400px" data-width="100%" accesskey="" data-url ="{{route('show_pan_verify_data',['type'=>9,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrPanVerifyNo[$j]->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Verify Pan Status)" data-type="3"> <i class="fa fa-eye"></i></button></a>
-                                                </td>
+                                                                          </td>
                                                 <td><b>Shareholding (%)</b></td>
                                                 <td>{{$row->share_per}}</td>
                                              </tr>

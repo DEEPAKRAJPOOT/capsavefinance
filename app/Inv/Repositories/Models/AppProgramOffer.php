@@ -90,6 +90,33 @@ class AppProgramOffer extends BaseModel {
     }
 
     /**
+     * Get All Offer Data
+     * 
+     * @param int AppId
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAllOffers($appId)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($appId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($appId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();      
+        return $offers ? $offers : null;
+    }
+
+    /**
      * Save Offer Data
      * 
      * @param array $offerData
@@ -145,14 +172,35 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
+        $rowUpdate = self::where('app_id',(int) $app_id)->update($arr);
+
+        return ($rowUpdate ? $rowUpdate : false);
+    }
+
+    public static function updateActiveOfferByAppId($app_id, $arr = [])
+    {
         /**
-         * Check Data is not blank
+         * Check id is not blank
          */
-        if (empty($arr)) {
+        if (empty($app_id)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
 
-        $rowUpdate = self::where('app_id',(int) $app_id)->update($arr);
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($arr)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        $rowUpdate = self::where(['app_id'=>(int) $app_id, 'is_active'=>1])->update($arr);
 
         return ($rowUpdate ? $rowUpdate : false);
     }
@@ -179,7 +227,13 @@ class AppProgramOffer extends BaseModel {
             if($prgmOffer){
                 $prgmOffer->update(['is_active'=>0]);
             }
+
+            AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
             return AppProgramOffer::create($data);
         }
+    }
+
+    public function programLimit(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');
     }
 }

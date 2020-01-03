@@ -308,7 +308,7 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        return Program::with('anchors')->where(['product_id' => $product_id, 'status' => 1])->get(['prgm_id', 'product_id', 'anchor_id']);
+        return Program::distinct('anchor_id')->with('anchors')->where(['product_id' => $product_id, 'status' => 1])->where('parent_prgm_id','<>',0)->get(['anchor_id']);
     }
 
     public function anchors()
@@ -326,7 +326,7 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        return Program::where(['anchor_id' => $anchor_id, 'status' => 1])->get(['prgm_id', 'product_id', 'anchor_id', 'prgm_name']);
+        return Program::where(['anchor_id' => $anchor_id, 'status' => 1])->where('parent_prgm_id','<>',0)->get(['prgm_id', 'product_id', 'anchor_id', 'prgm_name']);
     }
 
     public function product()

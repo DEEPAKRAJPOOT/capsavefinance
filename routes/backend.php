@@ -92,7 +92,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 [
                 'as' => 'application_save',
                 'uses' => 'Backend\ApplicationController@applicationSave'
-            ]);
+            ]);                 
 
             Route::get('fircu/fi', [
                 'as' => 'backend_fi',

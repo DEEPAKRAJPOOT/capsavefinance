@@ -866,6 +866,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppProgramOffer::updateOfferByAppId((int) $app_id, $arr);
     }
 
+    public function updateActiveOfferByAppId($app_id, $arr = [])
+    {        
+        return AppProgramOffer::updateActiveOfferByAppId((int) $app_id, $arr);
+    }
+
     /**
      * Save Offer Data
      * 
@@ -884,6 +889,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function saveAppLimit($arr, $limit_id=null){
         return AppLimit::saveAppLimit($arr, $limit_id);
+    }
+
+    public function getAppLimit($appId){
+        return AppLimit::where('app_id', $appId)->first();
     }
 
     public function saveProgramLimit($arr, $prgm_limit_id=null){
@@ -944,6 +953,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getCustomerApplications($user_id) 
     {
         return Application::where(['user_id' => $user_id, 'status' => 1])->with('business')->get();
+    }
+
+    public function getAllOffers($appId){
+        return AppProgramOffer::getAllOffers($appId);
     }    
     
     /**
