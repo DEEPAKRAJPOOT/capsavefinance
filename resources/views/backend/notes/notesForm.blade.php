@@ -5,7 +5,7 @@
 		<div class="form-group">
                   <input  type="hidden" id="app_id" class="form-control" value="{{$app_id}}">
 	                <label class="">Comment</label>                                          
-	                <textarea class="form-control" id='notesData'></textarea>
+	                <textarea class="form-control" id='notesData'  rows="6"></textarea>
 	                <span id='msg'></span>
 	    </div> 
         <button type="submit" class="btn btn-primary float-right" onclick="submitNotes();">Submit</button>
