@@ -483,11 +483,11 @@ Route::group(
     //////////////// ajax request for upload invoice///////////////////////
       Route::POST('front_program_list', [
                  'as' => 'front_program_list',
-                 'uses' => 'Application\InvoiceController@getProgramList'
+                 'uses' => 'AjaxController@getProgramSingleList'
             ]); 
                Route::POST('front_supplier_list', [
                  'as' => 'front_supplier_list',
-                 'uses' => 'Application\InvoiceController@getSupplierList'
+                 'uses' => 'AjaxController@getSupplierList'
             ]); 
     
     
