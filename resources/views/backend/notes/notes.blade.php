@@ -30,7 +30,7 @@
                                                   </tr> 
                                                 @foreach($arrData as $data)
                                                   <tr>
-                                                      <th class="text-left">{{$data->note_data}}</th>
+                                                      <td class="text-left"><div style="max-height: 100px; max-width: 647px; overflow:auto;">{!! $data->note_data !!}</div></td>
                                                       <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>
                                                   </tr>
                                                 @endforeach

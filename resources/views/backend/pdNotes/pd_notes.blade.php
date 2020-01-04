@@ -31,7 +31,7 @@
                                                 <tr>
                                                     <td class="text-left">@if($data->type==1) physical @elseif($data->type==2) Tele  @endif</td>
                                                     <td class="text-left">{{ $data->title }}</td>
-                                                    <td class="text-left">{!! $data->comments !!}</td>
+                                                    <td class="text-left"><div style="max-height: 100px; max-width: 647px; overflow:auto;">{!! $data->comments !!}</div></td>
                                                     <td class="text-right">{{$data->f_name.' '.$data->m_name}}</td>  
                                                     <td class="text-right">{{$data->created_at }}</td>                                                                        
                                                 </tr>
