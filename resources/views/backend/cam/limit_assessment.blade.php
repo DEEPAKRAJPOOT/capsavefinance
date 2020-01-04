@@ -9,7 +9,7 @@
                 <div class="data">
                     <h2 class="sub-title bg mb-4">Limit By Capsave</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                    <form method="POST" action="{{route('save_limit_assessment')}}">
+                    <form method="POST" action="{{route('save_limit_assessment')}}" onsubmit="return checkValidation()">
                         @csrf
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
@@ -58,7 +58,7 @@
                                 <div class="form-group INR">
                                     <label>Select Limit</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:30px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control" name="limit_amt">
+                                    <input type="text" class="form-control" name="limit_amt" maxlength="15" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                                 </div>
                             </div>
                         </div>
@@ -171,6 +171,11 @@ var messages = {
 $(document).ready(function(){
     $('#product_id').on('change',function(){
         let product_id = $('#product_id').val();
+        if(product_id == ''){
+            $('#program_id').html('<option value="">Select Program</option>');
+            $('#anchor_id').html('<option value="">Select Anchor</option>');
+            return;
+        }
         let token = "{{ csrf_token() }}";
         $('.isloader').show();
         $.ajax({
@@ -192,6 +197,10 @@ $(document).ready(function(){
 
     $('#anchor_id').on('change',function(){
         let anchor_id = $('#anchor_id').val();
+        if(anchor_id == ''){
+            $('#program_id').html('<option value="">Select Program</option>');
+            return;
+        }
         let token = "{{ csrf_token() }}";
         $('.isloader').show();
         $.ajax({
@@ -223,6 +232,45 @@ $(document).ready(function(){
     });
 
 });
+
+function checkValidation(){
+    unsetError('select[name=product_id]');
+    unsetError('select[name=anchor_id]');
+    unsetError('select[name=prgm_id]');
+    unsetError('input[name=limit_amt]');
+
+    let flag = true;
+    let product_id = $('select[name=product_id]').val();
+    let anchor_id = $('select[name=anchor_id]').val();
+    let program_id = $('select[name=prgm_id]').val();
+    let limit_amt = $('input[name=limit_amt]').val().trim();
+
+    if(product_id == ''){
+        setError('select[name=product_id]', 'Please select product type');
+        flag = false;
+    }
+
+    if(anchor_id == ''){
+        setError('select[name=anchor_id]', 'Please select anchor');
+        flag = false;
+    }
+
+    if(program_id == ''){
+        setError('select[name=prgm_id]', 'Please select program');
+        flag = false;
+    }
+
+    if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
+        setError('input[name=limit_amt]', 'Please fill limit amount');
+        flag = false;
+    }
+
+    if(flag){
+        return true;
+    }else{
+        return false;
+    }
+}
 
 function fillAnchors(programs){
     let html = '<option value="">Select Anchor</option>';
