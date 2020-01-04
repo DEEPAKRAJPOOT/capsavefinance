@@ -69,7 +69,7 @@ return [
         'correct_old_password' => 'Please enter correct old password',
         'minlen_confirm_password' => 'Confirm passwords must be at least 6 characters.',
     ],
-    'document' => 'Please save promoter details for futher process.',
+    'document' => 'Please save promoter details for further process.',
     'documentExRequire' => 'No Document required for this application.',
     //Common error messages
     'data_not_found' => 'No data found.',
