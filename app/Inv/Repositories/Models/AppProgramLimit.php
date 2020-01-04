@@ -124,14 +124,15 @@ class AppProgramLimit extends BaseModel {
          return AppProgramLimit::with('program')->where(['anchor_id' =>$aid])->get();
      }
      
-   
-    ///     public  function program()
-    /// {
-         
-       //  return $this->hasOne('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');  
-
-    //// }  
+    
      
+    public static function geAnchortLimitProgram($aid)
+     {
+     
+         return Program::where(['anchor_id' =>$aid,'parent_prgm_id' =>0])->first();
+     }
+     
+    
      public static function getLimitAllAnchor()
      {
   

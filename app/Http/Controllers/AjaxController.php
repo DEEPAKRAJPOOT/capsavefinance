@@ -2982,7 +2982,21 @@ if ($err) {
         return json_encode($programs);
     }
     
-
+     public function getProgramSingleList(Request $request)
+     {
+       
+         $get_program = $this->invRepo->getLimitProgram($request['anchor_id']);
+         $get_program_limit = $this->invRepo->geAnchortLimitProgram($request['anchor_id']);
+         return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program]);
+     }
+     
+      public function getSupplierList(Request $request)
+     {
+        $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
+        $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'get_supplier' =>$get_supplier]);
+     }
+           
 
     /**
      * change program status

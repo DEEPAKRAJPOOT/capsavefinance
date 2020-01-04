@@ -32,14 +32,7 @@
                     <div class="active" id="details">
                         <div class="form-sections">
                             <div class="col-md-8 col-md-offset-2">
-                                <div class="row">
-                <div class="col-md-6">
-                                    <h4><small>Total Limit (₹) : ₹0</small></h4>
-                                 </div>  
-                 <div class="col-md-6 text-right">
-                                    <h4><small>Available Limit (₹) : ₹0</small></h4>
-                                 </div>
-                                </div>
+                           
                                 <div class="clearfix"></div>
                                 <div class="row">
                                     

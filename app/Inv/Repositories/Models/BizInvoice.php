@@ -63,6 +63,7 @@ class BizInvoice extends BaseModel
         'app_id',
         'biz_id',
         'invoice_no',
+        'invoice_due_date',
         'invoice_date',
         'invoice_approve_amount',
         'file_id',
@@ -168,7 +169,12 @@ public static function saveInvoice($arrInvoice)
      public static function getProgram($aid)
     {
        return Program::where(['status' => 1,'anchor_id' =>$aid])->get();
-     }    
+     }   
+     
+     public static function getProgramForLimit($pid)
+    {
+       return Program::where(['prgm_id' =>$pid])->first();
+     }   
       
      public static function getAllAnchor()
     {

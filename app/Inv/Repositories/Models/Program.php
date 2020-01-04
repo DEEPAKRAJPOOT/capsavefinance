@@ -333,6 +333,9 @@ class Program extends BaseModel {
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Product', 'product_id', 'id');
     }
+    
+    
+   
 
     /**
      * Update program 

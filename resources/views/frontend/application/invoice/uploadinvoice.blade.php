@@ -100,10 +100,16 @@
                                             <input type="text" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
                                         </div>
                                     </div> 
+                                         <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="txtCreditPeriod">Invoice Due Date. <span class="error_message_label">*</span> </label>
+                                            <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth datepicker-dis-fdate" placeholder="Invoice Due Date">
+                                        </div>
+                                    </div> 
                   <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Date <span class="error_message_label">*</span> </label>
-                                            <input type="text" id="invoice_date" name="invoice_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate">
+                                            <input type="text" id="invoice_date" placeholder="Invoice Date"  name="invoice_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate">
                                         </div>
                                     </div>
                   
