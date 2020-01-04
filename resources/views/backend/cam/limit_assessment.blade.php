@@ -13,8 +13,8 @@
                         @csrf
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
-                        <input type="hidden" name="app_limit_id" value="{{$limitData->app_limit_id}}">
-                        <div class="row">
+                        {{-- <input type="hidden" name="app_limit_id" value="{{$limitData->app_limit_id}}"> --}}
+                        {{-- <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group INR">
                                     <label>Total Limit</label>
@@ -22,7 +22,7 @@
                                     <input type="text" class="form-control form-control-sm" name="tot_limit_amt" value="{{$limitData->tot_limit_amt}}" disabled>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -68,7 +68,7 @@
                                 <button class="btn btn-success btn-sm float-right" type="submit" name="program_submit">Submit</button>
                             </div>
                         </div>
-                        
+                        </form>
 
                         <div class="row">
                             <div class="col-sm-12">
@@ -140,19 +140,15 @@
                         <div>
                             <a data-toggle="modal" data-target="#limitOfferFrame" data-url ="" data-height="700px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openOfferModal" style="display: none;"><i class="fa fa-plus"></i>Add Offer</a>
                             <a data-toggle="modal" data-target="#editLimitFrame" data-url ="" data-height="350px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openLimitModal" style="display: none;"><i class="fa fa-plus"></i>Edit Limit</a>
-                            @if(request()->get('view_only') || $currStageCode == 'approver')
-                            {!! 
-                                Form::submit(
-                                    'Approve', 
-                                    [
-                                        'name'=>'btn_save_offer', 
-                                        'class' => 'btn btn-success btn-sm float-right  mt-3 ml-3'
-                                    ]
-                                )
-                            !!}
+                            @if((request()->get('view_only') || $currStageCode == 'approver') && ($approveStatus && $approveStatus->status ==0))
+                                <form method="POST" action="{{route('approve_offer')}}">
+                                @csrf
+                                <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
+                                <input name="btn_save_offer" class="btn btn-success btn-sm float-right  mt-3 ml-3" type="submit" value="Approve">
+                                </form>
                             @endif
                         </div>
-                        </form>
+                        
                     </div>
                 </div>
             </div>

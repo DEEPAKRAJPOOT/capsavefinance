@@ -428,6 +428,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@updateLimit'
                 ]);
 
+                Route::post('approve-offer', [
+                    'as' => 'approve_offer',
+                    'uses' => 'Backend\CamController@approveOffer'
+                ]);
+
             }); //end of cam   
         });//end of application
 
