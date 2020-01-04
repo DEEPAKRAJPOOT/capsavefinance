@@ -788,7 +788,7 @@ class CamController extends Controller
 
         $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
         $limitData = $this->appRepo->getAppLimit($appId);
-
+        $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
         $currStageCode = $currStage->stage_code;                    
                 
@@ -796,6 +796,7 @@ class CamController extends Controller
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
                 ->with('limitData', $limitData)
+                ->with('approveStatus', $approveStatus)
                 ->with('prgmLimitData', $prgmLimitData)
                 ->with('currStageCode', $currStageCode);
     }
@@ -807,7 +808,7 @@ class CamController extends Controller
      * @return view
      */
     public function saveLimitAssessment(Request $request)            
-    {   
+    {
         try {
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
@@ -866,6 +867,17 @@ class CamController extends Controller
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+    public function approveOffer(Request $request){
+        $appApprData = [
+            'app_id' => $appId,
+            'approver_user_id' => \Auth::user()->user_id,
+            'status' => 1
+          ];
+        $this->appRepo->saveAppApprovers($appApprData);
+        Session::flash('message',trans('backend_messages.offer_approved'));
+        return redirect()->back();
     }
 
     public function showLimitOffer(Request $request){

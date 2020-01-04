@@ -746,6 +746,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return AppApprover::saveAppApprovers(($attributes));
     }
+
+    public function getApproverStatus($where){
+        if(!is_array($where)){
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+        return AppApprover::where($where)->first();
+    }
     
     /**
      * get charges list
