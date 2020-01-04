@@ -377,9 +377,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'cam_finance_store',
                     'uses' => 'Backend\CamController@finance_store'
                 ]);
+                
                 Route::get('limit-assessment', [
-                'as' => 'limit_assessment',
-                'uses' => 'Backend\CamController@showLimitAssessment'
+                    'as' => 'limit_assessment',
+                    'uses' => 'Backend\CamController@showLimitAssessment'
                 ]);  
             
                 Route::post('save-limit-assessment', [
