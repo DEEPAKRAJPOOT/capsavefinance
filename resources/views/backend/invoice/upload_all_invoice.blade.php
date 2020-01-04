@@ -58,7 +58,7 @@
                                             </label>
                                              <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
-                                   <input type="text" id="pro_limit_hide">
+                                            <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                                    <span id="pro_limit"></span>
                                         </div>
                                     </div>
@@ -95,6 +95,7 @@
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice  Amount <span class="error_message_label">*</span> </label>
                                             <input type="text" class="form-control" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
+                                            <span id="msgProLimit" class="error"></span>
                                         </div>
                                     </div>
                    <div class="col-md-4">
@@ -151,14 +152,31 @@ var messages = {
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
    };
    
+   $('[name="invoice_approve_amount"]').on('change blur keyup', function() {
+     var pro_limit = parseInt($("#pro_limit_hide").val());
+     var invoice_approve_amount = parseInt($("#invoice_approve_amount").val());
+    
+     if(invoice_approve_amount  > pro_limit)
+     {
+       
+         $("#msgProLimit").text('Invoice amount should not more then program limit');
+         $("#submit").css("pointer-events","none");
+         return false;
+         
+     }
+     else
+     {
+         $("#msgProLimit").empty();
+         $("#submit").css("pointer-events","auto");
+         return true;
+     }
+});
+   
  $(document).ready(function () {
        $("#program_id").append("<option value=''>No data found</option>");  
         $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
-     var pro_limit = $("#pro_limit").text();
-     alert(pro_limit);
-     var invoice_approve_amount = $("#invoice_approve_amount").val();
      
      if ($('form#signupForm').validate().form()) {     
         $("#anchor_id" ).rules( "add", {
@@ -214,15 +232,7 @@ var messages = {
         required: "Please upload Invoice Copy",
         }
         }); 
-        if(invoice_approve_amount > pro_limit)        {
-          $("#invoice_approve_amount").rules("add", {
-          compare:true,
-          messages: {
-              required: "Invoice Amount should not more then Program Limit",
-          }
-          });
-          }
-          
+        
          
         } else {
          alert();
