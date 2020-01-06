@@ -152,6 +152,8 @@ try {
             },
             columns: [
                 {data: 'prgm_id'},
+                {data: 'product_id'},
+                
                 {data: 'f_name'},
                 {
                     data: 'prgm_name'
