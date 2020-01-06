@@ -37,7 +37,7 @@
                                                         <p class="float-left mr-3 mb-0">
                                                             <b>Total Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i> 
-                                                          {!! isset($programData->anchor_limit) ?  \Helpers::formatCurreny($programData->anchor_limit )   : null !!}
+                                                            {!! isset($programData->anchor_limit) ?  \Helpers::formatCurreny($programData->anchor_limit )   : null !!}
                                                         </p>
 
 
@@ -72,7 +72,7 @@
                                                 <div class="col-md-12">
                                                     <h5 class="card-title">Terms</h5>
                                                 </div>
-                                                
+
                                                 <div class="col-md-12">
                                                     <div class="form-group INR">
                                                         <div class="row">
@@ -693,8 +693,8 @@
         get_charges_html: "{{ URL::route('get_charges_html') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-        please_select: "{{ trans('backend.please_select') }}"
-
+        please_select: "{{ trans('backend.please_select') }}",
+        invoiceDataCount: "{{ ($invoiceDataCount > 0) ? 'true' : 'false' }}"
     };
 
 

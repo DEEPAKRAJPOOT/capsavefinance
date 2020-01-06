@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lms\ProgramRequest;
 use App\Http\Requests\Lms\SubProgramRequest;
+use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
@@ -18,11 +19,18 @@ class ProgramController extends Controller {
     protected $master;
 
     /**
+     *
+     * @var type mixed
+     */
+    protected $invRepo;
+
+    /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo, InvMasterRepoInterface $master)
+    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo, InvMasterRepoInterface $master,
+            InvoiceInterface $invRepo)
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('checkBackendLeadAccess');
@@ -30,6 +38,7 @@ class ProgramController extends Controller {
         $this->userRepo = $user;
         $this->appRepo = $app_repo;
         $this->master = $master;
+        $this->invRepo = $invRepo;
     }
 
     /**
@@ -152,9 +161,6 @@ class ProgramController extends Controller {
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
             $preSanction = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
-            //$type_one = $this->appRepo->getDocumentList(['doc_type_id' => 1, 'is_active' => 1])->toArray();
-            //$preSanction = $type_two + $type_one;
-
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 3, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
 
@@ -164,7 +170,6 @@ class ProgramController extends Controller {
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal;
             }
-
 
             /**
              * get DOA list 
@@ -190,14 +195,19 @@ class ProgramController extends Controller {
             if (isset($subProgramData->programCharges)) {
                 $programCharges = $subProgramData->programCharges->toArray();
             }
-
-            $getDoaLevel = $this->master->getProgramDoaLevelData(['prgm_id' => $subProgramData->prgm_id])->toArray();
-            $doaResult = array_reduce($getDoaLevel, function ($out, $elem) {
-                $out[] = $elem['doa_level_id'];
-                return $out;
-            }, []);
+            $doaResult = [];
+            $invoiceDataCount = 0;
+            
+            if (isset($subProgramData->prgm_id)) {
+                $getDoaLevel = $this->master->getProgramDoaLevelData(['prgm_id' => $subProgramData->prgm_id])->toArray();
+                $doaResult = array_reduce($getDoaLevel, function ($out, $elem) {
+                    $out[] = $elem['doa_level_id'];
+                    return $out;
+                }, []);
+                $invoiceDataCount = $this->invRepo->getInvoiceData(['program_id' => $subProgramData->prgm_id], ['invoice_id'])->count();
+            }
+            
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
-
             return view('backend.lms.add_sub_program',
                     compact(
                             'anchor_id',
@@ -214,7 +224,8 @@ class ProgramController extends Controller {
                             'programCharges',
                             'subProgramData',
                             'action',
-                            'doaResult'
+                            'doaResult',
+                            'invoiceDataCount'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -284,8 +295,8 @@ class ProgramController extends Controller {
             foreach ($charge as $keys => $values) {
                 $out[] = [
                     'prgm_id' => $program_id,
-                    'charge_id'=>$values,
-                   // 'chrg_applicable_id' => ,
+                    'charge_id' => $values,
+                    // 'chrg_applicable_id' => ,
                     'chrg_calculation_type' => isset($chrg_calculation_type[$keys]) ? $chrg_calculation_type[$keys] : null,
                     'chrg_type' => isset($chrg_type[$keys]) ? $chrg_type[$keys] : null,
                     'chrg_calculation_amt' => isset($chrg_calculation_amt[$keys]) ? str_replace(',', '', $chrg_calculation_amt[$keys]) : null,

@@ -446,6 +446,13 @@ try {
 
         $(document).on('click', '.save_sub_program', function (e) {
             e.preventDefault();
+
+            if (messages.invoiceDataCount == 'true')
+            {
+                customAlert('Alert!', 'This sub-program can not be update.');
+                return false;
+            }
+
             let form = $('#add_sub_program');
             var rules = {};
             var msg = {};
