@@ -44,6 +44,7 @@ class Program extends BaseModel {
     protected $fillable = [
         'anchor_id',
         'anchor_user_id',
+        'product_id',
         'parent_prgm_id',
         'prgm_name',
         'prgm_type',
