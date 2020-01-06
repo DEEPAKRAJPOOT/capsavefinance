@@ -440,6 +440,20 @@ Route::group(
         'uses' => 'AjaxController@getBackendUserList'
         ]
     );
+    
+    Route::post(
+        'ajax-doa-levels-list', [
+            'as' => 'ajax_doa_levels_list',
+            'uses' => 'AjaxController@getDoaLevelsList'
+        ]
+    );
+        
+    Route::post(
+        'ajax-get-city', [
+            'as' => 'ajax_get_city',
+            'uses' => 'AjaxController@getCityList'
+        ]
+    );
 
     Route::post(
         'get-anchors-by-product',
@@ -455,7 +469,6 @@ Route::group(
         'as' => 'ajax_get_programs_by_anchor',
         'uses' => 'AjaxController@getProgramsByAnchor'
         ]
-
     );    
 
      
@@ -483,11 +496,11 @@ Route::group(
     //////////////// ajax request for upload invoice///////////////////////
       Route::POST('front_program_list', [
                  'as' => 'front_program_list',
-                 'uses' => 'Application\InvoiceController@getProgramList'
+                 'uses' => 'AjaxController@getProgramSingleList'
             ]); 
                Route::POST('front_supplier_list', [
                  'as' => 'front_supplier_list',
-                 'uses' => 'Application\InvoiceController@getSupplierList'
+                 'uses' => 'AjaxController@getSupplierList'
             ]); 
     
     

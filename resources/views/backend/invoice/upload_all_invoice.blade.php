@@ -29,21 +29,15 @@
                     <div class="active" id="details">
                         <div class="form-sections">
                             <div class="col-md-8 col-md-offset-2">
-                                <div class="row">
-                <div class="col-md-6">
-                                    <h4><small>Total Limit (₹) : ₹0</small></h4>
-                                 </div>  
-                 <div class="col-md-6 text-right">
-                                    <h4><small>Available Limit (₹) : ₹0</small></h4>
-                                 </div>
-                                </div>
+                          
                                 <div class="clearfix"></div>
                                 <div class="row">
                                     
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Anchor Name <!-- from enchor table --> <span class="error_message_label">*</span></label>
-                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id" name="anchor_id">
+                            
+                                            <select readonly="readonly" class="form-control changeAnchor" id="anchor_id"  name="anchor_id">
                                              
                                             @if(count($get_anchor) > 0)
                                                 <option value="">Please Select</option>
@@ -53,6 +47,7 @@
                                                
                                                 @endif
                                              </select>
+                                             <span id="anc_limit"></span>
                                         </div>
                                     </div>
                    
@@ -63,6 +58,8 @@
                                             </label>
                                              <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
+                                            <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
+                                   <span id="pro_limit"></span>
                                         </div>
                                     </div>
                                   
@@ -77,14 +74,20 @@
                                    
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice No. <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Invoice  No. <span class="error_message_label">*</span> </label>
                                             <input type="text" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
+                                        </div>
+                                    </div> 
+                                     <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="txtCreditPeriod">Invoice Due Date. <span class="error_message_label">*</span> </label>
+                                            <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth datepicker-dis-fdate" placeholder="Invoice Due Date">
                                         </div>
                                     </div> 
                   <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Date <span class="error_message_label">*</span> </label>
-                                            <input type="text" id="invoice_date" name="invoice_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate">
+                                            <input type="text" id="invoice_date" name="invoice_date" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate">
                                         </div>
                                     </div>
                   
@@ -92,6 +95,7 @@
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice  Amount <span class="error_message_label">*</span> </label>
                                             <input type="text" class="form-control" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
+                                            <span id="msgProLimit" class="error"></span>
                                         </div>
                                     </div>
                    <div class="col-md-4">
@@ -148,11 +152,32 @@ var messages = {
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
    };
    
+   $('[name="invoice_approve_amount"]').on('change blur keyup', function() {
+     var pro_limit = parseInt($("#pro_limit_hide").val());
+     var invoice_approve_amount = parseInt($("#invoice_approve_amount").val());
+    
+     if(invoice_approve_amount  > pro_limit)
+     {
+       
+         $("#msgProLimit").text('Invoice amount should not more then program limit');
+         $("#submit").css("pointer-events","none");
+         return false;
+         
+     }
+     else
+     {
+         $("#msgProLimit").empty();
+         $("#submit").css("pointer-events","auto");
+         return true;
+     }
+});
+   
  $(document).ready(function () {
        $("#program_id").append("<option value=''>No data found</option>");  
         $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
+     
      if ($('form#signupForm').validate().form()) {     
         $("#anchor_id" ).rules( "add", {
         required: true,
@@ -182,6 +207,12 @@ var messages = {
         }
         });
         
+        $("#invoice_due_date" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter Invoice Due Date",
+        }
+        }); 
         $("#invoice_date" ).rules( "add", {
         required: true,
         messages: {
@@ -201,7 +232,7 @@ var messages = {
         required: "Please upload Invoice Copy",
         }
         }); 
-          
+        
          
         } else {
          alert();
@@ -213,7 +244,13 @@ var messages = {
   $(document).on('change','.changeAnchor',function(){
       
       var anchor_id =  $(this).val(); 
+      if(anchor_id=='')
+      {
+            $("#pro_limit").empty();
+             $("#pro_limit_hide").empty();
+      }
       $("#program_id").empty();
+      $("#anc_limit").empty();
       var postData =  ({'anchor_id':anchor_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_program_list,
@@ -229,12 +266,18 @@ var messages = {
                     {
                       
                         var obj1  = data.get_program;
+                        var obj2   =  data.limit;
+                       
+                        $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
+                          
                      
                            $("#program_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
-                            
+                           
                                    $("#program_id").append("<option value='"+v.program.prgm_id+"'>"+v.program.prgm_name+"</option>");  
                             });
+                           
+                        
                        
                     }
                     else
@@ -250,9 +293,11 @@ var messages = {
   
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeSupplier',function(){
-      
+    
       var program_id =  $(this).val(); 
       $("#supplier_id").empty();
+      $("#pro_limit").empty();
+      $("#pro_limit_hide").empty();
       var postData =  ({'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
@@ -268,8 +313,11 @@ var messages = {
                     {
                       
                         var obj1  = data.get_supplier;
-                     
-                           $("#supplier_id").append("<option value=''>Please Select</option>");  
+                        var obj2   =  data.limit;
+                       
+                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
+                         $("#pro_limit_hide").val(obj2.anchor_limit);  
+                         $("#supplier_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
                             
                                    $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  

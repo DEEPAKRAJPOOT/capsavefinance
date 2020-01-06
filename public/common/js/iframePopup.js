@@ -693,6 +693,48 @@ $(document).ready(function () {
                         }
                 );
         });
+        
+        $("#addDoaLevelFrame").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            $("#addDoaLevelFrame iframe").attr(
+                    {
+                        'src': url,
+                        'height': height,
+                        'width': width
+                    }
+            );
+        });
+        
+        $("#editDoaLevelFrame").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            $("#editDoaLevelFrame iframe").attr(
+                    {
+                        'src': url,
+                        'height': height,
+                        'width': width
+                    }
+            );
+        });
+        
+        $("#assignRoleLevelFrame").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            $("#assignRoleLevelFrame iframe").attr(
+                    {
+                        'src': url,
+                        'height': height,
+                        'width': width
+                    }
+            );
+        });          
 
         $("#limitOfferFrame").on('show.bs.modal', function (e) {
                 var parent = $(e.relatedTarget);

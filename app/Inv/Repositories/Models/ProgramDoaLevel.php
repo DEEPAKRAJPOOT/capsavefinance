@@ -3,27 +3,24 @@
 namespace App\Inv\Repositories\Models;
 
 use DB;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
-use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class DocumentMaster extends BaseModel {
-
-    /**
-     * The database table used by the model.
+class ProgramDoaLevel extends BaseModel {
+    /* The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'mst_doc';
+
+    protected $table = 'prgm_doa_level';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'id';
+    //  protected $primaryKey = 'prgm_doc_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -45,60 +42,73 @@ class DocumentMaster extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'doc_name',
-        'is_active',
-        'created_by',
-        'updated_by'
+        'doa_level_id',
+        'prgm_id',
+        'is_required',
+        'min_amount',
+        'max_amount'
     ];
 
-    
     /**
-     * get Document list
+     * insert DOA level
      * 
-     * @param type $where array
-     * @return type Mixed
-     * @throws BlankDataExceptions
-     * @throws InvalidDataTypeExceptions
+     * @param type $data array
+     * @return type mixed
      */
-    public static function getDocumentList($where)
+    public static function insertDoaLevel($data)
     {
-        if (empty($where)) {
+
+        if (empty($data)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
 
-
-        /**
-         * Check Data is Array
-         */
-        if (!is_array($where)) {
+        if (!is_array($data)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
-        $res = self::where($where)->pluck('doc_name', 'id');
+        $res = self::insert($data);
         return $res ?: false;
     }
 
     /**
-     * Get required documents
+     * Delete DOA level 
      * 
-     * @param array $where
-     * @return mixed
+     * @param type $where Array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
      */
-    public static function getRequiredDocs($where)
+    public static function deleteDoaLevelBywhere($where)
     {
         if (empty($where)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
 
-
-        /**
-         * Check Data is Array
-         */
         if (!is_array($where)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
-        $res = self::select('*','id as doc_id')->where($where)->get();
-        return $res ?: [];        
-    }    
+        return self::where($where)->delete();
+    }
+
+    /**
+     * get Program DOA level Data
+     * 
+     * @param type $where Array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getProgramDoaLevelData($where)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        $res = self::where($where)->get();
+        return $res ?: false;
+    }
+
 }

@@ -33,14 +33,7 @@
                     <div class="active" id="details">
                         <div class="form-sections">
                             <div class="col-md-8 col-md-offset-2">
-                                <div class="row">
-                <div class="col-md-6">
-                                    <h4><small>Total Limit (₹) : ₹0</small></h4>
-                                 </div>  
-                 <div class="col-md-6 text-right">
-                                    <h4><small>Available Limit (₹) : ₹0</small></h4>
-                                 </div>
-                                </div>
+                               
                                 <div class="clearfix"></div>
                                 <div class="row">
                                     
@@ -100,10 +93,16 @@
                                             <input type="text" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
                                         </div>
                                     </div> 
+                                         <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="txtCreditPeriod">Invoice Due Date. <span class="error_message_label">*</span> </label>
+                                            <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth datepicker-dis-fdate" placeholder="Invoice Due Date">
+                                        </div>
+                                    </div> 
                   <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Date <span class="error_message_label">*</span> </label>
-                                            <input type="text" id="invoice_date" name="invoice_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate">
+                                            <input type="text" id="invoice_date" placeholder="Invoice Date"  name="invoice_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate">
                                         </div>
                                     </div>
                   

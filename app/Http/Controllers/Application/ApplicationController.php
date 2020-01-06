@@ -223,6 +223,7 @@ class ApplicationController extends Controller
     
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
+          
             if($requiredDocs->count() != 0){
                 $docData = $this->docRepo->appDocuments($requiredDocs, $appId);
             }

@@ -129,6 +129,7 @@
             }
             @endphp
         
+        <!--
         <div class="col-md-6 is-apprv-req" style="display:{{ $disp }}">
             <div class="form-group">
                 <label for="txtMobile">
@@ -143,8 +144,45 @@
                 is approval required?                    
                 </label>
             </div>
-        </div>        
+        </div>
+        -->
+        
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="txtCreditPeriod"> State
+                    <span class="mandatory">*</span>
+                </label>                                                
+                {!!
+                    Form::select('state_id',
+                    [''=>'Select State'] + $stateList,
+                    $userData->state_id,
+                    [
+                    'class' => 'form-control',                
+                    'id' => 'state_id'
+                    ])
+                !!}                        
+            </div>
+        </div>         
     </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="txtCreditPeriod"> City
+                    <span class="mandatory">*</span>
+                </label>                                                
+                {!!
+                    Form::select('city_id',
+                    [''=>'Select City']+$cityList,
+                    $userData->city_id,
+                    [
+                    'class' => 'form-control',                
+                    'id' => 'city_id'
+                    ])
+                !!}                        
+            </div>
+        </div>    
+    </div>     
 
     <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>  
 
@@ -167,7 +205,8 @@ var messages = {
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     is_accept: "{{ Session::get('is_accept') }}",
-    get_backend_users_url : "{{ route('ajax_get_backend_user_list') }}"
+    get_backend_users_url : "{{ route('ajax_get_backend_user_list') }}",
+    ajax_get_city_url : "{{ route('ajax_get_city') }}",
 };
 </script>
 <script type="text/javascript">
@@ -195,8 +234,9 @@ var messages = {
                     equalTo: "#password",
                     required:true
                     
-                }
-            
+                },
+                state_id: "required",
+                city_id: "required"
             
             },
             // Specify validation error messages
@@ -241,7 +281,32 @@ var messages = {
                     //$(".isloader").hide();
                 },
             })        
-        })        
+        })    
+        
+        $(document).on('change', '#state_id', function(){
+            var state_id = $(this).val();       
+            $.ajax({
+                url  : messages.ajax_get_city_url,
+                type :'POST',
+                data : {state_id : state_id, _token : messages.token},
+                beforeSend: function() {
+                    $(".isloader").show();
+                },
+                dataType : 'json',
+                success:function(result) {
+                    var optionList = result;
+                    $("#city_id").empty().append('<option>Select City</option>');
+                    $.each(optionList, function (index, data) {
+                        $("#city_id").append('<option  value="' + data.id + '"  >' + data.name +  '</option>');
+                    }); 
+                },
+                error:function(error) {
+                },
+                complete: function() {
+                    $(".isloader").hide();
+                }
+            })
+        })  
     });
 
 </script>

@@ -122,12 +122,16 @@ class CibilController extends Controller
         $arrOwnerData->pan_gst_hash = $arrBizData['0']['pan_gst_hash'];
         $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
         $arrOwnerData->biz_cin = $arrBizData['0']['cin'];
+        $arrOwnerAddr = BizOwner::with('address')->where('biz_owner_id', $arrData['biz_owner_id'])->first();
+        if($arrOwnerAddr->address!=null) {
+            $arrOwnerData->owner_addr = $arrOwnerAddr->address->addr_1;
+        }else {
+            $arrOwnerData->owner_addr = '';
+        }
         $responce =  $CibilApi->getCommercialCibilAcknowledgement($arrOwnerData);
-
         $p = xml_parser_create('utf-8');
         xml_parse_into_struct($p, $responce, $resp);
         xml_parser_free($p);
-
         $acknowledgementResult = [];
         foreach ($resp as $key => $value) {
             if ($value['type'] == 'complete') {

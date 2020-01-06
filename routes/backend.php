@@ -92,7 +92,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 [
                 'as' => 'application_save',
                 'uses' => 'Backend\ApplicationController@applicationSave'
-            ]);
+            ]);                 
 
             Route::get('fircu/fi', [
                 'as' => 'backend_fi',
@@ -377,9 +377,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'cam_finance_store',
                     'uses' => 'Backend\CamController@finance_store'
                 ]);
+                
                 Route::get('limit-assessment', [
-                'as' => 'limit_assessment',
-                'uses' => 'Backend\CamController@showLimitAssessment'
+                    'as' => 'limit_assessment',
+                    'uses' => 'Backend\CamController@showLimitAssessment'
                 ]);  
             
                 Route::post('save-limit-assessment', [
@@ -426,6 +427,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::post('update-limit', [
                     'as' => 'update_limit',
                     'uses' => 'Backend\CamController@updateLimit'
+                ]);
+
+                Route::post('approve-offer', [
+                    'as' => 'approve_offer',
+                    'uses' => 'Backend\CamController@approveOffer'
                 ]);
 
             }); //end of cam   
@@ -626,7 +632,37 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save_industries', [
                 'as' => 'save_industries',
                 'uses' => 'Master\IndustryController@saveIndustries'
-            ]);       
+            ]); 
+            
+            Route::get('/doa-levels', [
+                'as' => 'manage_doa',
+                'uses' => 'Master\DoaController@index'
+            ]);
+
+            Route::get('/add-doa-level', [
+                'as' => 'add_doa_level',
+                'uses' => 'Master\DoaController@addDoaLevel'
+            ]);
+            
+            Route::get('/edit-doa-level', [
+                'as' => 'edit_doa_level',
+                'uses' => 'Master\DoaController@addDoaLevel'
+            ]);            
+            
+            Route::post('/save_doa-level', [
+                'as' => 'save_doa_level',
+                'uses' => 'Master\DoaController@saveDoaLevel'
+            ]);
+                        
+            Route::get('/assign-role-level', [
+                'as' => 'assign_role_level',
+                'uses' => 'Master\DoaController@assignRoleLevel'
+            ]);
+            
+            Route::post('/save-assign-role-level', [
+                'as' => 'save_assign_role_level',
+                'uses' => 'Master\DoaController@saveAssignRoleLevel'
+            ]);            
         });
 
         Route::group(['prefix' => 'agency'], function () {

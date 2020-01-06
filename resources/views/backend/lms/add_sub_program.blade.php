@@ -658,7 +658,7 @@
                                                 </div>
 
                                             </div>
-
+                                            @include('backend.lms.doalevel' ,['doaLevelList'=>$doaLevelList])
 
                                             <div class="col-md-12">
                                                 <div class="text-right mt-3">

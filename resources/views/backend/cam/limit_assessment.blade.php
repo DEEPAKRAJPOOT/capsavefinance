@@ -9,19 +9,20 @@
                 <div class="data">
                     <h2 class="sub-title bg mb-4">Limit By Capsave</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                    <form method="POST" action="{{route('save_limit_assessment')}}">
+                    <form method="POST" action="{{route('save_limit_assessment')}}" onsubmit="return checkValidation()">
                         @csrf
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
-                        <div class="row">
+                        {{-- <input type="hidden" name="app_limit_id" value="{{$limitData->app_limit_id}}"> --}}
+                        {{-- <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group INR">
                                     <label>Total Limit</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm" name="tot_limit_amt">
+                                    <input type="text" class="form-control form-control-sm" name="tot_limit_amt" value="{{$limitData->tot_limit_amt}}" disabled>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -57,14 +58,14 @@
                                 <div class="form-group INR">
                                     <label>Select Limit</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:30px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control" name="limit_amt">
+                                    <input type="text" class="form-control" name="limit_amt" maxlength="15" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-12">
-                                <button class="btn btn-success btn-sm float-right " type="submit">Submit</button>
+                                <button class="btn btn-success btn-sm float-right" type="submit" name="program_submit">Submit</button>
                             </div>
                         </div>
                         </form>
@@ -106,15 +107,15 @@
                                         <div id="collapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
                                             <ul class="row p-0 m-0">
                                             @if($prgmLimit->offer)
-                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{$prgmLimit->offer->loan_offer}}</b></li>
+                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{$prgmLimit->offer->prgm_limit_amt}}</b></li>
                                                 <li class="col-md-2">Interest(%)  <br> <b>{{$prgmLimit->offer->interest_rate}}</b></li>
                                                 <li class="col-md-2">Invoice Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
                                                 <li class="col-md-2">Margin(%) <br> <b>{{$prgmLimit->offer->margin}}</b></li>
                                                 <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>{{$prgmLimit->offer->processing_fee}}</b></li>
-                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">+ Add</button></li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
                                             @else
                                                 <li class="col-md-10">No Record found</li>
-                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">+ Add</button></li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
                                             @endif
                                             </ul>
                                         </div>
@@ -139,7 +140,15 @@
                         <div>
                             <a data-toggle="modal" data-target="#limitOfferFrame" data-url ="" data-height="700px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openOfferModal" style="display: none;"><i class="fa fa-plus"></i>Add Offer</a>
                             <a data-toggle="modal" data-target="#editLimitFrame" data-url ="" data-height="350px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openLimitModal" style="display: none;"><i class="fa fa-plus"></i>Edit Limit</a>
+                            @if((request()->get('view_only') || $currStageCode == 'approver') && ($approveStatus && $approveStatus->status ==0))
+                                <form method="POST" action="{{route('approve_offer')}}">
+                                @csrf
+                                <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
+                                <input name="btn_save_offer" class="btn btn-success btn-sm float-right  mt-3 ml-3" type="submit" value="Approve">
+                                </form>
+                            @endif
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -162,6 +171,11 @@ var messages = {
 $(document).ready(function(){
     $('#product_id').on('change',function(){
         let product_id = $('#product_id').val();
+        if(product_id == ''){
+            $('#program_id').html('<option value="">Select Program</option>');
+            $('#anchor_id').html('<option value="">Select Anchor</option>');
+            return;
+        }
         let token = "{{ csrf_token() }}";
         $('.isloader').show();
         $.ajax({
@@ -183,6 +197,10 @@ $(document).ready(function(){
 
     $('#anchor_id').on('change',function(){
         let anchor_id = $('#anchor_id').val();
+        if(anchor_id == ''){
+            $('#program_id').html('<option value="">Select Program</option>');
+            return;
+        }
         let token = "{{ csrf_token() }}";
         $('.isloader').show();
         $.ajax({
@@ -214,6 +232,45 @@ $(document).ready(function(){
     });
 
 });
+
+function checkValidation(){
+    unsetError('select[name=product_id]');
+    unsetError('select[name=anchor_id]');
+    unsetError('select[name=prgm_id]');
+    unsetError('input[name=limit_amt]');
+
+    let flag = true;
+    let product_id = $('select[name=product_id]').val();
+    let anchor_id = $('select[name=anchor_id]').val();
+    let program_id = $('select[name=prgm_id]').val();
+    let limit_amt = $('input[name=limit_amt]').val().trim();
+
+    if(product_id == ''){
+        setError('select[name=product_id]', 'Please select product type');
+        flag = false;
+    }
+
+    if(anchor_id == ''){
+        setError('select[name=anchor_id]', 'Please select anchor');
+        flag = false;
+    }
+
+    if(program_id == ''){
+        setError('select[name=prgm_id]', 'Please select program');
+        flag = false;
+    }
+
+    if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
+        setError('input[name=limit_amt]', 'Please fill limit amount');
+        flag = false;
+    }
+
+    if(flag){
+        return true;
+    }else{
+        return false;
+    }
+}
 
 function fillAnchors(programs){
     let html = '<option value="">Select Anchor</option>';

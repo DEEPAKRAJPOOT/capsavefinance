@@ -55,24 +55,12 @@ class InvoiceController extends Controller {
     {
         
         $get_anchor = $this->invRepo->getLimitAllAnchor();
-        return view('frontend.application.invoice.upload_all_invoice')
+       return view('frontend.application.invoice.upload_all_invoice')
                    ->with(['get_anchor' => $get_anchor]);
   
     }
   
-     public function getProgramList(Request $request)
-     {
-         $get_program = $this->invRepo->getLimitProgram($request['anchor_id']);
-         return response()->json(['status' => 1,'get_program' =>$get_program]);
-     }
-     
-      public function getSupplierList(Request $request)
-     {
-        
-        $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        return response()->json(['status' => 1,'get_supplier' =>$get_supplier]);
-     }
-           
+    
       public function viewInvoice() {
         $getAllInvoice    =   $this->invRepo->getAllAnchor();
         $get_bus = $this->invRepo->getBusinessName();
@@ -134,6 +122,7 @@ class InvoiceController extends Controller {
             'app_id'    => $appId,
             'biz_id'  => $biz_id,
             'invoice_no' => $attributes['invoice_no'],
+            'invoice_due_date' => $attributes['invoice_due_date'],
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
             'invoice_approve_amount' => $attributes['invoice_approve_amount'],
             'remark' => $attributes['remark'],

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\AclInterface as AclRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use Event;
 
 class AclController extends Controller {
@@ -18,10 +19,11 @@ class AclController extends Controller {
     protected $aclRepo;
 
     public function __construct(
-     InvUserRepoInterface $user_repo,  AclRepoInterface $acl_repo
+     InvUserRepoInterface $user_repo,  AclRepoInterface $acl_repo, InvMasterRepoInterface $master
     ) {
         $this->userRepo = $user_repo;
         $this->aclRepo = $acl_repo;
+        $this->masterRepo = $master;        
     }
 
     /**
@@ -174,8 +176,14 @@ class AclController extends Controller {
             foreach($roles as $role) {
                 $rolesDataArray[$role->id] = $role->name;
             }
+            $stateList = [];        
+            $states = $this->masterRepo->getState();
+            foreach($states as $state) {
+                $stateList[$state->id] = $state->name;
+            }            
             return view('backend.acl.add_user_role')
-                    ->with('rolesList', $rolesDataArray);
+                    ->with('rolesList', $rolesDataArray)
+                    ->with('stateList', $stateList);
         } catch (Exception $ex) {
             
         }
@@ -208,6 +216,8 @@ class AclController extends Controller {
             $arrData['is_otp_verified'] = 1;
             $arrData['parent_id'] = !empty($data['parent_id']) ? $data['parent_id'] : 0;
             $arrData['is_appr_required'] = isset($data['is_appr_required']) && !empty($data['is_appr_required']) ? $data['is_appr_required'] : null;
+            $arrData['state_id'] = $data['state_id'];
+            $arrData['city_id'] = $data['city_id'];
             $arrData['is_active'] = (int)$data['is_active'];
             $userId = null;
             $existData = $this->userRepo->getUserByemail($data['email']);
@@ -258,12 +268,26 @@ class AclController extends Controller {
         foreach($roles as $role) {
             $rolesDataArray[$role->id] = $role->name;
         }
+        
+        $stateList = [];        
+        $states = $this->masterRepo->getState();
+        foreach($states as $state) {
+            $stateList[$state->id] = $state->name;
+        }
+        
+        $cityList = [];
+        $cities = $this->masterRepo->getcity($userDataArray->state_id);
+        foreach($cities as $city) {
+            $cityList[$city->id] = $city->name;
+        }
             
         return view('backend.acl.edit_user_role')
                 ->with('userData', $userDataArray)
                 ->with('roleData', $roleData)
                 ->with('parentUserData', $parentUserDataArr)
-                ->with('rolesList', $rolesDataArray);
+                ->with('rolesList', $rolesDataArray)
+                ->with('stateList', $stateList)
+                ->with('cityList', $cityList);
     }
 
     /*
@@ -294,7 +318,8 @@ class AclController extends Controller {
             $arrData['parent_id'] = !empty($data['parent_id']) ? $data['parent_id'] : 0;
             $arrData['is_active'] = (int)$data['is_active'];
             $arrData['is_appr_required'] = isset($data['is_appr_required']) && !empty($data['is_appr_required']) ? $data['is_appr_required'] : null;
-            
+            $arrData['state_id'] = $data['state_id'];
+            $arrData['city_id'] = $data['city_id'];            
             //dd('oooooooooooo', $arrData);
             
             $userId = $data['user_id'];

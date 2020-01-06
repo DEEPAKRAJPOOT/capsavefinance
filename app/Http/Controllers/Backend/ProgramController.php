@@ -5,27 +5,31 @@ namespace App\Http\Controllers\Backend;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lms\ProgramRequest;
+use App\Http\Requests\Lms\SubProgramRequest;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 
 class ProgramController extends Controller {
 
     protected $userRepo;
     protected $appRepo;
+    protected $master;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo)
+    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo, InvMasterRepoInterface $master)
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('checkBackendLeadAccess');
 
         $this->userRepo = $user;
         $this->appRepo = $app_repo;
+        $this->master = $master;
     }
 
     /**
@@ -122,7 +126,9 @@ class ProgramController extends Controller {
         try {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
+
             \Session::put('list_program_id', $program_id);
+
             $is_prg_list = $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
             return view('backend.lms.show_sub_program', compact('anchor_id', 'program_id', 'redirectUrl'));
         } catch (Exception $ex) {
@@ -143,26 +149,33 @@ class ProgramController extends Controller {
             $program_id = (int) $request->get('program_id');
             $action = $request->get('action');
             $subProgramData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
-            //   dd($subProgramData , $program_id);
-            $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
-            $type_two = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
-            $type_one = $this->appRepo->getDocumentList(['doc_type_id' => 1, 'is_active' => 1])->toArray();
-            $preSanction = $type_two + $type_one;
+            $preSanction = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
+            //$type_one = $this->appRepo->getDocumentList(['doc_type_id' => 1, 'is_active' => 1])->toArray();
+            //$preSanction = $type_two + $type_one;
 
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 3, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
+
+            $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
 
             $remaningAmount = null;
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal;
             }
+
+
+            /**
+             * get DOA list 
+             */
+            $doaLevelList = $this->master->getDoaLevelList()->toArray();
+
             $programDoc = $programCharges = $sanctionData = [];
             if (isset($subProgramData->programDoc)) {
                 $programDoc = $subProgramData->programDoc->toArray();
                 $sanctionData = array_reduce($programDoc, function ($out, $elem) {
-                    if (in_array($elem['doc_type_id'], [1, 2])) {
+                    if (in_array($elem['doc_type_id'], [2])) {
                         $out['pre'][] = $elem['id'];
                     } else if ($elem['doc_type_id'] == 3) {
                         $out['post'][] = $elem['id'];
@@ -178,8 +191,11 @@ class ProgramController extends Controller {
                 $programCharges = $subProgramData->programCharges->toArray();
             }
 
-
-
+            $getDoaLevel = $this->master->getProgramDoaLevelData(['prgm_id' => $subProgramData->prgm_id])->toArray();
+            $doaResult = array_reduce($getDoaLevel, function ($out, $elem) {
+                $out[] = $elem['doa_level_id'];
+                return $out;
+            }, []);
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
 
             return view('backend.lms.add_sub_program',
@@ -193,10 +209,12 @@ class ProgramController extends Controller {
                             'charges',
                             'remaningAmount',
                             'redirectUrl',
+                            'doaLevelList',
                             'sanctionData',
                             'programCharges',
                             'subProgramData',
-                            'action'
+                            'action',
+                            'doaResult'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -216,6 +234,7 @@ class ProgramController extends Controller {
             'anchor_id' => $request->get('anchor_id'),
             'anchor_user_id' => $request->get('anchor_user_id'),
             'product_name' => $request->get('product_name'),
+            'prgm_name' => $request->get('product_name'),
             'interest_rate' => $request->get('interest_rate'),
             'anchor_sub_limit' => ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : null,
             'anchor_limit' => $request->get('anchor_limit'),
@@ -292,9 +311,8 @@ class ProgramController extends Controller {
      * Save sub program data
      * @param Request $request
      */
-    public function saveSubProgram(Request $request)
+    public function saveSubProgram(SubProgramRequest $request)
     {
-
         try {
             $user_id = \Auth::user()->user_id;
             $dataForProgram = $this->prepareSubProgramData($request);
@@ -330,7 +348,7 @@ class ProgramController extends Controller {
                     'user_id' => \Auth::user()->user_id,
                     'prgm_id' => $lastInsertId,
                     'doc_id' => (int) $element,
-                    'wf_stage_id' => 10,
+                    'wf_stage_id' => 49,
                     'created_by' => $user_id,
                     'updated_by' => $user_id,
                     'created_at' => \carbon\Carbon::now(),
@@ -360,12 +378,43 @@ class ProgramController extends Controller {
                 $this->appRepo->saveProgramDoc($postSanctionData);
             }
 
-            \Session::flash('message', trans('success_messages.sub_program_save_successfully'));
+            /**
+             * save DOA level 
+             */
+            $this->saveDoaLevel($request, $lastInsertId);
 
+            \Session::flash('message', trans('success_messages.sub_program_save_successfully'));
             $program_list_id = (\Session::has('list_program_id')) ? \Session::get('list_program_id') : $request->get('parent_prgm_id');
             return redirect()->route('manage_sub_program', ['anchor_id' => $request->get('anchor_id'), 'program_id' => $program_list_id]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    /**
+     * Save DOA level
+     * 
+     * @param type $request
+     * @return type mixed
+     */
+    function saveDoaLevel($request, $program_id)
+    {
+        try {
+            $doa_level = !empty($request->get('doa_level')) ? $request->get('doa_level') : [];
+            $prepareSaveDoa = [];
+            foreach ($doa_level as $key => $value) :
+                $prepareSaveDoa[$key] = [
+                    'doa_level_id' => $value,
+                    'prgm_id' => $program_id,
+                ];
+            endforeach;
+
+            if (count($prepareSaveDoa)) {
+                $this->master->deleteDoaLevelBywhere(['prgm_id' => $program_id]);
+                $this->master->insertDoaLevel($prepareSaveDoa);
+            }
+        } catch (Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
         }
     }
 

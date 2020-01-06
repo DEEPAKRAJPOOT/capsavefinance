@@ -205,7 +205,7 @@ class Program extends BaseModel {
         $res = self::select('prgm.*', 'u.f_name')
                 ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
                 ->where(['u.user_type' => 2])
-                ->where('prgm.parent_prgm_id', null);
+                ->where('prgm.parent_prgm_id', '0');
         if (!empty($id)) {
             $res = $res->where('prgm.anchor_id', $id);
         }
@@ -241,7 +241,7 @@ class Program extends BaseModel {
             $res = $res->where('prgm_id', $where['prgm_id']);
         }
         if (isset($where['is_null_parent_prgm_id']) && !empty($where['is_null_parent_prgm_id'])) {
-            $res = $res->where('parent_prgm_id', '!=', null);
+            $res = $res->where('parent_prgm_id', '!=', '0');
         }
 
 
@@ -308,7 +308,7 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        return Program::with('anchors')->where(['product_id' => $product_id, 'status' => 1])->get(['prgm_id', 'product_id', 'anchor_id']);
+        return Program::distinct('anchor_id')->with('anchors')->where(['product_id' => $product_id, 'status' => 1])->where('parent_prgm_id','<>',0)->get(['anchor_id']);
     }
 
     public function anchors()
@@ -326,13 +326,16 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        return Program::where(['anchor_id' => $anchor_id, 'status' => 1])->get(['prgm_id', 'product_id', 'anchor_id', 'prgm_name']);
+        return Program::where(['anchor_id' => $anchor_id, 'status' => 1])->where('parent_prgm_id','<>',0)->get(['prgm_id', 'product_id', 'anchor_id', 'prgm_name']);
     }
 
     public function product()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Product', 'product_id', 'id');
     }
+    
+    
+   
 
     /**
      * Update program 

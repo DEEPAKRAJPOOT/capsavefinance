@@ -57,10 +57,11 @@ class State extends BaseModel
      *
      * @return type array
      */
-    public static function getStateList()
+    public static function getStateList($countryId=101)
     {
         $state = self::select('mst_state.*','mst_country.country_name')
                 ->join('mst_country', 'mst_state.country_id', '=', 'mst_country.id')
+                ->where('mst_state.country_id', $countryId)
                 ->where('mst_state.is_active',1);
         return $state ? : false;
     }

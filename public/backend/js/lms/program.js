@@ -253,7 +253,7 @@ try {
 
         $(".grace").change(function () {
 
-           var v = $('input[name=' + $(this).attr('name') + ']' + ':checked').val();
+            var v = $('input[name=' + $(this).attr('name') + ']' + ':checked').val();
             if (v == 1) {
                 $("#facility2").show();
 
@@ -371,6 +371,10 @@ try {
             delete_btn = $('.delete_btn');
             addMoreBtn = $('.add_more');
             addMoreBtn.last().show();
+            let chargesLen = $('.charges').length;
+            if (chargesLen > 1) {
+                delete_btn.last().show();
+            }
         };
 
         /**

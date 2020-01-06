@@ -64,37 +64,6 @@ class ProgramDoc extends BaseModel {
     }
 
     /**
-     * Get Program Documents
-     * 
-     * @param array $whereCondition
-     * @return mixed
-     * @throws InvalidDataTypeExceptions
-     */
-    public static function getProgramDocs($whereCondition = [])
-    {
-        //Check $whereCondition is not an array
-        if (!is_array($whereCondition)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }
-
-        //$whereCondition['prgm.prgm_id'] = isset($whereCondition['prgm_id']) ? $whereCondition['prgm_id'] : 1;
-        $whereCondition['prgm_doc.is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
-        $whereCondition['prgm.status'] = isset($whereCondition['status']) ? $whereCondition['status'] : 1;
-
-        $prgmDocs = self::select('prgm_doc.*')
-                ->join('prgm', 'prgm.prgm_id', '=', 'prgm_doc.prgm_id')
-                //->join('user', 'user.user_id', '=', 'prgm_doc.user_id')                                
-                //->join('anchor_user', 'anchor_user.anchor_id', '=', 'user.anchor_id')
-                //->join('app', 'anchor_user.user_id', '=', 'app.user_id')                       
-                ->join('wf_stage', 'prgm_doc.wf_stage_id', '=', 'wf_stage.wf_stage_id')
-                ->where($whereCondition)
-                ->orderBy('prgm.prgm_id', 'DESC')
-                ->groupBy('prgm_doc.doc_id')
-                ->get();
-        return $prgmDocs;
-    }
-
-    /**
      * save Doc
      * 
      * @param type $attributes

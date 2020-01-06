@@ -2920,6 +2920,31 @@ if ($err) {
         return $dataProvider->getSubProgramList($request, $this->application->getSubProgramListByParentId($anchor_id, $program_id));
     }
 
+    /**
+     * Get DoA Levels List
+     * 
+     * @param Request $request
+     * @param DataProviderInterface $dataProvider
+     * @return mixed
+     */
+    public function getDoaLevelsList(Request $request, DataProviderInterface $dataProvider)
+    {        
+        $levelList = $this->masterRepo->getDoaLevels();
+        return $dataProvider->getDoaLevelsList($request, $levelList);
+    }
+        
+    /**
+     * Get City List By State Id
+     * 
+     * @param Request $request   
+     * @return json
+     */
+    public function getCityList(Request $request)
+    {
+        $stateId = $request->get('state_id');               
+        $cityList = $this->masterRepo->getCity($stateId);
+        return \Response()->json($cityList);
+    }
     
   /**
    * Get all customer list
@@ -2957,7 +2982,21 @@ if ($err) {
         return json_encode($programs);
     }
     
-
+     public function getProgramSingleList(Request $request)
+     {
+       
+         $get_program = $this->invRepo->getLimitProgram($request['anchor_id']);
+         $get_program_limit = $this->invRepo->geAnchortLimitProgram($request['anchor_id']);
+         return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program]);
+     }
+     
+      public function getSupplierList(Request $request)
+     {
+        $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
+        $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'get_supplier' =>$get_supplier]);
+     }
+           
 
     /**
      * change program status
@@ -2972,6 +3011,5 @@ if ($err) {
         $result = $this->application->updateProgramData(['status' => $status], ['prgm_id' => $program_id]);
         return \Response::json(['success' => $result]);
     }
-
 
 }

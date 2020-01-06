@@ -184,6 +184,17 @@ use CommonRepositoryTraits;
            return $ex;
         } 
     }
+    
+     public function getProgramForLimit($aid)
+    {
+     
+        try
+        {
+          return BizInvoice::getProgramForLimit($aid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
 
  public function getLimitProgram($aid)
     {
@@ -191,6 +202,19 @@ use CommonRepositoryTraits;
         try
         {
           return AppProgramLimit::getLimitProgram($aid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
+    
+  
+    
+     public function geAnchortLimitProgram($aid)
+    {
+     
+        try
+        {
+          return AppProgramLimit::geAnchortLimitProgram($aid);
         } catch (Exception $ex) {
            return $ex;
         } 

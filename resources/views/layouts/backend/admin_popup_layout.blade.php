@@ -20,6 +20,7 @@
         <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
         <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
         <link href="{{url('common/js/summernote/dist/summernote.css')}}" rel="stylesheet">
+        @yield('additional_css')
     </head>
 
     <body class="sidebar-icon-only"> 

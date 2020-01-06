@@ -686,36 +686,50 @@ class ApplicationController extends Controller
                         if (!$isAppApprByAuthority) {
                             Session::flash('error_code', 'no_approved');
                             return redirect()->back();
+                        } else {
+                            //$whereCondition = ['app_id' => $app_id];
+                            //$offerData = $this->appRepo->getOfferData($whereCondition);
+                            $this->appRepo->updateActiveOfferByAppId($app_id, ['is_approve' => 1]);
                         }
                     }
                 } else if ($currStage->stage_code == 'sales_queue') {
                     $whereCondition = ['app_id' => $app_id];
                     $offerData = $this->appRepo->getOfferData($whereCondition);
-                    if (isset($offerData->status) && $offerData->status != 1) {
+                    if (isset($offerData->is_approve) && $offerData->is_approve != 1) {
                         Session::flash('error_code', 'no_offer_accepted');
                         return redirect()->back();
                     }
-                } else if ($currStage->stage_code == 'upload_exe_doc') {
+                } else if ($currStage->stage_code == 'upload_post_sanction_doc') {
                     
-                    $requiredDocs = $this->getProgramDocs(['stage_code' => 'upload_exe_doc']);
+                    $requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_post_sanction_doc']);
                     $docIds = [];
                     foreach($requiredDocs as $doc) {
                         $docIds[] = $doc->doc_id;
                     }
-                    $uploadDocStatus = $this->appRepo->isPostSancDocsUpload($app_id, $docIds);                    
-                    if(!$uploadDocStatus)  {                    
+                    $uploadDocStatus = $this->appRepo->isDocsUploaded($app_id, $docIds);                    
+                    if(count($docIds) == 0 || !$uploadDocStatus)  {                    
                         Session::flash('error_code', 'no_post_docs_uploaded');
                         return redirect()->back();                                            
-                    }                  
-                }
+                    }                                  
+                } else if ($currStage->stage_code == 'upload_pre_sanction_doc') {
+                    
+                    $requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_pre_sanction_doc']);
+                    $docIds = [];
+                    foreach($requiredDocs as $doc) {
+                        $docIds[] = $doc->doc_id;
+                    }
+                    $uploadDocStatus = $this->appRepo->isDocsUploaded($app_id, $docIds);                    
+                    if(count($docIds) == 0 || !$uploadDocStatus)  {                    
+                        Session::flash('error_code', 'no_pre_docs_uploaded');
+                        return redirect()->back();                                            
+                    }
+                }                
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];
                 
                 if ($nextStage->stage_code == 'approver') {
                     $apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id);
-                    //$addl_data['to_id'] = isset($apprAuthUsers[0]) ? $apprAuthUsers[0]->user_id : null;
-                    //dd('uuuuuuuuuuuuuuuuuuuuu', $apprAuthUsers);
                     if (count($apprAuthUsers) == 0) {
                         Session::flash('error_code', 'no_approval_users_found');
                         return redirect()->back();                           
@@ -738,10 +752,14 @@ class ApplicationController extends Controller
                     $wf_status = 1;
                 }
                 
-                if ($nextStage->stage_code == 'upload_exe_doc') {
+                if ($nextStage->stage_code == 'upload_pre_sanction_doc' || $nextStage->stage_code == 'upload_post_sanction_doc') {
                     $prgmDocsWhere = [];
-                    $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
-                    $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id);                     
+                    $prgmDocsWhere['stage_code'] = $nextStage->stage_code;
+                    $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id);
+                    if(count($reqdDocs) == 0)  {
+                        Session::flash('error_code', 'no_docs_found');
+                        return redirect()->back();                                            
+                    }                    
                 }
                 
                 Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
@@ -818,22 +836,20 @@ class ApplicationController extends Controller
         //$appData = $this->appRepo->getAppDataByAppId($appId);        
         //$loanAmount = $appData ? $appData->loan_amt : 0;
         
-        $offerWhereCond = [];
-        $offerWhereCond['app_id'] = $appId;        
-        $offerData = $this->appRepo->getOfferData($offerWhereCond);
-        $offerId = $offerData ? $offerData->offer_id : 0;
-        $prgmId = $offerData ? $offerData->prgm_id : 0;
-        $loanAmount = $offerData ? $offerData->loan_amount : 0;
+        $offerData = $this->appRepo->getAllOffers($appId);
+        //$offerId = $offerData ? $offerData->offer_id : 0;
+        //$prgmId = $offerData ? $offerData->prgm_id : 0;
+        //$loanAmount = $offerData ? $offerData->loan_amount : 0;
         $currentStage = Helpers::getCurrentWfStage($appId);   
         $roleData = Helpers::getUserRole();        
         $viewGenSancLettertBtn = $currentStage->role_id == $roleData[0]->id ? 1 : 0;
-        
+        //dd($offerData);
         return view('backend.app.offer')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
-                ->with('loanAmount', $loanAmount)
-                ->with('prgm_id', $prgmId)
-                ->with('offerId', $offerId)                
+                //->with('loanAmount', $loanAmount)
+                //->with('prgm_id', $prgmId)
+                //->with('offerId', $offerId)                
                 ->with('offerData', $offerData)
                 ->with('currentStage', $currentStage)
                 ->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
@@ -852,7 +868,7 @@ class ApplicationController extends Controller
         
         try {
             $offerData = [];
-            if ($request->has('btn_accept_offer') && $request->get('btn_accept_offer') == 'Accept') {
+            if ($request->has('btn_accept_offer')) {
                 $offerData['status'] = 1;           
                 $message = trans('backend_messages.accept_offer_success');
                 
@@ -867,7 +883,7 @@ class ApplicationController extends Controller
                 //Update workflow stage
                 Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);                
                 
-            } else if($request->has('btn_reject_offer') && $request->get('btn_reject_offer') == 'Reject') {
+            } else if($request->has('btn_reject_offer')) {
                 $offerData['status'] = 2; 
                 $message = trans('backend_messages.reject_offer_success');
                 
@@ -878,7 +894,8 @@ class ApplicationController extends Controller
                 //Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
             }
             
-            $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
+            // $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
+            $savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData);
             if ($savedOfferData) {
                 Session::flash('message', $message);
                 //return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);
@@ -908,10 +925,10 @@ class ApplicationController extends Controller
             $offerWhereCond['is_active'] = 1; 
             $offerWhereCond['status'] = 1;  
             $offerData = $this->appRepo->getOfferData($offerWhereCond);
-            $offerId = $offerData ? $offerData->offer_id : 0;
+            $offerId = $offerData ? $offerData->prgm_offer_id : 0;
         }
         $offerWhereCond = [];
-        $offerWhereCond['offer_id'] = $offerId;        
+        $offerWhereCond['prgm_offer_id'] = $offerId;        
         $offerData = $this->appRepo->getOfferData($offerWhereCond);
         
         //Update workflow stage
@@ -1158,7 +1175,7 @@ class ApplicationController extends Controller
         
         try {
             $offerWhereCond = [];
-            $offerWhereCond['offer_id'] = $offerId;
+            $offerWhereCond['prgm_offer_id'] = $offerId;
             $offerData = $this->appRepo->getOfferData($offerWhereCond);
 
             $fileName = 'sanction_letter_'. time() . '.pdf';
@@ -1187,12 +1204,14 @@ class ApplicationController extends Controller
         $appId = $request->get('app_id');
         $offerId = $request->get('offer_id');
         $bizId = $request->get('biz_id');
-        $prgmDocsWhere = [];        
-        $prgmDocsWhere['stage_code'] = 'upload_exe_doc';
-        $prgmDocs = $this->docRepo->getProgramDocs($prgmDocsWhere);    //33;
+        //$prgmDocsWhere = [];
+        //$prgmDocsWhere['app_id'] = $appId;
+        //$prgmDocsWhere['stage_code'] = 'upload_exe_doc';
+        //$prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere);    //33;
         
-        $docId = $prgmDocs ? $prgmDocs[0]->doc_id : null;
-       
+        //$docId = $prgmDocs ? $prgmDocs[0]->doc_id : null;
+        $docId = 33;
+        
         return view('backend.app.upload_sanction_letter')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)

@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
+use App\Inv\Repositories\Models\Master\DoaLevelRole;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -1604,7 +1605,6 @@ class DataRenderer implements DataProviderInterface
                         )->make(true);
     }
 
-
     /*
      * 
      * get all lms customer list
@@ -1619,7 +1619,7 @@ class DataRenderer implements DataProviderInterface
                         $link = $customer->customer_id;
                         return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                     }
-                )
+                )     
                 ->editColumn(
                         'customer_name',
                         function ($customer) {
@@ -1713,5 +1713,65 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
     
+    /**
+     * List Doa Levels  
+     * 
+     * @param Request $request
+     * @param mixed $doa
+     * @return mixed 
+     */
+    function getDoaLevelsList($request, $doa)
+    {
+        return DataTables::of($doa)
+            ->rawColumns(['action', 'role', 'amount'])
+
+            ->editColumn(
+                    'level_code',
+                    function ($doa) {
+                return $doa->level_code;
+            })
+            ->editColumn(
+                    'level_name',
+                    function ($doa) {
+                return $doa->level_name;
+            })
+            ->editColumn(
+                    'city',
+                    function ($doa) {
+                return $doa->city;
+            })
+            ->addColumn(
+                    'amount',
+                    function ($doa) {
+                return \Helpers::formatCurreny($doa->min_amount) . ' - ' . \Helpers::formatCurreny($doa->max_amount);
+            })
+            ->editColumn(
+                    'role',
+                    function ($doa) {
+                $roles = DoaLevelRole::getDoaLevelRoles($doa->doa_level_id);
+                $rolesName = '';
+                foreach($roles as $role) {
+                    $rolesName .= $role->role . ', ';
+                }
+                return rtrim($rolesName,', ');
+            })                        
+             ->addColumn(
+                    'action',
+            function ($doa) {
+                $act = '';
+                $act = '<a  data-toggle="modal" data-target="#editDoaLevelFrame" data-url ="' . route('edit_doa_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Level"><i class="fa fa-edit"></i></a>';
+                $act .= '&nbsp;&nbsp;<a  data-toggle="modal" data-target="#assignRoleLevelFrame" data-url ="' . route('assign_role_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Assign Role"><i class="fa fa-angle-right"></i></a>';
+                return $act;
+            })
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') {
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('doa_level.level_name', 'like',"%$search_keyword%");                                    
+                    });
+                }
+            })
+            ->make(true);
+    }
 
 }

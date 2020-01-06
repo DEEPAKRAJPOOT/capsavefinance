@@ -12,8 +12,12 @@ use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Charges;
 use App\Inv\Repositories\Models\Master\Documents;
 use App\Inv\Repositories\Models\Master\Entity;
-
+use App\Inv\Repositories\Models\Master\DoaLevel;
 use App\Inv\Repositories\Models\Master\Industry;
+use App\Inv\Repositories\Models\Master\State as StateModel;
+use App\Inv\Repositories\Models\Master\City as CityModel;
+use App\Inv\Repositories\Models\Master\DoaLevelRole;
+use App\Inv\Repositories\Models\ProgramDoaLevel;
 /**
  * 
  */
@@ -146,4 +150,183 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return $status ?: false;
 
     }
+    
+    /**
+     * Get DoA Levels
+     * 
+     * @return mixed
+     */
+    public function getDoaLevels()
+    {
+        $result = DoaLevel::getDoaLevels();
+        return $result;
+    }
+    
+    /**
+     * Get DoA Level Data by doa_level_id
+     * 
+     * @param mixed $doa_level_id
+     * @return mixed
+     */
+    public function getDoaLevelById($doa_level_id)
+    {
+        $result = DoaLevel::getDoaLevelById((int) $doa_level_id);
+        return $result;
+    }
+    
+    /**
+     * Get all State
+     * 
+     * @param integer $countryId | optional
+     * @return mixed
+     */
+    public function getState($countryId=101)
+    {
+        $result = StateModel::getStateList($countryId)->orderBy('name')->get();
+        return $result;        
+    }
+    
+    /**
+     * Get City By State Id
+     * 
+     * @param integer $stateId
+     * @return mixed
+     */
+    public function getCity($stateId)
+    {
+        $result = CityModel::getCity($stateId);
+        return $result;        
+    }
+    
+    /**
+     * Get Latest DoA Data
+     * 
+     * @return mixed
+     */
+    public function getLatestDoaData()
+    {
+        $result = DoaLevel::getLatestDoaData();
+        return $result;
+    }
+        
+    /**
+     * Save DoA Data
+     * 
+     * @param array $data
+     * @param integer $doa_level_id
+     * @return mixed
+     */
+    public function saveDoaLevelData($data, $doa_level_id=null)
+    {
+        $result = DoaLevel::saveDoaLevelData($data, $doa_level_id);
+        return $result;
+    }
+    
+    /**
+     * Update DoA Data
+     * 
+     * @param array $data
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function updateDoaLevelData($data, $whereCond=[])
+    {
+        $result = DoaLevel::updateDoaLevelData($data, $whereCond);
+        return $result;
+    }
+    
+    /**
+     * Get DoA Levels
+     * 
+     * @param array $where
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public function getDoaLevelData($where)
+    {
+        return DoaLevel::getDoaLevelData($where);
+    }
+    
+    /**
+     * Get DoA Level Roles
+     * 
+     * @param array $doa_level_id
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public function getDoaLevelRoles($doa_level_id)
+    {
+        return DoaLevelRole::getDoaLevelRoles($doa_level_id);
+    }
+    
+    /**
+     * Save DoA Level Roles
+     * 
+     * @param array $data
+     * @return type mixed
+     */
+    public function saveDoaLevelRoles($data)
+    {
+        return DoaLevelRole::saveDoaLevelRoles($data);
+    }
+    
+    /**
+     * Save DoA Level Roles
+     * 
+     * @param array $data
+     * @return type mixed
+     */
+    public function deleteDoaLevelRoles($doa_level_id)
+    {
+        return DoaLevelRole::deleteDoaLevelRoles($doa_level_id);
+    }     
+    
+    
+    
+    
+    /**
+     * get D0A level list 
+     * 
+     * @return type mixed
+     */
+    public function getDoaLevelList()
+    {
+        return DoaLevel::getDoaLevelList();
+    }
+
+    /**
+     * Insert D0A level
+     * 
+     * @param type $attr array
+     * @return type mixed
+     */
+    public function insertDoaLevel($attr)
+    {
+        return ProgramDoaLevel::insertDoaLevel($attr);
+    }
+
+    /**
+     * delete  DOA Level
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function deleteDoaLevelBywhere($where)
+    {
+        return ProgramDoaLevel::deleteDoaLevelBywhere($where);
+    }
+    
+    /**
+     * get program DOA level data
+     * 
+     * @param type $where Array
+     * @return type mixed
+     */
+    public function getProgramDoaLevelData($where)
+    {
+        return ProgramDoaLevel::getProgramDoaLevelData($where);
+    }
+
 }
