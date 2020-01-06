@@ -249,10 +249,6 @@ class Program extends BaseModel {
             $res = $res->where('parent_prgm_id', $where['parent_prgm_id']);
         }
 
-
-        // dd($res->toSql());
-
-
         if (!empty($relations)) {
             $res = $res->with($relations);
         }
@@ -355,9 +351,7 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
-        /**
-         * Check Data is not blank
-         */
+       
         /**
          * Check Data is Array
          */
