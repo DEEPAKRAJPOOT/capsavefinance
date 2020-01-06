@@ -107,12 +107,6 @@ try {
                     anchor_id: {
                         required: true
                     },
-                    'pre_sanction[]': {
-                        required: true
-                    },
-                    'post_sanction[]': {
-                        required: true
-                    }
 
                 },
                 messages: {
@@ -153,7 +147,7 @@ try {
             columns: [
                 {data: 'prgm_id'},
                 {data: 'product_id'},
-                
+
                 {data: 'f_name'},
                 {
                     data: 'prgm_name'
@@ -538,6 +532,15 @@ try {
                         number: true,
                         max: 100
                     }, status: {
+                        required: true
+                    },
+                    'doa_level[]': {
+                        required: true
+                    },
+                    'pre_sanction[]': {
+                        required: true
+                    },
+                    'post_sanction[]': {
                         required: true
                     }
                 },
