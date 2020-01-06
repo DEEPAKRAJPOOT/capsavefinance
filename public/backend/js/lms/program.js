@@ -82,6 +82,9 @@ try {
 
             let validRules = {
                 rules: {
+                    product_id: {
+                        required: true
+                    },
                     prgm_type: {
                         required: true
                     },
