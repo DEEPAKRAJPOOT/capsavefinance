@@ -482,7 +482,7 @@ class Application extends BaseModel
                 })
                 ->where('app.app_id', $appId)
                 ->where('app_prgm_offer.is_active', 1)
-                ->groupBy('role_user.user_id1')
+                ->groupBy('role_user.user_id')
                 ->get();
                        
         return ($doaUsers ? $doaUsers : []);
