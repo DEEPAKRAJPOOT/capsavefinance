@@ -508,6 +508,10 @@ class Application extends BaseModel
         $whereCondition['app_prgm_offer.is_active'] = 1;
         $whereCondition['app_prgm_offer.is_approve'] = 1;
         
+        unset($whereCondition['app_id']);
+        unset($whereCondition['stage_code']);
+        unset($whereCondition['is_active']);
+        
         $prgmDocs = self::select('prgm_doc.*')
                 ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
                 ->join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')

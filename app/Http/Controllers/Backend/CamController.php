@@ -871,7 +871,7 @@ class CamController extends Controller
 
     public function approveOffer(Request $request){
         $appApprData = [
-            'app_id' => $appId,
+            'app_id' => $request->get('app_id'),
             'approver_user_id' => \Auth::user()->user_id,
             'status' => 1
           ];
