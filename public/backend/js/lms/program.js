@@ -82,6 +82,9 @@ try {
 
             let validRules = {
                 rules: {
+                    product_id: {
+                        required: true
+                    },
                     prgm_type: {
                         required: true
                     },
@@ -149,6 +152,8 @@ try {
             },
             columns: [
                 {data: 'prgm_id'},
+                {data: 'product_id'},
+                
                 {data: 'f_name'},
                 {
                     data: 'prgm_name'

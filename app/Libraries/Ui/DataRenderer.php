@@ -1153,6 +1153,11 @@ class DataRenderer implements DataProviderInterface
                       return $program->f_name;
                     })
                 ->editColumn(
+                    'product_id',
+                    function ($program) {                   
+                      return $program->product_name;
+                    })
+                ->editColumn(
                     'prgm_name',
                     function ($program) {                   
                       return $program->prgm_name;

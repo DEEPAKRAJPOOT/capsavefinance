@@ -36,6 +36,15 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
+                                                <label for="productList">
+                                                   Product Type
+                                                    <span class="error_message_label">*</span></label>
+                                                {!! Form::select('product_id', $productList,'',['class'=>'form-control'])!!}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-12">
+                                            <div class="form-group">
                                                 <label for="txtCreditPeriod">
                                                     {{ trans('backend.add_program.anchor_name') }}
                                                     <span class="error_message_label">*</span></label>

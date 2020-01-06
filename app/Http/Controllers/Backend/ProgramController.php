@@ -83,9 +83,11 @@ class ProgramController extends Controller {
                 $anchorList = ['' => 'Please Select'] + $anchorList;
             }
 
+            $productList = ['' => 'Please Select'] + $this->master->getProductDataList()->toArray();
+
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
             $industryList = $this->appRepo->getIndustryDropDown()->toArray();
-            return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id', 'redirectUrl'));
+            return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id', 'redirectUrl', 'productList'));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -110,6 +112,7 @@ class ProgramController extends Controller {
                 'sub_industry_id' => $request->get('sub_industry_id'),
                 'anchor_limit' => ($request->get('anchor_limit')) ? str_replace(',', '', $request->get('anchor_limit')) : null,
                 'is_fldg_applicable' => $request->get('is_fldg_applicable'),
+                'product_id'=>$request->get('product_id'),
                 'status' => 1
             ];
             $this->appRepo->saveProgram($prepareDate);
@@ -197,7 +200,7 @@ class ProgramController extends Controller {
             }
             $doaResult = [];
             $invoiceDataCount = 0;
-            
+
             if (isset($subProgramData->prgm_id)) {
                 $getDoaLevel = $this->master->getProgramDoaLevelData(['prgm_id' => $subProgramData->prgm_id])->toArray();
                 $doaResult = array_reduce($getDoaLevel, function ($out, $elem) {
@@ -206,7 +209,7 @@ class ProgramController extends Controller {
                 }, []);
                 $invoiceDataCount = $this->invRepo->getInvoiceData(['program_id' => $subProgramData->prgm_id], ['invoice_id'])->count();
             }
-            
+
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
             return view('backend.lms.add_sub_program',
                     compact(
