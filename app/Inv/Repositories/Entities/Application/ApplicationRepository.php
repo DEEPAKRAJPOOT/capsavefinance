@@ -1010,6 +1010,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getProgramDocs($whereCondition=[])
     {
-        return ProgramDoc::getProgramDocs($whereCondition);
+        return Application::getProgramDocs($whereCondition);
     }
 }
