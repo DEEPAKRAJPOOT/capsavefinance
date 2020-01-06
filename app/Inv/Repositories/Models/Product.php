@@ -47,6 +47,18 @@ class Product extends BaseModel {
         'created_at',
         'created_by',
     ];
+    
+    
+    /**
+     * get product data list
+     * 
+     * @return type mixed
+     */
+    public static function getProductDataList()
+    {
+        $res = self::where('is_active', 1)->pluck('product_name', 'id');
+        return $res ?: false;
+    }
 
     //    
 }

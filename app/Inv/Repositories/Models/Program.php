@@ -44,6 +44,7 @@ class Program extends BaseModel {
     protected $fillable = [
         'anchor_id',
         'anchor_user_id',
+        'product_id',
         'parent_prgm_id',
         'prgm_name',
         'prgm_type',
@@ -202,8 +203,9 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        $res = self::select('prgm.*', 'u.f_name')
+        $res = self::select('prgm.*', 'u.f_name','mp.product_name')
                 ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
+                ->join('mst_product as mp', 'prgm.product_id', '=', 'mp.id')
                 ->where(['u.user_type' => 2])
                 ->where('prgm.parent_prgm_id', '0');
         if (!empty($id)) {
@@ -248,10 +250,6 @@ class Program extends BaseModel {
         if (isset($where['parent_prgm_id']) && !empty($where['parent_prgm_id'])) {
             $res = $res->where('parent_prgm_id', $where['parent_prgm_id']);
         }
-
-
-        // dd($res->toSql());
-
 
         if (!empty($relations)) {
             $res = $res->with($relations);
@@ -355,9 +353,7 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
-        /**
-         * Check Data is not blank
-         */
+       
         /**
          * Check Data is Array
          */

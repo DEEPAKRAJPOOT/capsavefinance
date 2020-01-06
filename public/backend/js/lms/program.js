@@ -82,6 +82,9 @@ try {
 
             let validRules = {
                 rules: {
+                    product_id: {
+                        required: true
+                    },
                     prgm_type: {
                         required: true
                     },
@@ -104,12 +107,6 @@ try {
                     anchor_id: {
                         required: true
                     },
-                    'pre_sanction[]': {
-                        required: true
-                    },
-                    'post_sanction[]': {
-                        required: true
-                    }
 
                 },
                 messages: {
@@ -149,6 +146,8 @@ try {
             },
             columns: [
                 {data: 'prgm_id'},
+                {data: 'product_id'},
+
                 {data: 'f_name'},
                 {
                     data: 'prgm_name'
@@ -446,6 +445,13 @@ try {
 
         $(document).on('click', '.save_sub_program', function (e) {
             e.preventDefault();
+
+            if (messages.invoiceDataCount == 'true')
+            {
+                customAlert('Alert!', 'This sub-program can not be update.');
+                return false;
+            }
+
             let form = $('#add_sub_program');
             var rules = {};
             var msg = {};
@@ -526,6 +532,15 @@ try {
                         number: true,
                         max: 100
                     }, status: {
+                        required: true
+                    },
+                    'doa_level[]': {
+                        required: true
+                    },
+                    'pre_sanction[]': {
+                        required: true
+                    },
+                    'post_sanction[]': {
                         required: true
                     }
                 },

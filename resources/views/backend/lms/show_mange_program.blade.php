@@ -48,6 +48,7 @@
                             <thead>
                                 <tr role="row">
                                     <th>{{ trans('backend.mange_program.program_id') }}</th>
+                                    <th>{{ trans('backend.mange_program.product_type') }}</th>
                                     <th>{{ trans('backend.mange_program.anchor_name') }}</th>
                                     <th>{{ trans('backend.mange_program.program_mame') }}</th>
                                     <th>{{ trans('backend.mange_program.program_type') }}</th>
