@@ -739,7 +739,6 @@ class ApplicationController extends Controller
                       'created_by' => Auth::user()->user_id
                       );
                   $createCustomerId = $this->appRepo->createCustomerId($lmsCustomerArray);
-                  die("checking done");
                 }               
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
