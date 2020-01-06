@@ -449,19 +449,6 @@ class Application extends BaseModel
      */
     public static function getDoAUsersByAppId($appId)
     {
-        /**
-         * Check id is not blank
-         */
-        if (empty($appId)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
-        }
-
-        /**
-         * Check id is not an integer
-         */
-        if (!is_int($appId)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }
         
         $doaUsers = self::select('role_user.user_id')
                 ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
