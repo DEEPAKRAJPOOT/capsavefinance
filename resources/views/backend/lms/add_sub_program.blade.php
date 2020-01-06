@@ -56,6 +56,7 @@
                                             {!! Form::hidden('parent_prgm_id',$program_id) !!}
                                             {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}
                                             {!! Form::hidden('anchor_limit',isset($programData) ? $programData->anchor_limit : null) !!}
+                                            {!! Form::hidden('product_id',isset($programData) ? $programData->product_id : null) !!}
 
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
