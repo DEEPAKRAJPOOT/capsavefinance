@@ -152,6 +152,11 @@ class AppProgramLimit extends BaseModel {
   
          return AppProgramLimit::with('app.user')->where('prgm_id',$pid)->get();
      }  
+     
+        public static function getUserBehalfAnchor($uid)
+    {
+       return AppProgramLimit::with('app.user')->where('anchor_id',$uid)->get();
+    }   
    
        public  function app()
      {

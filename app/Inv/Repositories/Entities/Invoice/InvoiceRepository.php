@@ -146,7 +146,7 @@ use CommonRepositoryTraits;
        
         try
         {
-          return InvoiceModel::getUserBehalfAnchor($uid);
+          return AppProgramLimit::getUserBehalfAnchor($uid);
         } catch (Exception $ex) {
            return $ex;
         } 

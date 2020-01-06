@@ -502,7 +502,11 @@ Route::group(
                  'as' => 'front_supplier_list',
                  'uses' => 'AjaxController@getSupplierList'
             ]); 
-    
+               
+     Route::POST('upload_invoice', [
+                 'as' => 'upload_invoice',
+                 'uses' => 'AjaxController@uploadInvoice'
+            ]); 
     
 
 });

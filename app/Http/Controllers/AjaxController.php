@@ -3011,5 +3011,12 @@ if ($err) {
         $result = $this->application->updateProgramData(['status' => $status], ['prgm_id' => $program_id]);
         return \Response::json(['success' => $result]);
     }
-
+    
+    function uploadInvoice(Request $request)
+    {
+       $doc  = $request['doc_file'];
+       $path = $doc->getRealPath();
+        $data = \Excel::load($path)->get();
+       dd($data);
+    }
 }

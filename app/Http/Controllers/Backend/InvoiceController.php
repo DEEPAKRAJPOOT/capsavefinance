@@ -76,7 +76,34 @@ class InvoiceController extends Controller {
         return view('backend.invoice.repaid_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
-
+      
+      
+        public function viewSentToBankInvoice() {
+        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();
+        return view('backend.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+                
+      }
+        public function viewfailedDisbursment() {
+        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();
+        return view('backend.invoice.failed disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+                
+      }
+      
+        public function viewdisbursed() {
+        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();
+        return view('backend.invoice.failed disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+                
+      }
+        public function viewRejectInvoice() {
+        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();
+        return view('backend.invoice.reject_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+                
+      }
+       
     
     /* get suplier & program b behalf of anchor id */
       public function getProgramSupplier(Request $request){

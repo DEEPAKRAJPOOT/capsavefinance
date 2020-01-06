@@ -155,12 +155,6 @@ public static function saveInvoice($arrInvoice)
        return User::whereIn('is_buyer',[1,2])->where('user_id',$uid)->first();
     }   
     
-     public static function getUserBehalfAnchor($uid)
-    {
-   
-       return User::whereIn('is_buyer',[1,2])->where('anchor_id',$uid)->get();
-    }   
-    
     public static function getAnchor($aid)
     {
        return Anchor::where('anchor_id',$aid)->first();

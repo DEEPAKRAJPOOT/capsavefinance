@@ -747,6 +747,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'backend_get_repaid_invoice',
                 'uses' => 'Backend\InvoiceController@viewRepaidInvoice'
             ]); 
+             
+              Route::get('backend_get_sent_to_bank', [
+                 'as' => 'backend_get_sent_to_bank',
+                'uses' => 'Backend\InvoiceController@viewRepaidInvoice'
+            ]); 
+               Route::get('backend_get_failed_disbursment', [
+                 'as' => 'backend_get_failed_disbursment',
+                'uses' => 'Backend\InvoiceController@viewfailedDisbursment'
+            ]); 
+               
+                Route::get('backend_get_disbursed', [
+                 'as' => 'backend_get_disbursed',
+                'uses' => 'Backend\InvoiceController@viewdisbursed'
+            ]); 
+                 Route::get('backend_get_reject_invoice', [
+                 'as' => 'backend_get_reject_invoice',
+                'uses' => 'Backend\InvoiceController@viewRejectInvoice'
+            ]); 
+              
+             
         
            Route::POST('backend_save_invoice', [
                  'as' => 'backend_save_invoice',
