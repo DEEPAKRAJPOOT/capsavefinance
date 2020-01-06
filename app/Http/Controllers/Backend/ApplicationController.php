@@ -730,7 +730,17 @@ class ApplicationController extends Controller
                         Session::flash('error_code', 'no_pre_docs_uploaded');
                         return redirect()->back();                                            
                     }
-                }                
+                } else if ($currStage->stage_code == 'opps_checker') {
+                  $capId = sprintf('%09d', $user_id);
+                  $customerId = 'CAP'.$capId;
+                  $lmsCustomerArray = array(
+                      'user_id' => $user_id, 
+                      'customer_id' => $customerId,
+                      'created_by' => Auth::user()->user_id
+                      );
+                  $createCustomerId = $this->appRepo->createCustomerId($lmsCustomerArray);
+                  die("checking done");
+                }               
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];
@@ -767,7 +777,7 @@ class ApplicationController extends Controller
                         Session::flash('error_code', 'no_docs_found');
                         return redirect()->back();                                            
                     }                    
-                }
+                } 
                 
                 Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
             }

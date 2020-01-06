@@ -29,7 +29,19 @@ class LmsUser extends Authenticatable
      * @var integer
      */
     protected $primaryKey = 'lms_user_id';
+    /**
+     * Maintain created_at and updated_at automatically
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
 
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = false;
     /**
      * The attributes that should be mutated to dates.
      *

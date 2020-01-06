@@ -32,6 +32,7 @@ use App\Inv\Repositories\Models\ProgramDoc;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\LmsUser;
 /**
  * Application repository class
  */
@@ -1011,5 +1012,23 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getProgramDocs($whereCondition=[])
     {
         return ProgramDoc::getProgramDocs($whereCondition);
+    }
+
+    /**
+     * Get Program Documents
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function createCustomerId($lmsCustomerArray = [])
+    {
+    	$customerCheck = LmsUser::where('user_id', $lmsCustomerArray['user_id'])
+    			->first();
+    	if(!isset($customerCheck)) {
+    		$customer = LmsUser::create($lmsCustomerArray);
+    	} 
+
+        return (isset($customer)) ? $customer : false;
     }
 }
