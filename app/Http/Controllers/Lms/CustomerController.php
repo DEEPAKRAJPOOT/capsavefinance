@@ -88,5 +88,23 @@ class CustomerController extends Controller
 	{
 		return view('lms.customer.list_invoices');              
 	}
+        
+        
+        
+    /**
+     * bank account list
+     * 
+     * @return type mixed
+     */
+    public function bankAccountList(Request $request)
+    {
+        try {
+            $user_id = $request->get('user_id');
+            $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            return view('lms.customer.bank_account_list')->with(['userInfo'=>$userInfo]);
+        } catch (Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
 
 }
