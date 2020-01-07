@@ -72,6 +72,7 @@
                                     <tr>
                                         @if($data->doc_id == '4')
                                         <td width="20%"><b>Bank</b></td>
+                                        <td width="20%"><b>Month-Year</b></td>
                                         @endif
                                         @if($data->doc_id == '5')
                                         <td width="20%"><b>Finance Year</b></td>
@@ -91,6 +92,7 @@
                                     <tr>
                                         @if($data->doc_id == '4')
                                         <td width="20%">{{ $value->doc_name }}</td>
+                                        <td width="20%">{{ sprintf('%02d', $value->gst_month) . '-'. $value->gst_year}}</td>
                                         @endif
                                         @if($data->doc_id == '5')
                                         <td width="20%">{{ $value->finc_year }}</td>
