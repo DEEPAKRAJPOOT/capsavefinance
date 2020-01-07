@@ -26,7 +26,7 @@ class QmsController extends Controller {
     public function __construct(InvQmsRepoInterface $qms_repo, InvDocumentRepoInterface $doc_repo, InvUserRepoInterface $user_repo)
     {
         $this->middleware('auth');
-        $this->middleware('checkBackendLeadAccess');
+        //$this->middleware('checkBackendLeadAccess');
         $this->qmsRepo = $qms_repo;
         $this->docRepo = $doc_repo;
         $this->userRepo = $user_repo;

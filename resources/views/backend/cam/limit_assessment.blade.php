@@ -14,15 +14,15 @@
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         {{-- <input type="hidden" name="app_limit_id" value="{{$limitData->app_limit_id}}"> --}}
-                        {{-- <div class="row">
+                        <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group INR">
                                     <label>Total Limit</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm" name="tot_limit_amt" value="{{$limitData->tot_limit_amt}}" disabled>
+                                    <input type="text" class="form-control form-control-sm" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? $limitData->tot_limit_amt: '' }}" maxlength="15">
                                 </div>
                             </div>
-                        </div> --}}
+                        </div>
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
