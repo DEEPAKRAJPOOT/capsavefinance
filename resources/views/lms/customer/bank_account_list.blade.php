@@ -167,14 +167,13 @@ var messages = {
                                     data: {acc_id: acc_id, _token: messages.token , value: currentValue },
                                     'type': 'POST',
                                     beforeSend: function () {
-                                       $('.isloader').show();},
+                                       $('.isloader').show();
+                                   },
                                     success: function (data) {
                                         $('.isloader').hide();
                                         window.reloadDataTable();
                                     }
                                 });
-
-
                             }
 
                         },

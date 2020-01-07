@@ -3038,7 +3038,6 @@ if ($err) {
         $value = $request->get('value');
         $this->application->updateBankAccount(['is_default' => 0]);
         $res = $this->application->updateBankAccount(['is_default' => $value], ['acc_id' => $acc_id]);
-
         return \response()->json(['success' => $res]);
     }
 
