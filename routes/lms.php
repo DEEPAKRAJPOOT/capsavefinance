@@ -31,6 +31,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_get_bank_account',
                 'uses' => 'Lms\CustomerController@bankAccountList'
             ]);
+            
+            Route::get('/add-bank-account', [
+                'as' => 'add_bank_account',
+                'uses' => 'Lms\CustomerController@addBankAccount'
+            ]);
+            
+            Route::post('/save-bank-account', [
+                'as' => 'save_bank_account',
+                'uses' => 'Lms\CustomerController@saveBankAccount'
+            ]);
+            
+            
 
         });//end of application
         

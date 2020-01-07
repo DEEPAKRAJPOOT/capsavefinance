@@ -3011,5 +3011,31 @@ if ($err) {
         $result = $this->application->updateProgramData(['status' => $status], ['prgm_id' => $program_id]);
         return \Response::json(['success' => $result]);
     }
+    
+    
+   /**
+    * get Bank account list
+    * 
+    * @param DataProviderInterface $dataProvider
+    * @return type mixed
+    */
+    
+    public function getBankAccountList(DataProviderInterface $dataProvider)
+    {
+        return $dataProvider->getBankAccountList($this->request, $this->application->getBankAccountList());
+    }
+    
+    
+    public function setDefaultAccount(Request $request) 
+    {
+         $acc_id = ($request->get('acc_id')) ?  \Crypt::decrypt($request->get('acc_id')) : null ;
+         
+         
+          $this->application->updateBankAccount(['is_default'=>0]);
+        $res =  $this->application->updateBankAccount(['is_default'=> 1] , ['acc_id' => $acc_id] );
+        
+        return \response()->json(['success'=> $res]);
+        
+    }
 
 }

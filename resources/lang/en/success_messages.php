@@ -27,7 +27,7 @@ return [
 
     'pd_notes_saved'=>'Personal Discussion  details save successfully!',
     'query_management_saved'=>'Query save successfully!',
-    'program_save_successfully'=>'Program details saved successfully!',
-   
+    'program_save_successfully'=>'Program details saved successfully!',   
     'sub_program_save_successfully'=>'Sub program details saved successfully!',
+    'save_bank_account_successfully'=>'Bank Account details Saved successfuly! '
 ];

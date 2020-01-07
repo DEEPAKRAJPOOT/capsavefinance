@@ -2,6 +2,7 @@
 
 @section('content')
 
+@include('layouts.backend.partials.admin_customer_links',['active'=>'summary'])
 <div class="content-wrapper">
 	<div class="row ">
 		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">

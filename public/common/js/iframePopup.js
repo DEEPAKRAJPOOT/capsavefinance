@@ -763,4 +763,21 @@ $(document).ready(function () {
                         }
                 );
         });
+        
+        
+        
+         $("#add_bank_account").on('show.bs.modal', function (e) {
+        var parent = $(e.relatedTarget);
+        var height = parent.attr('data-height');
+        var url = parent.attr('data-url');
+        var width = parent.attr('data-width');
+        $("#add_bank_account iframe").attr(
+                {
+                    'src': url,
+                    'height': height,
+                    'width': width
+                }
+        );
+    });
+        
 });
