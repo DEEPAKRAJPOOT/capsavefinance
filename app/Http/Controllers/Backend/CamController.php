@@ -788,6 +788,7 @@ class CamController extends Controller
 
         $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
         $limitData = $this->appRepo->getAppLimit($appId);
+
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
         $currStageCode = $currStage->stage_code;                    
@@ -835,17 +836,22 @@ class CamController extends Controller
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             }
 
-            // ******** do not delete ***********
-            /*$app_limit = $this->appRepo->saveAppLimit([
+            $totalLimit = $this->appRepo->getAppLimit($appId);
+            if($totalLimit){
+              $this->appRepo->saveAppLimit(['tot_limit_amt'=>$request->tot_limit_amt], $totalLimit->app_limit_id);
+            }else{
+              $app_limit = $this->appRepo->saveAppLimit([
                           'app_id'=>$appId,
                           'biz_id'=>$bizId,
                           'tot_limit_amt'=>$request->tot_limit_amt,
                           'created_by'=>\Auth::user()->user_id,
                           'created_at'=>\Carbon\Carbon::now(),
-                          ]);*/
+                          ]);
+              
+            }
 
             $app_prgm_limit = $this->appRepo->saveProgramLimit([
-                          'app_limit_id'=>$request->app_limit_id,
+                          'app_limit_id'=>($totalLimit)? $totalLimit->app_limit_id : $app_limit->app_limit_id,
                           'app_id'=>$appId,
                           'biz_id'=>$bizId,
                           'anchor_id'=>$request->anchor_id,
