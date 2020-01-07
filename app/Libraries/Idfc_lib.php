@@ -9,7 +9,7 @@ use Auth;
 define('FIXED', array('vendorId' => 'capsave','time' => date('Ymd\THis\Z')));
 define('BSA_LIB_URL', config('proin.BSA_LIB_URL'));
 
-class Bsa_lib{
+class Idfc_lib{
 	private $httpMethod = 'POST';
 	const BASE_URL    =  'https://ESBUAT1RTN0140.idfcbank.com:9444/capsave/';
 	const SECRET_KEY    =  'wdqrEbgYfilAWJXCLRrqfYGdGJJGSShf';
