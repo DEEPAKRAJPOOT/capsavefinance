@@ -246,6 +246,7 @@ class ProgramController extends Controller {
         return [
             'parent_prgm_id' => $request->get('parent_prgm_id'),
             'anchor_id' => $request->get('anchor_id'),
+            'product_id' => $request->get('product_id'),
             'anchor_user_id' => $request->get('anchor_user_id'),
             'product_name' => $request->get('product_name'),
             'prgm_name' => $request->get('product_name'),
