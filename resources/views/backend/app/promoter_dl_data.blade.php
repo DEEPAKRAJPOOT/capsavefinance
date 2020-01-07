@@ -6,6 +6,7 @@
 
 
 <table class="table  overview-table">
+@if($res != null)
     <thead class="thead-primary">
         <tr>
             <th class="text-left" width="10%">Driving License Detail</th>
@@ -115,6 +116,14 @@
             </td>														
         </tr>													
     </tbody>
+
+    @else 
+    <thead class="thead-primary">
+        <tr>
+            <th class="text-left" colspan="4" width="10%">Driving License Not Verified</th>
+        </tr>
+    </thead>
+    @endif
 </table>
 
 

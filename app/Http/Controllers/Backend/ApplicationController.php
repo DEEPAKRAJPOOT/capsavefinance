@@ -978,7 +978,7 @@ class ApplicationController extends Controller
     {
         $request =  $request->all();
         $result   = $this->userRepo->getOwnerAppRes($request);
-        $res = json_decode($result->karza->res_file);
+        $res = json_decode((isset($result->karza)) ? $result->karza->res_file : '');
         return view('backend.app.promoter_pan_data')->with('res', $res);
         
     } 
@@ -987,7 +987,7 @@ class ApplicationController extends Controller
     {
          $request =  $request->all();
          $result   = $this->userRepo->getOwnerAppRes($request);
-         $res = json_decode($result->karza->res_file);
+         $res = json_decode((isset($result->karza)) ? $result->karza->res_file : '');
         return view('backend.app.promoter_dl_data')->with('res', $res);
         
     } 
@@ -996,7 +996,7 @@ class ApplicationController extends Controller
     {
          $request =  $request->all();
          $result   = $this->userRepo->getOwnerAppRes($request);
-         $res = json_decode($result->karza->res_file);
+         $res = json_decode((isset($result->karza)) ? $result->karza->res_file : '');
         return view('backend.app.promoter_voter_data')->with('res', $res);
         
     } 
@@ -1005,7 +1005,7 @@ class ApplicationController extends Controller
     {
          $request =  $request->all();
          $result   = $this->userRepo->getOwnerAppRes($request);
-         $res = json_decode($result->karza->res_file);
+         $res = json_decode((isset($result->karza)) ? $result->karza->res_file : '');
         return view('backend.app.promoter_pass_data')->with('res', $res);
         
     } 
