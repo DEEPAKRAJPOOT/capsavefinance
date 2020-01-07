@@ -197,9 +197,13 @@ $(document).ready(function(){
 
     $('#anchor_id').on('change',function(){
         let anchor_id = $('#anchor_id').val();
+        let anchor_limit = $('#anchor_id option:selected').data('limit');
         if(anchor_id == ''){
             $('#program_id').html('<option value="">Select Program</option>');
             return;
+        }else{
+            unsetError('select[name=anchor_id]');
+            setError('select[name=anchor_id]', '<i class="fa fa-inr" aria-hidden="true"></i> '+anchor_limit);
         }
         let token = "{{ csrf_token() }}";
         $('.isloader').show();
@@ -273,21 +277,28 @@ function checkValidation(){
 }
 
 function fillAnchors(programs){
-    let html = '<option value="">Select Anchor</option>';
+    let html = '<option value="" data-limit="">Select Anchor</option>';
     $.each(programs, function(i,program){
         if(program.anchors != null)
-            html += '<option value="'+program.anchors.anchor_id+'">'+program.anchors.comp_name+'</option>';
+            html += '<option value="'+program.anchors.anchor_id+'" data-limit="'+program.anchors.prgm_data.anchor_limit+'">'+program.anchors.comp_name+'</option>';
     });
     $('#anchor_id').html(html);
 }
 
 function fillPrograms(programs){
-    let html = '<option value="">Select Program</option>';
+    let html = '<option value="" data-sub_limit="">Select Program</option>';
     $.each(programs, function(i,program){
         if(program.prgm_name != null)
-            html += '<option value="'+program.prgm_id+'">'+program.prgm_name+'</option>';
+            html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'">'+program.prgm_name+'</option>';
     });
     $('#program_id').html(html);
 }
+
+$('#program_id').on('change',function(){
+    unsetError('select[name=prgm_id]');
+    let program_limit = $('#program_id option:selected').data('sub_limit');
+    setError('select[name=prgm_id]', '<i class="fa fa-inr" aria-hidden="true"></i> '+program_limit);
+});
+
 </script>
 @endsection

@@ -14,7 +14,7 @@
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control" value="{{isset($offerData->programLimit->limit_amt)? $offerData->programLimit->limit_amt: $limit_amt}}" placeholder="Loan Offer " maxlength="15" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-        <span class="s_value"><i class="fa fa-inr"></i>10,00,000 - <i class="fa fa-inr"></i>50,00,000</span>
+        <span class="s_value"><i class="fa fa-inr"></i>{{$offerData->programLimit->program->min_loan_size}} - <i class="fa fa-inr"></i>{{$offerData->programLimit->program->max_loan_size}}</span>
         </div>
       </div>
     </div>
@@ -24,7 +24,7 @@
         <label for="txtPassword" class="col-md-4"><b>Interest(%):</b></label> 
         <div class="col-md-8">
         <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="2">
-        <span class="s_value">10%-12%</span>
+        <span class="s_value">{{$offerData->programLimit->program->min_interest_rate}}%-{{$offerData->programLimit->program->max_interest_rate}}%</span>
         </div>
       </div>
     </div>
