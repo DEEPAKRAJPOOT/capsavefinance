@@ -99,6 +99,13 @@ class UserBankAccount extends BaseModel {
      */
     public static function updateBankAccount($attributes, $where = [])
     {
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        if (empty($attributes)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
 
 
         $result = \DB::table('user_bank_account');
@@ -107,6 +114,28 @@ class UserBankAccount extends BaseModel {
         }
         $result = $result->update($attributes);
         return $result ?: false;
+    }
+
+    /**
+     * get Bank account data
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function getBankAccountData($where)
+    {
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        $res = self::where($where)->get();
+        return $res ?: false;
     }
 
 }

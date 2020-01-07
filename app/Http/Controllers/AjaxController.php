@@ -3026,16 +3026,20 @@ if ($err) {
     }
     
     
-    public function setDefaultAccount(Request $request) 
+    /**
+     * set default account
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function setDefaultAccount(Request $request)
     {
-         $acc_id = ($request->get('acc_id')) ?  \Crypt::decrypt($request->get('acc_id')) : null ;
-         
-         
-          $this->application->updateBankAccount(['is_default'=>0]);
-        $res =  $this->application->updateBankAccount(['is_default'=> 1] , ['acc_id' => $acc_id] );
-        
-        return \response()->json(['success'=> $res]);
-        
+        $acc_id = ($request->get('acc_id')) ? \Crypt::decrypt($request->get('acc_id')) : null;
+        $value = $request->get('value');
+        $this->application->updateBankAccount(['is_default' => 0]);
+        $res = $this->application->updateBankAccount(['is_default' => $value], ['acc_id' => $acc_id]);
+
+        return \response()->json(['success' => $res]);
     }
 
 }

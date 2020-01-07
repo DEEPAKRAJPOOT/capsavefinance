@@ -68,8 +68,6 @@
 </div>
 @endsection
 {!!Helpers::makeIframePopup('add_bank_account','Add Bank', 'modal-md')!!}
-
-
 @section('additional_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 @endsection
@@ -166,7 +164,7 @@ var messages = {
                             action: function () {
                                 jQuery.ajax({
                                     url: messages.set_default_account,
-                                    data: {acc_id: acc_id, _token: messages.token},
+                                    data: {acc_id: acc_id, _token: messages.token , value: currentValue },
                                     'type': 'POST',
                                     beforeSend: function () {
                                        $('.isloader').show();},

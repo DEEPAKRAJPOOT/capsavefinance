@@ -771,6 +771,10 @@ $(document).ready(function () {
         var height = parent.attr('data-height');
         var url = parent.attr('data-url');
         var width = parent.attr('data-width');
+        var title = parent.attr('title');
+        if(title){
+               $('#add_bank_account').find('.modal-title').html(title); 
+        }
         $("#add_bank_account iframe").attr(
                 {
                     'src': url,

@@ -119,8 +119,11 @@ class CustomerController extends Controller {
     public function addBankAccount(Request $request)
     {
         try {
+            $acc_id = $request->get('acc_id');
+            $bankAccount =  $this->appRepo->getBankAccountData(['acc_id'=>$acc_id])->first();
             $bank_list = ['' => 'Please Select'] + $this->master->getBankList()->toArray();
-            return view('lms.customer.add_bank_account')->with(['bank_list' => $bank_list]);
+            return view('lms.customer.add_bank_account')
+                    ->with(['bank_list' => $bank_list ,'bankAccount'=>$bankAccount]);
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -135,6 +138,7 @@ class CustomerController extends Controller {
     public function saveBankAccount(BankAccountRequest $request)
     {
         try {
+            $acc_id = ($request->get('acc_id')) ? \Crypt::decrypt($request->get('acc_id')) : null;
             $prepareData = [
                 'acc_name' => $request->get('acc_name'),
                 'acc_no' => $request->get('acc_no'),
@@ -145,8 +149,9 @@ class CustomerController extends Controller {
                 'user_id' => \auth()->user()->user_id
             ];
 
-            $this->appRepo->UserBankAccount($prepareData);
-            Session::flash('message', trans('success_messages.save_bank_account_successfully'));
+            $this->appRepo->saveBankAccount($prepareData, $acc_id);
+            $messges = $acc_id ? trans('success_messages.update_bank_account_successfully') : trans('success_messages.save_bank_account_successfully');
+            Session::flash('message',$messges);
             Session::flash('operation_status', 1);
             return redirect()->back();
         } catch (Exception $ex) {

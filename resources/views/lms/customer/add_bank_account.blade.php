@@ -11,7 +11,7 @@ Form::open(
 )
 !!}
 
-
+{!! Form::hidden('acc_id', isset($bankAccount->acc_id) ? \Crypt::encrypt($bankAccount->acc_id)  : null ) !!}
 
 <div class="modal-body text-left">
     <div class="row">
@@ -20,7 +20,9 @@ Form::open(
                 <label for="txtCreditPeriod">Account Holder Name
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('acc_name', '',['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Holder Name']) !!}
+                {!! Form::text('acc_name', 
+                isset($bankAccount->acc_name) ? $bankAccount->acc_name : null
+                ,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Holder Name']) !!}
                 {!! $errors->first('acc_name', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -29,7 +31,8 @@ Form::open(
                 <label for="txtCreditPeriod">Account Number
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('acc_no', '',['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number']) !!}
+                {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
+                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number']) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -38,7 +41,7 @@ Form::open(
                 <label for="txtCreditPeriod">Bank Name
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::select('bank_id', $bank_list,'',['class'=>'form-control form-control-sm'])!!}
+                {!! Form::select('bank_id', $bank_list,isset($bankAccount->bank_id) ? $bankAccount->bank_id : null,['class'=>'form-control form-control-sm'])!!}
                 {!! $errors->first('bank_id', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -47,7 +50,7 @@ Form::open(
                 <label for="txtCreditPeriod">IFSC Code
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('ifsc_code', '',['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code']) !!}
+                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code']) !!}
                 {!! $errors->first('ifsc_code', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -56,14 +59,14 @@ Form::open(
                 <label for="txtCreditPeriod">Branch Name
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('branch_name', '',['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Branch Name']) !!}
+                {!! Form::text('branch_name',isset($bankAccount->branch_name) ? $bankAccount->branch_name : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Branch Name']) !!}
                 {!! $errors->first('branch_name', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="txtCreditPeriod">Status</label><br>
-                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],'',['class'=>'form-control form-control-sm']) !!}
+                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($bankAccount->is_active) ? $bankAccount->is_active : null,['class'=>'form-control form-control-sm']) !!}
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
         </div>

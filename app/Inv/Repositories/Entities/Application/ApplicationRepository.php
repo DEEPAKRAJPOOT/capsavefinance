@@ -1023,7 +1023,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $id int
      * @return type mixed
      */
-    public function UserBankAccount($attributes, $id = null)
+    public function saveBankAccount($attributes, $id = null)
     {
         return UserBankAccount::saveBankAccount($attributes, $id);
     }
@@ -1051,6 +1051,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function updateBankAccount($attributes, $where = [])
     {
         return UserBankAccount::updateBankAccount($attributes, $where);
+    }
+    
+    
+    /**
+     * get Bank account 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getBankAccountData($where)
+    {
+        return UserBankAccount::getBankAccountData($where);
     }
 
 }

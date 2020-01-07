@@ -1804,12 +1804,11 @@ class DataRenderer implements DataProviderInterface
 
                             $checked = ($bank->is_default == 1) ? 'checked' : null;
                             $act = '';
-                            $act = '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($bank->acc_id) . '"  class="make_default" name="add"><label for="add">Default</label> ';
-                            
-                            
-                           $act = '<a data-toggle="modal" data-target="#editAnchorFrm" data-url="http://admin.rent.local/anchor/update-anchor?__signature=31ea3911-cf94-4682-abee-4d2d937203f6" data-height="430px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Anchor Detail"><i class="fa fa-edit"></i></a>'
-                            
-                            
+                            $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($bank->acc_id) . '"  class="make_default" name="add"><label for="add">Default</label> ';
+                            $act .= '<a data-toggle="modal"  data-height="550px" 
+                           data-width="100%" 
+                           data-target="#add_bank_account"
+                           data-url="' . route('add_bank_account', ['acc_id' => $bank->acc_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Bank Account"><i class="fa fa-edit"></i></a>';
                             return $act;
                         })
                         ->editColumn(
