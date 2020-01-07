@@ -40,7 +40,7 @@
         <label for="txtPassword" class="col-md-4"><b>Limit:</b></label>
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="limit_amt" class="form-control" value="{{isset($limitData->limit_amt)? $limitData->limit_amt: ''}}" placeholder="Limit amount">
+        <input type="text" name="limit_amt" class="form-control" value="{{isset($limitData->limit_amt)? $limitData->limit_amt: ''}}" placeholder="Limit amount" maxlength="15">
         </div>
       </div>
     </div>
