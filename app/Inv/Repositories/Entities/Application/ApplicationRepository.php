@@ -1031,4 +1031,21 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
         return (isset($customer)) ? $customer : false;
     }
+
+	/**
+	 * Get Applications for Application list data tables
+	 */
+	public function getCustomerPrgmAnchors($user_id) 
+	{
+		return AppProgramLimit::whereHas('appLimit.app.user', function ($query) use ($user_id) {
+			        $query->where(function ($q) use ($user_id) {
+			            $q->where('user_id', $user_id);
+			        });
+			    })
+				->with('offer')
+				->with('anchor')
+				->with('program')
+				->whereHas('offer')
+				->get();
+	}   
 }

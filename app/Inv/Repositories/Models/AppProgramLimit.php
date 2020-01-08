@@ -166,6 +166,10 @@ class AppProgramLimit extends BaseModel {
          return self::where('anchor_id',$aid)->first();  
      }  
     
-    
+    public function appLimit()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\AppLimit', 'app_limit_id', 'app_limit_id');
+    }
+        
 
 }
