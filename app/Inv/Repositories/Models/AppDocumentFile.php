@@ -86,13 +86,13 @@ class AppDocumentFile extends BaseModel
         if($appDocFile){
             switch ($appDocFile->doc_id) {
                 case '4':
-                   $result = AppDocumentFile::where('app_id', $appDocFile->app_id)
-                    ->where('doc_id', $appDocFile->doc_id)
-                    ->where('gst_month', $appDocFile->gst_month)
-                    ->where('gst_year', $appDocFile->gst_year)
-                    ->where('file_bank_id', $appDocFile->file_bank_id)
-                    ->where('app_doc_file_id', '!=', $appDocFile->app_doc_file_id)
-                    ->update(['is_active' => '0']);
+                   // $result = AppDocumentFile::where('app_id', $appDocFile->app_id)
+                   //  ->where('doc_id', $appDocFile->doc_id)
+                   //  ->where('gst_month', $appDocFile->gst_month)
+                   //  ->where('gst_year', $appDocFile->gst_year)
+                   //  ->where('file_bank_id', $appDocFile->file_bank_id)
+                   //  ->where('app_doc_file_id', '!=', $appDocFile->app_doc_file_id)
+                   //  ->update(['is_active' => '0']);
                     break;
                 case '5':
                     $result = AppDocumentFile::where('app_id', $appDocFile->app_id)
