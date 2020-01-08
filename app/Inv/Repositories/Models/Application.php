@@ -87,6 +87,11 @@ class Application extends BaseModel
         return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where('is_active', 1);
     }
 
+    public function acceptedOffer()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1]);
+    }
+
     /**
      * Get Applications for Application list data tables
      */
@@ -415,12 +420,11 @@ class Application extends BaseModel
         return $appData ? $appData : [];
     }
     
-    
-        public  function user()
-     {
-  
-         return $this->hasOne('App\Inv\Repositories\Models\User','user_id','user_id');  
-     }
+    public  function user()
+    {
+
+        return $this->hasOne('App\Inv\Repositories\Models\User','user_id','user_id');  
+    }
      
      
     /**

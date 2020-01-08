@@ -27,7 +27,6 @@ class SubProgramRequest extends FormRequest {
         return [
             'product_name' => 'required',
             'anchor_sub_limit' => "required",
-            'interest_linkage' => 'required',
             'interest_borne_by' => "required",
             'anchor_limit' => "required",
             'margin' => "required",

@@ -56,8 +56,7 @@ class CustomerController extends Controller
 			$user_id = $request->get('user_id');
 			$userInfo = $this->userRepo->getCustomerDetail($user_id);
 			$application = $this->appRepo->getCustomerApplications($user_id);
-			$anchor = $this->appRepo->getCustomerAnchors($user_id);
-
+			$anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
 			foreach ($application as $key => $value) {
 				$totalLimit += (isset($value->appLimit->tot_limit_amt)) ? $value->appLimit->tot_limit_amt : 0;
 			}
@@ -69,9 +68,14 @@ class CustomerController extends Controller
 			$userInfo->consume_limit = number_format($consumeLimit);
 			$userInfo->avail_limit = number_format($totalLimit- $consumeLimit);
 			
+
 			return view('lms.customer.list_applications')
-				->with('userInfo', $userInfo)
-				->with('application', $application);
+				->with([
+					'userInfo' => $userInfo, 
+					'application' => $application,
+					'anchors' => $anchors
+					]);
+
 
 		} catch (Exception $ex) {
 			dd($ex);

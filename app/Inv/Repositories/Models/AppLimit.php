@@ -61,5 +61,10 @@ class AppLimit extends BaseModel {
         } else {
             return self::create($data);
         }
+    }
+
+    public function app()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Application', 'app_id', 'app_id');
     }    
 }

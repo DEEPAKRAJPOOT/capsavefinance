@@ -4,6 +4,7 @@
 
 
 <table class="table  table-striped table-hover overview-table">
+    @if($res != null)
 					<thead class="thead-primary">
 						<tr>
 							<th class="text-left" colspan="2" width="10%">Voter ID (EPIC) Detail</th>
@@ -104,6 +105,13 @@
 							<td>...</td>
 						</tr>                                                    
 					</tbody>
+    @else 
+    <thead class="thead-primary">
+        <tr>
+            <th class="text-left" colspan="4" width="10%">Voter ID Not Verified</th>
+        </tr>
+    </thead>
+    @endif
 				</table>
 
 @endsection

@@ -71,13 +71,21 @@
 					   </thead>
 					   
 					   <tbody>
-						   <tr role="row" class="odd">
-							   <td class="sorting_1">1</td>
-							   <td>Anchor 1</td>
-							   <td>Anchor 1 Vendor Financing</td>
-							   <td><i class="fa fa-inr"></i> 50,000000</td>
-							   <td><i class="fa fa-inr"></i> 20,000000</td>
-						   </tr>
+					   		@if($anchors->count() >0)
+							@foreach ($anchors AS $anchor)
+							<tr role="row" class="odd">
+								<td class="sorting_1">{{ $anchor->anchor->anchor_id }}</td>
+								<td>{{ $anchor->anchor->comp_name }}</td>
+								<td>{{ $anchor->program->prgm_name }}</td>
+								<td><i class="fa fa-inr"></i> {{ $anchor->limit_amt }}</td>
+								<td><i class="fa fa-inr"></i> {{ $anchor->offer->prgm_limit_amt - $anchor->offer->loan_amount }}</td>
+							</tr>
+						   	@endforeach
+							@else
+							<tr>
+								<td  colspan = "5"> No Anchor Found:</td>
+							</tr>
+							@endif
 					   </tbody>
 					</table>
 		 		</div>
@@ -123,7 +131,7 @@
 										@endforeach
 										@else
 										<tr>
-											<td  colspan = "3"> No Application Found:</td>
+											<td  colspan = "4"> No Application Found:</td>
 										</tr>
 										@endif
 									</tbody>

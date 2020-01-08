@@ -93,6 +93,27 @@
                                                             <button class="btn-upload btn-sm" type="button"> <i class="fa fa-download"></i>
                                                             </button>
                                                         </a>
+                                                        @if($document->doc_id == 31)
+                                                        <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
+                                                            <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>
+                                                            </button>
+                                                        </a>
+                                                        @endif
+
+                                                        @if($document->doc_id == 30)
+                                                        <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_voter_data',['type'=>'4','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
+                                                            <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>
+                                                            </button>
+                                                        </a>
+                                                        @endif
+
+                                                        @if($document->doc_id == 32)
+                                                        <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_pass_data',['type'=>'6','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
+                                                            <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>
+                                                            </button>
+                                                        </a>
+                                                        @endif
+
                                                         @if($document->doc_id == 2)
                                                         <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_pan_data',['type'=>'3','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
                                                             <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>

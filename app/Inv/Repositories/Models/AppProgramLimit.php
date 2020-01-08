@@ -137,7 +137,6 @@ class AppProgramLimit extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
     }
       
-     
     public static function getSingleLimit($aid){
         return self::where('anchor_id',$aid)->first();  
     }
@@ -157,6 +156,10 @@ class AppProgramLimit extends BaseModel {
             return AppProgramOffer::where('app_prgm_limit_id', $aplids)->sum('prgm_limit_amt');
         }
      }
+
+    public function appLimit(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppLimit', 'app_limit_id', 'app_limit_id');
+    }
 
     //to do
      /*public function programLimit(){

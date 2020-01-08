@@ -32,6 +32,7 @@ use App\Inv\Repositories\Models\ProgramDoc;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\LmsUser;
 /**
  * Application repository class
  */
@@ -271,7 +272,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	{
 		return Application::with('business')
 				->with('appLimit')
-				->with('appPrgmOffer')
+				->with('acceptedOffer')
+				->whereHas('acceptedOffer')
 				->where(['user_id' => $user_id, 'status' => 1])
 				->get();
 	}    
@@ -1017,4 +1019,55 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Application::getProgramDocs($whereCondition);
     }
+
+    /**
+     * Get Program Documents
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function createCustomerId($lmsCustomerArray = [])
+    {
+    	$customerCheck = LmsUser::where('user_id', $lmsCustomerArray['user_id'])
+    			->first();
+    	if(!isset($customerCheck)) {
+    		$customer = LmsUser::create($lmsCustomerArray);
+    	} 
+
+        return (isset($customer)) ? $customer : false;
+    } 
+
+    /**
+     * Get Program Documents
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function createVirtualId($lmsCustomerArray = [], $virtualId = false)
+    {
+    	
+		$response = LmsUser::updateVirtualId($lmsCustomerArray->lms_user_id, $virtualId);
+
+        return (isset($response)) ? $response : false;
+    }
+
+	/**
+	 * Get Applications for Application list data tables
+	 */
+	public function getCustomerPrgmAnchors($user_id) 
+	{
+		return AppProgramLimit::whereHas('appLimit.app.user', function ($query) use ($user_id) {
+			        $query->where(function ($q) use ($user_id) {
+			            $q->where('user_id', $user_id);
+			        });
+			    })
+				->with('offer')
+				->with('anchor')
+				->with('program')
+				->whereHas('appLimit.app.acceptedOffer')
+				->whereHas('offer')
+				->get();
+	}   
 }
