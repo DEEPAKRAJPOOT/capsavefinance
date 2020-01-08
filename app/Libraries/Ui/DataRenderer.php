@@ -1624,14 +1624,20 @@ class DataRenderer implements DataProviderInterface
                         $link = $customer->customer_id;
                         return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                     }
+                )
+                ->addColumn(
+                    'virtual_acc_id',
+                    function ($customer) {
+                        return $customer->virtual_acc_id;
+                    }
                 )     
                 ->editColumn(
                         'customer_name',
                         function ($customer) {
-                    $full_name = $customer->user->f_name.' '.$customer->user->l_name;
-                    return $full_name;
-                    
-                })
+                        $full_name = $customer->user->f_name.' '.$customer->user->l_name;
+                        return $full_name;
+                    }
+                )
                 ->editColumn(
                         'customer_email',
                         function ($customer) {
