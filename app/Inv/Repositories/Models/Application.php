@@ -87,6 +87,11 @@ class Application extends BaseModel
         return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where('is_active', 1);
     }
 
+    public function acceptedOffer()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1]);
+    }
+
     /**
      * Get Applications for Application list data tables
      */

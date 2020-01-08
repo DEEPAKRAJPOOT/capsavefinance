@@ -272,7 +272,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	{
 		return Application::with('business')
 				->with('appLimit')
-				->with('appPrgmOffer')
+				->with('acceptedOffer')
+				->whereHas('acceptedOffer')
 				->where(['user_id' => $user_id, 'status' => 1])
 				->get();
 	}    
@@ -1045,6 +1046,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 				->with('offer')
 				->with('anchor')
 				->with('program')
+				->whereHas('appLimit.app.acceptedOffer')
 				->whereHas('offer')
 				->get();
 	}   
