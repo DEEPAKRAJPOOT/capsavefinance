@@ -814,17 +814,6 @@ class CamController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
 
-            if($request->has('btn_save_offer')){
-              $appApprData = [
-                  'app_id' => $appId,
-                  'approver_user_id' => \Auth::user()->user_id,
-                  'status' => 1
-                ];
-              $this->appRepo->saveAppApprovers($appApprData);
-              Session::flash('message',trans('backend_messages.offer_approved'));
-              return redirect()->back();
-            }
-
             $checkProgram = $this->appRepo->checkduplicateProgram([
               'app_id'=>$appId,
               'anchor_id'=>$request->anchor_id,
@@ -837,13 +826,14 @@ class CamController extends Controller
             }
 
             $totalLimit = $this->appRepo->getAppLimit($appId);
+
             if($totalLimit){
-              $this->appRepo->saveAppLimit(['tot_limit_amt'=>$request->tot_limit_amt], $totalLimit->app_limit_id);
+              $this->appRepo->saveAppLimit(['tot_limit_amt'=>str_replace(',', '', $request->tot_limit_amt)], $totalLimit->app_limit_id);
             }else{
               $app_limit = $this->appRepo->saveAppLimit([
                           'app_id'=>$appId,
                           'biz_id'=>$bizId,
-                          'tot_limit_amt'=>$request->tot_limit_amt,
+                          'tot_limit_amt'=>str_replace(',', '', $request->tot_limit_amt),
                           'created_by'=>\Auth::user()->user_id,
                           'created_at'=>\Carbon\Carbon::now(),
                           ]);
@@ -856,7 +846,7 @@ class CamController extends Controller
                           'biz_id'=>$bizId,
                           'anchor_id'=>$request->anchor_id,
                           'prgm_id'=>$request->prgm_id,
-                          'limit_amt'=>$request->limit_amt,
+                          'limit_amt'=>str_replace(',', '', $request->limit_amt),
                           'created_by'=>\Auth::user()->user_id,
                           'created_at'=>\Carbon\Carbon::now(),
                           ]);
@@ -900,6 +890,10 @@ class CamController extends Controller
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
         $aplid = (int)$request->get('app_prgm_limit_id');
+        $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
+        $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
+        $request['check_bounce_fee'] = str_replace(',', '', $request->check_bounce_fee);
+        dd($request->all());
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
 
         if($offerData){
@@ -928,6 +922,7 @@ class CamController extends Controller
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
         $aplid = (int)$request->get('app_prgm_limit_id');
+        $request['limit_amt'] = str_replace(',', '', $request->limit_amt);
         $limitData= $this->appRepo->saveProgramLimit($request->all(), $aplid);
 
         if($limitData){

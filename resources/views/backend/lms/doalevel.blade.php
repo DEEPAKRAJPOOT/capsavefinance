@@ -14,7 +14,7 @@
                 $doaResult,
                 ['id' => 'doaLevelList',
                 'class'=>'form-control multi-select-demo',
-                'multiple'=>'multiple'
+                'multiple'=>'multiple','tabindex'=>36
                 ])
                 !!}
 

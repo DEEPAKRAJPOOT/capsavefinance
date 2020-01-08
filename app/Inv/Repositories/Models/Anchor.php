@@ -221,4 +221,9 @@ public static function saveAnchor($arrAnchor = [])
         return ($result ? : false);
     }
 
+    public function prgmData()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\Program', 'anchor_id', 'anchor_id')->where(['status'=>1, 'parent_prgm_id'=> 0]);
+    }
+
 }
