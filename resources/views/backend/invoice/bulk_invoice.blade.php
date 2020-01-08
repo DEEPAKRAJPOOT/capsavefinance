@@ -43,7 +43,7 @@
                      
 		 <div class="col-md-6">
 		<div class="form-group">
-        <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span></label>
+        <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <span id="anc_limit" class="error"></span></label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
                                              
                 <option value="">Select Anchor  </option>
@@ -51,7 +51,7 @@
                 <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
                 @endforeach
                                              </select>
-        <span id="anc_limit" class="error"></span>
+        
                                                <span id="anchor_bulk_id_msg" class="error"></span>
                 
                 </div></div>
@@ -59,12 +59,12 @@
 		 <div class="col-md-6">
                     <div class="form-group">
                         <label for="txtCreditPeriod">Product Program Name
-                            <span class="error_message_label">*</span>
+                            <span class="error_message_label">*</span>  <span id="pro_limit" class="error"></span>
                         </label>
                          <select readonly="readonly" class="form-control changeBulkSupplier" id="program_bulk_id" >
                                             </select>
                                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
-                                   <span id="pro_limit" class="error"></span>
+                                  
                                     <span id="program_bulk_id_msg" class="error"></span>
                </div>
 		</div>
