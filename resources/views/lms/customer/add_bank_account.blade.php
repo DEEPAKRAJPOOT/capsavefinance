@@ -37,6 +37,8 @@ Form::open(
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
+        
+        @if(!isset($bankAccount->bank_account_id))
          <div class="col-md-6">
             <div class="form-group">
                 <label for="txtCreditPeriod">Confirm Account Number
@@ -47,6 +49,7 @@ Form::open(
                 
             </div>
         </div>
+        @endif
        
         <div class="col-md-6">
             <div class="form-group">
