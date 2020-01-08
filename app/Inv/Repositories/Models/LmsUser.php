@@ -65,4 +65,10 @@ class LmsUser extends Authenticatable
     {
         return $this->belongsTo('App\Inv\Repositories\Models\User', 'user_id');
     }
+
+    public static function updateVirtualId($lmsUserId, $virtualId)
+    {
+        return self::where('lms_user_id', $lmsUserId)
+                    ->update(['virtual_acc_id' => $virtualId]);
+    }
 }

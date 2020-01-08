@@ -731,15 +731,20 @@ class ApplicationController extends Controller
                         return redirect()->back();                                            
                     }
                 } else if ($currStage->stage_code == 'opps_checker') {
-                  $capId = sprintf('%09d', $user_id);
-                  $customerId = 'CAP'.$capId;
-                  $lmsCustomerArray = array(
-                      'user_id' => $user_id, 
-                      'customer_id' => $customerId,
-                      'created_by' => Auth::user()->user_id
-                      );
-                  $createCustomerId = $this->appRepo->createCustomerId($lmsCustomerArray);
-                }               
+                  	$capId = sprintf('%09d', $user_id);
+                  	$customerId = 'CAP'.$capId;
+                  	$lmsCustomerArray = array(
+						'user_id' => $user_id, 
+						'customer_id' => $customerId,
+						'created_by' => Auth::user()->user_id
+						);
+                  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                  	if($createCustomer != null) {
+	                  	$capId = sprintf('%07d', $createCustomer->lms_user_id);
+	                  	$virtualId = 'CAPVA'.$capId;
+              			$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
+                  	}
+                } 
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];

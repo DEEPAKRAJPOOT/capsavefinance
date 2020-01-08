@@ -1031,6 +1031,21 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     	} 
 
         return (isset($customer)) ? $customer : false;
+    } 
+
+    /**
+     * Get Program Documents
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function createVirtualId($lmsCustomerArray = [], $virtualId = false)
+    {
+    	
+		$response = LmsUser::updateVirtualId($lmsCustomerArray->lms_user_id, $virtualId);
+
+        return (isset($response)) ? $response : false;
     }
 
 	/**
