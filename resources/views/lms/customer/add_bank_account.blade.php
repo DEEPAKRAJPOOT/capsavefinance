@@ -32,10 +32,22 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
-                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number']) !!}
+                ['class'=>'form-control form-control-sm' ,
+                'id'=>'acc_no','placeholder'=>'Enter Account Number']) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
+         <div class="col-md-6">
+            <div class="form-group">
+                <label for="txtCreditPeriod">Confirm Account Number
+                    <span class="mandatory">*</span>
+                </label>
+                {!! Form::password('confim_acc_no',
+                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number']) !!}
+                
+            </div>
+        </div>
+       
         <div class="col-md-6">
             <div class="form-group">
                 <label for="txtCreditPeriod">Bank Name
@@ -112,6 +124,12 @@ try {
                     required: true,
                     number: true,
                 },
+                'confim_acc_no': {
+                    required: true,
+                    equalTo: "#acc_no"
+                    
+                },
+                
                 'bank_id': {
                     required: true,
                 },
@@ -131,6 +149,9 @@ try {
                 },
             },
             messages: {
+                confim_acc_no:{
+                    equalTo:'Confirm Account Number and Account number do not match.  '
+                }
 
             },
             submitHandler: function (form) {
