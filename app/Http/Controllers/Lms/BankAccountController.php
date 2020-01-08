@@ -2,22 +2,19 @@
 
 namespace App\Http\Controllers\Lms;
 
-use App\Http\Controllers\Controller;
-use Auth;
+use Session;
+use Helpers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Lms\BankAccountRequest;
+use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
-use Session;
-use Helpers;
-use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
-use App\Inv\Repositories\Contracts\MasterInterface;
-use App\Http\Requests\Lms\BankAccountRequest;
 
-class CustomerController extends Controller {
+class BankAccountController extends Controller {
 
-    use ApplicationTrait;
+    //  use ApplicationTrait;
 
     protected $appRepo;
     protected $userRepo;
@@ -27,7 +24,7 @@ class CustomerController extends Controller {
     /**
      * The pdf instance.
      *
-     * @var App\Libraries\Pdf
+     * @var Pdf
      */
     protected $pdf;
 
@@ -41,60 +38,6 @@ class CustomerController extends Controller {
     }
 
     /**
-     * Display a listing of the customer.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function list()
-    {
-        return view('lms.customer.list');
-    }
-
-    /**
-     * Display a listing of the customer.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function listAppliction(Request $request)
-    {
-        try {
-            $totalLimit = 0;
-            $consumeLimit = 0;
-            $user_id = $request->get('user_id');
-            $userInfo = $this->userRepo->getCustomerDetail($user_id);
-            $application = $this->appRepo->getCustomerApplications($user_id);
-            $anchor = $this->appRepo->getCustomerAnchors($user_id);
-
-            foreach ($application as $key => $value) {
-                $totalLimit += (isset($value->appLimit->tot_limit_amt)) ? $value->appLimit->tot_limit_amt : 0;
-            }
-            foreach ($application as $key => $value) {
-                $consumeLimit += (isset($value->appPrgmOffer->loan_offer)) ? $value->appPrgmOffer->loan_offer : 0;
-            }
-
-            $userInfo->total_limit = number_format($totalLimit);
-            $userInfo->consume_limit = number_format($consumeLimit);
-            $userInfo->avail_limit = number_format($totalLimit - $consumeLimit);
-
-            return view('lms.customer.list_applications')
-                            ->with('userInfo', $userInfo)
-                            ->with('application', $application);
-        } catch (Exception $ex) {
-            dd($ex);
-        }
-    }
-
-    /**
-     * Display a listing of the invoices.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function listInvoice()
-    {
-        return view('lms.customer.list_invoices');
-    }
-
-    /**
      * bank account list
      * 
      * @return type mixed
@@ -105,7 +48,7 @@ class CustomerController extends Controller {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             return view('lms.customer.bank_account_list')->with(['userInfo' => $userInfo]);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
     }
@@ -120,11 +63,11 @@ class CustomerController extends Controller {
     {
         try {
             $acc_id = $request->get('bank_account_id');
-            $bankAccount =  $this->appRepo->getBankAccountData(['bank_account_id'=>$acc_id])->first();
+            $bankAccount = $this->appRepo->getBankAccountData(['bank_account_id' => $acc_id])->first();
             $bank_list = ['' => 'Please Select'] + $this->master->getBankList()->toArray();
             return view('lms.customer.add_bank_account')
-                    ->with(['bank_list' => $bank_list ,'bankAccount'=>$bankAccount]);
-        } catch (Exception $ex) {
+                            ->with(['bank_list' => $bank_list, 'bankAccount' => $bankAccount]);
+        } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
     }
@@ -146,15 +89,15 @@ class CustomerController extends Controller {
                 'ifsc_code' => $request->get('ifsc_code'),
                 'branch_name' => $request->get('branch_name'),
                 'is_active' => $request->get('is_active'),
-                'user_id' => \auth()->user()->user_id
+                'user_id' => auth()->user()->user_id
             ];
 
             $this->appRepo->saveBankAccount($prepareData, $acc_id);
             $messges = $acc_id ? trans('success_messages.update_bank_account_successfully') : trans('success_messages.save_bank_account_successfully');
-            Session::flash('message',$messges);
+            Session::flash('message', $messges);
             Session::flash('operation_status', 1);
             return redirect()->back();
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }

@@ -11,7 +11,7 @@ Form::open(
 )
 !!}
 
-{!! Form::hidden('acc_id', isset($bankAccount->acc_id) ? \Crypt::encrypt($bankAccount->acc_id)  : null ) !!}
+{!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
 
 <div class="modal-body text-left">
     <div class="row">

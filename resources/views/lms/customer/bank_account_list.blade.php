@@ -165,7 +165,7 @@ var messages = {
                             action: function () {
                                 jQuery.ajax({
                                     url: messages.set_default_account,
-                                    data: {acc_id: acc_id, _token: messages.token , value: currentValue },
+                                    data: {bank_account_id: acc_id, _token: messages.token , value: currentValue },
                                     'type': 'POST',
                                     beforeSend: function () {
                                        $('.isloader').show();

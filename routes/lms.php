@@ -29,17 +29,17 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             Route::get('/bank-account', [
                 'as' => 'lms_get_bank_account',
-                'uses' => 'Lms\CustomerController@bankAccountList'
+                'uses' => 'Lms\BankAccountController@bankAccountList'
             ]);
             
             Route::get('/add-bank-account', [
                 'as' => 'add_bank_account',
-                'uses' => 'Lms\CustomerController@addBankAccount'
+                'uses' => 'Lms\BankAccountController@addBankAccount'
             ]);
             
             Route::post('/save-bank-account', [
                 'as' => 'save_bank_account',
-                'uses' => 'Lms\CustomerController@saveBankAccount'
+                'uses' => 'Lms\BankAccountController@saveBankAccount'
             ]);
             
             

@@ -20,7 +20,7 @@ class UserBankAccount extends BaseModel {
      *
      * @var integer
      */
-    protected $primaryKey = 'acc_id';
+    protected $primaryKey = 'bank_account_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -74,8 +74,8 @@ class UserBankAccount extends BaseModel {
         if (empty($attributes)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-        $query = self::updateOrCreate(['acc_id' => $id], $attributes);
-        return $query ? $query->acc_id : $id;
+        $query = self::updateOrCreate(['bank_account_id' => $id], $attributes);
+        return $query ? $query->bank_account_id : $id;
     }
 
     /**
