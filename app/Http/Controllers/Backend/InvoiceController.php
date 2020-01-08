@@ -58,6 +58,13 @@ class InvoiceController extends Controller {
                 
       }
       
+      public function getBulkInvoice() {
+         $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();  
+          return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+        
+      } 
+      
        public function viewApproveInvoice() {
          $getAllInvoice    =   $this->invRepo->getAllAnchor();
           $get_bus = $this->invRepo->getBusinessName();
@@ -114,6 +121,21 @@ class InvoiceController extends Controller {
 
       }
    
+      /* save bulk invoice */
+      public function saveBulkInvoice(Request $request) { 
+           $attributes = $request->all();
+           $res =  $this->invRepo->saveBulk($attributes);
+           if($res)
+           {
+                  Session::flash('message', 'Invoice successfully saved');
+                  return back();
+           }
+        else {
+               Session::flash('message', 'Something wrong, Invoice is not saved');
+               return back();
+          }
+          
+      }
     /*   save invoice */
 
     public function saveInvoice(Request $request) {
@@ -147,7 +169,7 @@ class InvoiceController extends Controller {
             'file_id'  =>$userFile->file_id,
             'created_by' => $id,
             'created_at' => $date);
-        $result = $this->invRepo->save($arr);
+           $result = $this->invRepo->save($arr);
 
         if ($result) {
 

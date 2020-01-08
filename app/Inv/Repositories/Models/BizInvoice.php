@@ -88,6 +88,15 @@ public static function saveInvoice($arrInvoice)
         $arrInvoiceVal = self::create($arrInvoice);
         return ($arrInvoiceVal->invoice_id ?: false);
     } 
+    
+    
+public static function saveBulkInvoice($arrInvoice)
+    {
+        $arrInvoiceVal = self::insert($arrInvoice);
+        return ($arrInvoiceVal ?: false);
+    } 
+    
+    
 /* get invoice */    
   public static function getInvoice()
     {

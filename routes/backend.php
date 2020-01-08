@@ -727,7 +727,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'backend_upload_invoice',
                 'uses' => 'Backend\InvoiceController@getInvoice'
             ]); 
-        
+               
+         Route::get('backend_bulk_invoice', [
+                 'as' => 'backend_bulk_invoice',
+                'uses' => 'Backend\InvoiceController@getBulkInvoice'
+            ]); 
             Route::get('backend_get_invoice', [
                  'as' => 'backend_get_invoice',
                 'uses' => 'Backend\InvoiceController@viewInvoice'
@@ -772,6 +776,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'backend_save_invoice',
                 'uses' => 'Backend\InvoiceController@saveInvoice'
             ]); 
+           
+             Route::POST('backend_save_bulk_invoice', [
+                 'as' => 'backend_save_bulk_invoice',
+                'uses' => 'Backend\InvoiceController@saveBulkInvoice'
+            ]); 
+             
+             
          Route::get('backend_upload_all_invoice', [
                  'as' => 'backend_upload_all_invoice',
                 'uses' => 'Backend\InvoiceController@getAllInvoice'

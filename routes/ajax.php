@@ -507,6 +507,9 @@ Route::group(
                  'as' => 'upload_invoice',
                  'uses' => 'AjaxController@uploadInvoice'
             ]); 
-    
+       Route::POST('delete_temp_invoice', [
+                 'as' => 'delete_temp_invoice',
+                 'uses' => 'AjaxController@DeleteTempInvoice'
+            ]); 
 
 });
