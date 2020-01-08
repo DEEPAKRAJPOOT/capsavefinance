@@ -23,7 +23,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="head-sec">
-
+                        @can('add_bank_account')
                         <a data-toggle="modal" 
                            title="Add Bank" 
                            data-height="550px" 
@@ -35,6 +35,7 @@
                                 + Add Bank
                             </button>
                         </a>
+                        @endcan
 
                     </div>
                 </div>
