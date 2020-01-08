@@ -1,26 +1,8 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-<ul class="main-menu">
-	<li>
-		<a href="" class="active">Summary</a>
-	</li>
-	<li>
-		<a href="{{ route('lms_get_application_invoice', [ 'user_id' => $userInfo->user_id ]) }}">View Invoices</a>
-	</li>
-	<li>
-		<a href="">Repayment History</a>
-	</li>
-	<li>
-		<a href="">Charges</a>
-	</li>
-	<li>
-		<a href="">SOA</a>
-	</li>
-	<li>
-		<a href="">Bank Account</a>
-	</li>
-</ul>
+
+@include('layouts.backend.partials.admin_customer_links',['active'=>'summary'])
 <div class="content-wrapper">
 	<div class="row ">
 		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">

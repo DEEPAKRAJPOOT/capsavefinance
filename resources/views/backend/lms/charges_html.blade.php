@@ -82,7 +82,7 @@
                 <label for="txtPassword">GST <span class="error_message_label">*</span></label>
                 <div class="block-div">
                     {!! Form::text('gst_rate['.$len.']',isset($data->gst_percentage) ?  $data->gst_percentage : null ,
-                    ['class'=>'form-control clsRequired pl-2 valid_perc','placeholder'=>"Rate" ,'required'=>'required']) !!}
+                    ['class'=>'form-control clsRequired pl-2 valid_perc percentage','placeholder'=>"Rate" ,'required'=>'required']) !!}
                 </div>
             </div>
         </div>

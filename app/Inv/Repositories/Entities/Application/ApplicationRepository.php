@@ -33,6 +33,7 @@ use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\UserBankAccount;
 /**
  * Application repository class
  */
@@ -1070,4 +1071,58 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 				->whereHas('offer')
 				->get();
 	}   
+
+    
+    
+    
+    /**
+     * save bank account
+     * 
+     * @param type $attributes array
+     * @param type $id int
+     * @return type mixed
+     */
+    public function saveBankAccount($attributes, $id = null)
+    {
+        return UserBankAccount::saveBankAccount($attributes, $id);
+    }
+    
+    
+    
+    /**
+     * bank account list 
+     * 
+     * @return type mixed
+     */
+    public function getBankAccountList()
+    {
+        return UserBankAccount:: getBankAccountList();
+    }
+    
+    
+    /**
+     * update bank account
+     * 
+     * @param type $attributes array
+     * @param type $where array
+     * @return type mixed
+     */
+    public function updateBankAccount($attributes, $where = [])
+    {
+        return UserBankAccount::updateBankAccount($attributes, $where);
+    }
+    
+    
+    /**
+     * get Bank account 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getBankAccountData($where)
+    {
+        return UserBankAccount::getBankAccountData($where);
+    }
+
+
 }
