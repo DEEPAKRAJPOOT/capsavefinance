@@ -469,10 +469,16 @@ Route::group(
         'as' => 'ajax_get_programs_by_anchor',
         'uses' => 'AjaxController@getProgramsByAnchor'
         ]
+    );
+
+    Route::post(
+        'get-program-balance-limit',
+        [
+        'as' => 'ajax_get_program_balance_limit',
+        'uses' => 'AjaxController@getProgramBalanceLimit'
+        ]
     );    
 
-     
-    
     Route::post(
         'change-program-status',
         [

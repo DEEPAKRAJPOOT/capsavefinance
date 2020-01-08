@@ -867,6 +867,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Program::getProgramsByAnchor($anchor_id);
     }
 
+    public function getProgramBalanceLimit($program_id)
+    {
+        return AppProgramLimit::getProgramBalanceLimit($program_id);
+    }
+
     /**
      * Get Offer Data
      * 

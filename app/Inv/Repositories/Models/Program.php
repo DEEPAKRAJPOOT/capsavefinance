@@ -372,4 +372,9 @@ class Program extends BaseModel {
         return ($res ?: false);
     }
 
+    //to do
+    /*public function programLimits(){
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit', 'prgm_id', 'prgm_id');
+    }*/
+
 }

@@ -55,6 +55,16 @@
 
                     $(this).parents("tr").next(".dpr").slideToggle();
                 });
+
+                $('.number_format').on('input', function(event) {
+                   // skip for arrow keys
+                   if(event.which >= 37 && event.which <= 40) return;
+
+                   // format number
+                   $(this).val(function(index, value) {
+                       return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                   });
+                });
             });
 
             function unsetError(ele) {
@@ -63,6 +73,10 @@
 
             function setError(ele, msg) {
                 $(ele).after('<span class="text-danger error">' + msg + '</span>');
+            }
+
+            function setLimit(ele, msg){
+                $(ele).parent('div').find('.limit').html(msg);
             }
         </script>
         @yield('jscript')

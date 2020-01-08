@@ -2981,6 +2981,19 @@ if ($err) {
         $programs =  $this->application->getProgramsByAnchor($anchor_id);
         return json_encode($programs);
     }
+
+    /**
+     * get program balance limit
+     * 
+     * @param program_id
+     * @return program limit
+     */
+    public function getProgramBalanceLimit(Request $request)
+    {
+        $program_id = (int)$request->program_id;
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
+        return json_encode($prgm_limit);
+    }
     
      public function getProgramSingleList(Request $request)
      {
