@@ -58,6 +58,13 @@ class InvoiceController extends Controller {
                 
       }
       
+      public function getBulkInvoice() {
+         $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();  
+          return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+        
+      } 
+      
        public function viewApproveInvoice() {
          $getAllInvoice    =   $this->invRepo->getAllAnchor();
           $get_bus = $this->invRepo->getBusinessName();
@@ -76,7 +83,34 @@ class InvoiceController extends Controller {
         return view('backend.invoice.repaid_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
-
+      
+      
+        public function viewSentToBankInvoice() {
+        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();
+        return view('backend.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+                
+      }
+        public function viewfailedDisbursment() {
+        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();
+        return view('backend.invoice.failed disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+                
+      }
+      
+        public function viewdisbursed() {
+        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();
+        return view('backend.invoice.failed disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+                
+      }
+        public function viewRejectInvoice() {
+        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();
+        return view('backend.invoice.reject_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+                
+      }
+       
     
     /* get suplier & program b behalf of anchor id */
       public function getProgramSupplier(Request $request){
@@ -87,6 +121,21 @@ class InvoiceController extends Controller {
 
       }
    
+      /* save bulk invoice */
+      public function saveBulkInvoice(Request $request) { 
+           $attributes = $request->all();
+           $res =  $this->invRepo->saveBulk($attributes);
+           if($res)
+           {
+                  Session::flash('message', 'Invoice successfully saved');
+                  return back();
+           }
+        else {
+               Session::flash('message', 'Something wrong, Invoice is not saved');
+               return back();
+          }
+          
+      }
     /*   save invoice */
 
     public function saveInvoice(Request $request) {
@@ -120,7 +169,7 @@ class InvoiceController extends Controller {
             'file_id'  =>$userFile->file_id,
             'created_by' => $id,
             'created_at' => $date);
-        $result = $this->invRepo->save($arr);
+           $result = $this->invRepo->save($arr);
 
         if ($result) {
 

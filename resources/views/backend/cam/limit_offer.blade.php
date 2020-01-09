@@ -13,8 +13,8 @@
         <label for="txtPassword" class="col-md-4"><b>Loan Offer:</b></label> 
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="prgm_limit_amt" class="form-control" value="{{isset($offerData->programLimit->limit_amt)? $offerData->programLimit->limit_amt: $limit_amt}}" placeholder="Loan Offer " maxlength="15" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-        <span class="s_value"><i class="fa fa-inr"></i>10,00,000 - <i class="fa fa-inr"></i>50,00,000</span>
+        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limit_amt)}}" placeholder="Loan Offer" maxlength="15">
+        <span class="s_value"><i class="fa fa-inr"></i>{{$limitData->program->min_loan_size}} - <i class="fa fa-inr"></i>{{$limitData->program->max_loan_size}}</span><span class="float-right">Balance: <i class="fa fa-inr"></i>{{$limitData->program->anchor_sub_limit-$offeredLimit}}</span>
         </div>
       </div>
     </div>
@@ -23,8 +23,8 @@
       <div class="form-group row  ">
         <label for="txtPassword" class="col-md-4"><b>Interest(%):</b></label> 
         <div class="col-md-8">
-        <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="2">
-        <span class="s_value">10%-12%</span>
+        <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
+        <span class="s_value">{{$limitData->program->min_interest_rate}}%-{{$limitData->program->max_interest_rate}}%</span>
         </div>
       </div>
     </div>
@@ -51,7 +51,7 @@
       <div class="form-group row  ">
         <label for="txtPassword" class="col-md-4"><b>Margin(%):</b></label> 
         <div class="col-md-8">
-        <input type="text" name="margin" class="form-control" value="{{isset($offerData->margin)? $offerData->margin: ''}}" placeholder="Margin" maxlength="2">
+        <input type="text" name="margin" class="form-control" value="{{isset($offerData->margin)? $offerData->margin: ''}}" placeholder="Margin" maxlength="5">
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@
       <div class="form-group row  ">
         <label for="txtPassword" class="col-md-4"><b>Overdue Interest(%):</b></label> 
         <div class="col-md-8">
-        <input type="text" name="overdue_interest_rate" class="form-control" value="{{isset($offerData->overdue_interest_rate)? $offerData->overdue_interest_rate: ''}}" placeholder="Overdue Interest Rate" maxlength="2">
+        <input type="text" name="overdue_interest_rate" class="form-control" value="{{isset($offerData->overdue_interest_rate)? $offerData->overdue_interest_rate: ''}}" placeholder="Overdue Interest Rate" maxlength="5">
         </div>
       </div>
     </div>
@@ -69,7 +69,7 @@
       <div class="form-group row  ">
         <label for="txtPassword" class="col-md-4"><b>Adhoc Interest(%):</b></label> 
         <div class="col-md-8">
-        <input type="text" name="adhoc_interest_rate" class="form-control" value="{{isset($offerData->adhoc_interest_rate)? $offerData->adhoc_interest_rate: ''}}" placeholder="Adhoc Interest Rate" maxlength="2">
+        <input type="text" name="adhoc_interest_rate" class="form-control" value="{{isset($offerData->adhoc_interest_rate)? $offerData->adhoc_interest_rate: ''}}" placeholder="Adhoc Interest Rate" maxlength="5">
         </div>
       </div>
     </div>
@@ -88,7 +88,7 @@
         <label for="txtPassword" class="col-md-4"><b>Processing Fee:</b></label> 
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="7" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+        <input type="text" name="processing_fee" class="form-control number_format" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
         </div>
       </div>
     </div>
@@ -98,7 +98,7 @@
         <label for="txtPassword" class="col-md-4"><b>Check Bounce Fee:</b></label> 
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="check_bounce_fee" class="form-control" value="{{isset($offerData->check_bounce_fee)? $offerData->check_bounce_fee: ''}}" placeholder="Check Bounce Fee" maxlength="7" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+        <input type="text" name="check_bounce_fee" class="form-control number_format" value="{{isset($offerData->check_bounce_fee)? number_format($offerData->check_bounce_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
         </div>
       </div>
     </div>
@@ -107,7 +107,7 @@
       <div class="form-group row  ">
         <label for="txtPassword" class="col-md-4"><b>Comment:</b></label> 
         <div class="col-md-8">
-          <textarea class="form-control" name="comment" rows="3" col="3" placeholder="Comment">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
+          <textarea class="form-control" name="comment" rows="3" col="3" placeholder="Comment" maxlength="250">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
         </div>
       </div>
     </div>
@@ -124,6 +124,11 @@
 @section('jscript')
 <script>
   function checkValidations(){
+    let tot_limit_amt = "{{$totalLimit}}";
+    let prgm_limit = "{{$limitData->program->anchor_sub_limit}}";
+    let offered_limit = "{{$offeredLimit}}";
+    let balance_limit = prgm_limit - offered_limit;
+
     unsetError('input[name=prgm_limit_amt]');
     unsetError('input[name=interest_rate]');
     unsetError('input[name=tenor]');
@@ -150,10 +155,16 @@
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
+    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))) || (parseInt(prgm_limit_amt.replace(/,/g, '')) > balance_limit)){
+        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from Balance/Total limit');
+        flag = false;
     }
 
-    if(interest_rate == ''){
+    if(interest_rate == '' || isNaN(interest_rate)){
         setError('input[name=interest_rate]', 'Please fill intereset rate');
+        flag = false;
+    }else if(parseFloat(interest_rate) > 20){
+        setError('input[name=interest_rate]', 'Please fill correct intereset rate');
         flag = false;
     }
 
@@ -167,18 +178,27 @@
         flag = false;
     }
 
-    if(margin == ''){
+    if(margin == '' || isNaN(margin)){
         setError('input[name=margin]', 'Please fill margin');
         flag = false;
-    }
-
-    if(overdue_interest_rate == ''){
-        setError('input[name=overdue_interest_rate]', 'Please fill Overdue intereset rate');
+    }else if(parseFloat(margin) > 10){
+        setError('input[name=margin]', 'Please fill correct margin rate');
         flag = false;
     }
 
-    if(adhoc_interest_rate == ''){
+    if(overdue_interest_rate == '' || isNaN(overdue_interest_rate)){
+        setError('input[name=overdue_interest_rate]', 'Please fill Overdue intereset rate');
+        flag = false;
+    }else if(parseFloat(overdue_interest_rate) > 20){
+        setError('input[name=overdue_interest_rate]', 'Please fill correct overdue interest rate');
+        flag = false;
+    }
+
+    if(adhoc_interest_rate == '' || isNaN(adhoc_interest_rate)){
         setError('input[name=adhoc_interest_rate]', 'Please fill adhoc interest rate');
+        flag = false;
+    }else if(parseFloat(adhoc_interest_rate) > 20){
+        setError('input[name=adhoc_interest_rate]', 'Please fill correct adhoc interest rate');
         flag = false;
     }
 

@@ -60,6 +60,13 @@ class InvoiceController extends Controller {
   
     }
   
+      public function getBulkInvoice() {
+          
+         $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();  
+         return view('frontend.application.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+        
+      } 
     
       public function viewInvoice() {
         $getAllInvoice    =   $this->invRepo->getAllAnchor();
@@ -96,9 +103,23 @@ class InvoiceController extends Controller {
        return response()->json(['status' => 1,'userList' =>$get_user]);
 
       }
+        /* save bulk invoice */
+      public function saveBulkInvoice(Request $request) { 
+           $attributes = $request->all();
+           $res =  $this->invRepo->saveBulk($attributes);
+           if($res)
+           {
+                  Session::flash('message', 'Invoice successfully saved');
+                  return back();
+           }
+        else {
+               Session::flash('message', 'Something wrong, Invoice is not saved');
+               return back();
+          }
+          
+      }  
      /*   save invoice */
-
-    public function saveInvoice(Request $request) {
+   public function saveInvoice(Request $request) {
         $attributes = $request->all();
         $date = Carbon::now();
         $id = Auth::user()->user_id;

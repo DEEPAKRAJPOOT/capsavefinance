@@ -1624,14 +1624,20 @@ class DataRenderer implements DataProviderInterface
                         $link = $customer->customer_id;
                         return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                     }
+                )
+                ->addColumn(
+                    'virtual_acc_id',
+                    function ($customer) {
+                        return $customer->virtual_acc_id;
+                    }
                 )     
                 ->editColumn(
                         'customer_name',
                         function ($customer) {
-                    $full_name = $customer->user->f_name.' '.$customer->user->l_name;
-                    return $full_name;
-                    
-                })
+                        $full_name = $customer->user->f_name.' '.$customer->user->l_name;
+                        return $full_name;
+                    }
+                )
                 ->editColumn(
                         'customer_email',
                         function ($customer) {
@@ -1777,6 +1783,55 @@ class DataRenderer implements DataProviderInterface
                 }
             })
             ->make(true);
+    }
+    
+    
+    
+    
+    /**
+     * bank list 
+     * 
+     * @param type $request
+     * @param type $bank
+     * @return type mixed
+     */
+    function getBankAccountList($request, $bank)
+    {
+        return DataTables::of($bank)
+                        ->rawColumns(['action', 'is_active'])
+                        ->editColumn(
+                                'bank_name',
+                                function ($bank) {
+                            return $bank->bank_name;
+                        })
+                        ->addColumn(
+                                'action',
+                                function ($bank) {
+
+                            $checked = ($bank->is_default == 1) ? 'checked' : null;
+                            $act = '';
+                            if($bank->is_active){
+                              $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($bank->bank_account_id) . '"  class="make_default" name="add"><label for="add">Default</label> ';
+                            }
+                          
+                            if (Helpers::checkPermission('add_bank_account')) {
+                                $act .= '<a data-toggle="modal"  data-height="550px" 
+                           data-width="100%" 
+                           data-target="#add_bank_account"
+                           data-url="' . route('add_bank_account', ['bank_account_id' => $bank->bank_account_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Bank Account"><i class="fa fa-edit"></i></a>';
+                            }
+                            return $act;
+                        })
+                        ->editColumn(
+                                'is_active',
+                                function ($bank) {
+                            if ($bank->is_active) {
+                                return '<span class="badge badge-success">Active</span>';
+                            } else {
+                                return '<span class="badge badge-warning current-status">InActive</span>';
+                            }
+                        })
+                        ->make(true);
     }
 
 }

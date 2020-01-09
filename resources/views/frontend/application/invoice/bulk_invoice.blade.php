@@ -1,16 +1,7 @@
-@extends('layouts.backend.admin-layout')
-@section('additional_css')
-@endsection
+@extends('layouts.app')
 @section('content')
-
-
-
 <div class="content-wrapper">
-				
-				
-
-               
-                  <div class="col-md-12 ">
+<div class="col-md-12 ">
    <section class="content-header">
    <div class="header-icon">
       <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -30,207 +21,119 @@
    <div class="col-md-12 ">
       <div class="card">
          <div class="card-body">
-		 
-		 <ul class="nav nav-tabs" role="tablist">
-             <li class="nav-item ">
-      <a class="nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
-    </li>
-    <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
-    </li>
-  <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursment Que</a>
-    </li>
-        
-   <li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
-    </li>
-	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursment</a>
-    </li>
-    <li class="nav-item">
-              <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
-         
-    </li>
-      <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_repaid_invoice')}}">Repaid</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
-
-    </li>
-  
-   
-  </ul>
-
-
-
-  <div class="tab-content">
-    
-    <div id="menu1" class=" active tab-pane "><br>
-
-       
-    <div class="card">
-        <div class="card-body">
-                     <div class="row"><div class="col-md-4"></div>
-                 <div class="col-md-2">				 
-                                                      
-                     <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                           <option value="">Select Application  </option>
-                           @foreach($get_bus as $row)
-                           <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
-                           @endforeach
-                          
-                        
-                  </select>
-                     <span id="anchorMsg" class="error"></span>
-                  
-                   </div>
-               <div class="col-md-2">				 
-                                                              
-                    <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                           <option value="">Select Anchor  </option>
-                           @foreach($anchor_list as $row)
-                           <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
-                           @endforeach
-                          
-                        
-                  </select>
-                 
-                   </div>
-             <div class="col-md-2">		    
-                                                            
-                 <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
-                         
-                    </select>
-                     </div>    
-                      <div class="col-md-2">	
-                          <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
-
-                   
-            </div>
-            
-            </div>
-            <div class="row">
-                <div class="col-12 dataTables_wrapper mt-4">
-                    <div class="overflow">
-                        <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <table id="invoiceList" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
-                                        <thead>
-                                            <tr role="row">
-                                                <th><input type="checkbox" id="chkAll"></th> 
-                                               <th>Anchor Name</th>
-                                                <th>Supplier Name</th>
-                                                <th>Program Name</th>
-                                                <th>Invoice Date</th>
-                                                <th>Invoice  Amount</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                        </tbody>
-                                    </table>
-                                    <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-         
-    </div>
-	
-	
-  
-  </div>
-        
-           
-         </div>
-      </div>
-   </div>
-</div></div>
-
-
-
-
-<div class="modal align-middle" id="myModal6" style="display: none;" aria-hidden="true">
-   <div class="modal-dialog modal-md modal-dialog-centered">
-      <div class="modal-content">
+              <div class="modal-content">
          <!-- Modal Header -->
-         <div class="modal-header">
-			<h5>Upload Invoices</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
+       
          <!-- Modal body -->
          <div class="modal-body ">
-		 <form id="signupForm">
+		
+                 
 		 <div class="row">
+                    
+                     
+                     
 		 <div class="col-md-6">
 		<div class="form-group">
-        <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span></label>
-        <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id"  name="anchor_bulk_id">
+        <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <span id="anc_limit" class="error"></span></label>
+        <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
                                              
                 <option value="">Select Anchor  </option>
                 @foreach($anchor_list as $row)
                 <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
                 @endforeach
                                              </select>
-                                             <span id="anc_limit"></span>
+        
+                                               <span id="anchor_bulk_id_msg" class="error"></span>
                 
                 </div></div>
 		
 		 <div class="col-md-6">
                     <div class="form-group">
                         <label for="txtCreditPeriod">Product Program Name
-                            <span class="error_message_label">*</span>
+                            <span class="error_message_label">*</span>  <span id="pro_limit" class="error"></span>
                         </label>
-                         <select readonly="readonly" class="form-control changeBulkSupplier" id="program_bulk_id" name="supplier_bulk_id">
+                         <select readonly="readonly" class="form-control changeBulkSupplier" id="program_bulk_id" >
                                             </select>
                                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
-                                   <span id="pro_limit"></span>
+                                  
+                                    <span id="program_bulk_id_msg" class="error"></span>
                </div>
 		</div>
             <div class="col-md-6">
             <div class="form-group">
             <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
-           <select readonly="readonly" class="form-control" id="supplier_bulk_id" name="supplier_bulk_id">
+           <select readonly="readonly" class="form-control" id="supplier_bulk_id" >
            </select>
+            <span id="supplier_bulk_id_msg" class="error"></span>
             <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
             </div>
             </div>
 										
-										 <div class="col-md-6">
-										 <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
-										<div class="custom-file  ">
-              
-                                                                                    <input type="file" onchange="uploadInvoice()" class="custom-file-input fileUpload" id="customFile" name="file_id">
-               <label class="custom-file-label" for="customFile">Choose file</label>
+            <div class="col-md-4">
+            <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
+            <div class="custom-file  ">
+
+               <input type="file" accept=".csv"   class="custom-file-input fileUpload" id="customFile" name="file_id">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+            <span id="customFile_msg" class="error"></span>
             </div>
-										
-										</div>
+
+            </div>
                                     
-									
+		 <div class="col-md-2">
+            <label for="txtCreditPeriod"> <span class="error_message_label"></span></label>
+            <div class="custom-file  ">
+        <a  id="submit" class="btn btn-success float-right btn-sm mt-3 ml-2">Upload</a>
+            </div>
+
+            </div>							
 									
 			<div class="clearfix">
 			</div>
 			</div>	
-                     <h5 id="submitInvoiceMsg" class="text-success"></h5>
-                     <button type="submit" id="submit" class="btn btn-success float-right btn-sm mt-3 ml-2">Upload</button> 
-				 <button type="reset" class="btn btn-secondary btn-sm mt-3 float-right" data-dismiss="modal">Close</button> 	
-				 
-				 </form>
+                   
+                    
+				
             
+         </div>
+         <form action="{{Route('frontend_save_bulk_invoice')}}" method="post"> 
+             @csrf
+          <div class="row">
+             
+                                <div class="col-sm-12">
+                                    <table  class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                        <thead>
+                                            <tr role="row">
+                                               
+                                                <th>Sr. No.</th>
+                                                <th>Invoice No</th>
+                                                 <th>Invoice Due Date</th>
+                                                <th>Invoice Date</th>
+                                                <th>Invoice  Amount</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+ 
+                                        
+                                        
+                                        <tbody  class="invoiceAppendData">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+              <div class="col-md-12">
+                  <span id="final_submit_msg" class="error" style="display:none;">Total Amount  should not greater Program Limit</span>
+                  <input type="submit" id="final_submit" class="btn btn-secondary btn-sm mt-3 float-right finalButton" value="Final Submit"> 	
+            </div> 
+            
+             </div>
+        </form>
+      </div>
          </div>
       </div>
    </div>
-</div>
+</div></div>
+
 
 
 
@@ -246,49 +149,20 @@
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             front_program_list: "{{ URL::route('front_program_list') }}",
             front_supplier_list: "{{ URL::route('front_supplier_list') }}",
+            delete_temp_invoice: "{{ URL::route('delete_temp_invoice') }}",
+            
             token: "{{ csrf_token() }}",
  };
  
  
   $(document).ready(function () {
+      
+       $(".finalButton").hide();
+       $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');
+                      
        $("#program_bulk_id").append("<option value=''>No data found</option>");  
         $("#program_bulk_id").append("<option value=''>No data found</option>");                         
-  /////// jquery validate on submit button/////////////////////
-  $('#submit').on('click', function (e) {
-     
-     if ($('form#signupForm').validate().form()) {     
-        $("#anchor_bulk_id" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please enter Anchor name",
-        }
-        });
-       
-      $("#supplier_id" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please Select Supplier Name",
-        }
-        });
-          $("#program_bulk_id" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please Select Product Program Name",
-        }
-        });
-       
-        $("#customFile" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please upload Invoice Copy",
-        }
-        }); 
-       
-         
-        } else {
-         alert();
-        }  
-     });         
+   
   }); 
   
   
@@ -312,6 +186,7 @@
   $(document).on('change','.changeAnchor',function(){
      var anchor_id =  $(this).val(); 
       $("#supplier_id").empty();
+     
       var postData =  ({'anchor_id':anchor_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.get_program_supplier,
@@ -357,7 +232,7 @@
   
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeBulkAnchor',function(){
-      
+        $("#anchor_bulk_id_msg" ).hide();
       var anchor_id =  $(this).val(); 
       if(anchor_id=='')
       {
@@ -409,6 +284,7 @@
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeBulkSupplier',function(){
     
+       $("#program_bulk_id_msg" ).hide  ();
       var program_id =  $(this).val(); 
       $("#supplier_bulk_id").empty();
       $("#pro_limit").empty();
@@ -450,11 +326,74 @@
                 }
         }); }); 
     
+      $(document).on('change','#supplier_bulk_id',function(){
+       if($("#supplier_bulk_id").val()!='')
+        {
+           $("#supplier_bulk_id_msg" ).hide();
+        }
+      });
+      
+      
+        $(document).on('change','.fileUpload',function(){
+       
+          $("#customFile_msg" ).hide();
+       
+      });
+       
+    /////////////// validation the time of final submit/////////////// 
+      $(document).on('click','#final_submit',function(){
+      if (confirm("Are you sure? You want to update it")) {         
+        $("#final_submit_msg").hide();  
+        var p_limit =  $("#pro_limit_hide").val();  
+        var sum = 0;
+            $(".subOfAmount").each(function() {
+            sum += parseInt($(this).val());
+            });
+            if(sum >  p_limit)
+            {
+                $("#final_submit_msg").show(); 
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    });
+      
+
+    $(document).on('click','#submit',function(e){  
     
-    function uploadInvoice()
-    {
-//        $('.isloader').show();
-       $("#submitInvoiceMsg").empty();
+        if($("#anchor_bulk_id").val()=='')
+        {
+             $("#anchor_bulk_id_msg" ).show();
+            $("#anchor_bulk_id_msg" ).text('Please Select Anchor Name');
+            return false;
+        }
+          if($("#program_bulk_id").val()=='')
+        {
+              $("#program_bulk_id_msg" ).show();
+              $("#program_bulk_id_msg" ).text("Please Select Product Program Name");
+              return false;
+        }
+        if($("#supplier_bulk_id").val()=='')
+        {
+             $("#supplier_bulk_id_msg" ).show();
+             $("#supplier_bulk_id_msg" ).text("Please Select Supplier Name");
+             return false;
+        }
+        if($("#customFile").val()=='')
+        {
+             $("#customFile_msg" ).show();
+             $("#customFile_msg" ).text("Please Select Csv file");
+             return false;
+        }
+        else
+        {
+        if (confirm("Are you sure? You want to upload CSV")) {     
+       $(".invoiceAppendData").empty();
+      
         var file  = $("#customFile")[0].files[0];
         var datafile = new FormData();
         var anchor_bulk_id  = $("#anchor_bulk_id").val();
@@ -467,6 +406,7 @@
         datafile.append('program_bulk_id', program_bulk_id);
         datafile.append('supplier_bulk_id', supplier_bulk_id);
         datafile.append('pro_limit_hide', pro_limit_hide);
+        $('.isloader').show();
         $.ajax({
             headers: {'X-CSRF-TOKEN':  messages.token  },
             url : messages.upload_invoice_csv,
@@ -478,21 +418,91 @@
             enctype: 'multipart/form-data',
 
             success: function(r){
+               
                 $(".isloader").hide();
 
                 if(r.status==1)
                 {
-                     $("#submitInvoiceMsg").show();
-                     $("#submitInvoiceMsg").text('Invoice Successfully uploaded');
+                    $('.isloader').hide(); 
+                    $(".finalButton").show();
+                    // $("#submitInvoiceMsg").show();
+                     ///$("#submitInvoiceMsg").text('Invoice Successfully uploaded');
+                     j =0;
+                     $(r.data).each(function(i,v){ j++;
+                      var  date1 = v.invoice_due_date;
+                    var dateAr = date1.split('-');
+                    var invoice_due_date = '';
+                    var invoice = '';
+                    if (dateAr != '')
+                    {
+
+                    var invoice_due_date = dateAr[2] + '/' + dateAr[1] + '/' + dateAr[0];
+                    }
+                    var  date2 = v.invoice_date;
+                    var dateAr1 = date2.split('-');
+                    if (dateAr1 != '')
+                    {
+
+                      var invoice_date = dateAr1[2] + '/' + dateAr1[1] + '/' + dateAr1[0];
+                    }
+                    
+                   
+                    $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'"><td>'+j+'</td><td><input type="hidden" value="'+v.invoice_id+'" name="id[]"> <input type="text" id="invoice_no" name="invoice_no[]" class="form-control" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-fdate" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" id="invoice_date" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate" value="'+invoice_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+v.invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
+                    });
+                     datepickerDisFdate();
+                    return false;
+                }
+                 else if(r.status==2)
+                {
+                           $("#customFile_msg").show();  
+                         
+
+
                 }
                 else
                 {
-                     $("#submitInvoiceMsg").show();
-                     $("#submitInvoiceMsg").text('Total Amount if invoice should not greater Program Limit');
+                     ///$("#submitInvoiceMsg").show();
+                     $(".invoiceAppendData").append('<tr><td colspan="5" class="error">Total Amount  should not greater Program Limit</td></tr>'); 
+                   
+                      return false;
                  } 
+              }
+          });
+          }
+           else
+           {
+             return false;
+           }
+          }
+    });
+    
+     $(document).on('click','.deleteTempInv',function(){
+     if (confirm("Are you sure?")) {
+      var temp_id =  $(this).attr('data-id'); 
+      var postData =  ({'temp_id':temp_id,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.delete_temp_invoice,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
+                },
+                success: function (data) {
+                    if(data.status==1)
+                    {
+                         $(".finalButton").show();
+                         $("#deleteRow"+data.id).hide();
+                      }
+                  }
+                });
             }
-        });
-    }
+            else
+            {
+                return false;
+            }
+         });        
 </script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
 
