@@ -110,6 +110,7 @@ class AppProgramLimit extends BaseModel {
         return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
     }     
 
+
        function anchorOne()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
@@ -144,53 +145,62 @@ class AppProgramLimit extends BaseModel {
          return AppProgramLimit::with('program')->where(['anchor_id' =>$aid])->get();
      }
      
-    
-     
-    public static function geAnchortLimitProgram($aid)
-     {
-     
-         return Program::where(['anchor_id' =>$aid,'parent_prgm_id' =>0])->first();
-     }
-     
-    
-     public static function getLimitAllAnchor()
-     {
-  
-        return AppProgramLimit::with('anchorList')->get();
-      
-     }
-     
-         public  function anchorList()
-     {
-         
-         return $this->hasOne('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');  
-
-     }   
-     
-    public static function getLimitSupplier($pid)
-     {
-  
-         return AppProgramLimit::with('app.user')->where('prgm_id',$pid)->get();
-     }  
-     
+    public static function getLimitAnchor($aid){
+        return AppProgramLimit::with('anchorList')->where(['app_id' =>$aid])->get();
+    }
+ 
         public static function getUserBehalfAnchor($uid)
     {
        return AppProgramLimit::with('app.user')->where('anchor_id',$uid)->get();
     }   
-   
-       public  function app()
-     {
   
-         return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
-     }
-      
+    public static function geAnchortLimitProgram($aid){  
+        return Program::where(['anchor_id' =>$aid,'parent_prgm_id' =>0])->first();
+    }
      
-      public static function getSingleLimit($aid)
-     {
-  
-         return self::where('anchor_id',$aid)->first();  
-     }  
+    public static function getLimitAllAnchor(){
+        return AppProgramLimit::with('anchorList')->get();
+    }
+     
+    public  function anchorList(){   
+        return $this->hasOne('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');  
+    }   
     
-    
+    public static function getLimitSupplier($pid){
+        return AppProgramLimit::with('app.user')->where('prgm_id',$pid)->get();
+    }  
 
+   
+    public function app(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
+    }
+      
+    public static function getSingleLimit($aid){
+        return self::where('anchor_id',$aid)->first();  
+    }
+
+    public static function getProgramBalanceLimit($program_id){
+        if(empty($program_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+        if(!is_int($program_id)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $aplids = AppProgramLimit::where('prgm_id', $program_id)->pluck('app_prgm_limit_id');
+        if($aplids->count() == 0){
+            return 0;
+        }else{
+            return AppProgramOffer::where('app_prgm_limit_id', $aplids)->sum('prgm_limit_amt');
+        }
+     }
+
+    public function appLimit(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppLimit', 'app_limit_id', 'app_limit_id');
+    }
+
+    //to do
+     /*public function programLimit(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');
+    }*/  
 }

@@ -9,20 +9,20 @@
                 <div class="data">
                     <h2 class="sub-title bg mb-4">Limit By Capsave</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                    <form method="POST" action="{{route('save_limit_assessment')}}">
+                    <form method="POST" action="{{route('save_limit_assessment')}}" onsubmit="return checkValidation()">
                         @csrf
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         {{-- <input type="hidden" name="app_limit_id" value="{{$limitData->app_limit_id}}"> --}}
-                        {{-- <div class="row">
+                        <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group INR">
                                     <label>Total Limit</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm" name="tot_limit_amt" value="{{$limitData->tot_limit_amt}}" disabled>
+                                    <input type="text" class="form-control form-control-sm number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15">
                                 </div>
                             </div>
-                        </div> --}}
+                        </div>
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -38,7 +38,7 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label>Select Anchor</label>
+                                    <label>Select Anchor</label><span class="limit float-right"></span>
                                     <select class="form-control" name="anchor_id" id="anchor_id">
                                         <option value="">Select Anchor</option>
                                     </select>
@@ -47,7 +47,7 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label>Select Program</label>
+                                    <label>Select Program</label><span class="limit float-right"></span>
                                     <select class="form-control" name="prgm_id" id="program_id">
                                         <option value="">Select Program</option>
                                     </select>
@@ -56,9 +56,9 @@
 
                             <div class="col-md-3">
                                 <div class="form-group INR">
-                                    <label>Select Limit</label>
+                                    <label>Select Limit</label><span class="limit float-right"></span>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:30px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control" name="limit_amt">
+                                    <input type="text" class="form-control number_format" name="limit_amt" id="limit_amt" maxlength="15">
                                 </div>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
                                                        <td width="17%">{{$prgmLimit->program->product->product_name}}</td>
                                                        <td width="17%">{{$prgmLimit->anchor->comp_name}}</td>
                                                        <td width="17%">{{$prgmLimit->program->prgm_name}}</td>
-                                                       <td width="16%">{{$prgmLimit->limit_amt}}</td>
+                                                       <td width="16%">{{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="16%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button></td>
                                                     </tr>
                                                 </tbody>
@@ -107,11 +107,11 @@
                                         <div id="collapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
                                             <ul class="row p-0 m-0">
                                             @if($prgmLimit->offer)
-                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{$prgmLimit->offer->prgm_limit_amt}}</b></li>
+                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
                                                 <li class="col-md-2">Interest(%)  <br> <b>{{$prgmLimit->offer->interest_rate}}</b></li>
                                                 <li class="col-md-2">Invoice Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
                                                 <li class="col-md-2">Margin(%) <br> <b>{{$prgmLimit->offer->margin}}</b></li>
-                                                <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>{{$prgmLimit->offer->processing_fee}}</b></li>
+                                                <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>{{number_format($prgmLimit->offer->processing_fee)}}</b></li>
                                                 <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
                                             @else
                                                 <li class="col-md-10">No Record found</li>
@@ -165,12 +165,21 @@
 var messages = {
     "get_anchors_by_product" : "{{route('ajax_get_anchors_by_product')}}",  
     "get_programs_by_anchor" : "{{route('ajax_get_programs_by_anchor')}}",  
+    "get_program_balance_limit" : "{{route('ajax_get_program_balance_limit')}}",
     "token" : "{{ csrf_token() }}"  
 };
+
+var balance_limit; 
+
 
 $(document).ready(function(){
     $('#product_id').on('change',function(){
         let product_id = $('#product_id').val();
+        if(product_id == ''){
+            $('#program_id').html('<option value="">Select Program</option>');
+            $('#anchor_id').html('<option value="">Select Anchor</option>');
+            return;
+        }
         let token = "{{ csrf_token() }}";
         $('.isloader').show();
         $.ajax({
@@ -192,6 +201,17 @@ $(document).ready(function(){
 
     $('#anchor_id').on('change',function(){
         let anchor_id = $('#anchor_id').val();
+        let anchor_limit = $('#anchor_id option:selected').data('limit');
+        setLimit('select[name=anchor_id]', '');
+        setLimit('select[name=prgm_id]', '');
+        setLimit('#limit_amt', '');
+
+        if(anchor_id == ''){
+            $('#program_id').html('<option value="">Select Program</option>');
+            return;
+        }else{
+            setLimit('select[name=anchor_id]', 'Limit: <i class="fa fa-inr" aria-hidden="true"></i> '+anchor_limit);
+        }
         let token = "{{ csrf_token() }}";
         $('.isloader').show();
         $.ajax({
@@ -224,22 +244,105 @@ $(document).ready(function(){
 
 });
 
+function checkValidation(){
+    unsetError('select[name=product_id]');
+    unsetError('select[name=anchor_id]');
+    unsetError('select[name=prgm_id]');
+    unsetError('input[name=limit_amt]');
+    unsetError('input[name=tot_limit_amt]');
+
+    let flag = true;
+    let product_id = $('select[name=product_id]').val();
+    let anchor_id = $('select[name=anchor_id]').val();
+    let program_id = $('select[name=prgm_id]').val();
+    let limit_amt = $('input[name=limit_amt]').val().trim();
+    let tot_limit_amt = $('input[name=tot_limit_amt]').val().trim();
+
+    if(tot_limit_amt.length == 0 || parseInt(tot_limit_amt.replace(/,/g, '')) == 0){
+        setError('input[name=limit_amt]', 'Please fill total limit');
+        flag = false;
+    }
+
+    if(product_id == ''){
+        setError('select[name=product_id]', 'Please select product type');
+        flag = false;
+    }
+
+    if(anchor_id == ''){
+        setError('select[name=anchor_id]', 'Please select anchor');
+        flag = false;
+    }
+
+    if(program_id == ''){
+        setError('select[name=prgm_id]', 'Please select program');
+        flag = false;
+    }
+
+    if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
+        setError('input[name=limit_amt]', 'Please fill limit amount');
+        flag = false;
+    }else if((parseInt(limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))) || (parseInt(limit_amt.replace(/,/g, '')) > balance_limit)){
+        setError('input[name=limit_amt]', 'Limit amount can not exceed from Balance/Total limit');
+        flag = false;
+    }
+
+    if(flag){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 function fillAnchors(programs){
-    let html = '<option value="">Select Anchor</option>';
+    let html = '<option value="" data-limit="">Select Anchor</option>';
     $.each(programs, function(i,program){
         if(program.anchors != null)
-            html += '<option value="'+program.anchors.anchor_id+'">'+program.anchors.comp_name+'</option>';
+            html += '<option value="'+program.anchors.anchor_id+'" data-limit="'+program.anchors.prgm_data.anchor_limit+'">'+program.anchors.comp_name+'</option>';
     });
     $('#anchor_id').html(html);
 }
 
 function fillPrograms(programs){
-    let html = '<option value="">Select Program</option>';
+    let html = '<option value="" data-sub_limit="">Select Program</option>';
     $.each(programs, function(i,program){
         if(program.prgm_name != null)
-            html += '<option value="'+program.prgm_id+'">'+program.prgm_name+'</option>';
+            html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'">'+program.prgm_name+'</option>';
     });
     $('#program_id').html(html);
 }
+
+$('#program_id').on('change',function(){
+    let program_limit = $('#program_id option:selected').data('sub_limit');
+    let program_id = $('#program_id').val();
+    setLimit('select[name=prgm_id]', '');
+    if(program_id == ''){
+        unsetError('select[name=prgm_id]');
+        return;
+    }else{
+        unsetError('select[name=prgm_id]');
+        setLimit('select[name=prgm_id]', 'Limit: <i class="fa fa-inr" aria-hidden="true"></i> '+program_limit);
+    }
+    let token = "{{ csrf_token() }}";
+    $('.isloader').show();
+    $.ajax({
+        'url':messages.get_program_balance_limit,
+        'type':"POST",
+        'data':{"_token" : messages.token, "program_id" : program_id},
+        error:function (xhr, status, errorThrown) {
+            $('.isloader').hide();
+            alert(errorThrown);
+        },
+        success:function(res){
+            res = JSON.parse(res);
+            let program_limit = parseInt($('#program_id option:selected').data('sub_limit'));
+            let consumed_limit = parseInt(res);
+            balance_limit = program_limit - consumed_limit;
+
+            setLimit('#limit_amt', 'Balance: <i class="fa fa-inr" aria-hidden="true"></i> '+balance_limit);
+            $('.isloader').hide();
+        }
+    })
+});
+
 </script>
 @endsection

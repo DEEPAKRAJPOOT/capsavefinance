@@ -42,9 +42,9 @@
 
 
     @php
-    $wfStageData = \Helpers::getWfStageToProcess(request()->get('app_id'));
-    $wfStageToProcess = $wfStageData ? $wfStageData->stage_code : '';
-    $isWfStageCompleted = \Helpers::isWfStageCompleted('sales_queue', request()->get('app_id'));    
+        $wfStageData = \Helpers::getWfStageToProcess(request()->get('app_id'));
+        $wfStageToProcess = $wfStageData ? $wfStageData->stage_code : '';
+        $isWfStageCompleted = \Helpers::isWfStageCompleted('sales_queue', request()->get('app_id'));    
 
         $currentStage = \Helpers::getCurrentWfStage(request()->get('app_id'));   
         $roleData = \Helpers::getUserRole();        

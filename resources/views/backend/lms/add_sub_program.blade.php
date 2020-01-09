@@ -37,7 +37,7 @@
                                                         <p class="float-left mr-3 mb-0">
                                                             <b>Total Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i> 
-                                                          {!! isset($programData->anchor_limit) ?  \Helpers::formatCurreny($programData->anchor_limit )   : null !!}
+                                                            {!! isset($programData->anchor_limit) ?  \Helpers::formatCurreny($programData->anchor_limit )   : null !!}
                                                         </p>
 
 
@@ -56,6 +56,7 @@
                                             {!! Form::hidden('parent_prgm_id',$program_id) !!}
                                             {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}
                                             {!! Form::hidden('anchor_limit',isset($programData) ? $programData->anchor_limit : null) !!}
+                                            {!! Form::hidden('product_id',isset($programData) ? $programData->product_id : null) !!}
 
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
@@ -72,7 +73,7 @@
                                                 <div class="col-md-12">
                                                     <h5 class="card-title">Terms</h5>
                                                 </div>
-                                                
+
                                                 <div class="col-md-12">
                                                     <div class="form-group INR">
                                                         <div class="row">
@@ -126,7 +127,7 @@
 
                                                                     {!! Form::radio('interest_rate','1',
                                                                     isset($subProgramData->interest_rate) ? $subProgramData->interest_rate : null,
-                                                                    ['class'=>'form-check-input int-checkbox'])    !!} 
+                                                                    ['class'=>'form-check-input int-checkbox '])    !!} 
                                                                     Fixed
                                                                 </label>
                                                             </div>
@@ -159,14 +160,14 @@
 
                                                                 {!! Form::text('min_interest_rate',
                                                                 isset($subProgramData->min_interest_rate) ? $subProgramData->min_interest_rate : null,
-                                                                ['class'=>'form-control','placeholder'=>'Min'])   !!}
+                                                                ['class'=>'form-control percentage','placeholder'=>'Min'])   !!}
 
                                                             </div>
                                                             <div class="col-md-6">
 
                                                                 {!! Form::text('max_interest_rate',
                                                                 isset($subProgramData->max_interest_rate) ? $subProgramData->max_interest_rate : null,
-                                                                ['class'=>'form-control ','placeholder'=>'Max'])   
+                                                                ['class'=>'form-control percentage ','placeholder'=>'Max'])   
                                                                 !!}
 
                                                             </div>
@@ -180,7 +181,7 @@
 
                                                         {!! Form::text('overdue_interest_rate',
                                                         isset($subProgramData->overdue_interest_rate) ? $subProgramData->overdue_interest_rate : null,
-                                                        ['class'=>'form-control valid_perc','placeholder'=>'Overdue interest rate',
+                                                        ['class'=>'form-control valid_perc percentage','placeholder'=>'Overdue interest rate',
                                                         'id'=>'overdue_interest_rate'])   
                                                         !!}
                                                     </div>
@@ -208,7 +209,7 @@
                                                         <label for="txtCreditPeriod">Margin (%) <span class="error_message_label">*</span></label>
                                                         {!! Form::text('margin',
                                                         isset($subProgramData->margin) ? $subProgramData->margin : null,
-                                                        ['class'=>'form-control valid_perc','placeholder'=>'Margin',
+                                                        ['class'=>'form-control valid_perc percentage','placeholder'=>'Margin',
                                                         'id'=>'margin'])   
                                                         !!}
 
@@ -250,7 +251,7 @@
 
                                                                         {!! Form::text('adhoc_interest_rate',
                                                                         isset($subProgramData->adhoc_interest_rate) ? $subProgramData->adhoc_interest_rate : null,
-                                                                        ['class'=>'form-control valid_perc','placeholder'=>'Max interset rate',
+                                                                        ['class'=>'form-control valid_perc percentage','placeholder'=>'Max interset rate',
                                                                         'id'=>'employee'])   
                                                                         !!}
 
@@ -693,8 +694,8 @@
         get_charges_html: "{{ URL::route('get_charges_html') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-        please_select: "{{ trans('backend.please_select') }}"
-
+        please_select: "{{ trans('backend.please_select') }}",
+        invoiceDataCount: "{{ ($invoiceDataCount > 0) ? 'true' : 'false' }}"
     };
 
 

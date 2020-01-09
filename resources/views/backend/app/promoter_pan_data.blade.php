@@ -4,6 +4,7 @@
 
 
  <table class="table  table-striped table-hover overview-table">
+    @if($res != null)
         <thead class="thead-primary">
             <tr>
                 <th width="10%" class="text-left" colspan="2">PAN Status Detail</th>
@@ -17,6 +18,14 @@
 
           
         </tbody>
+
+    @else 
+    <thead class="thead-primary">
+        <tr>
+            <th class="text-left" colspan="4" width="10%">PAN Not Verified</th>
+        </tr>
+    </thead>
+    @endif
     </table>
  
  

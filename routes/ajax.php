@@ -469,10 +469,16 @@ Route::group(
         'as' => 'ajax_get_programs_by_anchor',
         'uses' => 'AjaxController@getProgramsByAnchor'
         ]
+    );
+
+    Route::post(
+        'get-program-balance-limit',
+        [
+        'as' => 'ajax_get_program_balance_limit',
+        'uses' => 'AjaxController@getProgramBalanceLimit'
+        ]
     );    
 
-     
-    
     Route::post(
         'change-program-status',
         [
@@ -487,6 +493,22 @@ Route::group(
         'as' => 'lms_get_customer',
         'uses' => 'AjaxController@lmsGetCustomer'
     ]);
+    
+    
+    
+    
+    Route::post('get-bank-account-list', [
+        'as' => 'get_bank_account_list',
+        'uses' => 'AjaxController@getBankAccountList'
+    ]);
+    
+    Route::post('set-default-account', [
+        'as' => 'set_default_account',
+        'uses' => 'AjaxController@setDefaultAccount'
+    ]);
+    
+    
+    
 
     /*lms route*/
 

@@ -24,6 +24,7 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
+                {data: 'virtual_acc_id'},
                 {data: 'customer_name'},
                 {data: 'customer_email'},
                 {data: 'customer_mobile'},

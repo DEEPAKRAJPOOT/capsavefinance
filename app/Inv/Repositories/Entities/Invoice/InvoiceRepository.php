@@ -352,8 +352,20 @@ use CommonRepositoryTraits;
         } catch (Exception $ex) {
            return $ex;
         } 
-    }    
-    
-    
-    
+    }
+
+
+
+    /**
+     * get invoice Data
+     * 
+     * @param type $where Array 
+     * @param type $select Array
+     * @return type mixed
+     */
+    public function getInvoiceData($where, $select)
+    {
+        return InvoiceModel::getInvoiceData($where, $select);
+    }
+
 }

@@ -4,6 +4,7 @@
 
 
 <table class="table  table-striped table-hover overview-table">
+    @if($res != null)
     <thead class="thead-primary">
         <tr>
             <th class="text-left" colspan="4" width="10%">Passport Detail</th>
@@ -37,6 +38,13 @@
             <td>{{$res->applicationDate}}</td>
         </tr>                                          
     </tbody>
+    @else 
+    <thead class="thead-primary">
+        <tr>
+            <th class="text-left" colspan="4" width="10%">Passport Not Verified</th>
+        </tr>
+    </thead>
+    @endif
 </table>   
 
 

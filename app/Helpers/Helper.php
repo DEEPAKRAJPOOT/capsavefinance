@@ -158,12 +158,14 @@ class Helper extends PaypalHelper
                 $nextWfData = WfStage::getNextWfStage($wf_order_no);
                 $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
                 if ( !$wfAppStageData ) {
+                    // $wf_disb_status = $nextWfData->stage_code == 'disbursed' ? 1 : 0;
+                    $wf_disb_status = 0;
                     $insertData = [
                         'wf_stage_id' => $nextWfData->wf_stage_id,
                         'biz_app_id' => $app_id,
                         'user_id' => $user_id,
-                        'app_wf_status' => 0,
-                        'is_complete' => 0
+                        'app_wf_status' => $wf_disb_status,
+                        'is_complete' => $wf_disb_status
                     ];
                     $result = WfAppStage::saveWfDetail($insertData);
                 } else {

@@ -159,6 +159,25 @@ class User extends Authenticatable
 
         return ($arrUser ?: false);
     }
+
+    /**
+     * Get User Details base of user Id
+     *
+     * @param  integer $user_id
+     * @return array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     * Since 0.1
+     */
+    public static function getCustomerDetail($user_id)
+    {
+         $arrUser = self::where('user_id', (int) $user_id)
+            ->with('anchor.salesUser')
+            ->first();
+         
+
+        return ($arrUser ?: false);
+    }
 /**
      * Get User Details base of user Id
      *
@@ -591,6 +610,10 @@ class User extends Authenticatable
 
     public function agency(){
         return $this->hasOne('App\Inv\Repositories\Models\Agency', 'agency_id', 'agency_id');
+    }
+
+    public function anchor(){
+        return $this->hasOne('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
     }
 
     /**

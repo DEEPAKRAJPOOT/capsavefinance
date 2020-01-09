@@ -19,6 +19,7 @@ return [
     ],
     'mange_program' => [
         'manage_program' => 'Manage Program',
+        'product_type' => 'Product Type',
         'program_list' => 'Program List',
         'home' => 'Home',
         'add_program' => 'Add Program',

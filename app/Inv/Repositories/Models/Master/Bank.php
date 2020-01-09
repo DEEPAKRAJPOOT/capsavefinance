@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Inv\Repositories\Models;
+namespace App\Inv\Repositories\Models\Master;
 
-use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\User;
 
-class Product extends BaseModel {
-    /* The database table used by the model.
+class Bank extends BaseModel {
+
+    /**
+     * The database table used by the model.
      *
      * @var string
      */
-
-    protected $table = 'mst_product';
+    protected $table = 'mst_bank';
 
     /**
      * Custom primary key is set for the table
@@ -42,23 +43,25 @@ class Product extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'product_name',
+        'bank_name',
+        'perfios_bank_id',
         'is_active',
-        'created_at',
-        'created_by',
     ];
-    
-    
+
     /**
-     * get product data list
+     * get Bank list
      * 
+     * @param type $where array
      * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
      */
-    public static function getProductDataList()
+    public static function getBankList()
     {
-        $res = self::where('is_active', 1)->pluck('product_name', 'id');
+        $res = self::where('is_active', '1')->pluck('bank_name', 'id');
         return $res ?: false;
     }
 
-    //    
+   
+
 }

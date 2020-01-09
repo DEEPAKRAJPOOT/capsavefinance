@@ -675,7 +675,14 @@ class ApplicationController extends Controller
             } else {                
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 //Validate the stage
-                if ($currStage->stage_code == 'approver') {
+                if ($currStage->stage_code == 'credit_mgr') {
+                    $whereCondition = ['app_id' => $app_id];
+                    $offerData = $this->appRepo->getOfferData($whereCondition);
+                    if (!$offerData) {
+                        Session::flash('error_code', 'no_offer_found');
+                        return redirect()->back();
+                    }
+                } else if ($currStage->stage_code == 'approver') {
                     $whereCondition = ['app_id' => $app_id];
                     $offerData = $this->appRepo->getOfferData($whereCondition);
                     if (!$offerData) {
@@ -723,7 +730,21 @@ class ApplicationController extends Controller
                         Session::flash('error_code', 'no_pre_docs_uploaded');
                         return redirect()->back();                                            
                     }
-                }                
+                } else if ($currStage->stage_code == 'opps_checker') {
+                  	$capId = sprintf('%09d', $user_id);
+                  	$customerId = 'CAP'.$capId;
+                  	$lmsCustomerArray = array(
+						'user_id' => $user_id, 
+						'customer_id' => $customerId,
+						'created_by' => Auth::user()->user_id
+						);
+                  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                  	if($createCustomer != null) {
+	                  	$capId = sprintf('%07d', $createCustomer->lms_user_id);
+	                  	$virtualId = 'CAPVA'.$capId;
+              			$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
+                  	}
+                } 
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];
@@ -760,7 +781,7 @@ class ApplicationController extends Controller
                         Session::flash('error_code', 'no_docs_found');
                         return redirect()->back();                                            
                     }                    
-                }
+                } 
                 
                 Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
             }
@@ -962,7 +983,7 @@ class ApplicationController extends Controller
     {
         $request =  $request->all();
         $result   = $this->userRepo->getOwnerAppRes($request);
-        $res = json_decode($result->karza->res_file);
+        $res = json_decode((isset($result->karza)) ? $result->karza->res_file : '');
         return view('backend.app.promoter_pan_data')->with('res', $res);
         
     } 
@@ -971,7 +992,7 @@ class ApplicationController extends Controller
     {
          $request =  $request->all();
          $result   = $this->userRepo->getOwnerAppRes($request);
-         $res = json_decode($result->karza->res_file);
+         $res = json_decode((isset($result->karza)) ? $result->karza->res_file : '');
         return view('backend.app.promoter_dl_data')->with('res', $res);
         
     } 
@@ -980,7 +1001,7 @@ class ApplicationController extends Controller
     {
          $request =  $request->all();
          $result   = $this->userRepo->getOwnerAppRes($request);
-         $res = json_decode($result->karza->res_file);
+         $res = json_decode((isset($result->karza)) ? $result->karza->res_file : '');
         return view('backend.app.promoter_voter_data')->with('res', $res);
         
     } 
@@ -989,7 +1010,7 @@ class ApplicationController extends Controller
     {
          $request =  $request->all();
          $result   = $this->userRepo->getOwnerAppRes($request);
-         $res = json_decode($result->karza->res_file);
+         $res = json_decode((isset($result->karza)) ? $result->karza->res_file : '');
         return view('backend.app.promoter_pass_data')->with('res', $res);
         
     } 

@@ -32,238 +32,263 @@ use App\Inv\Repositories\Models\ProgramDoc;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\UserBankAccount;
 /**
  * Application repository class
  */
 class ApplicationRepository extends BaseRepositories implements ApplicationInterface {
 
-    use CommonRepositoryTraits;
+	use CommonRepositoryTraits;
 
-    /**
-     * Class constructor
-     *
-     * @return void
-     */    
-    public function __construct() {
-    }
+	/**
+	 * Class constructor
+	 *
+	 * @return void
+	 */    
+	public function __construct() {
+	}
 
-    /**
-     * Create method
-     *
-     * @param array $attributes
-     */
-    protected function create(array $attributes) {        
-    }
+	/**
+	 * Create method
+	 *
+	 * @param array $attributes
+	 */
+	protected function create(array $attributes) {        
+	}
 
-    /**
-     * Update method
-     *
-     * @param array $attributes
-     */
-    protected function update(array $attributes, $id) {        
-    }
+	/**
+	 * Update method
+	 *
+	 * @param array $attributes
+	 */
+	protected function update(array $attributes, $id) {        
+	}
 
-    /**
-     * Get all records method
-     *
-     * @param array $columns
-     */
-    public function all($columns = array('*')) {        
-    }
+	/**
+	 * Get all records method
+	 *
+	 * @param array $columns
+	 */
+	public function all($columns = array('*')) {        
+	}
 
-    /**
-     * Find method
-     *
-     * @param mixed $id
-     * @param array $columns     
-     */
-    public function find($id, $columns = array('*')) {        
-    }
+	/**
+	 * Find method
+	 *
+	 * @param mixed $id
+	 * @param array $columns     
+	 */
+	public function find($id, $columns = array('*')) {        
+	}
 
-    /**
-    *create business information details
-    * @param mixed $userId
-    * @param array $attributes     
-    */
+	/**
+	*create business information details
+	* @param mixed $userId
+	* @param array $attributes     
+	*/
 
-    public function saveBusinessInfo($attributes = [], $userId = null){
-        /**
-         * Check Data is Array
-         */
-        if (!is_array($attributes)) {
-            throw new InvalidDataTypeExceptions('Please send an array');
-        }
+	public function saveBusinessInfo($attributes = [], $userId = null){
+		/**
+		 * Check Data is Array
+		 */
+		if (!is_array($attributes)) {
+			throw new InvalidDataTypeExceptions('Please send an array');
+		}
 
-        /**
-         * Check Data is not blank
-         */
-        if (empty($attributes)) {
-            throw new BlankDataExceptions('No Data Found');
-        }
+		/**
+		 * Check Data is not blank
+		 */
+		if (empty($attributes)) {
+			throw new BlankDataExceptions('No Data Found');
+		}
 
-        if(is_null($userId)){
-            throw new BlankDataExceptions('No Data Found');
-        }
-        return Business::creates($attributes, $userId);
-    }
+		if(is_null($userId)){
+			throw new BlankDataExceptions('No Data Found');
+		}
+		return Business::creates($attributes, $userId);
+	}
 
-    /**
-    *update company details
-    * @param mixed $bizId
-    * @param array $attributes     
-    */
+	/**
+	*update company details
+	* @param mixed $bizId
+	* @param array $attributes     
+	*/
 
-    public function updateCompanyDetail($attributes = [], $bizId = null, $userId){
-        /**
-         * Check Data is Array
-         */
-        if (!is_array($attributes)) {
-            throw new InvalidDataTypeExceptions('Please send an array');
-        }
+	public function updateCompanyDetail($attributes = [], $bizId = null, $userId){
+		/**
+		 * Check Data is Array
+		 */
+		if (!is_array($attributes)) {
+			throw new InvalidDataTypeExceptions('Please send an array');
+		}
 
-        /**
-         * Check Data is not blank
-         */
-        if (empty($attributes)) {
-            throw new BlankDataExceptions('No Data Found');
-        }
+		/**
+		 * Check Data is not blank
+		 */
+		if (empty($attributes)) {
+			throw new BlankDataExceptions('No Data Found');
+		}
 
-        if(is_null($bizId)){
-            throw new BlankDataExceptions('No Data Found');
-        }
-        return Business::updateCompanyDetail($attributes, $bizId, $userId);
-    }
+		if(is_null($bizId)){
+			throw new BlankDataExceptions('No Data Found');
+		}
+		return Business::updateCompanyDetail($attributes, $bizId, $userId);
+	}
 
-    /**
-     * Get Applications for Application list data tables
-     */
-    public function getApplications() 
-    {
-        return Application::getApplications();
-    }
+	/**
+	 * Get Applications for Application list data tables
+	 */
+	public function getApplications() 
+	{
+		return Application::getApplications();
+	}
 
-    /**
-     * Get business information according to app id
-     */
-    public function getAppDataByAppId($appId = null){
-        if(is_null($appId)){
-            throw new BlankDataExceptions('No Data Found');
-        }
-        return Application::find($appId);
-    }
+	/**
+	 * Get business information according to app id
+	 */
+	public function getAppDataByAppId($appId = null){
+		if(is_null($appId)){
+			throw new BlankDataExceptions('No Data Found');
+		}
+		return Application::find($appId);
+	}
 
-    /**
-     * Get Application by app id
-     */
-    public function getApplicationById($bizId) 
-    {
-        return Business::getApplicationById($bizId);
-    }
-    
-    /**
-     * Update Application Status
-     * 
-     * @param integer $appId
-     * @param array $attributes
-     * @return boolean
-     * @throws InvalidDataTypeExceptions
-     * @throws BlankDataExceptions
-     */
-    public function updateAppStatus($appId, $attributes = []){
-        /**
-         * Check Data is Array
-         */
-        if (!is_array($attributes)) {
-            throw new InvalidDataTypeExceptions('Please send an array');
-        }
+	/**
+	 * Get Application by app id
+	 */
+	public function getApplicationById($bizId) 
+	{
+		return Business::getApplicationById($bizId);
+	}
+	
+	/**
+	 * Update Application Status
+	 * 
+	 * @param integer $appId
+	 * @param array $attributes
+	 * @return boolean
+	 * @throws InvalidDataTypeExceptions
+	 * @throws BlankDataExceptions
+	 */
+	public function updateAppStatus($appId, $attributes = []){
+		/**
+		 * Check Data is Array
+		 */
+		if (!is_array($attributes)) {
+			throw new InvalidDataTypeExceptions('Please send an array');
+		}
 
-        /**
-         * Check Data is not blank
-         */
-        if (empty($attributes)) {
-            throw new BlankDataExceptions('No Data Found');
-        }
+		/**
+		 * Check Data is not blank
+		 */
+		if (empty($attributes)) {
+			throw new BlankDataExceptions('No Data Found');
+		}
 
-        if(empty($appId)){
-            throw new BlankDataExceptions('No Data Found');
-        }
-        return true;
-    }
+		if(empty($appId)){
+			throw new BlankDataExceptions('No Data Found');
+		}
+		return true;
+	}
 
-    /**
-     * Update Application Assignee
-     * 
-     * @param type $appId
-     * @param type $attributes
-     * @return boolean
-     * @throws InvalidDataTypeExceptions
-     * @throws BlankDataExceptions
-     */
-    public function updateAssignee($appId, $attributes = []){
-        /**
-         * Check Data is Array
-         */
-        if (!is_array($attributes)) {
-            throw new InvalidDataTypeExceptions('Please send an array');
-        }
+	/**
+	 * Update Application Assignee
+	 * 
+	 * @param type $appId
+	 * @param type $attributes
+	 * @return boolean
+	 * @throws InvalidDataTypeExceptions
+	 * @throws BlankDataExceptions
+	 */
+	public function updateAssignee($appId, $attributes = []){
+		/**
+		 * Check Data is Array
+		 */
+		if (!is_array($attributes)) {
+			throw new InvalidDataTypeExceptions('Please send an array');
+		}
 
-        /**
-         * Check Data is not blank
-         */
-        if (empty($attributes)) {
-            throw new BlankDataExceptions('No Data Found');
-        }
+		/**
+		 * Check Data is not blank
+		 */
+		if (empty($attributes)) {
+			throw new BlankDataExceptions('No Data Found');
+		}
 
-        if(empty($appId)){
-            throw new BlankDataExceptions('No Data Found');
-        }
-        return true;        
-    }
-    
-    /**
-     * Get Applications for Application list data tables
-     */
-    public function getApplicationsDetail($user_id) 
-    {
-        return Application::getApplicationsDetail($user_id);
-    }
-    
-    /**
-     * Get Applications for Application list data tables
-     */
-    public function getApplicationPoolData() 
-    {
-        return Application::getApplicationPoolData();
-    }    
-        
-    /**
-     * Save application note
-     * 
-     * @param array $noteData
-     * @return mixed
-     */
-    public function saveAppNote($noteData) 
-    {
-        return AppNote::create($noteData);
-    }
+		if(empty($appId)){
+			throw new BlankDataExceptions('No Data Found');
+		}
+		return true;        
+	}
+	
+	/**
+	 * Get Applications for Application list data tables
+	 */
+	public function getApplicationsDetail($user_id) 
+	{
+		return Application::getApplicationsDetail($user_id);
+	}
+	
+	/**
+	 * Get Applications for Application list data tables
+	 */
+	public function getApplicationPoolData() 
+	{
+		return Application::getApplicationPoolData();
+	}    
+		
+	/**
+	 * Save application note
+	 * 
+	 * @param array $noteData
+	 * @return mixed
+	 */
+	public function saveAppNote($noteData) 
+	{
+		return AppNote::create($noteData);
+	}
 
-    
-    /**
-     * Get Applications for Application list data tables
-     */
-    public function saveShaircase($attributes) 
-    {
-        return AppAssignment::saveData($attributes);
-    }
-    
-     /**
-     * update Applications for Application list data tables
-     */
-    public function updateAppDetails($app_id, $arrUserData = []) 
-    {
-        return Application::updateAppDetails((int)$app_id, $arrUserData);
-    }
+	
+	/**
+	 * Get Applications for Application list data tables
+	 */
+	public function saveShaircase($attributes) 
+	{
+		return AppAssignment::saveData($attributes);
+	}
+	
+	 /**
+	 * update Applications for Application list data tables
+	 */
+	public function updateAppDetails($app_id, $arrUserData = []) 
+	{
+		return Application::updateAppDetails((int)$app_id, $arrUserData);
+	}
  
+	/**
+	 * Get Applications for Application list data tables
+	 */
+	public function getCustomerApplications($user_id) 
+	{
+		return Application::with('business')
+				->with('appLimit')
+				->with('acceptedOffer')
+				->whereHas('acceptedOffer')
+				->where(['user_id' => $user_id, 'status' => 1])
+				->get();
+	}    
+
+	/**
+	 * Get Applications for Application list data tables
+	 */
+	public function getCustomerAnchors($user_id) 
+	{
+		return Application::with('business')
+				->with('appLimit')
+				->where(['user_id' => $user_id, 'status' => 1])
+				->get();
+	}    
     
      /**
      * update Applications for Application list data tables
@@ -845,6 +870,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Program::getProgramsByAnchor($anchor_id);
     }
 
+    public function getProgramBalanceLimit($program_id)
+    {
+        return AppProgramLimit::getProgramBalanceLimit($program_id);
+    }
+
     /**
      * Get Offer Data
      * 
@@ -954,14 +984,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ProgramDoc::deleteDoc($conditions);
     }
 
-    /**
-     * Get Applications for Application list data tables
-     */
-    public function getCustomerApplications($user_id) 
-    {
-        return Application::where(['user_id' => $user_id, 'status' => 1])->with('business')->get();
-    }
-
     public function getAllOffers($appId){
         return AppProgramOffer::getAllOffers($appId);
     }    
@@ -996,6 +1018,111 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getProgramDocs($whereCondition=[])
     {
-        return ProgramDoc::getProgramDocs($whereCondition);
+        return Application::getProgramDocs($whereCondition);
     }
+
+    /**
+     * Get Program Documents
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function createCustomerId($lmsCustomerArray = [])
+    {
+    	$customerCheck = LmsUser::where('user_id', $lmsCustomerArray['user_id'])
+    			->first();
+    	if(!isset($customerCheck)) {
+    		$customer = LmsUser::create($lmsCustomerArray);
+    	} 
+
+        return (isset($customer)) ? $customer : false;
+    } 
+
+    /**
+     * Get Program Documents
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function createVirtualId($lmsCustomerArray = [], $virtualId = false)
+    {
+    	
+		$response = LmsUser::updateVirtualId($lmsCustomerArray->lms_user_id, $virtualId);
+
+        return (isset($response)) ? $response : false;
+    }
+
+	/**
+	 * Get Applications for Application list data tables
+	 */
+	public function getCustomerPrgmAnchors($user_id) 
+	{
+		return AppProgramLimit::whereHas('appLimit.app.user', function ($query) use ($user_id) {
+			        $query->where(function ($q) use ($user_id) {
+			            $q->where('user_id', $user_id);
+			        });
+			    })
+				->with('offer')
+				->with('anchor')
+				->with('program')
+				->whereHas('appLimit.app.acceptedOffer')
+				->whereHas('offer')
+				->get();
+	}   
+
+    
+    
+    
+    /**
+     * save bank account
+     * 
+     * @param type $attributes array
+     * @param type $id int
+     * @return type mixed
+     */
+    public function saveBankAccount($attributes, $id = null)
+    {
+        return UserBankAccount::saveBankAccount($attributes, $id);
+    }
+    
+    
+    
+    /**
+     * bank account list 
+     * 
+     * @return type mixed
+     */
+    public function getBankAccountList()
+    {
+        return UserBankAccount:: getBankAccountList();
+    }
+    
+    
+    /**
+     * update bank account
+     * 
+     * @param type $attributes array
+     * @param type $where array
+     * @return type mixed
+     */
+    public function updateBankAccount($attributes, $where = [])
+    {
+        return UserBankAccount::updateBankAccount($attributes, $where);
+    }
+    
+    
+    /**
+     * get Bank account 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getBankAccountData($where)
+    {
+        return UserBankAccount::getBankAccountData($where);
+    }
+
+
 }

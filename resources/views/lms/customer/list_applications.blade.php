@@ -1,26 +1,8 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-<ul class="main-menu">
-	<li>
-		<a href="" class="active">Summary</a>
-	</li>
-	<li>
-		<a href="{{ route('lms_get_application_invoice', ['user_id' => $userInfo->user_id]) }}">View Invoices</a>
-	</li>
-	<li>
-		<a href="">Repayment History</a>
-	</li>
-	<li>
-		<a href="">Charges</a>
-	</li>
-	<li>
-		<a href="">SOA</a>
-	</li>
-	<li>
-		<a href="">Bank Account</a>
-	</li>
-</ul>
+
+@include('layouts.backend.partials.admin_customer_links',['active'=>'summary'])
 <div class="content-wrapper">
 	<div class="row ">
 		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
@@ -39,21 +21,17 @@
 									<td class="text-left" width="30%"><b>Mobile</b></td>
 									<td>{{$userInfo->mobile_no}} </td> 
 								</tr>
-								
-							</tbody>
-						</table><table class="table  table-td-right">
-							<tbody>
 								<tr>
 									<td class="text-left" width="30%"><b>Total Limit</b></td>
-									<td>1,000,0000	</td> 
+									<td>{{ $userInfo->total_limit }} </td> 
 									<td class="text-left" width="30%"><b>Avialable Limit</b></td>
-									<td>70,000,00 </td> 
+									<td>{{ $userInfo->avail_limit }} </td> 
 								</tr>
 								<tr>
 									<td class="text-left" width="30%"><b>Consume Limit</b></td>
-									<td> 30,000,000	</td> 
+									<td>{{ $userInfo->consume_limit }} </td> 
 									<td class="text-left" width="30%"><b>Sales Manager</b></td>
-									<td>Chandan </td>
+									<td>{{ $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name }} </td>
 								</tr>
 							</tbody>
 						</table>
@@ -75,13 +53,21 @@
 					   </thead>
 					   
 					   <tbody>
-						   <tr role="row" class="odd">
-							   <td class="sorting_1">1</td>
-							   <td>Anchor 1</td>
-							   <td>Anchor 1 Vendor Financing</td>
-							   <td><i class="fa fa-inr"></i> 50,000000</td>
-							   <td><i class="fa fa-inr"></i> 20,000000</td>
-						   </tr>
+					   		@if($anchors->count() >0)
+							@foreach ($anchors AS $anchor)
+							<tr role="row" class="odd">
+								<td class="sorting_1">{{ $anchor->anchor->anchor_id }}</td>
+								<td>{{ $anchor->anchor->comp_name }}</td>
+								<td>{{ $anchor->program->prgm_name }}</td>
+								<td><i class="fa fa-inr"></i> {{ $anchor->limit_amt }}</td>
+								<td><i class="fa fa-inr"></i> {{ $anchor->offer->prgm_limit_amt - $anchor->offer->loan_amount }}</td>
+							</tr>
+						   	@endforeach
+							@else
+							<tr>
+								<td  colspan = "5"> No Anchor Found:</td>
+							</tr>
+							@endif
 					   </tbody>
 					</table>
 		 		</div>
@@ -104,15 +90,13 @@
 									</thead>
 									<tbody>
 
-										@if(count($application)>0)
+										@if($application->count() >0)
 										@foreach ($application AS $app)
 										<tr>
+											<td class="text-left">{{$app->app_id}}</td>
+											<td class="text-left">{{$app->business->biz_entity_name}}</td>
 											<td class="text-left">
-												<a href="">{{$app['app_id']}}</a>
-											</td>
-											<td class="text-left">{{$app['business']['biz_entity_name']}}</td>
-											<td class="text-left">
-												@if($app['status'] == 1)
+												@if($app->status == 1)
 												<button type="button" class="btn btn-success btn-sm">Complete</button>
 												@else
 												<button type="button" class="btn btn-info btn-sm">Not Complete</button>
@@ -120,7 +104,7 @@
 											</td>
 											<td class="text-left">
 												<div class="d-flex inline-action-btn">
-													<a title="View Application Details" href="{{ route('company_details', ['biz_id' => $app['biz_id'], 'app_id' => $app['app_id'] ]) }}" class="btn btn-action-btn btn-sm"><i class="fa fa-eye" aria-hidden="true"></i></a>
+													<a title="View Application Details" href="{{ route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id ]) }}" class="btn btn-action-btn btn-sm"><i class="fa fa-eye" aria-hidden="true"></i></a>
 												   
 											   </div>	           
 											</td>  
@@ -129,7 +113,7 @@
 										@endforeach
 										@else
 										<tr>
-											<td  colspan = "3"> No Application Found:</td>
+											<td  colspan = "4"> No Application Found:</td>
 										</tr>
 										@endif
 									</tbody>

@@ -153,6 +153,10 @@
         function setError(ele, msg){
             $(ele).after('<span class="text-danger error">'+msg+'</span>');
         }
+
+        function setLimit(ele, msg){
+            $(ele).parent('div').find('.limit').html(msg);
+        }
     </script>
     @yield('jscript')
 </html>

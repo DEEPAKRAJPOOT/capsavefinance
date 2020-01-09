@@ -33,7 +33,9 @@ $(document).ready(function(){
 			},
 			success: function(res){
 				res = res.response;
-			    if(res['statusCode'] == 101){
+				if(res == null){
+					$('.isloader').hide();
+				}else if(res['statusCode'] == 101){
 			    	$('#pan-msg').show();
 			    	$('.pan-verify').text('Verified');
 			    	$('.pan-verify').css('pointer-events','none');
@@ -79,7 +81,9 @@ function fillEntity(gstinId){
 			},
 			success: function(res){
 				res = res.response;
-			    if(res['statusCode'] == 101){
+				if(res == null){
+					$('.isloader').hide();
+				}else if(res['statusCode'] == 101){
 			    	$('input[name=biz_entity_name]').val(res.result.lgnm);
 			    	getCIN(res.result.lgnm);
 			    	fillRegisteredAddress(res.result.pradr.adr);
@@ -102,7 +106,9 @@ function getCIN(entityName){
 		},
 		success: function(res){
 			res = res.response
-		    if(res['status-code'] == 101){
+			if(res == null){
+					$('.isloader').hide();
+			}else if(res['status-code'] == 101){
 		    	$('input[name=biz_cin]').val(res.result[0].cin);
 		    }else{
 		    	alert('Something went wrong, Try again later');

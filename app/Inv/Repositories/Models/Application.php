@@ -66,10 +66,30 @@ class Application extends BaseModel
         'updated_by'
     ];
 
-
     public function business()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
+    }
+    
+     /**
+     * join with app limit table to get limit amount for application
+     */
+    public function appLimit()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppLimit', 'app_id');
+    }
+
+     /**
+     * join with app limit table to get limit amount for application
+     */
+    public function appPrgmOffer()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where('is_active', 1);
+    }
+
+    public function acceptedOffer()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1]);
     }
 
     /**
@@ -400,12 +420,11 @@ class Application extends BaseModel
         return $appData ? $appData : [];
     }
     
-    
-        public  function user()
-     {
-  
-         return $this->hasOne('App\Inv\Repositories\Models\User','user_id','user_id');  
-     }
+    public  function user()
+    {
+
+        return $this->hasOne('App\Inv\Repositories\Models\User','user_id','user_id');  
+    }
      
      
     /**
@@ -449,19 +468,6 @@ class Application extends BaseModel
      */
     public static function getDoAUsersByAppId($appId)
     {
-        /**
-         * Check id is not blank
-         */
-        if (empty($appId)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
-        }
-
-        /**
-         * Check id is not an integer
-         */
-        if (!is_int($appId)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }
         
         $doaUsers = self::select('role_user.user_id')
                 ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
@@ -480,7 +486,7 @@ class Application extends BaseModel
                 })
                 ->where('app.app_id', $appId)
                 ->where('app_prgm_offer.is_active', 1)
-                ->groupBy('role_user.user_id1')
+                ->groupBy('role_user.user_id')
                 ->get();
                        
         return ($doaUsers ? $doaUsers : []);
@@ -505,6 +511,10 @@ class Application extends BaseModel
         $whereCondition['prgm_doc.is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
         $whereCondition['app_prgm_offer.is_active'] = 1;
         $whereCondition['app_prgm_offer.is_approve'] = 1;
+        
+        unset($whereCondition['app_id']);
+        unset($whereCondition['stage_code']);
+        unset($whereCondition['is_active']);
         
         $prgmDocs = self::select('prgm_doc.*')
                 ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')

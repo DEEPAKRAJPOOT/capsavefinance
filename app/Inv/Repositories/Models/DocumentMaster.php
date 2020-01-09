@@ -98,7 +98,7 @@ class DocumentMaster extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
-        $res = self::where($where)->get();
+        $res = self::select('*','id as doc_id')->where($where)->where('is_active', 1)->get();
         return $res ?: [];        
     }    
 }

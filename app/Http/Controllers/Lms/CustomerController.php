@@ -40,7 +40,7 @@ class CustomerController extends Controller
 	 */
 	public function list()
 	{
-	   	return view('lms.customer.list');              
+		return view('lms.customer.list');              
 	}
 
 	/**
@@ -51,17 +51,35 @@ class CustomerController extends Controller
 	public function listAppliction(Request $request)
 	{
 		try {
-            $user_id = $request->get('user_id');
-            $userInfo = $this->userRepo->getUserDetail($user_id);
-            $application = $this->appRepo->getCustomerApplications($user_id)->toArray();
-            
-            return view('lms.customer.list_applications')
-			  	->with('userInfo', $userInfo)
-			  	->with('application', $application);
+			$totalLimit = 0;
+			$consumeLimit = 0;
+			$user_id = $request->get('user_id');
+			$userInfo = $this->userRepo->getCustomerDetail($user_id);
+			$application = $this->appRepo->getCustomerApplications($user_id);
+			$anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+			foreach ($application as $key => $value) {
+				$totalLimit += (isset($value->appLimit->tot_limit_amt)) ? $value->appLimit->tot_limit_amt : 0;
+			}
+			foreach ($application as $key => $value) {
+				$consumeLimit += (isset($value->appPrgmOffer->loan_offer)) ? $value->appPrgmOffer->loan_offer : 0;
+			}
 
-        } catch (Exception $ex) {
-            dd($ex);
-        }
+			$userInfo->total_limit = number_format($totalLimit);
+			$userInfo->consume_limit = number_format($consumeLimit);
+			$userInfo->avail_limit = number_format($totalLimit- $consumeLimit);
+			
+
+			return view('lms.customer.list_applications')
+				->with([
+					'userInfo' => $userInfo, 
+					'application' => $application,
+					'anchors' => $anchors
+					]);
+
+
+		} catch (Exception $ex) {
+			dd($ex);
+		}
 
 	}
 
@@ -72,7 +90,7 @@ class CustomerController extends Controller
 	 */
 	public function listInvoice()
 	{
-	   	return view('lms.customer.list_invoices');              
+		return view('lms.customer.list_invoices');              
 	}
 
 }

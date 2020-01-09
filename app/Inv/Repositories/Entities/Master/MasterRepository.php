@@ -18,6 +18,8 @@ use App\Inv\Repositories\Models\Master\State as StateModel;
 use App\Inv\Repositories\Models\Master\City as CityModel;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Models\ProgramDoaLevel;
+use App\Inv\Repositories\Models\Product;
+use App\Inv\Repositories\Models\Master\Bank;
 /**
  * 
  */
@@ -327,6 +329,29 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function getProgramDoaLevelData($where)
     {
         return ProgramDoaLevel::getProgramDoaLevelData($where);
+    }
+    
+    /**
+     * get product data list
+     * 
+     * @return type mixed
+     */
+    
+    public function getProductDataList()
+    {
+        return Product::getProductDataList();
+    }
+    
+    
+    
+    /**
+     * get Bank list
+     * 
+     * @return type mixed
+     */
+    public function getBankList()
+    {
+        return Bank::getBankList();
     }
 
 }

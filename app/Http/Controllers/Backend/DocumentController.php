@@ -30,7 +30,7 @@ class DocumentController extends Controller
     /**
      * Display a application for Fi and Rcu
      */
-    public function list(Request $request)
+    public function listDocument(Request $request)
     {
     	try {
             $arrFileData = $request->all();

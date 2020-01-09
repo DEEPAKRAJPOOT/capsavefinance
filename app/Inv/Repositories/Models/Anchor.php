@@ -71,6 +71,10 @@ class Anchor extends BaseModel
 
     
    
+    public function salesUser(){
+        return $this->hasOne('App\Inv\Repositories\Models\User', 'user_id', 'sales_user_id');
+    }
+
      
     /**
      * update user details
@@ -215,6 +219,11 @@ public static function saveAnchor($arrAnchor = [])
                 ->where(['u.user_type' => 2, 'anchor.anchor_id' => $id])->get();
                
         return ($result ? : false);
+    }
+
+    public function prgmData()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\Program', 'anchor_id', 'anchor_id')->where(['status'=>1, 'parent_prgm_id'=> 0]);
     }
 
 }

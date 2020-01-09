@@ -20,7 +20,7 @@ try {
             var i = parseInt(min);
             var j = parseInt(max);
             return i <= j;
-        }, "Min loan size can not be greater than max loan size");
+        }, "Min loan size should not be greater than max loan size");
 
 
         $.validator.addMethod('lessThanEquals', function (value, element, param) {
@@ -30,7 +30,16 @@ try {
             var i = parseInt(min);
             var j = parseInt(max);
             return i <= j;
-        }, "Interest Rate Min  can not be greater than interest rate max");
+        }, "Interest Rate Min  should not be greater than interest rate max");
+        
+         $.validator.addMethod('lessLoanSize', function (value, element, param) {
+            var min = value.replace(/,/g, "");
+            var max = $(param).val().replace(/,/g, "");
+
+            var i = parseInt(min);
+            var j = parseInt(max);
+            return i <= j;
+        }, "Max loan size should not be greater than Limit");
 
         /**
          * handle Industry Change evnet
@@ -82,6 +91,9 @@ try {
 
             let validRules = {
                 rules: {
+                    product_id: {
+                        required: true
+                    },
                     prgm_type: {
                         required: true
                     },
@@ -104,12 +116,6 @@ try {
                     anchor_id: {
                         required: true
                     },
-                    'pre_sanction[]': {
-                        required: true
-                    },
-                    'post_sanction[]': {
-                        required: true
-                    }
 
                 },
                 messages: {
@@ -149,6 +155,8 @@ try {
             },
             columns: [
                 {data: 'prgm_id'},
+                {data: 'product_id'},
+
                 {data: 'f_name'},
                 {
                     data: 'prgm_name'
@@ -317,6 +325,7 @@ try {
                 },
                 success: function (data) {
                     targetDiv.html(data.contents);
+                    setTabIndex();
                 },
                 error: function () {
 
@@ -355,7 +364,6 @@ try {
             let parent_div = $('.charge_parent_div');
             let num = parent_div.length + 1;
 
-            console.log(num);
             let new_line = parent_div.first().clone();
             new_line.find('.add_more').show();
             new_line.find('select[name="charge[0]"]').attr({id: 'charge_' + num, name: 'charge[' + num + '] ', 'data-rel': num}).val('').removeClass('error')
@@ -363,7 +371,7 @@ try {
             new_line.find('.delete_btn').show();
             new_line.find('.html_append').html('');
             parent_div.last().after(new_line);
-
+            setTabIndex();
         });
 
         $.fn.showHideBtn = function () {
@@ -384,6 +392,7 @@ try {
             let selector = $(this);
             let parent_div = selector.parents('.charge_parent_div').remove();
             $(this).showHideBtn();
+            setTabIndex();
         });
 
 
@@ -446,6 +455,13 @@ try {
 
         $(document).on('click', '.save_sub_program', function (e) {
             e.preventDefault();
+
+            if (messages.invoiceDataCount == 'true')
+            {
+                customAlert('Alert!', 'This sub-program can not be update.');
+                return false;
+            }
+
             let form = $('#add_sub_program');
             var rules = {};
             var msg = {};
@@ -474,6 +490,7 @@ try {
                     max_loan_size: {
                         required: true,
                         // number: true
+                        lessLoanSize : 'input[name="anchor_sub_limit"]'
                     },
                     interest_rate: {
                         required: true
@@ -527,6 +544,15 @@ try {
                         max: 100
                     }, status: {
                         required: true
+                    },
+                    'doa_level[]': {
+                        required: true
+                    },
+                    'pre_sanction[]': {
+                        required: true
+                    },
+                    'post_sanction[]': {
+                        required: true
                     }
                 },
                 messages: {
@@ -577,6 +603,26 @@ try {
                 return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             });
         });
+        
+         $(document).on('keyup', '.percentage', function () {
+            var result = $(this).val();
+            if (result == 0) {
+                $(this).val('');
+            }
+            if (result >= 0 && result <= 100) {
+                if (parseFloat(result)) {
+                      if ($.inArray(".",result) !== -1) {
+                        if (result.split(".")[1].length > 2) {
+                            var array_conv = result.split(".")[1].substring(0,2);                           
+                            var output = result.split(".")[0] + '.' + array_conv;
+                            this.value = this.value.replace(result, output);
+                        }
+                    }
+                }
+            } else {
+                this.value = this.value.replace(/\D/g, "").replace(result, result.substr(0, 2));
+            }
+        });
 
         //$('.number_format').trigger('blue');
 
@@ -606,6 +652,19 @@ try {
         });
 
 
+
+        function setTabIndex()
+        {
+            var n = 1;
+            $('input.form-control,input.form-check-input, select.form-control').each(function () {
+
+                $(this).attr('tabindex', n++);
+            });
+
+        }
+
+
+        setTabIndex();
 
     });
 } catch (e) {

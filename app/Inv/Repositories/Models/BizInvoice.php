@@ -181,4 +181,36 @@ public static function saveBulkInvoice($arrInvoice)
    
      
      
+     
+     
+     
+     
+     /**
+     * get Invoice Data
+     * 
+     * @param type $where
+     * @param type $select
+     * @return type mixed
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function getInvoiceData($where, $select = ['*'])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $res = self::select($select)->where($where)->get();
+        return $res ?: false;
+    }
+
 }

@@ -29,7 +29,19 @@ class LmsUser extends Authenticatable
      * @var integer
      */
     protected $primaryKey = 'lms_user_id';
+    /**
+     * Maintain created_at and updated_at automatically
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
 
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = false;
     /**
      * The attributes that should be mutated to dates.
      *
@@ -52,5 +64,11 @@ class LmsUser extends Authenticatable
     public function user()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\User', 'user_id');
+    }
+
+    public static function updateVirtualId($lmsUserId, $virtualId)
+    {
+        return self::where('lms_user_id', $lmsUserId)
+                    ->update(['virtual_acc_id' => $virtualId]);
     }
 }
