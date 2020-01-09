@@ -525,8 +525,8 @@ Route::group(
                  'uses' => 'AjaxController@getSupplierList'
             ]); 
                
-     Route::POST('upload_invoice', [
-                 'as' => 'upload_invoice',
+     Route::POST('upload_invoice_csv', [
+                 'as' => 'upload_invoice_csv',
                  'uses' => 'AjaxController@uploadInvoice'
             ]); 
        Route::POST('delete_temp_invoice', [
