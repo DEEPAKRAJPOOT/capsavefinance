@@ -14,7 +14,7 @@
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limit_amt)}}" placeholder="Loan Offer" maxlength="15">
-        <span class="s_value"><i class="fa fa-inr"></i>{{$offerData->programLimit->program->min_loan_size}} - <i class="fa fa-inr"></i>{{$offerData->programLimit->program->max_loan_size}}</span>
+        <span class="s_value"><i class="fa fa-inr"></i>{{$limitData->program->min_loan_size}} - <i class="fa fa-inr"></i>{{$limitData->program->max_loan_size}}</span><span class="float-right">Balance: <i class="fa fa-inr"></i>{{$limitData->program->anchor_sub_limit-$offeredLimit}}</span>
         </div>
       </div>
     </div>
@@ -24,7 +24,7 @@
         <label for="txtPassword" class="col-md-4"><b>Interest(%):</b></label> 
         <div class="col-md-8">
         <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
-        <span class="s_value">{{$offerData->programLimit->program->min_interest_rate}}%-{{$offerData->programLimit->program->max_interest_rate}}%</span>
+        <span class="s_value">{{$limitData->program->min_interest_rate}}%-{{$limitData->program->max_interest_rate}}%</span>
         </div>
       </div>
     </div>
@@ -124,6 +124,11 @@
 @section('jscript')
 <script>
   function checkValidations(){
+    let tot_limit_amt = "{{$totalLimit}}";
+    let prgm_limit = "{{$limitData->program->anchor_sub_limit}}";
+    let offered_limit = "{{$offeredLimit}}";
+    let balance_limit = prgm_limit - offered_limit;
+
     unsetError('input[name=prgm_limit_amt]');
     unsetError('input[name=interest_rate]');
     unsetError('input[name=tenor]');
@@ -149,6 +154,9 @@
 
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
+        flag = false;
+    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))) || (parseInt(prgm_limit_amt.replace(/,/g, '')) > balance_limit)){
+        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from Balance/Total limit');
         flag = false;
     }
 

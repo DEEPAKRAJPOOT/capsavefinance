@@ -38,6 +38,7 @@
     <div class="col-md-12">
       <div class="form-group row INR">
         <label for="txtPassword" class="col-md-4"><b>Limit:</b></label>
+        <span>Balance: <i class="fa fa-inr" aria-hidden="true"></i>{{$prgmLimit-$offeredLimit}}</span>
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" name="limit_amt" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit amount" maxlength="15">
@@ -58,6 +59,11 @@
 @section('jscript')
 <script>
   function checkLimitValidation(){
+    let tot_limit_amt = "{{$totalLimit}}";
+    let prgm_limit = "{{$prgmLimit}}";
+    let offered_limit = "{{$offeredLimit}}";
+    let balance_limit = prgm_limit - offered_limit;
+
     unsetError('input[name=limit_amt]');
 
     let flag = true;
@@ -65,6 +71,9 @@
 
     if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=limit_amt]', 'Please fill limit amount');
+        flag = false;
+    }else if((parseInt(limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))) || (parseInt(limit_amt.replace(/,/g, '')) > balance_limit)){
+        setError('input[name=limit_amt]', 'Limit amount can not exceed from Balance/Total limit');
         flag = false;
     }
 

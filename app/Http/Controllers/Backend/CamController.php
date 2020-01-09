@@ -882,7 +882,10 @@ class CamController extends Controller
       $aplid = $request->get('app_prgm_limit_id');
       $offerData= $this->appRepo->getProgramOffer($aplid);
       $limitData= $this->appRepo->getLimit($aplid);
-      return view('backend.cam.limit_offer', ['offerData'=>$offerData,'limit_amt'=>$limitData->limit_amt]);
+      $current_offer_limit = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
+      $totalLimit = $this->appRepo->getAppLimit($appId);
+      $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
+      return view('backend.cam.limit_offer', ['offerData'=>$offerData, 'limitData'=>$limitData, 'limit_amt'=>$limitData->limit_amt, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit]);
     }
 
     public function updateLimitOffer(Request $request){
@@ -893,7 +896,7 @@ class CamController extends Controller
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
         $request['check_bounce_fee'] = str_replace(',', '', $request->check_bounce_fee);
-        dd($request->all());
+
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
 
         if($offerData){
@@ -913,8 +916,11 @@ class CamController extends Controller
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
       $limitData= $this->appRepo->getLimit($aplid);
-      //dd($limitData);
-      return view('backend.cam.limit', ['limitData'=>$limitData]);
+      $offerData= $this->appRepo->getProgramOffer($aplid);
+      $current_offer_limit = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
+      $totalLimit = $this->appRepo->getAppLimit($appId);
+      $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
+      return view('backend.cam.limit', ['limitData'=>$limitData, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit, 'prgmLimit'=> $limitData->program->anchor_sub_limit]);
     }
 
     public function updateLimit(Request $request){
