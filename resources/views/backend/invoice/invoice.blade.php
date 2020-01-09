@@ -241,7 +241,7 @@
 
     var messages = {
             backend_get_invoice_list: "{{ URL::route('backend_get_invoice_list') }}",
-            upload_invoice: "{{ URL::route('upload_invoice') }}",
+            upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
             get_program_supplier: "{{ URL::route('get_program_supplier') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             front_program_list: "{{ URL::route('front_program_list') }}",
@@ -469,7 +469,7 @@
         datafile.append('pro_limit_hide', pro_limit_hide);
         $.ajax({
             headers: {'X-CSRF-TOKEN':  messages.token  },
-            url : messages.upload_invoice,
+            url : messages.upload_invoice_csv,
             type: "POST",
             data: datafile,
             processData: false,
