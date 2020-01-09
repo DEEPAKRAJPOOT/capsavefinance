@@ -47,7 +47,7 @@ class Disbursal extends BaseModel {
         'invoice_id',
         'prgm_offer_id',
         'bank_id',
-        'disburse_at',
+        'disburse_date',
         'bank_name',
         'ifsc_code',
         'acc_no',
@@ -86,7 +86,9 @@ class Disbursal extends BaseModel {
         
         if (!empty($whereCondition)) {
             return self::where($whereCondition)->update($data);
-        } else {
+        } else if (isset($data[0])) {
+            return self::insert($data);
+        } else
             return self::create($data);
         }
     }
@@ -109,8 +111,9 @@ class Disbursal extends BaseModel {
         if (!empty($whereCondition)) {
             $query->where($whereCondition);
         }
-        
+        $query->orderBy('disburse_date', 'DESC');
+        $query->orderBy('disbursal_id', 'DESC');
         $result = $query->get();
         return $result;
-    }    
+    }
 }
