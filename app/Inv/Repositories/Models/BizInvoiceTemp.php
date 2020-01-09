@@ -134,6 +134,8 @@ public static function saveBulkTempInvoice($arrInvoice)
                         'invoice_due_date' => $result->invoice_due_date,
                         'invoice_date' => $result->invoice_date,
                         'invoice_approve_amount' => $result->invoice_approve_amount,
+                        'is_bulk_upload'    =>1,
+                        'bulk_invoice_file'  => $result->bulk_invoice_file,
                         'remark' => $result->remark,
                         'file_id'  => $result->file_id,
                         'created_by' => $result->created_by,

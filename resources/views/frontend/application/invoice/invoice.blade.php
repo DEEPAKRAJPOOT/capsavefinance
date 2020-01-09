@@ -50,10 +50,10 @@
        
     <div class="card">
         <div class="card-body">
-            <div class="row"><div class="col-md-5"></div>
+                     <div class="row"><div class="col-md-4"></div>
                  <div class="col-md-2">				 
                                                       
-                    <select class="form-control form-control-sm changeAnchor"  name="search_biz">
+                     <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
                            <option value="">Select Application  </option>
                            @foreach($get_bus as $row)
                            <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
@@ -61,12 +61,12 @@
                           
                         
                   </select>
-
+                     <span id="anchorMsg" class="error"></span>
                   
                    </div>
                <div class="col-md-2">				 
                                                               
-                    <select class="form-control form-control-sm changeAnchor"  name="search_anchor">
+                    <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
                            <option value="">Select Anchor  </option>
                            @foreach($anchor_list as $row)
                            <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
@@ -74,21 +74,20 @@
                           
                         
                   </select>
-
-                  
+                 
                    </div>
              <div class="col-md-2">		    
                                                             
-                 <select readonly="readonly" class="form-control form-control-sm" id="supplier_id" name="search_supplier">
+                 <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
                          
                     </select>
+                     </div>    
+                      <div class="col-md-2">	
+                          <a href="{{Route('frontend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
 
                    
-                </div>    
-           <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
-
-               
-
+            </div>
+            
             </div>
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -100,13 +99,12 @@
                                         <thead>
                                             <tr role="row">
                                                
-                                                <th>Anchor Name</th>
+                                               <th>Anchor Name</th>
                                                 <th>Supplier Name</th>
                                                 <th>Program Name</th>
                                                 <th>Invoice Date</th>
                                                 <th>Invoice  Amount</th>
                                                 <th>Status</th>
-                                            
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -130,7 +128,7 @@
 	
   
   </div>
-  
+ 
       
          </div>
       </div>
@@ -180,7 +178,7 @@
                        
                             $(obj1).each(function(i,v){
                                    
-                                   $("#supplier_id").append("<option value='"+v.user_id+"'>"+v.f_name+"</option>");  
+                                   $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
                             });
                         }
                         else

@@ -213,7 +213,7 @@ use CommonRepositoryTraits;
     {
         try
         {
-           return InvoiceModel::getBusinessName();  
+           return AppProgramLimit::getBusinessName();  
         } catch (Exception $ex) {
            return $ex;
         }
@@ -225,7 +225,7 @@ use CommonRepositoryTraits;
     {
         try
         {
-           return InvoiceModel::getAllAnchor();  
+           return AppProgramLimit::getAllAnchor();  
         } catch (Exception $ex) {
            return $ex;
         }

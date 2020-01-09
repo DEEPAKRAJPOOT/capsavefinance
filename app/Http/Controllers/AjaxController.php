@@ -3016,6 +3016,12 @@ if ($err) {
     }
     
     function uploadInvoice(Request $request) {
+    
+       $extension = $request['doc_file']->getClientOriginalExtension();
+       if($extension!="csv" || $extension!="csv")
+       {
+            return response()->json(['status' => 2]); 
+       }
        $date = Carbon::now();
        $data = array();
        $id = Auth::user()->user_id;
@@ -3031,11 +3037,12 @@ if ($err) {
         $csvFilePath = storage_path("app/public/" . $inputArr['file_path']);
         $sumInvoice = 0;
         $file = fopen($csvFilePath, "r");
-      
+     
         while (!feof($file)) {
           
             $rowData[] = explode(",",fgets($file));
           }
+        
         $i=0;
         $res =  $this->invRepo->getSingleLimit($request['anchor_bulk_id']);
         $appId = $res->app_id; 

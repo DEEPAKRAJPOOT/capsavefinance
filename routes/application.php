@@ -217,8 +217,15 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'uses' => 'Application\InvoiceController@saveInvoice'
             ]); 
            
-           
-           
+             Route::get('frontend_bulk_invoice', [
+                 'as' => 'frontend_bulk_invoice',
+                'uses' => 'Application\InvoiceController@getBulkInvoice'
+            ]); 
+             Route::POST('frontend_save_bulk_invoice', [
+                 'as' => 'frontend_save_bulk_invoice',
+                'uses' => 'Application\InvoiceController@saveBulkInvoice'
+            ]); 
+             
           });
           
      

@@ -1,16 +1,7 @@
-@extends('layouts.backend.admin-layout')
-@section('additional_css')
-@endsection
+@extends('layouts.app')
 @section('content')
-
-
-
 <div class="content-wrapper">
-				
-				
-
-               
-                  <div class="col-md-12 ">
+<div class="col-md-12 ">
    <section class="content-header">
    <div class="header-icon">
       <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -105,7 +96,7 @@
 				
             
          </div>
-         <form action="{{Route('backend_save_bulk_invoice')}}" method="post"> 
+         <form action="{{Route('frontend_save_bulk_invoice')}}" method="post"> 
              @csrf
           <div class="row">
              

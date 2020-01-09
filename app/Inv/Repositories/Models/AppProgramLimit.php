@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Models;
 
 use DB;
+use Auth;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Factory\Models\BaseModel;
@@ -109,14 +110,33 @@ class AppProgramLimit extends BaseModel {
         return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
     }     
 
+       function anchorOne()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
+    
+     }
+     
+      public static function getAllAnchor()
+    {
+         
+       return self::distinct('anchor_id')->with('anchorOne')->get(['anchor_id']);
+    }  
+    
    public static function getLimitAnchor($aid)
      {
   
          return AppProgramLimit::with('anchorList')->where(['app_id' =>$aid])->get();
      }
+     public static function getBusinessName()
+     {
+        return self::distinct('biz_id')->with('business')->get(['biz_id']);
+     }   
      
-   
-    
+     function Business()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id','biz_id');  
+     
+     } 
      
       public static function getLimitProgram($aid)
      {
