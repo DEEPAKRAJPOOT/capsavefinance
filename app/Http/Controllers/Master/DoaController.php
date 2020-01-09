@@ -43,12 +43,12 @@ class DoaController extends Controller {
         foreach($states as $state) {
             $stateList[$state->id] = $state->name;
         }
-            
+        $doaLevelStates = [];    
         if ($request->has('doa_level_id')) {
             $doa_level_id = preg_replace('#[^0-9]#', '', $request->get('doa_level_id'));
             $doa_level = $this->masterRepo->getDoaLevelById($doa_level_id);
             $level_code = $doa_level->level_code;
-            
+            $doaLevelStates = ($doa_level->doaLevelStates) ? $doa_level->doaLevelStates->toArray() : [];
             $cities = $this->masterRepo->getcity($doa_level->state_id);
             foreach($cities as $city) {
                 $cityList[$city->id] = $city->name;
@@ -63,7 +63,8 @@ class DoaController extends Controller {
             'doaLevel'  => $doa_level, 
             'stateList' => $stateList, 
             'levelCode' => $level_code,
-            'cityList'  => $cityList
+            'cityList'  => $cityList,
+            'doaLevelStates'=> $doaLevelStates
         ];
     	return view('master.doa.add_doa_level', $data);
     }
@@ -85,6 +86,35 @@ class DoaController extends Controller {
         
         return $level_code;
     }
+    
+    
+    
+    /**
+     * Save DOA level states
+     * 
+     * @param Array $request 
+     * @param int $doa_id 
+     */
+    function saveDeoLevelStates($request, $doa_id)
+    {
+        try {
+            $state_id = $request->get('state_id');
+            $city_id = $request->get('city_id');
+            $prepreDeoLevelData = [];
+            foreach ($state_id as $keys => $values):
+                $prepreDeoLevelData[$keys] = [
+                    'doa_level_id' => $doa_id,
+                    'state_id' => isset($values) ? $values : null,
+                    'city_id' => isset($city_id[$keys]) ? $city_id[$keys] : null,
+                ];
+            endforeach;
+          
+            $this->masterRepo->deleteDeoLevelStates(['doa_level_id'=>$doa_id]);
+            $this->masterRepo->saveDeoLevelStates($prepreDeoLevelData);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }
 
     /**
      * Save DoA Level
@@ -99,8 +129,8 @@ class DoaController extends Controller {
             $data = [
                 'level_code' => $reqData['level_code'],
                 'level_name' => $reqData['level_name'],
-                'state_id'   => $reqData['state_id'],
-                'city_id'    => $reqData['city_id'],
+                //'state_id'   => $reqData['state_id'],
+               // 'city_id'    => $reqData['city_id'],
                 'min_amount' => $reqData['min_amount'],
                 'max_amount' => $reqData['max_amount'],
             ];
@@ -121,7 +151,9 @@ class DoaController extends Controller {
                 }
             }
             
-            $this->masterRepo->saveDoaLevelData($data, $doa_level_id);                        
+             $lastInsertId =   $this->masterRepo->saveDoaLevelData($data, $doa_level_id); 
+             $lastInsertId = $doa_level_id ? $doa_level_id : $lastInsertId->doa_level_id;
+             $this->saveDeoLevelStates($request ,$lastInsertId);
 
             //Session::flash('message', 'Doa Level saved successfully!');
             //return redirect()->route('manage_doa');

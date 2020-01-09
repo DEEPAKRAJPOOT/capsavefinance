@@ -54,6 +54,17 @@ class DoaLevel extends BaseModel {
         'updated_at',
         'updated_by'
     ];
+    
+    
+      /**
+     * doa level stage
+     * 
+     * @return mixed
+     */
+    public function doaLevelStates()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\DeoLevelStates', 'doa_level_id', 'doa_level_id'); 
+    }
 
     /**
      * Get DoA Levels for Data Render
