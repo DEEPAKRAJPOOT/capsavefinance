@@ -45,7 +45,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             // disbursal routes
             Route::get('/disbursal-request/list', [
                 'as' => 'lms_disbursal_request_list',
-                'uses' => 'Lms\DisbursalController@list'
+                'uses' => 'Lms\DisbursalController@requestList'
             ]);
 
         });//end of application

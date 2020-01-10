@@ -19,6 +19,7 @@ class DisbursalController extends Controller
 	protected $appRepo;
 	protected $userRepo;
 	protected $docRepo;
+	protected $lmsRepo;
 
 	/**
 	 * The pdf instance.
@@ -40,9 +41,9 @@ class DisbursalController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function list()
+	public function requestList()
 	{
-		return view('lms.customer.list');              
+		return view('lms.disbursal.request_list');              
 	}
 
 
