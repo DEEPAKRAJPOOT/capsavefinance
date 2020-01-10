@@ -166,6 +166,7 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+       
 
         /*
          * Package Service Providers...
@@ -244,6 +245,7 @@ return [
         'Image' => Intervention\Image\Facades\Image::class,
         'Zip' => ZanySoft\Zip\ZipFacade::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
+   
      ],
 
 ];

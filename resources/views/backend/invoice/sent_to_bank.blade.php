@@ -1,4 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.backend.admin-layout')
+@section('additional_css')
+@endsection
 @section('content')
 
 <div class="content-wrapper">
@@ -24,23 +26,23 @@
    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
       <div class="card">
          <div class="card-body">
-		
-		 <ul class="nav nav-tabs" role="tablist">
-		   <li class="nav-item ">
-      <a class="nav-link @if(Route::currentRouteName()=='get_invoice') active @endif"  href="{{Route('get_invoice')}}">Pending</a>
+		 	   <ul class="nav nav-tabs" role="tablist">
+       <li class="nav-item ">
+      <a class="nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
     </li>
     <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='get_approve_invoice') active @endif"  href="{{Route('get_approve_invoice')}}">Approved</a>
+         <a class="nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
     </li>
-	<li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_invoice') active @endif"  href="{{Route('get_disbursed_invoice')}}">Disbursed</a>
+  <li class="nav-item">
+         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursed</a>
     </li>
-	<li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='get_repaid_invoice') active @endif" href="{{Route('get_repaid_invoice')}}">Repaid</a>
+  <li class="nav-item">
+         <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_repaid_invoice')}}">Repaid</a>
     </li>
   
    
   </ul>
+
 
 
   <div class="tab-content">
@@ -50,10 +52,10 @@
        
     <div class="card">
         <div class="card-body">
-                     <div class="row"><div class="col-md-4"></div>
+                     <div class="row"><div class="col-md-5"></div>
                  <div class="col-md-2">				 
                                                       
-                     <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
+                    <select class="form-control form-control-sm changeAnchor"  name="search_biz">
                            <option value="">Select Application  </option>
                            @foreach($get_bus as $row)
                            <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
@@ -61,12 +63,12 @@
                           
                         
                   </select>
-                     <span id="anchorMsg" class="error"></span>
+
                   
                    </div>
                <div class="col-md-2">				 
                                                               
-                    <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
+                    <select class="form-control form-control-sm changeAnchor"  name="search_anchor">
                            <option value="">Select Anchor  </option>
                            @foreach($anchor_list as $row)
                            <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
@@ -74,20 +76,21 @@
                           
                         
                   </select>
-                 
+
+                  
                    </div>
              <div class="col-md-2">		    
                                                             
-                 <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
+                 <select readonly="readonly" class="form-control form-control-sm" id="supplier_id" name="search_supplier">
                          
                     </select>
-                     </div>    
-                      <div class="col-md-2">	
-                          <a href="{{Route('frontend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
 
                    
-            </div>
-            
+                </div>    
+           <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+
+               
+
             </div>
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -98,7 +101,7 @@
                                     <table id="invoiceList" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                               
+                                                <th><input type="checkbox" id="chkAll"></th> 
                                                <th>Anchor Name</th>
                                                 <th>Supplier Name</th>
                                                 <th>Program Name</th>
@@ -128,7 +131,7 @@
 	
   
   </div>
- 
+  
       
          </div>
       </div>
@@ -141,15 +144,28 @@
 <script>
 
     var messages = {
-            get_invoice_list: "{{ URL::route('get_invoice_list') }}",
+            backend_get_invoice_list: "{{ URL::route('backend_get_invoice_list') }}",
             get_program_supplier: "{{ URL::route('get_program_supplier') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
  };
  
-   
+   //////////////// for checked & unchecked////////////////
+     $(document).on('click','#chkAll',function(){
+        var isChecked =  $("#chkAll").is(':checked');
+        if(isChecked)
+       {
+         $('input:checkbox').attr('checked','checked');
+       }
+       else
+       {
+              $('input:checkbox').removeAttr('checked');
+       }     
+     });
+     
   //////////////////// onchange anchor  id get data /////////////////
   $("#supplier_id").append("<option value=''>No data found</option>");  
+  $("#supplier_id").append("<option value=''>Select Supplier</option>");  
   $(document).on('change','.changeAnchor',function(){
       var anchor_id =  $(this).val(); 
        $("#supplier_id").empty();
@@ -173,12 +189,11 @@
                       ///////////////////// for suppllier array///////////////  
                     
                       if(obj1.length > 0)
-                      { 
-                           $("#supplier_id").append("<option value=''>Please select </option>");  
-                       
+                      {
+                               $("#supplier_id").append("<option value=''> Select Supplier </option>"); 
                             $(obj1).each(function(i,v){
-                                   
-                                   $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
+
+                                   $("#supplier_id").append("<option value='"+v.user_id+"'>"+v.f_name+"</option>");  
                             });
                         }
                         else
@@ -195,7 +210,7 @@
   
   
 </script>
-<script src="{{ asset('frontend/js/ajax-js/invoice_list.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
 
 @endsection
  

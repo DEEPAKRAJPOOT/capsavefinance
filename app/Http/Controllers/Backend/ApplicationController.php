@@ -773,9 +773,9 @@ class ApplicationController extends Controller
                     $wf_status = 1;
                 }
                 
-                if ($nextStage->stage_code == 'upload_pre_sanction_doc' || $nextStage->stage_code == 'upload_post_sanction_doc') {
+                if ($nextStage->stage_code == 'upload_post_sanction_doc') {
                     $prgmDocsWhere = [];
-                    $prgmDocsWhere['stage_code'] = $nextStage->stage_code;
+                    $prgmDocsWhere['stage_code'] = 'upload_post_sanction_doc';
                     $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id);
                     if(count($reqdDocs) == 0)  {
                         Session::flash('error_code', 'no_docs_found');
@@ -900,7 +900,7 @@ class ApplicationController extends Controller
                 $roleArr = [$nextStage->role_id];
                 $roles = $this->appRepo->getBackStageUsers($appId, $roleArr);
                 $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
-                
+                                    
                 //Update workflow stage
                 Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);                
                 
@@ -922,6 +922,13 @@ class ApplicationController extends Controller
                 $currStage = Helpers::getCurrentWfStage($appId);
                 Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
             }
+            
+            //Insert Pre Sanctions Documents
+            $prgmDocsWhere = [];
+            $prgmDocsWhere['stage_code'] = 'upload_pre_sanction_doc';
+            $appData = $this->appRepo->getAppDataByAppId($appId);
+            $userId = $appData ? $appData->user_id : null;
+            $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
             
             // $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
             $savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData);

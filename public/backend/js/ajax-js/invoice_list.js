@@ -37,7 +37,7 @@ try {
         });
 
         //Search
-        $('#searchbtn').on('click', function (e) {
+        $('.searchbtn').on('change', function (e) {
             oTable.draw();
         });                   
     });

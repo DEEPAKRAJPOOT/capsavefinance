@@ -5,10 +5,14 @@ use Auth;
 use Helpers;
 use Session;
 use Mail;
+use Carbon\Carbon;
 use Event;
+use Datetime;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Contracts\Ui\DataProviderInterface;
+use App\imports\UserImport;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Master\Country;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Master\Cluster;
@@ -3025,6 +3029,117 @@ if ($err) {
         return \Response::json(['success' => $result]);
     }
     
+
+    function uploadInvoice(Request $request) {
+      
+       $extension = $request['doc_file']->getClientOriginalExtension();
+       if($extension!="csv" || $extension!="csv")
+       {
+            return response()->json(['status' => 2]); 
+       }
+       $date = Carbon::now();
+       $data = array();
+       $id = Auth::user()->user_id;
+        $userId = 1;
+        if ($request['doc_file']) {
+            if (!Storage::exists('/public/user/' . $userId . '/invoice')) {
+                Storage::makeDirectory('/public/user/' . $userId . '/invoice', 0775, true);
+            }
+            $path = Storage::disk('public')->put('/user/' . $userId . '/invoice', $request['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+        $batch_id =  $this->invRepo->saveBatchNo($path); 
+        $csvFilePath = storage_path("app/public/" . $inputArr['file_path']);
+         $file = fopen($csvFilePath, "r");
+     
+        while (!feof($file)) {
+          
+            $rowData[] = explode(",",fgets($file));
+          }
+       
+        $i=0;
+        $res =  $this->invRepo->getSingleLimit($request['anchor_bulk_id']);
+        $appId = $res->app_id; 
+        $biz_id  = $res->biz_id;
+        $rowcount = count($rowData) -1;
+        foreach($rowData as $key=>$row)
+        {
+        
+          if($i > 0 && $i < $rowcount)  
+          {
+               
+                $whr  = ['status' =>0,'anchor_id' =>$request['anchor_bulk_id'],'supplier_id' => $request['supplier_bulk_id'], 'program_id' => $request['program_bulk_id']];
+                $invoice_no  = $row[0];
+                $invoice_date  = $row[1];
+                $invoice_due_date  = $row[2];
+                $invoice_amount  = $row[3];
+                $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
+                $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
+                if( $invoice_due_date_validate==false)
+               {
+                    return response()->json(['status' => 0]); 
+               }
+               if( $invoice_date_validate==false)
+               {
+                    return response()->json(['status' => 0]); 
+               } 
+                
+                
+                $invoice_amount = str_replace("\n","",$invoice_amount);
+                $data[$i]['anchor_id'] =  $request['anchor_bulk_id'];
+                $data[$i]['supplier_id'] = $request['supplier_bulk_id']; 
+                $data[$i]['program_id'] = $request['program_bulk_id'];
+                $data[$i]['app_id']    = $appId;
+                $data[$i]['biz_id']  = $biz_id;
+                $data[$i]['invoice_no'] = $invoice_no;
+                $data[$i]['invoice_due_date'] = ($invoice_due_date) ? Carbon::createFromFormat('d/m/Y', $invoice_due_date)->format('Y-m-d') : '';
+                $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
+                $data[$i]['invoice_approve_amount'] =  $invoice_amount;
+                $data[$i]['is_bulk_upload'] = 1;
+                $data[$i]['batch_id'] = $batch_id;
+                $data[$i]['created_by'] =  $id;
+                $data[$i]['created_at'] =  $date;
+          }
+           $i++;
+        }
+            
+              
+                if(count($data) > 0)
+               {
+                  $res = $this->invRepo->DeleteTempInvoice($whr);  
+                  $result = $this->invRepo->saveBulkTempInvoice($data);
+                  if( $result)
+                  {
+                      $getTempInvoice =  $this->invRepo->getTempInvoiceData($whr);
+                      return response()->json(['status' => 1,'data' =>$getTempInvoice]); 
+                  }
+                    else {
+                        return response()->json(['status' => 0]); 
+                    }
+                }  
+                  else {
+                        return response()->json(['status' => 0]); 
+                    }
+     }
+    
+    function validateDate($date, $format = 'd/m/Y')
+    { 
+       
+       return  $d = DateTime::createFromFormat($format, $date);
+      // return $d && $d->format($format) === $date;
+     }
+     
+     
+     
+    function DeleteTempInvoice(Request $request) {
+       
+        $whr =  ['invoice_id' => $request->temp_id];
+        $res = $this->invRepo->DeleteSingleTempInvoice($whr);
+        return response()->json(['status' => 1,'id' => $request->temp_id]); 
+        
+    }
+    
+
     
    /**
     * get Bank account list
@@ -3053,5 +3168,6 @@ if ($err) {
         $res = $this->application->updateBankAccount(['is_default' => $value], ['bank_account_id' => $acc_id]);
         return \response()->json(['success' => $res]);
     }
+
 
 }

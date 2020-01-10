@@ -88,6 +88,15 @@ public static function saveInvoice($arrInvoice)
         $arrInvoiceVal = self::create($arrInvoice);
         return ($arrInvoiceVal->invoice_id ?: false);
     } 
+    
+    
+public static function saveBulkInvoice($arrInvoice)
+    {
+        $arrInvoiceVal = self::insert($arrInvoice);
+        return ($arrInvoiceVal ?: false);
+    } 
+    
+    
 /* get invoice */    
   public static function getInvoice()
     {
@@ -145,20 +154,12 @@ public static function saveInvoice($arrInvoice)
           return $this->belongsTo('App\Inv\Repositories\Models\Program', 'program_id','prgm_id')->where(['status' => 1]);  
      
      }
-        function anchorOne()
-     {
-          return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
+     
     
-     }
+    
     public static function getUser($uid)
     {
        return User::whereIn('is_buyer',[1,2])->where('user_id',$uid)->first();
-    }   
-    
-     public static function getUserBehalfAnchor($uid)
-    {
-   
-       return User::whereIn('is_buyer',[1,2])->where('anchor_id',$uid)->get();
     }   
     
     public static function getAnchor($aid)
@@ -176,22 +177,8 @@ public static function saveInvoice($arrInvoice)
        return Program::where(['prgm_id' =>$pid])->first();
      }   
       
-     public static function getAllAnchor()
-    {
-         
-       return self::distinct('anchor_id')->with('anchorOne')->get(['anchor_id']);
-    }  
-     
-     public static function getBusinessName()
-     {
-        return self::distinct('biz_id')->with('business')->where(['created_by' => Auth::user()->user_id])->get(['biz_id']);
-     }   
-     
-     function Business()
-     {
-          return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id','biz_id');  
-     
-     } 
+    
+   
      
      
      

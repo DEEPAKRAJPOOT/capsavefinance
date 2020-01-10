@@ -151,6 +151,7 @@ class Bsa_lib{
     private function _genReq($method, $params){
     	$payload = [];
     	$httpMethod = "POST";
+    	$extra = '';
     	switch ($method) {
     		case SELF::CNCL_TXN:
     			$concat = $params['perfiosTransactionId'] . '?cancel';
@@ -187,6 +188,7 @@ class Bsa_lib{
     			break;
     		default:
     			$concat='';
+    			$extra='<facility>NONE</facility><companyNames><namePattern><pattern>capsave</pattern></namePattern></companyNames><sisterCompanyNames><namePattern><pattern>capsave</pattern></namePattern></sisterCompanyNames>';
     			$payload['txnId'] = $params['txnId'];
     			$payload['loanAmount'] = $params['loanAmount'];
     			$payload['loanDuration'] = $params['loanDuration'];
@@ -211,7 +213,7 @@ class Bsa_lib{
     			break;
     	}
     	if ($method != SELF::UPL_FILE && !empty($payload)) {
-    		$payload = $this->_genPayload($payload);
+    		$payload = $this->_genPayload($payload, $extra);
     	}
     	$this->httpMethod = $httpMethod;
     	$payload = !empty($payload) ? $payload : '';
@@ -302,10 +304,13 @@ class Bsa_lib{
 		return empty($errors);
     }
 
-    private function _genPayload(array $arr){
+    private function _genPayload(array $arr, $extra = ''){
        $xml = '<payload>';
        foreach ($arr as $k => $v) {
             $xml .= "<$k>$v</$k>";
+       }
+       if (!empty($extra)) {
+       	$xml .= $extra;
        }
        $xml .= "</payload>";
        return $xml;

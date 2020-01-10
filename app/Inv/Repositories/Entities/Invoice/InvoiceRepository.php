@@ -7,6 +7,8 @@ use App\Inv\Repositories\Contracts\InvoiceInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\BizInvoice as InvoiceModel;
+use App\Inv\Repositories\Models\BizInvoiceTemp as TempInvoiceModel;
+use App\Inv\Repositories\Models\BizBatchInvoice as BizBatchInvoice;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\Anchor;
@@ -85,6 +87,137 @@ use CommonRepositoryTraits;
         return InvoiceModel::saveInvoice($attributes);
     }
     
+     public function saveBulkTempInvoice($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return TempInvoiceModel::saveBulkTempInvoice($attributes);
+    }
+    
+       public function saveBulkInvoice($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return InvoiceModel::saveBulkInvoice($attributes);
+    }
+    
+        public function getTempInvoiceData($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return TempInvoiceModel::getTempInvoiceData($attributes);
+    }
+    
+    
+      public function DeleteTempInvoice($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return TempInvoiceModel::DeleteTempInvoice($attributes);  
+    }
+      public function DeleteSingleTempInvoice($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return TempInvoiceModel::DeleteSingleTempInvoice($attributes);  
+    }
+    
+        public function saveBulk($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return TempInvoiceModel::saveBulk($attributes);  
+    }
+    
+    public function saveBatchNo($path)
+    {
+        try
+        {
+           return BizBatchInvoice::saveBatchInvoice($path);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }
+    
     public function getInvoice()
     {
         try
@@ -111,7 +244,7 @@ use CommonRepositoryTraits;
     {
         try
         {
-           return InvoiceModel::getBusinessName();  
+           return AppProgramLimit::getBusinessName();  
         } catch (Exception $ex) {
            return $ex;
         }
@@ -123,7 +256,7 @@ use CommonRepositoryTraits;
     {
         try
         {
-           return InvoiceModel::getAllAnchor();  
+           return AppProgramLimit::getAllAnchor();  
         } catch (Exception $ex) {
            return $ex;
         }
@@ -146,7 +279,7 @@ use CommonRepositoryTraits;
        
         try
         {
-          return InvoiceModel::getUserBehalfAnchor($uid);
+          return AppProgramLimit::getUserBehalfAnchor($uid);
         } catch (Exception $ex) {
            return $ex;
         } 
