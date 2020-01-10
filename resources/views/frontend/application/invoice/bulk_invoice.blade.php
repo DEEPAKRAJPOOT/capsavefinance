@@ -535,7 +535,7 @@
                     if(data.status==1)
                     {
                          $(".finalButton").show();
-                         $("#deleteRow"+data.id).hide();
+                          $("#deleteRow"+data.id).remove();
                       }
                   }
                 });
