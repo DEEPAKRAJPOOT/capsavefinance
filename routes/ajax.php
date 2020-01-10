@@ -524,6 +524,17 @@ Route::group(
                  'as' => 'front_supplier_list',
                  'uses' => 'AjaxController@getSupplierList'
             ]); 
+               
+               
+               
+               
+          Route::POST('get-ueser-by-role', [
+                 'as' => 'get_ueser_by_role',
+                 'uses' => 'AjaxController@getUserByRole'
+            ]); 
+               
+               
+               
     
     
 

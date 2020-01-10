@@ -88,6 +88,11 @@
             !!}                        
         </div>
     </div>    
+    <div class="col-12 col-sm-12">
+    <div class="text-right mt-3">           
+        <button style="display:none" type="button" class="btn btn-danger ml-2 float-left btn-sm delete"> Delete</button>
+    </div>
+</div>
 </div>
 
 

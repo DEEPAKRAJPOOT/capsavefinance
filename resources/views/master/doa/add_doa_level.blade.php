@@ -126,30 +126,30 @@ $(document).ready(function () {
         parent.jQuery("#" + messages.target_model).modal('hide');
         parent.oTable.draw();
     }
-    $('#frm_doa_level').validate({
-        rules: {
-            level_code: {
-                required: true
-            },
-            level_name: {
-                required: true
-            },
-            state_id: {
-                required: true
-            },
-            city_id: {
-                required: true
-            },
-            min_amount: {
-                required: true
-            },
-            max_amount: {
-                required: true
-            }
-        },
-        messages: {
-        }
-    });
+//    $('#frm_doa_level').validate({
+//        rules: {
+//            level_code: {
+//                required: true
+//            },
+//            level_name: {
+//                required: true
+//            },
+//            state_id: {
+//                required: true
+//            },
+//            city_id: {
+//                required: true
+//            },
+//            min_amount: {
+//                required: true
+//            },
+//            max_amount: {
+//                required: true
+//            }
+//        },
+//        messages: {
+//        }
+//    });
 
     $(document).on('change', '.state_id', function () {
         var state_id = $(this).val();
@@ -189,7 +189,6 @@ $(document).ready(function () {
 
 
     $('.state_id').each(function () {
-
         $(this).trigger('change');
 
     });
@@ -221,7 +220,6 @@ $(document).ready(function () {
                               $('.delete').last().show();
                           }
                         selector.parents('.parent_div').remove();
-                          
                     }
 
                 },

@@ -58,7 +58,6 @@ class DoaController extends Controller {
             $doa_level = new \stdClass();
             $level_code = $this->getDoaLevelCode();
         }
-        
         $data = [
             'doaLevel'  => $doa_level, 
             'stateList' => $stateList, 
@@ -187,13 +186,26 @@ class DoaController extends Controller {
         
         $levelRoles = $this->masterRepo->getDoaLevelRoles($doa_level_id);
         $levelRoleList = [];
-        foreach($levelRoles as $levelRole) {
-            $levelRoleList[] = $levelRole->role_id;
-        }    
+        
+        foreach ($levelRoles as $levelRole) {
+            if (in_array($levelRole->role_id, $levelRoleList)) {
+                array_push($levelRoleList[$levelRole->role_id], $levelRole->user_id);
+            } else {
+                $levelRoleList[$levelRole->role_id][] = $levelRole->user_id;
+            }
+        }
+     //   dd($levelRoles->toArray());
+        $getCityData = ($doa_level->doaLevelStates) ? $doa_level->doaLevelStates->toArray() : [];
+       $selectedCity = array_reduce($getCityData, function ($out,$elem) {
+           $out[] =  $elem['name'];
+           return  $out;
+       },[]);
+      
+       
         $data = [
             'levelName'  => $doa_level->level_name,
             'limitAmount'  => $doa_level->min_amount . ' - ' . $doa_level->max_amount,
-            'city'  => $doa_level->city,
+            'city'  => implode(',', $selectedCity),
             'roleList'  => $roleList,
             'doaLevelRoles' => $levelRoleList,
             'doaLevelId' => $doa_level_id
@@ -210,24 +222,28 @@ class DoaController extends Controller {
     public function saveAssignRoleLevel(Request $request)
     {
         $reqData = $request->all();
-        try { 
+        try {
             $doa_level_id = $reqData['doa_level_id'];
-            $roles = $reqData['role'];            
-            
+            $roles = $reqData['role'];
+            $role_user_id = $reqData['role_user'];
+            $prepareData = [];
+            foreach ($role_user_id as $keys => $values):
+                $role_id = isset($roles[$keys]) ? $roles[$keys] : null;
+                foreach ($values as $inkeys => $inValue) {
+                    $prepareData[] = [
+                        'doa_level_id' => $doa_level_id,
+                        'role_id' => $role_id,
+                        'user_id' => isset($inValue) ? $inValue : null
+                    ];
+                }
+            endforeach;
             $this->masterRepo->deleteDoaLevelRoles($doa_level_id);
-            foreach($roles as $role) {
-                $data[] = [
-                    'doa_level_id' => $doa_level_id,
-                    'role_id' => $role,
-                ];
-            }
-            $this->masterRepo->saveDoaLevelRoles($data);
-            
+            $this->masterRepo->saveDoaLevelRoles($prepareData);
             Session::flash('message', 'Roles are assigned successfully.');
             return redirect()->route('manage_doa');
-                
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
 }

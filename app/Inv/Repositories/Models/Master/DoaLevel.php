@@ -63,7 +63,8 @@ class DoaLevel extends BaseModel {
      */
     public function doaLevelStates()
     {
-        return $this->hasMany('App\Inv\Repositories\Models\DeoLevelStates', 'doa_level_id', 'doa_level_id'); 
+        return $this->hasMany('App\Inv\Repositories\Models\DeoLevelStates', 'doa_level_id', 'doa_level_id')
+                  ->join('mst_city', 'doa_level_states.city_id','mst_city.id')->select('doa_level_states.*','mst_city.name'); 
     }
 
     /**
