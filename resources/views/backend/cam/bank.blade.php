@@ -19,12 +19,12 @@
                <div class="pl-4 pr-4 pb-4 pt-2">
                   @if($bankdocs->count() > 0)
                      @foreach($bankdocs as $bankdoc)
-                  <div class="doc"  style="text-align: center;">
+                  <div class="doc"  style="text-align: center;" id="bank_doc_{{$bankdoc->app_doc_file_id}}">
                      <small>{{ $bankdoc->doc_name }}</small>
                      <ul>
                         <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
                         <li><a href="{{ Storage::url($bankdoc->file_path) }}" download target="_blank">Download Bank Statement</a></li>
-                        <li><a href="javascript:void(0)"></a></li>
+                        <li><a href="javascript:void(0)">Re-Upload</a></li>
                      </ul>
                   </div>
                      @endforeach
@@ -445,10 +445,19 @@
          },
          dataType : 'json',
          success:function(result) {
-            console.log(result);
             let mclass = result['status'] ? 'success' : 'danger';
             var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
             $("#pullMsg").html(html);
+
+            //<small class="error">Some error occured. Please try again </small>
+            if(result['errors']){
+               $errors = result['errors'];
+               Object.keys($errors).forEach(function(key) {
+                   $('#bank_doc_' + key).append('<small class="error">'+ $errors[key] +'</small>');
+               });
+            }
+
+
             if (result['status']) {
                window.open(result['value']['file_url'], '_blank');
             }
@@ -480,6 +489,12 @@
             var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
             $("#pullMsg").html(html);
             $(".isloader").hide();
+
+            //<small class="error">Some error occured. Please try again </small>
+            if(result['errors']){
+               $errors = result['errors'];
+               console.log($errors);
+            }
             if (result['status']) {
              window.open(result['value']['file_url'], '_blank');
             }

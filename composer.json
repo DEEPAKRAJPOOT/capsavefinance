@@ -22,7 +22,8 @@
         "paypal/rest-api-sdk-php": "^1.14",
         "phpseclib/phpseclib": "^2.0",
         "yajra/laravel-datatables-oracle": "^9.6",
-        "zanysoft/laravel-zip": "^1.0"
+        "zanysoft/laravel-zip": "^1.0",
+        "faisalman/simple-excel-php" : "0.3.*"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
