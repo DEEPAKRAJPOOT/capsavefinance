@@ -132,6 +132,25 @@
                 </ul>
             </div>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu123" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <span class="menu-title">Manage Disbursal</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu123">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lms_disbursal_request_list') }}">Disbursal Requests</a>
+
+                    </li> 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('lms_disbursal_request_list')}}">Disbursal List</a>
+                    </li>                     
+                 
+                </ul>
+            </div>
+        </li>
 
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">

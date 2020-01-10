@@ -42,7 +42,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\BankAccountController@saveBankAccount'
             ]);
             
-            
+            // disbursal routes
+            Route::get('/disbursal-request/list', [
+                'as' => 'lms_disbursal_request_list',
+                'uses' => 'Lms\DisbursalController@list'
+            ]);
 
         });//end of application
         
