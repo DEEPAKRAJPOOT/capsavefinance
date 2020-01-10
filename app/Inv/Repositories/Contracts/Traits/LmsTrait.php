@@ -32,7 +32,7 @@ trait LmsTrait
         if (!isset($disbursalData[0])) return 0;
         
         $disbursalData = $disbursalData[0];
-        $userId    = $disbursalData->userId;
+        $userId    = $disbursalData->user_id;
         $invoiceId = $disbursalData->invoice_id;
         $principalAmount  = $disbursalData->principal_amount;
         $totalRepaidAmount  = $disbursalData->total_repaid_amt;
@@ -69,7 +69,7 @@ trait LmsTrait
 
         $disbursalData = $disbursalData[0];
         $disbursalId    = $disbursalData->disbursal_id;
-        $userId    = $disbursalData->userId;
+        $userId    = $disbursalData->user_id;
         $invoiceId = $disbursalData->invoice_id;
         $totalRepaidAmt = $disbursalData->total_repaid_amt;
         $principalAmount  = $disbursalData->principal_amount;
