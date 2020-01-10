@@ -124,8 +124,6 @@ class InvoiceController extends Controller {
       /* save bulk invoice */
       public function saveBulkInvoice(Request $request) { 
            $attributes = $request->all();
-             dd($attributes);
-      
            $res =  $this->invRepo->saveBulk($attributes);
            if($res)
            {
