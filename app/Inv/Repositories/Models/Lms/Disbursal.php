@@ -64,6 +64,7 @@ class Disbursal extends BaseModel {
         'settlement_date',
         'accured_interest',
         'interest_refund',
+        'funded_date',
         'created_at',
         'created_by',
         'updated_at',
@@ -88,7 +89,7 @@ class Disbursal extends BaseModel {
             return self::where($whereCondition)->update($data);
         } else if (isset($data[0])) {
             return self::insert($data);
-        } else
+        } else {
             return self::create($data);
         }
     }
