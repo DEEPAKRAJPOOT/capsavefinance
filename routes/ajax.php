@@ -493,6 +493,11 @@ Route::group(
         'as' => 'lms_get_customer',
         'uses' => 'AjaxController@lmsGetCustomer'
     ]);
+     
+    Route::post('lms-get-disbursal-customer', [
+        'as' => 'lms_get_disbursal_customer',
+        'uses' => 'AjaxController@lmsGetDisbursalCustomer'
+    ]);
     
     
     

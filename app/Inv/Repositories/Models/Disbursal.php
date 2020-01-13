@@ -13,7 +13,7 @@ use App\Inv\Repositories\Models\Master\Permission;
 
 
 
-class LmsUser extends Authenticatable
+class Disbursal extends Authenticatable
 {
      use Notifiable;
     /**
@@ -21,34 +21,14 @@ class LmsUser extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'lms_users';
+    protected $table = 'disbursal';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'lms_user_id';
-    /**
-     * Maintain created_at and updated_at automatically
-     *
-     * @var boolean
-     */
-    public $timestamps = false;
-
-    /**
-     * Maintain created_by and updated_by automatically
-     *
-     * @var boolean
-     */
-    public $userstamps = false;
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    //protected $dates = ['deleted_at'];
-
+    protected $primaryKey = 'disbursal_id';
     /**
      * The attributes that are mass assignable.
      *
@@ -56,24 +36,37 @@ class LmsUser extends Authenticatable
      */
     protected $fillable = [
         'user_id',
+        'app_id',
+        'invoice_id',
+        'prgm_offer_id',
+        'disburse_date',
+        'bank_id',
+        'bank_name',
+        'ifsc_code',
+        'acc_no',
+        'virtual_acc_id',
         'customer_id',
+        'principal_amount',
+        'inv_due_date',
+        'tenor_days',
+        'interest_rate',
+        'total_interest',
+        'margin',
+        'disburse_amount',
+        'total_repaid_amt',
+        'status',
+        'settlement_date',
+        'accured_interest',
+        'interest_refund',
+        'funded_date',
+        'created_by',
         'created_at',
-        'created_by'
+        'updated_by',
+        'updated_at'
     ];
 
-    public function user()
+    public function disbursal()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\User', 'user_id');
-    }
-
-    public static function updateVirtualId($lmsUserId, $virtualId)
-    {
-        return self::where('lms_user_id', $lmsUserId)
-                    ->update(['virtual_acc_id' => $virtualId]);
-    }
-
-    public static function lmsGetDisbursalCustomer()
-    {
-        return self::with(['disbursal', 'invoices',  'bank_details']);
     }
 }

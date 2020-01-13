@@ -1724,6 +1724,102 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
     
+    /*
+     * 
+     * get all lms customer list
+     */
+    public function lmsGetDisbursalCustomers(Request $request, $customer)
+    {
+        return DataTables::of($customer)
+                ->rawColumns(['status', 'action'])
+                ->addColumn(
+                    'customer_code',
+                    function ($customer) {
+                        return $link = $customer->customer_id;
+                        // return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                    }
+                )
+                ->addColumn(
+                    'ben_name',
+                    function ($customer) {
+                        return $customer->virtual_acc_id;
+                    }
+                )     
+                ->editColumn(
+                    'ben_bank_name',
+                        function ($customer) {
+                        $full_name = $customer->user->f_name.' '.$customer->user->l_name;
+                        return $full_name;
+                    }
+                )
+                ->editColumn(
+                    'ben_ifsc',
+                        function ($customer) {
+                        $email = $customer->user->email;
+                        return $email;
+                    
+                })
+                ->editColumn(
+                    'ben_account_no',
+                        function ($customer) {
+                        $mobile_no = $customer->user->mobile_no;
+                        return $mobile_no;
+                    
+                })
+                ->editColumn(
+                    'total_invoice_amt',
+                    function ($customer) {
+                        return 12;
+
+                })
+                ->editColumn(
+                    'total_fund_amt',
+                    function ($customer) {
+                        return 12;
+                })
+                ->editColumn(
+                    'total_disburse_amt',
+                    function ($customer) {
+                        return 12;
+                })
+                ->editColumn(
+                    'total_invoice',
+                    function ($customer) {                    
+                        return 12;
+                })                       
+                ->addColumn(
+                    'action',
+                    function ($customer) {
+                        $act = '';
+                        $act = '<a  data-toggle="modal" data-target="#editDoaLevelFrame" data-url ="' . route('edit_doa_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Level"><i class="fa fa-edit"></i></a>';
+                        $act .= '&nbsp;&nbsp;<a  data-toggle="modal" data-target="#assignRoleLevelFrame" data-url ="' . route('assign_role_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Assign Role"><i class="fa fa-angle-right"></i></a>';
+                        return $act;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->whereHas('user', function($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('email', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->whereHas('user', function($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                
+                                $query->where('is_assigned', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }
+                })
+                ->make(true);
+    }
+    
     /**
      * List Doa Levels  
      * 

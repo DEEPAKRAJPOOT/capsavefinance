@@ -2959,6 +2959,17 @@ if ($err) {
     $customersList = $this->userRepo->lmsGetCustomers();
     $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
     return $users;
+  }   
+
+  /**
+   * Get all customer list
+   *
+   * @return json customer data
+   */
+  public function lmsGetDisbursalCustomer(DataProviderInterface $dataProvider) {
+    $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer();
+    $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
+    return $users;
   }
 
     /**
