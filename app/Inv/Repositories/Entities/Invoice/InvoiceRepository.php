@@ -8,6 +8,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\BizInvoice as InvoiceModel;
 use App\Inv\Repositories\Models\BizInvoiceTemp as TempInvoiceModel;
+use App\Inv\Repositories\Models\BizBatchInvoice as BizBatchInvoice;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\Anchor;
@@ -166,6 +167,25 @@ use CommonRepositoryTraits;
 
        return TempInvoiceModel::DeleteTempInvoice($attributes);  
     }
+      public function DeleteSingleTempInvoice($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return TempInvoiceModel::DeleteSingleTempInvoice($attributes);  
+    }
     
         public function saveBulk($attributes = [])
     {
@@ -185,6 +205,17 @@ use CommonRepositoryTraits;
         }
 
        return TempInvoiceModel::saveBulk($attributes);  
+    }
+    
+    public function saveBatchNo($path)
+    {
+        try
+        {
+           return BizBatchInvoice::saveBatchInvoice($path);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
     }
     
     public function getInvoice()
