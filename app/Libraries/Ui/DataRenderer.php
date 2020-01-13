@@ -553,7 +553,7 @@ class DataRenderer implements DataProviderInterface
     { 
       
         return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id'])
+               ->rawColumns(['status','anchor_id','action'])
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
@@ -590,6 +590,14 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
                     return '<label class="badge '.(($invoice->status == 1)? "badge-primary":"badge-warning").'">'.(($invoice->status == 1)? "Completed":"Incomplete").'</label>';
+
+                })
+                 ->addColumn(
+                    'action',
+                    function ($invoice) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<a title="Edit" href="#" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>'
+                     . '<a title="Approve" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
 
                 })
               ->make(true);

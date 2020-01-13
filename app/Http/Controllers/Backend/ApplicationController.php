@@ -905,14 +905,22 @@ class ApplicationController extends Controller
                 Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);                
                 
             } else if($request->has('btn_reject_offer')) {
+                $addl_data = [];
+                $addl_data['sharing_comment'] = 'Reject comment goes here';
                 $offerData['status'] = 2; 
                 $message = trans('backend_messages.reject_offer_success');
                 
                 //Update workflow stage
                 //Helpers::updateWfStage('approver', $appId, $wf_status = 2);
-                Helpers::updateWfStage('sales_queue', $appId, $wf_status = 2);
+                //Helpers::updateWfStage('sales_queue', $appId, $wf_status = 2);
                 //Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 2);
                 //Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
+                $selRoleId = 6;
+                $roles = $this->appRepo->getBackStageUsers($app_id, [$selRoleId]);
+                $selUserId = $roles[0]->user_id;
+                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
+                $currStage = Helpers::getCurrentWfStage($appId);
+                Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
             }
             
             //Insert Pre Sanctions Documents
