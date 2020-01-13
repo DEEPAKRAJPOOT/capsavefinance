@@ -7,6 +7,7 @@ use Helpers;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
@@ -551,9 +552,8 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceList(Request $request,$invoice)
     { 
-      
-        return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id','action'])
+      return DataTables::of($invoice)
+               ->rawColumns(['view_upload_invoice','status','anchor_id','action'])
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
@@ -584,12 +584,20 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
                 })
-                
+                ->addColumn(
+                    'view_upload_invoice',
+                    function ($invoice) {  
+                         if(($invoice->file_id != 0)) {
+                         return '<a href="'.Storage::URL($invoice->userFile->file_path).'" download ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                         } else  {
+                             return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
+                         }
+                })
                ->addColumn(
                     'status',
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
-                    return '<label class="badge '.(($invoice->status == 1)? "badge-primary":"badge-warning").'">'.(($invoice->status == 1)? "Completed":"Incomplete").'</label>';
+                    return '<label class="badge '.(($invoice->status == 1)? "badge-primary":"badge-warning").'">'.(($invoice->status == 1)? "Pending":"Pending").'</label>';
 
                 })
                  ->addColumn(
@@ -597,7 +605,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
                     return '<a title="Edit" href="#" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>'
-                     . '<a title="Approve" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                     . '&nbsp;<a title="Approve"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
 
                 })
               ->make(true);

@@ -31,6 +31,7 @@ try {
                 {data: 'program_name'},
                 {data: 'invoice_date'},
                 {data: 'invoice_approve_amount'},
+                {data: 'view_upload_invoice'},
                 {data: 'status'},
                 {data: 'action'}
             ],

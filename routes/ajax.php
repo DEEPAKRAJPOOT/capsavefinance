@@ -264,6 +264,20 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceList'
         ]
     );
+     Route::post(
+        'invoice_document_save',
+        [
+        'as' => 'invoice_document_save',
+        'uses' => 'AjaxController@saveInvoiceDoc'
+        ]
+    );  
+      Route::post(
+        'update_invoice_approve',
+        [
+        'as' => 'update_invoice_approve',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );   
       
     Route::post(
         'get-role-list',

@@ -126,6 +126,7 @@
                                                 <th>Program Name</th>
                                                 <th>Invoice Date</th>
                                                 <th>Invoice  Amount</th>
+                                                <th>View & Upload Invoice </th> 
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -201,21 +202,11 @@
             <div class="col-md-6">
             <div class="form-group">
             <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
-           <select readonly="readonly" class="form-control" id="supplier_bulk_id" name="supplier_bulk_id">
-           </select>
+            <select readonly="readonly" class="form-control" id="supplier_bulk_id" name="supplier_bulk_id">
+            </select>
             <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
             </div>
             </div>
-										
-										 <div class="col-md-6">
-										 <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
-										<div class="custom-file  ">
-              
-                                                                                    <input type="file" onchange="uploadInvoice()" class="custom-file-input fileUpload" id="customFile" name="file_id">
-               <label class="custom-file-label" for="customFile">Choose file</label>
-            </div>
-										
-										</div>
                                     
 									
 									
@@ -232,10 +223,44 @@
       </div>
    </div>
 </div>
+</div>
+<div class="modal show" id="myModal7" style="display: none;">
+   <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        
+         <div class="modal-header">
+			<h5>Confirm Invoice Approved Amount</h5>
+            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
+         </div>
+        
+         <div class="modal-body text-left">
+			<div class="row">
+                           <div class="col-md-12">
+                              <div class="form-group">
+                                 <label for="txtCreditPeriod">Invoice Amount
+                                 <span class="mandatory">*</span>
+                                 </label>
+								<input type="text" class="form-control" value="60,000" disabled="">
+                                 
+                              </div>
+							   <div class="form-group">
+                                 <label for="txtCreditPeriod">Invoice Approved Amount
+                                 <span class="mandatory">*</span>
+                                 </label>
+								<input type="text" class="form-control" value="60,000">
+                                 
+                              </div>
+                           </div>
+						   
+						  
 
-
-
-  </div>
+                        </div>
+						
+            <button type="submit" class="btn btn-success float-right btn-sm mt-3">Submit</button>  
+         </div>
+      </div>
+   </div>
+</div>
     @endsection
     @section('jscript')
 <script>
@@ -247,6 +272,8 @@
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             front_program_list: "{{ URL::route('front_program_list') }}",
             front_supplier_list: "{{ URL::route('front_supplier_list') }}",
+            update_invoice_approve: "{{ URL::route('update_invoice_approve') }}",
+            invoice_document_save: "{{ URL::route('invoice_document_save') }}",
             token: "{{ csrf_token() }}",
  };
  
@@ -306,7 +333,24 @@
        }     
      });
    
- 
+ ///////////////////////For Invoice Approve////////////////////////
+  $(document).on('click','.approveInv',function(){
+     var invoice_id =  $(this).attr('data-id'); 
+      var postData =  ({'invoice_id':invoice_id,'_token':messages.token});
+      th  = this;
+       jQuery.ajax({
+        url: messages.update_invoice_approve,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                        alert(errorThrown);
+                 },
+                success: function (data) {
+                    $(th).parent('td').parent('tr').remove();
+                }
+             });    
+  });
   //////////////////// onchange anchor  id get data /////////////////
 
   $("#supplier_id").append("<option value=''>Select customer</option>");  
@@ -494,6 +538,37 @@
             }
         });
     }
+ //////////////////// for upload invoice//////////////////////////////   
+function uploadFile(app_id,id)
+{
+   $(".isloader").show(); 
+   var file  = $("#file"+id)[0].files[0];
+   var extension = file.name.split('.').pop().toLowerCase();
+   var datafile = new FormData();
+   datafile.append('_token', messages.token );
+   datafile.append('app_id', app_id);
+   datafile.append('doc_file', file);
+   datafile.append('invoice_id', id);
+    $.ajax({
+        headers: {'X-CSRF-TOKEN':  messages.token  },
+        url : messages.invoice_document_save,
+        type: "POST",
+        data: datafile,
+        processData: false,
+        contentType: false,
+        cache: false, // To unable request pages to be cached
+        enctype: 'multipart/form-data',
+         success: function(r){
+            $(".isloader").hide();
+            location.reload();
+        }
+    });
+}
+
+
+
+
+
 </script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
 

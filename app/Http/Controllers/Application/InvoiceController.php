@@ -76,6 +76,7 @@ class InvoiceController extends Controller {
       }
       
        public function viewApproveInvoice() {
+           
          $getAllInvoice    =   $this->invRepo->getAllAnchor();
               $get_bus = $this->invRepo->getBusinessName();
         return view('frontend.application.invoice.approve_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);

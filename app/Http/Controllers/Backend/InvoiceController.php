@@ -51,8 +51,7 @@ class InvoiceController extends Controller {
     }
 
       public function viewInvoice() {
-          
-        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $getAllInvoice    =   $this->invRepo->getAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();
         return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 

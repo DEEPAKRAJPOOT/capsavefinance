@@ -96,6 +96,12 @@ public static function saveBulkInvoice($arrInvoice)
         return ($arrInvoiceVal ?: false);
     } 
     
+        
+public static function updateInvoice($invoiceId,$status)
+    {
+        return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status]);
+       
+    } 
     
 /* get invoice */    
   public static function getInvoice()
@@ -103,12 +109,12 @@ public static function saveBulkInvoice($arrInvoice)
        return Anchor::get();
      }   
      
-     public static function getAllInvoice($request)
+     public static function getAllInvoice($request,$status)
      {
          
          if($request->get('supplier_id')!='' && $request->get('biz_id')=='')
          {
-             $whr = ['anchor_id' => $request->get('anchor_id'),'supplier_id' => $request->get('supplier_id')];
+             $whr= ['anchor_id' => $request->get('anchor_id'),'supplier_id' => $request->get('supplier_id')];
          }
          else if($request->get('supplier_id')!='' && $request->get('biz_id')!='' && $request->get('anchor_id')!='')
          {
@@ -134,12 +140,17 @@ public static function saveBulkInvoice($arrInvoice)
              $whr = [];
         }
        
-                    return self::where($whr)->with('anchor')->where(['created_by' => Auth::user()->user_id])->with('supplier')->with('program')->get();
+                    return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['anchor','supplier','userFile','program'])->get();
      } 
      
      function anchor()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
+    
+     }
+     function userFile()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id','file_id');  
     
      }
      
@@ -162,6 +173,10 @@ public static function saveBulkInvoice($arrInvoice)
        return User::whereIn('is_buyer',[1,2])->where('user_id',$uid)->first();
     }   
     
+    public static function updateFileId($arr,$invoiceId)
+    {
+       return self::where(['invoice_id' => $invoiceId])->update($arr);
+    }    
     public static function getAnchor($aid)
     {
        return Anchor::where('anchor_id',$aid)->first();
