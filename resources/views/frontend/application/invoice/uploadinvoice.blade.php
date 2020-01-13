@@ -109,7 +109,7 @@
                   <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice  Amount <span class="error_message_label">*</span> </label>
-                                            <input type="text" class="form-control" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
+                                            <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                         </div>
                                     </div>
                    <div class="col-md-4">
@@ -224,7 +224,12 @@ var messages = {
         }  
      });         
   });  
-  
+   //////// String value not allowed in  amount filed//////////////////////
+ $(document).on('keypress','#invoice_approve_amount',function(event){       
+  if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+    event.preventDefault();
+  }
+}); 
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeAnchor',function(){
       var anchor_id =  $(this).val(); 

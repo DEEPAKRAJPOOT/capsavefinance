@@ -37,7 +37,7 @@
                                     
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Anchor Name <!-- from enchor table --> <span class="error_message_label">*</span></label>
+                                            <label for="txtCreditPeriod">Anchor Name <!-- from enchor table --> <span class="error_message_label">*</span>  <span id="anc_limit" class="error"></span></label>
                             
                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id"  name="anchor_id">
                                              
@@ -49,19 +49,19 @@
                                                
                                                 @endif
                                              </select>
-                                             <span id="anc_limit"></span>
+                                           
                                         </div>
                                     </div>
                    
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Product Program Name
-                                                <span class="error_message_label">*</span>
+                                                <span class="error_message_label">*</span>    <span id="pro_limit" class="error"></span>
                                             </label>
                                              <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
                                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
-                                   <span id="pro_limit"></span>
+                               
                                         </div>
                                     </div>
                                   
@@ -95,7 +95,7 @@
                   <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice  Amount <span class="error_message_label">*</span> </label>
-                                            <input type="text" class="form-control" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
+                                            <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                         </div>
                                     </div>
@@ -291,7 +291,12 @@ var messages = {
                   
                 }
         }); }); 
-  
+  //////// String value not allowed in  amount filed//////////////////////
+ $(document).on('keypress','#invoice_approve_amount',function(event){       
+  if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+    event.preventDefault();
+  }
+}); 
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeSupplier',function(){
     
@@ -316,7 +321,7 @@ var messages = {
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                        
-                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
+                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_limit);  
                          $("#supplier_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
