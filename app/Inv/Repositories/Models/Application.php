@@ -92,6 +92,10 @@ class Application extends BaseModel
         return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1]);
     }
 
+    public function invoices()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\BizInvoice', 'app_id', 'app_id');
+    }
     /**
      * Get Applications for Application list data tables
      */
