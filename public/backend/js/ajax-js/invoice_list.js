@@ -31,7 +31,8 @@ try {
                 {data: 'program_name'},
                 {data: 'invoice_date'},
                 {data: 'invoice_approve_amount'},
-                {data: 'status'}
+                {data: 'status'},
+                {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });
