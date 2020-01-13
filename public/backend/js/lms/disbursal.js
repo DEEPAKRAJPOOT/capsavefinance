@@ -23,16 +23,16 @@ try {
                 }
             },
             columns: [
-                {data: 'app_id'},
-                {data: 'biz_entity_name'},
-                {data: 'user_name'},
-                {data: 'user_email'},
-                {data: 'user_phone'},
-                {data: 'assoc_anchor'},
-                {data: 'applied_loan_amount'},
-                {data: 'created_at'},
-                {data: 'status'}
-                /*{data: 'action'}*/
+                {data: 'customer_code'},
+                {data: 'ben_name'},
+                {data: 'ben_bank_name'},
+                {data: 'ben_ifsc'},
+                {data: 'ben_account_no'},
+                {data: 'total_invoice_amt'},
+                {data: 'total_fund_amt'},
+                {data: 'total_disburse_amt'},
+                {data: 'total_invoice'},
+                {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2,3,4,6,7,8]}]
         });

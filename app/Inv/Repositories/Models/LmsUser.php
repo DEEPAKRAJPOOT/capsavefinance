@@ -74,6 +74,11 @@ class LmsUser extends Authenticatable
 
     public static function lmsGetDisbursalCustomer()
     {
-        return self::with(['disbursal', 'invoices',  'bank_details']);
+        return self::with(['bank_details.bank']);
+    }
+
+    public function bank_details()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id');
     }
 }

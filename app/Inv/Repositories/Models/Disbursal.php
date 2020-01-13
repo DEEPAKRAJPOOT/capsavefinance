@@ -65,7 +65,7 @@ class Disbursal extends Authenticatable
         'updated_at'
     ];
 
-    public function disbursal()
+    public function user()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\User', 'user_id');
     }

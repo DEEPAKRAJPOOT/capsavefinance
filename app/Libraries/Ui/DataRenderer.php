@@ -1742,27 +1742,26 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'ben_name',
                     function ($customer) {
-                        return $customer->virtual_acc_id;
+                        return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
                     }
                 )     
                 ->editColumn(
                     'ben_bank_name',
                         function ($customer) {
-                        $full_name = $customer->user->f_name.' '.$customer->user->l_name;
-                        return $full_name;
+                        return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
                     }
                 )
                 ->editColumn(
                     'ben_ifsc',
                         function ($customer) {
-                        $email = $customer->user->email;
+                        $email = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
                         return $email;
                     
                 })
                 ->editColumn(
                     'ben_account_no',
                         function ($customer) {
-                        $mobile_no = $customer->user->mobile_no;
+                        $mobile_no = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
                         return $mobile_no;
                     
                 })
@@ -1791,8 +1790,8 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($customer) {
                         $act = '';
-                        $act = '<a  data-toggle="modal" data-target="#editDoaLevelFrame" data-url ="' . route('edit_doa_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Level"><i class="fa fa-edit"></i></a>';
-                        $act .= '&nbsp;&nbsp;<a  data-toggle="modal" data-target="#assignRoleLevelFrame" data-url ="' . route('assign_role_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Assign Role"><i class="fa fa-angle-right"></i></a>';
+                        $act = '<a  data-toggle="modal" data-target="#viewDisbursalCustomerInvoice" data-url ="' . route('edit_doa_level', ['user_id' => $customer->user_ids]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
+                        
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
