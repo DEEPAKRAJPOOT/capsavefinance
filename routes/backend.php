@@ -451,7 +451,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('lead-detail', [
                 'as' => 'lead_detail',
                 'uses' => 'Backend\LeadController@leadDetail'
-            ]);        
+            ]); 
+            Route::get('create-lead', [
+                'as' => 'create_backend_lead',
+                'uses' => 'Backend\LeadController@createBackendLead'
+            ]);   
+            Route::post('save-create-lead', [
+                'as' => 'save_backend_lead',
+                'uses' => 'Backend\LeadController@saveBackendLead'
+            ]);    
         });
         
         Route::group(['prefix' => 'fircu'], function () {
