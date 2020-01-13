@@ -48,6 +48,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@requestList'
             ]);
 
+            Route::get('/disbursal-request/view-invoice', [
+                'as' => 'lms_disbursal_invoice_view',
+                'uses' => 'Lms\DisbursalController@viewInvoice'
+            ]);
+
         });//end of application
         
 	});

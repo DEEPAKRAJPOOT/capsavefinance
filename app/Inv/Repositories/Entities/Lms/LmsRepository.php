@@ -7,6 +7,8 @@ use Session;
 use App\Inv\Repositories\Contracts\LmsInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
+use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
@@ -147,4 +149,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return InvoiceRepaymentTrail::getRepayments($whereCondition);
     }    
+    /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAllUserInvoice($userId)
+    {
+        return BizInvoice::getAllUserInvoice($userId);
+    }    
+
+    
 }

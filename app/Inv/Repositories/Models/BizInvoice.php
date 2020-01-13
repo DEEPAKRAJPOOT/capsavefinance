@@ -154,6 +154,24 @@ public static function saveBulkInvoice($arrInvoice)
           return $this->belongsTo('App\Inv\Repositories\Models\Program', 'program_id','prgm_id')->where(['status' => 1]);  
      
      }
+
+     function app()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Application', 'app_id','app_id');  
+     
+     }
+
+     function mstStatus()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'status_id');  
+     
+     }
+
+     function disbursal()
+     {
+          return $this->hasOne('App\Inv\Repositories\Models\Lms\Disbursal', 'invoice_id','invoice_id');  
+     
+     }
      
     
     
@@ -176,14 +194,16 @@ public static function saveBulkInvoice($arrInvoice)
     {
        return Program::where(['prgm_id' =>$pid])->first();
      }   
-      
-    
    
-     
-     
-     
-     
-     
+    public static function getAllUserInvoice($userId)
+    {
+        return self::with('app.acceptedOffer')
+            ->whereHas('app.user', function($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+            ->where('status_id', 8)
+            ->get();
+    }
      
      /**
      * get Invoice Data

@@ -9,7 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Disbursal Request </h3>
-            <small>Customer List</small>
+            <small>Disbursal Request</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li class="active">Disbursal Request</li>
@@ -80,7 +80,7 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('viewDisbursalCustomerInvoice','View Disbursal Customer Invoice', 'modal-md')!!}
+{!!Helpers::makeIframePopup('viewDisbursalCustomerInvoice','View Disbursal Customer Invoice', 'modal-lg')!!}
 
 @endsection
 

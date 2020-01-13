@@ -46,5 +46,21 @@ class DisbursalController extends Controller
 		return view('lms.disbursal.request_list');              
 	}
 
+	/**
+	 * Display a listing of the customer.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function viewInvoice(Request $request)
+	{
+		$userId = $request->get('user_id');
+		$userIvoices = $this->lmsRepo->getAllUserInvoice($userId);
+
+		return view('lms.disbursal.view_invoice')
+				->with([
+					'userIvoices'=>$userIvoices, 
+				]);              
+	}
+
 
 }
