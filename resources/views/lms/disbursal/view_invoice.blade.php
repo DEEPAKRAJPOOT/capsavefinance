@@ -10,7 +10,7 @@
 			<div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse show" data-parent="#accordion" style="">
 				@foreach($userIvoices as $invoice)
 				<ul class=" p-0 m-0 d-flex justify-content-between">
-					<li><input type="checkbox"></li>
+					<li><input type="checkbox" class="invoice_id" value="{{ $invoice->invoice_id }}"></li>
 					<li>Invoice No. <br> <i class="fa fa-inr"></i> <b>{{ $invoice->invoice_id }}</b></li>
 					<li>Invoice Date <br> <b>{{ $invoice->invoice_date }}</b></li>
 					<li>Invoice Due Date <br> <b>{{ $invoice->invoice_due_date }}</b></li>
@@ -47,12 +47,19 @@
 @section('jscript')
 <script>
 $(document).ready(function(){
-	$(parent.$('.document_id:checked')).each(function(i,ele){
-		let current_id = $(ele).val();
-		let org_ids = $('#document_ids').val();
-		let document_ids = org_ids+'#'+current_id;
-		$('#document_ids').val(document_ids);
-	});
+	$('.invoice_id').on('click', function() {
+		let current_inv_ids = parent.$('#invoice_ids').val();
+		let current_id = $(this).val();
+		if($(this).is(':checked')){
+			parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
+        }else{
+            alert('First check at least one checkbox.');
+        }
+		/*let invoice_ids = $('#invoice_ids').val();
+		let all_ids = invoice_ids+'#'+current_id;
+		$('#invoice_ids').val(all_ids);*/
+	})
+	
 });
 
 function checkValidation(){
