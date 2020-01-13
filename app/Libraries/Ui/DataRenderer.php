@@ -596,7 +596,8 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
-                    return '<a title="Edit" href="#" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                    return '<a title="Edit" href="#" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>'
+                     . '<a title="Approve" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
 
                 })
               ->make(true);
