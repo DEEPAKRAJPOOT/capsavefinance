@@ -65,6 +65,7 @@ class Disbursal extends BaseModel {
         'accured_interest',
         'interest_refund',
         'funded_date',
+        'int_accrual_start_dt',
         'created_at',
         'created_by',
         'updated_at',
@@ -110,8 +111,35 @@ class Disbursal extends BaseModel {
         $query = self::select('*');
                 
         if (!empty($whereCondition)) {
-            $query->where($whereCondition);
+            if (isset($whereCondition['int_accrual_start_dt'])) {
+                $query->where('int_accrual_start_dt', '>=', $whereCondition['int_accrual_start_dt']);
+            } else {
+                $query->where($whereCondition);
+            }
         }
+        $query->orderBy('disburse_date', 'DESC');
+        $query->orderBy('disbursal_id', 'DESC');
+        $result = $query->get();
+        return $result;
+    }
+    
+    /**
+     * Get Program Offer Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     */
+    public static function getProgramOffer($whereCondition=[])
+    {
+        if (!is_array($whereCondition)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $query = self::select('*');
+                        
+        if (isset($whereCondition['int_accrual_start_dt'])) {
+            $query->where('int_accrual_start_dt', '>=', $whereCondition['int_accrual_start_dt']);
+        } 
         $query->orderBy('disburse_date', 'DESC');
         $query->orderBy('disbursal_id', 'DESC');
         $result = $query->get();

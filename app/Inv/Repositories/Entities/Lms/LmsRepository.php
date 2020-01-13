@@ -146,5 +146,28 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public static function getRepayments($whereCondition=[])
     {
         return InvoiceRepaymentTrail::getRepayments($whereCondition);
-    }    
+    }
+
+    /**
+     * Get Accrued Interest Data
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAccruedInterestData($whereCondition=[])
+    {
+        return InterestAccrual::getAccruedInterestData($whereCondition);
+    }
+    
+    /**
+     * Get Program Offer Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     */
+    public static function getProgramOffer($whereCondition=[])
+    {
+        return Disbursal::getProgramOffer($whereCondition);
+    }
 }

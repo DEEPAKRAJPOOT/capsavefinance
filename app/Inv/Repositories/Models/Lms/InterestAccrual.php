@@ -72,4 +72,27 @@ class InterestAccrual extends BaseModel {
             return self::create($data);
         }
     }
+    
+    /**
+     * Get Accrued Interest Data
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAccruedInterestData($whereCondition=[])
+    {
+        if (!is_array($whereCondition)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $query = self::select('*');
+                
+        if (isset($whereCondition['interest_date'])) {
+            $query->where('interest_date', '>=', $whereCondition['interest_date']);
+        }
+        $query->orderBy('interest_accrual_id', 'ASC');
+        $result = $query->get();
+        return $result;
+    }
 }
