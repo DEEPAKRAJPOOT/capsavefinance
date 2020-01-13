@@ -47,13 +47,15 @@ class DoaController extends Controller {
         if ($request->has('doa_level_id')) {
             $doa_level_id = preg_replace('#[^0-9]#', '', $request->get('doa_level_id'));
             $doa_level = $this->masterRepo->getDoaLevelById($doa_level_id);
-            $level_code = $doa_level->level_code;
-            $doaLevelStates = ($doa_level->doaLevelStates) ? $doa_level->doaLevelStates->toArray() : [];
-            $cities = $this->masterRepo->getcity($doa_level->state_id);
-            foreach($cities as $city) {
-                $cityList[$city->id] = $city->name;
-            }
             
+            $level_code = isset($doa_level->level_code) ? $doa_level->level_code : null ;
+            $doaLevelStates = isset($doa_level->doaLevelStates) ? $doa_level->doaLevelStates->toArray() : [];
+            if (isset($doa_level->state_id)) {
+                $cities = $this->masterRepo->getcity($doa_level->state_id);
+                foreach ($cities as $city) {
+                    $cityList[$city->id] = $city->name;
+                }
+            }
         } else {
             $doa_level = new \stdClass();
             $level_code = $this->getDoaLevelCode();
