@@ -53,6 +53,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@viewInvoice'
             ]);
 
+            Route::post('/send-to-bank', [
+                'as' => 'send_to_bank',
+                'uses' => 'Lms\DisbursalController@sendToBank'
+            ]);
+            
+
         });//end of application
         
 	});

@@ -172,7 +172,12 @@ public static function saveBulkInvoice($arrInvoice)
           return $this->hasOne('App\Inv\Repositories\Models\Lms\Disbursal', 'invoice_id','invoice_id');  
      
      }
+    
+     function supplier_bank_detail()
+     {
+          return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'supplier_id')->where(['is_default' => 1, 'is_active' => 1]);  
      
+     }
     
     
     public static function getUser($uid)
@@ -201,7 +206,7 @@ public static function saveBulkInvoice($arrInvoice)
             ->whereHas('app.user', function($query) use ($userId) {
                     $query->where('user_id', $userId);
                 })
-            ->where('status_id', 8)
+            ->where('status_id', 9)
             ->get();
     }
      

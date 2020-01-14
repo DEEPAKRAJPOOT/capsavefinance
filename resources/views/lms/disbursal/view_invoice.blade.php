@@ -53,49 +53,10 @@ $(document).ready(function(){
 		if($(this).is(':checked')){
 			parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
         }else{
-            alert('First check at least one checkbox.');
+        	parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(current_id, 'g'), ''));
         }
-		/*let invoice_ids = $('#invoice_ids').val();
-		let all_ids = invoice_ids+'#'+current_id;
-		$('#invoice_ids').val(all_ids);*/
 	})
 	
 });
-
-function checkValidation(){
-		unsetError('select[name=agency_id]');
-		unsetError('select[name=to_id]');
-		//unsetError('textarea[name=comment]');
-
-		let flag = true;
-		let agency_id = $('select[name=agency_id]').val();
-		let to_id = $('select[name=to_id]').val();
-		//let comment = $('textarea[name=comment]').val().trim();
-
-		if(agency_id == ''){
-				setError('select[name=agency_id]', 'Plese select Agency');
-				flag = false;
-		}
-
-		if(to_id == ''){
-				setError('select[name=to_id]', 'Plese select User');
-				flag = false;
-		}
-
-		if(flag){
-				return true;
-		}else{
-				return false;
-		}
-}
-
-function fillAgencyUser(agency_id){
-	let html = '<option value="">Select User</option>';
-	$.each(users, function(i,user){
-		if(agency_id == user.agency_id)
-			html += '<option value="'+user.user_id+'">'+user.f_name+' '+user.l_name+'</option>';
-	});
-	$('#to_id').html(html);
-}
 </script>
 @endsection
