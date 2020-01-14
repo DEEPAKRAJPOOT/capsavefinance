@@ -240,6 +240,19 @@ use CommonRepositoryTraits;
          
     } 
     
+     public function updateInvoiceAmount($invId,$amount)
+    {
+        try
+        {
+           return InvoiceModel::updateInvoiceAmount($invId,$amount);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }  
+    
+    
+    
      public function updateFileId($arr,$invoiceId)
     {
         try

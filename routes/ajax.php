@@ -264,6 +264,39 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceList'
         ]
     );
+        Route::post(
+        'backend_get_invoice_list_approve',
+        [
+        'as' => 'backend_get_invoice_list_approve',
+        'uses' => 'AjaxController@getBackendInvoiceListApprove'
+        ]
+    );
+        
+       Route::post(
+        'backend_get_invoice_list_disbursed_que',
+        [
+        'as' => 'backend_get_invoice_list_disbursed_que',
+        'uses' => 'AjaxController@getBackendInvoiceListDisbursedQue'
+        ]
+    );  
+       
+           
+       Route::post(
+        'backend_get_invoice_list_bank',
+        [
+        'as' => 'backend_get_invoice_list_bank',
+        'uses' => 'AjaxController@getBackendInvoiceListBank'
+        ]
+    );  
+       
+            
+       Route::post(
+        'backend_get_invoice_list_failed_disbursed',
+        [
+        'as' => 'backend_get_invoice_list_failed_disbursed',
+        'uses' => 'AjaxController@getBackendInvoiceListFailedDisbursed'
+        ]
+    );     
      Route::post(
         'invoice_document_save',
         [
@@ -514,6 +547,11 @@ Route::group(
     Route::post('get-bank-account-list', [
         'as' => 'get_bank_account_list',
         'uses' => 'AjaxController@getBankAccountList'
+    ]);
+    
+      Route::post('update_bulk_invoice', [
+        'as' => 'update_bulk_invoice',
+        'uses' => 'AjaxController@updateBulkInvoice'
     ]);
     
     Route::post('set-default-account', [

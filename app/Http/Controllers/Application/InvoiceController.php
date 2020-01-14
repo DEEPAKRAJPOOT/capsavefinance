@@ -147,6 +147,7 @@ class InvoiceController extends Controller {
             'invoice_due_date' => $attributes['invoice_due_date'],
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
             'invoice_approve_amount' => $attributes['invoice_approve_amount'],
+            'invoice_amount' => $attributes['invoice_approve_amount'],
             'remark' => $attributes['remark'],
             'file_id'  =>$userFile->file_id,
             'created_by' => $id,

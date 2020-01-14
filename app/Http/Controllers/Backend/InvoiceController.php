@@ -93,7 +93,7 @@ class InvoiceController extends Controller {
         public function viewfailedDisbursment() {
         $getAllInvoice    =   $this->invRepo->getAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();
-        return view('backend.invoice.failed disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+        return view('backend.invoice.failed_disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
       
@@ -135,6 +135,21 @@ class InvoiceController extends Controller {
           }
           
       }
+      /* update invoice amount  */
+      public function saveInvoiceAmount(Request $request)
+      {
+            $attributes = $request->all();
+            $res =  $this->invRepo->updateInvoiceAmount($attributes['invoice_id'],$attributes['approve_invoice_amount']);
+           if($res)
+           {
+                  Session::flash('message', 'Invoice Amount successfully Updated');
+                  return back();
+           }
+        else {
+               Session::flash('message', 'Something wrong, Amount is not Updated');
+               return back();
+          }
+      }
     /*   save invoice */
 
     public function saveInvoice(Request $request) {
@@ -164,6 +179,7 @@ class InvoiceController extends Controller {
             'invoice_due_date' => $attributes['invoice_due_date'],
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
             'invoice_approve_amount' => $attributes['invoice_approve_amount'],
+            'invoice_amount' => $attributes['invoice_approve_amount'],
             'remark' => $attributes['remark'],
             'file_id'  =>$userFile->file_id,
             'created_by' => $id,

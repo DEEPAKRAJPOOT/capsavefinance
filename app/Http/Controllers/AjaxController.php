@@ -2724,7 +2724,39 @@ if ($err) {
         return $invoice;
     } 
 
-     /**
+      //////////////////// use for Approve invoice list/////////////////
+     public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
+        $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+      //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,9);
+        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+      //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getBackendInvoiceListBank(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,10);
+        $invoice = $dataProvider->getBackendInvoiceListBank($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+      //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getBackendInvoiceListFailedDisbursed(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,11);
+        $invoice = $dataProvider->getBackendInvoiceListFailedDisbursed($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+    /**
       * 
       * @param DataProviderInterface $dataProvider
       * @param Request $request
@@ -2734,7 +2766,7 @@ if ($err) {
       */
    public function updateInvoiceApprove(Request $request)
    {
-     return  $this->invRepo->updateInvoice($request->invoice_id,8);
+     return  $this->invRepo->updateInvoice($request->invoice_id,$request->status);
    
    }
     public function getFiLists(DataProviderInterface $dataProvider, Request $request){
@@ -3175,7 +3207,13 @@ if ($err) {
         
     }
     
-
+   function updateBulkInvoice(Request $request)
+   {
+       foreach($request['invoice_id'] as $row) {  
+        $res =   $this->invRepo->updateInvoice($row,$request->status);
+       }
+       return  $res;
+   }
     
    /**
     * get Bank account list

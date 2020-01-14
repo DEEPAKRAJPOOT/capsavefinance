@@ -65,6 +65,7 @@ class BizInvoice extends BaseModel
         'invoice_no',
         'invoice_due_date',
         'invoice_date',
+        'invoice_amount',
         'invoice_approve_amount',
         'file_id',
         'remark',
@@ -100,6 +101,12 @@ public static function saveBulkInvoice($arrInvoice)
 public static function updateInvoice($invoiceId,$status)
     {
         return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status]);
+       
+    } 
+    
+    public static function updateInvoiceAmount($invoiceId,$amount)
+    {
+        return self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount]);
        
     } 
     
