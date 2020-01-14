@@ -662,7 +662,33 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save-assign-role-level', [
                 'as' => 'save_assign_role_level',
                 'uses' => 'Master\DoaController@saveAssignRoleLevel'
-            ]);            
+            ]); 
+            
+            
+            
+            
+            
+            
+            
+            Route::get('/get-co-lenders', [
+                'as' => 'get_co_lenders',
+                'uses' => 'Master\CoLenderControllers@getColenders'
+            ]);  
+            Route::get('/add-co-lender', [
+                'as' => 'add_co_lender',
+                'uses' => 'Master\CoLenderControllers@addCoLender'
+            ]);  
+            Route::post('/save-co-lender', [
+                'as' => 'save_co_lenders',
+                'uses' => 'Master\CoLenderControllers@saveCoLender'
+            ]);  
+            
+            
+            
+            
+            
+            
+            
         });
 
         Route::group(['prefix' => 'agency'], function () {

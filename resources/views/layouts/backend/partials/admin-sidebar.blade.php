@@ -208,6 +208,12 @@
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                  </li>
+                 
+                 @can('get_co_lenders')
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_co_lenders') }}">Manage Co-lenders</a>
+                 </li>
+                 @endcan
                  <li class="nav-item">
                     <a class="nav-link" href="#">Manage State</a>
                  </li>
