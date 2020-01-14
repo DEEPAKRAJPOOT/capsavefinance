@@ -3158,7 +3158,7 @@ if ($err) {
      * set default account
      * 
      * @param Request $request
-     * @return type mixed
+     * @return mixed
      */
     public function setDefaultAccount(Request $request)
     {
@@ -3167,6 +3167,24 @@ if ($err) {
         $this->application->updateBankAccount(['is_default' => 0]);
         $res = $this->application->updateBankAccount(['is_default' => $value], ['bank_account_id' => $acc_id]);
         return \response()->json(['success' => $res]);
+    }
+    
+    
+    
+    /**
+     * get user by Role
+     * 
+     * @param Request $request
+     * @return mixed
+     */
+    public function getUserByRole(Request $request)
+    {
+        $role_id = (int) $request->get('role_id');
+        if (empty($role_id)) {
+            abort(400);
+        }
+        $roleUsers = Helpers::getAllUsersByRoleId($role_id);
+        return \response()->json(['data' => $roleUsers]);
     }
 
 

@@ -525,6 +525,7 @@ Route::group(
                  'uses' => 'AjaxController@getSupplierList'
             ]); 
                
+
      Route::POST('upload_invoice_csv', [
                  'as' => 'upload_invoice_csv',
                  'uses' => 'AjaxController@uploadInvoice'
@@ -532,6 +533,14 @@ Route::group(
        Route::POST('delete_temp_invoice', [
                  'as' => 'delete_temp_invoice',
                  'uses' => 'AjaxController@DeleteTempInvoice'
+            ]); 
+
+               
+               
+               
+          Route::POST('get-ueser-by-role', [
+                 'as' => 'get_ueser_by_role',
+                 'uses' => 'AjaxController@getUserByRole'
             ]); 
 
 });
