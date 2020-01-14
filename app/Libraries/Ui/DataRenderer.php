@@ -1757,7 +1757,8 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                     'city',
                     function ($doa) {
-                return $doa->city;
+               // \helpers::getDoaLevelCity($doa);
+                return \helpers::getDoaLevelCity($doa);
             })
             ->addColumn(
                     'amount',

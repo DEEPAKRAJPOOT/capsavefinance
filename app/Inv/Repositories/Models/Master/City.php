@@ -65,5 +65,20 @@ class City extends BaseModel
                 ->get();
         return $cities ? : [];
     }
+    
+    
+    /**
+     * get city 
+     * 
+     * @param type $stateId
+     * @return type mixed
+     */
+    public static function getCityWhereIn($stateId)
+    {
+        $res = self::whereIn('state_id',$stateId)
+                ->where('is_active', 1)
+                ->get();
+        return $res ?: [];
+    }
 
 }

@@ -853,4 +853,18 @@ class Helper extends PaypalHelper
         $dataArr['is_owner'] = 1;
         AppAssignment::saveData($dataArr);            
     }
+    
+    
+    
+    
+    public static  function getDoaLevelCity($request)
+    {
+        
+     $city_name =    $request->doaLevelStates->map(function($elem){
+           return $elem->name;
+        });
+        
+        return implode(',', $city_name->toArray());
+       
+    }
 }
