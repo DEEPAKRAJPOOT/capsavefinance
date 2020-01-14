@@ -50,6 +50,7 @@ class AppProgramLimit extends BaseModel {
         'biz_id',
         'anchor_id',
         'prgm_id',
+        'product_id',
         'limit_amt',
         'created_at',
         'created_by',
@@ -78,13 +79,17 @@ class AppProgramLimit extends BaseModel {
         }
     }
 
-    public static function getProgramLimitData($appId){
+    public static function getProgramLimitData($appId, $type=null){
         if(empty($appId)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }else if(!is_int($appId)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            return AppProgramLimit::where('app_id', $appId)->get();
+            if($type != null)
+                return AppProgramLimit::where('app_id', $appId)->where('product_id', $type)->get();
+            else
+                return AppProgramLimit::where('app_id', $appId)->get();
+            
         }
     }
 
@@ -195,8 +200,7 @@ class AppProgramLimit extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\AppLimit', 'app_limit_id', 'app_limit_id');
     }
 
-    //to do
-     /*public function programLimit(){
-        return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');
-    }*/  
+     public function product(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Product', 'product_id', 'id');
+    }  
 }

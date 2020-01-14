@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkValidations()">
+  <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return true">
     @csrf
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
@@ -9,22 +9,21 @@
     
     <div class="row">
     <div class="col-md-12">
-      <div class="form-group row INR ">
-        <label for="txtPassword" class="col-md-4"><b>Loan Offer:</b></label> 
+      <div class="form-group row">
+        <label for="txtPassword" class="col-md-4"><b>Facility Type:</b></label> 
         <div class="col-md-8">
-        <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limit_amt)}}" placeholder="Loan Offer" maxlength="15">
-        <span class="s_value"><i class="fa fa-inr"></i>{{$limitData->program->min_loan_size}} - <i class="fa fa-inr"></i>{{$limitData->program->max_loan_size}}</span><span class="float-right">Balance: <i class="fa fa-inr"></i>{{$limitData->program->anchor_sub_limit-$offeredLimit}}</span>
+        <input type="text" class="form-control" value="Leasing" placeholder="Facility Type" maxlength="15" disabled>
         </div>
       </div>
     </div>
-    
+
+
     <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Interest(%):</b></label> 
+      <div class="form-group row INR">
+        <label for="txtPassword" class="col-md-4"><b>Limit:</b></label> 
         <div class="col-md-8">
-        <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
-        <span class="s_value">{{$limitData->program->min_interest_rate}}%-{{$limitData->program->max_interest_rate}}%</span>
+        <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limit_amt)}}" placeholder="Loan Offer" maxlength="15">
         </div>
       </div>
     </div>
@@ -37,80 +36,72 @@
         </div>
       </div>
     </div>
-    
+
     <div class="col-md-12">
       <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Old Invoice Tenor(Days):</b></label> 
+        <label for="txtPassword" class="col-md-4"><b>Equipment Type:</b></label> 
         <div class="col-md-8">
-        <input type="text" name="tenor_old_invoice" class="form-control" value="{{isset($offerData->tenor_old_invoice)? $offerData->tenor_old_invoice: ''}}" placeholder="Tenor for old invoice" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-        </div>
-      </div>
-    </div>
-    
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Margin(%):</b></label> 
-        <div class="col-md-8">
-        <input type="text" name="margin" class="form-control" value="{{isset($offerData->margin)? $offerData->margin: ''}}" placeholder="Margin" maxlength="5">
+        <input type="text" name="equipment_type" class="form-control" value="{{isset($offerData->equipment_type)? $offerData->equipment_type: ''}}" placeholder="Equipment type" maxlength="80">
         </div>
       </div>
     </div>
     
     <div class="col-md-12">
       <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Overdue Interest(%):</b></label> 
+        <label for="txtPassword" class="col-md-4"><b>Security Deposit/Margin(%):</b></label> 
         <div class="col-md-8">
-        <input type="text" name="overdue_interest_rate" class="form-control" value="{{isset($offerData->overdue_interest_rate)? $offerData->overdue_interest_rate: ''}}" placeholder="Overdue Interest Rate" maxlength="5">
+        <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? $offerData->security_deposit: ''}}" placeholder="Security Deposit/Margin" maxlength="5">
         </div>
       </div>
     </div>
     
     <div class="col-md-12">
       <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Adhoc Interest(%):</b></label> 
+        <label for="txtPassword" class="col-md-4"><b>Rental Frequency:</b></label> 
         <div class="col-md-8">
-        <input type="text" name="adhoc_interest_rate" class="form-control" value="{{isset($offerData->adhoc_interest_rate)? $offerData->adhoc_interest_rate: ''}}" placeholder="Adhoc Interest Rate" maxlength="5">
+        <select name="rental_frequency" class="form-control">
+            <option value="">Select rental frequency</option>
+            <option value="4" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 4)? 'selected': ''):''}}>Monthly</option>
+            <option value="3" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 3)? 'selected': ''):''}}>Quaterly</option>
+            <option value="2" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 2)? 'selected': ''):''}}>Bi-Yearly</option>
+            <option value="1" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 1)? 'selected': ''):''}}>Yearly</option>
+        </select>
         </div>
       </div>
     </div>
     
     <div class="col-md-12">
       <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Grace Period(Days):</b></label> 
+        <label for="txtPassword" class="col-md-4"><b>PTPQ(%):</b></label> 
         <div class="col-md-8">
-        <input type="text" name="grace_period" class="form-control" value="{{isset($offerData->grace_period)? $offerData->grace_period: ''}}" placeholder="Grace Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+        <input type="text" name="ptpq" class="form-control" value="{{isset($offerData->ptpq)? $offerData->ptpq: ''}}" placeholder="PTPQ" maxlength="5">
         </div>
       </div>
     </div>
-    
+
     <div class="col-md-12">
-      <div class="form-group row  INR">
-        <label for="txtPassword" class="col-md-4"><b>Processing Fee:</b></label> 
+      <div class="form-group row  ">
+        <label for="txtPassword" class="col-md-4"><b>XIRR(%):</b></label> 
         <div class="col-md-8">
-        <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="processing_fee" class="form-control number_format" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
-        </div>
-      </div>
-    </div>
-    
-    <div class="col-md-12">
-      <div class="form-group row  INR">
-        <label for="txtPassword" class="col-md-4"><b>Check Bounce Fee:</b></label> 
-        <div class="col-md-8">
-        <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="check_bounce_fee" class="form-control number_format" value="{{isset($offerData->check_bounce_fee)? number_format($offerData->check_bounce_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
+        <input type="text" name="xirr" class="form-control" value="{{isset($offerData->xirr)? $offerData->xirr: ''}}" placeholder="Adhoc Interest Rate" maxlength="6">
         </div>
       </div>
     </div>
     
     <div class="col-md-12">
       <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Comment:</b></label> 
+        <label for="txtPassword" class="col-md-4"><b>Additional Security:</b></label> 
         <div class="col-md-8">
-          <textarea class="form-control" name="comment" rows="3" col="3" placeholder="Comment" maxlength="250">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
+            <div id="check_block">
+                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="1" name="addl_security[]"> BG</label>
+                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="addl_security[]"> MF</label>
+                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="addl_security[]"> Others</label>
+                <input type="text" name="comment" class="form-control" style="display: none" value="{{isset($offerData->coment)? $offerData->comment: ''}}">
+            </div>
         </div>
       </div>
     </div>
+    
     </div>
     <div class="row">
       <div class="col-md-12">
@@ -123,9 +114,9 @@
 
 @section('jscript')
 <script>
-  function checkValidations(){
+  function checkLeasingValidations(){
     let tot_limit_amt = "{{$totalLimit}}";
-    let prgm_limit = "{{$limitData->program->anchor_sub_limit}}";
+    let prgm_limit = 0;
     let offered_limit = "{{$offeredLimit}}";
     let balance_limit = prgm_limit - offered_limit;
 
