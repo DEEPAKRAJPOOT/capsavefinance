@@ -3,7 +3,7 @@
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
 
-@section('jscript')
+@section('additional_css')
 <style type="text/css">
     a:hover {
         text-decoration: none !important;
@@ -82,7 +82,8 @@
                                                      <tr>
                                                         <td width="25%"><b>File Name</b></td>
                                                         <td width="25%"><b>Upload On </b></td>
-                                                        <td width="25%">Action</td>
+                                                        <td width="25%"><b>Action</b></td>
+                                                        <td width="25%"><b>View Response</b></td>
                                                      </tr>
                                                     @foreach ($value->documents as $key1 => $document) 
                                                      <tr>
@@ -93,6 +94,8 @@
                                                             <button class="btn-upload btn-sm" type="button"> <i class="fa fa-download"></i>
                                                             </button>
                                                         </a>
+                                                    </td>
+                                                    <td width="25%">
                                                         @if($document->doc_id == 31)
                                                         <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
                                                             <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>

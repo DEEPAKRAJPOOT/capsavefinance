@@ -54,6 +54,18 @@ class DoaLevel extends BaseModel {
         'updated_at',
         'updated_by'
     ];
+    
+    
+      /**
+     * doa level stage
+     * 
+     * @return mixed
+     */
+    public function doaLevelStates()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\DeoLevelStates', 'doa_level_id', 'doa_level_id')
+                  ->join('mst_city', 'doa_level_states.city_id','mst_city.id')->select('doa_level_states.*','mst_city.name'); 
+    }
 
     /**
      * Get DoA Levels for Data Render
@@ -63,8 +75,8 @@ class DoaLevel extends BaseModel {
     public static function getDoaLevels()
     {
         $groupBy = ['doa_level.city_id', 'doa_level.min_amount', 'doa_level.max_amount'];
-        $res = self::select('doa_level.*', 'mst_city.name as city')
-                ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')
+        $res = self::select('doa_level.*')
+               // ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')
                 ->where('doa_level.is_active', 1)
                 ->groupBy($groupBy)
                 ->orderBy('doa_level.doa_level_id', 'DESC');
@@ -89,8 +101,8 @@ class DoaLevel extends BaseModel {
         if (!is_int($doa_level_id)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-        $res = self::select('doa_level.*', 'mst_city.name as city')
-                ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')
+        $res = self::select('doa_level.*')
+                //->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')
                 ->where('doa_level.is_active', 1)
                 ->where('doa_level.doa_level_id', $doa_level_id)
                 ->first();

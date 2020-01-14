@@ -128,7 +128,12 @@ class AppProgramLimit extends BaseModel {
        return self::distinct('anchor_id')->with('anchorOne')->get(['anchor_id']);
     }  
     
- 
+   /* public static function getAnchorBehalfStatus($status)
+    {
+         
+       return self::where(['status' => $status])->distinct('anchor_id')->with('anchorOne')->get(['anchor_id']);
+    }   */
+    
      public static function getBusinessName()
      {
         return self::distinct('biz_id')->with('business')->get(['biz_id']);
