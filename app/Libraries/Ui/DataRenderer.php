@@ -1768,11 +1768,10 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                     'role',
                     function ($doa) {
-                $roles = DoaLevelRole::getDoaLevelRoles($doa->doa_level_id);
-                $rolesName = '';
-                foreach($roles as $role) {
-                    $rolesName .= $role->role . ', ';
-                }
+                $roles = DoaLevelRole::getDoaLevelRoles($doa->doa_level_id)->map(function ($elem){
+                    return $elem->role;
+                });
+              $rolesName = implode(',', array_unique($roles->toArray()));
                 return rtrim($rolesName,', ');
             })                        
              ->addColumn(

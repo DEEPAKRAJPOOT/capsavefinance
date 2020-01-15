@@ -130,7 +130,8 @@
             <div class="form-group">
                 <label for="txtCreditPeriod"> Select Role Users
                     <span class="mandatory">*</span>
-                </label>                                                
+                </label>                            
+                 <br>
                 {!!
                 Form::select('role_user['.$i.'][]',
                 [],
@@ -175,7 +176,8 @@
             <div class="form-group">
                 <label for="txtCreditPeriod"> Select Role Users
                     <span class="mandatory">*</span>
-                </label>                                                
+                </label>            
+                <br>
                 {!!
                 Form::select('role_user[0][]',
                 [],
