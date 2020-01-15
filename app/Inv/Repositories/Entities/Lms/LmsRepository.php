@@ -111,7 +111,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      */
     public static function saveInterestAccrual($data, $whereCondition=[])
     {
-        return InterestAccrual::saveInterestAccrual($transactions);
+        return InterestAccrual::saveInterestAccrual($data, $whereCondition);
     }
     
     /**

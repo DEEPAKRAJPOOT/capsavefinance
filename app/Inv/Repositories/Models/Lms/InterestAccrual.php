@@ -45,7 +45,9 @@ class InterestAccrual extends BaseModel {
         'disbursal_id',
         'interest_date',
         'principal_amount',
-        'accrued_interest',        
+        'accrued_interest',
+        'interest_rate',
+        'overdue_interest_rate',
         'created_at',
         'created_by',
         'updated_at',
@@ -63,7 +65,7 @@ class InterestAccrual extends BaseModel {
     public static function saveInterestAccrual($data, $whereCondition=[])
     {
         if (!is_array($data)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
         
         if (!empty($whereCondition)) {
@@ -81,9 +83,9 @@ class InterestAccrual extends BaseModel {
      * @throws InvalidDataTypeExceptions
      */
     public static function getAccruedInterestData($whereCondition=[])
-    {
+    {                 
         if (!is_array($whereCondition)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
         
         $query = self::select('*');
@@ -95,7 +97,7 @@ class InterestAccrual extends BaseModel {
             $query->where('interest_date', '>=', $whereCondition['interest_date']);
         }        
         $query->orderBy('interest_accrual_id', 'ASC');
-        $result = $query->get();
+        $result = $query->get();                
         return $result;
     }
     

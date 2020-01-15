@@ -46,7 +46,7 @@ class Disbursal extends BaseModel {
         'app_id',
         'invoice_id',
         'prgm_offer_id',
-        'bank_id',
+        'bank_account_id',
         'disburse_date',
         'bank_name',
         'ifsc_code',
@@ -83,7 +83,7 @@ class Disbursal extends BaseModel {
     public static function saveDisbursalRequest($data, $whereCondition=[])
     {
         if (!is_array($data)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
         
         if (!empty($whereCondition)) {
@@ -105,7 +105,7 @@ class Disbursal extends BaseModel {
     public static function getDisbursalRequests($whereCondition=[])
     {
         if (!is_array($whereCondition)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
         
         $query = self::select('*');
@@ -132,7 +132,7 @@ class Disbursal extends BaseModel {
     public static function getProgramOffer($whereCondition=[])
     {
         if (!is_array($whereCondition)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
         
         $result = self::select('app_prgm_offer.*')

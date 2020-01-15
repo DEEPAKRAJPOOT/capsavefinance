@@ -11,7 +11,7 @@ class InterestAccrual extends Command
      *
      * @var string
      */
-    protected $signature = 'lms::interestaccrual';
+    protected $signature = 'lms:interestaccrual';
 
     /**
      * The console command description.
