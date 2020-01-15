@@ -67,7 +67,7 @@ class BizInvoiceTemp extends BaseModel
         'invoice_due_date',
         'invoice_date',
         'invoice_approve_amount',
-        'file_id',
+        'batch_id',
         'remark',
         'created_by',
         'created_at',
@@ -105,9 +105,16 @@ public static function saveBulkTempInvoice($arrInvoice)
     public static function DeleteTempInvoice($whr)
     {
        return self::where($whr)->delete();
-    }  
+    } 
     
-  public static function saveBulk($attributes)
+     public static function DeleteSingleTempInvoice($whr)
+    {
+        return  self::where($whr)->update(['status' => 2]);
+    } 
+      
+
+
+    public static function saveBulk($attributes)
     {
     //dd($attributes);
      $count = count($attributes['id']); 
@@ -116,6 +123,7 @@ public static function saveBulkTempInvoice($arrInvoice)
           
             $updateTemp =  self::where('invoice_id',$attributes['id'][$i])
                     ->update(['invoice_no' => $attributes['invoice_no'][$i],
+                        'status' => 1,
                 'invoice_due_date' => ($attributes['invoice_due_date'][$i]) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'][$i])->format('Y-m-d') : '',
                 'invoice_date' => ( $attributes['invoice_date'][$i]) ? Carbon::createFromFormat('d/m/Y',  $attributes['invoice_date'][$i])->format('Y-m-d') : '',
                 'invoice_approve_amount' => $attributes['invoice_approve_amount'][$i]]
@@ -133,11 +141,11 @@ public static function saveBulkTempInvoice($arrInvoice)
                         'invoice_no' => $result->invoice_no,
                         'invoice_due_date' => $result->invoice_due_date,
                         'invoice_date' => $result->invoice_date,
+                        'invoice_amount' => $result->invoice_approve_amount,
                         'invoice_approve_amount' => $result->invoice_approve_amount,
                         'is_bulk_upload'    =>1,
-                        'bulk_invoice_file'  => $result->bulk_invoice_file,
+                        'batch_id'  => $result->batch_id,
                         'remark' => $result->remark,
-                        'file_id'  => $result->file_id,
                         'created_by' => $result->created_by,
                         'created_at' =>$result->created_at]);
             }

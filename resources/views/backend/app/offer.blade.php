@@ -85,8 +85,8 @@
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         <div class="col-md-12">
-                            <!-- <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button> -->
                             @if($offerData->count() && $offerData[0]->status == 0)
+                            <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button>
                             <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept</button>
                             @endif
                         </div>

@@ -88,11 +88,27 @@ class InterestAccrual extends BaseModel {
         
         $query = self::select('*');
                 
+        if (isset($whereCondition['disbursal_id'])) {
+            $query->where('disbursal_id', $whereCondition['disbursal_id']);
+        }
         if (isset($whereCondition['interest_date'])) {
             $query->where('interest_date', '>=', $whereCondition['interest_date']);
-        }
+        }        
         $query->orderBy('interest_accrual_id', 'ASC');
         $result = $query->get();
+        return $result;
+    }
+    
+    /**
+     * Get Sum of Accrued Interest
+     *      
+     * @param integer $disbursal_id
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function sumAccruedInterest($disbursal_id)
+    {        
+        $result = self::where('disbursal_id', $disbursal_id)->sum('accrued_interest');
         return $result;
     }
 }

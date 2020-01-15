@@ -7,6 +7,8 @@ use Session;
 use App\Inv\Repositories\Contracts\LmsInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
+use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
@@ -146,6 +148,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public static function getRepayments($whereCondition=[])
     {
         return InvoiceRepaymentTrail::getRepayments($whereCondition);
+    }   
+    
+
+    public static function getAllUserInvoice($userId)
+    {
+        return BizInvoice::getAllUserInvoice($userId);
     }
 
     /**
@@ -154,7 +162,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @param array $whereCondition | optional
      * @return mixed
      * @throws InvalidDataTypeExceptions
-     */
+     */    
     public static function getAccruedInterestData($whereCondition=[])
     {
         return InterestAccrual::getAccruedInterestData($whereCondition);
@@ -170,4 +178,38 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return Disbursal::getProgramOffer($whereCondition);
     }
+
+    
+    public static function getInvoices($invoiceIds)
+    {
+        return BizInvoice::whereIn('invoice_id', $invoiceIds)
+               ->with(['program', 'supplier', 'supplier_bank_detail.bank'])
+               ->get();
+    }  
+
+    /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getInvoiceSupplier($invoiceIds)
+    {
+        return BizInvoice::groupBy('supplier_id')
+                ->whereIn('invoice_id', $invoiceIds)
+                ->pluck('supplier_id');
+    }    
+    
+    /**
+     * Get Sum of Accrued Interest
+     *      
+     * @param integer $disbursal_id
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function sumAccruedInterest($disbursal_id)
+    { 
+        return InterestAccrual::sumAccruedInterest($disbursal_id);
+    }    
 }

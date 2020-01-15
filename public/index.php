@@ -50,6 +50,8 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 | and wonderful application we have prepared for them.
 |
 */
+require_once __DIR__.'/../common/functions.php';
+
 
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 

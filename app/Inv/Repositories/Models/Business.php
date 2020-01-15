@@ -144,6 +144,9 @@ class Business extends BaseModel
                 'created_by'=>$userId
             ]);
 
+        // insert in rta_app_product table
+        $app->products()->sync($attributes['product_id']);
+
         Business::where('biz_id', $business->biz_id)->update([
             'panno_pan_gst_id'=>$bpg->biz_pan_gst_id,
             'is_pan_verified'=>1,
@@ -289,10 +292,14 @@ class Business extends BaseModel
         }
 
         // update into rta_app table
-        $app_id = Application::where('biz_id',$bizId)->update([
+        $app = Application::where('biz_id',$bizId)->first();
+        $app->update([
                 'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
                 'updated_by'=>$userId
             ]);
+
+        // insert in rta_app_product table
+        $app->products()->sync($attributes['product_id']);
 
 
         //get id from address and then update address into rta_biz_addr

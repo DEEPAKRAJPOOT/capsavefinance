@@ -218,7 +218,7 @@ class CamController extends Controller
     }
 
     public function finance_store(FinanceRequest $request, FinanceModel $fin){
-        $financeid = $this->_getFinanceId();
+        $financeid = _getRand();
         $insert_data = [];
         $post_data = $request->all();
         unset($post_data['_token']);
@@ -269,11 +269,17 @@ class CamController extends Controller
         'created_by' => Auth::user()->user_id,
       );
       FinanceModel::insertPerfios($log_data);
+      $errors = [];
+      if (!empty($response['errors'])) {
+        foreach ($response['errors'] as $app_doc_file_id => $perfios_err) {
+         $errors[$app_doc_file_id] = $perfios_err['message'];
+        }
+      }
       if ($response['status'] == 'success') {
         return response()->json(['message' =>'Bank Statement analysed successfully.','status' => 1,
           'value' => $response]);
       }else{
-        return response()->json(['message' =>$response['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
+        return response()->json(['message' =>$response['message'] ?? 'Something went wrong','errors' => $errors,'perfios_log_id' => $response['perfiosTransactionId'],'status' => 0,'value'=>['file_url'=>'']]);
       }
     }
 
@@ -309,12 +315,13 @@ class CamController extends Controller
 
 
     public function getFinanceFilePath($appId){
-      $fin = new FinanceModel();
+        $fin = new FinanceModel();
         $financedocs = $fin->getFinanceStatements($appId);
         $files = [];
         $dates = [];
         foreach ($financedocs as $doc) {
           $files[] = array(
+            'app_doc_file_id' => $doc->app_doc_file_id,
             'app_id' => $doc->app_id,
             'file_id' => $doc->file_id,
             'fin_year' => $doc->finc_year,
@@ -336,9 +343,12 @@ class CamController extends Controller
         $files = [];
         $dates = [];
         foreach ($bankdocs as $doc) {
+           $bank_detail = $fin->getBankDetail($doc->file_bank_id);
            $files[] = array(
+            'app_doc_file_id' => $doc->app_doc_file_id,
             'app_id' => $doc->app_id,
             'file_id' => $doc->file_id,
+            'institutionId' => $bank_detail->perfios_bank_id ?? NULL,
             'fin_year' => $doc->finc_year,
             'file_path' => public_path('storage/'.$doc->file_path),
             'is_scanned' => $doc->is_scanned == 1 ? 'true' : 'false',
@@ -359,7 +369,7 @@ class CamController extends Controller
         $ranges = $this->getRangeFromdates($dates);
         $bsa = new Bsa_lib();
         $reportType = 'json';
-        $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
+        $prolitus_txn = _getRand(18);
         $process_txn_cnt = 0;
         $req_arr = array(
             'txnId' => $prolitus_txn, //'bharatSTmt',
@@ -376,7 +386,9 @@ class CamController extends Controller
         if ($init_txn['status'] == 'success') {
           foreach ($filespath as $file_doc) {
              $filepath = $file_doc['file_path'];
+             $app_doc_file_id = $file_doc['app_doc_file_id'];
              $password = $file_doc['file_password'];
+             $institutionId = $file_doc['institutionId'];
               $req_arr = array(
                 'perfiosTransactionId' => $init_txn['perfiostransactionid'],
                 'file_content' => $filepath,
@@ -386,13 +398,19 @@ class CamController extends Controller
                   $req_arr = array(
                     'perfiosTransactionId' => $init_txn['perfiostransactionid'],
                     'fileId' => $upl_file['fileid'],
-                    'institutionId' => '',
+                    'institutionId' => $institutionId,
                     'password' => $password,
                   );
                   $proc_txn = $bsa->api_call(Bsa_lib::PRC_STMT, $req_arr);
                   if ($proc_txn['status'] == 'success') {
                       $process_txn_cnt++;
+                  }else{
+                      $error[$app_doc_file_id] = $proc_txn;
+                      $error[$app_doc_file_id]['api_type'] = Bsa_lib::PRC_STMT;
                   }
+              }else{
+                $error[$app_doc_file_id] = $upl_file;
+                $error[$app_doc_file_id]['api_type'] = Bsa_lib::UPL_FILE;
               }
           }
           if ($process_txn_cnt == count($filespath)) {
@@ -412,7 +430,8 @@ class CamController extends Controller
                 $final_res['api_type'] = Bsa_lib::REP_GEN;
              }
           }else{
-                $final_res = $proc_txn;
+                $final_res['errors'] = $error;
+                $final_res['status'] = 'fail';
                 $final_res['prolitusTransactionId'] = $prolitus_txn;
                 $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
                 $final_res['api_type'] = Bsa_lib::PRC_STMT;
@@ -467,13 +486,56 @@ class CamController extends Controller
         return $final_res;
     }
 
+    public function reUploadBankStmt(Request $request){
+       $post_data = $request->all();
+       $appId = $request->get('appId');
+       $app_doc_file_id = $request->get('app_doc_file_id');
+       $perfiostransactionid = $request->get('perfiostransactionid');
+       $fin = new FinanceModel();
+       $file_doc = $fin->getSingleBankStatement($appId, $app_doc_file_id);
+       $filepath = $file_doc['file_path'];
+       $app_doc_file_id = $file_doc['app_doc_file_id'];
+       $password = $file_doc['file_password'];
+        $req_arr = array(
+          'perfiosTransactionId' => $init_txn['perfiostransactionid'],
+          'file_content' => $filepath,
+         );
+        $upl_file = $bsa->api_call(Bsa_lib::UPL_FILE, $req_arr);
+        if ($upl_file['status'] == 'success') {
+            $req_arr = array(
+              'perfiosTransactionId' => $init_txn['perfiostransactionid'],
+              'fileId' => $upl_file['fileid'],
+              'institutionId' => '',
+              'password' => $password,
+            );
+            $proc_txn = $bsa->api_call(Bsa_lib::PRC_STMT, $req_arr);
+            if ($proc_txn['status'] == 'success') {
+                $process_txn_cnt++;
+            }else{
+                $error[$app_doc_file_id] = $proc_txn;
+                $error[$app_doc_file_id]['prolitusTransactionId'] = $prolitus_txn;
+                $error[$app_doc_file_id]['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
+                $error[$app_doc_file_id]['api_type'] = Bsa_lib::PRC_STMT;
+            }
+        }else{
+          $error[$app_doc_file_id] = $upl_file;
+          $error[$app_doc_file_id]['prolitusTransactionId'] = $prolitus_txn;
+          $error[$app_doc_file_id]['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+          $error[$app_doc_file_id]['api_type'] = Bsa_lib::UPL_FILE;
+        }
+    }
+
+    public function reProcessStmt(){
+      # code...
+    }
+
     public function _callFinanceApi($filespath, $appId) {
         $user = FinanceModel::getUserByAPP($appId);
         $loanAmount = (int)$user['loan_amt'];
         $dates = array_pop($filespath);
         $perfios = new Perfios_lib();
         $reportType = 'json';
-        $prolitus_txn = date('YmdHis').mt_rand(1000,9999).mt_rand(1000,9999);
+        $prolitus_txn = _getRand(18);
         $process_txn_cnt = 0;
         $apiVersion = '2.1';
         $vendorId = 'capsave';
@@ -722,59 +784,6 @@ class CamController extends Controller
         }
     }
 
-
-    private function _rand_str($length = 2){
-       $random_string = '';
-       $permitted_chars = str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-       $input_length = strlen($permitted_chars); 
-       for($i = 0; $i < $length; $i++) {
-          $random_character = $permitted_chars[mt_rand(0, $input_length - 1)];
-          $random_string .= $random_character;
-       }
-       return $random_string;
-    }
-
-    private function _getFinanceId() {
-        $rand_length = 3;
-        $min_finance_id = $rand_length + 8;
-        $temp =  $y = date('Y') - 2018;
-        $append = '';
-        $div = $temp / 26;
-        if (is_int($div)) {
-            $temp =  $temp - 26;
-        }
-        $fixed = $temp >= 26 ? floor($temp / 26) : 0;
-        $y = $y % 26 == 0 ?  90 : ($y % 26) + 64;
-        $year = $fixed. chr($y);
-        $m = date('m') + 64;
-        $d = date('d');
-        $d = (($d <= 25) ? ($d + 64) : ($d + 23));
-        $h = date('H') + 65;
-        $i = date('i');
-        $s = date('s');
-        $no = $year . chr($m) . chr($d) . chr($h). $i . $s. $this->_rand_str($rand_length);
-        return $no;
-    }
-
-    private function _financeid_reverse($string = '') {
-        $min_finance_id = 11;
-        $strlen = strlen($string);
-        $extra_year = substr($string, 0, 1) * 26;
-        $value = substr($string, - $min_finance_id);
-        $date = substr($value, 0, 4);
-        $time = substr($value, 4, 4);
-        $random = substr($value, 8);
-        list($y , $m, $d, $h) = str_split($date);
-        $y = ord($y) + 2018 - 64 + $extra_year;
-        $m = ord($m) - 64;
-        $d = is_numeric($d) ? ord($d) - 23 : ord($d) - 64;
-        $h = ord($h) - 65;
-        $i = substr($time, 0, 2);
-        $s = substr($time,-2);
-        $datetime = "$y-$m-$d $h:$i:$s-$random";
-        return $datetime;
-    }
-
     /**
      * Show Limit Assessment
      * 
@@ -786,7 +795,9 @@ class CamController extends Controller
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
 
-        $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
+        $supplyPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 1);
+        $termPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 2);
+        $leasingPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 3);
         $limitData = $this->appRepo->getAppLimit($appId);
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
@@ -798,7 +809,9 @@ class CamController extends Controller
                 ->with('bizId', $bizId)
                 ->with('limitData', $limitData)
                 ->with('approveStatus', $approveStatus)
-                ->with('prgmLimitData', $prgmLimitData)
+                ->with('supplyPrgmLimitData', $supplyPrgmLimitData)
+                ->with('termPrgmLimitData', $termPrgmLimitData)
+                ->with('leasingPrgmLimitData', $leasingPrgmLimitData)
                 ->with('currStageCode', $currStageCode);
     }
     
@@ -817,6 +830,7 @@ class CamController extends Controller
             $checkProgram = $this->appRepo->checkduplicateProgram([
               'app_id'=>$appId,
               'anchor_id'=>$request->anchor_id,
+              'product_id'=>$request->product_id,
               'prgm_id'=>$request->prgm_id
               ]);
 
@@ -844,6 +858,7 @@ class CamController extends Controller
                           'app_limit_id'=>($totalLimit)? $totalLimit->app_limit_id : $app_limit->app_limit_id,
                           'app_id'=>$appId,
                           'biz_id'=>$bizId,
+                          'product_id'=>$request->product_id,
                           'anchor_id'=>$request->anchor_id,
                           'prgm_id'=>$request->prgm_id,
                           'limit_amt'=>str_replace(',', '', $request->limit_amt),
@@ -884,8 +899,17 @@ class CamController extends Controller
       $limitData= $this->appRepo->getLimit($aplid);
       $current_offer_limit = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
       $totalLimit = $this->appRepo->getAppLimit($appId);
-      $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
-      return view('backend.cam.limit_offer', ['offerData'=>$offerData, 'limitData'=>$limitData, 'limit_amt'=>$limitData->limit_amt, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit]);
+
+      if(!is_null($limitData->prgm_id)){
+        $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
+        $prgmLimit = $limitData->program->anchor_sub_limit;
+      }else{
+        $offeredLimit = 0;
+        $prgmLimit = 0;
+      }
+
+      $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'limit_amt'=>$limitData->limit_amt, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit]);
     }
 
     public function updateLimitOffer(Request $request){
@@ -896,6 +920,7 @@ class CamController extends Controller
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
         $request['check_bounce_fee'] = str_replace(',', '', $request->check_bounce_fee);
+        $request['addl_security'] = implode(',', $request->addl_security);
 
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
 
@@ -919,8 +944,15 @@ class CamController extends Controller
       $offerData= $this->appRepo->getProgramOffer($aplid);
       $current_offer_limit = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
       $totalLimit = $this->appRepo->getAppLimit($appId);
-      $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
-      return view('backend.cam.limit', ['limitData'=>$limitData, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit, 'prgmLimit'=> $limitData->program->anchor_sub_limit]);
+
+      if(!is_null($limitData->prgm_id)){
+        $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
+        $prgmLimit = $limitData->program->anchor_sub_limit;
+      }else{
+        $offeredLimit = 0;
+        $prgmLimit = 0;
+      }
+      return view('backend.cam.limit', ['limitData'=>$limitData, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit, 'prgmLimit'=> $prgmLimit]);
     }
 
     public function updateLimit(Request $request){

@@ -105,7 +105,7 @@
 				
             
          </div>
-         <form action="{{Route('backend_save_bulk_invoice')}}" method="post"> 
+         <form id="signupForm" action="{{Route('backend_save_bulk_invoice')}}" method="post"> 
              @csrf
           <div class="row">
              
@@ -315,7 +315,7 @@
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                        
-                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
+                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_limit);  
                          $("#supplier_bulk_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
@@ -351,6 +351,37 @@
        
     /////////////// validation the time of final submit/////////////// 
       $(document).on('click','#final_submit',function(){
+          
+       if ($('form#signupForm').validate().form()) {     
+        $(".batchInvoice" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter invoice no",
+        }
+        });
+          $(".batchInvoiceDueDate" ).rules( "add", {
+        required: true,
+    
+        messages: {
+        required: "Please enter currect invoice due date",
+        }
+        });
+          $(".batchInvoiceDate" ).rules( "add", {
+        required: true,
+     
+        messages: {
+        required: "Please enter currect invoice due date",
+        }
+        });
+          $(".subOfAmount" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter currect invoice amount",
+        }
+        });
+       } else {
+        /// alert();
+        }  
       if (confirm("Are you sure? You want to update it")) {         
         $("#final_submit_msg").hide();  
         var p_limit =  $("#pro_limit_hide").val();  
@@ -370,7 +401,13 @@
             return false;
         }
     });
-      
+    
+    //////// String value not allowed in  amount filed//////////////////////
+ $(document).on('keypress','.subOfAmount',function(event){       
+  if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+    event.preventDefault();
+  }
+});
 
     $(document).on('click','#submit',function(e){  
     
@@ -434,11 +471,11 @@
                 {
                     $('.isloader').hide(); 
                     $(".finalButton").show();
-                    // $("#submitInvoiceMsg").show();
-                     ///$("#submitInvoiceMsg").text('Invoice Successfully uploaded');
+                   
                      j =0;
                      $(r.data).each(function(i,v){ j++;
-                      var  date1 = v.invoice_due_date;
+                    var invoice_approve_amount =  v.invoice_approve_amount;  
+                    var  date1 = v.invoice_due_date;
                     var dateAr = date1.split('-');
                     var invoice_due_date = '';
                     var invoice = '';
@@ -454,9 +491,12 @@
 
                       var invoice_date = dateAr1[2] + '/' + dateAr1[1] + '/' + dateAr1[0];
                     }
-                    
+                    if(parseInt(v.invoice_approve_amount)=='0.00')
+                    {
+                       var invoice_approve_amount = "";
+                    }
                    
-                    $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'"><td>'+j+'</td><td><input type="hidden" value="'+v.invoice_id+'" name="id[]"> <input type="text" id="invoice_no" name="invoice_no[]" class="form-control" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-fdate" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" id="invoice_date" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate" value="'+invoice_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+v.invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
+                    $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDueDate" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+v.invoice_id+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
                     });
                      datepickerDisFdate();
                     return false;
@@ -464,14 +504,11 @@
                  else if(r.status==2)
                 {
                            $("#customFile_msg").show();  
-                         
-
-
                 }
                 else
                 {
                      ///$("#submitInvoiceMsg").show();
-                     $(".invoiceAppendData").append('<tr><td colspan="5" class="error">Total Amount  should not greater Program Limit</td></tr>'); 
+                     $(".invoiceAppendData").append('<tr><td colspan="5" class="error">Something went wrong, Please try again!</td></tr>'); 
                    
                       return false;
                  } 
@@ -502,7 +539,7 @@
                     if(data.status==1)
                     {
                          $(".finalButton").show();
-                         $("#deleteRow"+data.id).hide();
+                         $("#deleteRow"+data.id).remove();
                       }
                   }
                 });

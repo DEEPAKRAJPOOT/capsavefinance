@@ -42,6 +42,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\BankAccountController@saveBankAccount'
             ]);
             
+            // disbursal routes
+            Route::get('/disbursal-request/list', [
+                'as' => 'lms_disbursal_request_list',
+                'uses' => 'Lms\DisbursalController@requestList'
+            ]);
+
+            Route::get('/disbursal-request/view-invoice', [
+                'as' => 'lms_disbursal_invoice_view',
+                'uses' => 'Lms\DisbursalController@viewInvoice'
+            ]);
+
+            Route::post('/send-to-bank', [
+                'as' => 'send_to_bank',
+                'uses' => 'Lms\DisbursalController@sendToBank'
+            ]);
             
 
         });//end of application

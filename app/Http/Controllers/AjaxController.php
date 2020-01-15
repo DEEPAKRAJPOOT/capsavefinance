@@ -7,6 +7,7 @@ use Session;
 use Mail;
 use Carbon\Carbon;
 use Event;
+use Datetime;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Contracts\Ui\DataProviderInterface;
@@ -29,6 +30,7 @@ use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
 use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 
 
 class AjaxController extends Controller {
@@ -42,8 +44,10 @@ class AjaxController extends Controller {
     protected $user;
     protected $application;
    protected $invRepo;
+   protected $docRepo;
+   
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo) {
 
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
@@ -54,6 +58,7 @@ class AjaxController extends Controller {
         $this->application = $application;
         $this->masterRepo = $master;
         $this->invRepo   =    $invRepo;
+        $this->docRepo          = $docRepo;
 
     }
 
@@ -2706,20 +2711,64 @@ if ($err) {
   
     //////////////////// use for invoice list/////////////////
      public function getInvoiceList(DataProviderInterface $dataProvider) {
-      
-        $invoice_data = $this->invRepo->getAllInvoice($this->request);
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
         return $invoice;
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
-      
-        $invoice_data = $this->invRepo->getAllInvoice($this->request);
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
 
+      //////////////////// use for Approve invoice list/////////////////
+     public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
+        $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
+        return $invoice;
+    } 
     
+      //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,9);
+        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+      //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getBackendInvoiceListBank(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,10);
+        $invoice = $dataProvider->getBackendInvoiceListBank($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+      //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getBackendInvoiceListFailedDisbursed(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,11);
+        $invoice = $dataProvider->getBackendInvoiceListFailedDisbursed($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+    /**
+      * 
+      * @param DataProviderInterface $dataProvider
+      * @param Request $request
+      * @return type
+      * 
+      * 
+      */
+   public function updateInvoiceApprove(Request $request)
+   {
+     return  $this->invRepo->updateInvoice($request->invoice_id,$request->status);
+   
+   }
     public function getFiLists(DataProviderInterface $dataProvider, Request $request){
         $fiLists = $this->application->getFiLists($request);
         $fis = $dataProvider->getFiListsList($this->request, $fiLists);
@@ -2958,6 +3007,17 @@ if ($err) {
     $customersList = $this->userRepo->lmsGetCustomers();
     $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
     return $users;
+  }   
+
+  /**
+   * Get all customer list
+   *
+   * @return json customer data
+   */
+  public function lmsGetDisbursalCustomer(DataProviderInterface $dataProvider) {
+    $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer();
+    $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
+    return $users;
   }
 
     /**
@@ -3030,7 +3090,7 @@ if ($err) {
     
 
     function uploadInvoice(Request $request) {
-    
+      
        $extension = $request['doc_file']->getClientOriginalExtension();
        if($extension!="csv" || $extension!="csv")
        {
@@ -3038,8 +3098,8 @@ if ($err) {
        }
        $date = Carbon::now();
        $data = array();
-       $id = Auth::user()->user_id;
-        $userId = 1;
+        $userId =  Auth::user()->user_id;
+        $id = Auth::user()->user_id;
         if ($request['doc_file']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice')) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice', 0775, true);
@@ -3047,16 +3107,15 @@ if ($err) {
             $path = Storage::disk('public')->put('/user/' . $userId . '/invoice', $request['doc_file'], null);
             $inputArr['file_path'] = $path;
         }
-
+        $batch_id =  $this->invRepo->saveBatchNo($path); 
         $csvFilePath = storage_path("app/public/" . $inputArr['file_path']);
-        $sumInvoice = 0;
-        $file = fopen($csvFilePath, "r");
+         $file = fopen($csvFilePath, "r");
      
         while (!feof($file)) {
           
             $rowData[] = explode(",",fgets($file));
           }
-        
+       
         $i=0;
         $res =  $this->invRepo->getSingleLimit($request['anchor_bulk_id']);
         $appId = $res->app_id; 
@@ -3064,16 +3123,28 @@ if ($err) {
         $rowcount = count($rowData) -1;
         foreach($rowData as $key=>$row)
         {
-       
+        
           if($i > 0 && $i < $rowcount)  
           {
-                $whr  = ['anchor_id' =>$request['anchor_bulk_id'],'supplier_id' => $request['supplier_bulk_id'], 'program_id' => $request['program_bulk_id']];
+               
+                $whr  = ['status' =>0,'anchor_id' =>$request['anchor_bulk_id'],'supplier_id' => $request['supplier_bulk_id'], 'program_id' => $request['program_bulk_id']];
                 $invoice_no  = $row[0];
                 $invoice_date  = $row[1];
                 $invoice_due_date  = $row[2];
                 $invoice_amount  = $row[3];
+                $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
+                $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
+                if( $invoice_due_date_validate==false)
+               {
+                    return response()->json(['status' => 0]); 
+               }
+               if( $invoice_date_validate==false)
+               {
+                    return response()->json(['status' => 0]); 
+               } 
+                
+                
                 $invoice_amount = str_replace("\n","",$invoice_amount);
-                $sumInvoice+= $invoice_amount;
                 $data[$i]['anchor_id'] =  $request['anchor_bulk_id'];
                 $data[$i]['supplier_id'] = $request['supplier_bulk_id']; 
                 $data[$i]['program_id'] = $request['program_bulk_id'];
@@ -3084,39 +3155,76 @@ if ($err) {
                 $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_approve_amount'] =  $invoice_amount;
                 $data[$i]['is_bulk_upload'] = 1;
-                $data[$i]['bulk_invoice_file'] = $path;
-                $data[$i]['file_id']  = 0;
+                $data[$i]['batch_id'] = $batch_id;
                 $data[$i]['created_by'] =  $id;
                 $data[$i]['created_at'] =  $date;
           }
            $i++;
         }
-         if($sumInvoice > $request['pro_limit_hide'])
-         {
-                  return response()->json(['status' => 0]); 
-         }
-        else {
-                  $res = $this->invRepo->DeleteTempInvoice($whr);
+            
+              
+                if(count($data) > 0)
+               {
+                  $res = $this->invRepo->DeleteTempInvoice($whr);  
                   $result = $this->invRepo->saveBulkTempInvoice($data);
                   if( $result)
                   {
                       $getTempInvoice =  $this->invRepo->getTempInvoiceData($whr);
                       return response()->json(['status' => 1,'data' =>$getTempInvoice]); 
                   }
-                 
-        }
+                    else {
+                        return response()->json(['status' => 0]); 
+                    }
+                }  
+                  else {
+                        return response()->json(['status' => 0]); 
+                    }
+     }
+    
+    function validateDate($date, $format = 'd/m/Y')
+    { 
+       
+       return  $d = DateTime::createFromFormat($format, $date);
+      // return $d && $d->format($format) === $date;
+     }
+     
+    function saveInvoiceDoc(Request $request)
+    {
+        $date = Carbon::now();
+        $id = Auth::user()->user_id;
+        $attributes  = $request->all();
+        $uploadData = Helpers::uploadAppFile($attributes, $attributes['app_id']);
+        $userFile = $this->docRepo->saveFile($uploadData);
+        $arr = array('file_id'  =>$userFile->file_id,
+                    'updated_by' => $id,
+                    'updated_at' => $date);
+        $result = $this->invRepo->updateFileId($arr,$attributes['invoice_id']);
+       if($result)
+       {
+           return response()->json(['status' => 1]); 
+       }
+       else
+       {
+           return response()->json(['status' => 0]); 
+       }
+       
     }
-    
-    
+     
     function DeleteTempInvoice(Request $request) {
        
         $whr =  ['invoice_id' => $request->temp_id];
-        $res = $this->invRepo->DeleteTempInvoice($whr);
+        $res = $this->invRepo->DeleteSingleTempInvoice($whr);
         return response()->json(['status' => 1,'id' => $request->temp_id]); 
         
     }
     
-
+   function updateBulkInvoice(Request $request)
+   {
+       foreach($request['invoice_id'] as $row) {  
+        $res =   $this->invRepo->updateInvoice($row,$request->status);
+       }
+       return  $res;
+   }
     
    /**
     * get Bank account list
@@ -3135,7 +3243,7 @@ if ($err) {
      * set default account
      * 
      * @param Request $request
-     * @return type mixed
+     * @return mixed
      */
     public function setDefaultAccount(Request $request)
     {
@@ -3144,6 +3252,24 @@ if ($err) {
         $this->application->updateBankAccount(['is_default' => 0]);
         $res = $this->application->updateBankAccount(['is_default' => $value], ['bank_account_id' => $acc_id]);
         return \response()->json(['success' => $res]);
+    }
+    
+    
+    
+    /**
+     * get user by Role
+     * 
+     * @param Request $request
+     * @return mixed
+     */
+    public function getUserByRole(Request $request)
+    {
+        $role_id = (int) $request->get('role_id');
+        if (empty($role_id)) {
+            abort(400);
+        }
+        $roleUsers = Helpers::getAllUsersByRoleId($role_id);
+        return \response()->json(['data' => $roleUsers]);
     }
 
 

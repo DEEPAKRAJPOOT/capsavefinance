@@ -37,6 +37,6 @@ class InterestAccrual extends Command
      */
     public function handle()
     {
-        //
+        \App::make('App\Http\Controllers\Lms\DisbursalController')->processAccrualInterest();
     }
 }

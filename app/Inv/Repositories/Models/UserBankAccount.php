@@ -56,6 +56,12 @@ class UserBankAccount extends BaseModel {
         'updated_by'
     ];
 
+
+    public function bank()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Bank', 'bank_id');
+    }
+
     /**
      * Save bank account
      * 
