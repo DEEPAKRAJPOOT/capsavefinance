@@ -14,7 +14,7 @@ trait LmsTrait
      */
     protected function calInterest($principalAmt, $interestRate, $tenorDays)
     {
-        $interest = $principalAmt * $tenorDays * ($interestRate / 365) ;                
+        $interest = $principalAmt * $tenorDays * ($interestRate / 360) ;                
         return $interest;        
     }   
     
@@ -25,12 +25,13 @@ trait LmsTrait
      * @return mixed
      */
     protected function calAccrualInterest()
-    {
-        $currentDate = \Carbon\Carbon::now()->format('Y-m-d');
-        
+    {        
+        //$currentDate = \Carbon\Carbon::now()->format('Y-m-d');
+        $currentDate = date('Y-m-d');
+                
         $disbursalWhereCond = [];
-        $disbursalWhereCond['status']  = [12];
-        $disbursalWhereCond['int_accrual_start_dt']  = $currentDate;
+        $disbursalWhereCond['status_id']  = [12];
+        //$disbursalWhereCond['int_accrual_start_dt']  = $currentDate;
         $disbursalData = $this->lmsRepo->getDisbursalRequests($disbursalWhereCond);
         
         foreach($disbursalData as $disburse) {
@@ -40,10 +41,11 @@ trait LmsTrait
             $principalAmount  = $disburse->principal_amount;
             $totalRepaidAmount  = $disburse->total_repaid_amt;
             $invoiceDueDate  = $disburse->inv_due_date;
-                        
-            $balancePrincipalAmt = $principalAmount - $totalRepaidAmount;
-            $interestRate = $disburse->interest_rate;
+            $intAccrualStartDt = $disburse->int_accrual_start_dt;
+            $intAccrualDt = $intAccrualStartDt;
             
+            $balancePrincipalAmt = $principalAmount - $totalRepaidAmount;
+                        
             $whereProgramOffer = [];
             $whereProgramOffer['app_id'] = $appId;
             $whereProgramOffer['invoice_id'] = $invoiceId;                
@@ -55,40 +57,62 @@ trait LmsTrait
             $gracePeriodDate = $this->addDays($invoiceDueDate, $gracePeriod);
             $overDueInterestDate = $this->addDays($invoiceDueDate, 1);
             $reculateInterest = false;
-            if ($currentDate > $gracePeriodDate && $balancePrincipalAmt > 0) {
-
-                $interestRate = $interestRate + $overdueIntRate;
-                $reculateInterest = true;
-            }
-            $calInterestRate  = round($interestRate / 100, 2);
-            $tenorDays        = 1;
-
-            $interest = $this->calInterest($balancePrincipalAmt, $calInterestRate, $tenorDays);
-        
-            $intAccrualData = [];
-            $intAccrualData['disbursal_id'] = $disbursalId;
-            $intAccrualData['interest_date'] = $currentDate;
-            $intAccrualData['principal_amount'] = $disburse->principal_amount;
-            $intAccrualData['accrued_interest'] = round($interest, 2);
-            $intAccrualData['interest_rate'] = $interestRate;
-            
-            //dd('$intAccrualData', $intAccrualData, $reculateInterest, $invoiceDueDate, $gracePeriod, $gracePeriodDate);
-            
-            if ($reculateInterest) {
-                $reWhereCond = [];
-                $reWhereCond['disbursal_id'] = $disbursalId;
-                $reWhereCond['interest_date'] = $overDueInterestDate;
-                $accruedInterestData = $this->lmsRepo->getAccruedInterestData($reWhereCond);
-                foreach($accruedInterestData as $accruedInt) {
-                    $whereCond = [];
-                    $whereCond['interest_accrual_id'] = $accruedInt->interest_accrual_id;
-                    $intAccrualData['overdue_interest_rate'] = $overdueIntRate;
-                    $this->lmsRepo->saveInterestAccrual($intAccrualData, $whereCond);
+            while (strtotime($intAccrualDt) <= strtotime($currentDate)) {
+                $interestRate = $disburse->interest_rate;
+                
+                if ($intAccrualDt > $gracePeriodDate && $balancePrincipalAmt > 0) {
+                    $interestRate = $interestRate + $overdueIntRate;
+                    $reculateInterest = true;
                 }
-            } else {
-                $this->lmsRepo->saveInterestAccrual($intAccrualData);
-            }
+                $calInterestRate  = round($interestRate / 100, 2);
+                $tenorDays        = 1;
+
+                $interest = $this->calInterest($balancePrincipalAmt, $calInterestRate, $tenorDays);
+
+                $intAccrualData = [];
+                $intAccrualData['disbursal_id'] = $disbursalId;
+                $intAccrualData['interest_date'] = $intAccrualDt;
+                $intAccrualData['principal_amount'] = $disburse->principal_amount;
+                $intAccrualData['accrued_interest'] = round($interest, 2);
+                $intAccrualData['interest_rate'] = $disburse->interest_rate;
+                
+                if ($reculateInterest) {
+                    $reWhereCond = [];
+                    $reWhereCond['disbursal_id'] = $disbursalId;
+                    $reWhereCond['interest_date_gte'] = $overDueInterestDate;
+                    $accruedInterestData = $this->lmsRepo->getAccruedInterestData($reWhereCond);
                     
+                    foreach($accruedInterestData as $accruedInt) {
+                        $whereCond = [];
+                        $whereCond['interest_accrual_id'] = $accruedInt->interest_accrual_id;  
+                        $updateIntAccrualData = [];
+                        $updateIntAccrualData['accrued_interest'] = $intAccrualData['accrued_interest'];                        
+                        $updateIntAccrualData['overdue_interest_rate'] = $overdueIntRate;
+                        $this->lmsRepo->saveInterestAccrual($updateIntAccrualData, $whereCond);
+                    }
+                }
+
+                $exWhereCond = [];
+                $exWhereCond['disbursal_id'] = $disbursalId;
+                $exWhereCond['interest_date_eq'] = $intAccrualDt;                
+                $exInterestData = $this->lmsRepo->getAccruedInterestData($exWhereCond);
+                if (!isset($exInterestData[0])) {
+                    if ($reculateInterest) {
+                        $intAccrualData['overdue_interest_rate'] = $overdueIntRate;
+                    }
+                    //echo "\n"; print_r($intAccrualData);
+                    $this->lmsRepo->saveInterestAccrual($intAccrualData);
+                } else {
+                    //$rewhereCond = [];
+                    //$reIntAccrualData = [];
+                    //$rewhereCond['interest_accrual_id'] = $exInterestData[0]->interest_accrual_id;
+                    //$reIntAccrualData['interest_rate'] = $disburse->interest_rate;
+                    //$this->lmsRepo->saveInterestAccrual($reIntAccrualData, $rewhereCond);
+                }
+                                                                   
+                $intAccrualDt = date ("Y-m-d", strtotime("+1 day", strtotime($intAccrualDt)));
+            }
+                                
             $accuredInterest = $this->lmsRepo->sumAccruedInterest($disbursalId);
             $saveDisbursalData['accured_interest'] = $accuredInterest;
             $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);

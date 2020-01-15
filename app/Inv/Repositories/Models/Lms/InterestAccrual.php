@@ -93,9 +93,12 @@ class InterestAccrual extends BaseModel {
         if (isset($whereCondition['disbursal_id'])) {
             $query->where('disbursal_id', $whereCondition['disbursal_id']);
         }
-        if (isset($whereCondition['interest_date'])) {
-            $query->where('interest_date', '>=', $whereCondition['interest_date']);
-        }        
+        if (isset($whereCondition['interest_date_gte'])) {
+            $query->where('interest_date', '>=', $whereCondition['interest_date_gte']);
+        }   
+        if (isset($whereCondition['interest_date_eq'])) {
+            $query->where('interest_date', '=', $whereCondition['interest_date_eq']);
+        }          
         $query->orderBy('interest_accrual_id', 'ASC');
         $result = $query->get();                
         return $result;

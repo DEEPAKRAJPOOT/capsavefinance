@@ -60,7 +60,7 @@ class Disbursal extends BaseModel {
         'total_interest',
         'margin',
         'disburse_amount',
-        'status',
+        'status_id',
         'settlement_date',
         'accured_interest',
         'interest_refund',
@@ -117,8 +117,8 @@ class Disbursal extends BaseModel {
                 $query->where($whereCondition);
             }
         }
-        $query->orderBy('disburse_date', 'DESC');
-        $query->orderBy('disbursal_id', 'DESC');
+        $query->orderBy('disburse_date', 'ASC');
+        $query->orderBy('disbursal_id', 'ASC');
         $result = $query->get();
         return $result;
     }
