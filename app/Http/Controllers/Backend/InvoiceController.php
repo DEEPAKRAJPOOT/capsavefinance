@@ -37,13 +37,13 @@ class InvoiceController extends Controller {
         $get_user = $this->invRepo->getUser($user_id);
         $get_anchor = $this->invRepo->getAnchor($anchor_id);
         $get_program = $this->invRepo->getProgram($anchor_id);
-        return view('backend.application.invoice.uploadinvoice')
+       return view('backend.application.invoice.uploadinvoice')
                    ->with(['get_user' => $get_user, 'get_anchor' => $get_anchor, 'get_program' => $get_program, 'app_id' => $app_id,'biz_id' => $biz_id]);
     }
     
      public function getAllInvoice()
     {
-        
+      
         $get_anchor = $this->invRepo->getLimitAllAnchor();
          return view('backend.invoice.upload_all_invoice')
          ->with(['get_anchor' => $get_anchor]);
@@ -51,6 +51,7 @@ class InvoiceController extends Controller {
     }
 
       public function viewInvoice() {
+       
          $getAllInvoice    =   $this->invRepo->getAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();
         return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
@@ -100,7 +101,7 @@ class InvoiceController extends Controller {
         public function viewdisbursed() {
         $getAllInvoice    =   $this->invRepo->getAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();
-        return view('backend.invoice.failed disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+        return view('backend.invoice.disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
         public function viewRejectInvoice() {

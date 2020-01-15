@@ -120,7 +120,7 @@ class AppProgramLimit extends BaseModel {
       public static function getAllAnchor()
     {
          
-       return self::distinct('anchor_id')->with('anchorOne')->get(['anchor_id']);
+       return self::whereHas('supplyOffers')->where(['product_id' =>1])->with('anchorOne')->groupBy('anchor_id')->get(['anchor_id']);
     }  
     
    /* public static function getAnchorBehalfStatus($status)
@@ -131,7 +131,7 @@ class AppProgramLimit extends BaseModel {
     
      public static function getBusinessName()
      {
-        return self::distinct('biz_id')->with('business')->get(['biz_id']);
+        return self::whereHas('supplyOffers')->where(['product_id' =>1])->with('business')->groupBy('biz_id')->get(['biz_id']);
      }   
      
      function Business()
@@ -143,7 +143,7 @@ class AppProgramLimit extends BaseModel {
       public static function getLimitProgram($aid)
      {
      
-         return AppProgramLimit::with('program')->where(['anchor_id' =>$aid])->get();
+         return AppProgramLimit::with('program')->where(['product_id' =>1,'anchor_id' =>$aid])->groupBy('prgm_id')->get();
      }
      
     public static function getLimitAnchor($aid){
@@ -152,7 +152,7 @@ class AppProgramLimit extends BaseModel {
  
         public static function getUserBehalfAnchor($uid)
     {
-       return AppProgramLimit::with('app.user')->where('anchor_id',$uid)->get();
+       return AppProgramLimit::whereHas('supplyOffers')->with('app.user')->where(['product_id' =>1,'anchor_id' => $uid])->get();
     }   
   
     public static function geAnchortLimitProgram($aid){  
@@ -160,7 +160,7 @@ class AppProgramLimit extends BaseModel {
     }
      
     public static function getLimitAllAnchor(){
-        return AppProgramLimit::with('anchorList')->get();
+        return AppProgramLimit::whereHas('supplyOffers')->where(['product_id' =>1])->with('anchorList')->groupBy('anchor_id')->get();
     }
      
     public  function anchorList(){   
@@ -199,7 +199,12 @@ class AppProgramLimit extends BaseModel {
     public function appLimit(){
         return $this->belongsTo('App\Inv\Repositories\Models\AppLimit', 'app_limit_id', 'app_limit_id');
     }
-
+    
+     function supplyOffers()
+     {
+          return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id','app_prgm_limit_id')->where(['is_approve' =>1]);  
+     
+     } 
     //to do
      /*public function programLimit(){
         return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');

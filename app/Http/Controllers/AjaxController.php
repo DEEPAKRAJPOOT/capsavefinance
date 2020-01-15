@@ -2756,6 +2756,29 @@ if ($err) {
         return $invoice;
     } 
     
+      //////////////////// use for Invoice Disbursed  list/////////////////
+     public function getBackendInvoiceListDisbursed(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,12);
+        $invoice = $dataProvider->getBackendInvoiceListDisbursed($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+     //////////////////// use for Invoice Disbursed  list/////////////////
+     public function getBackendInvoiceListRepaid(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,13);
+        $invoice = $dataProvider->getBackendInvoiceListRepaid($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+      //////////////////// use for Invoice Disbursed  list/////////////////
+     public function getBackendInvoiceListReject(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,14);
+        $invoice = $dataProvider->getBackendInvoiceListReject($this->request, $invoice_data);
+        return $invoice;
+    } 
     /**
       * 
       * @param DataProviderInterface $dataProvider
