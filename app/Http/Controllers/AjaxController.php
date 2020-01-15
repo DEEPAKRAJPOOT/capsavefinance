@@ -3248,9 +3248,9 @@ if ($err) {
     public function setDefaultAccount(Request $request)
     {
         $acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
-        $value = $request->get('value');
+     //   $value = $request->get('value');
         $this->application->updateBankAccount(['is_default' => 0]);
-        $res = $this->application->updateBankAccount(['is_default' => $value], ['bank_account_id' => $acc_id]);
+        $res = $this->application->updateBankAccount(['is_default' => 1], ['bank_account_id' => $acc_id]);
         return \response()->json(['success' => $res]);
     }
     

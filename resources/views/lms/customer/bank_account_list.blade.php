@@ -26,7 +26,7 @@
                         @can('add_bank_account')
                         <a data-toggle="modal" 
                            title="Add Bank" 
-                           data-height="550px" 
+                           data-height="400px" 
                            data-width="100%" 
                            data-target="#add_bank_account"
                            id="register" 
@@ -68,7 +68,7 @@
     </div>
 </div>
 @endsection
-{!!Helpers::makeIframePopup('add_bank_account','Add Bank', 'modal-md')!!}
+{!!Helpers::makeIframePopup('add_bank_account','Add Bank', 'modal-lg')!!}
 @section('additional_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 @endsection
@@ -178,8 +178,9 @@ var messages = {
                             }
 
                         },
-                        No: {
+                        Cancel: {
                             action: function () {
+                                window.reloadDataTable();
                             }
                         },
                     },

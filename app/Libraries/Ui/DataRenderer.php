@@ -2131,7 +2131,7 @@ class DataRenderer implements DataProviderInterface
             function ($doa) {
                 $act = '';
                 $act = '<a  data-toggle="modal" data-target="#editDoaLevelFrame" data-url ="' . route('edit_doa_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Level"><i class="fa fa-edit"></i></a>';
-                $act .= '&nbsp;&nbsp;<a  data-toggle="modal" data-target="#assignRoleLevelFrame" data-url ="' . route('assign_role_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Assign Role"><i class="fa fa-angle-right"></i></a>';
+             //   $act .= '&nbsp;&nbsp;<a  data-toggle="modal" data-target="#assignRoleLevelFrame" data-url ="' . route('assign_role_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Assign Role"><i class="fa fa-angle-right"></i></a>';
                 return $act;
             })
             ->filter(function ($query) use ($request) {
