@@ -44,6 +44,7 @@ class DoaController extends Controller {
             $stateList[$state->id] = $state->name;
         }
         $doaLevelStates = [];    
+        $doa_level_id = null;
         if ($request->has('doa_level_id')) {
             $doa_level_id = preg_replace('#[^0-9]#', '', $request->get('doa_level_id'));
             $doa_level = $this->masterRepo->getDoaLevelById($doa_level_id);
@@ -60,14 +61,64 @@ class DoaController extends Controller {
             $doa_level = new \stdClass();
             $level_code = $this->getDoaLevelCode();
         }
+          $levelRoleList = [];
+        
+        if ($request->has('doa_level_id')) {
+            $levelRoles = $this->masterRepo->getDoaLevelRoles($doa_level_id);
+
+
+            foreach ($levelRoles as $levelRole) {
+                if (in_array($levelRole->role_id, $levelRoleList)) {
+                    array_push($levelRoleList[$levelRole->role_id], $levelRole->user_id);
+                } else {
+                    $levelRoleList[$levelRole->role_id][] = $levelRole->user_id;
+                }
+            }
+
+
+
+            $levelRoles = $this->masterRepo->getDoaLevelRoles($doa_level_id);
+            $levelRoleList = [];
+
+            foreach ($levelRoles as $levelRole) {
+                if (in_array($levelRole->role_id, $levelRoleList)) {
+                    array_push($levelRoleList[$levelRole->role_id], $levelRole->user_id);
+                } else {
+                    $levelRoleList[$levelRole->role_id][] = $levelRole->user_id;
+                }
+            }
+        }
+        
+        
+        
+        $roles = $this->userRepo->getRolesByType(2);
+        $roleList = [];
+        foreach($roles as $role) {
+            $roleList[$role->id] = $role->name;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         $data = [
-            'doaLevel'  => $doa_level, 
-            'stateList' => $stateList, 
+            'doaLevel' => $doa_level,
+            'stateList' => $stateList,
             'levelCode' => $level_code,
-            'cityList'  => $cityList,
-            'doaLevelStates'=> $doaLevelStates
+            'cityList' => $cityList,
+            'doaLevelStates' => $doaLevelStates,
+            'roleList' => $roleList,
+            'doaLevelRoles' => $levelRoleList,
+            'doaLevelId' => $doa_level_id
         ];
-    	return view('master.doa.add_doa_level', $data);
+        return view('master.doa.add_doa_level', $data);
     }
     
     /**
@@ -123,7 +174,7 @@ class DoaController extends Controller {
      * @param Request $request
      * @return response
      */
-    public function saveDoaLevel(Request $request) 
+    public function saveDoaLevel(Request $request)
     {
         $reqData = $request->all();
         try {
@@ -131,43 +182,66 @@ class DoaController extends Controller {
                 'level_code' => $reqData['level_code'],
                 'level_name' => $reqData['level_name'],
                 //'state_id'   => $reqData['state_id'],
-               // 'city_id'    => $reqData['city_id'],
+                // 'city_id'    => $reqData['city_id'],
                 'min_amount' => $reqData['min_amount'],
                 'max_amount' => $reqData['max_amount'],
             ];
-            
+
             $doa_level_id = $reqData['doa_level_id'] ? $reqData['doa_level_id'] : null;
             if (is_null($doa_level_id)) {
                 $whereCond = [
-                    'city_id'    => $reqData['city_id'],
-                    'min_amount' => $reqData['min_amount'],
-                    'max_amount' => $reqData['max_amount']
+                    'city_id' => $reqData['city_id'],
+                    'min_amount' => str_replace(',', '', $reqData['min_amount']),
+                    'max_amount' => str_replace(',', '', $reqData['max_amount'])
                 ];
-                $doaData = $this->masterRepo->getDoaLevelData($whereCond);                
+
+
+
+                $doaData = $this->masterRepo->getDoaLevelData($whereCond);
                 //$doa_level_id = $doaData ? $doaData->doa_level_id : null;
                 //$data['level_code'] = $this->getDoaLevelCode($doa_level_id);
                 if ($doaData) {
-                    Session::flash('is_data_found', '1');                    
-                    return redirect()->back();                    
+                    Session::flash('is_data_found', '1');
+                    return redirect()->back();
                 }
             }
-            
-             $lastInsertId =   $this->masterRepo->saveDoaLevelData($data, $doa_level_id); 
-             $lastInsertId = $doa_level_id ? $doa_level_id : $lastInsertId->doa_level_id;
-             $this->saveDeoLevelStates($request ,$lastInsertId);
+
+            $lastInsertId = $this->masterRepo->saveDoaLevelData($data, $doa_level_id);
+            $lastInsertId = $doa_level_id ? $doa_level_id : $lastInsertId->doa_level_id;
+            $this->saveDeoLevelStates($request, $lastInsertId);
+
+
+
+            $role_user_id = $reqData['role_user'];
+            $prepareData = [];
+            $roles = $reqData['role'];
+            foreach ($role_user_id as $keys => $values):
+                $role_id = isset($roles[$keys]) ? $roles[$keys] : null;
+                foreach ($values as $inkeys => $inValue) {
+                    $prepareData[] = [
+                        'doa_level_id' => $lastInsertId,
+                        'role_id' => $role_id,
+                        'user_id' => isset($inValue) ? $inValue : null
+                    ];
+                }
+            endforeach;
+            // dd($prepareData);
+            $this->masterRepo->deleteDoaLevelRoles($doa_level_id);
+            $this->masterRepo->saveDoaLevelRoles($prepareData);
+
+
+
 
             //Session::flash('message', 'Doa Level saved successfully!');
             //return redirect()->route('manage_doa');
-            Session::flash('is_data_saved', '1');   
+            Session::flash('is_data_saved', '1');
             return redirect()->back();
-            
-            
         } catch (Exception $ex) {
-            Session::flash('is_data_saved', '1'); 
+            Session::flash('is_data_saved', '1');
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-    
+
     /**
      * View assign role
      * 
