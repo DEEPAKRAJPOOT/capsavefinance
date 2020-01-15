@@ -20,6 +20,7 @@ use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Models\ProgramDoaLevel;
 use App\Inv\Repositories\Models\Product;
 use App\Inv\Repositories\Models\Master\Bank;
+use App\Inv\Repositories\Models\DeoLevelStates;
 /**
  * 
  */
@@ -352,6 +353,47 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function getBankList()
     {
         return Bank::getBankList();
+    }
+    
+    
+    
+    /**
+     * get city
+     * 
+     * @param type $state_id
+     * @return type mixed
+     */
+    public function getCityWhereIn($state_id)
+    {
+        return CityModel::getCityWhereIn($state_id);
+    }
+    
+    
+    
+    
+     
+    /**
+     * Save Deo level states 
+     * 
+     * @param type $attributes
+     * @return type mixed
+     */
+    public function saveDeoLevelStates($attributes)
+    {
+        return DeoLevelStates::saveDeoLevelStates($attributes);
+    }
+    
+    
+    /**
+     * delete deo level
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+    
+    public function deleteDeoLevelStates($attributes)
+    {
+        return DeoLevelStates::deleteDeoLevelStates($attributes);
     }
 
 }

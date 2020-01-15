@@ -133,6 +133,7 @@ function checkValidation(){
 	unsetError('select[name=biz_state]');
 	unsetError('input[name=biz_city]');
 	unsetError('input[name=biz_pin]');
+	unsetError('#check_block');
 	
 	let flag = true;
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
@@ -150,6 +151,7 @@ function checkValidation(){
 	let biz_state = $('select[name=biz_state]').val();
 	let biz_city = $('input[name=biz_city]').val().trim();
 	let biz_pin = $('input[name=biz_pin]').val().trim();
+	let product_id = $('input[name*=product_id]:checked');
 
 	if(biz_pan_number.length != 10){
 		setError('input[name=biz_pan_number]', 'Enter valid PAN Number');
@@ -217,6 +219,11 @@ function checkValidation(){
 		// OK
 	}else if(tenor_days.length != 0 && parseInt(tenor_days) == 0){
 		setError('input[name=tenor_days]', 'Enter valid Tranche Tenor');
+		flag = false;
+	}
+
+	if(product_id.length <= 0){
+		setError('#check_block', 'Product type is required');
 		flag = false;
 	}
 

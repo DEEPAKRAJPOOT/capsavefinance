@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocRepoInterface;
+use App\Inv\Repositories\Models\Master\Status;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Session;
@@ -42,9 +43,11 @@ class FiRcuController extends Controller
         else
             $fiLists = $this->appRepo->getAddressforFI($biz_id);
 
+        $status_lists = Status::where(['status_type'=>3, 'is_active'=>1])->pluck('status_name', 'id');
+
         $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Management Address'];
         //dd($fiLists[0]->fiAddress);
-        return view('backend.fircu.fi')->with(['fiLists'=> $fiLists, 'addrType'=> $addrType]);   
+        return view('backend.fircu.fi')->with(['fiLists'=> $fiLists, 'addrType'=> $addrType, 'status_lists'=> $status_lists]);   
     }
 
     /**

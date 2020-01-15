@@ -30,6 +30,7 @@ use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
 use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 
 
 class AjaxController extends Controller {
@@ -43,8 +44,10 @@ class AjaxController extends Controller {
     protected $user;
     protected $application;
    protected $invRepo;
+   protected $docRepo;
+   
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo) {
 
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
@@ -55,6 +58,7 @@ class AjaxController extends Controller {
         $this->application = $application;
         $this->masterRepo = $master;
         $this->invRepo   =    $invRepo;
+        $this->docRepo          = $docRepo;
 
     }
 
@@ -2707,20 +2711,64 @@ if ($err) {
   
     //////////////////// use for invoice list/////////////////
      public function getInvoiceList(DataProviderInterface $dataProvider) {
-      
-        $invoice_data = $this->invRepo->getAllInvoice($this->request);
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
         return $invoice;
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
-      
-        $invoice_data = $this->invRepo->getAllInvoice($this->request);
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
 
+      //////////////////// use for Approve invoice list/////////////////
+     public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
+        $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
+        return $invoice;
+    } 
     
+      //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,9);
+        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+      //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getBackendInvoiceListBank(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,10);
+        $invoice = $dataProvider->getBackendInvoiceListBank($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+      //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getBackendInvoiceListFailedDisbursed(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,11);
+        $invoice = $dataProvider->getBackendInvoiceListFailedDisbursed($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+    /**
+      * 
+      * @param DataProviderInterface $dataProvider
+      * @param Request $request
+      * @return type
+      * 
+      * 
+      */
+   public function updateInvoiceApprove(Request $request)
+   {
+     return  $this->invRepo->updateInvoice($request->invoice_id,$request->status);
+   
+   }
     public function getFiLists(DataProviderInterface $dataProvider, Request $request){
         $fiLists = $this->application->getFiLists($request);
         $fis = $dataProvider->getFiListsList($this->request, $fiLists);
@@ -3050,8 +3098,8 @@ if ($err) {
        }
        $date = Carbon::now();
        $data = array();
-       $id = Auth::user()->user_id;
-        $userId = 1;
+        $userId =  Auth::user()->user_id;
+        $id = Auth::user()->user_id;
         if ($request['doc_file']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice')) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice', 0775, true);
@@ -3140,7 +3188,27 @@ if ($err) {
       // return $d && $d->format($format) === $date;
      }
      
-     
+    function saveInvoiceDoc(Request $request)
+    {
+        $date = Carbon::now();
+        $id = Auth::user()->user_id;
+        $attributes  = $request->all();
+        $uploadData = Helpers::uploadAppFile($attributes, $attributes['app_id']);
+        $userFile = $this->docRepo->saveFile($uploadData);
+        $arr = array('file_id'  =>$userFile->file_id,
+                    'updated_by' => $id,
+                    'updated_at' => $date);
+        $result = $this->invRepo->updateFileId($arr,$attributes['invoice_id']);
+       if($result)
+       {
+           return response()->json(['status' => 1]); 
+       }
+       else
+       {
+           return response()->json(['status' => 0]); 
+       }
+       
+    }
      
     function DeleteTempInvoice(Request $request) {
        
@@ -3150,7 +3218,13 @@ if ($err) {
         
     }
     
-
+   function updateBulkInvoice(Request $request)
+   {
+       foreach($request['invoice_id'] as $row) {  
+        $res =   $this->invRepo->updateInvoice($row,$request->status);
+       }
+       return  $res;
+   }
     
    /**
     * get Bank account list
@@ -3169,7 +3243,7 @@ if ($err) {
      * set default account
      * 
      * @param Request $request
-     * @return type mixed
+     * @return mixed
      */
     public function setDefaultAccount(Request $request)
     {
@@ -3178,6 +3252,24 @@ if ($err) {
         $this->application->updateBankAccount(['is_default' => 0]);
         $res = $this->application->updateBankAccount(['is_default' => $value], ['bank_account_id' => $acc_id]);
         return \response()->json(['success' => $res]);
+    }
+    
+    
+    
+    /**
+     * get user by Role
+     * 
+     * @param Request $request
+     * @return mixed
+     */
+    public function getUserByRole(Request $request)
+    {
+        $role_id = (int) $request->get('role_id');
+        if (empty($role_id)) {
+            abort(400);
+        }
+        $roleUsers = Helpers::getAllUsersByRoleId($role_id);
+        return \response()->json(['data' => $roleUsers]);
     }
 
 

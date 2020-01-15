@@ -795,7 +795,9 @@ class CamController extends Controller
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
 
-        $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
+        $supplyPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 1);
+        $termPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 2);
+        $leasingPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 3);
         $limitData = $this->appRepo->getAppLimit($appId);
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
@@ -807,7 +809,9 @@ class CamController extends Controller
                 ->with('bizId', $bizId)
                 ->with('limitData', $limitData)
                 ->with('approveStatus', $approveStatus)
-                ->with('prgmLimitData', $prgmLimitData)
+                ->with('supplyPrgmLimitData', $supplyPrgmLimitData)
+                ->with('termPrgmLimitData', $termPrgmLimitData)
+                ->with('leasingPrgmLimitData', $leasingPrgmLimitData)
                 ->with('currStageCode', $currStageCode);
     }
     
@@ -826,6 +830,7 @@ class CamController extends Controller
             $checkProgram = $this->appRepo->checkduplicateProgram([
               'app_id'=>$appId,
               'anchor_id'=>$request->anchor_id,
+              'product_id'=>$request->product_id,
               'prgm_id'=>$request->prgm_id
               ]);
 
@@ -853,6 +858,7 @@ class CamController extends Controller
                           'app_limit_id'=>($totalLimit)? $totalLimit->app_limit_id : $app_limit->app_limit_id,
                           'app_id'=>$appId,
                           'biz_id'=>$bizId,
+                          'product_id'=>$request->product_id,
                           'anchor_id'=>$request->anchor_id,
                           'prgm_id'=>$request->prgm_id,
                           'limit_amt'=>str_replace(',', '', $request->limit_amt),
@@ -893,8 +899,17 @@ class CamController extends Controller
       $limitData= $this->appRepo->getLimit($aplid);
       $current_offer_limit = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
       $totalLimit = $this->appRepo->getAppLimit($appId);
-      $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
-      return view('backend.cam.limit_offer', ['offerData'=>$offerData, 'limitData'=>$limitData, 'limit_amt'=>$limitData->limit_amt, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit]);
+
+      if(!is_null($limitData->prgm_id)){
+        $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
+        $prgmLimit = $limitData->program->anchor_sub_limit;
+      }else{
+        $offeredLimit = 0;
+        $prgmLimit = 0;
+      }
+
+      $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'limit_amt'=>$limitData->limit_amt, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit]);
     }
 
     public function updateLimitOffer(Request $request){
@@ -905,6 +920,7 @@ class CamController extends Controller
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
         $request['check_bounce_fee'] = str_replace(',', '', $request->check_bounce_fee);
+        $request['addl_security'] = implode(',', $request->addl_security);
 
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
 
@@ -928,8 +944,15 @@ class CamController extends Controller
       $offerData= $this->appRepo->getProgramOffer($aplid);
       $current_offer_limit = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
       $totalLimit = $this->appRepo->getAppLimit($appId);
-      $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
-      return view('backend.cam.limit', ['limitData'=>$limitData, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit, 'prgmLimit'=> $limitData->program->anchor_sub_limit]);
+
+      if(!is_null($limitData->prgm_id)){
+        $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
+        $prgmLimit = $limitData->program->anchor_sub_limit;
+      }else{
+        $offeredLimit = 0;
+        $prgmLimit = 0;
+      }
+      return view('backend.cam.limit', ['limitData'=>$limitData, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit, 'prgmLimit'=> $prgmLimit]);
     }
 
     public function updateLimit(Request $request){

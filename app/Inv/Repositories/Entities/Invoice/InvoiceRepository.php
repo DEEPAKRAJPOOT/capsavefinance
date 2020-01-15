@@ -229,16 +229,41 @@ use CommonRepositoryTraits;
          
     }
     
-    public function getAllInvoice($request)
+    public function getAllInvoice($request,$status)
     {
         try
         {
-           return InvoiceModel::getAllInvoice($request);  
+           return InvoiceModel::getAllInvoice($request,$status);  
         } catch (Exception $ex) {
            return $ex;
         }
          
     } 
+    
+     public function updateInvoiceAmount($invId,$amount)
+    {
+        try
+        {
+           return InvoiceModel::updateInvoiceAmount($invId,$amount);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }  
+    
+    
+    
+     public function updateFileId($arr,$invoiceId)
+    {
+        try
+        {
+           return InvoiceModel::updateFileId($arr,$invoiceId);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    } 
+     
     
     public function getBusinessName()
     {
@@ -340,8 +365,17 @@ use CommonRepositoryTraits;
         } 
     }
     
-  
-    
+    public function updateInvoice($invId,$status)
+    {
+       try
+        {
+          return BizInvoice::updateInvoice($invId,$status);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+          
+    }
+
      public function geAnchortLimitProgram($aid)
     {
      
