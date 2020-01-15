@@ -52,8 +52,8 @@ class Idfc_lib{
 		 list($payload, $http_header, $txn_id) = $this->_genReq($method, $params);
 		 $file_name = md5($txn_id).'.txt';
 		$this->_saveLogFile($payload, $file_name, 'Outgoing');
-		 dd($http_header);
      	$response = $this->_curl_call($url, $payload, $http_header);
+		 dd($response);
 	     if (!empty($response['error_no'])) {
 	     	$resp['code'] 	 = "CurlError";
 	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
