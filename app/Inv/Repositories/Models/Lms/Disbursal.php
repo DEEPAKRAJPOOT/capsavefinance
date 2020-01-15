@@ -135,14 +135,17 @@ class Disbursal extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        $query = self::select('*');
-                        
-        if (isset($whereCondition['int_accrual_start_dt'])) {
-            $query->where('int_accrual_start_dt', '>=', $whereCondition['int_accrual_start_dt']);
-        } 
-        $query->orderBy('disburse_date', 'DESC');
-        $query->orderBy('disbursal_id', 'DESC');
-        $result = $query->get();
+        $result = self::select('app_prgm_offer.*')
+                ->join('invoice', 'invoice.invoice_id', '=', 'disbursal.invoice_id')
+                ->join('app_prgm_limit', 'invoice.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
+                ->join('app_prgm_offer', 'disbursal.prgm_offer_id', '=', 'app_prgm_offer.prgm_offer_id')
+                
+                ->where('disbursal_id', $whereCondition['disbursal_id'])
+                ->where('app_prgm_offer.is_active', 1)
+                ->where('app_prgm_offer.is_active', 1)
+                ->where('app_prgm_offer.status', 1)
+                ->get();
+        
         return $result;
     }
 }
