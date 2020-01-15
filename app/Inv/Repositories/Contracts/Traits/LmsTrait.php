@@ -178,8 +178,8 @@ trait LmsTrait
 
             $disbursalData = [];
             $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-                $interest = (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
-                $disburseAmount = round($fundedAmount - $interest);
+            $interest = (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
+            $disburseAmount = round($fundedAmount - $interest);
 
 
             $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
@@ -194,7 +194,6 @@ trait LmsTrait
             $disbursalData['virtual_acc_id'] = $invoice['lms_user']['virtual_acc_id'] ?? null;
             $disbursalData['customer_id'] = $invoice['lms_user']['customer_id'] ?? null;
             $disbursalData['principal_amount'] = $fundedAmount ?? null;
-            
             $disbursalData['inv_due_date'] = $invoice['inv_due_date'] ?? null;
             $disbursalData['tenor_days'] =  $invoice['program_offer']['tenor'] ?? null;
             $disbursalData['interest_rate'] = $invoice['program_offer']['interest_rate'] ?? null;

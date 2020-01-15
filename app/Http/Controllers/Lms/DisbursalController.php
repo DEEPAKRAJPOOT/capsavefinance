@@ -99,24 +99,23 @@ class DisbursalController extends Controller
 					$fundedAmount += $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
 					$interest += (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
 					$disburseAmount += round($fundedAmount - $interest);
-					// dd($disburseAmount);
 				}			
+				$requestData[$userid]['RefNo'] = 'CAP'.$userid;
+				$requestData[$userid]['Amount'] = $disburseAmount;
+				$requestData[$userid]['Debit_Acct_No'] = '123344455';
+				$requestData[$userid]['Debit_Acct_Name'] = 'testing name';
+				$requestData[$userid]['Debit_Mobile'] = '9876543210';
+				$requestData[$userid]['Ben_IFSC'] = $invoice['supplier_bank_detail']['ifsc_code'];
+				$requestData[$userid]['Ben_Acct_No'] = $invoice['supplier_bank_detail']['acc_no'];
+				$requestData[$userid]['Ben_Name'] = $invoice['supplier_bank_detail']['acc_name'];
+				$requestData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];
+				$requestData[$userid]['Ben_Email'] = $invoice['supplier']['email'];
+				$requestData[$userid]['Ben_Mobile'] = $invoice['supplier']['mobile_no'];
+				$requestData[$userid]['Mode_of_Pay'] = 'IFT';
+				$requestData[$userid]['Nature_of_Pay'] = 'MPYMT';
+				$requestData[$userid]['Remarks'] = 'test remarks';
+				$requestData[$userid]['Value_Date'] = date('Y-m-d');
 			}
-			$requestData[$userid]['RefNo'] = 'CAP'.$userid;
-			$requestData[$userid]['Amount'] = $disburseAmount;
-			$requestData[$userid]['Debit_Acct_No'] = '123344455';
-			$requestData[$userid]['Debit_Acct_Name'] = 'testing name';
-			$requestData[$userid]['Debit_Mobile'] = '9876543210';
-			$requestData[$userid]['Ben_IFSC'] = $invoice['supplier_bank_detail']['ifsc_code'];
-			$requestData[$userid]['Ben_Acct_No'] = $invoice['supplier_bank_detail']['acc_no'];
-			$requestData[$userid]['Ben_Name'] = $invoice['supplier_bank_detail']['acc_name'];
-			$requestData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];
-			$requestData[$userid]['Ben_Email'] = $invoice['supplier']['email'];
-			$requestData[$userid]['Ben_Mobile'] = $invoice['supplier']['mobile_no'];
-			$requestData[$userid]['Mode_of_Pay'] = 'IFT';
-			$requestData[$userid]['Nature_of_Pay'] = 'MPYMT';
-			$requestData[$userid]['Remarks'] = 'test remarks';
-			$requestData[$userid]['Value_Date'] = date('Y-m-d');
 		}
 		$params = [
 			'http_header' => $http_header,
