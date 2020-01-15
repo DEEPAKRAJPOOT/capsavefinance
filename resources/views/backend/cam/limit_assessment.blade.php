@@ -69,7 +69,9 @@
                             </div>
                         </div>
                         </form>
-
+                        <!-- To show suply chain data -->
+                        @foreach($supplyPrgmLimitData as $key=>$prgmLimit)
+                        @if($loop->first)
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="table-responsive ps ps--theme_default mt-2">
@@ -86,16 +88,15 @@
                                         </thead>
                                     </table>
                                 </div>
-
-                                @forelse($prgmLimitData as $key=>$prgmLimit)
+                                @endif
                                 <div class="accordion">
                                     <div class="card card-color mb-0">
-                                        <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#collapse{{$key+1}}" aria-expanded="false">
+                                        <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#scollapse{{$key+1}}" aria-expanded="false">
                                             <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <tr role="row" class="odd">
                                                        <td width="17%">{{($key+1)}}</td>
-                                                       <td width="17%">{{$prgmLimit->program->product->product_name}}</td>
+                                                       <td width="17%">{{$prgmLimit->product->product_name}}</td>
                                                        <td width="17%">{{$prgmLimit->anchor->comp_name}}</td>
                                                        <td width="17%">{{$prgmLimit->program->prgm_name}}</td>
                                                        <td width="16%">{{number_format($prgmLimit->limit_amt)}}</td>
@@ -104,7 +105,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div id="collapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
+                                        <div id="scollapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
                                             <ul class="row p-0 m-0">
                                             @if($prgmLimit->offer)
                                                 <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
@@ -114,28 +115,136 @@
                                                 <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>{{number_format($prgmLimit->offer->processing_fee)}}</b></li>
                                                 <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
                                             @else
-                                                <li class="col-md-10">No Record found</li>
+                                                <li class="col-md-10" style="text-align: center;">No offer found</li>
                                                 <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
                                             @endif
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
-                                @empty
-                                <div class="card card-color mb-0">
-                                        <div class="card-header pl-0 pr-0 collapsed">
+                                @if($loop->last)
+                            </div>
+                        </div>
+                        @endif
+                        @endforeach
+
+                        <!-- To show term loan data -->
+                        @foreach($termPrgmLimitData as $key=>$prgmLimit)
+                        @if($loop->first)
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="table-responsive ps ps--theme_default mt-2">
+                                    <table id="supplier-listing" class="table table-striped cell-border  overview-table mb-0" cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr role="row">
+                                            <th width="17%">Sr. No.</th>
+                                            <th width="17%">Product Type</th>
+                                            <th width="17%"></th>
+                                            <th width="17%"></th>
+                                            <th width="16%">Limit</th>
+                                            <th width="16%">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                                @endif
+                                <div class="accordion">
+                                    <div class="card card-color mb-0">
+                                        <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#tcollapse{{$key+1}}" aria-expanded="false">
                                             <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <tr role="row" class="odd">
-                                                       <td width="100%" style="text-align: center;" colspan="6">No record found</td>
+                                                       <td width="17%">{{($key+1)}}</td>
+                                                       <td width="17%">{{$prgmLimit->product->product_name}}</td>
+                                                       <td width="17%"></td>
+                                                       <td width="17%"></td>
+                                                       <td width="16%">{{number_format($prgmLimit->limit_amt)}}</td>
+                                                       <td width="16%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
+                                        <div id="tcollapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
+                                            <ul class="row p-0 m-0">
+                                            @if($prgmLimit->offer)
+                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
+                                                <li class="col-md-2">Interest(%)  <br> <b>{{$prgmLimit->offer->interest_rate}}</b></li>
+                                                <li class="col-md-2">Invoice Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
+                                                <li class="col-md-2">Margin(%) <br> <b>{{$prgmLimit->offer->margin}}</b></li>
+                                                <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>{{number_format($prgmLimit->offer->processing_fee)}}</b></li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
+                                            @else
+                                                <li class="col-md-10" style="text-align: center;">No offer found</li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
+                                            @endif
+                                            </ul>
+                                        </div>
                                     </div>
-                                @endforelse
+                                </div>
+                                @if($loop->last)
                             </div>
                         </div>
+                        @endif
+                        @endforeach
+
+                        <!-- To show leasing data -->
+                        @foreach($leasingPrgmLimitData as $key=>$prgmLimit)
+                        @if($loop->first)
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="table-responsive ps ps--theme_default mt-2">
+                                    <table id="supplier-listing" class="table table-striped cell-border  overview-table mb-0" cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr role="row">
+                                            <th width="17%">Sr. No.</th>
+                                            <th width="17%">Product Type</th>
+                                            <th width="17%"></th>
+                                            <th width="17%"></th>
+                                            <th width="16%">Limit</th>
+                                            <th width="16%">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                                @endif
+                                <div class="accordion">
+                                    <div class="card card-color mb-0">
+                                        <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#lcollapse{{$key+1}}" aria-expanded="false">
+                                            <table cellspacing="0" cellpadding="0" width="100%">
+                                                <tbody>
+                                                    <tr role="row" class="odd">
+                                                       <td width="17%">{{($key+1)}}</td>
+                                                       <td width="17%">{{$prgmLimit->product->product_name}}</td>
+                                                       <td width="17%"></td>
+                                                       <td width="17%"></td>
+                                                       <td width="16%">{{number_format($prgmLimit->limit_amt)}}</td>
+                                                       <td width="16%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div id="lcollapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
+                                            <ul class="row p-0 m-0">
+                                            @if($prgmLimit->offer)
+                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
+                                                <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmLimit->offer->security_deposit}}</b></li>
+                                                <li class="col-md-2">Invoice Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
+                                                <li class="col-md-2">PTPQ(%) <br> <b>{{$prgmLimit->offer->ptpq}}</b></li>
+                                                <li class="col-md-2">XIRR(%) <br><i class="fa fa-inr"></i><b>{{number_format($prgmLimit->offer->xirr)}}</b></li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
+                                            @else
+                                                <li class="col-md-10" style="text-align: center;">No offer found</li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
+                                            @endif
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                        @if($loop->last)
+                            </div>
+                        </div>
+                        @endif
+                        @endforeach
                         <div class="clearfix"></div>
                         <div>
                             <a data-toggle="modal" data-target="#limitOfferFrame" data-url ="" data-height="700px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openOfferModal" style="display: none;"><i class="fa fa-plus"></i>Add Offer</a>
@@ -176,9 +285,18 @@ $(document).ready(function(){
     $('#product_id').on('change',function(){
         let product_id = $('#product_id').val();
         if(product_id == ''){
+            $('#program_id').attr('disabled', false);
+            $('#anchor_id').attr('disabled', false);
             $('#program_id').html('<option value="">Select Program</option>');
             $('#anchor_id').html('<option value="">Select Anchor</option>');
             return;
+        }else if(product_id != 1){
+            $('#program_id').attr('disabled', true);
+            $('#anchor_id').attr('disabled', true);
+            return;
+        }else{
+            $('#program_id').attr('disabled', false);
+            $('#anchor_id').attr('disabled', false);
         }
         let token = "{{ csrf_token() }}";
         $('.isloader').show();
@@ -268,12 +386,12 @@ function checkValidation(){
         flag = false;
     }
 
-    if(anchor_id == ''){
+    if(anchor_id == '' && product_id == 1){
         setError('select[name=anchor_id]', 'Please select anchor');
         flag = false;
     }
 
-    if(program_id == ''){
+    if(program_id == '' && product_id == 1){
         setError('select[name=prgm_id]', 'Please select program');
         flag = false;
     }

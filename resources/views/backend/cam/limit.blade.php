@@ -12,11 +12,12 @@
       <div class="form-group row">
         <label for="txtPassword" class="col-md-4"><b>Product Type:</b></label> 
         <div class="col-md-8">
-        <input type="text" name="prgm_limit_amt" class="form-control" value="{{isset($limitData->program->product)? $limitData->program->product->product_name : ''}}" disabled>
+        <input type="text" name="prgm_limit_amt" class="form-control" value="{{isset($limitData->product)? $limitData->product->product_name : ''}}" disabled>
         </div>
       </div>
     </div>
     
+    @if($limitData->product->id == 1)
     <div class="col-md-12">
       <div class="form-group row">
         <label for="txtPassword" class="col-md-4"><b>Anchor:</b></label> 
@@ -34,6 +35,7 @@
         </div>
       </div>
     </div>
+    @endif
     
     <div class="col-md-12">
       <div class="form-group row INR">

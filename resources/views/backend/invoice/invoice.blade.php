@@ -30,8 +30,7 @@
    <div class="col-md-12 ">
       <div class="card">
          <div class="card-body">
-		 
-		 <ul class="nav nav-tabs" role="tablist">
+	 <ul class="nav nav-tabs" role="tablist">
              <li class="nav-item ">
       <a class="nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
     </li>
@@ -43,26 +42,25 @@
     </li>
         
    <li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
+            <a class="nav-link @if(Route::currentRouteName()=='backend_get_sent_to_bank') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
     </li>
 	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursment</a>
+            <a class="nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursment</a>
     </li>
     <li class="nav-item">
-              <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
+              <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
          
     </li>
       <li class="nav-item">
          <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_repaid_invoice')}}">Repaid</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
+      <a class="nav-link @if(Route::currentRouteName()=='backend_get_reject_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
 
     </li>
   
    
   </ul>
-
 
 
   <div class="tab-content">
@@ -72,9 +70,9 @@
        
     <div class="card">
         <div class="card-body">
-                     <div class="row"><div class="col-md-4"></div>
+                     <div class="row"><div class="col-md-3"></div>
                  <div class="col-md-2">				 
-                                                      
+                     <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                      <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
                            <option value="">Select Application  </option>
                            @foreach($get_bus as $row)
@@ -109,7 +107,9 @@
 
                    
             </div>
-            
+                <div class="col-md-1">	          
+                <button type="button" id="bulkApprove" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Approve</button>
+             </div>
             </div>
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -121,12 +121,16 @@
                                         <thead>
                                             <tr role="row">
                                                 <th><input type="checkbox" id="chkAll"></th> 
-                                               <th>Anchor Name</th>
+                                              <th>Invoice  No</th>
+                                                <th>Anchor Name</th>
                                                 <th>Supplier Name</th>
                                                 <th>Program Name</th>
                                                 <th>Invoice Date</th>
-                                                <th>Invoice  Amount</th>
+                                                 <th>Invoice  Amount</th>
+                                                <th>Invoice Approve Amount</th>
+                                                <th>View & Upload Invoice </th> 
                                                 <th>Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -200,21 +204,11 @@
             <div class="col-md-6">
             <div class="form-group">
             <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
-           <select readonly="readonly" class="form-control" id="supplier_bulk_id" name="supplier_bulk_id">
-           </select>
+            <select readonly="readonly" class="form-control" id="supplier_bulk_id" name="supplier_bulk_id">
+            </select>
             <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
             </div>
             </div>
-										
-										 <div class="col-md-6">
-										 <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
-										<div class="custom-file  ">
-              
-                                                                                    <input type="file" onchange="uploadInvoice()" class="custom-file-input fileUpload" id="customFile" name="file_id">
-               <label class="custom-file-label" for="customFile">Choose file</label>
-            </div>
-										
-										</div>
                                     
 									
 									
@@ -231,10 +225,47 @@
       </div>
    </div>
 </div>
+</div>
+<div class="modal show" id="myModal7" style="display: none;">
+   <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        
+         <div class="modal-header">
+			<h5>Confirm Invoice Approved Amount</h5>
+            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
+         </div>
+        
+         <div class="modal-body text-left">
+             <form id="signupFormNew"  action="{{Route('update_invoice_amount')}}" method="post">
+		@csrf	
+                 <div class="row">
+                           <div class="col-md-12">
+                              <div class="form-group">
+                                 <label for="txtCreditPeriod">Invoice Amount
+                                 <span class="mandatory">*</span>
+                                 </label>
+                                  <input type="text" class="form-control" id="invoice_amount" value="" disabled="">
+                                  <input type="hidden" name="invoice_id" id="invoice_id">
+                              </div>
+							   <div class="form-group">
+                                 <label for="txtCreditPeriod">Invoice Approved Amount
+                                 <span class="mandatory">*</span>
+                                 </label>
+			      <input type="text" class="form-control" id="invoice_approve_amount" name="approve_invoice_amount" value="Enter Amount">
+                                 
+                              </div>
+                           </div>
+						   
+						  
 
-
-
-  </div>
+                        </div>
+             <span class="model7msg error"></span>			
+             <input type="submit" id="UpdateInvoiceAmount" class="btn btn-success float-right btn-sm mt-3" value="Submit"> 
+             </form> 
+         </div>
+      </div>
+   </div>
+</div>
     @endsection
     @section('jscript')
 <script>
@@ -246,6 +277,9 @@
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             front_program_list: "{{ URL::route('front_program_list') }}",
             front_supplier_list: "{{ URL::route('front_supplier_list') }}",
+            update_invoice_approve: "{{ URL::route('update_invoice_approve') }}",
+            invoice_document_save: "{{ URL::route('invoice_document_save') }}",
+            update_bulk_invoice: "{{ URL::route('update_bulk_invoice') }}",
             token: "{{ csrf_token() }}",
  };
  
@@ -305,7 +339,31 @@
        }     
      });
    
- 
+ ///////////////////////For Invoice Approve////////////////////////
+  $(document).on('click','.approveInv',function(){
+    if(confirm('Are you sujre? You want to approve it'))  
+    {
+     var invoice_id =  $(this).attr('data-id'); 
+      var postData =  ({'invoice_id':invoice_id,'status':8,'_token':messages.token});
+      th  = this;
+       jQuery.ajax({
+        url: messages.update_invoice_approve,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                        alert(errorThrown);
+                 },
+                success: function (data) {
+                    $(th).parent('td').parent('tr').remove();
+                }
+             });  
+    }
+    else
+    {
+        return false;
+    }
+  });
   //////////////////// onchange anchor  id get data /////////////////
 
   $("#supplier_id").append("<option value=''>Select customer</option>");  
@@ -453,7 +511,7 @@
     
     function uploadInvoice()
     {
-//        $('.isloader').show();
+       $('.isloader').show();
        $("#submitInvoiceMsg").empty();
         var file  = $("#customFile")[0].files[0];
         var datafile = new FormData();
@@ -493,6 +551,104 @@
             }
         });
     }
+ //////////////////// for upload invoice//////////////////////////////   
+function uploadFile(app_id,id)
+{
+   $(".isloader").show(); 
+   var file  = $("#file"+id)[0].files[0];
+   var extension = file.name.split('.').pop().toLowerCase();
+   var datafile = new FormData();
+   datafile.append('_token', messages.token );
+   datafile.append('app_id', app_id);
+   datafile.append('doc_file', file);
+   datafile.append('invoice_id', id);
+    $.ajax({
+        headers: {'X-CSRF-TOKEN':  messages.token  },
+        url : messages.invoice_document_save,
+        type: "POST",
+        data: datafile,
+        processData: false,
+        contentType: false,
+        cache: false, // To unable request pages to be cached
+        enctype: 'multipart/form-data',
+         success: function(r){
+            $(".isloader").hide();
+            location.reload();
+        }
+    });
+}
+
+//////////////////////////// for bulk approve invoice////////////////////
+
+
+$(document).on('click','#bulkApprove',function(){
+    var arr = [];
+    i = 0;
+    th  = this;
+      $(".chkstatus:checked").each(function(){
+           arr[i++] = $(this).val();
+        });
+        if(arr.length==0){
+            alert('Please select atleast one checked');
+            return false;
+        }
+        if(confirm('Are you sujre? You want to approve it'))  
+    { 
+        var postData =  ({'invoice_id':arr,'status':8,'_token':messages.token});
+         jQuery.ajax({
+          url: messages.update_bulk_invoice,
+                  method: 'post',
+                  dataType: 'json',
+                  data: postData,
+                  error: function (xhr, status, errorThrown) {
+                  alert(errorThrown);
+
+                  },
+                  success: function (data) {
+                      if(data==1)
+                      {
+                          
+                   location.reload();
+        }
+
+          }
+      });
+  }
+  else
+  {
+     return false; 
+    }
+    });
+    
+///////////////////////////////////////// change invoice amount////////////////
+$(document).on('click','.changeInvoiceAmount',function(){
+    
+    var limit  = $(this).attr('data-limit');
+    var approveAmount  = $(this).attr('data-approve');    
+    var amount  = $(this).attr('data-amount'); 
+    var invoiceId  = $(this).attr('data-id');
+    $("#invoice_id").val(invoiceId);
+    $("#invoice_amount").val(amount);
+    $("#invoice_approve_amount").val(approveAmount);
+    
+  });
+    
+///////////////////////////////////////// change invoice amount////////////////
+$(document).on('click','#UpdateInvoiceAmount',function(){
+    
+    var amount  = parseFloat($("#invoice_amount").val());
+    var approveAmount  = parseFloat($("#invoice_approve_amount").val());
+    if(approveAmount > amount)
+    {
+        $(".model7msg").show();
+        $(".model7msg").html('Invoice Approve Amount should not greater amount');
+        return false;
+     }
+     else
+     {   $(".model7msg").hide();
+         return true;
+     }
+ });
 </script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
 
