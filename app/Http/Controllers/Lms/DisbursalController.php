@@ -11,11 +11,11 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use Session;
 use Helpers;
-use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 
 class DisbursalController extends Controller
 {
-	use ApplicationTrait;
+	use LmsTrait;
 	
 	protected $appRepo;
 	protected $userRepo;
@@ -73,7 +73,12 @@ class DisbursalController extends Controller
 		$record = array_filter(explode(",",$invoiceIds));
 		$allinvoices = $this->lmsRepo->getInvoices($record)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($record)->toArray();
+		
 		$params = array('http_header' => '', 'header' => '', 'request' => []);
+		$fundedAmount = 0;
+		$interest = 0;
+		$disburseAmount = 0;
+
 		$http_header = [
 			'timestamp' => date('Y-m-d H:i:s'),
     		'txn_id' => _getRand(18)
@@ -84,12 +89,16 @@ class DisbursalController extends Controller
     		'Checker_ID' => 11,
     		'Approver_ID' => 12
     		];
+
 		foreach ($supplierIds as $userid) {
 			foreach ($allinvoices as $invoice) {
+				$disburseRequestData = $this->createInvoiceDisbursalData($invoice);
+				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
+
 				if($invoice['supplier_id'] = $userid) {
-					$fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program']['margin'])/100);
-					$interest = (($fundedAmount*$invoice['program']['interest_rate']*10)/360);
-					$disburseAmount = round($fundedAmount - $interest);
+					$fundedAmount += $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
+					$interest += (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
+					$disburseAmount += round($fundedAmount - $interest);
 					// dd($disburseAmount);
 				}			
 			}
@@ -109,14 +118,15 @@ class DisbursalController extends Controller
 			$requestData[$userid]['Remarks'] = 'test remarks';
 			$requestData[$userid]['Value_Date'] = date('Y-m-d');
 		}
-		
 		$params = [
 			'http_header' => $http_header,
 			'header' => $header,
 			'request' => $requestData
 			];
+
 		$idfcObj= new Idfc_lib();
-		$idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);      
+		$result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+		dd($result);      
 	}
 
 

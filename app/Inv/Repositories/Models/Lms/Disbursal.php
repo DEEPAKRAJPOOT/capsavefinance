@@ -88,7 +88,7 @@ class Disbursal extends BaseModel {
             return self::where($whereCondition)->update($data);
         } else if (isset($data[0])) {
             return self::insert($data);
-        } else
+        } else {
             return self::create($data);
         }
     }

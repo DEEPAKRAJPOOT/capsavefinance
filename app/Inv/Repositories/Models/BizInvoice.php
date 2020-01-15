@@ -167,9 +167,15 @@ public static function updateInvoice($invoiceId,$status)
      
      }
      
-     function program()
+     function lms_user()
      {
-          return $this->belongsTo('App\Inv\Repositories\Models\Program', 'program_id','prgm_id')->where(['status' => 1]);  
+          return $this->belongsTo('App\Inv\Repositories\Models\LmsUser', 'supplier_id','user_id'); 
+     
+     }
+     
+     function program_offer()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id','prgm_offer_id');  
      
      }
 
