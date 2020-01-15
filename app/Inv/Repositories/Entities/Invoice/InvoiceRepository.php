@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\BizInvoiceTemp as TempInvoiceModel;
 use App\Inv\Repositories\Models\BizBatchInvoice as BizBatchInvoice;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
 
@@ -353,6 +354,18 @@ use CommonRepositoryTraits;
            return $ex;
         } 
     }
+    
+      public function getOfferForLimit($oid)
+    {
+     
+        try
+        {
+          return AppProgramOffer::getOfferForLimit($oid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
+    
 
  public function getLimitProgram($aid)
     {

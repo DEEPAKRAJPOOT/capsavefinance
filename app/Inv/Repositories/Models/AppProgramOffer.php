@@ -89,6 +89,21 @@ class AppProgramOffer extends BaseModel {
         return $offerData ? $offerData : null;
     }
 
+   
+     /**
+     * Get single Offer Data
+     * 
+     * @param int AppId
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getOfferForLimit($oid)
+    {
+       
+      return  self::where(['app_prgm_limit_id'=>$oid,'is_active' =>1, 'is_active'=>1,'status' =>1 ])->first();      
+
+    }
+
     /**
      * Get All Offer Data
      * 

@@ -853,7 +853,7 @@ class DataRenderer implements DataProviderInterface
                   ->addColumn(
                     'action',
                     function ($invoice) {
-                     return '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option><option value="8">Approved</option><option value="9">Disb Que</option></select><a title="View Reason" href="#" class="btn btn-action-btn btn-sm ml-2"><i class="fa fa-edit" aria-hidden="true"></i></a></div>';
+                     return '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option><option value="8">Approved</option><option value="9">Disb Que</option></select>&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey=""data-url ="{{route([])}}"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
 
                 })
               ->make(true);
@@ -914,7 +914,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
-                    return '<a title="Update Repayment" href="#" data-toggle="modal" data-target="#myModal5" class="btn btn-action-btn btn-sm ml-2"><i class="fa fa-money" aria-hidden="true"></i></a>';
+             return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="400px" data-width="100%" accesskey=""data-url ="{{route([])}}"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
 
                 })
                  

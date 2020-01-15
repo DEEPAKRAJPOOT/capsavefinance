@@ -3080,9 +3080,13 @@ if ($err) {
      
       public function getSupplierList(Request $request)
      {
+        $result  =  explode(",",$request['program_id']);
+        $request['program_id']  = $result[0];
+        $request['prgm_offer_id']  = $result[1];
+        $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        return response()->json(['status' => 1,'limit' => $getProgramLimit,'get_supplier' =>$get_supplier]);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'get_supplier' =>$get_supplier]);
      }
            
 
