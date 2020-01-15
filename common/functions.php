@@ -30,6 +30,20 @@ function _rand_str($length = 2){
    return $random_string;
 }
 
+function _uuid_rand($strLen = 60){
+  $string = sprintf('%04x%04x%04x%05x%05x%04x%04x%04x%05x%05x%06x',
+    mt_rand(0, 0xffff), mt_rand(0, 0xffff),mt_rand(0, 0xffff),
+    mt_rand(0, 0x0fff) | 0x4000,mt_rand(0, 0x3fff) | 0x8000,
+    mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+    mt_rand(0, 0x0fff) | 0x4000,
+    mt_rand(0, 0x3fff) | 0x8000,
+    mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+  );
+  return substr($string, 0, $strLen);
+}
+
+
+
 function extra_char($string = ''){
    $i = 0;
    $extra_char = '';

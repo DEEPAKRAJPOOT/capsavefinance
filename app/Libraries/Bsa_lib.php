@@ -48,7 +48,7 @@ class Bsa_lib{
 			SELF::CNCL_TXN => 'success',
 			SELF::UPL_FILE => 'file',
 			SELF::PRC_STMT => 'bankstatement',
-			SELF::REPRC_STMT => 'needtocheck',
+			SELF::REPRC_STMT => 'bankstatement',
 			SELF::REP_GEN => 'success',
 			SELF::GET_REP => 'pir:data',
 	);
@@ -187,8 +187,22 @@ class Bsa_lib{
     			$concat = $params['perfiosTransactionId'] . '/reports?types='.$params['types'];
     			break;
     		default:
-    			$concat='';
-    			$extra='<facility>NONE</facility><companyNames><namePattern><pattern>capsave</pattern></namePattern></companyNames><sisterCompanyNames><namePattern><pattern>capsave</pattern></namePattern></sisterCompanyNames>';
+    			$concat ='';
+    			if (!empty($params['drawingpowervariableamount'])) {
+    				$extra .= '<drawingPowerVariableAmounts>';
+    				foreach ($params['drawingpowervariableamount'] as $key => $drawing) {
+    					$extra .= "<variableAmount><amount>$drawing</amount></variableAmount>";
+    				}
+    				$extra .= '</drawingPowerVariableAmounts>';
+    			}
+    			if (!empty($params['sanctionlimitvariableamount'])) {
+    				
+    				$extra .= '<sanctionLimitVariableAmounts>';
+    				foreach ($params['drawingpowervariableamount'] as $key => $sanction) {
+    					$extra .= "<variableAmount><amount>$sanction</amount></variableAmount>";
+    				}
+    				$extra .= '</sanctionLimitVariableAmounts>';
+    			}
     			$payload['txnId'] = $params['txnId'];
     			$payload['loanAmount'] = $params['loanAmount'];
     			$payload['loanDuration'] = $params['loanDuration'];
@@ -210,6 +224,8 @@ class Bsa_lib{
     			if (!empty($params['yearMonthTo'])) {
     				$payload['yearMonthTo'] = $params['yearMonthTo'];
     			}
+    			$payload['facility'] = $params['facility'];
+    			$payload['sanctionLimitFixed'] = $params['sanctionLimitFixed'];
     			break;
     	}
     	if ($method != SELF::UPL_FILE && !empty($payload)) {

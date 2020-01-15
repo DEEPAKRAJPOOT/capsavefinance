@@ -363,6 +363,10 @@ class ApplicationController extends Controller
                     $arrFileData['gst_month'] = $arrFileData['bank_month'];
                     $arrFileData['gst_year'] = $arrFileData['bank_year'];
                     $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
+                    $arrFileData['facility'] = $arrFileData['facility'] ?? 'NONE';
+                    $arrFileData['sanctionlimitfixed'] = $arrFileData['sanctionlimitfixed'] ?? '0';;
+                    $arrFileData['drawingpowervariableamount'] = $arrFileData['drawingpowervariableamount'] ?? '0';
+                    $arrFileData['sanctionlimitvariableamount'] = $arrFileData['sanctionlimitvariableamount'] ?? '0';
                     break;
                 case '5':
                     $arrFileData['file_bank_id'] = NULL;

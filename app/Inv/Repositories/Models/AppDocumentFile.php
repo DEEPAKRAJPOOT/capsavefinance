@@ -60,6 +60,10 @@ class AppDocumentFile extends BaseModel
         'is_pwd_protected',
         'is_scanned',
         'pwd_txt',
+        'facility',
+        'sanctionlimitfixed',
+        'drawingpowervariableamount',
+        'sanctionlimitvariableamount',
         'doc_id_no',
         'file_id',
         'comment',
@@ -159,11 +163,14 @@ class AppDocumentFile extends BaseModel
         $inputArr['gst_month']  = (isset($attributes['gst_month'])) ? $attributes['gst_month'] : ''; 
         $inputArr['gst_year']  = (isset($attributes['gst_year'])) ? $attributes['gst_year'] : ''; 
         $inputArr['doc_id_no']  = (isset($attributes['doc_id_no'])) ? $attributes['doc_id_no'] : '';
-
         $inputArr['file_bank_id']  = $attributes['file_bank_id'] ?? NULL;
         $inputArr['is_pwd_protected']  = $attributes['is_pwd_protected'] ?? NULL;
         $inputArr['is_scanned']  = $attributes['is_scanned'] ?? NULL;
         $inputArr['pwd_txt']  = $attributes['pwd_txt'] ?? NULL;
+        $inputArr['facility'] = $attributes['facility'] ?? 'NONE';
+        $inputArr['sanctionlimitfixed'] = $attributes['sanctionlimitfixed'] ?? '0';;
+        $inputArr['drawingpowervariableamount'] = $attributes['drawingpowervariableamount'] ?? '0';
+        $inputArr['sanctionlimitvariableamount'] = $attributes['sanctionlimitvariableamount'] ?? '0';
         $inputArr['file_id']  = $fileId; 
         $inputArr['comment'] = $attributes['comment'] ?? NULL;
         $inputArr['is_upload'] = 1;
