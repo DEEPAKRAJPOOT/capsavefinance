@@ -52,12 +52,9 @@
                                                 @if($fiList->fiAddress->count() && request()->get('view_only') && Auth::user()->agency_id == null)
                                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="2">Inprogress</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="3">Positive</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="4">Negative</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Cancelled</a>
-                                                    <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="6">Refer to Credit</a>
+                                                    @foreach($status_lists as $status_id => $status_name)
+                                                        <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="{{$status_id}}">{{$status_name}}</a>
+                                                    @endforeach
                                                 </div>
                                                 @endif
                                             </div>
@@ -99,15 +96,10 @@
                                                         @endif
 
                                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$fiAdd->fi_addr_id}}">
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="1">Pending</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="2">Inprogress</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="3">Positive</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="4">Negative</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="5">Cancelled</a>
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="6">Refer to Credit</a>
+                                                        @foreach($status_lists as $status_id => $status_name)
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="{{$status_id}}">{{$status_name}}</a>
+                                                        @endforeach
                                                         </div>
-
-
                                                     </td>
                                                  </tr>
                                                  @endif

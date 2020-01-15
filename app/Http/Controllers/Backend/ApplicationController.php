@@ -65,15 +65,20 @@ class ApplicationController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userId = $request->get('user_id');
-            
+            $product_ids = [];
            
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
+            $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
+            foreach($app_data->products as $product){
+              array_push($product_ids, $product->pivot->product_id);
+            }
+
             $states = State::getStateList()->get();
             //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
                 return view('backend.app.company_details')
-                        ->with(['business_info'=>$business_info, 'states'=>$states])
+                        ->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
                         ->with('user_id',$userId)
                         ->with('app_id',$appId)
                         ->with('biz_id',$bizId);

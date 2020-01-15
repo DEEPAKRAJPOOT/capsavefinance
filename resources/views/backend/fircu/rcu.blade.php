@@ -3,7 +3,7 @@
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
 
-@section('jscript')
+@section('additional_css')
 <style type="text/css">
     a:hover {
         text-decoration: none !important;
@@ -82,8 +82,8 @@
                                                      <tr>
                                                         <td width="25%"><b>File Name</b></td>
                                                         <td width="25%"><b>Upload On </b></td>
-                                                        <td width="25%">Action</td>
-                                                        <td width="25%">View Response</td>
+                                                        <td width="25%"><b>Action</b></td>
+                                                        <td width="25%"><b>View Response</b></td>
                                                      </tr>
                                                     @foreach ($value->documents as $key1 => $document) 
                                                      <tr>

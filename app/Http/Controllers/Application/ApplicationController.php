@@ -45,6 +45,7 @@ class ApplicationController extends Controller
     {
         $userId  = Session::has('userId') ? Session::get('userId') : 0;
         $userArr = [];
+        $product_ids = [];
         $states = State::getStateList()->get();
 
         if ($userId > 0) {
@@ -52,8 +53,12 @@ class ApplicationController extends Controller
         }
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
+            $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
+            foreach($app_data->products as $product){
+              array_push($product_ids, $product->pivot->product_id);
+            }
             return view('frontend.application.company_details')
-                        ->with(['business_info'=>$business_info, 'states'=>$states])
+                        ->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
                         ->with('user_id',$request->get('user_id'))
                         ->with('app_id',$request->get('app_id'))
                         ->with('biz_id',$request->get('biz_id'));

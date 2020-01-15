@@ -451,7 +451,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('lead-detail', [
                 'as' => 'lead_detail',
                 'uses' => 'Backend\LeadController@leadDetail'
-            ]);        
+            ]); 
+            Route::get('create-lead', [
+                'as' => 'create_backend_lead',
+                'uses' => 'Backend\LeadController@createBackendLead'
+            ]);   
+            Route::post('save-create-lead', [
+                'as' => 'save_backend_lead',
+                'uses' => 'Backend\LeadController@saveBackendLead'
+            ]);    
         });
         
         Route::group(['prefix' => 'fircu'], function () {
@@ -774,6 +782,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\InvoiceController@viewDisbursedInvoice'
             ]); 
             
+            
+            
              Route::get('backend_get_repaid_invoice', [
                  'as' => 'backend_get_repaid_invoice',
                 'uses' => 'Backend\InvoiceController@viewRepaidInvoice'
@@ -781,7 +791,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
              
               Route::get('backend_get_sent_to_bank', [
                  'as' => 'backend_get_sent_to_bank',
-                'uses' => 'Backend\InvoiceController@viewRepaidInvoice'
+                'uses' => 'Backend\InvoiceController@viewSentToBankInvoice'
             ]); 
                Route::get('backend_get_failed_disbursment', [
                  'as' => 'backend_get_failed_disbursment',
@@ -808,6 +818,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'backend_save_bulk_invoice',
                 'uses' => 'Backend\InvoiceController@saveBulkInvoice'
             ]); 
+             
+            Route::POST('update_invoice_amount', [
+                 'as' => 'update_invoice_amount',
+                'uses' => 'Backend\InvoiceController@saveInvoiceAmount'
+            ]);    
              
              
          Route::get('backend_upload_all_invoice', [

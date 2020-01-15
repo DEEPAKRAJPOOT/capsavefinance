@@ -96,6 +96,23 @@
             </div>
         </li>
         <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <span class="menu-title">Manage Co-lenders</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu12">
+                <ul class="nav flex-column sub-menu">
+                       @can('get_co_lenders')
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_co_lenders') }}">Co-lenders List</a>
+                 </li>
+                 @endcan
+                     
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu20" aria-expanded="true" aria-controls="collapseExample">
               <i class="fa fa-user-plus" aria-hidden="true"></i>
                 <span class="menu-title">Manage Customer</span>
@@ -127,6 +144,25 @@
                    
                         <li class="nav-item">
                         <a class="nav-link" href="{{route('backend_get_invoice')}}">Manage Invoice</a>
+                    </li>                     
+                 
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuDisbursal" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <span class="menu-title">Manage Disbursal</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenuDisbursal">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lms_disbursal_request_list') }}">Disbursal Requests</a>
+
+                    </li> 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('lms_disbursal_request_list')}}">Disbursal List</a>
                     </li>                     
                  
                 </ul>
@@ -209,11 +245,7 @@
                     <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                  </li>
                  
-                 @can('get_co_lenders')
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{ route('get_co_lenders') }}">Manage Co-lenders</a>
-                 </li>
-                 @endcan
+          
                  <li class="nav-item">
                     <a class="nav-link" href="#">Manage State</a>
                  </li>

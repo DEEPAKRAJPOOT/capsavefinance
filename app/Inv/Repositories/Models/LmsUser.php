@@ -71,4 +71,20 @@ class LmsUser extends Authenticatable
         return self::where('lms_user_id', $lmsUserId)
                     ->update(['virtual_acc_id' => $virtualId]);
     }
+
+    public static function lmsGetDisbursalCustomer()
+    {
+        return self::with(['bank_details.bank', 'app.invoices'])
+                ->whereHas('app.invoices');
+    }
+
+    public function bank_details()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id');
+    }
+
+    public function app()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id');
+    }
 }

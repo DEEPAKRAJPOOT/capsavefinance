@@ -3,6 +3,7 @@ namespace App\Libraries;
 
 use phpseclib\Crypt\RSA;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use Auth;
 
 
@@ -13,6 +14,7 @@ class Idfc_lib{
 	private $httpMethod = 'POST';
 	const BASE_URL    =  'https://ESBUAT1RTN0140.idfcbank.com:9444/capsave/';
 	const SECRET_KEY    =  'wdqrEbgYfilAWJXCLRrqfYGdGJJGSShf';
+	const CORP_ID    =  'CAPSAVEUAT';
 
 	const MULTI_PAYMENT    = '1001';    #Intiate Multi Payment API
 	const BATCH_ENQ    = '1002';    #Check Batch Transaction Inquiry API
@@ -44,51 +46,14 @@ class Idfc_lib{
 			$resp['message'] = "Method not available";
 			return $resp;
 		 }
+
+		 $url = SELF::METHOD[$method];
 		 $query_string = '';
-		 
-		 list($payload, $concat, $httpMethod) = $this->_genReq($method, $params);
-		 $date = FIXED["time"];
-		 $url = SELF::METHOD[$method]. $concat;
-		 $parsed_url = array_values(parse_url($url));
-		 list($scheme, $host, $path) = $parsed_url;
-		 if (strtoupper($httpMethod) == 'GET') {
-		 	list($scheme, $host, $path, $query_string) = $parsed_url;
-		 }
-		 if ($method == SELF::UPL_FILE) {
-		 	 $req_data = '';
-		 	 $content_type = "Content-Type: multipart/form-data";
-		 }else {
-		 	 $req_data = $payload;
-		 	 $content_type = "Content-Type: application/xml";
-	     }
-
-		 $sha256Payload = $this->_getHash($req_data);
-		 $canonical_url = $this->_uriEncode($path);
-		 $signed_headers = "host;x-perfios-content-sha256;x-perfios-date";
-		 $canonical_headers = "host:$host"."\n"."x-perfios-content-sha256:$sha256Payload"."\n"."x-perfios-date:$date";
-		 $canonical_req = "$httpMethod"."\n"."$canonical_url"."\n"."$query_string"."\n"."$canonical_headers"."\n"."$signed_headers"."\n"."$sha256Payload";
-		 $req_hex = $this->_getHash($canonical_req);
-		 $string2sign = "PERFIOS-RSA-SHA256"."\n"."$date"."\n"."$req_hex";
-		 $checksum = $this->_getHash($string2sign);
-		 $signature = $this->_genSignature($checksum);
-
-		 $headers = array(
-			'1' =>  "X-Perfios-Algorithm: PERFIOS-RSA-SHA256",
-					"X-Perfios-Content-Sha256: $sha256Payload",
-					"X-Perfios-Date: $date",
-					"X-Perfios-Signature: $signature",
-					"X-Perfios-Signed-Headers: host;x-perfios-content-sha256;x-perfios-date",
-		 );
-		 $headers[0] = $content_type;
-		 $log_req = array(
-	     	'perfios_log_id' => $params['perfiosTransactionId'] ?? NULL,
-	     	'req_file' => is_array($payload) || is_object($payload) ? base64_encode(json_encode($payload)) : base64_encode($payload),
-	     	'url' => base64_encode($url),
-	     	'status' => 'pending',
-	     	'created_by' => Auth::user()->user_id,
-	     );
-	     $inserted_id = FinanceModel::insertPerfios($log_req, 'biz_perfios_log');
-	     $response = $this->_curl_call($url, $payload, $headers);
+		 list($payload, $http_header, $txn_id) = $this->_genReq($method, $params);
+		 $file_name = md5($txn_id).'.txt';
+		$this->_saveLogFile($payload, $file_name, 'Outgoing');
+		 dd($http_header);
+     	$response = $this->_curl_call($url, $payload, $http_header);
 	     if (!empty($response['error_no'])) {
 	     	$resp['code'] 	 = "CurlError";
 	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
@@ -156,7 +121,7 @@ class Idfc_lib{
 	    		$req['doMultiPaymentCorpReq'] = array(
 	    			'Header' => $params['header'],
 	    			'Body' => array(
-	    				'Payment' => $params['request'],
+	    				'Payment' => array_values($params['request']),
 	    			 ),
 	    		);
     			break;
@@ -173,9 +138,9 @@ class Idfc_lib{
     			break;
     	}
     	$req_json = json_encode($req);
+    	$req_http_header = $this->_gen_header($params['http_header']);
     	$this->httpMethod = $httpMethod;
-    	$payload = !empty($payload) ? $payload : '';
-    	return [$payload, $concat, $httpMethod];
+    	return [$req_json, $req_http_header, $params['http_header']['txn_id']];
     }
 
     private function _curl_call($url, $postdata, $header ,$timeout= 300){
@@ -197,13 +162,14 @@ class Idfc_lib{
     }
 
     private function _gen_header($http_header){
-    	$sign_string = $http_header['timeStamp'].' '.SELF::SECRET_KEY.$http_header['txn_id'];
+    	$sign_string = $http_header['timestamp'].' '.SELF::SECRET_KEY.$http_header['txn_id'];
     	$resp_data = array(
-    		'TimeStamp' => $http_header['timeStamp'],
+    		'TimeStamp' => $http_header['timestamp'],
     		'Tran_ID' => $http_header['txn_id'],
-    		'Sign' => SELF::SECRET_KEY,
-    		'Corp_ID' => $http_header['corp_id'],
+    		'Sign' => $this->_genSignature($sign_string),
+    		'Corp_ID' => SELF::CORP_ID
     	);
+    	return $resp_data;
     }
 
     private function _parseResult($xml, $method) {
@@ -263,7 +229,7 @@ class Idfc_lib{
 
 	}
 
-    private function _is_valid_xml($xml){
+    private function _is_valid_json($json){
 		libxml_use_internal_errors(TRUE);
 		$doc = new DOMDocument('1.0', 'utf-8');
     	$doc->loadXML( $xml );
@@ -272,60 +238,17 @@ class Idfc_lib{
 		return empty($errors);
     }
 
-    private function _genPayload(array $arr){
-       $xml = '<payload>';
-       foreach ($arr as $k => $v) {
-            $xml .= "<$k>$v</$k>";
-       }
-       $xml .= "</payload>";
-       return $xml;
-    }
-
     private function _genSignature($checksum){
-       $signature = $this->_encrypt($checksum);
+       $signature = hash_hmac('sha256', $checksum, SELF::SECRET_KEY);
        return $signature;
     }
 
-    private function _encrypt($checksum){
-    	$rsa = new RSA();
-		if ($rsa->loadKey(base64_decode(SELF::PRIVATE_KEY)) != TRUE) {
-		    return false;
-		}
-		$rsa->setHash("sha256");
-		$rsa->setMGFHash("sha256");
-		$crypted = $rsa->sign($checksum);
-		return strtolower(bin2hex($crypted));
-    }
-
-
-    private function _pass_encrypt($password){
-     	openssl_public_encrypt($password, $encrypted, base64_decode(SELF::PUBLIC_KEY));
-     	return bin2hex($encrypted);
-    }
-
-    private function _decrypt($ciphertext){
-        openssl_public_decrypt(hex2bin($ciphertext), $decrypted, base64_decode(SELF::PUBLIC_KEY));
-        return $decrypted;
-    }
-
-    private function _getHash($string){
-    	$hash = bin2hex(hash('sha256', $string, true));
-    	return strtolower($hash);
-    }
-
-    private function _uriEncode($input){
-      $result = '';
-      $arr = str_split($input);
-      for ($i = 0; $i < strlen($input); $i++) {
-          $ch = $arr[$i];
-          if (($ch >= 'A' && $ch <= 'Z') || ($ch >= 'a' && $ch <= 'z') || ($ch >= '0' && $ch <= '9') || $ch == '_' || $ch == '-' || $ch == '~' || $ch == '.' || $ch == '/') {
-             $result .= $ch; 
-          } else {
-           $result .= dechex($ch);
-          }
-      }
-      return $result;
-	}
+    private function _saveLogFile($data, $w_filename = '', $w_folder = '') {
+      list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
+      $path = Storage::disk('public')->put("/IDFCH2H/CAPSAVEUAT/ACHDR/$w_folder/$w_filename", $data);
+     
+      return True;
+  }
 
 }
 

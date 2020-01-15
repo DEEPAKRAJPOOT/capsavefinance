@@ -190,14 +190,29 @@
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
 								</div>
-
 							</div>
+
 							<div class="col-md-4">
 								<div class="form-group">
 									<label for="txtSupplierName">Tranche Tenor (Days)
 									</label>
 									<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
 									@error('tenor_days')
+						                <span class="text-danger error">{{ $message }}</span>
+						            @enderror
+								</div>
+							</div>
+
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="txtSupplierName">Product Type
+									</label><br/>
+									<div id="check_block">
+									<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="1" name="product_id[]" {{in_array(1, $product_ids)? 'checked': ''}}> Supply Chain</label>
+									<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="product_id[]" {{in_array(2, $product_ids)? 'checked': ''}}> Term Loan</label>
+									<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="product_id[]" {{in_array(3, $product_ids)? 'checked': ''}}> Leasing</label>
+									</div>
+									@error('product_id')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
 								</div>
@@ -504,5 +519,5 @@ var messages = {
 };
 </script>
 <!-- <script src="{{url('common/js/company_details.js?v=1')}}"></script> -->
-<script src="{{url('common/js/business_info.js?v=1')}}"></script>
+<script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
 @endsection

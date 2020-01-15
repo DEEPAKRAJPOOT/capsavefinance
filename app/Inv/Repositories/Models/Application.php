@@ -58,7 +58,7 @@ class Application extends BaseModel
         'user_id',
         'biz_id',
         'loan_amt',
-        'status',
+        'status_id',
         'is_assigned',
         'created_by',
         'created_at',
@@ -70,6 +70,7 @@ class Application extends BaseModel
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
     }
+    
     
      /**
      * join with app limit table to get limit amount for application
@@ -92,6 +93,10 @@ class Application extends BaseModel
         return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1]);
     }
 
+    public function invoices()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\BizInvoice', 'app_id', 'app_id')->where('status_id', 9);
+    }
     /**
      * Get Applications for Application list data tables
      */
@@ -527,5 +532,9 @@ class Application extends BaseModel
                 ->get();
         return $prgmDocs;
     }
-            
+
+    public function products(){
+        return $this->belongsToMany('App\Inv\Repositories\Models\Master\Product', 'app_product', 'app_id');
+    }
+        
 }

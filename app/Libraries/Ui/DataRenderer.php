@@ -7,6 +7,7 @@ use Helpers;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
@@ -551,13 +552,18 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceList(Request $request,$invoice)
     { 
-      
-        return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id','action'])
+    
+      return DataTables::of($invoice)
+               ->rawColumns(['view_upload_invoice','status','anchor_id','action'])
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
                         return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
+                })
+                 ->addColumn(
+                    'invoice_id',
+                    function ($invoice) {                        
+                       return $invoice->invoice_no ? $invoice->invoice_no : '';
                 })
                 ->addColumn(
                     'anchor_name',
@@ -579,30 +585,280 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
                 })
-                 ->addColumn(
+                 ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                })
+                 ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
                          return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
                 })
-                
+                ->addColumn(
+                    'view_upload_invoice',
+                    function ($invoice) {
+                       if(($invoice->file_id != 0)) {
+                         return '<a href="'.Storage::URL($invoice->userFile->file_path).'" download ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                         } else  {
+                             return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
+                         }
+                })
                ->addColumn(
                     'status',
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
-                    return '<label class="badge '.(($invoice->status == 1)? "badge-primary":"badge-warning").'">'.(($invoice->status == 1)? "Completed":"Incomplete").'</label>';
+                    return '<div class="d-flex inline-action-btn"><span class="badge badge-warning">Pending</span></div>';
 
                 })
                  ->addColumn(
                     'action',
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
-                    return '<a title="Edit" href="#" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>'
-                     . '<a title="Approve" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                    return '<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>'
+                     . '&nbsp;<a title="Approve"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
 
                 })
               ->make(true);
     } 
     
+    
+     /*      
+     * Get Invoice list for backend
+     */
+    public function getBackendInvoiceListApprove(Request $request,$invoice)
+    { 
+    
+      return DataTables::of($invoice)
+               ->rawColumns(['view_upload_invoice','status','anchor_id','action'])
+                ->addColumn(
+                    'anchor_id',
+                    function ($invoice) {                        
+                        return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
+                })
+                ->addColumn(
+                    'invoice_id',
+                    function ($invoice) {                        
+                       return $invoice->invoice_no ? $invoice->invoice_no : '';
+                })
+                ->addColumn(
+                    'anchor_name',
+                    function ($invoice) {                        
+                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                })
+                ->addColumn(
+                    'supplier_name',
+                    function ($invoice) { 
+                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                })
+                 ->addColumn(
+                    'program_name',
+                    function ($invoice) {                        
+                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
+                })
+                ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {                        
+                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })
+                 ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                })
+                 ->addColumn(            
+                    'invoice_approve_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                })
+               
+               ->addColumn(
+                    'status',
+                    function ($invoice) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<div class="d-flex inline-action-btn"><span class="badge badge-success">Approved</span></div>';
+
+                })
+                 ->addColumn(
+                    'action',
+                    function ($invoice) {
+                     return '<a title="Approve"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
+
+                })
+              ->make(true);
+    } 
+   /*      
+     * Get Invoice list for backend
+     */
+    public function getBackendInvoiceListDisbursedQue(Request $request,$invoice)
+    { 
+    
+      return DataTables::of($invoice)
+               ->rawColumns(['status','anchor_id'])
+                ->addColumn(
+                    'anchor_id',
+                    function ($invoice) {                        
+                       return $invoice->invoice_no ? $invoice->invoice_no : '';
+                })
+                ->addColumn(
+                    'anchor_name',
+                    function ($invoice) {                        
+                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                })
+                ->addColumn(
+                    'supplier_name',
+                    function ($invoice) { 
+                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                })
+                 ->addColumn(
+                    'program_name',
+                    function ($invoice) {                        
+                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
+                })
+                ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {                        
+                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })
+                 ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                })
+                 ->addColumn(            
+                    'invoice_approve_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                })
+               
+               ->addColumn(
+                    'status',
+                    function ($invoice) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<div class="d-flex inline-action-btn"><span class="badge badge-success">Ready for Disbursal</span></div>';
+
+                })
+                 
+              ->make(true);
+    }  
+    
+    
+     /*      
+     * Get Invoice list for backend
+     */
+    public function getBackendInvoiceListBank(Request $request,$invoice)
+    { 
+    
+      return DataTables::of($invoice)
+               ->rawColumns(['status','anchor_id'])
+                ->addColumn(
+                    'anchor_id',
+                    function ($invoice) {                        
+                       return $invoice->invoice_no ? $invoice->invoice_no : '';
+                })
+                ->addColumn(
+                    'anchor_name',
+                    function ($invoice) {                        
+                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                })
+                ->addColumn(
+                    'supplier_name',
+                    function ($invoice) { 
+                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                })
+                 ->addColumn(
+                    'program_name',
+                    function ($invoice) {                        
+                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
+                })
+                ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {                        
+                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })
+                 ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                })
+                 ->addColumn(            
+                    'invoice_approve_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                })
+               
+               ->addColumn(
+                    'status',
+                    function ($invoice) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<div class="d-flex inline-action-btn"><span class="badge badge-success">Sent to Bank</span></div>';
+
+                })
+                 
+              ->make(true);
+    }  
+    
+    
+    /*      
+     * Get Invoice list for backend
+     */
+    public function getBackendInvoiceListFailedDisbursed(Request $request,$invoice)
+    { 
+    
+      return DataTables::of($invoice)
+               ->rawColumns(['status','anchor_id','action'])
+                ->addColumn(
+                    'anchor_id',
+                    function ($invoice) {                        
+                       return $invoice->invoice_no ? $invoice->invoice_no : '';
+                })
+                ->addColumn(
+                    'anchor_name',
+                    function ($invoice) {                        
+                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                })
+                ->addColumn(
+                    'supplier_name',
+                    function ($invoice) { 
+                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                })
+                 ->addColumn(
+                    'program_name',
+                    function ($invoice) {                        
+                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
+                })
+                ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {                        
+                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })
+                 ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                })
+                 ->addColumn(            
+                    'invoice_approve_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                })
+               
+               ->addColumn(
+                    'status',
+                    function ($invoice) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<div class="d-flex inline-action-btn"><span class="badge badge-danger">Failed </span></div>';
+
+                })
+                  ->addColumn(
+                    'action',
+                    function ($invoice) {
+                     return '<div class="d-flex"><select class=" btn-success rounded"><option>Change Status</option><option>Approved</option><option>Disb Que</option></select><a title="View Reason" href="#" class="btn btn-action-btn btn-sm ml-2"><i class="fa fa-edit" aria-hidden="true"></i></a></div>';
+
+                })
+              ->make(true);
+    }  
+     
     /*
      * get application pool
      * 
@@ -1732,6 +1988,101 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
     
+    /*
+     * 
+     * get all lms customer list
+     */
+    public function lmsGetDisbursalCustomers(Request $request, $customer)
+    {
+        return DataTables::of($customer)
+                ->rawColumns(['status', 'action'])
+                ->addColumn(
+                    'customer_code',
+                    function ($customer) {
+                        return $link = $customer->customer_id;
+                        // return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                    }
+                )
+                ->addColumn(
+                    'ben_name',
+                    function ($customer) {
+                        return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+                    }
+                )     
+                ->editColumn(
+                    'ben_bank_name',
+                        function ($customer) {
+                        return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
+                    }
+                )
+                ->editColumn(
+                    'ben_ifsc',
+                        function ($customer) {
+                        $email = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
+                        return $email;
+                    
+                })
+                ->editColumn(
+                    'ben_account_no',
+                        function ($customer) {
+                        $mobile_no = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
+                        return $mobile_no;
+                    
+                })
+                ->editColumn(
+                    'total_invoice_amt',
+                    function ($customer) {
+                        return 12;
+
+                })
+                ->editColumn(
+                    'total_fund_amt',
+                    function ($customer) {
+                        return 12;
+                })
+                ->editColumn(
+                    'total_disburse_amt',
+                    function ($customer) {
+                        return 12;
+                })
+                ->editColumn(
+                    'total_invoice',
+                    function ($customer) {                    
+                        return 12;
+                })                       
+                ->addColumn(
+                    'action',
+                    function ($customer) {
+                        $act = '';
+                        $act = '<a  data-toggle="modal" data-target="#viewDisbursalCustomerInvoice" data-url ="' . route('lms_disbursal_invoice_view', ['user_id' => $customer->user_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
+                        
+                        return $act;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->whereHas('user', function($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('email', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->whereHas('user', function($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                
+                                $query->where('is_assigned', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }
+                })
+                ->make(true);
+    }
+    
     /**
      * List Doa Levels  
      * 
@@ -1780,7 +2131,7 @@ class DataRenderer implements DataProviderInterface
             function ($doa) {
                 $act = '';
                 $act = '<a  data-toggle="modal" data-target="#editDoaLevelFrame" data-url ="' . route('edit_doa_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Level"><i class="fa fa-edit"></i></a>';
-                $act .= '&nbsp;&nbsp;<a  data-toggle="modal" data-target="#assignRoleLevelFrame" data-url ="' . route('assign_role_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Assign Role"><i class="fa fa-angle-right"></i></a>';
+             //   $act .= '&nbsp;&nbsp;<a  data-toggle="modal" data-target="#assignRoleLevelFrame" data-url ="' . route('assign_role_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Assign Role"><i class="fa fa-angle-right"></i></a>';
                 return $act;
             })
             ->filter(function ($query) use ($request) {

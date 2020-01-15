@@ -73,6 +73,74 @@ class LeadController extends Controller {
     }
 
     /**
+     * Create lead.
+     */
+    public function createBackendLead(Request $request) {
+        //dd('kkk');
+        try {            
+            return view('backend.lead.create_lead');
+        } catch (Exception $ex) {
+            dd($ex);
+        }        
+    }
+
+    /**
+     * Save backend lead
+     * @param Request $request
+     * @return type
+     */
+    public function saveBackendLead(Request $request) {
+        try {
+            $string = time();
+            $reqData = $request->all();
+            $user_info = $this->userRepo->getUserByEmail($reqData['email']);
+            //dd($reqData);
+            if(!$user_info){
+                $arrUserData = [
+                    'anchor_id' => NULL,
+                    'f_name' => $reqData['full_name'],
+                    'biz_name' => $reqData['comp_name'],
+                    'email' => $reqData['email'],
+                    'mobile_no' => $reqData['phone'],
+                    'is_buyer' => $reqData['is_buyer'],
+                    'user_type' => 1,
+                    'is_email_verified' => 1,
+                    'is_active' => 1,
+                    'password' => bcrypt($string)
+                ];
+                $userDataArray = $this->userRepo->save($arrUserData);
+
+                $arrLeadAssingData = [
+                    'from_id' => $userDataArray->user_id,
+                    'to_id' => $reqData['assigned_sale_mgr'],
+                    'is_owner'=>1,
+                    'assigned_user_id' => $userDataArray->user_id,             
+                    'created_by' => Auth::user()->user_id,
+                    'created_at' => \Carbon\Carbon::now(),
+                ];
+                $this->userRepo->createLeadAssign($arrLeadAssingData);
+                
+                //Add application workflow stages
+                Helpers::addWfAppStage('new_case', $userDataArray->user_id);
+
+                $userMailArr = [];
+                $userMailArr['email'] = $arrUserData['email'];
+                $userMailArr['name'] = $arrUserData['f_name'];
+                $userMailArr['password'] = $string;
+                Event::dispatch("user.registered", serialize($userMailArr));
+                Session::flash('message', 'Lead created successfully');
+                return redirect()->route('lead_list');                       
+            }else{
+                Session::flash('error', trans('error_messages.email_already_exists'));
+                return redirect()->route('lead_list');
+            }
+        
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    /**
      * backend Lead Details
      * 
      * @param Request $request
