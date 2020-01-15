@@ -18,6 +18,37 @@
                 'file_bank_id' : {
                     required : true,
                 },
+                'facility' : {
+                    required : true,
+                },
+                'sanctionlimitfixed' : {
+                    required : function() {
+                        if ($('input[name="facility"]').val() != 'NONE') {
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }
+                },
+                'sanctionlimitvariableamount' : {
+                    required : function() {
+                        var facility_val = $('#facility').val();
+                        if ((facility_val == 'CC' || facility_val == 'OD') && $('input[name="sanctionlimitfixed"]').is(':checked') && $('input[name="sanctionlimitfixed"]:checked').val() == '0') {
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }
+                },
+                'drawingpowervariableamount' : {
+                    required : function() {
+                        if ($('#facility').val() == 'CC') {
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }
+                },
                 'finc_year' : {
                     required : true,
                 },

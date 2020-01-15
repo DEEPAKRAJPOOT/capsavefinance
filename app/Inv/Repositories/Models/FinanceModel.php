@@ -131,7 +131,7 @@ class FinanceModel extends BaseModel
      * @return mixed
      */
     public function getBankStatements($app_id) {        
-        $result = self::select('app_doc_file.app_doc_file_id','app_doc_file.file_bank_id','app_doc_file.doc_name','app_doc_file.app_id','app_doc_file.file_id','app_doc_file.gst_month','app_doc_file.gst_year','file.file_type','file.file_name','file.file_size','file.file_path')
+        $result = self::select('app_doc_file.app_doc_file_id','app_doc_file.doc_id','app_doc_file.file_bank_id','app_doc_file.doc_name','app_doc_file.facility','app_doc_file.sanctionlimitfixed','app_doc_file.drawingpowervariableamount','app_doc_file.sanctionlimitvariableamount','app_doc_file.app_id','app_doc_file.file_id','app_doc_file.gst_month','app_doc_file.gst_year','file.file_type','file.file_name','file.file_size','file.file_path')
               ->from('app_doc_file')
               ->join('file', 'app_doc_file.file_id', '=', 'file.file_id')
               ->where('app_doc_file.app_id', '=', $app_id)
@@ -142,7 +142,7 @@ class FinanceModel extends BaseModel
     }
 
     public function getSingleBankStatement($app_id, $app_doc_file_id) {        
-        $result = self::select('app_doc_file.app_doc_file_id','app_doc_file.file_bank_id','app_doc_file.doc_name','app_doc_file.app_id','app_doc_file.file_id','app_doc_file.gst_month','app_doc_file.gst_year','file.file_type','file.file_name','file.file_size','file.file_path')
+        $result = self::select('app_doc_file.app_doc_file_id','app_doc_file.doc_id','app_doc_file.file_bank_id','app_doc_file.doc_name','app_doc_file.facility','app_doc_file.sanctionlimitfixed','app_doc_file.drawingpowervariableamount','app_doc_file.sanctionlimitvariableamount','app_doc_file.app_id','app_doc_file.file_id','app_doc_file.gst_month','app_doc_file.gst_year','file.file_type','file.file_name','file.file_size','file.file_path')
               ->from('app_doc_file')
               ->join('file', 'app_doc_file.file_id', '=', 'file.file_id')
               ->where('app_doc_file.app_id', '=', $app_id)
@@ -154,7 +154,7 @@ class FinanceModel extends BaseModel
     }
 
      public function getFinanceStatements($app_id) {        
-        $result = self::select('app_doc_file.app_doc_file_id','app_doc_file.doc_name','app_doc_file.app_id','app_doc_file.gst_month','app_doc_file.gst_year','app_doc_file.finc_year','app_doc_file.file_id','file.file_type','file.file_name','file.file_size','file.file_path')
+        $result = self::select('app_doc_file.app_doc_file_id','app_doc_file.doc_id','app_doc_file.doc_name','app_doc_file.app_id','app_doc_file.gst_month','app_doc_file.gst_year','app_doc_file.finc_year','app_doc_file.file_id','file.file_type','file.file_name','file.file_size','file.file_path')
               ->from('app_doc_file')
               ->join('file', 'app_doc_file.file_id', '=', 'file.file_id')
               ->where('app_doc_file.app_id', '=', $app_id)
@@ -252,6 +252,7 @@ class FinanceModel extends BaseModel
        $result = self::select('*')
                 ->from('biz_perfios')
                 ->where('biz_perfios_id', $biz_perfios_id)
+                ->orWhere('perfios_log_id', $biz_perfios_id)
                 ->first();
         return ($result ?? null);
     }

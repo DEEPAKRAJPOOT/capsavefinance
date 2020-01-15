@@ -280,6 +280,23 @@ class DocumentRepository implements DocumentInterface
      * @param mixed $ids
      */
     
+    public function UpdateAppDocument($arrayToUpdate, $appDocFileId){
+        $doc = AppDocumentFile::find($appDocFileId);
+        if($doc){
+            foreach ($arrayToUpdate as $column => $value) {
+               $doc->$column = $value;
+            }
+        }
+        $doc->save();
+        return $doc;
+    }
+    
+    /**
+     * application document
+     *
+     * @param mixed $ids
+     */
+    
     public function getFileByFileId($FileId){
         
         /**

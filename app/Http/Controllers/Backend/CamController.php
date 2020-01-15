@@ -23,10 +23,11 @@ use Session;
 use App\Libraries\Gupshup_lib;
 date_default_timezone_set('Asia/Kolkata');
 use Helpers;
+use Illuminate\Support\Facades\Hash;
 
 class CamController extends Controller
 {
-    protected $download_xlsx = TRUE;
+    protected $download_xls = TRUE;
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
@@ -248,6 +249,191 @@ class CamController extends Controller
         return redirect()->route('cam_finance');
     }
 
+    public function updateBankDocument(Request $request){
+      $perfios_txn_id = $request->session()->get('perfios_txn_id');
+      $allData = $request->all();
+      $appId = $request->get('app_id');
+      $biz_id = $request->get('biz_id');
+      $doc_id = $request->get('doc_id');
+      $app_doc_file_id = $request->get('app_doc_file_id');
+      $fin = new FinanceModel;
+      $bank_doc_data = $fin->getSingleBankStatement($appId, $app_doc_file_id);
+      $bankdata = $fin->getBankData();
+      $req_data = _encrypt("$appId|$doc_id|$biz_id|$app_doc_file_id|$perfios_txn_id");
+      return view('backend.cam.upload_bank',compact('bank_doc_data', 'req_data','bankdata','perfios_txn_id'));
+    }
+
+    public function saveBankDocument(Request $request){
+        $arrFileData = $request->all();
+        $perfios_txn_id = $request->session()->get('perfios_txn_id');
+        if (empty($perfios_txn_id)) {
+          return response()->json(['message' => 'You can\'t re-process without analyse the files.','status' => 0]);
+        }
+        $userId = Auth::user()->user_id;
+        $doc_id = $request->get('doc_id');
+        $biz_id = $request->get('biz_id');
+        $appId = $request->get('app_id');
+        $app_doc_file_id = $request->get('app_doc_file_id');
+        $req_data = $request->get('req_data');
+        $encrypted = "$appId|$doc_id|$biz_id|$app_doc_file_id|$perfios_txn_id";
+        if ($encrypted != _decrypt($req_data)) {
+         return response()->json(['message' => 'Requested Data is not valid','status' => 0]);
+        }
+        if (empty($arrFileData['doc_file']) && !empty($arrFileData['reupload'])) {
+         return response()->json(['message' => 'File is required to Re-upload','status' => 0]);
+        }
+        $fin = new FinanceModel;
+        $appUser = $fin->getUserByAPP($appId);
+        $appUserId = $appUser['user_id'];
+        $file_bank_id = $arrFileData['file_bank_id'];
+        $bankData = $fin->getBankDetail($file_bank_id);
+        $arrFileData['doc_name'] = $bankData['bank_name'] ?? NULL;
+        $arrFileData['finc_year'] = NULL;
+        $arrFileData['gst_month'] = $arrFileData['bank_month'];
+        $arrFileData['gst_year'] = $arrFileData['bank_year'];
+        $arrFileData['pwd_txt'] = $arrFileData['is_pwd_protected'] ? $arrFileData['pwd_txt'] :NULL;
+        if (empty($arrFileData['doc_file']) && !empty($arrFileData['reprocess'])) {
+          $bank_errors = $request->session()->get('bank_errors');
+          if (empty($bank_errors[$app_doc_file_id])) {
+            return response()->json(['message' => 'You can\'t re-process without error on this file.','status' => 0]);
+          }
+          $fileid = $bank_errors[$app_doc_file_id]['fileid'];
+          $arrayToUpdate = array(
+            "is_pwd_protected" => $arrFileData['is_pwd_protected'],
+            "is_scanned" => $arrFileData['is_scanned'],
+            "pwd_txt" => $arrFileData['pwd_txt'],
+            "doc_name" => $arrFileData['doc_name'],
+            "file_bank_id" => $arrFileData['file_bank_id'],
+            "finc_year" => NULL,
+            "gst_month" => $arrFileData['gst_month'],
+            "gst_year" => $arrFileData['gst_year'],
+          );
+          $is_updated = $this->docRepo->UpdateAppDocument($arrayToUpdate, $app_doc_file_id);
+          if ($is_updated) {
+             $reprocess_data = array(
+              'doc_id' => $doc_id,
+              'biz_id' => $biz_id,
+              'app_id' => $appId,
+              'app_doc_file_id' => $app_doc_file_id,
+              'fileid' => $fileid,
+            );
+            return $this->_reProcessStmt($reprocess_data);
+          }
+        }else{
+          $arrFile['doc_file'] = $arrFileData['doc_file']['0'];
+          $uploadData = Helpers::uploadAppFile($arrFile, $appId);
+          $userFile = $this->docRepo->saveFile($uploadData);
+          $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+          $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+          $is_deleted = $this->docRepo->deleteDocument($app_doc_file_id);
+          $app_doc_file_id = $appDocResponse['app_doc_file_id'];
+          if ($app_doc_file_id && $is_deleted) {
+            $reupload_data = array(
+              'app_id' => $appId,
+              'app_doc_file_id' => $app_doc_file_id,
+              'perfiostransactionid' => $perfios_txn_id,
+              'prolitus_txn_id' => $request->session()->get('prolitus_txn_id'),
+              'doc_id' => $doc_id,
+              'biz_id' => $biz_id,
+            );
+            return $this->_reUploadBankStmt($reupload_data);
+          }else{
+            return response()->json(['message' => 'Unable to Re-Upload the statement.','status' => 0]);
+          }
+        } 
+    }
+
+
+    private function _reUploadBankStmt($reupload_data){
+       $app_id = $reupload_data['app_id'];
+       $doc_id = $reupload_data['doc_id'];
+       $biz_id = $reupload_data['biz_id'];
+       $app_doc_file_id = $reupload_data['app_doc_file_id'];
+       $perfiostransactionid = $reupload_data['perfiostransactionid'];
+       $prolitus_txn = $reupload_data['prolitus_txn_id'];
+       $fin = new FinanceModel();
+       $file_doc = $fin->getSingleBankStatement($app_id, $app_doc_file_id);
+       dd($file_doc);
+       $bank_detail = $fin->getBankDetail($file_doc->file_bank_id);
+       $perfios_bank_id = $bank_detail->perfios_bank_id ?? NULL;
+       $filepath = $file_doc['file_path'];
+       $app_doc_file_id = $file_doc['app_doc_file_id'];
+       $password = $file_doc['file_password'];
+        $req_arr = array(
+          'perfiosTransactionId' => $perfiostransactionid,
+          'file_content' => public_path('storage/'.$filepath),
+         );
+        $bsa = new Bsa_lib();
+        $upl_file = $bsa->api_call(Bsa_lib::UPL_FILE, $req_arr);
+        if ($upl_file['status'] == 'success') {
+            $reprocess_data = array(
+              'doc_id' => $doc_id,
+              'biz_id' => $biz_id,
+              'app_id' => $app_id,
+              'app_doc_file_id' => $app_doc_file_id,
+              'fileid' => $upl_file['fileid']
+            );
+            return $this->_reProcessStmt($reprocess_data);
+        }else{
+           return response()->json(['message' => $proc_txn['message'],'status' => 0]);
+        }
+        return response()->json(['message' => 'Unable to upload the file.','status' => 1]);
+    }
+
+
+    private function _reProcessStmt($reprocess_data){
+        $perfios_txn_id = Session::get('perfios_txn_id');
+        if (empty($perfios_txn_id)) {
+          return response()->json(['message' => 'You can\'t re-process without analyse the files.','status' => 0]);
+        }
+        $userId = Auth::user()->user_id;
+        $doc_id = $reprocess_data['doc_id'];
+        $biz_id = $reprocess_data['biz_id'];
+        $app_id = $reprocess_data['app_id'];
+        $app_doc_file_id = $reprocess_data['app_doc_file_id'];
+
+       $fin = new FinanceModel();
+       $file_doc = $fin->getSingleBankStatement($app_id, $app_doc_file_id);
+       $bank_detail = $fin->getBankDetail($file_doc->file_bank_id);
+       $perfios_bank_id = $bank_detail->perfios_bank_id ?? NULL;
+       $filepath = $file_doc['file_path'];
+       $password = $file_doc['file_password'];
+       $prolitus_txn = Session::get('prolitus_txn_id');
+        $req_arr = array(
+          'perfiosTransactionId' => $perfios_txn_id,
+          'fileId' => $reprocess_data['fileid'],
+          'institutionId' => $perfios_bank_id,
+          'password' => $password,
+        );
+        $bsa = new Bsa_lib();
+        $proc_txn = $bsa->api_call(Bsa_lib::REPRC_STMT, $req_arr);
+        if ($proc_txn['status'] == 'success') {
+             return response()->json(['message' => "File processed Successfully",'status' => 1, 'biz_perfios_id' => $perfios_txn_id]);
+        }else{
+            return response()->json(['message' => $proc_txn['message'],'status' => 0]);
+        }
+    }
+
+
+
+    public function _uploadFiles($path, $reqFiles){
+      $inputArr = [];
+      foreach ($reqFiles as $key => $reqFile) {
+        $fileName = $reqFile->hashName();
+        $filePath = storage_path("app/public/") . $path;
+        $fullPath = $filePath . $fileName;
+        $inputArr[$key]['file_path'] = $path . $fileName;
+        $inputArr[$key]['file_type'] = $reqFile->getClientMimeType();
+        $inputArr[$key]['file_name'] = $reqFile->getClientOriginalName();
+        $inputArr[$key]['file_size'] = $reqFile->getClientSize();
+        $inputArr[$key]['file_encp_key'] =  md5($fullPath);
+        $inputArr[$key]['created_by'] = 1;
+        $inputArr[$key]['updated_by'] = 1;
+        $reqFile->move($filePath, $fileName);
+      }
+        return $inputArr[0] ?? $inputArr;
+    }
+
     public function analyse_bank(Request $request) {
       $post_data = $request->all();
       $appId = $request->get('appId');
@@ -259,6 +445,11 @@ class CamController extends Controller
       }else{
           $response['perfiosTransactionId'] = $response['perfiosTransactionId'] ?? $response['perfiostransactionid'];
       }
+      if (!empty($response['perfiosTransactionId'])) {
+         $request->session()->put('perfios_txn_id', $response['perfiosTransactionId']);
+         $request->session()->put('prolitus_txn_id', $response['prolitusTransactionId']);
+      }
+
       $log_data = array(
         'app_id' =>  $appId,
         'status' => $response['status'],
@@ -271,6 +462,7 @@ class CamController extends Controller
       FinanceModel::insertPerfios($log_data);
       $errors = [];
       if (!empty($response['errors'])) {
+        $request->session()->put('bank_errors', $response['errors']);
         foreach ($response['errors'] as $app_doc_file_id => $perfios_err) {
          $errors[$app_doc_file_id] = $perfios_err['message'];
         }
@@ -346,6 +538,10 @@ class CamController extends Controller
            $bank_detail = $fin->getBankDetail($doc->file_bank_id);
            $files[] = array(
             'app_doc_file_id' => $doc->app_doc_file_id,
+            'facility' => $doc->facility,
+            'sanctionlimitfixed' => $doc->sanctionlimitfixed,
+            'drawingpowervariableamount' => $doc->drawingpowervariableamount,
+            'sanctionlimitvariableamount' => $doc->sanctionlimitvariableamount,
             'app_id' => $doc->app_id,
             'file_id' => $doc->file_id,
             'institutionId' => $bank_detail->perfios_bank_id ?? NULL,
@@ -377,11 +573,22 @@ class CamController extends Controller
             'loanDuration' => '12',
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
+            'facility' => 'NONE',
+            'sanctionLimitFixed' => 'FALSE',
             'acceptancePolicy' => 'atLeastOneTransactionInRange',
             'yearMonthFrom' => date('Y-m',strtotime($ranges['from'])),
             'yearMonthTo' => date('Y-m',strtotime($ranges['to'])),
             'transactionCompleteCallbackUrl' => route('api_perfios_bsa_callback'),
          );
+        foreach ($filespath as $bankdocs) {
+          $req_arr['drawingpowervariableamount'][] = $bankdocs['drawingpowervariableamount'];
+          $req_arr['sanctionlimitvariableamount'][] = $bankdocs['sanctionlimitvariableamount'];
+
+
+          if ($loanAmount < $bankdocs['drawingpowervariableamount'] || $loanAmount < $bankdocs['sanctionlimitvariableamount']) {
+            return ["status" => "fail","message" => "Loan amount can not be less than drawingpowervariableamount or sanctionlimitvariableamount","api_type"=>Bsa_lib::INIT_TXN];
+          }
+        }
         $init_txn = $bsa->api_call(Bsa_lib::INIT_TXN, $req_arr);
         if ($init_txn['status'] == 'success') {
           foreach ($filespath as $file_doc) {
@@ -406,10 +613,12 @@ class CamController extends Controller
                       $process_txn_cnt++;
                   }else{
                       $error[$app_doc_file_id] = $proc_txn;
+                      $error[$app_doc_file_id]['fileid'] = $upl_file['fileid'];
                       $error[$app_doc_file_id]['api_type'] = Bsa_lib::PRC_STMT;
                   }
               }else{
                 $error[$app_doc_file_id] = $upl_file;
+                $error[$app_doc_file_id]['fileid'] = $upl_file['fileid'];
                 $error[$app_doc_file_id]['api_type'] = Bsa_lib::UPL_FILE;
               }
           }
@@ -449,12 +658,12 @@ class CamController extends Controller
            return $final_res;
         }
 
-        $file_name = $appId.'_banking.xlsx';
+        $file_name = $appId.'_banking.xls';
         $req_arr = array(
           'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-          'types' => 'xlsx',
+          'types' => 'xls',
         );
-        if ($this->download_xlsx) {
+        if ($this->download_xls) {
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Bsa_lib::GET_REP;
@@ -484,49 +693,6 @@ class CamController extends Controller
         $final_res['prolitusTransactionId'] = $prolitus_txn;
         $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
         return $final_res;
-    }
-
-    public function reUploadBankStmt(Request $request){
-       $post_data = $request->all();
-       $appId = $request->get('appId');
-       $app_doc_file_id = $request->get('app_doc_file_id');
-       $perfiostransactionid = $request->get('perfiostransactionid');
-       $fin = new FinanceModel();
-       $file_doc = $fin->getSingleBankStatement($appId, $app_doc_file_id);
-       $filepath = $file_doc['file_path'];
-       $app_doc_file_id = $file_doc['app_doc_file_id'];
-       $password = $file_doc['file_password'];
-        $req_arr = array(
-          'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-          'file_content' => $filepath,
-         );
-        $upl_file = $bsa->api_call(Bsa_lib::UPL_FILE, $req_arr);
-        if ($upl_file['status'] == 'success') {
-            $req_arr = array(
-              'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-              'fileId' => $upl_file['fileid'],
-              'institutionId' => '',
-              'password' => $password,
-            );
-            $proc_txn = $bsa->api_call(Bsa_lib::PRC_STMT, $req_arr);
-            if ($proc_txn['status'] == 'success') {
-                $process_txn_cnt++;
-            }else{
-                $error[$app_doc_file_id] = $proc_txn;
-                $error[$app_doc_file_id]['prolitusTransactionId'] = $prolitus_txn;
-                $error[$app_doc_file_id]['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
-                $error[$app_doc_file_id]['api_type'] = Bsa_lib::PRC_STMT;
-            }
-        }else{
-          $error[$app_doc_file_id] = $upl_file;
-          $error[$app_doc_file_id]['prolitusTransactionId'] = $prolitus_txn;
-          $error[$app_doc_file_id]['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
-          $error[$app_doc_file_id]['api_type'] = Bsa_lib::UPL_FILE;
-        }
-    }
-
-    public function reProcessStmt(){
-      # code...
     }
 
     public function _callFinanceApi($filespath, $appId) {
@@ -624,15 +790,15 @@ class CamController extends Controller
            $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
            return $final_res;
         }
-        $file_name = $appId.'_finance.xlsx';
+        $file_name = $appId.'_finance.xls';
         $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
             'perfiosTransactionId' => $start_txn['perfiostransactionid'],
-            'reportType' => 'xlsx',
+            'reportType' => 'xls',
             'txnId' => $prolitus_txn,
         );
-        if ($this->download_xlsx) {
+        if ($this->download_xls) {
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Perfios_lib::GET_STMT;
@@ -679,15 +845,15 @@ class CamController extends Controller
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_finance.xlsx';
+        $file_name = $appId.'_finance.xls';
         $req_arr = array(
               'apiVersion' => $apiVersion,
               'vendorId' => $vendorId,
               'perfiosTransactionId' => $perfiostransactionid,
-              'reportType' => 'xlsx',
+              'reportType' => 'xls',
               'txnId' => $prolitus_txn,
         );
-        if ($this->download_xlsx) {
+        if ($this->download_xls) {
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Perfios_lib::GET_STMT;
@@ -739,18 +905,28 @@ class CamController extends Controller
         $bsa = new Bsa_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_banking.xlsx';
+        $file_name = $appId.'_banking.xls';
 
         $req_arr = array(
           'perfiosTransactionId' => $perfiostransactionid,
-          'types' => 'xlsx',
+          'types' => 'xls',
         );
-        if ($this->download_xlsx) {
+        if ($this->download_xls) {
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Bsa_lib::GET_REP;
               $final_res['prolitusTransactionId'] = $prolitus_txn;
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
+               $log_data = array(
+                'app_id' =>  $appId,
+                'status' => $final_res['status'],
+                'type' => '1',
+                'api_name' => Bsa_lib::GET_REP,
+                'prolitus_txn_id' => $prolitus_txn ?? NULL,
+                'perfios_log_id' => $perfiostransactionid,
+                'created_by' => Auth::user()->user_id,
+              );
+              FinanceModel::insertPerfios($log_data);
               return response()->json(['message' => $final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
           }else{
              $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");

@@ -257,7 +257,7 @@ class Helper extends PaypalHelper
         $inputArr = [];
         if($attributes['doc_file']) {
             if(!Storage::exists('/public/user/' .$userId. '/' .$appId)) {
-                Storage::makeDirectory('/public/user/' .$userId. '/' .$appId, 0775, true);
+                Storage::makeDirectory('/public/user/' .$userId. '/' .$appId, 0777, true);
             }
             $path = Storage::disk('public')->put('/user/' .$userId. '/' .$appId, $attributes['doc_file'], null);
             $inputArr['file_path'] = $path;

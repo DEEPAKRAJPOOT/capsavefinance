@@ -24,7 +24,9 @@
                      <ul>
                         <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
                         <li><a href="{{ Storage::url($bankdoc->file_path) }}" download target="_blank">Download Bank Statement</a></li>
-                        <li><a href="javascript:void(0)">Re-Upload</a></li>
+                        <li>
+                             <a href="javascript:void(0)" data-toggle="modal" data-target="#uploadBankDocument" data-url ="{{route('upload_bank_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'app_doc_file_id' => $bankdoc->app_doc_file_id,'doc_id' => $bankdoc->doc_id]) }}" data-height="300px" data-width="100%" class="hide" id="reprocess_{{$bankdoc->app_doc_file_id}}">Re-Process</a>
+                        </li>
                      </ul>
                   </div>
                      @endforeach
@@ -39,6 +41,7 @@
                      @php $class_enable="disabled"; @endphp
                      <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
                   @endif
+                  <a href="javascript:void(0)" class="btn btn-success btn-sm hide" biz_perfios_id="" id="getReport">Get Report</a>
                   @if(request()->get('view_only') && $bankdocs->count() > 0)
                      <a href="javascript:void(0)" class="btn btn-success btn-sm <?php echo $class_enable ?>">Get Analysis</a>
                   @endif   
@@ -424,6 +427,7 @@
       </div>
    </div>
 </div>
+{!!Helpers::makeIframePopup('uploadBankDocument','Re-Upload Document', 'modal-md')!!}
 @endsection
 @section('jscript')
 <script type="text/javascript">
@@ -448,16 +452,13 @@
             let mclass = result['status'] ? 'success' : 'danger';
             var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
             $("#pullMsg").html(html);
-
-            //<small class="error">Some error occured. Please try again </small>
             if(result['errors']){
                $errors = result['errors'];
                Object.keys($errors).forEach(function(key) {
-                   $('#bank_doc_' + key).append('<small class="error">'+ $errors[key] +'</small>');
+                  $('#reprocess_' + key).removeClass('hide');
+                   $('#bank_doc_' + key).append('<small class="error" id="append_'+ key +'">'+ $errors[key] +'</small>');
                });
             }
-
-
             if (result['status']) {
                window.open(result['value']['file_url'], '_blank');
             }
@@ -473,9 +474,19 @@
    })
 
 
-    $(document).on('click', '.process_stmt', function() {
-      biz_perfios_id = $(this).attr('pending');
-      data = {appId, _token, biz_perfios_id};
+
+   $(document).on('click', '#getReport', function(argument) {
+      var biz_perfios_id = $(this).attr('biz_perfios_id');
+      getReport(biz_perfios_id);
+   })
+
+    $(document).on('click', '.process_stmt', function(argument) {
+      var biz_perfios_id = $(this).attr('pending');
+      getReport(biz_perfios_id);
+   })
+
+    function getReport(biz_perfios_id) {
+       data = {appId, _token, biz_perfios_id};
       $.ajax({
          url  : process_url,
          type :'POST',
@@ -489,12 +500,6 @@
             var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
             $("#pullMsg").html(html);
             $(".isloader").hide();
-
-            //<small class="error">Some error occured. Please try again </small>
-            if(result['errors']){
-               $errors = result['errors'];
-               console.log($errors);
-            }
             if (result['status']) {
              window.open(result['value']['file_url'], '_blank');
             }
@@ -506,6 +511,6 @@
             $(".isloader").hide();
          },
       })
-   })
+    }
 </script>
 @endsection
