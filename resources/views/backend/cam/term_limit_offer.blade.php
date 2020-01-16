@@ -28,7 +28,7 @@
         <label for="txtPassword" class="col-md-4"><b>Limit:</b></label> 
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Loan Offer" maxlength="15"><span class="float-right">Balance: <i class="fa fa-inr"></i>{{($actualBalance > 0)? $actualBalance: 0}}</span>
+        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Loan Offer" maxlength="15"><span class="float-right">Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
         </div>
       </div>
     </div>
@@ -153,7 +153,7 @@
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
-    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > actual_balance)){
+    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > balance_limit)){
         setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
     }

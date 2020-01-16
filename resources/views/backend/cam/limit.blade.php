@@ -41,12 +41,17 @@
     $programBalanceLimit = $programLimit - $programOfferedAmount + $currentOfferAmount;
     $balanceLimit = $totalLimit - $totalOfferedAmount + $currentOfferAmount;
     $actualBalance = ($programBalanceLimit < $balanceLimit)? $programBalanceLimit: $balanceLimit;
+    if($limitData->product->id == 1){
+        $ab = $actualBalance;
+    }else{
+        $ab = $balanceLimit;
+    }
     @endphp
     
     <div class="col-md-12">
       <div class="form-group row INR">
         <label for="txtPassword" class="col-md-4"><b>Limit:</b></label>
-        <span>Balance: <i class="fa fa-inr" aria-hidden="true"></i>{{($actualBalance > 0)? $actualBalance: 0}}</span>
+        <span>Balance: <i class="fa fa-inr" aria-hidden="true"></i>{{($ab > 0)? $ab: 0}}</span>
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" name="limit_amt" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit amount" maxlength="15">
@@ -67,6 +72,7 @@
 @section('jscript')
 <script>
   function checkLimitValidation(){
+    let pro_type = "{{$limitData->product->id}}";
     let total_limit = "{{$totalLimit}}"; //total exposure limit amount
     let program_limit = "{{$programLimit}}"; //program limit
     let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
@@ -76,6 +82,13 @@
     let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
     let balance_limit = total_limit - total_offered_amount + current_offer_amount;
     let actual_balance = (program_balance_limit < balance_limit)? program_balance_limit: balance_limit;
+    let ab;
+
+    if(pro_type == 1){
+        ab = actual_balance;
+    }else{
+        ab = balance_limit;
+    }
 
     unsetError('input[name=limit_amt]');
 
@@ -85,7 +98,7 @@
     if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=limit_amt]', 'Please fill limit amount');
         flag = false;
-    }else if((parseInt(limit_amt.replace(/,/g, '')) > actual_balance)){
+    }else if((parseInt(limit_amt.replace(/,/g, '')) > ab)){
         setError('input[name=limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
     }
