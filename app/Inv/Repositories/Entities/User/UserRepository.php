@@ -1472,9 +1472,33 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param array $attributes
      * @return mixed
      */
-    public function saveColenderUsers($attributes)
+    public function saveColenderUsers($attributes ,  $id)
     {
-        return CoLenderUsers::saveColenderUsers($attributes);
+        return CoLenderUsers::saveColenderUsers($attributes , $id);
+    }
+    
+    
+    /**
+     * get colender list
+     * 
+     * @return mixed
+     */
+    
+    public function getColenderList()
+    {
+        return CoLenderUsers::getColenderList();
+    }
+    
+    
+    /**
+     * get co lender data
+     * 
+     * @param array $where
+     * @return mixed
+     */
+    public function getCoLenderData($where)
+    {
+       return CoLenderUsers::getCoLenderData($where);  
     }
        
 }

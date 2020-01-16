@@ -44,7 +44,7 @@
                 <div class="row">
                 <div class="col-sm-12">
                                      <div class="table-responsive">
-                                    <table id="anchleadList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="co_lenderList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
                                                 <th>Sr.No.</th>
@@ -54,7 +54,7 @@
                                                 <th>Mobile</th>
 <!--                                                <th>Anchor</th>-->
                                                 <th>Created At</th>
-                                                 <th>Status</th>
+                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -80,15 +80,81 @@
 <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" /> @endsection @section('jscript')
 <script>
     var messages = {
-        get_sub_industry: "{{ URL::route('get_sub_industry') }}",
+        get_co_lender_list: "{{ URL::route('get_co_lender_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
         please_select: "{{ trans('backend.please_select') }}",
 
     };
+    
+    
+    
+    
+      $(document).ready(function () {
+          
+             oTables = $('#co_lenderList').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 10,
+            searching: false,
+            bSort: true,
+            ajax: {
+                url: messages.get_co_lender_list,
+                method: 'POST',
+                data: function (d) {
+                    d._token = messages.token;
+                },
+                error: function () { // error handling
+
+                    $("#leadMaster").append('<tbody class="leadMaster-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#leadMaster_processing").css("display", "none");
+                }
+            },
+            columns: [
+                {data: 'co_lender_id'},
+                {data: 'name'},
+
+                {data: 'biz_name'},
+                {
+                    data: 'email'
+                },
+                {
+                    data: 'phone'
+                },
+                {
+                    data: 'created_at'
+                },
+
+                {
+                    data: 'action'
+                }
+               
+            ],
+            aoColumnDefs: [{
+                    'bSortable': false,
+                    'aTargets': []
+                }]
+
+        });
+        
+          window.refresh = function ()
+      {
+          oTables.draw();
+      }
+          
+          
+          
+      });
+      
+      
+    
+    
+    
+    
+    
 </script>
-<script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
-<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/common.js') }}" type="text/javascript"></script>
-<script src="{{ asset('backend/js/lms/program.js') }}" type="text/javascript"></script>
+
+
+
+
 @endsection

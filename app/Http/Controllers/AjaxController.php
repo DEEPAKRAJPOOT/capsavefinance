@@ -3271,6 +3271,15 @@ if ($err) {
         $roleUsers = Helpers::getAllUsersByRoleId($role_id);
         return \response()->json(['data' => $roleUsers]);
     }
+    
+    
+    
+    public function getColenderList(DataProviderInterface $dataProvider)
+    {
+        $getColenderList = $this->userRepo->getColenderList();
+      return $dataProvider->getColenderList($this->request, $getColenderList);
+        
+    }
 
 
 }

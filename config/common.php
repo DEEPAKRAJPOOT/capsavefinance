@@ -29,6 +29,7 @@ return [
     //Roles Ids
     'anchor_role' => 11,
     'YES' => 1,
+    'NO' => 0,
     'yes_no' => [
         '0' => 'No',
         '1' => 'Yes'

@@ -19,5 +19,7 @@ return [
     'agency_user_registration_updated' => 'Agency user information successfully updated..',
     'already_exist' => 'Already Exist..',
     'offer_approved' => 'Offer approved successfully.',
+    'co_lender_registration_success'=>'Co-lender registration successfully.',
+    'co_lender_registration_update'=>'Co-lender updated successfully.'
 ];
 

@@ -599,5 +599,14 @@ Route::group(
                  'as' => 'get_ueser_by_role',
                  'uses' => 'AjaxController@getUserByRole'
             ]); 
+          
+          Route::POST('get-co-lender-list', [
+                 'as' => 'get_co_lender_list',
+                 'uses' => 'AjaxController@getColenderList'
+            ]); 
+          
+          
+          
+          
 
 });

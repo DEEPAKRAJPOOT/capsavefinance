@@ -805,7 +805,7 @@ $(document).ready(function () {
         var width = parent.attr('data-width');
         var title = parent.attr('title');
         if (title) {
-            $('#add_bank_account').find('.modal-title').html(title);
+            $('#addcolenders').find('.modal-title').html(title);
         }
         $("#addcolenders iframe").attr(
                 {

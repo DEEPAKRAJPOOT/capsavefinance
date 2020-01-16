@@ -22,7 +22,7 @@ class CoLenderUsers extends BaseModel {
      *
      * @var integer
      */
-    protected $primaryKey = 'co_lender_user_id';
+    protected $primaryKey = 'co_lender_id';
 
     /**
      * The attributes that should be mutated to dates.
@@ -52,22 +52,23 @@ class CoLenderUsers extends BaseModel {
      */
     protected $fillable = [
         'user_id',
-        'anchor_id',
-        'name',
-        'l_name',
-        'biz_name',
-        'email',
-        'phone',
-        'user_type',
-        'token',
-        'is_registered',
+        'comp_name',
+        'comp_email',
+        'comp_addr',
+        'comp_state',
+        'comp_city',
+        'comp_zip',
+        'comp_phone',
+        'doc_name',
+        'gst',
+        'percentage',
+        'is_active',
         'created_by',
         'created_at',
         'updated_at',
         'updated_by'
     ];
 
-    
     /**
      * save co lender Users
      * 
@@ -76,7 +77,7 @@ class CoLenderUsers extends BaseModel {
      * @throws InvalidDataTypeExceptions
      * @throws BlankDataExceptions
      */
-    public static function saveColenderUsers($attributes)
+    public static function saveColenderUsers($attributes , $id = null)
     {
         //Check data is Array
         if (!is_array($attributes)) {
@@ -91,9 +92,47 @@ class CoLenderUsers extends BaseModel {
         /**
          * Create anchor
          */
-        $res = self::create($attributes);
+      //  dd($id , $attributes);
+        $res = self::UpdateOrcreate(['co_lender_id'=> $id] , $attributes );
+        return ($res->co_lender_id ?: false);
+    }
 
-        return ($res->co_lender_user_id ?: false);
+    /**
+     * get colender list
+     * 
+     * @return mixed
+     */
+    public static function getColenderList()
+    {
+
+        $res = self::select('co_lenders_user.*', 'u.f_name', 'u.biz_name', 'u.email')->where('co_lenders_user.is_active', 1)
+                ->join('users as u', 'co_lenders_user.co_lender_id', '=', 'u.co_lender_id');
+        return $res ?: false;
+    }
+
+    /**
+     * get colender data
+     * 
+     * @param array $where
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions
+     */
+    public static function getCoLenderData($where)
+    {
+        //Check data is Array
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
+        }
+
+        //Check data is not blank
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        return self::where($where)
+                        ->join('users as u', 'co_lenders_user.co_lender_id', '=', 'u.co_lender_id')
+                        ->get();
     }
 
 }
