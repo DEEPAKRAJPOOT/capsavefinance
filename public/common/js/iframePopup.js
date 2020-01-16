@@ -764,38 +764,38 @@ $(document).ready(function () {
         });
 
         $("#editLimitFrame").on('show.bs.modal', function (e) {
-                var parent = $(e.relatedTarget);
-                var height = parent.attr('data-height');
-                var url = parent.attr('data-url');
-                var width = parent.attr('data-width');
-                $("#editLimitFrame iframe").attr(
-                        {
-                            'src': url,
-                            'height': height,
-                            'width': width
-                        }
-                );
-        });
-        
-        
-        
-         $("#add_bank_account").on('show.bs.modal', function (e) {
-        var parent = $(e.relatedTarget);
-        var height = parent.attr('data-height');
-        var url = parent.attr('data-url');
-        var width = parent.attr('data-width');
-        var title = parent.attr('title');
-        if(title){
-               $('#add_bank_account').find('.modal-title').html(title); 
-        }
-        $("#add_bank_account iframe").attr(
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            $("#editLimitFrame iframe").attr(
                 {
                     'src': url,
                     'height': height,
                     'width': width
                 }
-        );
-    });
+            );
+        });
+        
+        
+        
+         $("#add_bank_account").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            var title = parent.attr('title');
+            if(title){
+                   $('#add_bank_account').find('.modal-title').html(title); 
+            }
+            $("#add_bank_account iframe").attr(
+                {
+                    'src': url,
+                    'height': height,
+                    'width': width
+                });
+         });
+    
      
     $("#viewDisbursalCustomerInvoice").on('show.bs.modal', function (e) {
             var parent = $(e.relatedTarget);
@@ -807,9 +807,22 @@ $(document).ready(function () {
                         'src': url,
                         'height': height,
                         'width': width
-                    }
-            );
-    });
+                    });
+        });
+
+
+        $("#uploadBankDocument").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            $("#uploadBankDocument iframe").attr(
+                {
+                    'src': url,
+                    'height': height,
+                    'width': width
+                });
+        });
       
     $("#disbueseInvoices").on('show.bs.modal', function (e) {
             var parent = $(e.relatedTarget);

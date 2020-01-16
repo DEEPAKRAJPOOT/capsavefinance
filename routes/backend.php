@@ -76,6 +76,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@saveDocument'
             ]);
             
+            Route::get('upload_bank_document', [
+                'as' => 'upload_bank_document',
+                'uses' => 'Backend\CamController@updateBankDocument'
+            ]);
+            
+            Route::post('bank_document_save', [
+                'as' => 'bank_document_save',
+                'uses' => 'Backend\CamController@saveBankDocument'
+            ]);
+            
             
             Route::get('document-delete/{appDocFileId}',
                 [

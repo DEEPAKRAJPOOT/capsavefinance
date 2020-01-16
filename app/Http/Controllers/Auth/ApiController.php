@@ -14,7 +14,7 @@ class ApiController
 
 	//protected $secret_key = "Rentalpha__vkzARY";
   protected $secret_key = "0702f2c9c1414b70efc1e69f2ff31af0";
-  protected $download_xlsx = true;
+  protected $download_xls = true;
 	
 	function __construct(){
 		
@@ -187,16 +187,16 @@ class ApiController
     	$perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_finance.xlsx';
+        $file_name = $appId.'_finance.xls';
 
         $req_arr = array(
               'apiVersion' => $apiVersion,
               'vendorId' => $vendorId,
               'perfiosTransactionId' => $perfiostransactionid,
-              'reportType' => 'xlsx',
+              'reportType' => 'xls',
               'txnId' => $prolitus_txn,
         );
-        if ($this->download_xlsx) {
+        if ($this->download_xls) {
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Perfios_lib::GET_STMT;
@@ -230,12 +230,12 @@ class ApiController
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_banking.xlsx';
+        $file_name = $appId.'_banking.xls';
         $req_arr = array(
             'perfiosTransactionId' => $perfiostransactionid,
-            'types' => 'xlsx',
+            'types' => 'xls',
         );
-        if ($this->download_xlsx) {
+        if ($this->download_xls) {
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Bsa_lib::GET_REP;

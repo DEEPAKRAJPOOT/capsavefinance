@@ -9043,6 +9043,8 @@ body.avgrund-active {
 
 /*# sourceMappingURL=maps/style.css.map */
 .error{color:#ff0000;}
+.success{color:#468046;}
+
 .form-heading small {
     font-size: 11px;
     color: #888;
@@ -9061,6 +9063,10 @@ table.dataTable.no-footer {
   margin-top: -10px;
 }
 
+.mt10{
+  margin-top: 10px;
+}
+
 .ml-15{
   margin-left: 15px;
 }
@@ -9074,4 +9080,8 @@ table.dataTable.no-footer {
     position: absolute;
     margin-top: 0.25rem;
     margin-left: -1.25rem;
+}
+
+.hide{
+  display: none !important;
 }

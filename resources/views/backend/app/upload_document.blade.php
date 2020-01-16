@@ -10,7 +10,7 @@
         <div class="modal-body text-left">
 
             <div id="is_required_addl_info">
-              <div class="row" id="bank_dates">
+              <div class="row bank_divs">
                 <div class="col-6">
                    <div class="form-group">
                       <label for="email">Select Month</label>
@@ -34,6 +34,46 @@
                    </div>
                 </div>
              </div>
+             <div class="row bank_divs">
+                <div class="col-6">
+                   <div class="form-group">
+                      <label for="facility">Facility</label>
+                      <select class="form-control" name="facility" id="facility">
+                         <option selected diabled value=''>Select Facility</option>
+                         <option value='CC'>CC</option>
+                         <option value='OD'>OD</option>
+                         <option value='NONE'>NONE</option>
+                      </select>
+                   </div>
+                </div>
+                <div class="col-6">
+                   <label>Sanction Limit Fixed</label>
+                   <div class="form-group mt10">
+                      <label for="sanctionlimitfixed_y">
+                        <input type="radio" name="sanctionlimitfixed" id="sanctionlimitfixed_y" value="1"> Yes
+                      </label>
+                      <label for="sanctionlimitfixed_n">
+                        <input type="radio" name="sanctionlimitfixed" checked id="sanctionlimitfixed_n" value="0"> No
+                      </label>
+                   </div>
+                </div>
+             </div>
+             
+              <div class="row bank_divs">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="drawingpowervariableamount">Drawing Power Variable Amount</label>
+                    <input type="text" name="drawingpowervariableamount" id="drawingpowervariableamount" class="form-control" autocomplete="off" />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                  <label for="sanctionlimitvariableamount">Sanction Limit Variable Amount</label>
+                  <input type="text" name="sanctionlimitvariableamount" id="sanctionlimitvariableamount" class="form-control" autocomplete="off" />
+                  </div>
+                </div>
+              </div>
+
               <div class="form-group">
                   <label for="email">Select Bank Name</label>
                   <select class="form-control" name="file_bank_id">
@@ -149,11 +189,11 @@
         if (docId != 6 && $('input[name="is_pwd_protected"]').is(':checked') && $('input[name="is_pwd_protected"]:checked').val() == '1') {
             $('#password_file_div').show();
         }
-        $('#bank_dates').hide();
+        $('.bank_divs').hide();
         
         if(docId == 4) {
             $('select[name=file_bank_id]').parent('div').show();
-            $('#bank_dates').show();
+            $('.bank_divs').show();
         } else if (docId == 5) {
             $('select[name=finc_year]').parent('div').show();
         } else if (docId == 6) {    
@@ -166,7 +206,7 @@
         } else {            
             $('#is_not_for_gst').hide();
             $('#is_required_addl_info').hide();       
-            $('#bank_dates').hide();       
+            $('.bank_divs').hide();       
         }
         
     });

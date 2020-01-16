@@ -63,7 +63,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@confirmDisburse'
             ]);
             
-
+            Route::get('/interest-accrual', [
+                'as' => 'lms_interest_accrual',
+                'uses' => 'Lms\DisbursalController@processAccrualInterest'
+            ]);
+            
         });//end of application
         
 	});
