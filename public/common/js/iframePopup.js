@@ -795,13 +795,14 @@ $(document).ready(function () {
                     'width': width
                 });
          });
-         
-        $("#viewDisbursalCustomerInvoice").on('show.bs.modal', function (e) {
-                var parent = $(e.relatedTarget);
-                var height = parent.attr('data-height');
-                var url = parent.attr('data-url');
-                var width = parent.attr('data-width');
-                $("#viewDisbursalCustomerInvoice iframe").attr(
+    
+     
+    $("#viewDisbursalCustomerInvoice").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            $("#viewDisbursalCustomerInvoice iframe").attr(
                     {
                         'src': url,
                         'height': height,
@@ -822,5 +823,19 @@ $(document).ready(function () {
                     'width': width
                 });
         });
+      
+    $("#disbueseInvoices").on('show.bs.modal', function (e) {
+            var parent = $(e.relatedTarget);
+            var height = parent.attr('data-height');
+            var url = parent.attr('data-url');
+            var width = parent.attr('data-width');
+            $("#disbueseInvoices iframe").attr(
+                    {
+                        'src': url,
+                        'height': height,
+                        'width': width
+                    }
+            );
+    });
         
 });

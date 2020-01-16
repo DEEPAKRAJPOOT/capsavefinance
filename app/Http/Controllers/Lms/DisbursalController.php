@@ -64,6 +64,16 @@ class DisbursalController extends Controller
 					'userIvoices'=>$userIvoices, 
 				]);              
 	}
+
+	/**
+	 * Display a listing of the customer.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function confirmDisburse(Request $request)
+	{
+		return view('lms.disbursal.confirm_disburse');              
+	}
 	/**
 	 * Display a listing of the customer.
 	 *
@@ -75,7 +85,12 @@ class DisbursalController extends Controller
 		$record = array_filter(explode(",",$invoiceIds));
 		$allinvoices = $this->lmsRepo->getInvoices($record)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($record)->toArray();
+		
 		$params = array('http_header' => '', 'header' => '', 'request' => []);
+		$fundedAmount = 0;
+		$interest = 0;
+		$disburseAmount = 0;
+
 		$http_header = [
 			'timestamp' => date('Y-m-d H:i:s'),
     		'txn_id' => _getRand(18)
@@ -86,39 +101,44 @@ class DisbursalController extends Controller
     		'Checker_ID' => 11,
     		'Approver_ID' => 12
     		];
+
 		foreach ($supplierIds as $userid) {
 			foreach ($allinvoices as $invoice) {
+				$disburseRequestData = $this->createInvoiceDisbursalData($invoice);
+				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
+
 				if($invoice['supplier_id'] = $userid) {
-					$fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program']['margin'])/100);
-					$interest = (($fundedAmount*$invoice['program']['interest_rate']*10)/360);
-					$disburseAmount = round($fundedAmount - $interest);
-					// dd($disburseAmount);
+					$fundedAmount += $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
+					$interest += (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
+					$disburseAmount += round($fundedAmount - $interest);
 				}			
+				$requestData[$userid]['RefNo'] = 'CAP'.$userid;
+				$requestData[$userid]['Amount'] = $disburseAmount;
+				$requestData[$userid]['Debit_Acct_No'] = '123344455';
+				$requestData[$userid]['Debit_Acct_Name'] = 'testing name';
+				$requestData[$userid]['Debit_Mobile'] = '9876543210';
+				$requestData[$userid]['Ben_IFSC'] = $invoice['supplier_bank_detail']['ifsc_code'];
+				$requestData[$userid]['Ben_Acct_No'] = $invoice['supplier_bank_detail']['acc_no'];
+				$requestData[$userid]['Ben_Name'] = $invoice['supplier_bank_detail']['acc_name'];
+				$requestData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];
+				$requestData[$userid]['Ben_Email'] = $invoice['supplier']['email'];
+				$requestData[$userid]['Ben_Mobile'] = $invoice['supplier']['mobile_no'];
+				$requestData[$userid]['Mode_of_Pay'] = 'IFT';
+				$requestData[$userid]['Nature_of_Pay'] = 'MPYMT';
+				$requestData[$userid]['Remarks'] = 'test remarks';
+				$requestData[$userid]['Value_Date'] = date('Y-m-d');
 			}
-			$requestData[$userid]['RefNo'] = 'CAP'.$userid;
-			$requestData[$userid]['Amount'] = $disburseAmount;
-			$requestData[$userid]['Debit_Acct_No'] = '123344455';
-			$requestData[$userid]['Debit_Acct_Name'] = 'testing name';
-			$requestData[$userid]['Debit_Mobile'] = '9876543210';
-			$requestData[$userid]['Ben_IFSC'] = $invoice['supplier_bank_detail']['ifsc_code'];
-			$requestData[$userid]['Ben_Acct_No'] = $invoice['supplier_bank_detail']['acc_no'];
-			$requestData[$userid]['Ben_Name'] = $invoice['supplier_bank_detail']['acc_name'];
-			$requestData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];
-			$requestData[$userid]['Ben_Email'] = $invoice['supplier']['email'];
-			$requestData[$userid]['Ben_Mobile'] = $invoice['supplier']['mobile_no'];
-			$requestData[$userid]['Mode_of_Pay'] = 'IFT';
-			$requestData[$userid]['Nature_of_Pay'] = 'MPYMT';
-			$requestData[$userid]['Remarks'] = 'test remarks';
-			$requestData[$userid]['Value_Date'] = date('Y-m-d');
 		}
-		
 		$params = [
 			'http_header' => $http_header,
 			'header' => $header,
 			'request' => $requestData
 			];
+
 		$idfcObj= new Idfc_lib();
-		$idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);      
+		$result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+		dd($result);      
+		return redirect()->route('lms_disbursal_request_list');
 	}
 
     /**

@@ -183,7 +183,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public static function getInvoices($invoiceIds)
     {
         return BizInvoice::whereIn('invoice_id', $invoiceIds)
-               ->with(['program', 'supplier', 'supplier_bank_detail.bank'])
+               ->with(['program_offer','lms_user' , 'supplier', 'supplier_bank_detail.bank'])
                ->get();
     }  
 
@@ -200,7 +200,21 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
                 ->whereIn('invoice_id', $invoiceIds)
                 ->pluck('supplier_id');
     }    
-    
+
+    /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function createDisbursalInvoice($allInvoices)
+    {
+        return BizInvoice::groupBy('supplier_id')
+                ->whereIn('invoice_id', $invoiceIds)
+                ->pluck('supplier_id');
+    }    
+
     /**
      * Get Sum of Accrued Interest
      *      
