@@ -26,6 +26,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use DB;
+use App\Inv\Repositories\Models\CoLenderUsers;
 
 class UserRepository extends BaseRepositories implements UserInterface
 {
@@ -1462,6 +1463,18 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         $result = LmsUser::lmsGetDisbursalCustomer();
         return $result ?: false;
+    }
+    
+    
+    /**
+     * Save co lender users
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+    public function saveColenderUsers($attributes)
+    {
+        return CoLenderUsers::saveColenderUsers($attributes);
     }
        
 }

@@ -74,13 +74,17 @@
                 <div class="form-group">
                     <label for="txtEmail">State
                         <span class="mandatory">*</span>
-                    </label>                  
-                    <select class="form-control state" name="state" id="state" tabindex="6">
-                        <option value=""> Select State</option>
-
-                    </select>
-
-                </div>
+                    </label>     
+                    
+                    
+                    
+                      <select class="form-control state" name="state" id="state" tabindex="6">
+                             <option value=""> Select State</option>
+                             @foreach($states as $key => $state)
+                             <option value="{{$state->id}}"> {{$state->name}} </option>
+                             @endforeach
+                         </select>
+               </div>
             </div>
 
 
@@ -116,26 +120,35 @@
                     </div>
                 </div>
             </div>
-
-        </div>
-
-        <div class="row">
+            
             <div class="col-6">
                 <div class="form-group">
-                    <label for="txtEmail">Assigned Sale Manager
+                    <label for="txtMobile">GST
                         <span class="mandatory">*</span>
                     </label>
 
-                    {!!
-                    Form::select('assigned_sale_mgr',
-                    [''=>'Please Select']+Helpers::getAllUsersByRoleId(4),
-                    '',
-                    array('id' => 'assigned_sale_mgr',
-                    'class'=>'form-control'))
-                    !!}
+                    <input class="form-control" name="gst" id="gst"  type="text"  placeholder="GST" required>
+
                 </div>
-            </div>                           
-        </div>  
+            </div>
+            
+            
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="txtMobile">Percentage(%)
+                        <span class="mandatory">*</span>
+                    </label>
+
+                    <input class="form-control" name="perc" id="perc"  type="text"  placeholder="Percentage(%)" required="">
+
+                </div>
+            </div>
+            
+            
+
+        </div>
+
+        
 
 
         <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
@@ -224,16 +237,11 @@
                             number: true,
                         })
             });
-            $('input.assigned_sale_mgr').each(function () {
-                $(this).rules("add",
-                        {
-                            required: true,
-                        })
-            });
+           
             // test if form is valid                
         })
         //$("#btnAddMore").on('click', addInput);
-        $('form#anchorForm').validate();
+        $('form#save_co_lenders').validate();
     });
 
 </script>
