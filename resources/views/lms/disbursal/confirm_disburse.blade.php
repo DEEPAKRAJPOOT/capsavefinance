@@ -14,9 +14,7 @@
 
 <script>
 $(document).ready(function(){
-	alert($('#invoice_ids').val());
-	$invoice_ids = parent.$('#invoice_ids').val();
-	$('#invoiceids').val(invoiceids);
+	$('#invoiceids').val(parent.$('#invoice_ids').val());
 });
 
 </script>

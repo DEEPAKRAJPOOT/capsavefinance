@@ -197,11 +197,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function createDisbursalInvoice($allInvoices)
+    public static function updateInvoiceStatus($invoiceId, $status)
     {
-        return BizInvoice::groupBy('supplier_id')
-                ->whereIn('invoice_id', $invoiceIds)
-                ->pluck('supplier_id');
+        return BizInvoice::where('invoice_id', $invoiceId)
+                ->update(['status_id' => $status]);
     }    
 
     
