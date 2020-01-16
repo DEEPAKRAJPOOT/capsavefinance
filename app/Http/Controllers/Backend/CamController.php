@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Hash;
 
 class CamController extends Controller
 {
-    protected $download_xls = TRUE;
+    protected $download_xlsx = TRUE;
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
@@ -658,12 +658,12 @@ class CamController extends Controller
            return $final_res;
         }
 
-        $file_name = $appId.'_banking.xls';
+        $file_name = $appId.'_banking.xlsx';
         $req_arr = array(
           'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-          'types' => 'xls',
+          'types' => 'xlsx',
         );
-        if ($this->download_xls) {
+        if ($this->download_xlsx) {
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Bsa_lib::GET_REP;
@@ -790,15 +790,15 @@ class CamController extends Controller
            $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
            return $final_res;
         }
-        $file_name = $appId.'_finance.xls';
+        $file_name = $appId.'_finance.xlsx';
         $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
             'perfiosTransactionId' => $start_txn['perfiostransactionid'],
-            'reportType' => 'xls',
+            'reportType' => 'xlsx',
             'txnId' => $prolitus_txn,
         );
-        if ($this->download_xls) {
+        if ($this->download_xlsx) {
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Perfios_lib::GET_STMT;
@@ -845,15 +845,15 @@ class CamController extends Controller
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_finance.xls';
+        $file_name = $appId.'_finance.xlsx';
         $req_arr = array(
               'apiVersion' => $apiVersion,
               'vendorId' => $vendorId,
               'perfiosTransactionId' => $perfiostransactionid,
-              'reportType' => 'xls',
+              'reportType' => 'xlsx',
               'txnId' => $prolitus_txn,
         );
-        if ($this->download_xls) {
+        if ($this->download_xlsx) {
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Perfios_lib::GET_STMT;
@@ -905,13 +905,13 @@ class CamController extends Controller
         $bsa = new Bsa_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_banking.xls';
+        $file_name = $appId.'_banking.xlsx';
 
         $req_arr = array(
           'perfiosTransactionId' => $perfiostransactionid,
-          'types' => 'xls',
+          'types' => 'xlsx',
         );
-        if ($this->download_xls) {
+        if ($this->download_xlsx) {
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Bsa_lib::GET_REP;
