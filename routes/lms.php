@@ -57,6 +57,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'send_to_bank',
                 'uses' => 'Lms\DisbursalController@sendToBank'
             ]);
+
+            Route::get('/confirm-disburse', [
+                'as' => 'confirm_disburse',
+                'uses' => 'Lms\DisbursalController@confirmDisburse'
+            ]);
             
 
         });//end of application

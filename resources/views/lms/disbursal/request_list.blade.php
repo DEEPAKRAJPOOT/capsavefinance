@@ -44,6 +44,13 @@
                 </div>
                 <button id="searchB" type="button" class="btn  btn-success btn-sm float-right">Search</button>
                 
+                <div class="col-md-3 ml-auto text-right">
+
+                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_disburse', ['disburse_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Send To Bank</a>
+                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_disburse', ['disburse_type' => 2]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Disburse Manually</a>
+                </div>
+                <input type="hidden" value="" name="invoice_ids" id="invoice_ids">  
+
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -77,20 +84,12 @@
                     </div>
                 </div>
 
-               <div class="d-flex btn-section ">
-                    <div class="col-md-4 ml-auto text-right">
-                        <form method="POST" action="{{ Route('send_to_bank') }}">
-                            @csrf
-                            <input type="hidden" value="" name="invoice_ids" id="invoice_ids">  
-                            <input type="submit" value="Submit" class="btn btn-success btn-sm">
-                        </form>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
 {!!Helpers::makeIframePopup('viewDisbursalCustomerInvoice','View Disbursal Customer Invoice', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('disbueseInvoices','Disbuse Invoices', 'modal-md')!!}
 
 @endsection
 

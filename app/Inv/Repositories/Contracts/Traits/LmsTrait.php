@@ -173,7 +173,7 @@ trait LmsTrait
      * @param array $data
      * @return mixed
      */
-    protected function createInvoiceDisbursalData($invoice)
+    protected function createInvoiceDisbursalData($invoice, $disburseType = 2)
     {
 
             $disbursalData = [];
@@ -205,8 +205,8 @@ trait LmsTrait
             $disbursalData['settlement_date'] = null;
             $disbursalData['accured_interest'] = null;
             $disbursalData['interest_refund'] = null;
-            $disbursalData['funded_date'] = null;
-            $disbursalData['int_accrual_start_dt'] = null;
+            $disbursalData['funded_date'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
+            $disbursalData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
             
         return $disbursalData;
     }    

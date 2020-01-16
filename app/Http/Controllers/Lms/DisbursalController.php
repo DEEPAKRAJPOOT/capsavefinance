@@ -62,6 +62,16 @@ class DisbursalController extends Controller
 					'userIvoices'=>$userIvoices, 
 				]);              
 	}
+
+	/**
+	 * Display a listing of the customer.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function confirmDisburse(Request $request)
+	{
+		return view('lms.disbursal.confirm_disburse');              
+	}
 	/**
 	 * Display a listing of the customer.
 	 *
@@ -126,6 +136,7 @@ class DisbursalController extends Controller
 		$idfcObj= new Idfc_lib();
 		$result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
 		dd($result);      
+		return redirect()->route('lms_disbursal_request_list');
 	}
 
 
