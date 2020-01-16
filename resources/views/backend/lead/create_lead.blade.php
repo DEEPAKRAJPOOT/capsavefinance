@@ -3,13 +3,43 @@
 @section('content')
 
 <div class="modal-body text-left">
-   <form id="createLeadForm" name="createLeadForm" method="POST" action="{{route('save_backend_lead')}}" target="_top">
-		@csrf
+<div class="row">                
+   <div class="col-md-12">   
+         @if (Session::has('error') && Session::get('error'))  
+         <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+               <ul>                  
+                  <label class='error'>{{Session::get('error')}}</label><br>               
+               </ul>
+         </div>
+         @endif
+         @if ($errors->any())
+            <div class="alert alert-danger">
+               <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+               <ul>
+                     @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                     @endforeach
+               </ul>
+            </div>
+         @endif
+         @if (Session::has('message') && Session::get('message'))  
+         <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+               <ul>                  
+                  <label class='success'>{{Session::get('message')}}</label><br>               
+               </ul>
+         </div>
+         @endif
+   </div>
+</div>
+   <form id="createLeadForm" name="createLeadForm" method="POST" action="{{route('save_backend_lead')}}">
+   @csrf
       <div class="row">
          <div class="col-6">
             <div class="form-group">
                <label for="txtCreditPeriod">Full Name<span class="mandatory">*</span></label>
-               <input type="text" name="full_name" id="full_name" value="" class="form-control full_name" tabindex="1" placeholder="Full Name" />
+               <input type="text" name="full_name" id="full_name" value="{{ old('full_name') }}" class="form-control full_name" tabindex="1" placeholder="Full Name" />
             </div>
          </div>
          <div class="col-6">
@@ -17,7 +47,7 @@
                <label for="txtSupplierName">Business Name
                <span class="mandatory">*</span>
                </label>
-               <input type="text" name="comp_name" id="comp_name" value="" class="form-control comp_name" tabindex="2" placeholder="Business Name" >
+               <input type="text" name="comp_name" id="comp_name" value="{{ old('comp_name') }}" class="form-control comp_name" tabindex="2" placeholder="Business Name" >
             </div>
          </div>
       </div>
@@ -28,7 +58,7 @@
                <label for="txtEmail">Email
                <span class="mandatory">*</span>
                </label>
-               <input type="email" name="email" id="email" value="" class="form-control email" tabindex="3" placeholder="Email" >
+               <input type="email" name="email" id="email" value="{{ old('email') }}" class="form-control email" tabindex="3" placeholder="Email" >
             </div>
          </div>
          <div class="col-6">
@@ -37,7 +67,7 @@
                <span class="mandatory">*</span>
                </label>
 
-               <input class="form-control numbercls phone" name="phone" id="phone" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
+               <input class="form-control numbercls phone" name="phone" id="phone" value="{{ old('phone') }}" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
                <div class="failed">
                   <div style="color:#FF0000">
                      <small class="erro-sms" id="erro-sms">
@@ -57,7 +87,7 @@
                {!!
                Form::select('assigned_sale_mgr',
                [''=>'Please Select']+Helpers::getAllUsersByRoleId(4),
-               Auth::user()->user_id,
+               old('phone') ?  old('phone') : Auth::user()->user_id,
                array('id' => 'assigned_sale_mgr',
                'class'=>'form-control'))
                !!}
@@ -70,8 +100,8 @@
                </label>
                   <select class="form-control is_buyer" name="is_buyer" id="is_buyer">
                      <option value="">Please Select</option>
-                     <option value="1">Supplier</option>
-                     <option value="2">Buyer</option>
+                     <option value="1" {{ (old("is_buyer") == "1" ? "selected":"") }}>Supplier</option>
+                     <option value="2" {{ (old("is_buyer") == "2" ? "selected":"") }}>Buyer</option>
                   </select>
             </div>
          </div>                        
@@ -90,13 +120,19 @@
         get_lead: "{{ URL::route('get_lead') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-
+        is_accept: "{{ Session::get('is_accept') }}"
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function () {
+   if(messages.is_accept == 1){
+      setTimeout(function() {
+         parent.jQuery("#createLeadForm").modal('hide'); 
+         parent.oTables.draw(); 
+      }, 1000);
+   }
    $('#saveLead').on('click', function (event) {
          $('input.full_name').each(function () {
             $(this).rules("add",
@@ -137,7 +173,10 @@ $(document).ready(function () {
                      {
                         required: true,
                      })
-         });               
+         });   
+         if($("#createLeadForm").valid()){
+           $('#saveLead').hide();
+         }              
    })
    $('form#createLeadForm').validate();
 });

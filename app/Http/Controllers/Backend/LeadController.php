@@ -13,6 +13,7 @@ use App\Http\Requests\AnchorRegistrationFormRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use Event;
+use App\Http\Requests\Backend\CreateLeadRequest;
 
 class LeadController extends Controller {
 
@@ -89,7 +90,7 @@ class LeadController extends Controller {
      * @param Request $request
      * @return type
      */
-    public function saveBackendLead(Request $request) {
+    public function saveBackendLead(CreateLeadRequest $request) {
         try {
             $string = time();
             $reqData = $request->all();
@@ -128,11 +129,12 @@ class LeadController extends Controller {
                 $userMailArr['name'] = $arrUserData['f_name'];
                 $userMailArr['password'] = $string;
                 Event::dispatch("user.registered", serialize($userMailArr));
-                Session::flash('message', 'Lead created successfully');
-                return redirect()->route('lead_list');                       
+                Session::flash('message', 'Lead created successfully'); 
+                Session::flash('is_accept', 1);
+                return redirect()->back();                      
             }else{
                 Session::flash('error', trans('error_messages.email_already_exists'));
-                return redirect()->route('lead_list');
+                return redirect()->back()->withInput();
             }
         
         } catch (Exception $ex) {
