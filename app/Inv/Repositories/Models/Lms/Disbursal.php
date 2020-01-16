@@ -66,6 +66,8 @@ class Disbursal extends BaseModel {
         'settlement_date',
         'accured_interest',
         'interest_refund',
+        'funded_date',
+        'int_accrual_start_dt',
         'created_at',
         'created_by',
         'updated_at',
