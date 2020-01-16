@@ -554,7 +554,7 @@ class DataRenderer implements DataProviderInterface
     { 
     
       return DataTables::of($invoice)
-               ->rawColumns(['view_upload_invoice','status','anchor_id','action'])
+               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id'])
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
@@ -563,9 +563,9 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'invoice_id',
                     function ($invoice) {                        
-                       return $invoice->invoice_no ? $invoice->invoice_no : '';
-                })
-                ->addColumn(
+                             return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+              })
+              ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
                         return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
@@ -630,7 +630,7 @@ class DataRenderer implements DataProviderInterface
     { 
     
       return DataTables::of($invoice)
-               ->rawColumns(['view_upload_invoice','status','anchor_id','action'])
+               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id'])
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
@@ -639,8 +639,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'invoice_id',
                     function ($invoice) {                        
-                       return $invoice->invoice_no ? $invoice->invoice_no : '';
-                })
+                             return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+             })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -698,8 +698,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
-                       return $invoice->invoice_no ? $invoice->invoice_no : '';
-                })
+                             return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+             })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -754,8 +754,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
-                       return $invoice->invoice_no ? $invoice->invoice_no : '';
-                })
+                             return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+             })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -810,8 +810,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
-                       return $invoice->invoice_no ? $invoice->invoice_no : '';
-                })
+                               return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+              })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -853,7 +853,7 @@ class DataRenderer implements DataProviderInterface
                   ->addColumn(
                     'action',
                     function ($invoice) {
-                     return '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option><option value="8">Approved</option><option value="9">Disb Que</option></select>&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey=""data-url ="{{route([])}}"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                     return '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option><option value="8">Approved</option><option value="9">Disb Que</option></select>&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_failed_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
 
                 })
               ->make(true);
@@ -870,8 +870,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
-                       return $invoice->invoice_no ? $invoice->invoice_no : '';
-                })
+                            return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+              })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -914,7 +914,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
-             return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="400px" data-width="100%" accesskey=""data-url ="{{route([])}}"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+             return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
 
                 })
                  
@@ -932,8 +932,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
-                       return $invoice->invoice_no ? $invoice->invoice_no : '';
-                })
+                               return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -988,8 +988,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
-                       return $invoice->invoice_no ? $invoice->invoice_no : '';
-                })
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+             })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        

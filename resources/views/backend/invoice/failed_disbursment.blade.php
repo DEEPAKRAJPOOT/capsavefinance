@@ -261,6 +261,7 @@
       </div>
    </div>
 </div>
+{!!Helpers::makeIframePopup('modalInvoiceFailed','Invoice Failed Status', 'modal-md')!!}
     @endsection
     @section('jscript')
 <script>

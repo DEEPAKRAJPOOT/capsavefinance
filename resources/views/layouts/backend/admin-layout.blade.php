@@ -123,9 +123,10 @@
 
             $(this).parents("tr").next(".dpr").slideToggle();
             });
-
+           /* use for hide future date  */
             datepickerDisFdate();
-
+            /* use for hide past date  */
+            datepickerDisPdate();
             $('.number_format').on('input', function(event) {
                // skip for arrow keys
                if(event.which >= 37 && event.which <= 40) return;
@@ -146,6 +147,16 @@
             });
         }
 
+       function datepickerDisPdate(){
+            $(".datepicker-dis-pdate").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+               startDate: new Date()
+            });
+        }
+        
+        
         function unsetError(ele){
             $(ele+' +span').remove();
         }

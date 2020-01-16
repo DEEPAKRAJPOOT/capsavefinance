@@ -800,6 +800,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\InvoiceController@saveInvoice'
             ]); 
           
+            Route::get('invoice_failed_status', [
+                 'as' => 'invoice_failed_status',
+                'uses' => 'Backend\InvoiceController@invoiceFailedStatus'
+            ]); 
+            Route::get('invoice_success_status', [
+                 'as' => 'invoice_success_status',
+                'uses' => 'Backend\InvoiceController@invoiceSuccessStatus'
+            ]); 
+            
+             Route::get('view_invoice_details', [
+                 'as' => 'view_invoice_details',
+                'uses' => 'Backend\InvoiceController@viewInvoiceDetails'
+            ]);  
+            
          });
          
         Route::group(['prefix' => 'document'], function () {

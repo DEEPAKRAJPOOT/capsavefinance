@@ -91,7 +91,7 @@
 									<div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Due Date <span class="error_message_label">*</span> </label>
-                                              <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth datepicker-dis-fdate" placeholder="Invoice Due Date">
+                                              <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth datepicker-dis-pdate" placeholder="Invoice Due Date">
                                       </div>
                                     </div>
 									

@@ -3158,8 +3158,11 @@ if ($err) {
                {
                     return response()->json(['status' => 0]); 
                } 
-                
-                
+               if($this->twoDateDiff($date,$invoice_due_date)==1)
+               {
+                   return response()->json(['status' => 0]); 
+               }
+               
                 $invoice_amount = str_replace("\n","",$invoice_amount);
                 $data[$i]['anchor_id'] =  $request['anchor_bulk_id'];
                 $data[$i]['supplier_id'] = $request['supplier_bulk_id']; 
@@ -3196,7 +3199,20 @@ if ($err) {
                         return response()->json(['status' => 0]); 
                     }
      }
-    
+    function twoDateDiff($fdate,$tdate)
+    {
+            $curdate=strtotime($fdate);
+            $mydate=strtotime($tdate);
+
+            if($curdate > $mydate)
+            {
+               return 1;
+            }
+            else
+            {
+                return 0;
+            }
+    }
     function validateDate($date, $format = 'd/m/Y')
     { 
        

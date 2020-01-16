@@ -12,6 +12,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
+use DB;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
 
@@ -120,6 +121,27 @@ class InvoiceController extends Controller {
        return response()->json(['status' => 1,'userList' =>$get_user]);
 
       }
+      
+      /* failed invoice status iframe    */
+       public function invoiceFailedStatus(Request $request){
+           dd( $request->invoice_id);
+         return view('backend.invoice.invoice_failed_status');
+      }
+      
+       /* success invoice status iframe    */
+       public function invoiceSuccessStatus(Request $request){
+           dd( $request->invoice_id);
+         return view('backend.invoice.invoice_success_status');
+      }
+      
+       /* success invoice status iframe    */
+       public function viewInvoiceDetails(Request $request){
+          $invoice_id =  $request->get('invoice_id');  
+          $res =  $this->invRepo->getSingleInvoice($invoice_id);
+          $get_status  = DB::table('mst_status')->where('status_type',4)->get();
+          return view('backend.invoice.view_invoice_details')->with(['invoice' => $res,'status' => $get_status]);
+      }
+     
    
       /* save bulk invoice */
       public function saveBulkInvoice(Request $request) { 
@@ -127,6 +149,7 @@ class InvoiceController extends Controller {
            $res =  $this->invRepo->saveBulk($attributes);
            if($res)
            {
+                 
                   Session::flash('message', 'Invoice successfully saved');
                   return back();
            }
@@ -138,11 +161,12 @@ class InvoiceController extends Controller {
       }
       /* update invoice amount  */
       public function saveInvoiceAmount(Request $request)
-      {
+      {     $id = Auth::user()->user_id;
             $attributes = $request->all();
             $res =  $this->invRepo->updateInvoiceAmount($attributes['invoice_id'],$attributes['approve_invoice_amount']);
            if($res)
            {
+                  
                   Session::flash('message', 'Invoice Amount successfully Updated');
                   return back();
            }
@@ -190,7 +214,7 @@ class InvoiceController extends Controller {
 
         if ($result) {
 
-
+            $this->invRepo->saveInvoiceActivityLog($result,7,null,$id);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {
