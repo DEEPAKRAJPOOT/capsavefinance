@@ -9,12 +9,27 @@
     
     <div class="row">
     <div class="col-md-12">
+      <div class="form-group row">
+        <label for="txtPassword" class="col-md-4"><b>Facility Type:</b></label> 
+        <div class="col-md-8">
+        <input type="text" class="form-control" value="Supply Chain" placeholder="Facility Type" maxlength="15" disabled>
+        </div>
+      </div>
+    </div>
+
+    @php
+    $programBalanceLimit = $programLimit - $programOfferedAmount + $currentOfferAmount;
+    $balanceLimit = $totalLimit - $totalOfferedAmount + $currentOfferAmount;
+    $actualBalance = ($programBalanceLimit < $balanceLimit)? $programBalanceLimit: $balanceLimit;
+    @endphp
+
+    <div class="col-md-12">
       <div class="form-group row INR ">
         <label for="txtPassword" class="col-md-4"><b>Loan Offer:</b></label> 
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limit_amt)}}" placeholder="Loan Offer" maxlength="15">
-        <span class="s_value"><i class="fa fa-inr"></i>{{$limitData->program->min_loan_size}} - <i class="fa fa-inr"></i>{{$limitData->program->max_loan_size}}</span><span class="float-right">Balance: <i class="fa fa-inr"></i>{{$limitData->program->anchor_sub_limit-$offeredLimit}}</span>
+        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Loan Offer" maxlength="15">
+        <span class="s_value"><i class="fa fa-inr"></i>{{$limitData->program->min_loan_size}} - <i class="fa fa-inr"></i>{{$limitData->program->max_loan_size}}</span><span class="float-right">Balance: <i class="fa fa-inr"></i>{{($actualBalance > 0)? $actualBalance: 0}}</span>
         </div>
       </div>
     </div>
@@ -124,10 +139,15 @@
 @section('jscript')
 <script>
   function checkSupplyValidations(){
-    let tot_limit_amt = "{{$totalLimit}}";
-    let prgm_limit = "{{$limitData->program->anchor_sub_limit}}";
-    let offered_limit = "{{$offeredLimit}}";
-    let balance_limit = prgm_limit - offered_limit;
+    let total_limit = "{{$totalLimit}}"; //total exposure limit amount
+    let program_limit = "{{$programLimit}}"; //program limit
+    let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
+    let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
+    let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
+
+    let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
+    let balance_limit = total_limit - total_offered_amount + current_offer_amount;
+    let actual_balance = (program_balance_limit < balance_limit)? program_balance_limit: balance_limit;
 
     unsetError('input[name=prgm_limit_amt]');
     unsetError('input[name=interest_rate]');
@@ -155,8 +175,8 @@
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
-    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))) || (parseInt(prgm_limit_amt.replace(/,/g, '')) > balance_limit)){
-        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from Balance/Total limit');
+    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > actual_balance)){
+        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
     }
 

@@ -17,7 +17,7 @@
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group INR">
-                                    <label>Total Limit</label>
+                                    <label>Total Exposure</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control form-control-sm number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15">
                                 </div>
@@ -230,7 +230,7 @@
                                                 <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmLimit->offer->security_deposit}}</b></li>
                                                 <li class="col-md-2">Invoice Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
                                                 <li class="col-md-2">PTPQ(%) <br> <b>{{$prgmLimit->offer->ptpq}}</b></li>
-                                                <li class="col-md-2">XIRR(%) <br><i class="fa fa-inr"></i><b>{{number_format($prgmLimit->offer->xirr)}}</b></li>
+                                                <li class="col-md-2">XIRR(%) <br><i class="fa fa-inr"></i><b>{{$prgmLimit->offer->xirr}}</b></li>
                                                 <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
                                             @else
                                                 <li class="col-md-10" style="text-align: center;">No offer found</li>
@@ -278,12 +278,18 @@ var messages = {
     "token" : "{{ csrf_token() }}"  
 };
 
-var balance_limit; 
+var offers = {
+    "program_limit":0,
+    "program_balance_limit":0,
+    "current_offer_limit":0,
+    "total_offered_limit":{{$totOfferedLimit}},
+}; 
 
 
 $(document).ready(function(){
     $('#product_id').on('change',function(){
         let product_id = $('#product_id').val();
+        $('span.limit').html('');
         if(product_id == ''){
             $('#program_id').attr('disabled', false);
             $('#anchor_id').attr('disabled', false);
@@ -348,6 +354,38 @@ $(document).ready(function(){
         })
     });
 
+    $('#program_id').on('change',function(){
+        offers.program_limit = parseInt($('#program_id option:selected').data('sub_limit'));
+        let program_id = $('#program_id').val();
+        setLimit('select[name=prgm_id]', '');
+        if(program_id == ''){
+            unsetError('select[name=prgm_id]');
+            return;
+        }else{
+            unsetError('select[name=prgm_id]');
+            setLimit('select[name=prgm_id]', 'Limit: <i class="fa fa-inr" aria-hidden="true"></i> '+offers.program_limit);
+        }
+        let token = "{{ csrf_token() }}";
+        $('.isloader').show();
+        $.ajax({
+            'url':messages.get_program_balance_limit,
+            'type':"POST",
+            'data':{"_token" : messages.token, "program_id" : program_id},
+            error:function (xhr, status, errorThrown) {
+                $('.isloader').hide();
+                alert(errorThrown);
+            },
+            success:function(res){
+                res = JSON.parse(res);
+                let consumed_limit = parseInt(res);
+                offers.program_balance_limit = offers.program_limit - consumed_limit;
+                setLimit('#limit_amt', 'Balance: <i class="fa fa-inr" aria-hidden="true"></i> '+offers.program_balance_limit);
+                $('.isloader').hide();
+            }
+        })
+    });
+
+
     $('.add-offer').on('click', function(){
         let data_url = $(this).data('url');
         $('#openOfferModal').attr('data-url', data_url);
@@ -375,9 +413,8 @@ function checkValidation(){
     let program_id = $('select[name=prgm_id]').val();
     let limit_amt = $('input[name=limit_amt]').val().trim();
     let tot_limit_amt = $('input[name=tot_limit_amt]').val().trim();
-
     if(tot_limit_amt.length == 0 || parseInt(tot_limit_amt.replace(/,/g, '')) == 0){
-        setError('input[name=limit_amt]', 'Please fill total limit');
+        setError('input[name=tot_limit_amt]', 'Please fill total exposure limit');
         flag = false;
     }
 
@@ -399,9 +436,16 @@ function checkValidation(){
     if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=limit_amt]', 'Please fill limit amount');
         flag = false;
-    }else if((parseInt(limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))) || (parseInt(limit_amt.replace(/,/g, '')) > balance_limit)){
-        setError('input[name=limit_amt]', 'Limit amount can not exceed from Balance/Total limit');
+    }else if((parseInt(limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))) || (parseInt(limit_amt.replace(/,/g, '')) > (parseInt(tot_limit_amt.replace(/,/g, '')) - offers.total_offered_limit))){
+        setError('input[name=limit_amt]', 'Limit amount can not exceed from Total Exposure');
         flag = false;
+    }else{
+        if(product_id == 1 && (parseInt(limit_amt.replace(/,/g, '')) > offers.program_balance_limit)){
+            setError('input[name=limit_amt]', 'Limit amount can not exceed from program limit');
+            flag = false;
+        }else{
+            // TAKE REST
+        }
     }
 
     if(flag){
@@ -412,7 +456,7 @@ function checkValidation(){
 }
 
 function fillAnchors(programs){
-    let html = '<option value="" data-limit="">Select Anchor</option>';
+    let html = '<option value="" data-limit="0">Select Anchor</option>';
     $.each(programs, function(i,program){
         if(program.anchors != null)
             html += '<option value="'+program.anchors.anchor_id+'" data-limit="'+program.anchors.prgm_data.anchor_limit+'">'+program.anchors.comp_name+'</option>';
@@ -421,46 +465,13 @@ function fillAnchors(programs){
 }
 
 function fillPrograms(programs){
-    let html = '<option value="" data-sub_limit="">Select Program</option>';
+    let html = '<option value="" data-sub_limit="0">Select Program</option>';
     $.each(programs, function(i,program){
         if(program.prgm_name != null)
             html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'">'+program.prgm_name+'</option>';
     });
     $('#program_id').html(html);
 }
-
-$('#program_id').on('change',function(){
-    let program_limit = $('#program_id option:selected').data('sub_limit');
-    let program_id = $('#program_id').val();
-    setLimit('select[name=prgm_id]', '');
-    if(program_id == ''){
-        unsetError('select[name=prgm_id]');
-        return;
-    }else{
-        unsetError('select[name=prgm_id]');
-        setLimit('select[name=prgm_id]', 'Limit: <i class="fa fa-inr" aria-hidden="true"></i> '+program_limit);
-    }
-    let token = "{{ csrf_token() }}";
-    $('.isloader').show();
-    $.ajax({
-        'url':messages.get_program_balance_limit,
-        'type':"POST",
-        'data':{"_token" : messages.token, "program_id" : program_id},
-        error:function (xhr, status, errorThrown) {
-            $('.isloader').hide();
-            alert(errorThrown);
-        },
-        success:function(res){
-            res = JSON.parse(res);
-            let program_limit = parseInt($('#program_id option:selected').data('sub_limit'));
-            let consumed_limit = parseInt(res);
-            balance_limit = program_limit - consumed_limit;
-
-            setLimit('#limit_amt', 'Balance: <i class="fa fa-inr" aria-hidden="true"></i> '+balance_limit);
-            $('.isloader').hide();
-        }
-    })
-});
 
 </script>
 @endsection
