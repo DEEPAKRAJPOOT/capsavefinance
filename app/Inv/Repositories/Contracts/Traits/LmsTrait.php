@@ -14,42 +14,125 @@ trait LmsTrait
      */
     protected function calInterest($principalAmt, $interestRate, $tenorDays)
     {
-        $interest = $principalAmt * $tenorDays * ($interestRate / 365) ;                
+        $interest = $principalAmt * $tenorDays * ($interestRate / 360) ;                
         return $interest;        
     }   
     
+
     /**
-     * Calculate Interest
-     * 
-     * @param integer $disbursalId
+     * Process Interest Accrual
+     *      
      * @return mixed
      */
-    protected function calAccrualInterest($disbursalId, $tenorDays=null)
-    {
-        $disbursalWhereCond = [];
-        $disbursalWhereCond['disbursal_id']  = $disbursalId;
-        $disbursalData = $this->lmsRepo->getDisbursalRequests($disbursalWhereCond);
-        if (!isset($disbursalData[0])) return 0;
-        
-        $disbursalData = $disbursalData[0];
-        $userId    = $disbursalData->userId;
-        $invoiceId = $disbursalData->invoice_id;
-        $principalAmount  = $disbursalData->principal_amount;
-        $totalRepaidAmount  = $disbursalData->total_repaid_amt;
-        
-        //$repaymentWhereCond = [];
-        //$repaymentWhereCond['user_id']  = $userId;
-        //$repaymentWhereCond['invoice_id']  = $invoiceId;
-        //$repaymentWhereCond['trans_type']  = 17;   //Repayment Trans Type
-        //$repaymentData = $this->lmsRepo->getRepayments($repaymentWhereCond);
-        
-        $balancePrincipalAmt = $principalAmount - $totalRepaidAmount;
-        $interestRate     = round($disbursalData->interest_rate / 100, 2);
-        $tenorDays        = $tenorDays ? : $disbursalData->tenor_days;
-        
-        $interest = $this->calInterest($balancePrincipalAmt, $interestRate, $tenorDays);
+    protected function calAccrualInterest()
+    {        
+        //$currentDate = \Carbon\Carbon::now()->format('Y-m-d');
+        $currentDate = date('Y-m-d');
                 
-        return $interest;
+        $disbursalWhereCond = [];
+        $disbursalWhereCond['status_id']  = [12];
+        //$disbursalWhereCond['int_accrual_start_dt']  = $currentDate;
+        $disbursalData = $this->lmsRepo->getDisbursalRequests($disbursalWhereCond);
+        $returnData = [];
+        foreach($disbursalData as $disburse) {
+            $disbursalId = $disburse->disbursal_id;
+            $appId  = $disburse->app_id;
+            $invoiceId  = $disburse->invoice_id;
+            $principalAmount  = $disburse->principal_amount;
+            $totalRepaidAmount  = $disburse->total_repaid_amt;
+            $invoiceDueDate  = $disburse->inv_due_date;
+            $intAccrualStartDt = $disburse->int_accrual_start_dt;
+            $intAccrualDt = $intAccrualStartDt;
+            
+            $balancePrincipalAmt = $principalAmount - $totalRepaidAmount;
+                        
+            $whereProgramOffer = [];
+            $whereProgramOffer['app_id'] = $appId;
+            $whereProgramOffer['invoice_id'] = $invoiceId;                
+            $whereProgramOffer['disbursal_id'] = $disbursalId;
+            $prgmOffer = $this->lmsRepo->getProgramOffer($whereProgramOffer);
+            $overdueIntRate = $prgmOffer->overdue_interest_rate;
+            $gracePeriod = $prgmOffer->grace_period ? $prgmOffer->grace_period : 0;
+            
+            $gracePeriodDate = $this->addDays($invoiceDueDate, $gracePeriod);
+            $overDueInterestDate = $this->addDays($invoiceDueDate, 1);
+            $reculateInterest = false;
+            while (strtotime($intAccrualDt) <= strtotime($currentDate)) {
+                $interestRate = $disburse->interest_rate;
+                
+                if ($intAccrualDt > $gracePeriodDate && $balancePrincipalAmt > 0) {
+                    $interestRate = $interestRate + $overdueIntRate;
+                    $reculateInterest = true;
+                }
+                $calInterestRate  = round($interestRate / 100, 2);
+                $tenorDays        = 1;
+
+                $interest = $this->calInterest($balancePrincipalAmt, $calInterestRate, $tenorDays);
+
+                $intAccrualData = [];
+                $intAccrualData['disbursal_id'] = $disbursalId;
+                $intAccrualData['interest_date'] = $intAccrualDt;
+                $intAccrualData['principal_amount'] = $disburse->principal_amount;
+                $intAccrualData['accrued_interest'] = round($interest, 2);
+                $intAccrualData['interest_rate'] = $disburse->interest_rate;
+                
+                if ($reculateInterest) {
+                    $reWhereCond = [];
+                    $reWhereCond['disbursal_id'] = $disbursalId;
+                    $reWhereCond['interest_date_gte'] = $overDueInterestDate;
+                    $accruedInterestData = $this->lmsRepo->getAccruedInterestData($reWhereCond);
+                    
+                    foreach($accruedInterestData as $accruedInt) {
+                        $whereCond = [];
+                        $whereCond['interest_accrual_id'] = $accruedInt->interest_accrual_id;  
+                        $updateIntAccrualData = [];
+                        $updateIntAccrualData['accrued_interest'] = $intAccrualData['accrued_interest'];                        
+                        $updateIntAccrualData['overdue_interest_rate'] = $overdueIntRate;
+                        $this->lmsRepo->saveInterestAccrual($updateIntAccrualData, $whereCond);
+                    }
+                }
+
+                $exWhereCond = [];
+                $exWhereCond['disbursal_id'] = $disbursalId;
+                $exWhereCond['interest_date_eq'] = $intAccrualDt;                
+                $exInterestData = $this->lmsRepo->getAccruedInterestData($exWhereCond);
+                if (!isset($exInterestData[0])) {
+                    if ($reculateInterest) {
+                        $intAccrualData['overdue_interest_rate'] = $overdueIntRate;
+                    }
+                    //echo "\n"; print_r($intAccrualData);
+                    $this->lmsRepo->saveInterestAccrual($intAccrualData);
+                } else {
+                    //$rewhereCond = [];
+                    //$reIntAccrualData = [];
+                    //$rewhereCond['interest_accrual_id'] = $exInterestData[0]->interest_accrual_id;
+                    //$reIntAccrualData['interest_rate'] = $disburse->interest_rate;
+                    //$this->lmsRepo->saveInterestAccrual($reIntAccrualData, $rewhereCond);
+                }
+                                                                   
+                $intAccrualDt = date ("Y-m-d", strtotime("+1 day", strtotime($intAccrualDt)));
+            }
+                                
+            $accuredInterest = $this->lmsRepo->sumAccruedInterest($disbursalId);
+            $saveDisbursalData['accured_interest'] = $accuredInterest;
+            $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);
+            
+            $returnData[$disbursalId] = $accuredInterest;
+        }
+        return $returnData;
+    }
+    
+    /**
+     * Add No Of Days to Date
+     * 
+     * @param Date $currentDate
+     * @param integer $noOfDays
+     * @return Date
+     */
+    protected function addDays($currentDate, $noOfDays)
+    {
+        $calDate = date('Y-m-d', strtotime($currentDate . "+ $noOfDays days"));
+        return $calDate;
     }
     
     /**
@@ -61,7 +144,7 @@ trait LmsTrait
     protected function calRepayment($virtualAccountId, $paidAmount)
     {
         $disbursalWhereCond = [];
-        $disbursalWhereCond['status']  = [0,1,2];
+        $disbursalWhereCond['status']  = [12,13];   //12 => Disbursed, 13 => Repaid
         $disbursalWhereCond['virtual_acc_id']  = $virtualAccountId;
         $disbursalData = $this->lmsRepo->getDisbursalRequests($disbursalWhereCond);
         
@@ -69,7 +152,7 @@ trait LmsTrait
 
         $disbursalData = $disbursalData[0];
         $disbursalId    = $disbursalData->disbursal_id;
-        $userId    = $disbursalData->userId;
+        $userId    = $disbursalData->user_id;
         $invoiceId = $disbursalData->invoice_id;
         $totalRepaidAmt = $disbursalData->total_repaid_amt;
         $principalAmount  = $disbursalData->principal_amount;
@@ -86,27 +169,11 @@ trait LmsTrait
         $saveDisbursalData = [];
         $saveDisbursalData['total_repaid_amt'] = $totalRepaidAmt + $paidAmount;
         $balRepaymentAmt = $principalAmount - $saveDisbursalData['total_repaid_amt'];
-        $status = $balRepaymentAmt == 0 ? 3 : 2;
+        $status = $balRepaymentAmt == 0 ? 15 : 13;   //13 => Repaid Status, 15 => Payment Settled
         $saveDisbursalData['status'] = $status;
         $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);
         
-    }
-    
-    /**
-     * Save Disbursal Data
-     * 
-     * @param array $data
-     * @return mixed
-     */
-    protected function saveDisbursalData($data)
-    {
-        $saveDisbursalData = [];
-        $saveDisbursalData['total_repaid_amt'] = $totalRepaidAmt + $paidAmount;
-        $balRepaymentAmt = $principalAmount - $saveDisbursalData['total_repaid_amt'];
-        $status = $balRepaymentAmt == 0 ? 3 : 2;
-        $saveDisbursalData['status'] = $status;
-        $this->lmsRepo->saveDisbursalRequest($saveDisbursalData);        
-    }
+    }    
     
     protected function calDisbursalAmount($principalAmount, $deductions)
     {
@@ -165,5 +232,5 @@ trait LmsTrait
             $disbursalData[] = $data;
         }
         return $data;
-    }    
+    }
 }

@@ -45,7 +45,9 @@ class InterestAccrual extends BaseModel {
         'disbursal_id',
         'interest_date',
         'principal_amount',
-        'accrued_interest',        
+        'accrued_interest',
+        'interest_rate',
+        'overdue_interest_rate',
         'created_at',
         'created_by',
         'updated_at',
@@ -63,7 +65,7 @@ class InterestAccrual extends BaseModel {
     public static function saveInterestAccrual($data, $whereCondition=[])
     {
         if (!is_array($data)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
         
         if (!empty($whereCondition)) {
@@ -71,5 +73,47 @@ class InterestAccrual extends BaseModel {
         } else {
             return self::create($data);
         }
+    }
+    
+    /**
+     * Get Accrued Interest Data
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAccruedInterestData($whereCondition=[])
+    {                 
+        if (!is_array($whereCondition)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+        
+        $query = self::select('*');
+                
+        if (isset($whereCondition['disbursal_id'])) {
+            $query->where('disbursal_id', $whereCondition['disbursal_id']);
+        }
+        if (isset($whereCondition['interest_date_gte'])) {
+            $query->where('interest_date', '>=', $whereCondition['interest_date_gte']);
+        }   
+        if (isset($whereCondition['interest_date_eq'])) {
+            $query->where('interest_date', '=', $whereCondition['interest_date_eq']);
+        }          
+        $query->orderBy('interest_accrual_id', 'ASC');
+        $result = $query->get();                
+        return $result;
+    }
+    
+    /**
+     * Get Sum of Accrued Interest
+     *      
+     * @param integer $disbursal_id
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function sumAccruedInterest($disbursal_id)
+    {        
+        $result = self::where('disbursal_id', $disbursal_id)->sum('accrued_interest');
+        return $result;
     }
 }

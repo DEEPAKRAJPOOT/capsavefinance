@@ -111,7 +111,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      */
     public static function saveInterestAccrual($data, $whereCondition=[])
     {
-        return InterestAccrual::saveInterestAccrual($transactions);
+        return InterestAccrual::saveInterestAccrual($data, $whereCondition);
     }
     
     /**
@@ -148,27 +148,38 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public static function getRepayments($whereCondition=[])
     {
         return InvoiceRepaymentTrail::getRepayments($whereCondition);
-    }    
+    }   
     
-    /**
-     * Get Repayments
-     *      
-     * @param array $whereCondition | optional
-     * @return mixed
-     * @throws InvalidDataTypeExceptions
-     */
+
     public static function getAllUserInvoice($userId)
     {
         return BizInvoice::getAllUserInvoice($userId);
     }
 
     /**
-     * Get Repayments
+     * Get Accrued Interest Data
      *      
      * @param array $whereCondition | optional
      * @return mixed
      * @throws InvalidDataTypeExceptions
+     */    
+    public static function getAccruedInterestData($whereCondition=[])
+    {
+        return InterestAccrual::getAccruedInterestData($whereCondition);
+    }
+    
+    /**
+     * Get Program Offer Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
      */
+    public static function getProgramOffer($whereCondition=[])
+    {
+        return Disbursal::getProgramOffer($whereCondition);
+    }
+
+    
     public static function getInvoices($invoiceIds)
     {
         return BizInvoice::whereIn('invoice_id', $invoiceIds)
@@ -189,6 +200,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
                 ->whereIn('invoice_id', $invoiceIds)
                 ->pluck('supplier_id');
     }    
-
     
+    /**
+     * Get Sum of Accrued Interest
+     *      
+     * @param integer $disbursal_id
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function sumAccruedInterest($disbursal_id)
+    { 
+        return InterestAccrual::sumAccruedInterest($disbursal_id);
+    }    
 }

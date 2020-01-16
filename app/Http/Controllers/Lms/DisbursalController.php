@@ -12,11 +12,13 @@ use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use Session;
 use Helpers;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 
 class DisbursalController extends Controller
 {
 	use ApplicationTrait;
-	
+	use LmsTrait;
+        
 	protected $appRepo;
 	protected $userRepo;
 	protected $docRepo;
@@ -119,5 +121,17 @@ class DisbursalController extends Controller
 		$idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);      
 	}
 
+    /**
+     * Process Interest Accrual
+     *      
+     * @return mixed
+     */
+    public function processAccrualInterest()
+    {
+        $returnData = $this->calAccrualInterest();
+        foreach($returnData as $disbursal_id => $interest) {
+            echo "<br>\nDisbursal ID#{$disbursal_id} -  Accrued Interest {$interest}";
+        }
+    }
 
 }
