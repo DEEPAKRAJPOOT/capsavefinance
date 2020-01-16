@@ -137,12 +137,13 @@ class Disbursal extends BaseModel {
         
         $result = self::select('app_prgm_offer.*')
                 ->join('invoice', 'invoice.invoice_id', '=', 'disbursal.invoice_id')
-                //->join('app_prgm_limit', 'invoice.program_id', '=', 'app_prgm_limit.prgm_id')
-                ->join('app_prgm_limit', function ($join) {
-                    $join->on('invoice.program_id', '=', 'app_prgm_limit.prgm_id');
-                    $join->on('invoice.app_id', '=', 'app_prgm_limit.app_id');
-                })
-                ->join('app_prgm_offer', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
+                ////->join('app_prgm_limit', 'invoice.program_id', '=', 'app_prgm_limit.prgm_id')
+                //->join('app_prgm_limit', function ($join) {
+                //    $join->on('invoice.program_id', '=', 'app_prgm_limit.prgm_id');
+                //    $join->on('invoice.app_id', '=', 'app_prgm_limit.app_id');
+                //})
+                //->join('app_prgm_offer', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
+                ->join('app_prgm_offer', 'invoice.prgm_offer_id', '=', 'app_prgm_offer.prgm_offer_id')
                 ->where('disbursal_id', $whereCondition['disbursal_id'])
                 ->where('app_prgm_offer.is_active', 1)
                 ->where('app_prgm_offer.status', 1)

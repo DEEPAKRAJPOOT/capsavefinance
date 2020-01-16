@@ -128,7 +128,10 @@ class DisbursalController extends Controller
      */
     public function processAccrualInterest()
     {
-        $this->calAccrualInterest();
+        $returnData = $this->calAccrualInterest();
+        foreach($returnData as $disbursal_id => $interest) {
+            echo "<br>\nDisbursal ID#{$disbursal_id} -  Accrued Interest {$interest}";
+        }
     }
 
 }

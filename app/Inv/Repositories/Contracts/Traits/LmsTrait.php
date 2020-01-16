@@ -33,7 +33,7 @@ trait LmsTrait
         $disbursalWhereCond['status_id']  = [12];
         //$disbursalWhereCond['int_accrual_start_dt']  = $currentDate;
         $disbursalData = $this->lmsRepo->getDisbursalRequests($disbursalWhereCond);
-        
+        $returnData = [];
         foreach($disbursalData as $disburse) {
             $disbursalId = $disburse->disbursal_id;
             $appId  = $disburse->app_id;
@@ -116,7 +116,10 @@ trait LmsTrait
             $accuredInterest = $this->lmsRepo->sumAccruedInterest($disbursalId);
             $saveDisbursalData['accured_interest'] = $accuredInterest;
             $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);
+            
+            $returnData[$disbursalId] = $accuredInterest;
         }
+        return $returnData;
     }
     
     /**
