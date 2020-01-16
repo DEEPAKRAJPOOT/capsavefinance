@@ -146,9 +146,12 @@ class DisbursalController extends Controller
 
 			$idfcObj= new Idfc_lib();
 			$result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+			// dd($result);
+			return redirect()->route('lms_disbursal_request_list')->withErrors($result);      
+			// Session::flash('message',$result);
 		}
-		die("here");
-		// dd($result);      
+        
+        Session::flash('message',trans('backend_messages.disbursed'));
 		return redirect()->route('lms_disbursal_request_list');
 	}
 
