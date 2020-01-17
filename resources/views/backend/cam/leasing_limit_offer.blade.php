@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return true">
+  <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkLeasingValidations()">
     @csrf
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
@@ -17,13 +17,18 @@
       </div>
     </div>
 
+    @php
+    $programBalanceLimit = $programLimit - $programOfferedAmount + $currentOfferAmount;
+    $balanceLimit = $totalLimit - $totalOfferedAmount + $currentOfferAmount;
+    $actualBalance = ($programBalanceLimit < $balanceLimit)? $programBalanceLimit: $balanceLimit;
+    @endphp
 
     <div class="col-md-12">
       <div class="form-group row INR">
         <label for="txtPassword" class="col-md-4"><b>Limit:</b></label> 
         <div class="col-md-8">
         <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limit_amt)}}" placeholder="Loan Offer" maxlength="15">
+        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Loan Offer" maxlength="15"><span class="float-right">Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
         </div>
       </div>
     </div>
@@ -93,10 +98,10 @@
         <label for="txtPassword" class="col-md-4"><b>Additional Security:</b></label> 
         <div class="col-md-8">
             <div id="check_block">
-                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="1" name="addl_security[]"> BG</label>
-                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="addl_security[]"> MF</label>
-                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="addl_security[]"> Others</label>
-                <input type="text" name="comment" class="form-control" style="display: none" value="{{isset($offerData->coment)? $offerData->comment: ''}}">
+                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="1" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '1') !== false)? 'checked': ''): '')}}> BG</label>
+                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '2') !== false)? 'checked': ''): '')}}> MF</label>
+                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '3') !== false)? 'checked': ''): '')}}> Others</label>
+                <input type="text" name="comment" class="" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '3') !== false)? 'inline': 'none'): 'none')}}" value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Fill other security">
             </div>
         </div>
       </div>
@@ -115,47 +120,41 @@
 @section('jscript')
 <script>
   function checkLeasingValidations(){
-    let tot_limit_amt = "{{$totalLimit}}";
-    let prgm_limit = 0;
-    let offered_limit = "{{$offeredLimit}}";
-    let balance_limit = prgm_limit - offered_limit;
+    let total_limit = "{{$totalLimit}}"; //total exposure limit amount
+    let program_limit = "{{$programLimit}}"; //program limit
+    let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
+    let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
+    let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
+
+    let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
+    let balance_limit = total_limit - total_offered_amount + current_offer_amount;
+    let actual_balance = (program_balance_limit < balance_limit)? program_balance_limit: balance_limit;
 
     unsetError('input[name=prgm_limit_amt]');
-    unsetError('input[name=interest_rate]');
     unsetError('input[name=tenor]');
-    unsetError('input[name=tenor_old_invoice]');
-    unsetError('input[name=margin]');
-    unsetError('input[name=overdue_interest_rate]');
-    unsetError('input[name=adhoc_interest_rate]');
-    unsetError('input[name=grace_period]');
-    unsetError('input[name=processing_fee]');
-    unsetError('input[name=check_bounce_fee]');
+    unsetError('input[name=equipment_type]');
+    unsetError('input[name=security_deposit]');
+    unsetError('select[name=rental_frequency]');
+    unsetError('input[name=ptpq]');
+    unsetError('input[name=xirr]');
+    unsetError('#check_block');
 
     let flag = true;
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
-    let interest_rate = $('input[name=interest_rate]').val();
     let tenor = $('input[name=tenor]').val();
-    let tenor_old_invoice = $('input[name=tenor_old_invoice]').val().trim();
-    let margin = $('input[name=margin]').val().trim();
-    let overdue_interest_rate = $('input[name=overdue_interest_rate]').val().trim();
-    let adhoc_interest_rate = $('input[name=adhoc_interest_rate]').val().trim();
-    let grace_period = $('input[name=grace_period]').val().trim();
-    let processing_fee = $('input[name=processing_fee]').val().trim();
-    let check_bounce_fee = $('input[name=check_bounce_fee]').val().trim();
+    let equipment_type = $('input[name=equipment_type]').val();
+    let security_deposit = $('input[name=security_deposit]').val();
+    let rental_frequency = $('select[name=rental_frequency]').val();
+    let ptpq = $('input[name=ptpq]').val().trim();
+    let xirr = $('input[name=xirr]').val().trim();
+    let addl_security = $('input[name*=addl_security]').is(':checked');
+    let comment = $('input[name=comment]').val().trim();
 
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
-    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))) || (parseInt(prgm_limit_amt.replace(/,/g, '')) > balance_limit)){
-        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from Balance/Total limit');
-        flag = false;
-    }
-
-    if(interest_rate == '' || isNaN(interest_rate)){
-        setError('input[name=interest_rate]', 'Please fill intereset rate');
-        flag = false;
-    }else if(parseFloat(interest_rate) > 20){
-        setError('input[name=interest_rate]', 'Please fill correct intereset rate');
+    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > balance_limit)){
+        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
     }
 
@@ -164,49 +163,52 @@
         flag = false;
     }
 
-    if(tenor_old_invoice == ''){
-        setError('input[name=tenor_old_invoice]', 'Please fill old tenor invoice');
+    if(equipment_type == ''){
+        setError('input[name=equipment_type]', 'Please fill equipment type');
         flag = false;
     }
 
-    if(margin == '' || isNaN(margin)){
-        setError('input[name=margin]', 'Please fill margin');
+    if(security_deposit == '' || isNaN(security_deposit)){
+        setError('input[name=security_deposit]', 'Please fill security deposit');
         flag = false;
-    }else if(parseFloat(margin) > 10){
-        setError('input[name=margin]', 'Please fill correct margin rate');
-        flag = false;
-    }
-
-    if(overdue_interest_rate == '' || isNaN(overdue_interest_rate)){
-        setError('input[name=overdue_interest_rate]', 'Please fill Overdue intereset rate');
-        flag = false;
-    }else if(parseFloat(overdue_interest_rate) > 20){
-        setError('input[name=overdue_interest_rate]', 'Please fill correct overdue interest rate');
+    }else if(parseFloat(security_deposit) > 20){
+        setError('input[name=security_deposit]', 'Please fill correct security deposit');
         flag = false;
     }
 
-    if(adhoc_interest_rate == '' || isNaN(adhoc_interest_rate)){
-        setError('input[name=adhoc_interest_rate]', 'Please fill adhoc interest rate');
-        flag = false;
-    }else if(parseFloat(adhoc_interest_rate) > 20){
-        setError('input[name=adhoc_interest_rate]', 'Please fill correct adhoc interest rate');
+    if(rental_frequency == ''){
+        setError('input[name=rental_frequency]', 'Please select rental frequency');
         flag = false;
     }
 
-    if(grace_period == ''){
-        setError('input[name=grace_period]', 'Please fill grace period');
+    if(ptpq == '' || isNaN(ptpq)){
+        setError('input[name=ptpq]', 'Please fill PTPQ');
+        flag = false;
+    }else if(parseFloat(ptpq) > 10){
+        setError('input[name=ptpq]', 'Please fill correct PTPQ');
         flag = false;
     }
 
-    if(processing_fee == ''){
-        setError('input[name=processing_fee]', 'Please fill processing fee');
+    if(xirr == '' || isNaN(xirr)){
+        setError('input[name=xirr]', 'Please fill XIRR');
+        flag = false;
+    }else if(parseFloat(xirr) > 20){
+        setError('input[name=xirr]', 'Please fill correct XIRR');
         flag = false;
     }
 
-    if(check_bounce_fee == ''){
-        setError('input[name=check_bounce_fee]', 'Please fill check bounce fee');
+    if(addl_security == ''){
+        setError('#check_block', 'Please check atleast one security');
         flag = false;
+    }else if($('#other_sec').is(':checked')){
+        if(comment == ''){
+            setError('#check_block', 'Please fill other security');
+            flag = false;
+        }else{
+            // TAKE REST
+        }
     }
+
 
     if(flag){
         return true;
@@ -214,5 +216,16 @@
         return false;
     }
   }
+
+  $(document).ready(function(){
+    $('#other_sec').on('change', function(){
+        if($('#other_sec').is(':checked')){
+            $('input[name=comment]').css('display', 'inline');
+        }else{
+            $('input[name=comment]').css('display', 'none');
+            $('input[name=comment]').val('');
+        }
+    })
+  })
 </script>
 @endsection

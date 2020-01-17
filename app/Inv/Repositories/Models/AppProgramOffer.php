@@ -242,4 +242,17 @@ class AppProgramOffer extends BaseModel {
     public function programLimit(){
         return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');
     }
+
+    public static function getTotalOfferedLimit($app_id){
+        if(empty($app_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+        if(!is_int($app_id)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $tot_offered_limit = AppProgramOffer::where(['app_id' => $app_id, 'is_active'=>1])->sum('prgm_limit_amt');
+        
+        return $tot_offered_limit;
+    }
 }
