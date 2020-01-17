@@ -95,12 +95,9 @@ class DisbursalController extends Controller
 		foreach ($supplierIds as $userid) {
 			foreach ($allinvoices as $invoice) {
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
-		// dd($disburseRequestData);
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 				
-
 				if($disburseType == 1) {
-
 					$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
 					if($invoice['supplier_id'] = $userid) {
 						$fundedAmount += $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
@@ -151,7 +148,7 @@ class DisbursalController extends Controller
 			$result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
 			return redirect()->route('lms_disbursal_request_list')->withErrors($result);      
 		} elseif (empty($record)) {
-			return redirect()->route('lms_disbursal_request_list')->withErrors("Please select atleast one invoice.");
+			return redirect()->route('lms_disbursal_request_list')->withErrors(trans('backend_messages.noSelectedInvoice'));
 		}
         
         Session::flash('message',trans('backend_messages.disbursed'));
