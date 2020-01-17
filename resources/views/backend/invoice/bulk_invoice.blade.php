@@ -318,7 +318,7 @@
                         var offer_id   =  data.offer_id;
                         $("#prgm_offer_id").val(offer_id);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
-                         $("#pro_limit_hide").val(obj2.anchor_limit);  
+                         $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                          $("#supplier_bulk_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
                             
