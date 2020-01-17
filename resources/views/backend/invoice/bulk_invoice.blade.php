@@ -525,7 +525,7 @@
     });
     
      $(document).on('click','.deleteTempInv',function(){
-     if (confirm("Are you sure?")) {
+     if (confirm("Are you sure? You want to delete it.")) {
       var temp_id =  $(this).attr('data-id'); 
       var postData =  ({'temp_id':temp_id,'_token':messages.token});
        jQuery.ajax({
