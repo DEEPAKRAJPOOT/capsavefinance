@@ -202,6 +202,12 @@ public static function updateInvoice($invoiceId,$status)
      
      }
 
+     function program()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Program', 'program_id');  
+     
+     }
+
      function disbursal()
      {
           return $this->hasOne('App\Inv\Repositories\Models\Lms\Disbursal', 'invoice_id','invoice_id');  
