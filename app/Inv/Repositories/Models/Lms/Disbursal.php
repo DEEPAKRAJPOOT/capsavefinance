@@ -61,6 +61,8 @@ class Disbursal extends BaseModel {
         'margin',
         'disburse_amount',
         'status_id',
+        'disbursal_api_log_id',
+        'disburse_type',
         'settlement_date',
         'accured_interest',
         'interest_refund',

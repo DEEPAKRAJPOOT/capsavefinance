@@ -233,4 +233,51 @@ trait LmsTrait
         }
         return $data;
     }
+
+    /**
+     * Prepare Disbursal Data
+     * 
+     * @param array $data
+     * @return mixed
+     */
+    protected function createInvoiceDisbursalData($invoice, $disburseType = 2)
+    {
+        /**
+        * disburseType = 1 for online and 2 for manually
+        */
+        $disbursalData = [];
+        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
+        $interest = (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
+        $disburseAmount = round($fundedAmount - $interest);
+
+
+        $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
+        $disbursalData['app_id'] = $invoice['app_id'] ?? null;
+        $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;
+        $disbursalData['prgm_offer_id'] = $invoice['prgm_offer_id'] ?? null;
+        $disbursalData['bank_account_id'] = $invoice['supplier_bank_detail']['bank_id'] ?? null;
+        $disbursalData['disburse_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $disbursalData['bank_name'] = $invoice['supplier_bank_detail']['bank']['bank_name'] ?? null;
+        $disbursalData['ifsc_code'] = $invoice['supplier_bank_detail']['ifsc_code'] ?? null;
+        $disbursalData['acc_no'] = $invoice['supplier_bank_detail']['acc_no'] ?? null;            
+        $disbursalData['virtual_acc_id'] = $invoice['lms_user']['virtual_acc_id'] ?? null;
+        $disbursalData['customer_id'] = $invoice['lms_user']['customer_id'] ?? null;
+        $disbursalData['principal_amount'] = $fundedAmount ?? null;
+        $disbursalData['inv_due_date'] = $invoice['invoice_due_date'] ?? null;
+        $disbursalData['tenor_days'] =  $invoice['program_offer']['tenor'] ?? null;
+        $disbursalData['interest_rate'] = $invoice['program_offer']['interest_rate'] ?? null;
+        $disbursalData['total_interest'] = $interest;
+        $disbursalData['margin'] =$invoice['program_offer']['margin'] ?? null;
+        $disbursalData['disburse_amount'] = $disburseAmount ?? null;
+        $disbursalData['total_repaid_amt'] = 0;
+        $disbursalData['status_id'] = ($disburseType == 2) ? 12 : 10;
+        $disbursalData['disburse_type'] = $disburseType;
+        $disbursalData['settlement_date'] = null;
+        $disbursalData['accured_interest'] = null;
+        $disbursalData['interest_refund'] = null;
+        $disbursalData['funded_date'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
+        $disbursalData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
+            
+        return $disbursalData;
+    }    
 }

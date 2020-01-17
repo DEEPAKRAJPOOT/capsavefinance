@@ -47,49 +47,22 @@ class Idfc_lib{
 			return $resp;
 		 }
 
-		 $url = SELF::METHOD[$method];
-		 $query_string = '';
-		 list($payload, $http_header, $txn_id) = $this->_genReq($method, $params);
-		 $file_name = md5($txn_id).'.txt';
+		$url = SELF::METHOD[$method];
+		$query_string = '';
+		list($payload, $http_header, $txn_id) = $this->_genReq($method, $params);
+		$file_name = md5($txn_id).'.txt';
 		$this->_saveLogFile($payload, $file_name, 'Outgoing');
-		 dd($http_header);
      	$response = $this->_curl_call($url, $payload, $http_header);
-	     if (!empty($response['error_no'])) {
-	     	$resp['code'] 	 = "CurlError";
-	     	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
+     	$this->_saveLogFile($response, $file_name, 'Incoming');
+
+		if (!empty($response['error_no'])) {
+			$resp['code'] 	 = "CurlError";
+			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
-	     }
-	     $update_log = array(
-	     	"res_file" => is_array($response['result']) || is_object($response['result']) ? base64_encode(json_encode($response['result'])) : base64_encode($response['result']),
-	     );
+		}
 
-	     if ($method == SELF::GET_REP && !in_array($params['types'], ['xml','json'])) {
-	     	$xml = @simplexml_load_string($response['result']);
-	     	if(!$xml){
-		     	$update_log['status'] = "success";
-		     	FinanceModel::updatePerfios($update_log,'biz_perfios_log', $inserted_id);
-		     	$resp['status'] = "success";
-		     	$resp['message'] = "success";
-			 	$resp['result'] = $response['result'];
-			 	return $resp;
-		 	}
-	     }
-
-	      if ($method == SELF::GET_REP && 'json' == strtolower($params['types'])) {
-	     	$xml = @simplexml_load_string($response['result']);
-	     	if(!$xml){
-	     		$update_log['status'] = "success";
-	     		FinanceModel::updatePerfios($update_log,'biz_perfios_log', $inserted_id);
-	     		$resp['status'] = "success";
-			 	$resp['result'] = $response['result'];
-			 	return $resp;
-	     	}
-	     }
-	     
-	     $result = $this->_parseResult($response['result'], $method);
-	     $update_log['status'] = $result['status'];
-	     FinanceModel::updatePerfios($update_log, 'biz_perfios_log', $inserted_id);
-	     return $result;
+		$result = $this->_parseResult($response['result'], $method);
+		return $result;
     }
 
     private function _genReq($method, $params){
@@ -172,42 +145,26 @@ class Idfc_lib{
     	return $resp_data;
     }
 
-    private function _parseResult($xml, $method) {
+    private function _parseResult($json, $method) {
     	$result = ['status' => 'success','result' => ''];
-    	$is_valid = true;//@$this->_is_valid_xml($xml);
+    	$is_valid = true;//@$this->_is_valid_json($json);
     	if (!$is_valid) {
     		$result['status'] = "fail";
-    		$result['code'] = "InvalidXML";
-    		$result['message'] = "response xml is not valid";
+    		$result['code'] = "InvalidJSON";
+    		$result['message'] = "response json is not valid";
     		return $result;
     	}
+    	
+    	$response = json_decode($json, true);
+    	$header = $response['doMultiPaymentCorpRes']['Header'];
+    	$body = $response['doMultiPaymentCorpRes']['Body'];
 
-    	$p = xml_parser_create();
-	    xml_parse_into_struct($p, $xml, $resp);
-	    xml_parser_free($p);
-    	$status = strtolower($resp[0]['tag']);
-
-    	if (SELF::STATUS[$method] != strtolower($status)) {
-	    	$result['status'] = "fail";
-	    }
-
-    	if ($method == SELF::GET_REP && strtolower($result['status']) == 'success') {
-    		$xml_obj = simplexml_load_string($xml);
-    		$xml_arr = json_decode(json_encode($xml_obj), TRUE);
-    		foreach ($xml_arr as $key => $value) {
-    			$result[$key] = $this->_removeAttribute($value);
-    		}
-    		return $result;
-    	}
-
-	    foreach ($resp as $key => $value) {
-	    	if ($value['type'] == 'complete' && (!empty($value['value']) || strtolower($value['tag']) == 'success')) {
-	    		if (!empty($result[strtolower($value['tag'])])) {
-	    			$result[strtolower($value['tag'])] = $result[strtolower($value['tag'])]. ' & ' .$value['value'] ?? 'success';
-	    			continue;
-	    		}
-	    		$result[strtolower($value['tag'])] = $value['value'] ?? 'success';
-	    	}
+	    if (strtolower($header['Status']) != 'success' ) {
+	    	$result['status'] = 'fail';
+	    	$result['message'] = 'Some error occured';
+	    }else{
+	    	$result['message'] = 'success';
+	    	$result['result'] = ['header'=>$header,'body'=> $body];
 	    }
 	    return $result;
     }
@@ -230,12 +187,9 @@ class Idfc_lib{
 	}
 
     private function _is_valid_json($json){
-		libxml_use_internal_errors(TRUE);
-		$doc = new DOMDocument('1.0', 'utf-8');
-    	$doc->loadXML( $xml );
-    	$errors = libxml_get_errors();
-    	libxml_clear_errors();
-		return empty($errors);
+    	json_decode($json);
+		return (json_last_error() == JSON_ERROR_NONE);
+
     }
 
     private function _genSignature($checksum){
@@ -244,11 +198,11 @@ class Idfc_lib{
     }
 
     private function _saveLogFile($data, $w_filename = '', $w_folder = '') {
-      list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
-      $path = Storage::disk('public')->put("/IDFCH2H/CAPSAVEUAT/ACHDR/$w_folder/$w_filename", $data);
-     
-      return True;
-  }
+      	list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
+      	$path = Storage::disk('public')->put("/IDFCH2H/CAPSAVEUAT/ACHDR/$w_folder/$w_filename", $data);
+	     
+      	return True;
+	  }
 
 }
 

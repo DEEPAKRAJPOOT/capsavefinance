@@ -1,10 +1,6 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-	<form method="POST" style="width:100%;" action="{{route('save_assign_rcu')}}" target="_top" onsubmit="return checkValidation();">
-		@csrf
-		<input type="hidden" value="" name="document_ids" id="document_ids">
-		<input type="hidden" value="{{request()->get('user_id')}}" name="user_id">
 		@if($userIvoices->count() != 0)
 		<div class="row">
 			<div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse show" data-parent="#accordion" style="">
@@ -28,11 +24,6 @@
 				@endforeach	
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
-			</div>
-		</div>
 		@else 
 		 <thead class="thead-primary">
 	        <tr>
@@ -40,7 +31,6 @@
 	        </tr>
 	    </thead>
 		@endif   
-	</form>
  
 @endsection
 
