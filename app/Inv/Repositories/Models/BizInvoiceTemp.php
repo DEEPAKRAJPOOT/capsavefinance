@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\InvoiceActivityLog;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
@@ -116,7 +117,7 @@ public static function saveBulkTempInvoice($arrInvoice)
 
     public static function saveBulk($attributes)
     {
-    //dd($attributes);
+     $id = Auth::user()->user_id;
      $count = count($attributes['id']); 
         for ($i=0;$i< $count;$i++)  
      {   
@@ -133,23 +134,27 @@ public static function saveBulkTempInvoice($arrInvoice)
             {
                 
                $result =  self::where('invoice_id',$attributes['id'][$i])->first();
-               $insert = BizInvoice::insert(['anchor_id' => $result->anchor_id,
-                        'supplier_id' => $result->supplier_id,
-                        'program_id' => $result->program_id,
-                        'app_id'    => $result->app_id,
-                        'biz_id'  => $result->biz_id,
-                        'invoice_no' => $result->invoice_no,
-                        'invoice_due_date' => $result->invoice_due_date,
-                        'invoice_date' => $result->invoice_date,
-                        'invoice_amount' => $result->invoice_approve_amount,
-                        'invoice_approve_amount' => $result->invoice_approve_amount,
-                        'is_bulk_upload'    =>1,
-                        'batch_id'  => $result->batch_id,
-                        'remark' => $result->remark,
-                        'created_by' => $result->created_by,
-                        'created_at' =>$result->created_at]);
+               $data = new BizInvoice;
+                       $data->anchor_id =  $result->anchor_id;
+                        $data->supplier_id =  $result->supplier_id;
+                        $data->program_id =  $result->program_id;
+                        $data->app_id    =  $result->app_id;
+                        $data->biz_id  =  $result->biz_id;
+                        $data->invoice_no =  $result->invoice_no;
+                        $data->invoice_due_date =  $result->invoice_due_date;
+                        $data->invoice_date =  $result->invoice_date;
+                        $data->invoice_amount =  $result->invoice_approve_amount;
+                        $data->invoice_approve_amount = $result->invoice_approve_amount;
+                        $data->is_bulk_upload    =  1;
+                        $data->batch_id  =  $result->batch_id;
+                        $data->prgm_offer_id =   $attributes['prgm_offer_id'];
+                        $data->remark =  $result->remark;
+                        $data->created_by =  $result->created_by;
+                        $data->created_at =  $result->created_at;
+               $insert = $data->save();
+               InvoiceActivityLog::saveInvoiceActivityLog($data->invoice_id,7,null,$id);
             }
-           
+            
        }  
        return  $insert;
     }

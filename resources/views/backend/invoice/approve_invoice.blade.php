@@ -71,7 +71,7 @@
        
     <div class="card">
         <div class="card-body">
-                     <div class="row"><div class="col-md-2"></div>
+                     <div class="row"><div class="col-md-4"></div>
                  <div class="col-md-2">				 
                      <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                      <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
@@ -103,11 +103,7 @@
                          
                     </select>
                      </div>    
-                      <div class="col-md-2">	
-                          <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
-
-                   
-            </div>
+                     
                 <div class="col-md-2">	          
                 <button type="button" id="bulkApprove" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Send to Disbursement</button>
              </div>
@@ -650,7 +646,7 @@ $(document).on('click','#UpdateInvoiceAmount',function(){
      }
  });
 </script>
-<script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/invoice_list_approve.js') }}"></script>
 
 @endsection
  
