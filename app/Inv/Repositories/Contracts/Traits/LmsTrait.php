@@ -255,7 +255,7 @@ trait LmsTrait
         $disbursalData['app_id'] = $invoice['app_id'] ?? null;
         $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;
         $disbursalData['prgm_offer_id'] = $invoice['prgm_offer_id'] ?? null;
-        $disbursalData['bank_account_id'] = $invoice['supplier_bank_detail']['bank_id'] ?? null;
+        $disbursalData['bank_account_id'] = $invoice['supplier_bank_detail']['bank_account_id'] ?? 0;
         $disbursalData['disburse_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $disbursalData['bank_name'] = $invoice['supplier_bank_detail']['bank']['bank_name'] ?? null;
         $disbursalData['ifsc_code'] = $invoice['supplier_bank_detail']['ifsc_code'] ?? null;

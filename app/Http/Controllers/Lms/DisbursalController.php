@@ -168,4 +168,14 @@ class DisbursalController extends Controller
         }
     }
 
+	/**
+	 * Display a listing of the customer.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function disbursedList()
+	{
+		return view('lms.disbursal.disbursed_list');              
+	}
+
 }

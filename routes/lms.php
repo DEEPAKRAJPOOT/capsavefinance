@@ -43,12 +43,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
             
             // disbursal routes
-            Route::get('/disbursal-request/list', [
+            Route::get('/disbursal/request-list', [
                 'as' => 'lms_disbursal_request_list',
                 'uses' => 'Lms\DisbursalController@requestList'
             ]);
 
-            Route::get('/disbursal-request/view-invoice', [
+
+            Route::get('/disbursal/view-invoice', [
                 'as' => 'lms_disbursal_invoice_view',
                 'uses' => 'Lms\DisbursalController@viewInvoice'
             ]);
@@ -68,6 +69,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@processAccrualInterest'
             ]);
             
+            Route::get('/disbursal/disbursed-list', [
+                'as' => 'lms_disbursed_list',
+                'uses' => 'Lms\DisbursalController@disbursedList'
+            ]);
         });//end of application
         
 	});

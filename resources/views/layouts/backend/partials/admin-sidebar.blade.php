@@ -145,7 +145,7 @@
 
                     </li> 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('lms_disbursal_request_list')}}">Disbursal List</a>
+                        <a class="nav-link" href="{{route('lms_disbursed_list')}}">Disbursal List</a>
                     </li>                     
                  
                 </ul>
