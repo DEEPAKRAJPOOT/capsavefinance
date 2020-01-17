@@ -28,7 +28,7 @@ use App\Inv\Repositories\Models\AppBizFinDetail;
 
 class CamController extends Controller
 {
-    protected $download_xls = TRUE;
+    protected $download_xlsx = TRUE;
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
@@ -688,12 +688,12 @@ class CamController extends Controller
            return $final_res;
         }
 
-        $file_name = $appId.'_banking.xls';
+        $file_name = $appId.'_banking.xlsx';
         $req_arr = array(
           'perfiosTransactionId' => $init_txn['perfiostransactionid'],
-          'types' => 'xls',
+          'types' => 'xlsx',
         );
-        if ($this->download_xls) {
+        if ($this->download_xlsx) {
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Bsa_lib::GET_REP;
@@ -820,15 +820,15 @@ class CamController extends Controller
            $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
            return $final_res;
         }
-        $file_name = $appId.'_finance.xls';
+        $file_name = $appId.'_finance.xlsx';
         $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
             'perfiosTransactionId' => $start_txn['perfiostransactionid'],
-            'reportType' => 'xls',
+            'reportType' => 'xlsx',
             'txnId' => $prolitus_txn,
         );
-        if ($this->download_xls) {
+        if ($this->download_xlsx) {
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Perfios_lib::GET_STMT;
@@ -875,15 +875,15 @@ class CamController extends Controller
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_finance.xls';
+        $file_name = $appId.'_finance.xlsx';
         $req_arr = array(
               'apiVersion' => $apiVersion,
               'vendorId' => $vendorId,
               'perfiosTransactionId' => $perfiostransactionid,
-              'reportType' => 'xls',
+              'reportType' => 'xlsx',
               'txnId' => $prolitus_txn,
         );
-        if ($this->download_xls) {
+        if ($this->download_xlsx) {
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Perfios_lib::GET_STMT;
@@ -935,13 +935,13 @@ class CamController extends Controller
         $bsa = new Bsa_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_banking.xls';
+        $file_name = $appId.'_banking.xlsx';
 
         $req_arr = array(
           'perfiosTransactionId' => $perfiostransactionid,
-          'types' => 'xls',
+          'types' => 'xlsx',
         );
-        if ($this->download_xls) {
+        if ($this->download_xlsx) {
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
               $final_res['api_type'] = Bsa_lib::GET_REP;
@@ -1005,6 +1005,7 @@ class CamController extends Controller
         $termPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 2);
         $leasingPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 3);
         $limitData = $this->appRepo->getAppLimit($appId);
+        $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
@@ -1014,6 +1015,7 @@ class CamController extends Controller
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
                 ->with('limitData', $limitData)
+                ->with('totOfferedLimit', $tot_offered_limit)
                 ->with('approveStatus', $approveStatus)
                 ->with('supplyPrgmLimitData', $supplyPrgmLimitData)
                 ->with('termPrgmLimitData', $termPrgmLimitData)
@@ -1101,21 +1103,29 @@ class CamController extends Controller
       $appId = $request->get('app_id');
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
-      $offerData= $this->appRepo->getProgramOffer($aplid);
+
+      $totalLimit; //total exposure limit amount
+      $prgmLimit; //program limit
+      $totalOfferedAmount; //total offered amount including all product type from offer table
+      $prgmOfferedAmount; //total offered amount related to program from offer table
+      $currentOfferAmount; //current offered amount corresponding to app_prgm_limit_id
+
       $limitData= $this->appRepo->getLimit($aplid);
-      $current_offer_limit = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
+      $offerData= $this->appRepo->getProgramOffer($aplid);
+      $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
+      $totalOfferedAmount = $this->appRepo->getTotalOfferedLimit($appId);
       $totalLimit = $this->appRepo->getAppLimit($appId);
 
       if(!is_null($limitData->prgm_id)){
-        $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
+        $prgmOfferedAmount= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
         $prgmLimit = $limitData->program->anchor_sub_limit;
       }else{
-        $offeredLimit = 0;
+        $prgmOfferedAmount = 0;
         $prgmLimit = 0;
       }
 
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'limit_amt'=>$limitData->limit_amt, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit]);
     }
 
     public function updateLimitOffer(Request $request){
@@ -1126,7 +1136,9 @@ class CamController extends Controller
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
         $request['check_bounce_fee'] = str_replace(',', '', $request->check_bounce_fee);
-        $request['addl_security'] = implode(',', $request->addl_security);
+        if($request->has('addl_security')){
+          $request['addl_security'] = implode(',', $request->addl_security);
+        }
 
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
 
@@ -1146,19 +1158,27 @@ class CamController extends Controller
       $appId = $request->get('app_id');
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
+
+      $totalLimit; //total exposure limit amount
+      $prgmLimit; //program limit
+      $totalOfferedAmount; //total offered amount including all product type from offer table
+      $prgmOfferedAmount; //total offered amount related to program from offer table
+      $currentOfferAmount; //current offered amount corresponding to app_prgm_limit_id
+
       $limitData= $this->appRepo->getLimit($aplid);
       $offerData= $this->appRepo->getProgramOffer($aplid);
-      $current_offer_limit = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
+      $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
+      $totalOfferedAmount = $this->appRepo->getTotalOfferedLimit($appId);
       $totalLimit = $this->appRepo->getAppLimit($appId);
 
       if(!is_null($limitData->prgm_id)){
-        $offeredLimit= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
+        $prgmOfferedAmount= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
         $prgmLimit = $limitData->program->anchor_sub_limit;
       }else{
-        $offeredLimit = 0;
+        $prgmOfferedAmount = 0;
         $prgmLimit = 0;
       }
-      return view('backend.cam.limit', ['limitData'=>$limitData, 'totalLimit'=> $totalLimit->tot_limit_amt, 'offeredLimit'=> $offeredLimit+$current_offer_limit, 'prgmLimit'=> $prgmLimit]);
+      return view('backend.cam.limit', ['limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit]);
     }
 
     public function updateLimit(Request $request){

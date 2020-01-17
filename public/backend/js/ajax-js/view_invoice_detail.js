@@ -2,7 +2,7 @@ try {
     var oTable;
     jQuery(document).ready(function ($) {   
         //User Listing code
-        oTable = $('#invoiceList').DataTable({
+        oTable = $('#invoiceActivityList').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 10,
@@ -19,22 +19,15 @@ try {
                 },
                 "error": function () {  // error handling
                    
-                    $("#invoiceList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#invoiceActivityList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
                     $("#appList_processing").css("display", "none");
                 }
             },
             columns: [
-                {data: 'anchor_id'},
-                {data: 'invoice_id'},
-                {data: 'anchor_name'},
-                {data: 'supplier_name'},
-                {data: 'program_name'},
-                {data: 'invoice_date'},
-                {data: 'invoice_amount'},
-                {data: 'invoice_approve_amount'},
-                {data: 'view_upload_invoice'},
+               
+                {data: 'approve_by'},
                 {data: 'status'},
-                {data: 'action'}
+                {data: 'timestamp'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });

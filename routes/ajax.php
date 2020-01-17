@@ -114,7 +114,7 @@ Route::group(
         'uses' => 'Application\InvoiceController@getProgramSupplier'
     ]);
     
-    
+   
     
      Route::post('verify-otp-mobile', [
         'as' => 'verify_otp_mobile',
@@ -280,7 +280,30 @@ Route::group(
         ]
     );  
        
-           
+         
+       Route::post(
+        'backend_get_invoice_list_disbursed',
+        [
+        'as' => 'backend_get_invoice_list_disbursed',
+        'uses' => 'AjaxController@getBackendInvoiceListDisbursed'
+        ]
+    );  
+       
+         Route::post(
+        'backend_get_invoice_list_repaid',
+        [
+        'as' => 'backend_get_invoice_list_repaid',
+        'uses' => 'AjaxController@getBackendInvoiceListRepaid'
+        ]
+    );   
+         
+           Route::post(
+        'backend_get_invoice_list_reject',
+        [
+        'as' => 'backend_get_invoice_list_reject',
+        'uses' => 'AjaxController@getBackendInvoiceListReject'
+        ]
+    );   
        Route::post(
         'backend_get_invoice_list_bank',
         [
@@ -544,6 +567,11 @@ Route::group(
     Route::post('lms-get-disbursal-customer', [
         'as' => 'lms_get_disbursal_customer',
         'uses' => 'AjaxController@lmsGetDisbursalCustomer'
+    ]);
+    
+    Route::post('lms-get-disbursal-list', [
+        'as' => 'lms_get_disbursal_list',
+        'uses' => 'AjaxController@lmsGetDisbursalList'
     ]);
     
     

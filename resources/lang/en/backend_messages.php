@@ -19,5 +19,7 @@ return [
     'agency_user_registration_updated' => 'Agency user information successfully updated..',
     'already_exist' => 'Already Exist..',
     'offer_approved' => 'Offer approved successfully.',
+    'disbursed' => 'Selected invoices has been successfully disbursed.',
+    'noSelectedInvoice' => 'Please select atleast one invoice.',
 ];
 

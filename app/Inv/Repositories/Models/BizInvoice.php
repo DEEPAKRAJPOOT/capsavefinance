@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Models\InvoiceActivityLog;
 
 class BizInvoice extends BaseModel
 {
@@ -67,6 +68,7 @@ class BizInvoice extends BaseModel
         'invoice_date',
         'invoice_amount',
         'invoice_approve_amount',
+        'prgm_offer_id',
         'file_id',
         'remark',
         'created_by',
@@ -100,12 +102,16 @@ public static function saveBulkInvoice($arrInvoice)
         
 public static function updateInvoice($invoiceId,$status)
     {
+        $id = Auth::user()->user_id;
+        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,$status,null,$id);
         return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status]);
        
     } 
     
     public static function updateInvoiceAmount($invoiceId,$amount)
     {
+        $id = Auth::user()->user_id;
+        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,0,'Invoice Approved Amount',$id);
         return self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount]);
        
     } 
@@ -150,6 +156,11 @@ public static function updateInvoice($invoiceId,$status)
                     return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['anchor','supplier','userFile','program'])->get();
      } 
      
+    public static function  getSingleInvoice($invId)
+     {
+         return self::with('anchor')->with('supplier')->where(['invoice_id' =>$invId])->first();
+         
+     }
      function anchor()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
@@ -167,9 +178,15 @@ public static function updateInvoice($invoiceId,$status)
      
      }
      
-     function program()
+     function lms_user()
      {
-          return $this->belongsTo('App\Inv\Repositories\Models\Program', 'program_id','prgm_id')->where(['status' => 1]);  
+          return $this->belongsTo('App\Inv\Repositories\Models\LmsUser', 'supplier_id','user_id'); 
+     
+     }
+     
+     function program_offer()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id','prgm_offer_id');  
      
      }
 
@@ -182,6 +199,12 @@ public static function updateInvoice($invoiceId,$status)
      function mstStatus()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'status_id');  
+     
+     }
+
+     function program()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Program', 'program_id');  
      
      }
 

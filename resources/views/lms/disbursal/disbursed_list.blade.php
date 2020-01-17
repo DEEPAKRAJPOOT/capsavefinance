@@ -8,11 +8,11 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Disbursal Request </h3>
-            <small>Disbursal Request</small>
+            <h3>Disbursal List </h3>
+            <small>Disbursal List</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li class="active">Disbursal Request</li>
+                <li class="active">Disbursal List</li>
             </ol>
         </div>
     </section>
@@ -43,13 +43,6 @@
                     !!}
                 </div>
                 <button id="searchB" type="button" class="btn  btn-success btn-sm float-right">Search</button>
-                
-                <div class="col-md-3 ml-auto text-right">
-
-                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_disburse', ['disburse_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Send To Bank</a>
-                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_disburse', ['disburse_type' => 2]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Disburse Manually</a>
-                </div>
-                <input type="hidden" value="" name="invoice_ids" id="invoice_ids">  
 
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -60,16 +53,17 @@
 	                              		<table id="disbursalCustomerList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
-                                                    <th>Customer Code</th>
-													<th>Ben Name</th>
-													<th>Ben Bank Name</th>
-													<th>Ben IFSC</th>
-													<th>Ben Account No.</th>
-													<th>Total Invoice Amt.</th>
-													<th>Total Funded Amt.</th>
-													<th>Total Disburse Amt.</th>
-													<th>Total Invoice </th>
-													<th>Action</th>
+													<th>Disb. Date</th>
+													<th>Inv. Ref. No.</th>
+													<th>Due Date</th>
+													<th>Inv. Amount</th>
+													<th>Funded Amount</th>
+													<th>Disb. Status</th>
+													<th>Disb. Amount</th>
+													<th>Collection Date</th>
+													<th>Collection Amount</th>
+													<th>Accured Intrest</th>
+													<th>Surplus Amount</th>
 												</tr>
 	                                        </thead>
 	                                        <tbody>
@@ -89,15 +83,13 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('viewDisbursalCustomerInvoice','View Disbursal Customer Invoice', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('disbueseInvoices','Disbuse Invoices', 'modal-md')!!}
-
 @endsection
 
 @section('jscript')
 <script>
 
     var messages = {
-        lms_get_disbursal_customer: "{{ URL::route('lms_get_disbursal_customer') }}",
+        lms_get_disbursal_list: "{{ URL::route('lms_get_disbursal_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
