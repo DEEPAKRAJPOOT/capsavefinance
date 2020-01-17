@@ -2138,7 +2138,7 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($customer) {
                     if ($customer->is_assign == 0) {
-                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                        return "<label class=\"badge badge-warning current-status\">sanctioned</label>";
                     } else {
                         return "<span style='color:green'>Assigned</span>";
                     }
