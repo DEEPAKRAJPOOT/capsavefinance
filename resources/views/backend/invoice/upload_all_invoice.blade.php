@@ -97,7 +97,7 @@
 									
 									<div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice Approve Amount <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>

@@ -141,8 +141,8 @@ public static function saveBulkTempInvoice($arrInvoice)
                         $data->app_id    =  $result->app_id;
                         $data->biz_id  =  $result->biz_id;
                         $data->invoice_no =  $result->invoice_no;
-                        $data->invoice_due_date =  $result->invoice_due_date;
-                        $data->invoice_date =  $result->invoice_date;
+                        $data->invoice_due_date =  $result['invoice_due_date'];
+                        $data->invoice_date =   $result['invoice_date'];
                         $data->invoice_amount =  $result->invoice_approve_amount;
                         $data->invoice_approve_amount = $result->invoice_approve_amount;
                         $data->is_bulk_upload    =  1;
