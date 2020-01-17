@@ -682,7 +682,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'action',
                     function ($invoice) {
-                     return '<a title="Approve"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
+                     return '<a title="Disbursed Que"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
 
                 })
               ->make(true);

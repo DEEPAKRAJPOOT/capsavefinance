@@ -97,7 +97,7 @@
 									
 									<div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice Approve Amount <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>
@@ -337,7 +337,7 @@ var messages = {
    $('[name="invoice_approve_amount"]').on('change blur keyup', function() {
      var pro_limit = parseInt($("#pro_limit_hide").val());
      var invoice_approve_amount = parseInt($("#invoice_approve_amount").val());
-    
+   
      if(invoice_approve_amount  > pro_limit)
      {
        
@@ -501,7 +501,7 @@ var messages = {
                         var offer_id   =  data.offer_id;
                         $("#prgm_offer_id").val(offer_id);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
-                         $("#pro_limit_hide").val(obj2.anchor_limit);  
+                         $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                          $("#supplier_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
                             
