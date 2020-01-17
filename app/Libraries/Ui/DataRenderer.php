@@ -2205,7 +2205,7 @@ class DataRenderer implements DataProviderInterface
                             return $data->co_lender_id;
                         })
                         ->editColumn(
-                                'name',
+                                'f_name',
                                 function ($data) {
                             return $data->f_name;
                         })
@@ -2220,7 +2220,7 @@ class DataRenderer implements DataProviderInterface
                             return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >" . $data->comp_email . "</a> ";
                         })
                         ->editColumn(
-                                'phone',
+                                'comp_phone',
                                 function ($user) {
                             $achorId = $user->comp_phone;
                             return $achorId;
@@ -2233,9 +2233,20 @@ class DataRenderer implements DataProviderInterface
                         ->editColumn(
                                 'status',
                                 function ($user) {
-                            return ($user->created_at) ? date('d-M-Y', strtotime($user->created_at)) : '---';
+                            
+                          
+                            if ($user->is_active) {
+                                return '<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
+                            } else {
+                                return '<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">In Active</label>
+                                             
+                                          </div></b>';
+                            }
                         })
-                        
                         ->editColumn(
                                 'action',
                                 function ($data) {

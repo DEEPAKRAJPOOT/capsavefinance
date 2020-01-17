@@ -113,14 +113,14 @@
             },
             columns: [
                 {data: 'co_lender_id'},
-                {data: 'name'},
+                {data: 'f_name'},
 
                 {data: 'biz_name'},
                 {
                     data: 'email'
                 },
                 {
-                    data: 'phone'
+                    data: 'comp_phone'
                 },
                 {
                     data: 'created_at'
@@ -136,7 +136,7 @@
             ],
             aoColumnDefs: [{
                     'bSortable': false,
-                    'aTargets': []
+                    'aTargets': [6,7]
                 }]
 
         });

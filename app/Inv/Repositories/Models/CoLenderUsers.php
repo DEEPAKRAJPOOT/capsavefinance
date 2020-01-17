@@ -130,7 +130,7 @@ class CoLenderUsers extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
 
-        return self::where($where)
+        return self::where($where)->select('co_lenders_user.*' ,'u.f_name', 'u.biz_name', 'u.email')
                         ->join('users as u', 'co_lenders_user.co_lender_id', '=', 'u.co_lender_id')
                         ->get();
     }
