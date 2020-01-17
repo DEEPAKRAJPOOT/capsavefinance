@@ -11,9 +11,10 @@ use App\Inv\Repositories\Models\BizInvoiceTemp as TempInvoiceModel;
 use App\Inv\Repositories\Models\BizBatchInvoice as BizBatchInvoice;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
-
+use App\Inv\Repositories\Models\InvoiceActivityLog;
 //
 
 
@@ -167,6 +168,21 @@ use CommonRepositoryTraits;
 
        return TempInvoiceModel::DeleteTempInvoice($attributes);  
     }
+    
+     /* save invoice activity log  */
+      public function saveInvoiceActivityLog($invoice_id,$status_id=0,$activity_name,$created_by=null)
+    {
+       
+         try
+        {
+          return InvoiceActivityLog::saveInvoiceActivityLog($invoice_id,$status_id,$activity_name,$created_by);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+
+       
+    }
+    
       public function DeleteSingleTempInvoice($attributes = [])
     {
        
@@ -353,6 +369,18 @@ use CommonRepositoryTraits;
            return $ex;
         } 
     }
+    
+      public function getOfferForLimit($oid)
+    {
+     
+        try
+        {
+          return AppProgramOffer::getOfferForLimit($oid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
+    
 
  public function getLimitProgram($aid)
     {
@@ -375,7 +403,17 @@ use CommonRepositoryTraits;
         } 
           
     }
-
+    
+   public function getSingleInvoice($invId)
+    {
+       try
+        {
+          return BizInvoice::getSingleInvoice($invId);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+          
+    }
      public function geAnchortLimitProgram($aid)
     {
      

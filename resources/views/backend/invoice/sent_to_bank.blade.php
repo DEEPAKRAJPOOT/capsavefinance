@@ -648,7 +648,7 @@ $(document).on('click','#UpdateInvoiceAmount',function(){
      }
  });
 </script>
-<script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/invoice_list_send_to_bank.js') }}"></script>
 
 @endsection
  

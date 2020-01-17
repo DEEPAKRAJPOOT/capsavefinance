@@ -35,8 +35,7 @@
                     <div class="active" id="details">
                         <div class="form-sections">
                            
-                             
-                                <div class="clearfix"></div>
+                           <div class="clearfix"></div>
                                 <div class="row">
                                     
                                     <div class="col-md-4">
@@ -92,7 +91,7 @@
 									<div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Due Date <span class="error_message_label">*</span> </label>
-                                              <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth datepicker-dis-fdate" placeholder="Invoice Due Date">
+                                              <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth datepicker-dis-pdate" placeholder="Invoice Due Date">
                                       </div>
                                     </div>
 									
@@ -133,6 +132,7 @@
 								   <div class="row">
                                     <div class="col-md-12">
                                         <div class="text-right mt-2">
+                                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                                             <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
                                             <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
                                         </div>
@@ -446,17 +446,13 @@ var messages = {
                 success: function (data) {
                     if(data.status==1)
                     {
-                      
                         var obj1  = data.get_program;
                         var obj2   =  data.limit;
-                       
                         $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
-                          
-                     
                            $("#program_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
                            
-                                   $("#program_id").append("<option value='"+v.program.prgm_id+"'>"+v.program.prgm_name+"</option>");  
+                                   $("#program_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
                             });
                            
                         
@@ -502,7 +498,8 @@ var messages = {
                       
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
-                       
+                        var offer_id   =  data.offer_id;
+                        $("#prgm_offer_id").val(offer_id);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_limit);  
                          $("#supplier_id").append("<option value=''>Please Select</option>");  

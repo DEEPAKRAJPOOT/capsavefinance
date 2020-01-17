@@ -132,6 +132,7 @@
                                 </div>
               <div class="col-md-12">
                   <span id="final_submit_msg" class="error" style="display:none;">Total Amount  should not greater Program Limit</span>
+                   <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                   <input type="submit" id="final_submit" class="btn btn-secondary btn-sm mt-3 float-right finalButton" value="Final Submit"> 	
             </div> 
             
@@ -273,7 +274,7 @@
                            $("#program_bulk_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
                            
-                                   $("#program_bulk_id").append("<option value='"+v.program.prgm_id+"'>"+v.program.prgm_name+"</option>");  
+                                   $("#program_bulk_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
                             });
                            
                         
@@ -314,7 +315,8 @@
                       
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
-                       
+                        var offer_id   =  data.offer_id;
+                        $("#prgm_offer_id").val(offer_id);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_limit);  
                          $("#supplier_bulk_id").append("<option value=''>Please Select</option>");  

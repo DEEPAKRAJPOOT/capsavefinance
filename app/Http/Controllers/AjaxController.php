@@ -2756,6 +2756,29 @@ if ($err) {
         return $invoice;
     } 
     
+      //////////////////// use for Invoice Disbursed  list/////////////////
+     public function getBackendInvoiceListDisbursed(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,12);
+        $invoice = $dataProvider->getBackendInvoiceListDisbursed($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+     //////////////////// use for Invoice Disbursed  list/////////////////
+     public function getBackendInvoiceListRepaid(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,13);
+        $invoice = $dataProvider->getBackendInvoiceListRepaid($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
+      //////////////////// use for Invoice Disbursed  list/////////////////
+     public function getBackendInvoiceListReject(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,14);
+        $invoice = $dataProvider->getBackendInvoiceListReject($this->request, $invoice_data);
+        return $invoice;
+    } 
     /**
       * 
       * @param DataProviderInterface $dataProvider
@@ -3068,9 +3091,13 @@ if ($err) {
      
       public function getSupplierList(Request $request)
      {
+        $result  =  explode(",",$request['program_id']);
+        $request['program_id']  = $result[0];
+        $request['prgm_offer_id']  = $result[1];
+        $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        return response()->json(['status' => 1,'limit' => $getProgramLimit,'get_supplier' =>$get_supplier]);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'get_supplier' =>$get_supplier]);
      }
            
 
@@ -3142,8 +3169,11 @@ if ($err) {
                {
                     return response()->json(['status' => 0]); 
                } 
-                
-                
+               if($this->twoDateDiff($date,$invoice_due_date)==1)
+               {
+                   return response()->json(['status' => 0]); 
+               }
+               
                 $invoice_amount = str_replace("\n","",$invoice_amount);
                 $data[$i]['anchor_id'] =  $request['anchor_bulk_id'];
                 $data[$i]['supplier_id'] = $request['supplier_bulk_id']; 
@@ -3180,7 +3210,20 @@ if ($err) {
                         return response()->json(['status' => 0]); 
                     }
      }
-    
+    function twoDateDiff($fdate,$tdate)
+    {
+            $curdate=strtotime($fdate);
+            $mydate=strtotime($tdate);
+
+            if($curdate > $mydate)
+            {
+               return 1;
+            }
+            else
+            {
+                return 0;
+            }
+    }
     function validateDate($date, $format = 'd/m/Y')
     { 
        

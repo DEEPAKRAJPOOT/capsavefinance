@@ -72,7 +72,7 @@
        
     <div class="card">
         <div class="card-body">
-                     <div class="row"><div class="col-md-4"></div>
+                     <div class="row"><div class="col-md-6"></div>
                  <div class="col-md-2">				 
                      <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                      <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
@@ -104,11 +104,7 @@
                          
                     </select>
                      </div>    
-                      <div class="col-md-2">	
-                          <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
-
-                   
-            </div>
+                     
               
             </div>
             <div class="row">
@@ -265,6 +261,7 @@
       </div>
    </div>
 </div>
+{!!Helpers::makeIframePopup('modalInvoiceFailed','Invoice Failed Status', 'modal-md')!!}
     @endsection
     @section('jscript')
 <script>
@@ -339,11 +336,17 @@
      });
    
  ///////////////////////For Invoice Approve////////////////////////
-  $(document).on('click','.approveInv',function(){
+  $(document).on('change','.approveInv',function(){
+       var status =  $(this).val();
+     if(status==0)
+     {
+         return false;
+     }
     if(confirm('Are you sujre? You want to approve it'))  
     {
+     th  =  this;   
      var invoice_id =  $(this).attr('data-id'); 
-      var postData =  ({'invoice_id':invoice_id,'status':9,'_token':messages.token});
+     var postData =  ({'invoice_id':invoice_id,'status':status,'_token':messages.token});
       th  = this;
        jQuery.ajax({
         url: messages.update_invoice_approve,
@@ -354,7 +357,7 @@
                         alert(errorThrown);
                  },
                 success: function (data) {
-                    $(th).parent('td').parent('tr').remove();
+                    $(th).closest('tr').remove();
                 }
              });  
     }
@@ -649,7 +652,7 @@ $(document).on('click','#UpdateInvoiceAmount',function(){
      }
  });
 </script>
-<script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/invoice_list_failed_disbursment.js') }}"></script>
 
 @endsection
  
