@@ -341,7 +341,7 @@
    
  ///////////////////////For Invoice Approve////////////////////////
   $(document).on('click','.approveInv',function(){
-    if(confirm('Are you sujre? You want to approve it'))  
+    if(confirm('Are you sure? You want to approve it.'))  
     {
      var invoice_id =  $(this).attr('data-id'); 
       var postData =  ({'invoice_id':invoice_id,'status':8,'_token':messages.token});
@@ -592,7 +592,7 @@ $(document).on('click','#bulkApprove',function(){
             alert('Please select atleast one checked');
             return false;
         }
-        if(confirm('Are you sujre? You want to approve it'))  
+        if(confirm('Are you sure? You want to approve it.'))  
     { 
         var postData =  ({'invoice_id':arr,'status':8,'_token':messages.token});
          jQuery.ajax({

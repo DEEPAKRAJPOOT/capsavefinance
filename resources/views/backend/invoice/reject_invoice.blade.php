@@ -340,7 +340,7 @@
      {
          return false;
      }
-    if(confirm('Are you sujre? You want to approve it'))  
+    if(confirm('Are you sure? You want to approve it.'))  
     {
      th  =  this;   
      var invoice_id =  $(this).attr('data-id'); 

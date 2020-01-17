@@ -210,51 +210,35 @@
     <div class=" col-md-12 col-sm-6 mb-4">
       <div class="card">
          <div class="card-body">
-            <h4><small>Invoice History</small></h4>
-			<div id="Anchor-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-			<div class="row">
-                                    <div class="col-sm-12 col-md-6">
-                                        <div class="dataTables_length" id="Anchor-listing_length">
-                                            <label>
-                                                Show
-                                                <select name="Anchor-listing_length" aria-controls="Anchor-listing" class="form-control form-control-sm">
-                                                    <option value="10">10</option>
-                                                    <option value="25">25</option>
-                                                    <option value="50">50</option>
-                                                    <option value="100">100</option>
-                                                </select>
-                                                entries
-                                            </label>
-                                        </div>
-                                    </div> 
-									
-                                    
-                                </div>  </div>
-			
-			<table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellspacing="0" cellpadding="0">
-                           <thead>
-                              <tr role="row"><th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" style="width: 107px;">Sr.No</th><th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="width: 103px;">Docs </th><th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Comment : activate to sort column ascending" style="width: 164px;">Comment </th><th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending" style="width: 258px;">Status</th><th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Timestamp: activate to sort column ascending" style="width: 352px;">Timestamp</th></tr>
-                           </thead>
-						   
-                           <tbody>
-						   <tr role="row" class="odd">
-						   <td class="sorting_1"></td>
-						   <td></td>
-						   <td></td>
-						   <td></td>
-						   <td></td>
-						   </tr>
-						   </tbody>
-                        </table>
-						
-						
-						<div class="row mt-3"><div class="col-sm-12 col-md-5"><div class="dataTables_info" id="invoice_history_info" role="status" aria-live="polite">Showing 1 to 1 of 1 entries</div></div><div class="col-sm-12 col-md-7"><div class="dataTables_paginate paging_simple_numbers float-right" id="invoice_history_paginate"><ul class="pagination mb-0"><li class="paginate_button page-item previous disabled" id="invoice_history_previous"><a href="#" aria-controls="invoice_history" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="invoice_history" data-dt-idx="1" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item next disabled" id="invoice_history_next"><a href="#" aria-controls="invoice_history" data-dt-idx="2" tabindex="0" class="page-link">Next</a></li></ul></div></div></div>
-						
-						
-						
-						
-						
-          
+            <div class="row">
+                <div class="col-12 dataTables_wrapper mt-4">
+                    <div class="overflow">
+                        <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table id="invoiceActivityList" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                        <thead>
+                                            <tr role="row">
+                                               <th>Sr.No</th>
+                                                <th>Docs</th>
+                                                <th>Comment </th> 
+                                                <th>Status</th>
+                                                <th>Timestamp</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
+                                    <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>  
          </div>
       </div>
    </div> 
@@ -694,6 +678,6 @@ $(document).on('click','#UpdateInvoiceAmount',function(){
      }
  });
 </script>
-
+<script src="{{ asset('backend/js/ajax-js/view_invoice_detail.js') }}"></script>
 @endsection
  
