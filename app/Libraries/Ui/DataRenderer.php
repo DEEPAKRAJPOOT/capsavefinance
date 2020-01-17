@@ -2198,7 +2198,7 @@ class DataRenderer implements DataProviderInterface
     function getColenderList($request, $data)
     {
         return DataTables::of($data)
-                        ->rawColumns(['action', 'is_active','email' ,'action'])
+                        ->rawColumns(['action', 'is_active','email' ,'action' ,'status'])
                         ->editColumn(
                                 'co_lender_id',
                                 function ($data) {
@@ -2227,6 +2227,11 @@ class DataRenderer implements DataProviderInterface
                         })
                         ->editColumn(
                                 'created_at',
+                                function ($user) {
+                            return ($user->created_at) ? date('d-M-Y', strtotime($user->created_at)) : '---';
+                        })
+                        ->editColumn(
+                                'status',
                                 function ($user) {
                             return ($user->created_at) ? date('d-M-Y', strtotime($user->created_at)) : '---';
                         })

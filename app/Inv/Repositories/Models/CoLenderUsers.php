@@ -105,7 +105,7 @@ class CoLenderUsers extends BaseModel {
     public static function getColenderList()
     {
 
-        $res = self::select('co_lenders_user.*', 'u.f_name', 'u.biz_name', 'u.email')->where('co_lenders_user.is_active', 1)
+        $res = self::select('co_lenders_user.*', 'u.f_name', 'u.biz_name', 'u.email')
                 ->join('users as u', 'co_lenders_user.co_lender_id', '=', 'u.co_lender_id');
         return $res ?: false;
     }

@@ -146,6 +146,13 @@
 
             </div>
         </div>
+         <div class="col-6">
+            <div class="form-group">
+                <label for="txtCreditPeriod">Status</label><br>
+                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($coLenderData->is_active) ? $coLenderData->is_active : null,['class'=>'form-control form-control-sm']) !!}
+                {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
 
 
 

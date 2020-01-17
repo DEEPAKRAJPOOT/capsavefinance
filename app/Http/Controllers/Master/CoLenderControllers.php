@@ -75,6 +75,7 @@ class CoLenderControllers extends Controller {
                     'comp_zip' => $request['pin_code'],
                     'gst' => $request['gst'],
                     'percentage' => $request['perc'],
+                    'is_active'=>$request['is_active']
                 ];
                
                 if ($co_lender_id > 0) {

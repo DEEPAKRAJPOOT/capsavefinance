@@ -54,6 +54,7 @@
                                                 <th>Mobile</th>
 <!--                                                <th>Anchor</th>-->
                                                 <th>Created At</th>
+                                                <th>Status</th>
                                                  <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -123,6 +124,9 @@
                 },
                 {
                     data: 'created_at'
+                },
+                {
+                    data: 'status'
                 },
 
                 {
