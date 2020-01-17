@@ -43,7 +43,7 @@
                      
 		 <div class="col-md-6">
 		<div class="form-group">
-        <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <span id="anc_limit" class="error"></span></label>
+        <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
                                              
                 <option value="">Select Anchor  </option>
@@ -59,7 +59,7 @@
 		 <div class="col-md-6">
                     <div class="form-group">
                         <label for="txtCreditPeriod">Product Program Name
-                            <span class="error_message_label">*</span>  <span id="pro_limit" class="error"></span>
+                            <span class="error_message_label">*</span>  <!-- <span id="pro_limit" class="error"></span> -->
                         </label>
                          <select readonly="readonly" class="form-control changeBulkSupplier" id="program_bulk_id" >
                                             </select>

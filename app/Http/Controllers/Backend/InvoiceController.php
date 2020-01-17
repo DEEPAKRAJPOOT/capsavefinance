@@ -130,7 +130,7 @@ class InvoiceController extends Controller {
       
        /* success invoice status iframe    */
        public function invoiceSuccessStatus(Request $request){
-           dd( $request->invoice_id);
+        
          return view('backend.invoice.invoice_success_status');
       }
       
@@ -163,10 +163,10 @@ class InvoiceController extends Controller {
       public function saveInvoiceAmount(Request $request)
       {     $id = Auth::user()->user_id;
             $attributes = $request->all();
-            $res =  $this->invRepo->updateInvoiceAmount($attributes['invoice_id'],$attributes['approve_invoice_amount']);
+            $res =  $this->invRepo->updateInvoiceAmount($attributes);
            if($res)
            {
-                  
+                
                   Session::flash('message', 'Invoice Amount successfully Updated');
                   return back();
            }

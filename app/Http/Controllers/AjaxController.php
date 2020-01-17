@@ -2779,6 +2779,13 @@ if ($err) {
         $invoice = $dataProvider->getBackendInvoiceListReject($this->request, $invoice_data);
         return $invoice;
     } 
+    
+      //////////////////// use for Invoice Activity  list/////////////////
+     public function getBackendInvoiceActivityList(DataProviderInterface $dataProvider) {
+        $invoice_activity_data = $this->invRepo->getAllActivityInvoiceLog($this->request->inv_name);
+        $invoice_activity_data = $dataProvider->getBackendInvoiceActivityList($this->request, $invoice_activity_data);
+        return $invoice_activity_data;
+    } 
     /**
       * 
       * @param DataProviderInterface $dataProvider

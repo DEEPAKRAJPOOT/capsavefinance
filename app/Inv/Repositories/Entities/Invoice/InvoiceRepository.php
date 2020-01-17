@@ -256,11 +256,22 @@ use CommonRepositoryTraits;
          
     } 
     
-     public function updateInvoiceAmount($invId,$amount)
+    public function getAllActivityInvoiceLog($invId)
     {
         try
         {
-           return InvoiceModel::updateInvoiceAmount($invId,$amount);  
+           return InvoiceActivityLog::getAllActivityInvoiceLog($invId);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }   
+    
+     public function updateInvoiceAmount($attributes)
+    {
+        try
+        {
+           return InvoiceModel::updateInvoiceAmount($attributes);  
         } catch (Exception $ex) {
            return $ex;
         }

@@ -108,10 +108,13 @@ public static function updateInvoice($invoiceId,$status)
        
     } 
     
-    public static function updateInvoiceAmount($invoiceId,$amount)
+    public static function updateInvoiceAmount($attributes)
     {
+        $invoiceId  = $attributes['invoice_id'];
+        $amount  = $attributes['approve_invoice_amount'];
+        $comment  = $attributes['comment'];
         $id = Auth::user()->user_id;
-        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,0,'Invoice Approved Amount',$id);
+        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,0,$comment,$id);
         return self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount]);
        
     } 
@@ -158,9 +161,21 @@ public static function updateInvoice($invoiceId,$status)
      
     public static function  getSingleInvoice($invId)
      {
-         return self::with('anchor')->with('supplier')->where(['invoice_id' =>$invId])->first();
+         return self::with(['anchor','supplier','gst','pan'])->where(['invoice_id' =>$invId])->first();
          
      }
+      function pan()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst', 'supplier_id','user_id')->where(['status' =>1,'type' =>1,]);  
+    
+     }
+      
+     function gst()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst', 'supplier_id','user_id')->where(['status' =>1,'type' =>2,]);  
+    
+     }
+     
      function anchor()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  

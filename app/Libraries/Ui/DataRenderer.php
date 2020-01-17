@@ -1039,6 +1039,47 @@ class DataRenderer implements DataProviderInterface
               ->make(true);
     }  
     
+    
+      /*      
+     * Get Invoice list for backend
+     */
+    public function getBackendInvoiceActivityList(Request $request,$invoice)
+    { 
+    
+      return DataTables::of($invoice)
+               ->rawColumns(['anchor_id','action','status','comment'])
+                ->addIndexColumn()
+               
+                ->addColumn(
+                    'comment',
+                    function ($invoice) { 
+                      $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
+                        if($invoice->status_id==0) {
+                              return $invoice->activity_name;
+                      }
+                })
+                 
+               
+               ->addColumn(
+                    'status',
+                    function ($invoice) {
+                      $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
+                      if($invoice->status_id!=0) {
+                      return '<button type="button" class="'.$color[$invoice->status_id] .' btn-sm">'.$invoice->activity_name.'</button>';
+                      }
+
+                })
+                 ->addColumn(
+                    'timestamp',
+                    function ($invoice) {
+                       return $invoice->created_at;
+                })
+                 
+                 
+              ->make(true);
+    }  
+    
+    
     /*
      * get application pool
      * 

@@ -63,5 +63,12 @@ class InvoiceActivityLog extends BaseModel {
            return self::insert($arr);  
      
        }
+       
+       
+       public static function getAllActivityInvoiceLog($inv)
+       {
+           
+           return self::where(['invoice_id' => $inv])->get();
+       }
 
 }

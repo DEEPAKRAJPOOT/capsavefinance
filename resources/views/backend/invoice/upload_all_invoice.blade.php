@@ -40,7 +40,7 @@
                                     
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span><span id="anc_limit" class="error"></span></label>
+                                            <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id"  name="anchor_id">
                                              
                                             @if(count($get_anchor) > 0)
@@ -59,7 +59,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Product Program Name
-                                                <span class="error_message_label">*</span>   <span id="pro_limit" class="error"></span>
+                                                <span class="error_message_label">*</span>   <!-- <span id="pro_limit" class="error"></span> -->
                                             </label>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
