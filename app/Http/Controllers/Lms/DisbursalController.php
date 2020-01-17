@@ -84,6 +84,7 @@ class DisbursalController extends Controller
 		$invoiceIds = $request->invoiceids;
 		$disburseType = $request->disburse_type;
 		$record = array_filter(explode(",",$invoiceIds));
+		
 		$allinvoices = $this->lmsRepo->getInvoices($record)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($record)->toArray();
 		
@@ -127,7 +128,7 @@ class DisbursalController extends Controller
 				}
 			}
 		}
-		if($disburseType == 1) {
+		if($disburseType == 1 && !empty($record)) {
 			
 			$http_header = [
 				'timestamp' => date('Y-m-d H:i:s'),
@@ -148,8 +149,9 @@ class DisbursalController extends Controller
 
 			$idfcObj= new Idfc_lib();
 			$result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
-			// dd($result);
 			return redirect()->route('lms_disbursal_request_list')->withErrors($result);      
+		} elseif (empty($record)) {
+			return redirect()->route('lms_disbursal_request_list')->withErrors("Please select atleast one invoice.");
 		}
         
         Session::flash('message',trans('backend_messages.disbursed'));
