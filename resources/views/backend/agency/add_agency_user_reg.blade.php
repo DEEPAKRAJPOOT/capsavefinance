@@ -2,7 +2,7 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="agencyUserForm" name="agencyUserForm" method="POST" action="{{route('save_agency_user_reg')}}" target="_top">
+           <form id="agencyUserForm" name="agencyUserForm" method="POST" action="{{route('save_agency_user_reg')}}">
               @csrf
               <div class="row">
                  <div class="col-6">
@@ -10,7 +10,10 @@
                        <label for="txtCreditPeriod">First Name
                        <span class="mandatory">*</span>
                        </label>
-                       <input type="text" name="f_name" id="f_name" value="" class="form-control employee" tabindex="1" placeholder="First Name" >
+                       <input type="text" name="f_name" id="f_name" value="{{old('f_name')}}" class="form-control employee" tabindex="1" placeholder="First Name" >
+                       @error('f_name')
+                          <span class="error">{{ $message }}</span>
+                       @enderror
                     </div>
                  </div>
                  <div class="col-6">
@@ -18,7 +21,10 @@
                        <label for="txtCreditPeriod">Last Name
                        <span class="mandatory">*</span>
                        </label>
-                       <input type="text" name="l_name" id="l_name" value="" class="form-control employee" tabindex="2" placeholder="Last Name" >
+                       <input type="text" name="l_name" id="l_name" value="{{old('l_name')}}" class="form-control employee" tabindex="2" placeholder="Last Name" >
+                       @error('l_name')
+                          <span class="error">{{ $message }}</span>
+                       @enderror
                     </div>
                  </div>
               </div>
@@ -28,7 +34,10 @@
                      <label for="txtEmail">Email
                      <span class="mandatory">*</span>
                      </label>
-                     <input type="email" name="email" id="email" value="" class="form-control email" tabindex="3" placeholder="Email" >
+                     <input type="email" name="email" id="email" value="{{old('email')}}" class="form-control email" tabindex="3" placeholder="Email" >
+                     @error('email')
+                          <span class="error">{{ $message }}</span>
+                       @enderror
                   </div>
                </div>
 
@@ -37,7 +46,10 @@
                         <label for="txtMobile">Mobile
                         <span class="mandatory">*</span>
                         </label>
-                        <input class="form-control numbercls phone" name="mobile_no" id="mobile_no" tabindex="4" type="text" maxlength="10" placeholder="Mobile" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        <input class="form-control numbercls phone" name="mobile_no" id="mobile_no" value="{{old('mobile_no')}}" tabindex="4" type="text" maxlength="10" placeholder="Mobile" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        @error('mobile_no')
+                          <span class="error">{{ $message }}</span>
+                        @enderror
                      </div>
                   </div>
             </div>
@@ -58,9 +70,12 @@
                         <select class="form-control state" name="agency_id" id="agency_id" tabindex="6">
                           <option value=""> Select Agency</option>
                           @foreach($agencies as $key => $agency)
-                          <option value="{{$agency->agency_id}}"> {{$agency->comp_name}} </option>
+                          <option value="{{$agency->agency_id}}" {{(old('agency_id') == $agency->agency_id)? 'selected': ''}}> {{$agency->comp_name}} </option>
                           @endforeach
                         </select>
+                        @error('agency_id')
+                          <span class="error">{{ $message }}</span>
+                       @enderror
                     </div>
                  </div>
                 </div>
