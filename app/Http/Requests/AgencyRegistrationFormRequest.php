@@ -18,6 +18,7 @@ class AgencyRegistrationFormRequest extends Request
         return $rules = [
             //'employee' => 'required|min:2|max:50|alpha_dash|alpha',
             'comp_name' => 'required|min:5|max:50|unique:agency',
+            'type_id' => 'required',
             'comp_email'  => 'required|email|max:50',
             'comp_phone' => 'required|numeric|digits:10',
             'comp_addr'   => 'required|min:5|max:50',
@@ -35,18 +36,15 @@ class AgencyRegistrationFormRequest extends Request
     public function messages()
     {
         return $messages = [
-            'employee.required' => trans('error_messages.req_first_name'),
-            'employee.alpha_dash' => trans('error_messages.invalid_first_name'),
-            'employee.max' => trans('error_messages.first_name_max_length'),
-            'employee.string' => trans('error_messages.first_name_allow_string'),
-            'employee.required' => trans('error_messages.req_last_name'),            
-            'business_name.required' => trans('error_messages.buis_business'),
-            'email.required' => trans('error_messages.req_email'),
-            'email.max' => trans('error_messages.email_max_length'),
-            'email.email' => trans('error_messages.invalid_email'),
-            'email.unique' => trans('error_messages.email_already_exists'),
-            'mobile_no.required'=>trans('error_messages.req_phone'),
-
+            'comp_name.required' => 'Agency name is required',
+            'type_id.required' => 'Type is required',
+            'comp_email.required' => 'Email is required',
+            'comp_email.email' => trans('error_messages.invalid_email'),
+            'comp_phone.required' => 'Contact number is required',
+            'comp_addr.required' => 'Address is required',            
+            'comp_state.required' => 'State is required',
+            'comp_city.required' => 'City name is required',
+            'comp_zip.required' => 'Pin code is required',
             'comp_phone.numeric'=>trans('error_messages.invalid_phone'), 
             'comp_zip.numeric'=>trans('error_messages.invalid_zip') 
         ];

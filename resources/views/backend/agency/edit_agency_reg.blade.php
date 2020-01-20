@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="modal-body text-left">
-    <form id="editAgencyForm" name="editAgencyForm" method="POST" action="{{route('update_agency_reg')}}" target="_top">
+    <form id="editAgencyForm" name="editAgencyForm" method="POST" action="{{route('update_agency_reg')}}">
     @csrf
     <input type="hidden" name="agency_id" value="{{request()->get('agency_id')}}">
         <div class="row">
@@ -11,7 +11,10 @@
                <label for="txtCreditPeriod">Agency Name
                <span class="mandatory">*</span>
                </label>
-               <input type="text" name="comp_name" id="comp_name" value="{{old('comp_name', $agencyData->comp_name)}}" class="form-control employee" tabindex="1" placeholder="Agency Name" >
+               <input type="text" name="comp_name" id="comp_name" value="{{old('comp_name', $agencyData->comp_name)}}" class="form-control employee" tabindex="1" placeholder="Agency Name">
+               @error('comp_name')
+                  <span class="text-danger error">{{ $message }}</span>
+               @enderror
             </div>
          </div>
          <div class="col-6">
@@ -36,7 +39,10 @@
              <label for="txtEmail">Email
              <span class="mandatory">*</span>
              </label>
-             <input type="email" name="comp_email" id="comp_email" value="{{old('comp_email', $agencyData->comp_email)}}" class="form-control email" tabindex="2" placeholder="Email" >
+             <input type="email" name="comp_email" id="comp_email" value="{{old('comp_email', $agencyData->comp_email)}}" class="form-control email" tabindex="2" placeholder="Email">
+             @error('comp_email')
+                <span class="text-danger error">{{ $message }}</span>
+             @enderror
           </div>
        </div>
 
@@ -46,6 +52,9 @@
                 <span class="mandatory">*</span>
                 </label>
                 <input class="form-control numbercls phone" name="comp_phone" id="comp_phone" value="{{old('comp_phone', $agencyData->comp_phone)}}" tabindex="3" type="text" maxlength="10" placeholder="Mobile" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                @error('comp_phone')
+                  <span class="text-danger error">{{ $message }}</span>
+               @enderror
              </div>
           </div>
           </div>
@@ -56,6 +65,9 @@
                     <span class="mandatory">*</span>
                     </label>
                     <input class="form-control comp_addr" name="comp_addr" id="comp_addr" value="{{old('comp_addr', $agencyData->comp_addr)}}" tabindex="4" type="text"  placeholder="Address">
+                    @error('comp_addr')
+                      <span class="text-danger error">{{ $message }}</span>
+                   @enderror
                  </div>
               </div>
                   
@@ -70,6 +82,9 @@
                         <option value="{{$state->id}}" {{(old('comp_state', $agencyData->comp_state) == $state->id)? 'selected': ''}}> {{$state->name}} </option>
                         @endforeach
                       </select>
+                      @error('comp_state')
+                        <span class="text-danger error">{{ $message }}</span>
+                      @enderror
                   </div>
                </div>
               </div>
@@ -81,18 +96,24 @@
                         <span class="mandatory">*</span>
                         </label>
                         <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city', $agencyData->comp_city)}}" tabindex="6" type="text" maxlength="10" placeholder="City">
+                        @error('comp_city')
+                            <span class="text-danger error">{{ $message }}</span>
+                        @enderror
                      </div>
                   </div>
-                 <div class="col-6">
-                       <div class="form-group">
-                          <label for="txtMobile">Pin Code
-                          <span class="mandatory">*</span>
-                          </label>
-                          <input class="form-control numbercls pin_code" name="comp_zip" id="comp_zip" value="{{old('comp_zip', $agencyData->comp_zip)}}" tabindex="7" type="text" maxlength="6" placeholder="Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-                       </div>
-                    </div>
-                </div>
-                <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
+                  <div class="col-6">
+                      <div class="form-group">
+                        <label for="txtMobile">Pin Code
+                        <span class="mandatory">*</span>
+                        </label>
+                        <input class="form-control numbercls pin_code" name="comp_zip" id="comp_zip" value="{{old('comp_zip', $agencyData->comp_zip)}}" tabindex="7" type="text" maxlength="6" placeholder="Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        @error('comp_zip')
+                            <span class="text-danger error">{{ $message }}</span>
+                        @enderror
+                      </div>
+                  </div>
+              </div>
+              <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
         </form>
     </div>
 @endsection
@@ -100,10 +121,13 @@
 @section('jscript')
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#editAgencyForm').validate({ // initialize the plugin
+        $('#editAgencyForm1').validate({ // initialize the plugin
             rules: {
                 'comp_name' : {
                     required : true,
+                },
+                'type_id[]': {
+                    required: true,
                 },
                 'comp_email' : {
                     required : true,
@@ -135,6 +159,9 @@
             messages: {
                 'comp_name': {
                     required: "Please enter Agency Name",
+                },
+                'type_id[]': {
+                    required: 'Please select at least one type',
                 },
                 'comp_email': {
                     required: "Please enter Email Id",

@@ -68,16 +68,18 @@ class AgencyController extends Controller {
      * @param Request $request
      * @return type
      */
-    public function saveAgencyReg(Request $request) {
+    public function saveAgencyReg(AgencyRegistrationFormRequest $request) {
         try {
             $arrAgencyData = $request->all();
             $arrAgencyData['created_at'] = \carbon\Carbon::now();
             $status = $this->userRepo->saveAgency($arrAgencyData);
             if($status){
                 Session::flash('message', trans('backend_messages.agency_registration_success'));
+                Session::flash('operation_status', 1); 
                 return redirect()->route('get_agency_list');
             }else{
                 Session::flash('message', trans('backend_messages.something_went_wrong'));
+                Session::flash('operation_status', 1); 
                 return redirect()->route('get_agency_list');
             }
         } catch (Exception $ex) {
@@ -116,7 +118,7 @@ class AgencyController extends Controller {
      * @param Request $request
      * @return type
      */
-    public function updateAgencyReg(Request $request) {
+    public function updateAgencyReg(AgencyRegistrationFormRequest $request) {
         try {
             $arrAgencyData = [
                         'comp_name'=>$request->comp_name,
@@ -133,9 +135,11 @@ class AgencyController extends Controller {
             $status = $this->userRepo->updateAgency($arrAgencyData, $request->agency_id);
             if($status){
                 Session::flash('message', trans('backend_messages.agency_registration_updated'));
+                Session::flash('operation_status', 1); 
                 return redirect()->route('get_agency_list');
             }else{
                 Session::flash('message', trans('backend_messages.something_went_wrong'));
+                Session::flash('operation_status', 1); 
                 return redirect()->route('get_agency_list');
             }
         } catch (Exception $ex) {
