@@ -2,15 +2,8 @@
 @section('additional_css')
 @endsection
 @section('content')
-
-
-
 <div class="content-wrapper">
-				
-				
-
-               
-                  <div class="col-md-12 ">
+<div class="col-md-12 ">
    <section class="content-header">
    <div class="header-icon">
       <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -131,8 +124,12 @@
                                     </table>
                                 </div>
               <div class="col-md-12">
+                   <div class="col-md-8">
+                           <label class="error" id="tenorMsg"></label>
+                   </div>
                   <span id="final_submit_msg" class="error" style="display:none;">Total Amount  should not greater Program Limit</span>
-                   <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
+                  <input type="hidden" value="" id="tenor" name="tenor">
+                  <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                   <input type="submit" id="final_submit" class="btn btn-secondary btn-sm mt-3 float-right finalButton" value="Final Submit"> 	
             </div> 
             
@@ -316,7 +313,9 @@
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;
+                        var tenor   =  data.tenor;
                         $("#prgm_offer_id").val(offer_id);
+                        $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                          $("#supplier_bulk_id").append("<option value=''>Please Select</option>");  
@@ -350,10 +349,29 @@
           $("#customFile_msg" ).hide();
        
       });
-       
+      function ChangeDateFormat(date)
+   {
+            var datearray = date.split("/");
+            return  newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
+
+   }
+
+    function findDaysWithDate(firstDate,secondDate)
+    {
+        var firstDate  =   ChangeDateFormat(firstDate);
+        var secondDate  =  ChangeDateFormat(secondDate);
+        var startDay = new Date(firstDate);
+        var endDay = new Date(secondDate);
+        var millisecondsPerDay = 1000 * 60 * 60 * 24;
+        var  millisBetween = startDay.getTime() - endDay.getTime();
+        var    days = millisBetween / millisecondsPerDay;
+        return  Math.floor(days);
+    } 
     /////////////// validation the time of final submit/////////////// 
-      $(document).on('click','#final_submit',function(){
-          
+      $(document).on('click','#final_submit',function(e){
+        $("#final_submit_msg").hide();
+        var p_limit =  $("#pro_limit_hide").val();  
+        var sum = 0;
        if ($('form#signupForm').validate().form()) {     
         $(".batchInvoice" ).rules( "add", {
         required: true,
@@ -381,27 +399,38 @@
         required: "Please enter currect invoice amount",
         }
         });
+                
+        //////// check total amount /////////////
+        $(".subOfAmount").each(function() {
+        sum += parseInt($(this).val());
+        });
+        if(sum >  p_limit)
+        {
+            $("#final_submit_msg").show(); 
+            e.preventDefault();
+        }
+        
+        ////////// check tanor date///////////////////
+        var count  = 0;
+        $(".batchInvoiceDate").each(function(i,v) { count++;
+        var  first =  $(".invoiceTanor"+count).val();
+        var  second = $(this).val();
+        var getDays  = parseInt(findDaysWithDate(first,second));
+        var tenor  = parseInt($('#tenor').val());
+        if(getDays > tenor)
+        {
+           
+           $("#tenorMsg").show(); 
+           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days in row '+count); 
+           e.preventDefault();
+        }
+         
+        });
+       
        } else {
         /// alert();
         }  
-      if (confirm("Are you sure? You want to update it")) {         
-        $("#final_submit_msg").hide();  
-        var p_limit =  $("#pro_limit_hide").val();  
-        var sum = 0;
-            $(".subOfAmount").each(function() {
-            sum += parseInt($(this).val());
-            });
-            if(sum >  p_limit)
-            {
-                $("#final_submit_msg").show(); 
-                return false;
-            }
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+     
     });
     
     //////// String value not allowed in  amount filed//////////////////////
@@ -498,7 +527,7 @@
                        var invoice_approve_amount = "";
                     }
                    
-                    $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDueDate" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+v.invoice_id+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
+                    $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+v.invoice_id+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
                     });
                      datepickerDisFdate();
                     return false;
@@ -510,7 +539,7 @@
                 else
                 {
                      ///$("#submitInvoiceMsg").show();
-                     $(".invoiceAppendData").append('<tr><td colspan="5" class="error">Something went wrong, Please try again!</td></tr>'); 
+                     $(".invoiceAppendData").append('<tr><td colspan="5" class="error">'+r.message+'</td></tr>'); 
                    
                       return false;
                  } 

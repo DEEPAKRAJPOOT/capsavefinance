@@ -3104,7 +3104,7 @@ if ($err) {
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'get_supplier' =>$get_supplier]);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'get_supplier' =>$get_supplier]);
      }
            
 
@@ -3166,22 +3166,34 @@ if ($err) {
                 $invoice_date  = $row[1];
                 $invoice_due_date  = $row[2];
                 $invoice_amount  = $row[3];
+                $invoice_amount  = str_replace("\n","",$invoice_amount);
                 $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
                 $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
+                 if($invoice_no=='')
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check invoice , Invoice should not be null']); 
+               } 
                 if( $invoice_due_date_validate==false)
                {
-                    return response()->json(['status' => 0]); 
+                    return response()->json(['status' => 0,'message' => 'Please check the invoice date, It Should be "dd/mm/yy" format']); 
                }
                if( $invoice_date_validate==false)
                {
-                    return response()->json(['status' => 0]); 
+                    return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
                } 
-               if($this->twoDateDiff($date,$invoice_due_date)==1)
+               if(strtotime(Carbon::parse($invoice_due_date)->format('d-m-Y')) < strtotime($date->format('d-m-Y')))
                {
-                   return response()->json(['status' => 0]); 
+                   return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be greater from current date']); 
                }
-               
-                $invoice_amount = str_replace("\n","",$invoice_amount);
+                if($invoice_amount=='')
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check invoice amount, Amount should not be null']); 
+               } 
+                if(!is_numeric($invoice_amount))
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check invoice amount, string value not allowed']); 
+               } 
+                $invoice_amount =  $invoice_amount;
                 $data[$i]['anchor_id'] =  $request['anchor_bulk_id'];
                 $data[$i]['supplier_id'] = $request['supplier_bulk_id']; 
                 $data[$i]['program_id'] = $request['program_bulk_id'];
@@ -3210,7 +3222,7 @@ if ($err) {
                       return response()->json(['status' => 1,'data' =>$getTempInvoice]); 
                   }
                     else {
-                        return response()->json(['status' => 0]); 
+                        return response()->json(['status' => 0,'message' => 'Something wrong, Please try again']); 
                     }
                 }  
                   else {

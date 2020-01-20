@@ -131,8 +131,12 @@
                                 </div> 
 								   <div class="row">
                                     <div class="col-md-12">
+                                        <div class="col-md-8">
+                                            <label class="error" id="tenorMsg"></label>
+                                        </div>
                                         <div class="text-right mt-2">
                                             <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
+                                             <input type="hidden" value="" id="tenor" name="tenor">
                                             <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
                                             <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
                                         </div>
@@ -254,14 +258,6 @@
                                  <input type="email" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Email" required="">
                               </div>
                            </div>
-                         <!-- <div class="col-md-6">
-                              <div class="form-group password-input">
-                                 <label for="txtPassword">Password
-                                 <span class="mandatory">*</span>
-                                 </label>
-                     <input class="form-control" name="password" id="passwordRegistration" type="password" tabindex="5" placeholder="Password" oninput="removeSpace(this);">
-                              </div>
-                           </div>  -->
                            <div class="col-md-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Mobile
@@ -353,15 +349,39 @@ var messages = {
          return true;
      }
 });
+
+   function ChangeDateFormat(date)
+   {
+            var datearray = date.split("/");
+            return  newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
+
+   }
+
+    function findDaysWithDate(firstDate,secondDate)
+    {
+        var firstDate  =   ChangeDateFormat(firstDate);
+        var secondDate  =  ChangeDateFormat(secondDate);
+        var startDay = new Date(firstDate);
+        var endDay = new Date(secondDate);
+        var millisecondsPerDay = 1000 * 60 * 60 * 24;
+        var  millisBetween = startDay.getTime() - endDay.getTime();
+        var    days = millisBetween / millisecondsPerDay;
+        return  Math.floor(days);
+    }
    
  $(document).ready(function () {
        $("#program_id").append("<option value=''>No data found</option>");  
         $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
+        $("#tenorMsg").hide();
+        var first  = $('#invoice_due_date').val();
+        var second = $('#invoice_date').val();
+        var getDays  = findDaysWithDate(first,second);
+        var tenor  = $('#tenor').val();
      
-     if ($('form#signupForm').validate().form()) {     
-        $("#anchor_id" ).rules( "add", {
+     if ($('form#signupForm').validate().form()) {  
+       $("#anchor_id" ).rules( "add", {
         required: true,
         messages: {
         required: "Please enter Anchor name",
@@ -414,7 +434,13 @@ var messages = {
         required: "Please upload Invoice Copy",
         }
         }); 
-        
+         if(getDays > tenor)
+        {
+           $("#tenorMsg").show(); 
+           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor); 
+           return false;
+        }
+      
          
         } else {
         /// alert();
@@ -499,7 +525,9 @@ var messages = {
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;
+                        var tenor   =  data.tenor;
                         $("#prgm_offer_id").val(offer_id);
+                        $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                          $("#supplier_id").append("<option value=''>Please Select</option>");  
