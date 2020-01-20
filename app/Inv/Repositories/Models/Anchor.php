@@ -109,10 +109,16 @@ public static function saveAnchor($arrAnchor = [])
      * @return type
      */
     public static function getAllAnchor($orderBy='anchor_id') {
-        $result = self::select('anchor.*', 'u.user_id', 'u.f_name')
-                ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id') 
+        $result = self::select('anchor.*', 'u.user_id', 'u.f_name','f.file_path')
+                ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id')
+                ->leftjoin('user_doc as u_doc', function($join)
+                {
+                    $join->on( 'u.user_id', '=', 'u_doc.user_id')
+                    ->where('u_doc.is_active', 1);
+                });
+        $result->leftjoin('file as f','f.file_id','=','u_doc.file_id')
                 ->where('u.user_type', 2);
-        
+    
         if ($orderBy == 'anchor_id') {
             $result->orderBy('anchor.anchor_id', 'DESC');
         } else {
@@ -225,5 +231,4 @@ public static function saveAnchor($arrAnchor = [])
     {
         return $this->hasOne('App\Inv\Repositories\Models\Program', 'anchor_id', 'anchor_id')->where(['status'=>1, 'parent_prgm_id'=> 0]);
     }
-
 }
