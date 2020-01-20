@@ -137,7 +137,7 @@
                            </div>   
                            <div class="col-6">
                               <div class="form-group">
-                                 <label for="txtCreditPeriod">Upload Document {{--<span class="error_message_label">*</span> --}} </label>
+                                 <label for="txtCreditPeriod">Upload CAM <small>(Allowed Formats: JPG,PNG,PDF)</small><span class="error_message_label">*</span></label>
                                  <div class="custom-file">
                                     <label for="email">Upload Document</label>
                                     <input type="file" class="custom-file-input" id="anchorDocFile" name="doc_file">
@@ -239,7 +239,14 @@
                             {
                                 required: true,
                             })
-                });                
+                });   
+                $('input.doc_file').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true,
+                                extension: "jpeg|jpg|pdf"
+                            })
+                });              
                 // test if form is valid                
             })
             //$("#btnAddMore").on('click', addInput);
