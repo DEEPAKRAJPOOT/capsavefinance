@@ -44,7 +44,8 @@ trait LmsTrait
             $invoiceDueDate  = $disburse->inv_due_date;
             $intAccrualStartDt = $disburse->int_accrual_start_dt;
             $intAccrualDt = $intAccrualStartDt;
-            $accruedInterest = $disburse->accured_interest ? $disburse->accured_interest : 0;
+            //$calAccruedInterest = $disburse->accured_interest ? $disburse->accured_interest : 0;
+            $calAccruedInterest = 0;
             
             $balancePrincipalAmt = $principalAmount - $totalRepaidAmount;
                         
@@ -69,13 +70,13 @@ trait LmsTrait
                 $calInterestRate  = round($interestRate / 100, 2);
                 $tenorDays        = 1;
                 
-                $usedPrincipalAmt = $int_type_config == 2 ? $balancePrincipalAmt + $accruedInterest : $balancePrincipalAmt;
+                $usedPrincipalAmt = $int_type_config == 2 ? $balancePrincipalAmt + $calAccruedInterest : $balancePrincipalAmt;
                 $interest = $this->calInterest($usedPrincipalAmt, $calInterestRate, $tenorDays);
 
                 $intAccrualData = [];
                 $intAccrualData['disbursal_id'] = $disbursalId;
                 $intAccrualData['interest_date'] = $intAccrualDt;
-                $intAccrualData['principal_amount'] = $disburse->principal_amount;
+                $intAccrualData['principal_amount'] = $usedPrincipalAmt;   //$disburse->principal_amount;
                 $intAccrualData['accrued_interest'] = round($interest, 2);
                 $intAccrualData['interest_rate'] = $disburse->interest_rate;
                 
@@ -114,7 +115,12 @@ trait LmsTrait
                 }
                 
                 if ($int_type_config == 2 && date("Y-m-t", strtotime($intAccrualDt)) == $intAccrualDt) {
-                    $accuredInterest = $this->lmsRepo->sumAccruedInterest($disbursalId);
+                    $monthlyIntCond = [];
+                    $monthlyIntCond['disbursal_id'] = $disbursalId;
+                    $monthlyIntCond['interest_date_lte'] = date("Y-m-t", strtotime($intAccrualDt));
+                    $monthlyIntCond['interest_date_gte'] = date('Y-m-01', strtotime($intAccrualDt));
+                    $accuredInterest = $this->lmsRepo->sumAccruedInterest($monthlyIntCond);
+                    $calAccruedInterest += $accuredInterest;
                     $saveDisbursalData = [];
                     $saveDisbursalData['accured_interest'] = $accuredInterest;
                     $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);                    
@@ -123,7 +129,7 @@ trait LmsTrait
                 $intAccrualDt = date ("Y-m-d", strtotime("+1 day", strtotime($intAccrualDt)));
             }
             
-            $accuredInterest = $this->lmsRepo->sumAccruedInterest($disbursalId);
+            $accuredInterest = $this->lmsRepo->sumAccruedInterest(['disbursal_id' => $disbursalId]);
             if ($int_type_config == 1) {
                 $saveDisbursalData = [];
                 $saveDisbursalData['accured_interest'] = $accuredInterest;

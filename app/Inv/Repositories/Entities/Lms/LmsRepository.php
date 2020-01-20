@@ -71,7 +71,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveDisbursalRequest($data, $whereCondition=[])
+    public function saveDisbursalRequest($data, $whereCondition=[])
     {
         return Disbursal::saveDisbursalRequest($data, $whereCondition);
     }
@@ -83,7 +83,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveTransaction($transactions)
+    public function saveTransaction($transactions)
     {
         return Transactions::saveTransaction($transactions);
     }
@@ -96,7 +96,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveRepayment($data, $whereCondition=[])
+    public function saveRepayment($data, $whereCondition=[])
     {
         return InvoiceRepaymentTrail::saveRepayment($data, $whereCondition);
     }
@@ -109,7 +109,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveInterestAccrual($data, $whereCondition=[])
+    public function saveInterestAccrual($data, $whereCondition=[])
     {
         return InterestAccrual::saveInterestAccrual($data, $whereCondition);
     }
@@ -121,7 +121,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getDisbursalRequests($whereCondition=[])
+    public function getDisbursalRequests($whereCondition=[])
     {
         return Disbursal::getDisbursalRequests($whereCondition);
     }
@@ -133,7 +133,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getTransactions($whereCondition=[])
+    public function getTransactions($whereCondition=[])
     {
         return Transactions::getTransactions($whereCondition);
     }
@@ -145,13 +145,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getRepayments($whereCondition=[])
+    public function getRepayments($whereCondition=[])
     {
         return InvoiceRepaymentTrail::getRepayments($whereCondition);
     }   
     
 
-    public static function getAllUserInvoice($userId)
+    public function getAllUserInvoice($userId)
     {
         return BizInvoice::getAllUserInvoice($userId);
     }
@@ -163,7 +163,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */    
-    public static function getAccruedInterestData($whereCondition=[])
+    public function getAccruedInterestData($whereCondition=[])
     {
         return InterestAccrual::getAccruedInterestData($whereCondition);
     }
@@ -174,13 +174,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @param array $whereCondition
      * @return mixed
      */
-    public static function getProgramOffer($whereCondition=[])
+    public function getProgramOffer($whereCondition=[])
     {
         return Disbursal::getProgramOffer($whereCondition);
     }
 
     
-    public static function getInvoices($invoiceIds)
+    public function getInvoices($invoiceIds)
     {
         return BizInvoice::whereIn('invoice_id', $invoiceIds)
                ->with(['program_offer','lms_user' , 'supplier', 'supplier_bank_detail.bank'])
@@ -194,7 +194,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getInvoiceSupplier($invoiceIds)
+    public function getInvoiceSupplier($invoiceIds)
     {
         return BizInvoice::groupBy('supplier_id')
                 ->whereIn('invoice_id', $invoiceIds)
@@ -208,7 +208,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function updateInvoiceStatus($invoiceId, $status)
+    public function updateInvoiceStatus($invoiceId, $status)
     {
         return BizInvoice::where('invoice_id', $invoiceId)
                 ->update(['status_id' => $status]);
@@ -217,12 +217,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     /**
      * Get Sum of Accrued Interest
      *      
-     * @param integer $disbursal_id
+     * @param array $whereCond
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function sumAccruedInterest($disbursal_id)
-    { 
-        return InterestAccrual::sumAccruedInterest($disbursal_id);
+    public function sumAccruedInterest($whereCond) 
+    {        
+        return InterestAccrual::sumAccruedInterest($whereCond);
     }    
 }
