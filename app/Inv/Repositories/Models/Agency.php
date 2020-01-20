@@ -70,10 +70,11 @@ class Agency extends BaseModel
     }
 
     public static function updateAgency($attributes, $agency_id){
-        $agency = Agency::whereAgencyId($agency_id)->update($attributes);
+        $query = Agency::whereAgencyId($agency_id)->first();
+        $agency = $query->update($attributes);
 
         // insert in rta_agency_type table
-        $agency->agencyType()->sync($attributes['type_id']);
+        $query->agencyType()->sync($attributes['type_id']);
         return $agency;
     }
 

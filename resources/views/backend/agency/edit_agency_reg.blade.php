@@ -6,12 +6,27 @@
     @csrf
     <input type="hidden" name="agency_id" value="{{request()->get('agency_id')}}">
         <div class="row">
-         <div class="col-12">
+         <div class="col-6">
             <div class="form-group">
                <label for="txtCreditPeriod">Agency Name
                <span class="mandatory">*</span>
                </label>
                <input type="text" name="comp_name" id="comp_name" value="{{old('comp_name', $agencyData->comp_name)}}" class="form-control employee" tabindex="1" placeholder="Agency Name" >
+            </div>
+         </div>
+         <div class="col-6">
+            <div class="form-group">
+               <label for="txtCreditPeriod">Type
+               <span class="mandatory">*</span>
+               </label><br/>
+               <div id="check_block">
+                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="16" name="type_id[]" {{in_array(16, $type_ids)? 'checked': ''}}> FI</label>
+                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="17" name="type_id[]" {{in_array(17, $type_ids)? 'checked': ''}}> RCU</label>
+                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="18" name="type_id[]" {{in_array(18, $type_ids)? 'checked': ''}}> Inspection</label>
+               </div>
+               @error('type_id')
+                  <span class="text-danger error">{{ $message }}</span>
+               @enderror
             </div>
          </div>
       </div>
