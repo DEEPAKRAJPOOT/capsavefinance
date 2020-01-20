@@ -47,5 +47,10 @@ class Documents extends Authenticatable
      public function userDetail(){
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function product_document()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\ProductDoc', 'doc_id')->where('is_active', 1);
+    }
 }
 

@@ -1806,6 +1806,7 @@ class DataRenderer implements DataProviderInterface
             '2' => 'Pre Sanction',
             '3' => 'Post Sanction',
         );
+        
         return DataTables::of($documents)
                 ->rawColumns(['is_active'])
                 ->addColumn(
@@ -1817,6 +1818,17 @@ class DataRenderer implements DataProviderInterface
                     'doc_name',
                     function ($documents) {
                     return $documents->doc_name;
+                })
+                ->addColumn(
+                    'product_type',
+                    function ($documents) {
+                        $productTypes = '';
+                        if(isset($documents->product_document)) {
+                            foreach ($documents->product_document as $value) {
+                                $productTypes .= $value->product->product_name.', ';
+                            }
+                        }
+                    return $productTypes;
                 })
                 ->addColumn(
                     'is_rcu',
