@@ -49,7 +49,7 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {       
        return view('backend.app.index');              
     }
 
@@ -190,8 +190,14 @@ class ApplicationController extends Controller
                 $prgmDocsWhere['stage_code'] = 'doc_upload';
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
             
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);                                
-                $toUserId = $this->userRepo->getLeadSalesManager($userId);
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1); 
+                
+                $userData = $this->userRepo->getfullUserDetail($userId);
+                if ($userData && !empty($userData->anchor_id)) {
+                    $toUserId = $this->userRepo->getLeadSalesManager($userId);
+                } else {
+                    $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+                }
                 
                 if ($toUserId) {
                    Helpers::assignAppToUser($toUserId, $appId);
@@ -457,9 +463,9 @@ class ApplicationController extends Controller
             $appId  = (int)$request->app_id;
             $userData = User::getUserByAppId($appId);
             $userId = $userData->user_id;
-            $response = $this->docRepo->isUploadedCheck($userId, $appId);
+            // $response = $this->docRepo->isUploadedCheck($userId, $appId);
             
-            if ($response->count() < 1) {
+            // if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
                                                 
@@ -473,12 +479,12 @@ class ApplicationController extends Controller
             
                 
                 return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
-            } else {
-                //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+            // } else {
+            //     //Add application workflow stages                
+            //     Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
                 
-                return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
-            }
+            //     return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
+            // }
         } catch (Exception $ex) {
             //Add application workflow stages                
             Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);

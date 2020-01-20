@@ -252,8 +252,9 @@ trait LmsTrait
 
         $tenor = round($datediff / (60 * 60 * 24));
         $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-        $interest = (($fundedAmount*$invoice['program_offer']['interest_rate']*$tenor)/360);
-        $disburseAmount = round($fundedAmount - $interest);
+        //$interest = (($fundedAmount * ($invoice['program_offer']['interest_rate']/100) * $tenor)/360);
+        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+        $disburseAmount = round($fundedAmount - $interest, 2);
         // dd($disburseAmount);
         $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
         $disbursalData['app_id'] = $invoice['app_id'] ?? null;
@@ -281,7 +282,7 @@ trait LmsTrait
         $disbursalData['interest_refund'] = null;
         $disbursalData['funded_date'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
         $disbursalData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
-            
+        
         return $disbursalData;
     }    
 }

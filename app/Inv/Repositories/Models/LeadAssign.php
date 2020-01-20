@@ -72,4 +72,21 @@ class LeadAssign extends BaseModel {
         return ($arrLeadAssign->lead_assign_id ?: false);
     }
    
+    /**
+     * Get Assigned Sales Manager User Id
+     * 
+     * @param integer $userId
+     * @return integer
+     */
+    public static function getAssignedSalesManager($userId)
+    {
+        $result = self::select('lead_assign.to_id')
+                ->join('role_user', 'role_user.user_id', '=', 'lead_assign.to_id')
+                ->where('lead_assign.assigned_user_id', $userId)
+                ->where('lead_assign.is_owner', 1)
+                ->where('role_user.role_id', 4)   //4=>Sales Manager Role
+                ->first();
+        
+        return $result ? $result->to_id : null;
+    }
 }
