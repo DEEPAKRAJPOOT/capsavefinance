@@ -220,4 +220,21 @@ class AppProgramLimit extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');
     }*/  
 
+    public static function getLimitWithOffer($appId, $bizId, $productId){
+        return self::select('app_prgm_limit.limit_amt', 
+                'app_prgm_offer.tenor',
+                'app_prgm_offer.equipment_type', 
+                'app_prgm_offer.security_deposit',
+                'app_prgm_offer.rental_frequency',
+                'app_prgm_offer.ptpq',
+                'app_prgm_offer.xirr',
+                'app_prgm_offer.addl_security'
+                )
+                ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
+                ->where('app_prgm_limit.app_id',$appId)
+                ->where('app_prgm_limit.biz_id',$bizId)
+                ->where('app_prgm_limit.product_id',$productId)
+                ->where('app_prgm_offer.is_active', config('common.active.yes'))
+                ->first();  
+    }
 }
