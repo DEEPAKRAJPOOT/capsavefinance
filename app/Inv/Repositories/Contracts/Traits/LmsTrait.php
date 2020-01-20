@@ -44,7 +44,7 @@ trait LmsTrait
             $invoiceDueDate  = $disburse->inv_due_date;
             $intAccrualStartDt = $disburse->int_accrual_start_dt;
             $intAccrualDt = $intAccrualStartDt;
-            $accruedInterest = $disburse->accured_interest;
+            $accruedInterest = $disburse->accured_interest ? $disburse->accured_interest : 0;
             
             $balancePrincipalAmt = $principalAmount - $totalRepaidAmount;
                         
@@ -69,8 +69,8 @@ trait LmsTrait
                 $calInterestRate  = round($interestRate / 100, 2);
                 $tenorDays        = 1;
                 
-                $balancePrincipalAmt = $int_type_config == 2 ? $balancePrincipalAmt + $accruedInterest : $balancePrincipalAmt;
-                $interest = $this->calInterest($balancePrincipalAmt, $calInterestRate, $tenorDays);
+                $usedPrincipalAmt = $int_type_config == 2 ? $balancePrincipalAmt + $accruedInterest : $balancePrincipalAmt;
+                $interest = $this->calInterest($usedPrincipalAmt, $calInterestRate, $tenorDays);
 
                 $intAccrualData = [];
                 $intAccrualData['disbursal_id'] = $disbursalId;
