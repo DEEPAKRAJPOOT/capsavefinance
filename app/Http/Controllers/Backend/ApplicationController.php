@@ -463,9 +463,9 @@ class ApplicationController extends Controller
             $appId  = (int)$request->app_id;
             $userData = User::getUserByAppId($appId);
             $userId = $userData->user_id;
-            $response = $this->docRepo->isUploadedCheck($userId, $appId);
+            // $response = $this->docRepo->isUploadedCheck($userId, $appId);
             
-            if ($response->count() < 1) {
+            // if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
                                                 
@@ -479,12 +479,12 @@ class ApplicationController extends Controller
             
                 
                 return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
-            } else {
-                //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+            // } else {
+            //     //Add application workflow stages                
+            //     Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
                 
-                return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
-            }
+            //     return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
+            // }
         } catch (Exception $ex) {
             //Add application workflow stages                
             Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
