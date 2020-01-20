@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Agency;
 use App\Http\Requests\AgencyRegistrationFormRequest;
+use App\Http\Requests\AgencyUserFormRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use Event;
@@ -164,7 +165,7 @@ class AgencyController extends Controller {
      * @param Request $request
      * @return type
      */
-    public function saveAgencyUserReg(Request $request) {
+    public function saveAgencyUserReg(AgencyUserFormRequest $request) {
         try {
             $string = time();
             $arrAgencyData = $request->all();
@@ -196,9 +197,11 @@ class AgencyController extends Controller {
                 $agencyUserMailArr['password'] = $string;
                 Event::dispatch("AGENCY_USER_REGISTER_MAIL", serialize($agencyUserMailArr));
                 Session::flash('message', trans('backend_messages.agency_user_registration_success'));
+                Session::flash('operation_status', 1);
                 return redirect()->route('get_agency_user_list');
             }else{
                 Session::flash('message', trans('backend_messages.something_went_wrong'));
+                Session::flash('operation_status', 1);
                 return redirect()->route('get_agency_user_list');
             }
         } catch (Exception $ex) {
@@ -227,7 +230,7 @@ class AgencyController extends Controller {
      * @param Request $request
      * @return type
      */
-    public function updateAgencyUserReg(Request $request){
+    public function updateAgencyUserReg(AgencyUserFormRequest $request){
         try {
             $arrAgencyData = $request->all();
             $user_id = $request->get('user_id');
@@ -243,8 +246,8 @@ class AgencyController extends Controller {
             ];
             $current_user_info = $this->userRepo->save($arrAgencyUserData, $user_id);
             
-            
             Session::flash('message', trans('backend_messages.agency_user_registration_updated'));
+            Session::flash('operation_status', 1);
             return redirect()->route('get_agency_user_list');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

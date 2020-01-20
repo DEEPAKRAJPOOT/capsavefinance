@@ -13,7 +13,7 @@
                </label>
                <input type="text" name="comp_name" id="comp_name" value="{{old('comp_name', $agencyData->comp_name)}}" class="form-control employee" tabindex="1" placeholder="Agency Name">
                @error('comp_name')
-                  <span class="text-danger error">{{ $message }}</span>
+                  <span class="error">{{ $message }}</span>
                @enderror
             </div>
          </div>
@@ -28,7 +28,7 @@
                   <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="18" name="type_id[]" {{in_array(18, $type_ids)? 'checked': ''}}> Inspection</label>
                </div>
                @error('type_id')
-                  <span class="text-danger error">{{ $message }}</span>
+                  <span class="error">{{ $message }}</span>
                @enderror
             </div>
          </div>
@@ -41,7 +41,7 @@
              </label>
              <input type="email" name="comp_email" id="comp_email" value="{{old('comp_email', $agencyData->comp_email)}}" class="form-control email" tabindex="2" placeholder="Email">
              @error('comp_email')
-                <span class="text-danger error">{{ $message }}</span>
+                <span class="error">{{ $message }}</span>
              @enderror
           </div>
        </div>
@@ -53,7 +53,7 @@
                 </label>
                 <input class="form-control numbercls phone" name="comp_phone" id="comp_phone" value="{{old('comp_phone', $agencyData->comp_phone)}}" tabindex="3" type="text" maxlength="10" placeholder="Mobile" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                 @error('comp_phone')
-                  <span class="text-danger error">{{ $message }}</span>
+                  <span class="error">{{ $message }}</span>
                @enderror
              </div>
           </div>
@@ -66,7 +66,7 @@
                     </label>
                     <input class="form-control comp_addr" name="comp_addr" id="comp_addr" value="{{old('comp_addr', $agencyData->comp_addr)}}" tabindex="4" type="text"  placeholder="Address">
                     @error('comp_addr')
-                      <span class="text-danger error">{{ $message }}</span>
+                      <span class="error">{{ $message }}</span>
                    @enderror
                  </div>
               </div>
@@ -83,7 +83,7 @@
                         @endforeach
                       </select>
                       @error('comp_state')
-                        <span class="text-danger error">{{ $message }}</span>
+                        <span class="error">{{ $message }}</span>
                       @enderror
                   </div>
                </div>
@@ -97,7 +97,7 @@
                         </label>
                         <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city', $agencyData->comp_city)}}" tabindex="6" type="text" maxlength="10" placeholder="City">
                         @error('comp_city')
-                            <span class="text-danger error">{{ $message }}</span>
+                            <span class="error">{{ $message }}</span>
                         @enderror
                      </div>
                   </div>
@@ -108,7 +108,7 @@
                         </label>
                         <input class="form-control numbercls pin_code" name="comp_zip" id="comp_zip" value="{{old('comp_zip', $agencyData->comp_zip)}}" tabindex="7" type="text" maxlength="6" placeholder="Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                         @error('comp_zip')
-                            <span class="text-danger error">{{ $message }}</span>
+                            <span class="error">{{ $message }}</span>
                         @enderror
                       </div>
                   </div>
