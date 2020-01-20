@@ -491,7 +491,7 @@
                               </div>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
                                  <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="kyc_risk_check" id="kyc_risk_check_medium" value="Medium" {{isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Medium' ? 'checked' : ''}}>Medium
+                                 <input type="radio" class="form-check-input" name="kyc_risk_check" id="kyc_risk_check_medium" value="Med" {{isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ? 'checked' : ''}}>Medium
                                  <i class="input-helper"></i></label>
                               </div>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">

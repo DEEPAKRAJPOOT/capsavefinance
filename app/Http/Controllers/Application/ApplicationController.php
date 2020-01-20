@@ -191,8 +191,13 @@ class ApplicationController extends Controller
                 $prgmDocsWhere['stage_code'] = 'doc_upload';
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
             
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);                                
-                $toUserId = $this->userRepo->getLeadSalesManager($userId);
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);                                                
+                $userData = $this->userRepo->getfullUserDetail($userId);
+                if ($userData && !empty($userData->anchor_id)) {
+                    $toUserId = $this->userRepo->getLeadSalesManager($userId);
+                } else {
+                    $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+                }                
                 
                 if ($toUserId) {
                    Helpers::assignAppToUser($toUserId, $appId);

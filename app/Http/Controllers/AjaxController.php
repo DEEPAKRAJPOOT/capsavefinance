@@ -3049,6 +3049,16 @@ if ($err) {
     $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
     return $users;
   }
+  /**
+   * Get all customer list
+   *
+   * @return json customer data
+   */
+  public function lmsGetDisbursalList(DataProviderInterface $dataProvider) {
+    $customersDisbursalList = $this->userRepo->lmsGetDisbursalList();
+    $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
+    return $users;
+  }
 
     /**
      * get anchors by product id

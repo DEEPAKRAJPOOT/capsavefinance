@@ -59,13 +59,18 @@ class QmsController extends Controller {
             $qms_cmnt = $request->get('qms_cmnt');
             $arrData = $request->all();
             $arrFileId  = array();
-            foreach ($arrData['doc_file'] as $key => $arr) {
-                $arrFileData['doc_file'] = $arr;
-                $uploadData = Helpers::uploadAppFile($arrFileData, $app_id);
-                $userFile = $this->docRepo->saveFile($uploadData);
-                $arrFileId[$key] = $userFile->file_id;                 
-            };
-            $fileId =  implode(',', $arrFileId);
+            if(isset($arrData['doc_file'])){
+                foreach ($arrData['doc_file'] as $key => $arr) {
+                    $arrFileData['doc_file'] = $arr;
+                    $uploadData = Helpers::uploadAppFile($arrFileData, $app_id);
+                    $userFile = $this->docRepo->saveFile($uploadData);
+                    $arrFileId[$key] = $userFile->file_id;                 
+                };
+
+                $fileId =  implode(',', $arrFileId);
+            }else{
+                $fileId = '';
+            }
             $dom = new \DomDocument();
             $dom->loadHtml($qms_cmnt, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD); 
             $qms_cmnt = $dom->saveHTML();
@@ -81,6 +86,7 @@ class QmsController extends Controller {
             Session::flash('operation_status', 1); 
             return redirect()->back();
         } catch (Exception $ex) {
+            dd($ex);
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }

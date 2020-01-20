@@ -11,12 +11,89 @@
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
    <div class="inner-container">
-      <form method="post" action="{{ route('cam_finance_store') }}">
-            @csrf
          <div class="row mt-4">
             <div class="col-lg-12 col-12 mb-4">
                <div class="card">
                   <div class="card-body">
+                  +  <div class="row">
+                        <div class="col-sm-12">
+                           <div class="table-responsive ">
+                              <form method="post" action="{{ route('save_finance_detail') }}">
+                              @csrf
+                              <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}"> 
+                              <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}"> 
+                               <input type="hidden" name="fin_detail_id" value="{{isset($finDetailData->fin_detail_id) ? $finDetailData->fin_detail_id : ''}}" />                                                                          
+                              <table id="supplier-listing" class="table table-striped cell-border  no-footer overview-table mb-3" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                 <thead>
+                                    <tr role="row">
+                                       <th>Condition</th>
+                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Name: activate to sort column ascending">Criteria</th>
+                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending"> Yes/No</th>
+                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Mobile: activate to sort column ascending"> Comments</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    <tr role="row" class="odd">
+                                       <td>Adjusted Tangible Net Worth</td>
+                                       <td>Positive for last 2 financial years</td>
+                                       <td>
+                                          <span class="mr-2">
+                                          <input type="radio" class="form-check-input" name="adj_net_worth_check" id="adj_net_worth_check_yes" value="Yes" {{isset($finDetailData->adj_net_worth_check) && $finDetailData->adj_net_worth_check == 'Yes' ? 'checked' : ''}}>
+                                          <label for="adj_net_worth_check_yes">Yes</label>
+                                          </span>
+                                          <span>
+                                          <input type="radio" class="form-check-input" name="adj_net_worth_check" id="adj_net_worth_check_no" value="No" {{!isset($finDetailData->adj_net_worth_check) || $finDetailData->adj_net_worth_check == 'No' ? 'checked' : ''}}>
+                                          <label for="adj_net_worth_check_no">No</label>
+                                          </span>
+                                       </td>
+                                       <td><input type="text" class="form-control from-inline" id="adj_net_worth_cmnt" name="adj_net_worth_cmnt" value="{{isset($finDetailData->adj_net_worth_cmnt) ? $finDetailData->adj_net_worth_cmnt : ''}}"></td>									  
+                                    </tr>									
+                                    <tr role="row" class="odd">
+                                       <td>Cash Profit</td>
+                                       <td>Positive for 2 out of last 3 financial years (positive in last year)</td>
+                                       <td>
+                                          <span class="mr-2">
+                                          <input type="radio" class="form-check-input" name="cash_profit_check" id="cash_profit_check_yes" value="Yes" {{isset($finDetailData->cash_profit_check) && $finDetailData->cash_profit_check == 'Yes' ? 'checked' : ''}}>
+                                          <label for="cash_profit_check_yes">Yes</label></span>
+                                          <span>
+                                          <input type="radio" class="form-check-input" name="cash_profit_check" id="cash_profit_check_no" value="No" {{!isset($finDetailData->cash_profit_check) || $finDetailData->cash_profit_check == 'No' ? 'checked' : ''}}>
+                                          <label for="cash_profit_check_no">No</label></span>
+                                       </td>
+                                       <td><input type="text" class="form-control from-inline" id="cash_profit_cmnt" name="cash_profit_cmnt" value="{{isset($finDetailData->cash_profit_cmnt) ? $finDetailData->cash_profit_cmnt : ''}}"></td>									  
+                                    </tr>
+                                    <tr role="row" class="odd">
+                                       <td>DSCR</td>
+                                       <td>>1.2X</td>
+                                       <td>
+                                          <span class="mr-2">
+                                          <input type="radio" class="form-check-input" name="dscr_check" id="dscr_check_yes" value="Yes" {{isset($finDetailData->dscr_check) && $finDetailData->dscr_check == 'Yes' ? 'checked' : ''}}>
+                                          <label for="dscr_check_yes">Yes</label></span>
+                                          <span><input type="radio" class="form-check-input" name="dscr_check" id="dscr_check_no" value="No" {{!isset($finDetailData->dscr_check) || $finDetailData->dscr_check == 'No' ? 'checked' : ''}}>
+                                          <label for="dscr_check_no">No</label></span>
+                                       </td>
+                                       <td><input type="text" class="form-control from-inline" id="dscr_cmnt" name="dscr_cmnt" value="{{isset($finDetailData->dscr_cmnt) ? $finDetailData->dscr_cmnt : ''}}"></td>									  
+                                    </tr>
+                                    <tr role="row" class="odd">
+                                       <td>Debt/EBIDTA</td>
+                                       <td><5X</td>
+                                       <td>
+                                          <span class="mr-2">
+                                          <input type="radio" class="form-check-input" name="debt_check" id="debt_check_yes" value="Yes" {{isset($finDetailData->debt_check) && $finDetailData->debt_check == 'Yes' ? 'checked' : ''}}>
+                                          <label for="debt_check_yes">Yes</label></span>
+                                          <span><input type="radio" class="form-check-input" name="debt_check" id="debt_check_no" value="No" {{!isset($finDetailData->debt_check) || $finDetailData->debt_check == 'No' ? 'checked' : ''}}>
+                                          <label for="debt_check_no">No</label></span>
+                                       </td>
+                                       <td><input type="text" class="form-control from-inline" id="debt_cmnt" name="debt_cmnt" value="{{isset($finDetailData->debt_cmnt) ? $finDetailData->debt_cmnt : ''}}"></td>									  
+                                    </tr>
+                                 </tbody>
+                              </table>
+                              <button type="submit" class="btn btn-success ml-auto  mt-3"> Save</button>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                     <form method="post" action="{{ route('cam_finance_store') }}">
+                     @csrf
                      <div id="pullMsg"></div>
                      <h2 class="sub-title bg mb-4">Uploaded Finance statement-</h2>
                      <div class="clearfix"></div>

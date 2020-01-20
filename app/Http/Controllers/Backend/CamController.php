@@ -24,6 +24,7 @@ use App\Libraries\Gupshup_lib;
 date_default_timezone_set('Asia/Kolkata');
 use Helpers;
 use Illuminate\Support\Facades\Hash;
+use App\Inv\Repositories\Models\AppBizFinDetail;
 
 class CamController extends Controller
 {
@@ -159,6 +160,7 @@ class CamController extends Controller
 
     public function finance(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
         $pending_rec = $fin->getPendingFinanceStatement($appId);
         $financedocs = $fin->getFinanceStatements($appId);
         $contents = array();
@@ -175,6 +177,7 @@ class CamController extends Controller
             $financeData[$v['year']] = $v;
           }
         }
+        $finDetailData = AppBizFinDetail::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
         return view('backend.cam.finance', [
           'financedocs' => $financedocs, 
           'appId'=> $appId, 
@@ -182,8 +185,35 @@ class CamController extends Controller
           'borrower_name'=> $borrower_name,
           'finance_data'=> $financeData,
           'latest_finance_year'=> $latest_finance_year,
+          'finDetailData'=>$finDetailData
         ]);
 
+    }
+
+    public function saveFinanceDetail(Request $request) {
+      try {
+            $userId = Auth::user()->user_id;
+            $arrData = $request->all();            
+            
+            if(isset($arrData['fin_detail_id']) && $arrData['fin_detail_id']){
+                  $result = AppBizFinDetail::updateHygieneData($arrData, $userId);
+                  if($result){
+                        Session::flash('message',trans('Finance detail updated sauccessfully'));
+                  }else{
+                        Session::flash('message',trans('Finance detail not updated'));
+                  }
+            }else{
+                $result = AppBizFinDetail::creates($arrData, $userId);
+                if($result){
+                        Session::flash('message',trans('Finance detail saved successfully'));
+                  }else{
+                        Session::flash('message',trans('Finance detail not saved'));
+                  }
+            }    
+            return redirect()->route('cam_finance', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
 
     public function banking(Request $request, FinanceModel $fin){

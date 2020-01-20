@@ -20,5 +20,6 @@ return [
     'already_exist' => 'Already Exist..',
     'offer_approved' => 'Offer approved successfully.',
     'disbursed' => 'Selected invoices has been successfully disbursed.',
+    'noSelectedInvoice' => 'Please select atleast one invoice.',
 ];
 

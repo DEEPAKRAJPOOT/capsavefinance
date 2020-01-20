@@ -183,8 +183,8 @@ class DoaController extends Controller {
                 'level_name' => $reqData['level_name'],
                 //'state_id'   => $reqData['state_id'],
                 // 'city_id'    => $reqData['city_id'],
-                'min_amount' => $reqData['min_amount'],
-                'max_amount' => $reqData['max_amount'],
+                'min_amount' => str_replace(',', '', $reqData['min_amount']),
+                'max_amount' => str_replace(',', '', $reqData['max_amount'])
             ];
 
             $doa_level_id = $reqData['doa_level_id'] ? $reqData['doa_level_id'] : null;
