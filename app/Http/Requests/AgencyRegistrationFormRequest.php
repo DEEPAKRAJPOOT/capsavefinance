@@ -14,10 +14,9 @@ class AgencyRegistrationFormRequest extends Request
      */
     public function rules()
     {
-      ///dd($this->request);
         return $rules = [
             //'employee' => 'required|min:2|max:50|alpha_dash|alpha',
-            'comp_name' => 'required|min:5|max:50|unique:agency',
+            'comp_name' => 'required|min:5|max:50|unique:agency'.(($this->request->has('agency_id'))? ',comp_name,'.$this->request->get('agency_id').',agency_id':''),
             'type_id' => 'required',
             'comp_email'  => 'required|email|max:50',
             'comp_phone' => 'required|numeric|digits:10',
