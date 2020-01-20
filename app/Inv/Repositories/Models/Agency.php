@@ -7,6 +7,7 @@ use DateTime;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use Illuminate\Database\Eloquent\Builder;
 
 class Agency extends BaseModel
 {
@@ -77,5 +78,15 @@ class Agency extends BaseModel
         $query->agencyType()->sync($attributes['type_id']);
         return $agency;
     }
+
+    public static function getAllAgency($type=null){
+        if(!is_null($type)){
+            return Agency::whereHas('agencyType', function(Builder $query) use($type){$query->where('status_name', $type);})->get();
+        }else{
+            return Agency::get();
+        }
+    }
+
+
 
 }

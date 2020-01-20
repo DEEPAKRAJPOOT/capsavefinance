@@ -577,8 +577,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * get all agency list
      * @return agency
      */
-    public function getAllAgency(){
-        $agency = Agency::get();
+    public function getAllAgency($type=null){
+        $agency = Agency::getAllAgency($type);
         return $agency ?: false;
     }
 
