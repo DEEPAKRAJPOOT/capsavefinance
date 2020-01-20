@@ -252,7 +252,8 @@ trait LmsTrait
 
         $tenor = round($datediff / (60 * 60 * 24));
         $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-        $interest = (($fundedAmount * ($invoice['program_offer']['interest_rate']/100) * $tenor)/360);
+        //$interest = (($fundedAmount * ($invoice['program_offer']['interest_rate']/100) * $tenor)/360);
+        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
         $disburseAmount = round($fundedAmount - $interest, 2);
         // dd($disburseAmount);
         $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
