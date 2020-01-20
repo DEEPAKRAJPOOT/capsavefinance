@@ -2,7 +2,7 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_reg')}}" onsubmit="return checkValidation();" target="_top">
+           <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_reg')}}" onsubmit="return checkValidation();" target="_top" enctype="multipart/form-data">
 		@csrf
                         <div class="row">
                            <div class="col-6">
@@ -133,8 +133,18 @@
                                 array('id' => 'assigned_sale_mgr',
                                 'class'=>'form-control'))
                                 !!}
-                    </div>
-                           </div>                           
+                              </div>
+                           </div>   
+                           <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtCreditPeriod">Upload Document {{--<span class="error_message_label">*</span> --}} </label>
+                                 <div class="custom-file">
+                                    <label for="email">Upload Document</label>
+                                    <input type="file" class="custom-file-input" id="anchorDocFile" name="doc_file">
+                                    <label class="custom-file-label" for="anchorDocFile">Choose file</label>
+                                 </div>
+                             </div>
+                           </div>                       
                         </div>  
                 
                 

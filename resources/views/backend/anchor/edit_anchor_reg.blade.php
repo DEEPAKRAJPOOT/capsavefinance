@@ -11,7 +11,8 @@
                 'autocomplete' => 'off', 
                 'id' => 'editAchorForm',
                 'target' => '_top',
-                'method'=> 'POST'
+                'method'=> 'POST',
+                'enctype'=>'multipart/form-data'
                 )
                 )
                 !!}
@@ -147,7 +148,19 @@
                                 'class'=>'form-control'))
                                 !!}
                               </div>
-                           </div>                           
+                           </div>  
+                      
+                           <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtCreditPeriod">Upload Document {{-- <span class="error_message_label">*</span>--}}</label>
+                                 <div class="custom-file">
+                                    <label for="email">Upload Document</label>
+                                    <input type="file" class="custom-file-input" id="customFile" name="doc_file">
+                                    <label class="custom-file-label" for="customFile">Choose file</label>
+                                 </div>
+                             </div>
+                           </div>  
+                       
                         </div>  
                 
                 
