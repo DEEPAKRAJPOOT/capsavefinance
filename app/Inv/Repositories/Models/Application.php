@@ -477,9 +477,9 @@ class Application extends BaseModel
         $doaUsers = self::select('role_user.user_id')
                 ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
                 ->join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
-                ->join('prgm_doa_level', 'prgm_doa_level.prgm_id', '=', 'app_prgm_limit.prgm_id')                
+                //->join('prgm_doa_level', 'prgm_doa_level.prgm_id', '=', 'app_prgm_limit.prgm_id')                
                 ->join('doa_level', function ($join) {
-                    $join->on('doa_level.doa_level_id', '=', 'prgm_doa_level.doa_level_id');
+                    //$join->on('doa_level.doa_level_id', '=', 'prgm_doa_level.doa_level_id');
                     $join->on('app_prgm_offer.prgm_limit_amt', '>=', 'doa_level.min_amount');
                     $join->on('app_prgm_offer.prgm_limit_amt', '<=', 'doa_level.max_amount');
                 })
