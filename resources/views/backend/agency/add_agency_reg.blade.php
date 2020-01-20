@@ -5,13 +5,28 @@
            <form id="agencyForm" name="agencyForm" method="POST" action="{{route('add_agency_reg')}}" target="_top">
               @csrf
               <div class="row">
-                 <div class="col-12">
+                 <div class="col-6">
                     <div class="form-group">
                        <label for="txtCreditPeriod">Agency Name
                        <span class="mandatory">*</span>
                        </label>
                        <input type="text" name="comp_name" id="comp_name" value="" class="form-control employee" tabindex="1" placeholder="Agency Name" >
                        @error('comp_name')
+                          <span class="text-danger error">{{ $message }}</span>
+                       @enderror
+                    </div>
+                 </div>
+                 <div class="col-6">
+                    <div class="form-group">
+                       <label for="txtCreditPeriod">Type
+                       <span class="mandatory">*</span>
+                       </label><br/>
+                       <div id="check_block">
+                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="16" name="type_id[]"> FI</label>
+                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="17" name="type_id[]"> RCU</label>
+                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="18" name="type_id[]"> Inspection</label>
+                       </div>
+                       @error('type_id')
                           <span class="text-danger error">{{ $message }}</span>
                        @enderror
                     </div>

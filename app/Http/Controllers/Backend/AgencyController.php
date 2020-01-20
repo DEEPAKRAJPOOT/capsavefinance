@@ -69,6 +69,7 @@ class AgencyController extends Controller {
      * @return type
      */
     public function saveAgencyReg(Request $request) {
+        dd($request->all());
         try {
             $arrAgencyData = $request->all();
             $arrAgencyData['created_at'] = \carbon\Carbon::now();

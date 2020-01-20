@@ -1347,7 +1347,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     }
 
     public function saveAgency($attributes){
-        $status = Agency::create($attributes);
+        $status = Agency::creates($attributes);
         return $status ?: false;
     }
 

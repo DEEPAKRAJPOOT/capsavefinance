@@ -57,5 +57,24 @@ class Agency extends BaseModel
         return ucwords($this->f_name.' '.$this->m_name.' '.$this->l_name);
     }
 
+    public function agencyType(){
+        return $this->belongsToMany('App\Inv\Repositories\Models\Master\Status', 'agency_type', 'agency_id', 'type_id');
+    }
+
+    public static function creates($attributes){
+        $agency = Agency::create($attributes);
+
+        // insert in rta_agency_type table
+        $agency->agencyType()->sync($attributes['type_id']);
+        return $agency;
+    }
+
+    public static function updateAgency($attributes, $agency_id){
+        $agency = Agency::whereAgencyId($agency_id)->update($attributes);
+
+        // insert in rta_agency_type table
+        $agency->agencyType()->sync($attributes['type_id']);
+        return $agency;
+    }
 
 }
