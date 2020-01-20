@@ -1463,5 +1463,16 @@ class UserRepository extends BaseRepositories implements UserInterface
         $result = LmsUser::lmsGetDisbursalCustomer();
         return $result ?: false;
     }
+    
+    /**
+     * Get Assigned Sales Manager User Id
+     * 
+     * @param integer $userId
+     * @return integer
+     */
+    public function getAssignedSalesManager($userId)
+    {
+        return LeadAssign::getAssignedSalesManager($userId);
+    }
        
 }
