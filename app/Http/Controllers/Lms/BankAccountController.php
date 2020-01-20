@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Lms;
 
+use File;
 use Session;
 use Helpers;
 use Illuminate\Http\Request;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Lms\BankAccountRequest;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Libraries\Storage\Contract\StorageManagerInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 
@@ -20,6 +22,7 @@ class BankAccountController extends Controller {
     protected $userRepo;
     protected $docRepo;
     protected $master;
+    protected $storage;
 
     /**
      * The pdf instance.
@@ -28,12 +31,13 @@ class BankAccountController extends Controller {
      */
     protected $pdf;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, MasterInterface $master)
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, MasterInterface $master, StorageManagerInterface $storage)
     {
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
         $this->master = $master;
+        $this->storage = $storage;
         $this->middleware('checkBackendLeadAccess');
     }
 
@@ -92,13 +96,50 @@ class BankAccountController extends Controller {
                 'user_id' => auth()->user()->user_id
             ];
 
-            $this->appRepo->saveBankAccount($prepareData, $acc_id);
+            $lastInsertId = $this->appRepo->saveBankAccount($prepareData, $acc_id);
+            $this->uploadBankDoc($request, $lastInsertId);
             $messges = $acc_id ? trans('success_messages.update_bank_account_successfully') : trans('success_messages.save_bank_account_successfully');
             Session::flash('message', $messges);
             Session::flash('operation_status', 1);
             return redirect()->back();
         } catch (\Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    /**
+     * upload bank Doc
+     * 
+     * @param array $attr
+     * @param int $id
+     * @return mixed
+     * @throws \Exception
+     */
+    function uploadBankDoc($attr, $id)
+    {
+        try {
+            foreach ($attr->file() as $files):
+                $docname = $files->getClientOriginalName();
+                $ext = $files->getClientOriginalExtension();
+                $fileSize = $files->getClientSize();
+                if ($fileSize < config('common.MAX_UPLOAD_SIZE')) {
+                    $userBaseDir = 'appDocs/Document/bankDoc/' . auth()->user()->user_id;
+                    $userFileName = rand(0, 9999) . time() . '.' . $ext;
+                    $pathName = $files->getPathName();
+                    $this->storage->engine()->put($userBaseDir . DIRECTORY_SEPARATOR . $userFileName, File::get($pathName));
+                    $doc = [
+                        'doc_name' => $userFileName,
+                        'doc_ext' => $ext,
+                        'enc_id' => md5(rand(1, 9999)),
+                    ];
+                    $this->appRepo->saveBankAccount($doc, $id);
+                    File::delete($pathName);
+                } else {
+                    return redirect()->back()->withErrors(trans('error_messages.file_size_error'));
+                }
+            endforeach;
+        } catch (\Exception $ex) {
+            throw $ex;
         }
     }
 

@@ -56,4 +56,5 @@ return [
         'BACKEND' => 2,
     ],
     'YES' => 1,
+    'MAX_UPLOAD_SIZE'=>4*1024*1024
 ];
