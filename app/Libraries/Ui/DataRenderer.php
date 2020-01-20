@@ -213,15 +213,16 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {
                         //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                        
-                    //if($app->anchor_id){
-                    //  $userInfo=User::getUserByAnchorId($app->anchor_id);
-                    //   $achorName= $userInfo->f_name.''.$userInfo->l_name;
-                    //}else{
-                    //  $achorName='';  
-                    //}                    
-                    //return $achorName;
-                    return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
+                    /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
+                    
+                    if($app->anchor_id){
+                       $userInfo = User::getUserByAnchorId($app->anchor_id);
+                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                    } else {
+                       $achorName='';  
+                    }                    
+                    return $achorName;
+                    
                 })
                 ->addColumn(
                     'user_type',
