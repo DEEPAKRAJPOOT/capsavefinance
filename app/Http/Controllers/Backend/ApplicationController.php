@@ -49,7 +49,7 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {       
        return view('backend.app.index');              
     }
 

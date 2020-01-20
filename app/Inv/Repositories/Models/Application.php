@@ -474,7 +474,7 @@ class Application extends BaseModel
     public static function getDoAUsersByAppId($appId)
     {
         
-        $doaUsers = self::select('role_user.user_id')
+        $doaUsers = self::select('users.user_id')
                 ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
                 ->join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
                 //->join('prgm_doa_level', 'prgm_doa_level.prgm_id', '=', 'app_prgm_limit.prgm_id')                
@@ -484,14 +484,18 @@ class Application extends BaseModel
                     $join->on('app_prgm_offer.prgm_limit_amt', '<=', 'doa_level.max_amount');
                 })
                 ->join('doa_level_role', 'doa_level_role.doa_level_id', '=', 'doa_level.doa_level_id')
-                ->join('role_user', 'role_user.role_id', '=', 'doa_level_role.role_id')
+                //->join('role_user', 'role_user.role_id', '=', 'doa_level_role.role_id')
+                        
+                ->join('doa_level_states', 'doa_level_states.doa_level_id', '=', 'doa_level.doa_level_id')
                 ->join('users', function ($join) {
-                    $join->on('role_user.user_id', '=', 'users.user_id');
-                    $join->on('doa_level.city_id', '=', 'users.city_id');
+                    //$join->on('role_user.user_id', '=', 'users.user_id');
+                    //$join->on('doa_level.city_id', '=', 'users.city_id');
+                    $join->on('doa_level_role.user_id', '=', 'users.user_id');
+                    $join->on('doa_level_states.city_id', '=', 'users.city_id');
                 })
                 ->where('app.app_id', $appId)
                 ->where('app_prgm_offer.is_active', 1)
-                ->groupBy('role_user.user_id')
+                ->groupBy('users.user_id')
                 ->get();
                        
         return ($doaUsers ? $doaUsers : []);
