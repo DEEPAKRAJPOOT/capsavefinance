@@ -1193,7 +1193,7 @@ class DataRenderer implements DataProviderInterface
                         $act .= "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></i></a>";
                      }
                      if(isset($users->file_path)){
-                        $act .= "<a  href=". Storage::url($users->file_path) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\"> <i class=\"fa fa-eye\"></i></a>";
+                        $act .= "<a  href=". Storage::url($users->file_path) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\" title=\"View CAM\"> <i class=\"fa fa-eye\"></i></a>";
                      }
                      return $act;
                     }
@@ -1810,6 +1810,7 @@ class DataRenderer implements DataProviderInterface
             '2' => 'Pre Sanction',
             '3' => 'Post Sanction',
         );
+        
         return DataTables::of($documents)
                 ->rawColumns(['is_active'])
                 ->addColumn(
@@ -1821,6 +1822,17 @@ class DataRenderer implements DataProviderInterface
                     'doc_name',
                     function ($documents) {
                     return $documents->doc_name;
+                })
+                ->addColumn(
+                    'product_type',
+                    function ($documents) {
+                        $productTypes = '';
+                        if(isset($documents->product_document)) {
+                            foreach ($documents->product_document as $value) {
+                                $productTypes .= $value->product->product_name.', ';
+                            }
+                        }
+                    return $productTypes;
                 })
                 ->addColumn(
                     'is_rcu',
@@ -2142,7 +2154,7 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($customer) {
                     if ($customer->is_assign == 0) {
-                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                        return "<label class=\"badge badge-warning current-status\">sanctioned</label>";
                     } else {
                         return "<span style='color:green'>Assigned</span>";
                     }

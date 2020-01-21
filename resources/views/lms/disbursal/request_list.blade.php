@@ -66,8 +66,8 @@
 													<th>Ben IFSC</th>
 													<th>Ben Account No.</th>
 													<th>Total Invoice Amt.</th>
-													<th>Total Funded Amt.</th>
 													<th>Total Disburse Amt.</th>
+													<th>Total Actual Funded Amt.</th>
 													<th>Total Invoice </th>
 													<th>Action</th>
 												</tr>

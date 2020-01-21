@@ -15,8 +15,15 @@ trait ApplicationTrait
     {
         if ($prgmDocsWhere['stage_code'] == 'doc_upload') {
             $prgmDocs = $this->appRepo->getRequiredDocs(['doc_type_id' => 1]);
+            foreach ($prgmDocs as $key => $value) {
+                $prgmDocs[$key]->product_document = $this->appRepo->getDocumentProduct($value->doc_id);
+            }
         } else {
             $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere);
+            foreach ($prgmDocs as $key => $value) {
+                $prgmDocs[$key]->product_document = $this->appRepo->getDocumentProduct($value->doc_id);
+            }
+
         }
         return $prgmDocs ;
     }
@@ -31,21 +38,28 @@ trait ApplicationTrait
      */
     protected function createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id)
     {   
+        $appProductIds = [];
+        $appDocProduct = [];
+        $appDocs = [];
         $prgmDocsWhere['app_id'] = $app_id;
+
         $reqDocs = $this->getProgramDocs($prgmDocsWhere);
-                        
+        $appProducts = $this->appRepo->getAppProducts($app_id);
+
+        foreach($appProducts->products as $product){
+            array_push($appProductIds, $product->pivot->product_id);
+        }
         if($reqDocs && count($reqDocs) == 0) {
             return;
         }
         
-        $appDocs = [];
         foreach($reqDocs as $doc) {
             //$appDocCheck = AppDocument::where('app_id', $app_id)->count();
             $appDocCheck = $this->docRepo->isAppDocFound($app_id, $doc->doc_id);
             
             if(!$appDocCheck){
                 $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-                $appDocs[] = [
+                $appDocs = [
                     'rcu_status' => 0,
                     'user_id' => $user_id,
                     'app_id' => (int) $app_id,
@@ -57,10 +71,22 @@ trait ApplicationTrait
                     'updated_by' => Auth::user()->user_id,                   
                     'updated_at' => $curData, 
                 ];
+                $appDocResponce = $this->docRepo->saveAppRequiredDocs($appDocs);
+
+                foreach ($doc->product_document->product_document as $productDoc) {
+                    if(in_array($productDoc->product_id, $appProductIds)) {
+                        $appDocProduct = [
+                            'app_doc_id' => $appDocResponce->app_doc_id,
+                            'product_id' => $productDoc->product_id,
+                            'doc_id' => $doc->doc_id
+
+                        ];
+                        $productDoc = $this->docRepo->saveAppDocProduct($appDocProduct);
+                    } 
+                }
             }
         }
         
-        $this->docRepo->saveAppRequiredDocs($appDocs);        
         return $reqDocs;
     }
 }

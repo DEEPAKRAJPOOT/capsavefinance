@@ -119,6 +119,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@saveFiUpload'
             ]);
 
+            Route::get('fircu/inspection', [
+                'as' => 'backend_inspection',
+                'uses' => 'Backend\FiRcuController@listInspection'
+            ]);
+
+            Route::get('fircu/inspectionupload', [
+                'as' => 'inspection_upload',
+                'uses' => 'Backend\FiRcuController@InspectionUpload'
+            ]);
+
+            Route::post('fircu/inspectionupload', [
+                'as' => 'save_inspection_upload',
+                'uses' => 'Backend\FiRcuController@saveInspectionUpload'
+            ]);
+
             Route::get('fircu/rcu', [
                 'as' => 'backend_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'
@@ -301,6 +316,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@saveAssignFi'
             ]);
 
+            Route::get('fircu/assign-inspection', [
+                'as' => 'show_assign_inspection',
+                'uses' => 'Backend\FiRcuController@showAssignInspection'
+            ]);
+
+            Route::post('fircu/assign-inspection', [
+                'as' => 'save_assign_inspection',
+                'uses' => 'Backend\FiRcuController@saveAssignInspection'
+            ]);
+
             Route::post('fircu/assign-rcu', [
                 'as' => 'save_assign_rcu',
                 'uses' => 'Backend\FiRcuController@saveAssignRcu'
@@ -312,7 +337,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@showAssignRcu'
             ]);
 
-            Route::get('pd-notes', [
+            Route::get('fircu/pd-notes', [
                 'as' => 'pd_notes_list',
                 'uses' => 'Backend\NotesController@pdNotesList'
             ]);
@@ -484,7 +509,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('save-create-lead', [
                 'as' => 'save_backend_lead',
                 'uses' => 'Backend\LeadController@saveBackendLead'
-            ]);    
+            ]); 
+
+            Route::post('update-backend-lead', [
+                'as' => 'update_backend_lead',
+                'uses' => 'Backend\LeadController@updateBackendLead'
+            ]);   
         });
         
         Route::group(['prefix' => 'fircu'], function () {
@@ -493,15 +523,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@appList'
             ]);
             
-            Route::get('/fi', [
+            /*Route::get('/fi', [
                 'as' => 'backend_agency_fi',
                 'uses' => 'Backend\FiRcuController@listFI'
-            ]);
+            ]);*/
 
-            Route::get('/rcu', [
+            /*Route::get('/rcu', [
                 'as' => 'backend_agency_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'
-            ]);   
+            ]);*/   
         });
         
         Route::group(['prefix' => 'anchor'], function () {

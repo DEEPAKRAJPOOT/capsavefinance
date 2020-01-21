@@ -408,8 +408,8 @@ class ApplicationController extends Controller
             if ($document_info) {
                 //Add/Update application workflow stages    
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
-                $wf_status = $response->count() < 1 ? 1 : 2;
-                                
+                //$wf_status = $response->count() < 1 ? 1 : 2;
+                $wf_status = 1;                
                 Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
                 Session::flash('message',trans('success_messages.uploaded'));

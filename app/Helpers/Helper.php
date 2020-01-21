@@ -884,7 +884,12 @@ class Helper extends PaypalHelper
     
     
     
-    
+    /**
+     * get Doa Level
+     * 
+     * @param mixed $request
+     * @return mixed
+     */
     public static  function getDoaLevelCity($request)
     {
         
@@ -894,5 +899,18 @@ class Helper extends PaypalHelper
         
         return implode(',', $city_name->toArray());
        
+    }
+    
+    
+    /**
+     * check permission 
+     * 
+     * @param int $permission_id
+     * @param int $role_id
+     * @return mixed
+     */
+    public static function checkPermissionAssigntoRole($permission_id, $role_id)
+    {
+        return PermissionRole::checkPermissionAssigntoRole($permission_id, $role_id);
     }
 }

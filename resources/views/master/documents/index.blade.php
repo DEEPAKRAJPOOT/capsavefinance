@@ -41,6 +41,7 @@
                                 <tr role="row">
                                     <th>Document Type</th>
                                     <th>Document Name</th>
+                                    <th>product Types</th>
                                     <th>Is RCU</th>
                                     <th>Created At</th>
                                     <th>Created By</th>
