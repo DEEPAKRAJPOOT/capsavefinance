@@ -26,6 +26,7 @@ try {
            columns: [
                     {data: 'doc_type_id'},
                     {data: 'doc_name'},
+                    {data: 'product_type'},
                     {data: 'is_rcu'},
                     {data: 'created_at'},
                     {data: 'created_by'},

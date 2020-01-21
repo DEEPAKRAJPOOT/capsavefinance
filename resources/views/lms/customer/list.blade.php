@@ -61,7 +61,7 @@
 													<th >Customer Mobile</th>
 													<th >Loan/Limit Offer</th>
 													<th >Interest Rate</th>
-													<th >Consume Limit</th>
+													<th >Utilize Limit</th>
 													<th >Avialable Limit</th>
 													<th >Tenor(Days)</th>
 													<th >Assignee</th>

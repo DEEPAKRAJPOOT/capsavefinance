@@ -3321,12 +3321,15 @@ if ($err) {
         if (empty($role_id)) {
             abort(400);
         }
+        $checkPer =  (int) Helpers::checkPermissionAssigntoRole(104, $role_id);
+        if(!$checkPer){
+            return \response()->json(['success' => false , 'messges'=>'For this role you do not have permission to Approve the application.']);
+        }
+        
         $roleUsers = Helpers::getAllUsersByRoleId($role_id);
         return \response()->json(['data' => $roleUsers]);
     }
-    
-    
-    
+
     public function getColenderList(DataProviderInterface $dataProvider)
     {
         $getColenderList = $this->userRepo->getColenderList();
