@@ -259,7 +259,7 @@
                   messages: {
                      doc_file: {
                         required: "Please select file",
-                        extension:"Please select jpg, png, pdf type format only.",
+                        extension:"Invalid file format",
                      }
                   }
                });
