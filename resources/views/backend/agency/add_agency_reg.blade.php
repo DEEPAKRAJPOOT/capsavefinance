@@ -23,8 +23,8 @@
                        </label><br/>
                        <div id="check_block">
                           <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="16" name="type_id[]" {{(is_array(old('type_id')) && in_array(16,old('type_id')))? 'checked': ''}}> FI</label>
-                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="17" name="type_id[]" {{(is_array(old('type_id')) && in_array(16,old('type_id')))? 'checked': ''}}> RCU</label>
-                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="18" name="type_id[]" {{(is_array(old('type_id')) && in_array(16,old('type_id')))? 'checked': ''}}> Inspection</label>
+                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="17" name="type_id[]" {{(is_array(old('type_id')) && in_array(17,old('type_id')))? 'checked': ''}}> RCU</label>
+                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="18" name="type_id[]" {{(is_array(old('type_id')) && in_array(18,old('type_id')))? 'checked': ''}}> Inspection</label>
                        </div>
                        @error('type_id')
                           <span class="error">{{ $message }}</span>
