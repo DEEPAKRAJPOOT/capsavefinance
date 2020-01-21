@@ -57,5 +57,25 @@ return [
         'BACKEND' => 2,
     ],
     'YES' => 1,
-    'MAX_UPLOAD_SIZE'=>4*1024*1024
+    'MAX_UPLOAD_SIZE'=>4*1024*1024,
+    'PRODUCT' => [
+        'SUPPLY_CHAIN' => 1,
+        'TERM_LOAN' => 2,
+        'LEASE_LOAN' => 3,
+    ],
+    'active' => [
+        'yes' => '1',
+        'no' => '2'
+    ], 
+    'rental_frequency' => [
+        '1' => 'Yearly',
+        '2' => 'Bi-Yearly',
+        '3' => 'Quaterly',
+        '4' => 'Monthly'
+    ],
+    'addl_security' => [
+        '1' => 'BG',
+        '2' => 'MF',
+        '3' => 'Others',
+    ]    
 ];
