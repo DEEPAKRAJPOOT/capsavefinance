@@ -13,42 +13,40 @@
             </a>
 
       </li>             
-        
-    <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
-                <span class="menu-title">Manage FI/RCU</span>
-               <i class="fa fa-angle-right" aria-hidden="true"></i>
-            </a>
-            <div class="collapse" id="layoutsSubmenu1">
-                <ul class="nav flex-column sub-menu">
-                    @can('applicaiton_list')
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('applicaiton_list') }}">Applications</a>
-                    </li>
-                    @endcan
-                </ul>
-            </div>
-     </li>
-        
-    <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
-                <span class="menu-title">Manage Leads</span>
-               <i class="fa fa-angle-right" aria-hidden="true"></i>
-            </a>
-            <div class="collapse" id="layoutsSubmenu1">
-                <ul class="nav flex-column sub-menu">
-                @can('lead_list')
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('lead_list') }}">My Leads</a>
-                    </li>
-                @endcan    
-                                                
-                </ul>
-            </div>
-     </li>
-        
+    @can('applicaiton_list')  
+        <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-files-o" aria-hidden="true"></i>
+                    <span class="menu-title">Manage FI/RCU</span>
+                   <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+                <div class="collapse" id="layoutsSubmenu1">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('applicaiton_list') }}">Applications</a>
+                        </li>
+                    </ul>
+                </div>
+         </li>
+    @endcan  
+    @can('lead_list')
+        <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-files-o" aria-hidden="true"></i>
+                    <span class="menu-title">Manage Leads</span>
+                   <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+                <div class="collapse" id="layoutsSubmenu1">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('lead_list') }}">My Leads</a>
+                        </li>
+                    </ul>
+                </div>
+         </li>
+    @endcan    
+
+    @canany(['application_pool','application_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-file-image-o"></i>
@@ -71,7 +69,8 @@
                 </ul>
             </div>
         </li>    
-
+    @endcan
+    @canany(['get_anchor_list','get_anchor_lead_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
@@ -81,20 +80,21 @@
             <div class="collapse" id="layoutsSubmenu12">
                 <ul class="nav flex-column sub-menu">
                 @can('get_anchor_list')
-                
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_anchor_list') }}">Anchor List</a>
 
                     </li>
-                    @endcan
-                    @can('get_anchor_lead_list')
+                @endcan
+                @can('get_anchor_lead_list')
                         <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_anchor_lead_list') }}">Anchor Uploaded Lead</a>
                     </li>                     
-                    @endcan      
+                @endcan      
                 </ul>
             </div>
         </li>
+    @endcan
+    @can('get_co_lenders')
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
@@ -103,15 +103,13 @@
             </a>
             <div class="collapse" id="layoutsSubmenu12">
                 <ul class="nav flex-column sub-menu">
-                       @can('get_co_lenders')
                   <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_co_lenders') }}">Co-lenders List</a>
                  </li>
-                 @endcan
-                     
                 </ul>
             </div>
         </li>
+    @endcan
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu20" aria-expanded="true" aria-controls="collapseExample">
               <i class="fa fa-user-plus" aria-hidden="true"></i>
@@ -135,13 +133,9 @@
             </a>
             <div class="collapse" id="layoutsSubmenu123">
                 <ul class="nav flex-column sub-menu">
-               
-                
                   <li class="nav-item">
                         <a class="nav-link" href="{{ route('backend_upload_all_invoice') }}">Invoice Upload</a>
-
                     </li> 
-                   
                         <li class="nav-item">
                         <a class="nav-link" href="{{route('backend_get_invoice')}}">Manage Invoice</a>
                     </li>                     
@@ -168,7 +162,7 @@
                 </ul>
             </div>
         </li>
-
+    @canany(['get_agency_list','get_agency_user_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-user-secret" aria-hidden="true"></i>
@@ -190,6 +184,7 @@
                 </ul>
             </div>
         </li>   
+    @endcan      
         
         @php $roleData = \Helpers::getUserRole() @endphp
         
@@ -230,11 +225,11 @@
                     <a class="nav-link" href="{{ route('manage_doa') }} ">Manage DOA Level</a>
                  </li>
                  @endcan
-                  @can('manage_program')
+                 @can('manage_program')
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('manage_program') }} ">Manage Program</a>
                  </li>
-                   @endcan
+                @endcan
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_charges_list') }}">Manage Charges</a>
                  </li>
