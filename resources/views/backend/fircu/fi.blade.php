@@ -17,7 +17,7 @@
         @endcan
         @can('backend_fi')
         <li>
-            <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Inspection</a>
+            <a href="{{ route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Inspection</a>
         </li>
         @endcan
         <li>

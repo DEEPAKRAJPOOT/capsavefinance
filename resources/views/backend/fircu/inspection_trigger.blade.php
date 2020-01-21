@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('save_assign_fi')}}" target="_top" onsubmit="return checkValidation();">
+  <form method="POST" style="width:100%;" action="{{route('save_assign_inspection')}}" target="_top" onsubmit="return checkValidation();">
     @csrf
     <input type="hidden" value="" name="address_ids" id="address_ids">
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">

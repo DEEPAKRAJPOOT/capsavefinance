@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('save_fi_upload')}}" target="_top" enctype="multipart/form-data" id="documentForm">
+  <form method="POST" style="width:100%;" action="{{route('save_inspection_upload')}}" target="_top" enctype="multipart/form-data" id="documentForm">
     @csrf
     <input type="hidden" value="" name="fiaid" id="fiaid">
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
