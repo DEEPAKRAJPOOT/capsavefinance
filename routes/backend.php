@@ -523,15 +523,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@appList'
             ]);
             
-            /*Route::get('/fi', [
+            Route::get('/fi', [
                 'as' => 'backend_agency_fi',
                 'uses' => 'Backend\FiRcuController@listFI'
-            ]);*/
+            ]);
 
-            /*Route::get('/rcu', [
+            Route::get('/inspection', [
+                'as' => 'backend_agency_inspection',
+                'uses' => 'Backend\FiRcuController@listInspection'
+            ]);
+
+            Route::get('/rcu', [
                 'as' => 'backend_agency_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'
-            ]);*/   
+            ]);   
         });
         
         Route::group(['prefix' => 'anchor'], function () {
