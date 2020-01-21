@@ -558,8 +558,8 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceList(Request $request,$invoice)
     { 
-    
-      return DataTables::of($invoice)
+        
+        return DataTables::of($invoice)
                ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id'])
                 ->addColumn(
                     'anchor_id',
@@ -568,9 +568,17 @@ class DataRenderer implements DataProviderInterface
                 })
                  ->addColumn(
                     'invoice_id',
-                    function ($invoice) {                        
-                             return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-              })
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
+             })
               ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -648,10 +656,18 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
                 })
-                ->addColumn(
+                   ->addColumn(
                     'invoice_id',
-                    function ($invoice) {                        
-                             return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
              })
                 ->addColumn(
                     'anchor_name',
@@ -712,10 +728,18 @@ class DataRenderer implements DataProviderInterface
     
       return DataTables::of($invoice)
                ->rawColumns(['status','anchor_id'])
-                ->addColumn(
+                   ->addColumn(
                     'anchor_id',
-                    function ($invoice) {                        
-                             return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
              })
                 ->addColumn(
                     'anchor_name',
@@ -773,10 +797,18 @@ class DataRenderer implements DataProviderInterface
     
       return DataTables::of($invoice)
                ->rawColumns(['status','anchor_id'])
-                ->addColumn(
+                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) {                        
-                             return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
              })
                 ->addColumn(
                     'anchor_name',
@@ -836,9 +868,17 @@ class DataRenderer implements DataProviderInterface
                ->rawColumns(['status','anchor_id','action'])
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) {                        
-                               return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-              })
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
+             })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -908,9 +948,17 @@ class DataRenderer implements DataProviderInterface
                ->rawColumns(['status','anchor_id','action'])
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) {                        
-                            return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-              })
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
+             })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -980,9 +1028,17 @@ class DataRenderer implements DataProviderInterface
                ->rawColumns(['status','anchor_id'])
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) {                        
-                               return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            })
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
+             })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        
@@ -1041,8 +1097,16 @@ class DataRenderer implements DataProviderInterface
                ->rawColumns(['status','anchor_id','action'])
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) {                        
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
                               return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
              })
                 ->addColumn(
                     'anchor_name',

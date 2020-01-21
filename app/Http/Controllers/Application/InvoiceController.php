@@ -12,6 +12,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
+use DB;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
 
@@ -141,6 +142,13 @@ class InvoiceController extends Controller {
         
          return view('frontend.application.invoice.invoice_success_status');
       }
+         /* success invoice status iframe    */
+       public function viewInvoiceDetails(Request $request){
+          $invoice_id =  $request->get('invoice_id');  
+          $res =  $this->invRepo->getSingleInvoice($invoice_id);
+          $get_status  = DB::table('mst_status')->where('status_type',4)->get();
+          return view('frontend.application.invoice.view_invoice_details')->with(['invoice' => $res,'status' => $get_status]);
+      }
       
         /* update invoice amount  */
       public function saveInvoiceAmount(Request $request)
@@ -174,6 +182,8 @@ class InvoiceController extends Controller {
           }
           
       }
+      
+      
      /*   save invoice */
     public function saveInvoice(Request $request) {
         $attributes = $request->all();

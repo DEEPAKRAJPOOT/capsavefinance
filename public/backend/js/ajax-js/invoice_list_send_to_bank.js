@@ -16,6 +16,7 @@ try {
                     d.anchor_id = $('select[name=search_anchor]').val();
                     d.supplier_id = $('select[name=search_supplier]').val();
                     d.biz_id = $('select[name=search_biz]').val();
+                    d.front = $('input[name=front]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling

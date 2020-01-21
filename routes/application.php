@@ -257,7 +257,12 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'uses' => 'Application\InvoiceController@saveInvoiceAmount'
             ]);    
              
-             
+              Route::get('frontend_view_invoice_details', [
+                 'as' => 'frontend_view_invoice_details',
+                'uses' => 'Application\InvoiceController@viewInvoiceDetails'
+            ]); 
+               
+               
           });
           
      
