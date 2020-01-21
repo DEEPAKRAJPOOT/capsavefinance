@@ -567,6 +567,7 @@ $(document).ready(function () {
     });
 
 
+                        
     $(document).on('click', '.delete_role', function () {
         var selector = $(this);
         $.confirm({
@@ -591,6 +592,11 @@ $(document).ready(function () {
         });
 
     });
+    
+    
+     if ($('.parent_role_div').length > 1) {
+           $('.delete_role').last().show();
+       }
 
 
 
