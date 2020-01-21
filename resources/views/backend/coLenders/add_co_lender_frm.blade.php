@@ -27,6 +27,33 @@
             </div>
         </div>
     </div>
+  
+  
+  
+    <div class="row">
+         <div class="col-6">
+            <div class="form-group">
+                <label for="txtMobile">GST Number
+                    <span class="mandatory">*</span>
+                </label>
+
+                <input class="form-control percentage"  value="{{ isset($coLenderData->gst) ? $coLenderData->gst  : null }}"  name="gst" id="gst"  type="text"  placeholder="GST Number" required>
+
+            </div>
+        </div>
+
+
+        <div class="col-6">
+            <div class="form-group">
+                <label for="txtMobile">PAN Number
+                    <span class="mandatory">*</span>
+                </label>
+
+                <input class="form-control" value="{{ isset($coLenderData->pan_no	) ? $coLenderData->pan_no	  : null }}"  name="pan_no" id="pan"  type="text"  placeholder="PAN Number" required="">
+
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-6">
             <div class="form-group">
@@ -124,28 +151,7 @@
             </div>
         </div>
 
-        <div class="col-6">
-            <div class="form-group">
-                <label for="txtMobile">GST
-                    <span class="mandatory">*</span>
-                </label>
-
-                <input class="form-control percentage"  value="{{ isset($coLenderData->gst) ? $coLenderData->gst  : null }}"  name="gst" id="gst"  type="text"  placeholder="GST" required>
-
-            </div>
-        </div>
-
-
-        <div class="col-6">
-            <div class="form-group">
-                <label for="txtMobile">Percentage(%)
-                    <span class="mandatory">*</span>
-                </label>
-
-                <input class="form-control percentage" value="{{ isset($coLenderData->percentage	) ? $coLenderData->percentage	  : null }}"  name="perc" id="perc"  type="text"  placeholder="Percentage(%)" required="">
-
-            </div>
-        </div>
+       
      
          <div class="col-6">
             <div class="form-group">
