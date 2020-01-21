@@ -16,7 +16,7 @@
             <div class="row">
                <div class="col-md-12">
                      <h4><small>Cover Note</small></h4>
-                     <textarea name="cover_note" name="cover_note" class="form-control" cols="10" rows="10">
+                     <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">
                         {{isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : ''}}
                      </textarea>
                </div>
@@ -275,6 +275,10 @@
 </script>
 
 <script type="text/javascript">
+   $(document).ready(function(){
+      $("#cover_note").focus();
+   });
+   
    $(document).on('click', '.getAnalysis', function() {
       data = {appId, _token};
       $.ajax({
