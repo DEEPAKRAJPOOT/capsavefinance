@@ -7,6 +7,7 @@ use DateTime;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use Illuminate\Database\Eloquent\Builder;
 
 class Agency extends BaseModel
 {
@@ -56,6 +57,36 @@ class Agency extends BaseModel
     public function getFullnameAttribute(){
         return ucwords($this->f_name.' '.$this->m_name.' '.$this->l_name);
     }
+
+    public function agencyType(){
+        return $this->belongsToMany('App\Inv\Repositories\Models\Master\Status', 'agency_type', 'agency_id', 'type_id');
+    }
+
+    public static function creates($attributes){
+        $agency = Agency::create($attributes);
+
+        // insert in rta_agency_type table
+        $agency->agencyType()->sync($attributes['type_id']);
+        return $agency;
+    }
+
+    public static function updateAgency($attributes, $agency_id){
+        $query = Agency::whereAgencyId($agency_id)->first();
+        $agency = $query->update($attributes);
+
+        // insert in rta_agency_type table
+        $query->agencyType()->sync($attributes['type_id']);
+        return $agency;
+    }
+
+    public static function getAllAgency($type=null){
+        if(is_null($type) || $type == ''){
+            return Agency::get();
+        }else{
+            return Agency::whereHas('agencyType', function(Builder $query) use($type){$query->where('status_name', $type);})->get();
+        }
+    }
+
 
 
 }

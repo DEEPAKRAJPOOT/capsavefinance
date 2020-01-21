@@ -26,7 +26,7 @@ class QueryManagementRequest extends Request
         return [
             'assignRoleId' => 'required',
             'qms_cmnt' => 'required',
-            'doc_file' => 'required'
+            //'doc_file' => 'required'
         ];
     }
 
@@ -35,7 +35,7 @@ class QueryManagementRequest extends Request
         return [
             'assignRoleId.required' => 'Please select role.',
             'qms_cmnt.required' => 'Please enter query.',
-            'doc_file.required' => 'Please select file',
+            //'doc_file.required' => 'Please select file',
         ];
     }
 }

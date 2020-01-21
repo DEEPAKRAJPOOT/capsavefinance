@@ -29,6 +29,7 @@ return [
     //Roles Ids
     'anchor_role' => 11,
     'YES' => 1,
+    'NO' => 0,
     'yes_no' => [
         '0' => 'No',
         '1' => 'Yes'
@@ -56,6 +57,7 @@ return [
         'BACKEND' => 2,
     ],
     'YES' => 1,
+    'MAX_UPLOAD_SIZE'=>4*1024*1024,
     'PRODUCT' => [
         'SUPPLY_CHAIN' => 1,
         'TERM_LOAN' => 2,
@@ -75,5 +77,5 @@ return [
         '1' => 'BG',
         '2' => 'MF',
         '3' => 'Others',
-    ],    
+    ]    
 ];

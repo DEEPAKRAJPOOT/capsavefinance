@@ -31,3 +31,4 @@ Homestead.json
 /storage
 /app/Inv/Repositories/config/common.php
 /bootstrap/cache/config.php
+.vscode
