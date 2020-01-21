@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Inv\Repositories\Contracts\DocumentInterface;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\AppDocument;
+use App\Inv\Repositories\Models\AppDocProduct;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
@@ -320,6 +321,19 @@ class DocumentRepository implements DocumentInterface
     public function saveAppRequiredDocs($attributes=[])
     {
         return AppDocument::saveAppRequiredDocs($attributes);
+    }
+     
+    
+    /**
+     * Save Required Documents for Application
+     * 
+     * @param array $attributes
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveAppDocProduct($attributes=[])
+    {
+        return AppDocProduct::create($attributes);
     }
     
     /**

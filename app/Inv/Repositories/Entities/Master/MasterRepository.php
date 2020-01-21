@@ -19,6 +19,7 @@ use App\Inv\Repositories\Models\Master\City as CityModel;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Models\ProgramDoaLevel;
 use App\Inv\Repositories\Models\Product;
+use App\Inv\Repositories\Models\ProductDoc;
 use App\Inv\Repositories\Models\Master\Bank;
 use App\Inv\Repositories\Models\DeoLevelStates;
 /**
@@ -80,13 +81,16 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     if (empty($documentId) || !ctype_digit($documentId)) {
       throw new BlankDataExceptions('No Data Found');
     }
-    $result = Documents::find($documentId);
+    $result = Documents::with('product_document')
+            ->where('id', $documentId)
+            ->first();
+
     return $result ?: false;
   }
 
   public function getAllDocuments()
   {
-    $result = Documents::orderBy('id', 'DESC');
+    $result = Documents::with('product_document.product')->orderBy('id', 'DESC');
     return $result ?: false;
   }
 
@@ -94,6 +98,29 @@ class MasterRepository extends BaseRepositories implements MasterInterface
   {
     $status = Documents::create($attributes);
     return $status ?: false;
+  }
+
+  public function updateProductDocuments($productIds, $docId)
+  {
+
+    $product = ProductDoc::where('doc_id', $docId)
+            ->update(['is_active' => 0]);
+    if(!empty($productIds)) {
+        foreach ($productIds as $productId) {
+            $result = ProductDoc::updateOrCreate(
+                [
+                    'product_id' => $productId, 
+                    'doc_id' => $docId
+                ], 
+                [
+                    'product_id' => $productId, 
+                    'doc_id' => $docId, 
+                    'is_active' => 1
+                ]);
+        }
+    }
+
+    return true;
   }
 
   public function updateDocuments($attributes, $documentId)
@@ -394,6 +421,14 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function deleteDeoLevelStates($attributes)
     {
         return DeoLevelStates::deleteDeoLevelStates($attributes);
+    }
+
+
+    public function getActiveProducts()
+    {
+        $result = Product::where('is_active', 1)
+                ->get();
+        return $result ?: false;
     }
 
 }

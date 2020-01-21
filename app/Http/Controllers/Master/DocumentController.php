@@ -22,19 +22,31 @@ class DocumentController extends Controller {
     }
 
     public function addDocument(){
-    	return view('master.documents.add_documents');
+        $products = $this->masterRepo->getActiveProducts();
+    	return view('master.documents.add_documents', ['products' => $products]);
     }
 
     public function editDocument(Request $request){
         $document_id = preg_replace('#[^0-9]#', '', $request->get('id'));
         $document_data = $this->masterRepo->findDocumentById($document_id);
-    	return view('master.documents.edit_documents',['document_data' => $document_data]);
+        $products = $this->masterRepo->getActiveProducts();
+        $documentProductIds = [];
+        foreach ($document_data->product_document as $value) {
+            $documentProductIds[] = $value->product_id;
+        }
+        // dd($documentProductIds);
+    	return view('master.documents.edit_documents',[
+                'document_data' => $document_data,
+                'documentProductIds' => $documentProductIds,
+                'products' => $products
+                ]);
     }
 
 
     public function saveDocuments(Request $request) {
         try {
             $arrDocumentsData = $request->all();
+            // dd($arrDocumentsData);
             $status = false;
             $document_id = false;
             if(!empty($request->get('id'))){
@@ -43,12 +55,14 @@ class DocumentController extends Controller {
                 if (!empty($document_data)) {
                     $arrDocumentsData['updated_by'] = Auth::user()->user_id;
                     $status = $this->masterRepo->updateDocuments($arrDocumentsData, $document_id);
+                    $result = $this->masterRepo->updateProductDocuments($arrDocumentsData['product_ids'], $document_id);
                 }
             }else{
                $arrDocumentsData['created_by'] = Auth::user()->user_id;
                $status = $this->masterRepo->saveDocuments($arrDocumentsData); 
+               $result = $this->masterRepo->updateProductDocuments($arrDocumentsData['product_ids'], $status->id);
             }
-            if($status){
+            if($result){
                 Session::flash('message', $document_id ? trans('master_messages.documents_edit_success') :trans('master_messages.documents_add_success'));
                 return redirect()->route('get_documents_list');
             }else{

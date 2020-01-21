@@ -57,9 +57,9 @@
 													<th>Inv. Ref. No.</th>
 													<th>Due Date</th>
 													<th>Inv. Amount</th>
-													<th>Funded Amount</th>
+													<th>disbursed Amount</th>
 													<th>Disb. Status</th>
-													<th>Disb. Amount</th>
+													<th>actual funded Amount</th>
 													<th>Collection Date</th>
 													<th>Collection Amount</th>
 													<th>Accured Intrest</th>
