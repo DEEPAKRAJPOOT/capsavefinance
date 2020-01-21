@@ -811,3 +811,15 @@ ul.listing.listing1 li{float:left; width:33.33%;}
     width: 40%;
     float: left;
 }
+.multiselect-native-select .btn-group{width: 100%;}
+.multiselect.dropdown-toggle{       width: 100%;
+    text-align: left;
+    background: no-repeat;
+    border: #d8d8d8 solid 1px;
+    color: #495057;
+    font-size: 13px; letter-spacing: 1px;}
+    .dropdown-toggle::after {
+  
+    float: right;
+    margin-top: 9px;
+}
