@@ -77,8 +77,26 @@
 @endsection
 
 @section('jscript')
-<script>
 
+@php 
+$operation_status = session()->get('operation_status', false);
+@endphp
+@if( $operation_status == config('common.YES'))  
+  <script>
+      try {
+          var p = window.parent;       
+          p.jQuery('#editAgencyFrame').modal('hide');
+          p.jQuery('#addAgencyFrame').modal('hide');
+          window.parent.location.reload();
+      } catch (e) {
+          if (typeof console !== 'undefined') {
+              console.log(e);
+          }
+      }
+  </script>
+@endif
+
+<script>
 var messages = {
     get_agency_list: "{{ URL::route('get_ajax_agency_list') }}",       
     data_not_found: "{{ trans('error_messages.data_not_found') }}",

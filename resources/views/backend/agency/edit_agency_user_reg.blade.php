@@ -2,7 +2,7 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="editAgencyUserForm" name="editAgencyUserForm" method="POST" action="{{route('update_agency_user_reg')}}" target="_top">
+           <form id="editAgencyUserForm" name="editAgencyUserForm" method="POST" action="{{route('update_agency_user_reg')}}">
               @csrf
               <input type="hidden" name="user_id" value="{{request()->get('user_id')}}">
               <div class="row">
@@ -12,6 +12,9 @@
                        <span class="mandatory">*</span>
                        </label>
                        <input type="text" name="f_name" id="f_name" value="{{old('f_name', $agencyUser->f_name)}}" class="form-control employee" tabindex="1" placeholder="First Name" >
+                       @error('f_name')
+                          <span class="error">{{ $message }}</span>
+                       @enderror
                     </div>
                  </div>
                  <div class="col-6">
@@ -20,6 +23,9 @@
                        <span class="mandatory">*</span>
                        </label>
                        <input type="text" name="l_name" id="l_name" value="{{old('l_name', $agencyUser->l_name)}}" class="form-control employee" tabindex="2" placeholder="Last Name" >
+                       @error('l_name')
+                          <span class="error">{{ $message }}</span>
+                       @enderror
                     </div>
                  </div>
               </div>
@@ -29,7 +35,10 @@
                      <label for="txtEmail">Email
                      <span class="mandatory">*</span>
                      </label>
-                     <input type="email" name="email" id="email" value="{{old('email', $agencyUser->email)}}" class="form-control email" tabindex="3" placeholder="Email" disabled>
+                     <input type="email" name="email" id="email" value="{{old('email', $agencyUser->email)}}" class="form-control email" tabindex="3" placeholder="Email" readonly>
+                     @error('email')
+                        <span class="error">{{ $message }}</span>
+                    @enderror
                   </div>
                </div>
 
@@ -39,6 +48,9 @@
                         <span class="mandatory">*</span>
                         </label>
                         <input class="form-control numbercls phone" name="mobile_no" id="mobile_no" value="{{old('mobile_no', $agencyUser->mobile_no)}}" tabindex="4" type="text" maxlength="10" placeholder="Mobile" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        @error('mobile_no')
+                          <span class="error">{{ $message }}</span>
+                       @enderror
                      </div>
                   </div>
             </div>
@@ -62,6 +74,9 @@
                           <option value="{{$agency->agency_id}}" {{(old('agency_id', $agencyUser->agency_id) == $agency->agency_id)? 'selected': ''}}> {{$agency->comp_name}} </option>
                           @endforeach
                         </select>
+                        @error('agency_id')
+                          <span class="error">{{ $message }}</span>
+                       @enderror
                     </div>
                  </div>
                 </div>

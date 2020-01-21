@@ -2376,5 +2376,75 @@ class DataRenderer implements DataProviderInterface
                         })
                         ->make(true);
     }
+    
+    
+    function getColenderList($request, $data)
+    {
+        return DataTables::of($data)
+                        ->rawColumns(['action', 'is_active','email' ,'action' ,'status'])
+                        ->editColumn(
+                                'co_lender_id',
+                                function ($data) {
+                            return $data->co_lender_id;
+                        })
+                        ->editColumn(
+                                'f_name',
+                                function ($data) {
+                            return $data->f_name;
+                        })
+                        ->editColumn(
+                                'biz_name',
+                                function ($data) {
+                            return $data->biz_name;
+                        })
+                        ->editColumn(
+                                'email',
+                                function ($data) {
+                            return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >" . $data->comp_email . "</a> ";
+                        })
+                        ->editColumn(
+                                'comp_phone',
+                                function ($user) {
+                            $achorId = $user->comp_phone;
+                            return $achorId;
+                        })
+                        ->editColumn(
+                                'created_at',
+                                function ($user) {
+                            return ($user->created_at) ? date('d-M-Y', strtotime($user->created_at)) : '---';
+                        })
+                        ->editColumn(
+                                'status',
+                                function ($user) {
+                            
+                          
+                            if ($user->is_active) {
+                                return '<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
+                            } else {
+                                return '<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">In Active</label>
+                                             
+                                          </div></b>';
+                            }
+                        })
+                        ->editColumn(
+                                'action',
+                                function ($data) {
+                            $act = '';
+                             if (Helpers::checkPermission('add_co_lender')) {
+                                $act .= '<a data-toggle="modal"  data-height="550px" 
+                           data-width="100%" 
+                           data-target="#addcolenders"
+                           data-url="' . route('add_co_lender', ['co_lender_id' => $data->co_lender_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Co-lender"><i class="fa fa-edit"></i></a>';
+                            }
+                            
+                            return $act;
+                           
+                        })
+                        ->make(true);
+    }
 
 }

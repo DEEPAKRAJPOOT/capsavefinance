@@ -311,6 +311,36 @@ class UserEventsListener extends BaseEvent
         }
     } 
     
+    
+    
+    /**
+     * co lender user mail
+     * 
+     * @param Array $attributes
+     */
+    public function coLenderUserRegMail($attributes)
+    {
+       $data = unserialize($attributes); 
+        $email_content = EmailTemplate::getEmailTemplate("CO_Lender_REGISTER_USER_MAIL");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name', '%email','%password'],
+                [ucwords($data['name']),$data['email'],$data['password']],
+                $email_content->message
+            );
+
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($data, $email_content) {
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($data["email"], $data["name"])->subject($email_content->subject);
+            });
+        }
+       
+       
+    }
+    
 
     /**
      * Event subscribers
@@ -378,6 +408,14 @@ class UserEventsListener extends BaseEvent
             'AGENCY_USER_REGISTER_MAIL',
             'App\Inv\Repositories\Events\UserEventsListener@onAgencyUserRegisterSuccess'
         );
+        
+        
+         $events->listen(
+            'CO_LENDER_USER_REGISTER_MAIL',
+            'App\Inv\Repositories\Events\UserEventsListener@coLenderUserRegMail'
+        );
+        
+        
         
         //
     }

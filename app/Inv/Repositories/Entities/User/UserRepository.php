@@ -26,6 +26,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use DB;
+use App\Inv\Repositories\Models\CoLenderUsers;
 
 class UserRepository extends BaseRepositories implements UserInterface
 {
@@ -1347,12 +1348,12 @@ class UserRepository extends BaseRepositories implements UserInterface
     }
 
     public function saveAgency($attributes){
-        $status = Agency::create($attributes);
+        $status = Agency::creates($attributes);
         return $status ?: false;
     }
 
     public function updateAgency($attributes, $agency_id){
-        $status = Agency::whereAgencyId($agency_id)->update($attributes);
+        $status = Agency::updateAgency($attributes, $agency_id);
         return $status ?: false;
     }
 
@@ -1473,6 +1474,41 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getAssignedSalesManager($userId)
     {
         return LeadAssign::getAssignedSalesManager($userId);
+    }
+    
+    /**
+     * Save co lender users
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+    public function saveColenderUsers($attributes ,  $id)
+    {
+        return CoLenderUsers::saveColenderUsers($attributes , $id);
+    }
+    
+    
+    /**
+     * get colender list
+     * 
+     * @return mixed
+     */
+    
+    public function getColenderList()
+    {
+        return CoLenderUsers::getColenderList();
+    }
+    
+    
+    /**
+     * get co lender data
+     * 
+     * @param array $where
+     * @return mixed
+     */
+    public function getCoLenderData($where)
+    {
+       return CoLenderUsers::getCoLenderData($where);  
     }
        
 }

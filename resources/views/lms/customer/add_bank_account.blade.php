@@ -6,7 +6,8 @@ Form::open(
 'route' => 'save_bank_account',
 'name' => 'bank_account',
 'autocomplete' => 'off', 
-'id' => 'bank_account'
+'id' => 'bank_account',
+'files' => true
 ]
 )
 !!}
@@ -80,9 +81,17 @@ Form::open(
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod">Status</label><br>
+                <label for="txtCreditPeriod">Status</label> <span class="mandatory">*</span><br>
+                
                 {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($bankAccount->is_active) ? $bankAccount->is_active : null,['class'=>'form-control form-control-sm']) !!}
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="txtCreditPeriod">Upload</label>  <span class="mandatory">*</span><br>
+               
+                 <input type="file" {{isset($bankAccount->bank_account_id) ?  null : 'required' }} class="form-control" id="customFile" name="doc_file">
             </div>
         </div>
     </div>
@@ -115,8 +124,11 @@ try {
 @endif
 
 <script>
+    
+   
 
     $(function () {
+        
         $("form[name='bank_account']").validate({
             rules: {
                 'acc_name': {
@@ -150,6 +162,7 @@ try {
                     required: true,
 
                 },
+               
             },
             messages: {
                 confim_acc_no:{
