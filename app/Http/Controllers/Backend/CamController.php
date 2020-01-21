@@ -13,6 +13,8 @@ use App\Inv\Repositories\Models\Cam;
 use App\Libraries\Perfios_lib;
 use App\Libraries\Bsa_lib;
 use App\Libraries\MobileAuth_lib;
+use PHPExcel;
+use PHPExcel_IOFactory;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
@@ -20,6 +22,7 @@ use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\CamHygiene;
 use Auth;
 use Session;
+use Storage;
 use App\Libraries\Gupshup_lib;
 date_default_timezone_set('Asia/Kolkata');
 use Helpers;
@@ -158,14 +161,31 @@ class CamController extends Controller
        );
     }
 
+    public function _getXLSXTable($appId, $fileType = 'finance'){
+     $objPHPExcel =  new PHPExcel();
+     $files = $this->getLatestFileName($appId, $fileType, 'xlsx');
+     $file_name = $files['curr_file'];
+     $inputFileName = $this->getToUploadPath($appId, 'finance').'/'.$file_name;
+     $objPHPExcel = PHPExcel_IOFactory::load($inputFileName);
+     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'HTML');
+     $objWriter->setSheetIndex(0);
+     $html =  $objWriter->dump();
+     return $html;
+    }
+
     public function finance(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
+        $xlsx_html = $this->_getXLSXTable($appId,'finance');
+        $json_files = $this->getLatestFileName($appId,'finance', 'json');
+        $active_json_filename = $json_files['curr_file'];
+        $xlsx_files = $this->getLatestFileName($appId,'finance', 'xlsx');
+        $active_xlsx_filename = $xlsx_files['curr_file'];
         $bizId = $request->get('biz_id');
         $pending_rec = $fin->getPendingFinanceStatement($appId);
         $financedocs = $fin->getFinanceStatements($appId);
         $contents = array();
-        if (file_exists(storage_path('app/public/user/'.$appId.'_finance.json'))) {
-          $contents = json_decode(base64_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_finance.json'))),true);
+        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
+          $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)),true);
         }
         $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
         $latest_finance_year = 2010;
@@ -185,7 +205,10 @@ class CamController extends Controller
           'borrower_name'=> $borrower_name,
           'finance_data'=> $financeData,
           'latest_finance_year'=> $latest_finance_year,
-          'finDetailData'=>$finDetailData
+          'finDetailData'=>$finDetailData,
+          'active_xlsx_filename'=> $active_xlsx_filename,
+          'active_json_filename'=> $active_json_filename,
+          'xlsx_html'=> $xlsx_html,
         ]);
 
     }
@@ -216,13 +239,49 @@ class CamController extends Controller
         }
     }
 
+
+    public function getLatestFileName($appId, $fileType='banking', $extType='json'){
+      $files = scandir($this->getToUploadPath($appId, $fileType), SCANDIR_SORT_DESCENDING);
+      $files = array_diff($files, [".", ".."]);
+      $filename = "";
+      if (!empty($files)) {
+        foreach ($files as $key => $file) {
+          $fileparts = pathinfo($file);
+          $filename = $fileparts['filename'];
+          $ext = $fileparts['extension'];
+          if ($extType == $ext) {
+             break;
+          }
+        }
+      }
+      $included_no = preg_replace('#[^0-9]+#', '', $filename);
+      $file_no = str_replace($appId, '', $included_no);
+      if (empty($file_no) && empty($filename)) {
+        $new_file = $appId.'_'.$fileType.".$extType";
+        $curr_file = '';
+      }else{
+        $file_no = (int)$file_no + 1;
+        $curr_file = $filename.".$extType";
+        $new_file = $appId.'_'.$fileType.'_'.$file_no . ".$extType";
+      }
+      $fileArr = array(
+        'curr_file' => $curr_file,
+        'new_file' => $new_file,
+      );
+      return $fileArr;
+    }
+
     public function banking(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
+        $json_files = $this->getLatestFileName($appId,'banking', 'json');
+        $active_json_filename = $json_files['curr_file'];
+        $xlsx_files = $this->getLatestFileName($appId,'banking', 'xlsx');
+        $active_xlsx_filename = $xlsx_files['curr_file'];
         $pending_rec = $fin->getPendingBankStatement($appId);        
         $bankdocs = $fin->getBankStatements($appId);
         $contents = array();
-        if (file_exists(storage_path('app/public/user/'.$appId.'_banking.json'))) {
-          $contents = json_decode(base64_decode(file_get_contents(storage_path('app/public/user/'.$appId.'_banking.json'))),true);
+        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
+          $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'.$active_json_filename)),true);
         }
         $customers_info = [];
         if (!empty($contents)) {
@@ -245,6 +304,8 @@ class CamController extends Controller
           'pending_rec'=> $pending_rec,
           'bank_data'=> $contents,
           'customers_info'=> $customers_info,
+          'active_xlsx_filename'=> $active_xlsx_filename,
+          'active_json_filename'=> $active_json_filename,
           ]);
     }
 
@@ -588,6 +649,16 @@ class CamController extends Controller
         return $files;
     }
 
+    private function getToUploadPath($appId, $type = 'banking'){
+      $touploadpath = storage_path('app/public/user/docs/'.$appId);
+      if(!Storage::exists('public/user/docs/' .$appId)) {
+          Storage::makeDirectory('public/user/docs/' .$appId.'/banking', 0777, true);
+          Storage::makeDirectory('public/user/docs/' .$appId.'/finance', 0777, true);
+          $touploadpath = storage_path('public/user/docs/' .$appId);
+      }
+      return $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+    }
+
     private function _callBankApi($filespath, $appId){
         $user = FinanceModel::getUserByAPP($appId);
         $loanAmount = (int)$user['loan_amt'];
@@ -688,7 +759,10 @@ class CamController extends Controller
            return $final_res;
         }
 
-        $file_name = $appId.'_banking.xlsx';
+
+
+        $nameArr = $this->getLatestFileName($appId, 'banking', 'xlsx');
+        $file_name = $nameArr['new_file'];
         $req_arr = array(
           'perfiosTransactionId' => $init_txn['perfiostransactionid'],
           'types' => 'xlsx',
@@ -701,17 +775,18 @@ class CamController extends Controller
               $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
               return $final_res;
           }
-          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']); 
+          $myfile = fopen($this->getToUploadPath($appId,'banking') .'/'.$file_name, "w");
+          \File::put($this->getToUploadPath($appId,'banking') .'/'.$file_name, $final_res['result']); 
         }
-        $file= url('storage/user/'. $file_name);
+        $file= url("storage/user/docs/$appId/banking/". $file_name);
         $req_arr['types'] =  $reportType;
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         if ($final_res['status'] == 'success') {
           $final_res['result'] = base64_encode($final_res['result']);
-          $json_file_name = $appId.'_banking.json';
-          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
+          $nameArr = $this->getLatestFileName($appId, 'banking', 'json');
+          $json_file_name = $nameArr['new_file'];
+          $myfile = fopen($this->getToUploadPath($appId, 'banking') .'/'.$json_file_name, "w");
+          \File::put($this->getToUploadPath($appId, 'banking') .'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => Auth::user()->user_id,
@@ -820,7 +895,9 @@ class CamController extends Controller
            $final_res['api_type'] = Perfios_lib::CMPLT_TXN;
            return $final_res;
         }
-        $file_name = $appId.'_finance.xlsx';
+
+        $nameArr = $this->getLatestFileName($appId, 'finance', 'xlsx');
+        $file_name = $nameArr['new_file'];
         $req_arr = array(
             'apiVersion' => $apiVersion,
             'vendorId' => $vendorId,
@@ -836,17 +913,19 @@ class CamController extends Controller
               $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
               return $final_res;
           }
-          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
+          $myfile = fopen($this->getToUploadPath($appId, 'finance') .'/'.$file_name, "w");
+          \File::put($this->getToUploadPath($appId, 'finance') .'/'.$file_name, $final_res['result']);
         }
-        $file= url('storage/user/'. $file_name);
+        $file= url("storage/user/docs/$appId/finance/". $file_name);
         $req_arr['reportType'] = $reportType;
         $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
         if ($final_res['status'] == 'success') {
           $final_res['result'] = base64_encode($final_res['result']);
-          $json_file_name = $appId.'_finance.json';
-          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
+
+          $nameArr = $this->getLatestFileName($appId, 'finance', 'json');
+          $json_file_name = $nameArr['new_file'];
+          $myfile = fopen($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, "w");
+          \File::put($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => Auth::user()->user_id,
@@ -875,7 +954,8 @@ class CamController extends Controller
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_finance.xlsx';
+        $nameArr = $this->getLatestFileName($appId, 'finance', 'xlsx');
+        $file_name = $nameArr['new_file'];
         $req_arr = array(
               'apiVersion' => $apiVersion,
               'vendorId' => $vendorId,
@@ -891,11 +971,11 @@ class CamController extends Controller
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
               return response()->json(['message' => $final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
           }else{
-            $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-            \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
+            $myfile = fopen($this->getToUploadPath($appId, 'finance') .'/'.$file_name, "w");
+            \File::put($this->getToUploadPath($appId, 'finance') .'/'.$file_name, $final_res['result']);
           }
         }
-        $file= url('storage/user/'. $file_name);
+        $file= url("storage/user/docs/$appId/finance/". $file_name);
         $req_arr['reportType'] = 'json';
         $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
         $final_res['api_type'] = Perfios_lib::GET_STMT;
@@ -904,9 +984,10 @@ class CamController extends Controller
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
           $final_res['result'] = base64_encode($final_res['result']);
-          $json_file_name = $appId.'_finance.json';
-          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
+          $nameArr = $this->getLatestFileName($appId, 'finance', 'json');
+          $json_file_name = $nameArr['new_file'];
+          $myfile = fopen($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, "w");
+          \File::put($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => Auth::user()->user_id,
@@ -935,8 +1016,8 @@ class CamController extends Controller
         $bsa = new Bsa_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_banking.xlsx';
-
+        $nameArr = $this->getLatestFileName($appId, 'banking', 'xlsx');
+        $file_name = $nameArr['new_file'];
         $req_arr = array(
           'perfiosTransactionId' => $perfiostransactionid,
           'types' => 'xlsx',
@@ -959,11 +1040,11 @@ class CamController extends Controller
               FinanceModel::insertPerfios($log_data);
               return response()->json(['message' => $final_res['message'] ?? 'Something went wrong','status' => 0,'value'=>['file_url'=>'']]);
           }else{
-             $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-             \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
+             $myfile = fopen($this->getToUploadPath($appId, 'finance') .'/'.$file_name, "w");
+             \File::put($this->getToUploadPath($appId, 'finance') .'/'.$file_name, $final_res['result']);
           }
         }
-        $file= url('storage/user/'. $file_name);
+        $file= url("storage/user/docs/$appId/banking/". $file_name);
         $req_arr['types'] = 'json'; 
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['api_type'] = Bsa_lib::GET_REP;
@@ -972,9 +1053,10 @@ class CamController extends Controller
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
           $final_res['result'] = base64_encode($final_res['result']);
-          $json_file_name = $appId.'_banking.json';
-          $myfile = fopen(storage_path('app/public/user').'/'.$json_file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$json_file_name, $final_res['result']);
+          $nameArr = $this->getLatestFileName($appId, 'banking', 'json');
+          $json_file_name = $nameArr['new_file'];
+          $myfile = fopen($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, "w");
+          \File::put($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => Auth::user()->user_id,
