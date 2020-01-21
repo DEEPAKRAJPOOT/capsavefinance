@@ -101,7 +101,7 @@ class AppDocument extends BaseModel
      */
     public static function saveAppRequiredDocs($attributes) 
     {        
-        return self::insert($attributes);
+        return self::create($attributes);
     }
  
     /**

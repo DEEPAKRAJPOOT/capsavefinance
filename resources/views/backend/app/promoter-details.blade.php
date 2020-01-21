@@ -826,6 +826,7 @@
            }
        }
         var form = $("#signupForm");
+        alert("hii");
         $('.isloader').show();
         $.ajax({
         type: "POST",
@@ -836,6 +837,7 @@
                 {
 
                 $('.isloader').hide();
+                return false;
 //                var ownerNull = false;
 //                $(".owneridDynamic").each(function(k, v){
 //                var GetVal = $(this).val();
