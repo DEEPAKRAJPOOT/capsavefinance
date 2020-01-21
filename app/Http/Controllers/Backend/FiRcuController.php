@@ -135,7 +135,7 @@ class FiRcuController extends Controller
      */
     public function showAssignRcu(Request $request)
     {
-        $agencies = $this->appRepo->getAllAgency();
+        $agencies = $this->appRepo->getAllAgency('rcu');
         $agency_users = $this->userRepo->getAllAgencyUsers();
         
         return view('backend.fircu.rcu_trigger')->with(['agencies'=>$agencies, 'agency_users'=>$agency_users]);   

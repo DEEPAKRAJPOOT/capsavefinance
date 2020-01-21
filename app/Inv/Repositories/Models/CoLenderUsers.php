@@ -61,7 +61,7 @@ class CoLenderUsers extends BaseModel {
         'comp_phone',
         'doc_name',
         'gst',
-        'percentage',
+        'pan_no',
         'is_active',
         'created_by',
         'created_at',

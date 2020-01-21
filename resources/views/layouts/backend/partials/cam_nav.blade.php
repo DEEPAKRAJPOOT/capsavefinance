@@ -8,6 +8,12 @@
         </li>
       @endcan
     
+      @can('reviewer_summary')
+        <li>
+            <a href="{{route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'reviewer_summary' ? 'active' : ''}}">Reviewer Summary</a>
+        </li>
+      @endcan
+
         <li>
             <a href="{{route('anchor_view', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{$route_name == 'anchor_view' ? 'active' : '' }}">Anchor</a>
         </li>

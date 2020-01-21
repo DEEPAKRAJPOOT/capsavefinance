@@ -2,7 +2,7 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_reg')}}" onsubmit="return checkValidation();" target="_top" enctype="multipart/form-data">
+           <form id="anchorForm" name="anchorForm" method="POST" {{-- onsubmit="return checkValidation();"--}} action="{{route('add_anchor_reg')}}" target="_top" enctype="multipart/form-data">
 		@csrf
                         <div class="row">
                            <div class="col-6">
@@ -137,11 +137,10 @@
                            </div>   
                            <div class="col-6">
                               <div class="form-group">
-                                 <label for="txtCreditPeriod">Upload Document {{--<span class="error_message_label">*</span> --}} </label>
+                                 <label for="txtCreditPeriod">Upload CAM <small>(Allowed Formats: JPG,PNG,PDF)</small><span class="error_message_label">*</span></label>
                                  <div class="custom-file">
-                                    <label for="email">Upload Document</label>
-                                    <input type="file" class="custom-file-input" id="anchorDocFile" name="doc_file">
-                                    <label class="custom-file-label" for="anchorDocFile">Choose file</label>
+                                    <input type="file" class="custom-file-input" id="doc_file" name="doc_file">
+                                    <label class="custom-file-label" for="customFile">Choose file</label>
                                  </div>
                              </div>
                            </div>                       
@@ -161,6 +160,7 @@
 
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script>
 
     var messages = {
@@ -190,13 +190,13 @@
                             {
                                 required: true,
                                  email: true,
-//                                remote: {
-//                                url: messages.check_exist_user,
-//                                type: 'post',
-//                                data: {
-//                                'username': $('#email').val()
-//                                }
-//                            }
+                              // remote: {
+                              // url: messages.check_exist_user,
+                              // type: 'post',
+                              // data: {
+                              // 'username': $('#email').val()
+                              //}
+                           //}
                             
                             })
                 });
@@ -239,12 +239,32 @@
                             {
                                 required: true,
                             })
-                });                
-                // test if form is valid                
-            })
+                });                   
+            });
             //$("#btnAddMore").on('click', addInput);
-            $('form#anchorForm').validate();
-        });
+            $('form#anchorForm').validate(
+               {
+                  rules: {
+                     doc_file: {
+                        required: true,
+                        extension: "jpg,jpeg,png,pdf",
+                     }
+                  },
+                  messages: {
+                     doc_file: {
+                        required: "Please select file",
+                        extension:"Invalid file format",
+                     }
+                  }
+               }
+            );
 
+        });
+</script>
+<script type="text/javascript">
+   $(".custom-file-input").on("change", function() {
+   var fileName = $(this).val().split("\\").pop();
+   $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+   });
 </script>
 @endsection

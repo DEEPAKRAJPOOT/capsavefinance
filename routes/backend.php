@@ -383,6 +383,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@saveFinanceDetail'
                 ]);
 
+                Route::get('reviewer-summary', [
+                    'as' => 'reviewer_summary',
+                    'uses' => 'Backend\CamController@reviewerSummary'
+                ]);
+
+                Route::post('save-reviewer-summary', [
+                    'as' => 'save_reviewer_summary',
+                    'uses' => 'Backend\CamController@saveReviewerSummary'
+                ]);
+
                 Route::get('gstin', [
                     'as' => 'cam_gstin',
                     'uses' => 'Backend\CamController@gstin'

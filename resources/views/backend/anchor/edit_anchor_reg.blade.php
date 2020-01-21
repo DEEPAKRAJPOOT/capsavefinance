@@ -152,10 +152,9 @@
                       
                            <div class="col-6">
                               <div class="form-group">
-                                 <label for="txtCreditPeriod">Upload Document {{-- <span class="error_message_label">*</span>--}}</label>
+                                 <label for="txtCreditPeriod">Upload CAM <small>(Allowed Formats: JPG,PNG,PDF)</small><span class="error_message_label">*</span></label>
                                  <div class="custom-file">
-                                    <label for="email">Upload Document</label>
-                                    <input type="file" class="custom-file-input" id="customFile" name="doc_file">
+                                    <input type="file" class="custom-file-input" id="doc_file" name="doc_file" >
                                     <label class="custom-file-label" for="customFile">Choose file</label>
                                  </div>
                              </div>
@@ -180,6 +179,7 @@
 
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script>
 
     var messages = {
@@ -249,12 +249,31 @@
                 // test if form is valid                
             })
             //$("#btnAddMore").on('click', addInput);
-            $('form#anchorForm').validate();
+            $('#editAchorForm').validate( {
+                  rules: {
+                     doc_file: {
+                        required: true,
+                        extension: "jpg,jpeg,png,pdf",
+                     }
+                  },
+                  messages: {
+                     doc_file: {
+                        required: "Please select file",
+                        extension:"Invalid file format",
+                     }
+                  }
+               });
         });
 $(document).ready(function(){
   $("#email").click(function(){
     $("#email").attr("readonly","readonly");  
   });  
 })
+</script>
+<script type="text/javascript">
+   $(".custom-file-input").on("change", function() {
+   var fileName = $(this).val().split("\\").pop();
+   $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+   });
 </script>
 @endsection

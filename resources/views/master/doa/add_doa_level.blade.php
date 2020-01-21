@@ -111,7 +111,7 @@
     <div class="row parent_role_div">
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Select Role
+                <label for="txtCreditPeriod"> Select Approval Role
                     <span class="mandatory">*</span>
                 </label>                                                
                 {!!
@@ -128,7 +128,7 @@
         </div> 
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Select Role Users
+                <label for="txtCreditPeriod"> Select Approval Role Users
                     <span class="mandatory">*</span>
                 </label>                            
                  <br>
@@ -158,7 +158,7 @@
     <div class="row parent_role_div">
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Select Role
+                <label for="txtCreditPeriod"> Select Approval Role
                     <span class="mandatory">*</span>
                 </label>                                                
                 {!!
@@ -174,7 +174,7 @@
         </div> 
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Select Role Users
+                <label for="txtCreditPeriod"> Select Approval Role Users
                     <span class="mandatory">*</span>
                 </label>            
                 <br>
@@ -245,6 +245,7 @@ Form::close()
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 <script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
+<script src="{{ asset('backend/js/common.js') }}" type="text/javascript"></script>
 
 <script>
 var messages = {
@@ -536,6 +537,9 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (result) {
                 var optionList = result.data;
+                if(result.success == false){
+                     customAlert('Alert!', result.messges);
+                }
                 selector.parents('.parent_role_div').find('.role_user').empty();
                 $.each(optionList, function (index, data) {
                     let check = '';
@@ -563,6 +567,7 @@ $(document).ready(function () {
     });
 
 
+                        
     $(document).on('click', '.delete_role', function () {
         var selector = $(this);
         $.confirm({
@@ -587,6 +592,11 @@ $(document).ready(function () {
         });
 
     });
+    
+    
+     if ($('.parent_role_div').length > 1) {
+           $('.delete_role').last().show();
+       }
 
 
 

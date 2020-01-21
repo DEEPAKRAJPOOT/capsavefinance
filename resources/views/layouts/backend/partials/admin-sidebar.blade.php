@@ -13,22 +13,8 @@
             </a>
 
       </li>             
-    @can('applicaiton_list')  
-        <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fa fa-files-o" aria-hidden="true"></i>
-                    <span class="menu-title">Manage FI/RCU</span>
-                   <i class="fa fa-angle-right" aria-hidden="true"></i>
-                </a>
-                <div class="collapse" id="layoutsSubmenu1">
-                    <ul class="nav flex-column sub-menu">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('applicaiton_list') }}">Applications</a>
-                        </li>
-                    </ul>
-                </div>
-         </li>
-    @endcan  
+
+
     @can('lead_list')
         <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
@@ -49,7 +35,7 @@
     @canany(['application_pool','application_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-file-image-o"></i>
+                <i class="fa fa-address-card-o"></i>
                 <span class="menu-title">Manage Application</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -62,14 +48,33 @@
                 @endcan 
                 @can('application_list')       
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('application_list') }}">Manage Application</a>
+                        <a class="nav-link" href="{{ route('application_list') }}">My Application</a>
                         </li>   
                 @endcan 
                                         
                 </ul>
             </div>
-        </li>    
+
+        </li>  
     @endcan
+
+    @can('applicaiton_list')  
+        <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-files-o" aria-hidden="true"></i>
+                    <span class="menu-title">Manage FI/RCU</span>
+                   <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+                <div class="collapse" id="layoutsSubmenu1">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('applicaiton_list') }}">FI/RCU Applications</a>
+                        </li>
+                    </ul>
+                </div>
+         </li>
+    @endcan  
+
     @canany(['get_anchor_list','get_anchor_lead_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
@@ -94,10 +99,11 @@
             </div>
         </li>
     @endcan
+
     @can('get_co_lenders')
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="fa fa-handshake-o" aria-hidden="true"></i>
                 <span class="menu-title">Manage Co-lenders</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -110,6 +116,7 @@
             </div>
         </li>
     @endcan
+    
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu20" aria-expanded="true" aria-controls="collapseExample">
               <i class="fa fa-user-plus" aria-hidden="true"></i>
@@ -127,7 +134,7 @@
         </li>
          <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu123" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="fa fa-file-text-o" aria-hidden="true"></i>
                 <span class="menu-title">Manage Invoice</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -145,7 +152,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuDisbursal" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="fa fa-bank" aria-hidden="true"></i>
                 <span class="menu-title">Manage Disbursal</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
