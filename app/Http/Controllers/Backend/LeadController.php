@@ -12,8 +12,11 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Http\Requests\AnchorRegistrationFormRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Event;
 use App\Http\Requests\Backend\CreateLeadRequest;
+use App\Inv\Repositories\Models\UserDoc;
+use Illuminate\Support\Facades\Validator;
 
 class LeadController extends Controller {
 
@@ -25,12 +28,13 @@ class LeadController extends Controller {
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo) {
+    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo,InvDocumentRepoInterface $doc_repo) {
         $this->middleware('guest')->except('logout');
         $this->middleware('checkBackendLeadAccess');
 
         $this->userRepo = $user;
         $this->appRepo = $app_repo;
+        $this->docRepo = $doc_repo;
     }
 
     /**
@@ -66,8 +70,7 @@ class LeadController extends Controller {
                 $userInfo = $this->userRepo->getUserDetail($user_id);
                 $arr['full_name'] = $userInfo->f_name;
             }
-
-            return view('backend.edit_lead');
+            return view('backend.edit_lead')->with('userInfo', $userInfo);
         } catch (Exception $ex) {
             dd($ex);
         }
@@ -84,6 +87,22 @@ class LeadController extends Controller {
             dd($ex);
         }        
     }
+
+    // Update lead
+
+    public function updateBackendLead(Request $request) {
+        try {
+                $userId = $request->get('userId'); 
+                $attributes['f_name'] = $request->get('f_name'); 
+                $attributes['biz_name'] = $request->get('biz_name'); 
+                $userInfo = $this->userRepo->updateUser($attributes, $userId);
+                Session::flash('operation_status', 1); 
+                return view('backend.lead.index');
+        } catch (Exception $ex) {
+            dd($ex);
+        }
+    }
+
 
     /**
      * Save backend lead
@@ -267,6 +286,17 @@ class LeadController extends Controller {
         try {
             //$string = Helpers::randomPassword();
             $string = time();
+           
+            $validator = Validator::make($request->all(), [
+                'doc_file' => 'required|mimes:jpeg,jpg,png,pdf',
+            ],['doc_file.mimes'=> 'Invalid file format']);
+    
+            if ($validator->fails()) {
+                return redirect('anchor')
+                            ->withErrors($validator)
+                            ->withInput();
+            }
+           
             $arrAnchorVal = $request->all();
             $anchor_user_info = $this->userRepo->getUserByEmail($arrAnchorVal['email']);
             if(!$anchor_user_info){
@@ -306,18 +336,44 @@ class LeadController extends Controller {
                     $role['role_id'] = 11;
                     $role['user_id'] = $anchor_user_info->user_id;
                     $rr = $this->userRepo->addNewRoleUser($role);
+                    if($request->doc_file){
+                        self::uploadAnchorDoc($request->all(), $role['user_id'] ,$anchor_info);
+                    }
+
                     Session::flash('message', trans('backend_messages.anchor_registration_success'));
                     return redirect()->route('get_anchor_list');
                 }        
             }else{
-            Session::flash('error', trans('error_messages.email_already_exists'));
-            return redirect()->route('get_anchor_list');
+                Session::flash('error', trans('error_messages.email_already_exists'));
+                return redirect()->route('get_anchor_list');
             }
         
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    /**
+     *  function for upload anchor documents
+     * @param Request $arrFileData
+     * @param Int $userId
+     * @param Int $anchorId
+     * @return type
+     */
+    private function uploadAnchorDoc($arrFileData, $userId, $anchorId) {
+        $uploadData = Helpers::uploadAnchorFile($arrFileData, $anchorId);
+        $anchorFile = $this->docRepo->saveFile($uploadData);
+        if(!empty($anchorFile->file_id)) {
+
+            UserDoc::where('user_id', '=', $userId)->update(['is_active' => '0']);
+
+            UserDoc::create(array(
+                'user_id' => $userId,
+                'file_id' => $anchorFile->file_id,
+                'created_by' => \Auth::user()->user_id,
+                'updated_by' => \Auth::user()->user_id
+            ));
+        }
+    } 
 
     /**
      *  function for upload anchor lead using csv
@@ -442,6 +498,16 @@ class LeadController extends Controller {
     public function updateAnchorReg(Request $request) {
         try {
             $arrAnchorVal = $request->all();
+            $validator = Validator::make($request->all(), [
+                'doc_file' => 'mimes:jpeg,jpg,png,pdf',
+            ],['doc_file.mimes'=> 'Invalid file format']);
+    
+            if ($validator->fails()) {
+                return redirect('anchor')
+                            ->withErrors($validator)
+                            ->withInput();
+            }
+
             $anchId = $request->post('anchor_id');
             $anchId=(int)$anchId;
             $arrAnchorData = [
@@ -464,6 +530,10 @@ class LeadController extends Controller {
             ];
             $Updateanchorinfo = $this->userRepo->updateUser($arrAnchorUserData, (int) $anchorInfo->user_id);
             
+            if($request->doc_file){
+                self::uploadAnchorDoc($request->all(), $anchorInfo->user_id ,$anchId);
+            }
+
             if ($updateAnchInfo && $Updateanchorinfo) {
                 Session::flash('message', trans('backend_messages.anchor_registration_updated'));
                 return redirect()->route('get_anchor_list');

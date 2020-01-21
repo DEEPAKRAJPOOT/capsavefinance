@@ -25,6 +25,8 @@ date_default_timezone_set('Asia/Kolkata');
 use Helpers;
 use Illuminate\Support\Facades\Hash;
 use App\Inv\Repositories\Models\AppBizFinDetail;
+use App\Inv\Repositories\Models\CamReviewerSummary;
+use App\Inv\Repositories\Models\AppProgramLimit;
 
 class CamController extends Controller
 {
@@ -198,7 +200,7 @@ class CamController extends Controller
             if(isset($arrData['fin_detail_id']) && $arrData['fin_detail_id']){
                   $result = AppBizFinDetail::updateHygieneData($arrData, $userId);
                   if($result){
-                        Session::flash('message',trans('Finance detail updated sauccessfully'));
+                        Session::flash('message',trans('Finance detail updated successfully'));
                   }else{
                         Session::flash('message',trans('Finance detail not updated'));
                   }
@@ -214,6 +216,47 @@ class CamController extends Controller
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+
+    public function reviewerSummary(Request $request){
+      $appId = $request->get('app_id');
+      $bizId = $request->get('biz_id');
+      $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
+      $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
+      
+      return view('backend.cam.reviewer_summary', [
+        'bizId' => $bizId, 
+        'appId'=> $appId,
+        'limitOfferData'=> $limitOfferData,
+        'reviewerSummaryData'=> $reviewerSummaryData
+      ]);
+    }
+
+    public function saveReviewerSummary(Request $request) {
+      try {
+        $userId = Auth::user()->user_id;
+        $arrData = $request->all();            
+        $arrData['product_id'] = config('common.PRODUCT.LEASE_LOAN');  // For lease product
+        if(isset($arrData['cam_reviewer_summary_id']) && $arrData['cam_reviewer_summary_id']){
+              $result = CamReviewerSummary::updateData($arrData, $userId);
+              if($result){
+                    Session::flash('message',trans('Reviewer Summary updated successfully'));
+              }else{
+                    Session::flash('message',trans('Reviewer Summary not updated'));
+              }
+        }else{
+            $result = CamReviewerSummary::createData($arrData, $userId);
+            if($result){
+                    Session::flash('message',trans('Reviewer Summary saved successfully'));
+              }else{
+                    Session::flash('message',trans('Reviewer Summary not saved'));
+              }
+        }    
+        return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+      } catch (Exception $ex) {
+          return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+      }
     }
 
     public function banking(Request $request, FinanceModel $fin){

@@ -3,13 +3,18 @@
 @section('content')
 
 <div class="modal-body text-left">
-			<div class="row">
+                    <form action="{{route('update_backend_lead')}}" method="POST">
+                       @csrf
+
+                          <input type="hidden" name="userId" value="{{$userInfo->user_id}}" /> 
+			                 <div class="row">
+
                            <div class="col-6">
                               <div class="form-group">
                                  <label for="txtCreditPeriod">Full Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Full Name" required="">
+                                 <input type="text" name="f_name" id="employee" value="{{$userInfo->f_name}}" class="form-control" tabindex="1" placeholder="Full Name" required="">
                               </div>
                            </div>
                            <div class="col-6">
@@ -17,35 +22,34 @@
                                  <label for="txtSupplierName">Business Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="name" id="name" value="" class="form-control" tabindex="3" placeholder="Business Name" required="">
+                                 <input type="text" name="biz_name" id="name" value="{{$userInfo->biz_name}}" class="form-control" tabindex="3" placeholder="Business Name" required="">
                               </div>
                            </div>
                         </div>
-						<div class="row">
+						            <div class="row">
                            <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="hidden" name="send_otp" id="send-otp" value="">
-                                 <input type="email" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Email" required="">
+                                 <input type="email" name="email" id="email" value="{{$userInfo->email}}" class="form-control" tabindex="4" placeholder="Email" required="" disabled="">
                               </div>
                            </div>
-                         <!-- <div class="col-md-6">
-                              <div class="form-group password-input">
-                                 <label for="txtPassword">Password
-                                 <span class="mandatory">*</span>
-                                 </label>
-                     <input class="form-control" name="password" id="passwordRegistration" type="password" tabindex="5" placeholder="Password" oninput="removeSpace(this);">
-                              </div>
-                           </div>  -->
+                             <!-- <div class="col-md-6">
+                                  <div class="form-group password-input">
+                                     <label for="txtPassword">Password
+                                     <span class="mandatory">*</span>
+                                     </label>
+                         <input class="form-control" name="password" id="passwordRegistration" type="password" tabindex="5" placeholder="Password" oninput="removeSpace(this);">
+                                  </div>
+                               </div>  -->
                            <div class="col-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Mobile
                                     <span class="mandatory">*</span>
                                     </label>
                                    
-                                    <input class="form-control numbercls" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
+                                    <input class="form-control numbercls" name="mobile_no" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" value='{{$userInfo->mobile_no}}' required="" disabled="">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -53,10 +57,11 @@
                                        </div>
                                     </div>
                                  </div>
-                                 <input name="password" id="passwordRegistration" type="hidden" oninput="removeSpace(this);" value="nr40od5m">
+                                 
                               </div>
                         </div>
-            <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
+                        <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
+                    </form>
          </div>
      
 

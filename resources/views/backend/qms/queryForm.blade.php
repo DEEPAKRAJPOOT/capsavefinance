@@ -85,11 +85,11 @@ $messages = trans('success_messages.query_management_saved')
           'qms_cmnt' : {
                     required : true,
                 },
-          'doc_file[]': {
-                    required: true,
-                    extension: "jpg,jpeg,png,pdf,doc,dox,xls,xlsx",
-                    filesize : 200000000,
-                },
+          // 'doc_file[]': {
+          //           required: true,
+          //           extension: "jpg,jpeg,png,pdf,doc,dox,xls,xlsx",
+          //           filesize : 200000000,
+          //       },
         },
         messages: {
          'assignRoleId': {
@@ -98,11 +98,11 @@ $messages = trans('success_messages.query_management_saved')
         'qms_cmnt': {
                     required: "Please enter query.",
                 },
-          'doc_file[]': {
-                    required: "Please select file",
-                    extension:"Please select jpg,jpeg,png,pdf,doc,dox,xls,xlsx type format only.",
-                    filesize:"maximum size for upload 20 MB.",
-                },
+          // 'doc_file[]': {
+          //           required: "Please select file",
+          //           extension:"Please select jpg,jpeg,png,pdf,doc,dox,xls,xlsx type format only.",
+          //           filesize:"maximum size for upload 20 MB.",
+          //       },
          },
         submitHandler: function(form) {
           form.submit();

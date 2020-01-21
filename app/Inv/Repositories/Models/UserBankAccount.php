@@ -53,7 +53,10 @@ class UserBankAccount extends BaseModel {
         'created_by',
         'created_at',
         'updated_at',
-        'updated_by'
+        'updated_by',
+        'doc_name',
+        'doc_ext',
+        'enc_id'
     ];
 
 

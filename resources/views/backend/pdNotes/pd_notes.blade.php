@@ -2,6 +2,30 @@
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
+
+
+    <ul class="sub-menu-main pl-0 m-0">
+        @can('backend_fi')
+        <li>
+            <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">FI Residence</a>
+        </li>
+        @endcan
+        @can('backend_rcu')
+        <li>
+            <a href="{{ route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">RCU Document</a>
+        </li>
+        @endcan
+        @can('backend_fi')
+        <li>
+            <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Inspection</a>
+        </li>
+        @endcan
+        <li>
+            <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active"> Personal Discussion </a>
+        </li>
+    </ul>
+
+
 <div class="row grid-margin mt-3 mb-2">
 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
     <div class="card">

@@ -28,13 +28,18 @@
                                                     <th class="text-left" width="15%">Action</th>   
                                                 </tr> 
                                                 @forelse($arrData as $data)
+
                                                 <tr>
                                                     <td class="text-left"><div style="max-height: 100px; max-width: 1000px; overflow:auto;">{!! $data->qms_cmnt !!}</div></td>
                                                     <td class="text-left">{{ $arrRole[$data->assign_role_id] }}</td>
                                                     <td class="text-left">{{ucwords($data->f_name.' '.$data->l_name)}}</td>
                                                     <td class="text-left">{{\Carbon\Carbon::parse($data->created_at)->format('d-m-Y')}}</td>
                                                     <td>
-                                                        <a data-toggle="modal" data-target="#queryDeatailsFrame" data-url ="{{route('show_qms_details',['qms_req_id' => $data->qms_req_id ])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-left" title="Download File(s)"><i class="fa fa-download">&nbsp;</i></a>
+                                                        @if ($data['file_id'] != '')
+                                                         <a data-toggle="modal" data-target="#queryDeatailsFrame" data-url ="{{route('show_qms_details',['qms_req_id' => $data->qms_req_id ])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-left" title="Download File(s)"><i class="fa fa-download">&nbsp;</i></a>
+                                                        @endif
+
+                                                    </td>    
                                                 </tr>
                                                 @empty
                                                     <tr>
