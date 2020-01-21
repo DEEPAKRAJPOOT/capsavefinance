@@ -26,10 +26,10 @@
                               <table id="supplier-listing" class="table table-striped cell-border  no-footer overview-table mb-3" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                  <thead>
                                     <tr role="row">
-                                       <th>Condition</th>
+                                       <th>Parameter</th>
                                        <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Name: activate to sort column ascending">Criteria</th>
-                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending"> Yes/No</th>
-                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Mobile: activate to sort column ascending"> Comments</th>
+                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending"> Deviation</th>
+                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Mobile: activate to sort column ascending"> Remarks</th>
                                     </tr>
                                  </thead>
                                  <tbody>
