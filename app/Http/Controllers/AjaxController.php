@@ -2794,6 +2794,7 @@ if ($err) {
       * 
       * 
       */
+    
    public function updateInvoiceApprove(Request $request)
    {
      return  $this->invRepo->updateInvoice($request->invoice_id,$request->status);
@@ -3179,21 +3180,35 @@ if ($err) {
                 $invoice_amount  = str_replace("\n","",$invoice_amount);
                 $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
                 $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
-                 if($invoice_no=='')
+               
+               
+                 if(strlen($invoice_date) < 10)
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It Should be "dd/mm/yy" format']); 
+               } 
+               if(strlen($invoice_due_date) < 10)
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
+               } 
+                if($invoice_no=='')
                {
                     return response()->json(['status' => 0,'message' => 'Please check invoice , Invoice should not be null']); 
                } 
                 if( $invoice_due_date_validate==false)
                {
-                    return response()->json(['status' => 0,'message' => 'Please check the invoice date, It Should be "dd/mm/yy" format']); 
+                    return response()->json(['status' => 0,'message' => 'Please check the invoice date, It should be "dd/mm/yy" format']); 
                }
                if( $invoice_date_validate==false)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
                } 
-               if(strtotime(Carbon::parse($invoice_due_date)->format('d-m-Y')) < strtotime($date->format('d-m-Y')))
+                if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_due_date)) < strtotime(Carbon::parse($date)->format('d-m-Y')))
                {
-                   return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be greater from current date']); 
+                   return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It should be greater than current date']); 
+               }
+                if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_date)) > strtotime(Carbon::parse($date)->format('d-m-Y')))
+               {
+                   return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It should be less than current date']); 
                }
                 if($invoice_amount=='')
                {
@@ -3210,6 +3225,7 @@ if ($err) {
                 $data[$i]['app_id']    = $appId;
                 $data[$i]['biz_id']  = $biz_id;
                 $data[$i]['invoice_no'] = $invoice_no;
+                $data[$i]['tenor'] =  $request['tenor']; 
                 $data[$i]['invoice_due_date'] = ($invoice_due_date) ? Carbon::createFromFormat('d/m/Y', $invoice_due_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_approve_amount'] =  $invoice_amount;
@@ -3236,7 +3252,7 @@ if ($err) {
                     }
                 }  
                   else {
-                        return response()->json(['status' => 0]); 
+                        return response()->json(['status' => 0,'message' => 'Something wrong, Please try again']); 
                     }
      }
     function twoDateDiff($fdate,$tdate)

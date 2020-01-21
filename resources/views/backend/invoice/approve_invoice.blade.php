@@ -6,11 +6,7 @@
 
 
 <div class="content-wrapper">
-				
-				
-
-               
-                  <div class="col-md-12 ">
+<div class="col-md-12 ">
    <section class="content-header">
    <div class="header-icon">
       <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -123,6 +119,7 @@
                                                 <th>Supplier Name</th>
                                                 <th>Program Name</th>
                                                 <th>Invoice Date</th>
+                                                <th>Tenor</th>
                                                  <th>Invoice  Amount</th>
                                                 <th>Invoice Approve Amount</th>
                                                 <th>Status</th>

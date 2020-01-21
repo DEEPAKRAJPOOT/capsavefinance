@@ -32,6 +32,7 @@ try {
                 {data: 'supplier_name'},
                 {data: 'program_name'},
                 {data: 'invoice_date'},
+                 {data: 'tenor'},
                 {data: 'invoice_amount'},
                 {data: 'invoice_approve_amount'},
                 {data: 'status'},

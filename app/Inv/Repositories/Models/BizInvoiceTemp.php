@@ -65,6 +65,7 @@ class BizInvoiceTemp extends BaseModel
         'app_id',
         'biz_id',
         'invoice_no',
+        'tenor',
         'invoice_due_date',
         'invoice_date',
         'invoice_approve_amount',
@@ -125,6 +126,7 @@ public static function saveBulkTempInvoice($arrInvoice)
             $updateTemp =  self::where('invoice_id',$attributes['id'][$i])
                     ->update(['invoice_no' => $attributes['invoice_no'][$i],
                         'status' => 1,
+                         'tenor' => $attributes['tenor'],
                 'invoice_due_date' => ($attributes['invoice_due_date'][$i]) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'][$i])->format('Y-m-d') : '',
                 'invoice_date' => ( $attributes['invoice_date'][$i]) ? Carbon::createFromFormat('d/m/Y',  $attributes['invoice_date'][$i])->format('Y-m-d') : '',
                 'invoice_approve_amount' => $attributes['invoice_approve_amount'][$i]]
@@ -141,6 +143,7 @@ public static function saveBulkTempInvoice($arrInvoice)
                         $data->app_id    =  $result->app_id;
                         $data->biz_id  =  $result->biz_id;
                         $data->invoice_no =  $result->invoice_no;
+                        $data->tenor =  $result->tenor;
                         $data->invoice_due_date =  $result['invoice_due_date'];
                         $data->invoice_date =   $result['invoice_date'];
                         $data->invoice_amount =  $result->invoice_approve_amount;

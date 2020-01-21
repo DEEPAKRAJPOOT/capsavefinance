@@ -109,9 +109,9 @@
                                                
                                                 <th>Sr. No.</th>
                                                 <th>Invoice No</th>
-                                                 <th>Invoice Due Date</th>
-                                                <th>Invoice Date</th>
-                                                <th>Invoice  Amount</th>
+                                                   <th>Invoice Date</th>
+                                                   <th>Invoice Due Date</th>
+                                                    <th>Invoice  Amount</th>
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
@@ -424,6 +424,13 @@
            $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days in row '+count); 
            e.preventDefault();
         }
+         if(getDays < 0)
+        {
+           
+           $("#tenorMsg").show(); 
+           $("#tenorMsg").html('Invoice Due Date should be  greater than invoice date'); 
+           e.preventDefault();
+        }
          
         });
        
@@ -527,9 +534,10 @@
                        var invoice_approve_amount = "";
                     }
                    
-                    $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+v.invoice_id+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
+                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+v.invoice_id+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
                     });
                      datepickerDisFdate();
+                      datepickerDisPdate();
                     return false;
                 }
                  else if(r.status==2)

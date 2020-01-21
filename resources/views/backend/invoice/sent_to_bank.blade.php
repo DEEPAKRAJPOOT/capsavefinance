@@ -125,6 +125,7 @@
                                                 <th>Supplier Name</th>
                                                 <th>Program Name</th>
                                                 <th>Invoice Date</th>
+                                                   <th>Tenor</th>
                                                  <th>Invoice  Amount</th>
                                                 <th>Invoice Approve Amount</th>
                                                 <th>Status</th>

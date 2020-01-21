@@ -1,16 +1,7 @@
-@extends('layouts.backend.admin-layout')
-@section('additional_css')
-@endsection
+@extends('layouts.app')
 @section('content')
-
-
-
 <div class="content-wrapper">
-				
-				
-
-               
-                  <div class="col-md-12 ">
+<div class="col-md-12 ">
    <section class="content-header">
    <div class="header-icon">
       <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -30,41 +21,38 @@
    <div class="col-md-12 ">
       <div class="card">
          <div class="card-body">
-		 
-		 <ul class="nav nav-tabs" role="tablist">
-             <li class="nav-item ">
-      <a class="nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
+	 <ul class="nav nav-tabs" role="tablist">
+           <li class="nav-item ">
+      <a class="nav-link @if(Route::currentRouteName()=='get_invoice') active @endif"  href="{{Route('get_invoice')}}">Pending</a>
     </li>
     <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
+         <a class="nav-link @if(Route::currentRouteName()=='get_approve_invoice') active @endif"  href="{{Route('get_approve_invoice')}}">Approved</a>
     </li>
   <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursment Que</a>
+         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_que_invoice') active @endif"  href="{{Route('get_disbursed_que_invoice')}}">Disbursment Que</a>
     </li>
         
    <li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_sent_to_bank') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
+            <a class="nav-link @if(Route::currentRouteName()=='get_sent_to_bank') active @endif" href="{{Route('get_sent_to_bank')}}">Sent to Bank</a>
     </li>
 	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursment</a>
+            <a class="nav-link @if(Route::currentRouteName()=='get_failed_disbursed_invoice') active @endif" href="{{Route('get_failed_disbursed_invoice')}}">Failed Disbursment</a>
     </li>
-    <li class="nav-item">
-              <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
-         
+   <li class="nav-item">
+         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_invoice') active @endif"  href="{{Route('get_disbursed_invoice')}}">Disbursed</a>
     </li>
-      <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_repaid_invoice')}}">Repaid</a>
+	<li class="nav-item">
+         <a class="nav-link @if(Route::currentRouteName()=='get_repaid_invoice') active @endif" href="{{Route('get_repaid_invoice')}}">Repaid</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
+   <li class="nav-item">
+      <a class="nav-link @if(Route::currentRouteName()=='get_reject_invoice') active @endif" href="{{Route('get_reject_invoice')}}">Reject</a>
 
     </li>
   
    
   </ul>
-
-
-
+	 
+	
   <div class="tab-content">
     
     <div id="menu1" class=" active tab-pane "><br>

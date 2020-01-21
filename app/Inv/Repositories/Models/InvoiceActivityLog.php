@@ -51,7 +51,7 @@ class InvoiceActivityLog extends BaseModel {
     
   
       /* invoice activity log  */
-      public static function  saveInvoiceActivityLog($invoice_id,$status_id,$activity_name,$created_by)
+      public static function  saveInvoiceActivityLog($invoice_id,$status_id,$activity_name=null,$created_by)
       {
           if($status_id!=0)
           {

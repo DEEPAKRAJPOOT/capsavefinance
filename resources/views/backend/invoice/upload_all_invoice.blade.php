@@ -337,7 +337,7 @@ var messages = {
      if(invoice_approve_amount  > pro_limit)
      {
        
-         $("#msgProLimit").text('Invoice amount should not more then program limit');
+         $("#msgProLimit").text('Invoice amount should not more than program limit');
          $("#submit").css("pointer-events","none");
          return false;
          
@@ -438,7 +438,7 @@ var messages = {
         {
            $("#tenorMsg").show(); 
            $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor); 
-           return false;
+           e.preventDefault();
         }
       
          

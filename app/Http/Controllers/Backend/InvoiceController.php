@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Backend;
-
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -201,6 +200,7 @@ class InvoiceController extends Controller {
             'app_id'    => $appId,
             'biz_id'  => $biz_id,
             'invoice_no' => $attributes['invoice_no'],
+            'tenor' => $attributes['tenor'],
             'invoice_due_date' => ($attributes['invoice_due_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'])->format('Y-m-d') : '',
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
             'invoice_approve_amount' => $attributes['invoice_approve_amount'],

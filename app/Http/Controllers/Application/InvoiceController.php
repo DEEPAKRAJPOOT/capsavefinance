@@ -68,31 +68,55 @@ class InvoiceController extends Controller {
         
       } 
     
-      public function viewInvoice() {
-        $getAllInvoice    =   $this->invRepo->getAllAnchor();
-        $get_bus = $this->invRepo->getBusinessName();
-        return view('frontend.application.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
-                
-      }
+         public function viewInvoice() {
+           
+            $getAllInvoice    =   $this->invRepo->getAllAnchor();
+            $get_bus = $this->invRepo->getBusinessName();
+            return view('frontend.application.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+
+        }
       
        public function viewApproveInvoice() {
            
-         $getAllInvoice    =   $this->invRepo->getAllAnchor();
-              $get_bus = $this->invRepo->getBusinessName();
-        return view('frontend.application.invoice.approve_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
-                
+          $getAllInvoice    =   $this->invRepo->getAllAnchor();
+          $get_bus = $this->invRepo->getBusinessName();
+          return view('frontend.application.invoice.approve_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
       }
-       public function viewDisbursedInvoice() {
-         $getAllInvoice    =   $this->invRepo->getAllAnchor();
-              $get_bus = $this->invRepo->getBusinessName();
-        return view('frontend.application.invoice.disbursed_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
-                
+      
+       public function viewDisbursedQueInvoice() {
+            $getAllInvoice    =   $this->invRepo->getAllAnchor();
+            $get_bus = $this->invRepo->getBusinessName();
+            return view('frontend.application.invoice.disbursed_que_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+
+      }
+        public function viewSentBankInvoice() {
+        
+             $getAllInvoice    =   $this->invRepo->getAllAnchor();
+            $get_bus = $this->invRepo->getBusinessName();
+            return view('frontend.application.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+
+      }
+      public function viewFailedDisbursedInvoice() {
+        
+             $getAllInvoice    =   $this->invRepo->getAllAnchor();
+            $get_bus = $this->invRepo->getBusinessName();
+            return view('frontend.application.invoice.failed_disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+
+      }  
+      public function viewDisbursedInvoice() {
+             $getAllInvoice    =   $this->invRepo->getAllAnchor();
+            $get_bus = $this->invRepo->getBusinessName();
+            return view('frontend.application.invoice.disbursed_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
       }
        public function viewRepaidInvoice() {
-        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+            $getAllInvoice    =   $this->invRepo->getAllAnchor();
+            $get_bus = $this->invRepo->getBusinessName();
+            return view('frontend.application.invoice.repaid_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+      }
+        public function viewRejectInvoice() {
+             $getAllInvoice    =   $this->invRepo->getAllAnchor();
              $get_bus = $this->invRepo->getBusinessName();
-        return view('frontend.application.invoice.repaid_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
-                
+             return view('frontend.application.invoice.reject_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
       }
 
     
@@ -104,12 +128,43 @@ class InvoiceController extends Controller {
        return response()->json(['status' => 1,'userList' =>$get_user]);
 
       }
+      
+      
+      /* failed invoice status iframe    */
+       public function invoiceFailedStatus(Request $request){
+           dd( $request->invoice_id);
+         return view('frontend.application.invoice.invoice_failed_status');
+      }
+      
+       /* success invoice status iframe    */
+       public function invoiceSuccessStatus(Request $request){
+        
+         return view('frontend.application.invoice.invoice_success_status');
+      }
+      
+        /* update invoice amount  */
+      public function saveInvoiceAmount(Request $request)
+      {     $id = Auth::user()->user_id;
+            $attributes = $request->all();
+            $res =  $this->invRepo->updateInvoiceAmount($attributes);
+           if($res)
+           {
+                
+                  Session::flash('message', 'Invoice Amount successfully Updated');
+                  return back();
+           }
+        else {
+               Session::flash('message', 'Something wrong, Amount is not Updated');
+               return back();
+          }
+      }
         /* save bulk invoice */
       public function saveBulkInvoice(Request $request) { 
            $attributes = $request->all();
            $res =  $this->invRepo->saveBulk($attributes);
            if($res)
            {
+                 
                   Session::flash('message', 'Invoice successfully saved');
                   return back();
            }
@@ -118,9 +173,9 @@ class InvoiceController extends Controller {
                return back();
           }
           
-      }  
+      }
      /*   save invoice */
-   public function saveInvoice(Request $request) {
+    public function saveInvoice(Request $request) {
         $attributes = $request->all();
         $date = Carbon::now();
         $id = Auth::user()->user_id;
@@ -144,19 +199,21 @@ class InvoiceController extends Controller {
             'app_id'    => $appId,
             'biz_id'  => $biz_id,
             'invoice_no' => $attributes['invoice_no'],
-            'invoice_due_date' => $attributes['invoice_due_date'],
+            'tenor' => $attributes['tenor'],
+            'invoice_due_date' => ($attributes['invoice_due_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'])->format('Y-m-d') : '',
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
             'invoice_approve_amount' => $attributes['invoice_approve_amount'],
             'invoice_amount' => $attributes['invoice_approve_amount'],
+            'prgm_offer_id' => $attributes['prgm_offer_id'],
             'remark' => $attributes['remark'],
             'file_id'  =>$userFile->file_id,
             'created_by' => $id,
             'created_at' => $date);
-        $result = $this->invRepo->save($arr);
+           $result = $this->invRepo->save($arr);
 
         if ($result) {
 
-
+            $this->invRepo->saveInvoiceActivityLog($result,7,null,$id);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {

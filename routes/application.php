@@ -137,6 +137,15 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'uses' => 'Application\ApplicationController@uploadDocument'
             ]);
             
+             Route::get('front_invoice_failed_status', [
+                 'as' => 'front_invoice_failed_status',
+                'uses' => 'Application\InvoiceController@invoiceFailedStatus'
+            ]); 
+            Route::get('front_invoice_success_status', [
+                 'as' => 'front_invoice_success_status',
+                'uses' => 'Application\InvoiceController@invoiceSuccessStatus'
+            ]); 
+            
             
             Route::post('document-save',
                 [
@@ -202,6 +211,20 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'uses' => 'Application\InvoiceController@viewApproveInvoice'
             ]); 
            
+            Route::get('get_disbursed_que_invoice', [
+                 'as' => 'get_disbursed_que_invoice',
+                'uses' => 'Application\InvoiceController@viewDisbursedQueInvoice'
+            ]); 
+            Route::get('get_sent_to_bank', [
+                 'as' => 'get_sent_to_bank',
+                'uses' => 'Application\InvoiceController@viewSentBankInvoice'
+            ]); 
+            
+             Route::get('get_failed_disbursed_invoice', [
+                 'as' => 'get_failed_disbursed_invoice',
+                'uses' => 'Application\InvoiceController@viewFailedDisbursedInvoice'
+            ]); 
+             
             Route::get('get_disbursed_invoice', [
                  'as' => 'get_disbursed_invoice',
                 'uses' => 'Application\InvoiceController@viewDisbursedInvoice'
@@ -210,6 +233,10 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
              Route::get('get_repaid_invoice', [
                  'as' => 'get_repaid_invoice',
                 'uses' => 'Application\InvoiceController@viewRepaidInvoice'
+              ]); 
+           Route::get('get_reject_invoice', [
+                 'as' => 'get_reject_invoice',
+                'uses' => 'Application\InvoiceController@viewRejectInvoice'
             ]); 
      
            Route::POST('front_save_invoice', [
@@ -225,6 +252,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                  'as' => 'frontend_save_bulk_invoice',
                 'uses' => 'Application\InvoiceController@saveBulkInvoice'
             ]); 
+               Route::POST('frontend_update_invoice_amount', [
+                 'as' => 'frontend_update_invoice_amount',
+                'uses' => 'Application\InvoiceController@saveInvoiceAmount'
+            ]);    
+             
              
           });
           
