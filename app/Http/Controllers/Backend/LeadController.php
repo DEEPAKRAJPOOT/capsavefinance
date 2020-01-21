@@ -70,8 +70,7 @@ class LeadController extends Controller {
                 $userInfo = $this->userRepo->getUserDetail($user_id);
                 $arr['full_name'] = $userInfo->f_name;
             }
-
-            return view('backend.edit_lead');
+            return view('backend.edit_lead')->with('userInfo', $userInfo);
         } catch (Exception $ex) {
             dd($ex);
         }
@@ -88,6 +87,22 @@ class LeadController extends Controller {
             dd($ex);
         }        
     }
+
+    // Update lead
+
+    public function updateBackendLead(Request $request) {
+        try {
+                $userId = $request->get('userId'); 
+                $attributes['f_name'] = $request->get('f_name'); 
+                $attributes['biz_name'] = $request->get('biz_name'); 
+                $userInfo = $this->userRepo->updateUser($attributes, $userId);
+                Session::flash('operation_status', 1); 
+                return view('backend.lead.index');
+        } catch (Exception $ex) {
+            dd($ex);
+        }
+    }
+
 
     /**
      * Save backend lead

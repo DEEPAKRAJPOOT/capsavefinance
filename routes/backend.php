@@ -312,7 +312,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@showAssignRcu'
             ]);
 
-            Route::get('pd-notes', [
+            Route::get('fircu/pd-notes', [
                 'as' => 'pd_notes_list',
                 'uses' => 'Backend\NotesController@pdNotesList'
             ]);
@@ -474,7 +474,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('save-create-lead', [
                 'as' => 'save_backend_lead',
                 'uses' => 'Backend\LeadController@saveBackendLead'
-            ]);    
+            ]); 
+
+            Route::post('update-backend-lead', [
+                'as' => 'update_backend_lead',
+                'uses' => 'Backend\LeadController@updateBackendLead'
+            ]);   
         });
         
         Route::group(['prefix' => 'fircu'], function () {
