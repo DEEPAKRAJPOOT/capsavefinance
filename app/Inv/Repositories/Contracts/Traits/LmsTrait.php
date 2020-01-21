@@ -26,7 +26,7 @@ trait LmsTrait
      */
     protected function calAccrualInterest()
     {   
-        $int_type_config = 1; //1=>Daily Interest Accrual, 2=>Monthly Interest Accrual
+        $int_type_config = 2; //1=>Daily Interest Accrual, 2=>Monthly Interest Accrual
         //$currentDate = \Carbon\Carbon::now()->format('Y-m-d');
         $currentDate = date('Y-m-d');
                 
