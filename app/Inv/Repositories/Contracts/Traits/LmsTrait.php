@@ -26,7 +26,7 @@ trait LmsTrait
      */
     protected function calAccrualInterest()
     {   
-        $interest_config = 1; //1=>Daily Interest Accrual, 2=>Monthly Interest Accrual
+        $int_type_config = 1; //1=>Daily Interest Accrual, 2=>Monthly Interest Accrual
         //$currentDate = \Carbon\Carbon::now()->format('Y-m-d');
         $currentDate = date('Y-m-d');
                 
@@ -122,7 +122,7 @@ trait LmsTrait
                     $accuredInterest = $this->lmsRepo->sumAccruedInterest($monthlyIntCond);
                     $calAccruedInterest += $accuredInterest;
                     $saveDisbursalData = [];
-                    $saveDisbursalData['accured_interest'] = $accuredInterest;
+                    $saveDisbursalData['accured_interest'] = $calAccruedInterest;
                     $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);                    
                 }
                                                                    
