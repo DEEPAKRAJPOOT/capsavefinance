@@ -27,6 +27,33 @@
             </div>
         </div>
     </div>
+  
+  
+  
+    <div class="row">
+         <div class="col-6">
+            <div class="form-group">
+                <label for="txtMobile">GST Number
+                    <span class="mandatory">*</span>
+                </label>
+
+                <input class="form-control percentage"  value="{{ isset($coLenderData->gst) ? $coLenderData->gst  : null }}"  name="gst" id="gst"  type="text"  placeholder="GST Number" required>
+
+            </div>
+        </div>
+
+
+        <div class="col-6">
+            <div class="form-group">
+                <label for="txtMobile">PAN Number
+                    <span class="mandatory">*</span>
+                </label>
+
+                <input class="form-control" value="{{ isset($coLenderData->pan_no	) ? $coLenderData->pan_no	  : null }}"  name="pan_no" id="pan"  type="text"  placeholder="PAN Number" required="">
+
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-6">
             <div class="form-group">
@@ -124,33 +151,13 @@
             </div>
         </div>
 
-        <div class="col-6">
-            <div class="form-group">
-                <label for="txtMobile">GST
-                    <span class="mandatory">*</span>
-                </label>
-
-                <input class="form-control percentage"  value="{{ isset($coLenderData->gst) ? $coLenderData->gst  : null }}"  name="gst" id="gst"  type="text"  placeholder="GST" required>
-
-            </div>
-        </div>
-
-
-        <div class="col-6">
-            <div class="form-group">
-                <label for="txtMobile">Percentage(%)
-                    <span class="mandatory">*</span>
-                </label>
-
-                <input class="form-control percentage" value="{{ isset($coLenderData->percentage	) ? $coLenderData->percentage	  : null }}"  name="perc" id="perc"  type="text"  placeholder="Percentage(%)" required="">
-
-            </div>
-        </div>
+       
      
          <div class="col-6">
             <div class="form-group">
-                <label for="txtCreditPeriod">Status</label><br>
-                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($coLenderData->is_active) ? $coLenderData->is_active : null,['class'=>'form-control form-control-sm']) !!}
+                <label for="txtCreditPeriod">Status
+                 <span class="mandatory">*</span></label><br>
+                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($coLenderData->is_active) ? $coLenderData->is_active : null,['class'=>'form-control form-control-sm required']) !!}
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -234,6 +241,11 @@ p.refresh();
 				required: true
 			})
 		});
+		$('.required').each(function () {
+			$(this).rules("add", {
+				required: true
+			})
+		});
 		$('input.email').each(function () {
 			$(this).rules("add", {
 				required: true,
@@ -301,6 +313,21 @@ p.refresh();
                 this.value = this.value.replace(/\D/g, "").replace(result, result.substr(0, 2));
             }
         });
+        
+        
+        
+         function setTabIndex()
+        {
+            var n = 1;
+            $('input.form-control,input.form-check-input, select.form-control').each(function () {
+
+                $(this).attr('tabindex', n++);
+            });
+
+        }
+
+
+        setTabIndex();
 });
 
 </script>

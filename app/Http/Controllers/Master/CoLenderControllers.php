@@ -74,7 +74,7 @@ class CoLenderControllers extends Controller {
                     'comp_city' => $request['city'],
                     'comp_zip' => $request['pin_code'],
                     'gst' => $request['gst'],
-                    'percentage' => $request['perc'],
+                    'pan_no' => $request['pan_no'],
                     'is_active'=>$request['is_active']
                 ];
                
