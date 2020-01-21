@@ -60,7 +60,7 @@
 </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('addDocumentsFrame','Add Documetns', 'modal-md')!!}
+{!!Helpers::makeIframePopup('addDocumentsFrame','Add Document', 'modal-md')!!}
 {!!Helpers::makeIframePopup('editDocumentsFrame','Edit Document Detail', 'modal-md')!!}
 @endsection
 

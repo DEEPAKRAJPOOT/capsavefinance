@@ -8,7 +8,7 @@
 	  	<div class="row">
 			<div class="form-group col-md-6">
 			  <label for="chrg_name">Document Name</label>
-			  <input type="text" class="form-control" id="doc_name" name="doc_name" placeholder="Enter Document Name" maxlength="50">
+			  <input type="text" class="form-control" id="doc_name" name="doc_name" placeholder="Enter Document Name" maxlength="250">
 			</div>
 			<div class="form-group col-md-6">
 				 <label for="chrg_type">Is RCU</label><br />
@@ -38,7 +38,7 @@
 		</div> 
 		<div class="row">
 		 	<div class="form-group col-md-6">
-				 <label for="chrg_type">Doc Type</label>
+				 <label for="chrg_type">Document Stage</label>
 				 <select class="form-control" name="doc_type_id" id="doc_type_id">
 					  <option value="" selected>Select</option>
 					  <option value="1">On-boarding</option>
@@ -96,16 +96,16 @@
 			},
 			messages: {
 				'doc_name': {
-					required: "Please enter Document Name",
+					required: "Please enter document name.",
 				},
 				'is_rcu': {
-					required: "Please enter Document Description",
+					required: "Please enter document",
 				},
 				'doc_type_id': {
-					required: "Please select Document type",
+					required: "Please select document stage",
 				},
 				'is_active': {
-					required: "Please Select Status of Document",
+					required: "Please select status",
 				},
 			}
 		});
