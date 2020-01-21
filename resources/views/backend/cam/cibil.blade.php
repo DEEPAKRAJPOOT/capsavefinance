@@ -286,22 +286,6 @@
                            </td>
                         </tr>
                         <tr>
-                           <td><b>Availability of adequate insurance cover for stock and fixed assets</b></td>
-                           <td>
-                              <div class="form-check" style="display: inline-block; margin-right:10px;">
-                                 <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="adeq_ins_check" id="adeq_ins_check_yes" value="Yes" {{isset($arrHygieneData->adeq_ins_check) && $arrHygieneData->adeq_ins_check == 'Yes' ? 'checked' : ''}}>Yes
-                                 <i class="input-helper"></i></label>
-                              </div>
-                              <div class="form-check" style="display: inline-block;">
-                                 <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="adeq_ins_check" id="adeq_ins_check_no" value="No" {{!isset($arrHygieneData->adeq_ins_check) || $arrHygieneData->adeq_ins_check == 'No' ? 'checked' : ''}}>No
-                                 <i class="input-helper"></i></label>
-                              </div>
-                              <input type="text" class="form-control from-inline" id="adeq_ins_cmnt" name="adeq_ins_cmnt" value="{{isset($arrHygieneData->adeq_ins_cmnt) ? $arrHygieneData->adeq_ins_cmnt : ''}}">
-                           </td>
-                        </tr>
-                        <tr>
                            <td><b>Any other Negative news reported on public domain (by way of Google search etc.)</b></td>
                            <td>
                               <div class="form-check" style="display: inline-block; margin-right:10px;">
@@ -316,59 +300,7 @@
                               </div>
                               <input type="text" class="form-control from-inline" id="neg_news_report_cmnt" name="neg_news_report_cmnt" value="{{isset($arrHygieneData->neg_news_report_cmnt) ? $arrHygieneData->neg_news_report_cmnt : ''}}">
                            </td>
-                        </tr>
-
-                        <tr>
-                           <td><b>NACH mandate for the rentals</b></td>
-                           <td>
-                              <div class="form-check" style="display: inline-block; margin-right:10px;">
-                                 <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="nach_mandate_check" id="nach_mandate_check_yes" value="Yes" {{isset($arrHygieneData->nach_mandate_check) && $arrHygieneData->nach_mandate_check == 'Yes' ? 'checked' : ''}}>Yes
-                                 <i class="input-helper"></i></label>
-                              </div>
-                              <div class="form-check" style="display: inline-block;">
-                                 <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="nach_mandate_check" id="nach_mandate_check_no" value="No" {{!isset($arrHygieneData->nach_mandate_check) || $arrHygieneData->nach_mandate_check == 'No' ? 'checked' : ''}}>No
-                                 <i class="input-helper"></i></label>
-                              </div>
-                              <input type="text" class="form-control from-inline" id="nach_mandate_cmnt" name="nach_mandate_cmnt" value="{{isset($arrHygieneData->nach_mandate_cmnt) ? $arrHygieneData->nach_mandate_cmnt : ''}}">
-                           </td>
-                        </tr>
-
-                        <tr>
-                           <td><b>Inspection of Assets</b></td>
-                           <td>
-                              <div class="form-check" style="display: inline-block; margin-right:10px;">
-                                 <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="asset_insp_check" id="asset_insp_check_yes" value="Yes" {{isset($arrHygieneData->asset_insp_check) && $arrHygieneData->asset_insp_check == 'Yes' ? 'checked' : ''}}>Yes
-                                 <i class="input-helper"></i></label>
-                              </div>
-                              <div class="form-check" style="display: inline-block;">
-                                 <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="asset_insp_check" id="asset_insp_check_no" value="No" {{!isset($arrHygieneData->asset_insp_check) || $arrHygieneData->asset_insp_check == 'No' ? 'checked' : ''}}>No
-                                 <i class="input-helper"></i></label>
-                              </div>
-                              <input type="text" class="form-control from-inline" id="asset_insp_cmnt" name="asset_insp_cmnt" value="{{isset($arrHygieneData->asset_insp_cmnt) ? $arrHygieneData->asset_insp_cmnt : ''}}">
-                           </td>
-                        </tr>
-
-                        <tr>
-                           <td><b>Insurance policy of the assets under rental to be endorsed in favor of Capsave Finance Pvt Ltd</b></td>
-                           <td>
-                              <div class="form-check" style="display: inline-block; margin-right:10px;">
-                                 <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="asset_insu_policy_check" id="asset_insu_policy_check_yes" value="Yes" {{isset($arrHygieneData->asset_insu_policy_check) && $arrHygieneData->asset_insu_policy_check == 'Yes' ? 'checked' : ''}}>Yes
-                                 <i class="input-helper"></i></label>
-                              </div>
-                              <div class="form-check" style="display: inline-block;">
-                                 <label class="form-check-label">
-                                 <input type="radio" class="form-check-input" name="asset_insu_policy_check" id="asset_insu_policy_check_no" value="No" {{!isset($arrHygieneData->asset_insu_policy_check) || $arrHygieneData->asset_insu_policy_check == 'No' ? 'checked' : ''}}>No
-                                 <i class="input-helper"></i></label>
-                              </div>
-                              <input type="text" class="form-control from-inline" id="asset_insu_policy_cmnt" name="asset_insu_policy_cmnt" value="{{isset($arrHygieneData->asset_insu_policy_cmnt) ? $arrHygieneData->asset_insu_policy_cmnt : ''}}">
-                           </td>
-                        </tr>
-                       
+                        </tr> 
                         <tr>
                            <td><b>CFPL Defaulter List</b></td>
                            <td>
