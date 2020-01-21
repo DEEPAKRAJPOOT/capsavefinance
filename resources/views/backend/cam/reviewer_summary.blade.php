@@ -16,9 +16,7 @@
             <div class="row">
                <div class="col-md-12">
                      <h4><small>Cover Note</small></h4>
-                     <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">
-                        {{isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : ''}}
-                     </textarea>
+                     <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{{isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : ''}}</textarea>
                </div>
                <div class="col-md-12 mt-4">
                      <h4><small>Deal Structure:</small></h4>
@@ -168,9 +166,7 @@
                                     <input type="text" name="cond_pos_track_rec" value="{{isset($reviewerSummaryData->cond_pos_track_rec) ? $reviewerSummaryData->cond_pos_track_rec : ''}}" class="form-control form-control-sm">
                                  </td>
                                  <td class="">
-                                    <textarea name="cmnt_pos_track_rec" class="form-control form-control-sm">
-                                    {{isset($reviewerSummaryData->cmnt_pos_track_rec) ? $reviewerSummaryData->cmnt_pos_track_rec : ''}}
-                                    </textarea>
+                                    <textarea name="cmnt_pos_track_rec" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_pos_track_rec) ? $reviewerSummaryData->cmnt_pos_track_rec : ''}}</textarea>
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
@@ -178,9 +174,7 @@
                                     <input type="text" name="cond_pos_credit_rating" value="{{isset($reviewerSummaryData->cond_pos_credit_rating) ? $reviewerSummaryData->cond_pos_credit_rating : ''}}" class="form-control form-control-sm">
                                  </td>
                                  <td class="">
-                                    <textarea  name="cmnt_pos_credit_rating" class="form-control form-control-sm">
-                                    {{isset($reviewerSummaryData->cmnt_pos_credit_rating) ? $reviewerSummaryData->cmnt_pos_credit_rating : ''}}
-                                    </textarea>
+                                    <textarea  name="cmnt_pos_credit_rating" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_pos_credit_rating) ? $reviewerSummaryData->cmnt_pos_credit_rating : ''}}</textarea>
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
@@ -188,9 +182,7 @@
                                     <input type="text" name="cond_pos_fin_matric" value="{{isset($reviewerSummaryData->cond_pos_fin_matric) ? $reviewerSummaryData->cond_pos_fin_matric : ''}}" class="form-control form-control-sm">
                                  </td>
                                  <td class="">
-                                    <textarea  name="cmnt_pos_fin_matric" class="form-control form-control-sm">
-                                    {{isset($reviewerSummaryData->cmnt_pos_fin_matric) ? $reviewerSummaryData->cmnt_pos_fin_matric : ''}}
-                                    </textarea>
+                                    <textarea  name="cmnt_pos_fin_matric" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_pos_fin_matric) ? $reviewerSummaryData->cmnt_pos_fin_matric : ''}}</textarea>
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
@@ -198,9 +190,7 @@
                                     <input type="text" name="cond_pos_establish_client" value="{{isset($reviewerSummaryData->cond_pos_establish_client) ? $reviewerSummaryData->cond_pos_establish_client : ''}}" class="form-control form-control-sm">  
                                  </td>
                                  <td class="">
-                                    <textarea  name="cmnt_pos_establish_client" class="form-control form-control-sm">
-                                    {{isset($reviewerSummaryData->cmnt_pos_establish_client) ? $reviewerSummaryData->cmnt_pos_establish_client : ''}}
-                                    </textarea>
+                                    <textarea  name="cmnt_pos_establish_client" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_pos_establish_client) ? $reviewerSummaryData->cmnt_pos_establish_client : ''}}</textarea>
                                  </td>
                            </tr>
                         </tbody>
@@ -213,9 +203,7 @@
                                     <input type="text" name="cond_neg_competition" value="{{isset($reviewerSummaryData->cond_neg_competition) ? $reviewerSummaryData->cond_neg_competition : ''}}" class="form-control form-control-sm">  
                                  </td>
                                  <td class="">
-                                    <textarea name="cmnt_neg_competition" class="form-control form-control-sm">
-                                    {{isset($reviewerSummaryData->cmnt_neg_competition) ? $reviewerSummaryData->cmnt_neg_competition : ''}}
-                                    </textarea>
+                                    <textarea name="cmnt_neg_competition" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_neg_competition) ? $reviewerSummaryData->cmnt_neg_competition : ''}}</textarea>
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
@@ -223,9 +211,7 @@
                                     <input type="text" name="cond_neg_forex_risk" value="{{isset($reviewerSummaryData->cond_neg_forex_risk) ? $reviewerSummaryData->cond_neg_forex_risk : ''}}" class="form-control form-control-sm">  
                                  </td>
                                  <td class="">
-                                    <textarea  name="cmnt_neg_forex_risk" class="form-control form-control-sm">
-                                    {{isset($reviewerSummaryData->cmnt_neg_forex_risk) ? $reviewerSummaryData->cmnt_neg_forex_risk : ''}}
-                                    </textarea>
+                                    <textarea  name="cmnt_neg_forex_risk" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_neg_forex_risk) ? $reviewerSummaryData->cmnt_neg_forex_risk : ''}}</textarea>
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
@@ -233,9 +219,7 @@
                                     <input type="text" name="cond_neg_pbdit" value="{{isset($reviewerSummaryData->cond_neg_pbdit) ? $reviewerSummaryData->cond_neg_pbdit : ''}}" class="form-control form-control-sm">  
                                  </td>
                                  <td class="">
-                                    <textarea  name="cmnt_neg_pbdit" class="form-control form-control-sm">
-                                    {{isset($reviewerSummaryData->cmnt_neg_pbdit) ? $reviewerSummaryData->cmnt_neg_pbdit : ''}}
-                                    </textarea>
+                                    <textarea  name="cmnt_neg_pbdit" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_neg_pbdit) ? $reviewerSummaryData->cmnt_neg_pbdit : ''}}</textarea>
                                  </td>
                            </tr>
                         </tbody>
@@ -247,9 +231,7 @@
                         <tbody>
                            <tr role="row">
                                  <td class="">
-                                    <textarea  name="recommendation" class="form-control form-control-sm" cols="3" rows="3">
-                                    {{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}}
-                                    </textarea>
+                                    <textarea  name="recommendation" class="form-control form-control-sm" cols="3" rows="3">{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}}</textarea>
                                  </td>
                            </tr>
                         </tbody>
@@ -278,7 +260,7 @@
    $(document).ready(function(){
       $("#cover_note").focus();
    });
-   
+
    $(document).on('click', '.getAnalysis', function() {
       data = {appId, _token};
       $.ajax({
