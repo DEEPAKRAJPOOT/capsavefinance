@@ -2446,5 +2446,91 @@ class DataRenderer implements DataProviderInterface
                         })
                         ->make(true);
     }
+    
+    
+    
+    /**
+     * get disbursal list
+     * 
+     * @param object $request
+     * @param object $data
+     * @return mixed
+     */
+    function getDisbursalList($request, $data)
+    {
+        return DataTables::of($data)
+                        ->rawColumns(['action', 'is_active', 'email', 'action', 'status'])
+                        ->editColumn(
+                                'disburse_date',
+                                function ($data) {
+                            return ($data->disburse_date) ? date('d-M-Y', strtotime($data->disburse_date)) : '---';
+                        })
+                        ->editColumn(
+                                'inv_due_date',
+                                function ($data) {
+                            return ($data->inv_due_date) ? date('d-M-Y', strtotime($data->inv_due_date)) : '---';
+                        })
+                        ->editColumn(
+                                'invoice_no',
+                                function ($data) {
+                            return $data->invoice_no;
+                        })
+                        ->editColumn(
+                                'invoice_approve_amount',
+                                function ($data) {
+                            return $data->invoice_approve_amount ? number_format($data->invoice_approve_amount) : '';
+                        })
+                        ->editColumn(
+                                'principal_amount',
+                                function ($data) {
+                            //s dd($data->principal_amount);
+                            return $data->principal_amount ? number_format($data->principal_amount) : '';
+                        })
+                        ->editColumn(
+                                'status_name',
+                                function ($data) {
+                            return $data->status_name;
+                        })
+                        ->editColumn(
+                                'disburse_amount',
+                                function ($data) {
+                            return $data->disburse_amount;
+                        })
+                        ->addColumn(
+                                'collection_date',
+                                function ($data) {
+                            return isset($data->collection_date) ? $data->collection_date : '-';
+                        })
+                        ->addColumn(
+                                'collection_amount',
+                                function ($data) {
+                            return isset($data->collection_amount) ? $data->collection_amount : '-';
+                        })
+                        ->editColumn(
+                                'accured_interest',
+                                function ($data) {
+                            return isset($data->accured_interest) ? $data->accured_interest : '-';
+                        })
+                        ->addColumn(
+                                'surplus_amount',
+                                function ($data) {
+                            return isset($data->surplus_amount) ? $data->surplus_amount : '-';
+                        })
+                        ->filter(function ($query) use ($request) {
+                            if ($request->get('search_keyword') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $search_keyword = trim($request->get('search_keyword'));
+                                    $query->where('invoice.invoice_no', 'like', "%$search_keyword%");
+                                });
+                            }
+                            if ($request->get('is_status') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $is_status = trim($request->get('is_status'));
+                                    $query->where('disbursal.status_id', $is_status);
+                                });
+                            }
+                        })
+                        ->make(true);
+    }
 
 }

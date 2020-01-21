@@ -45,5 +45,19 @@ class Status extends BaseModel
         'status_type',
         'status_name',
         'is_active'
-    ];   
+    ]; 
+    
+    
+    
+    /**
+     * get status list
+     * 
+     * @return mixed
+     */
+    
+    public static function getStatusList()
+    {
+      $res =   self::where('is_active',1)->pluck('status_name','id');
+      return $res?:false;
+    }
 }

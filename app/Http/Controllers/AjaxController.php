@@ -3333,6 +3333,19 @@ if ($err) {
       return $dataProvider->getColenderList($this->request, $getColenderList);
         
     }
+    
+    
+    /**
+     * Get disbursal list
+     * 
+     * @param DataProviderInterface $dataProvider
+     * @return mixed
+     */
+    public function getDisbursalList(DataProviderInterface $dataProvider)
+    {
+     $getDisList = $this->userRepo->getDisbursalList();
+     return $dataProvider->getDisbursalList($this->request , $getDisList);   
+    }
 
 
 }

@@ -594,6 +594,14 @@ Route::group(
     
     
     
+    
+    Route::post('lms-get-disbursal-list', [
+        'as' => 'lms_get_disbursal_list',
+        'uses' => 'AjaxController@getDisbursalList'
+    ]);
+    
+    
+    
 
     /*lms route*/
 
