@@ -273,8 +273,8 @@ class LeadController extends Controller {
             $string = time();
            
             $validator = Validator::make($request->all(), [
-                'doc_file' => 'mimes:jpeg,png,jpg,gif,svg,pdf',
-            ],['doc_file.mimes'=> 'Invalid document format!']);
+                'doc_file' => 'required|mimes:jpeg,jpg,pdf',
+            ],['doc_file.mimes'=> 'Invalid file format!']);
     
             if ($validator->fails()) {
                 return redirect('anchor')
@@ -484,8 +484,8 @@ class LeadController extends Controller {
         try {
             $arrAnchorVal = $request->all();
             $validator = Validator::make($request->all(), [
-                'doc_file' => 'mimes:jpeg,png,jpg,gif,svg,pdf',
-            ],['doc_file.mimes'=> 'Document must be Image/Pdf']);
+                'doc_file' => 'required|mimes:jpeg,jpg,pdf',
+            ],['doc_file.mimes'=> 'Invalid file format!']);
     
             if ($validator->fails()) {
                 return redirect('anchor')
