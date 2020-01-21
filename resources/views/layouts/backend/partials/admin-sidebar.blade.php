@@ -14,22 +14,7 @@
 
       </li>             
         
-    <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-address-book-o" aria-hidden="true"></i>
-                <span class="menu-title">Manage FI/RCU</span>
-               <i class="fa fa-angle-right" aria-hidden="true"></i>
-            </a>
-            <div class="collapse" id="layoutsSubmenu1">
-                <ul class="nav flex-column sub-menu">
-                    @can('applicaiton_list')
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('applicaiton_list') }}">Applications</a>
-                    </li>
-                    @endcan
-                </ul>
-            </div>
-     </li>
+
         
     <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
@@ -64,13 +49,30 @@
                 @endcan 
                 @can('application_list')       
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('application_list') }}">Manage Application</a>
+                        <a class="nav-link" href="{{ route('application_list') }}">My Application</a>
                         </li>   
                 @endcan 
                                         
                 </ul>
             </div>
-        </li>    
+        </li>  
+        
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-address-book-o" aria-hidden="true"></i>
+                <span class="menu-title">Manage FI/RCU</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu1">
+                <ul class="nav flex-column sub-menu">
+                    @can('applicaiton_list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('applicaiton_list') }}">FI/RCU Applications</a>
+                    </li>
+                    @endcan
+                </ul>
+            </div>
+        </li>
 
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
