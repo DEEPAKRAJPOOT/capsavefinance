@@ -307,6 +307,21 @@ p.refresh();
                 this.value = this.value.replace(/\D/g, "").replace(result, result.substr(0, 2));
             }
         });
+        
+        
+        
+         function setTabIndex()
+        {
+            var n = 1;
+            $('input.form-control,input.form-check-input, select.form-control').each(function () {
+
+                $(this).attr('tabindex', n++);
+            });
+
+        }
+
+
+        setTabIndex();
 });
 
 </script>
