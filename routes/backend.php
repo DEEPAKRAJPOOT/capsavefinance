@@ -312,7 +312,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@showAssignRcu'
             ]);
 
-            Route::get('pd-notes', [
+            Route::get('fircu/pd-notes', [
                 'as' => 'pd_notes_list',
                 'uses' => 'Backend\NotesController@pdNotesList'
             ]);
@@ -381,6 +381,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::post('save-finance-detail', [
                     'as' => 'save_finance_detail',
                     'uses' => 'Backend\CamController@saveFinanceDetail'
+                ]);
+
+                Route::get('reviewer-summary', [
+                    'as' => 'reviewer_summary',
+                    'uses' => 'Backend\CamController@reviewerSummary'
+                ]);
+
+                Route::post('save-reviewer-summary', [
+                    'as' => 'save_reviewer_summary',
+                    'uses' => 'Backend\CamController@saveReviewerSummary'
                 ]);
 
                 Route::get('gstin', [
@@ -474,7 +484,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('save-create-lead', [
                 'as' => 'save_backend_lead',
                 'uses' => 'Backend\LeadController@saveBackendLead'
-            ]);    
+            ]); 
+
+            Route::post('update-backend-lead', [
+                'as' => 'update_backend_lead',
+                'uses' => 'Backend\LeadController@updateBackendLead'
+            ]);   
         });
         
         Route::group(['prefix' => 'fircu'], function () {
@@ -685,7 +700,33 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save-assign-role-level', [
                 'as' => 'save_assign_role_level',
                 'uses' => 'Master\DoaController@saveAssignRoleLevel'
-            ]);            
+            ]); 
+            
+            
+            
+            
+            
+            
+            
+            Route::get('/get-co-lenders', [
+                'as' => 'get_co_lenders',
+                'uses' => 'Master\CoLenderControllers@getColenders'
+            ]);  
+            Route::get('/add-co-lender', [
+                'as' => 'add_co_lender',
+                'uses' => 'Master\CoLenderControllers@addCoLender'
+            ]);  
+            Route::post('/save-co-lender', [
+                'as' => 'save_co_lenders',
+                'uses' => 'Master\CoLenderControllers@saveCoLender'
+            ]);  
+            
+            
+            
+            
+            
+            
+            
         });
 
         Route::group(['prefix' => 'agency'], function () {

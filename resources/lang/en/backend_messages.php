@@ -21,5 +21,7 @@ return [
     'offer_approved' => 'Offer approved successfully.',
     'disbursed' => 'Selected invoices has been successfully disbursed.',
     'noSelectedInvoice' => 'Please select atleast one invoice.',
+    'co_lender_registration_success'=>'Co-lender registration successfully.',
+    'co_lender_registration_update'=>'Co-lender updated successfully.'
 ];
 

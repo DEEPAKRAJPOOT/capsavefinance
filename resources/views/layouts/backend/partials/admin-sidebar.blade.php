@@ -16,7 +16,7 @@
         
     <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="fa fa-address-book-o" aria-hidden="true"></i>
                 <span class="menu-title">Manage FI/RCU</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -33,7 +33,7 @@
         
     <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="fa fa-table" aria-hidden="true"></i>
                 <span class="menu-title">Manage Leads</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -51,7 +51,7 @@
         
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-file-image-o"></i>
+                <i class="fa fa-address-card-o"></i>
                 <span class="menu-title">Manage Application</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -74,7 +74,7 @@
 
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="fa fa-anchor" aria-hidden="true"></i>
                 <span class="menu-title">Manage Anchor</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -96,6 +96,23 @@
             </div>
         </li>
         <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-handshake-o" aria-hidden="true"></i>
+                <span class="menu-title">Manage Co-lenders</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu12">
+                <ul class="nav flex-column sub-menu">
+                       @can('get_co_lenders')
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_co_lenders') }}">Co-lenders List</a>
+                 </li>
+                 @endcan
+                     
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu20" aria-expanded="true" aria-controls="collapseExample">
               <i class="fa fa-user-plus" aria-hidden="true"></i>
                 <span class="menu-title">Manage Customer</span>
@@ -112,7 +129,7 @@
         </li>
          <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu123" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="fa fa-file-text-o" aria-hidden="true"></i>
                 <span class="menu-title">Manage Invoice</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -134,7 +151,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuDisbursal" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="fa fa-bank" aria-hidden="true"></i>
                 <span class="menu-title">Manage Disbursal</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
@@ -227,6 +244,8 @@
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                  </li>
+                 
+          
                  <li class="nav-item">
                     <a class="nav-link" href="#">Manage State</a>
                  </li>
