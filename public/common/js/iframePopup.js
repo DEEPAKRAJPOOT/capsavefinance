@@ -63,6 +63,10 @@ var iframe_ids = [
     'disbueseInvoices',
     'addcolenders',
     'uploadXLSXdoc',
+    'addAddressFrame',
+    'editAddressFrame',
+    'addStateFrame',
+    'editStatesFrame',
 ];
 iframe_ids.forEach(function(id) {
     $("#" + id).on('show.bs.modal', function (e) {
