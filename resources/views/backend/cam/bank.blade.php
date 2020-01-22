@@ -34,8 +34,8 @@
                   <div class="clearfix"></div>
 
                   <div style="text-align: right;">                  
-                  @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
-                     <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download</a>
+                  @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/banking/".$active_xlsx_filename)))
+                     <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/banking/'.$active_xlsx_filename) }}" download>Download</a>
                   @endif 
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
                      @php $class_enable="disabled"; @endphp

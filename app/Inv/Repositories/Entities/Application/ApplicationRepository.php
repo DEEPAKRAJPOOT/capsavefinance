@@ -577,8 +577,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * get all agency list
      * @return agency
      */
-    public function getAllAgency(){
-        $agency = Agency::get();
+    public function getAllAgency($type=null){
+        $agency = Agency::getAllAgency($type);
         return $agency ?: false;
     }
 
@@ -1004,6 +1004,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /**
+     * Get required documents
+     * 
+     * @param array $where
+     * @return mixed
+     */
+    public function getDocumentProduct($docId)
+    {
+        return DocumentMaster::with('product_document')
+                ->where(['id' => $docId, 'is_active' => 1])
+                ->first();
+    }
+
+    /**
      * Get DoA Users By $appId
      * 
      * @param type $appId
@@ -1126,6 +1139,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getBankAccountData($where)
     {
         return UserBankAccount::getBankAccountData($where);
+    } 
+
+    /**
+     * get Bank account 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getAppProducts($app_id)
+    {
+        return Application::with('products')
+                ->where('app_id', $app_id)
+                ->first();
     }
 
 

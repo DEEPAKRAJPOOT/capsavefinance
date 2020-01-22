@@ -98,7 +98,17 @@ class DocumentMaster extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
-        $res = self::select('*','id as doc_id')->where($where)->where('is_active', 1)->get();
+        $res = self::select('*','id as doc_id')
+                ->where($where)
+                ->where('is_active', 1)
+                ->get();
         return $res ?: [];        
-    }    
+    }
+
+    public function product_document()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\ProductDoc', 'doc_id')
+                ->whereIn('product_id', [2,3])
+                ->where('is_active', 1);
+    }
 }

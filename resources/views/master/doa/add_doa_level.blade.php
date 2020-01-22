@@ -111,7 +111,7 @@
     <div class="row parent_role_div">
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Select Role
+                <label for="txtCreditPeriod"> Select Approval Role
                     <span class="mandatory">*</span>
                 </label>                                                
                 {!!
@@ -128,7 +128,7 @@
         </div> 
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Select Role Users
+                <label for="txtCreditPeriod"> Select Approval Role Users
                     <span class="mandatory">*</span>
                 </label>                            
                  <br>
@@ -158,7 +158,7 @@
     <div class="row parent_role_div">
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Select Role
+                <label for="txtCreditPeriod"> Select Approval Role
                     <span class="mandatory">*</span>
                 </label>                                                
                 {!!
@@ -174,7 +174,7 @@
         </div> 
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Select Role Users
+                <label for="txtCreditPeriod"> Select Approval Role Users
                     <span class="mandatory">*</span>
                 </label>            
                 <br>
@@ -245,6 +245,7 @@ Form::close()
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 <script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
+<script src="{{ asset('backend/js/common.js') }}" type="text/javascript"></script>
 
 <script>
 var messages = {
@@ -351,7 +352,7 @@ $(document).ready(function () {
         var selector = $(this);
         $.confirm({
             title: 'Confirm!',
-            content: 'Are you sure to Delete?',
+            content: 'Are you sure you want to delete this State from State list?',
             buttons: {
                 Yes: {
                     action: function () {
@@ -362,7 +363,7 @@ $(document).ready(function () {
                     }
 
                 },
-                No: {
+                Cancel: {
                     action: function () {
                     }
                 },
@@ -521,11 +522,15 @@ $(document).ready(function () {
         num++;
     });
 
+$(document).on('blur','.role_change', function (){
+     $(this).parent().find('.role_error').remove(); 
+});
 
     $(document).on('change', '.role_change', function () {
         var selector = $(this);
         var value = selector.val();
         var selected_value = (selector.data('rel')) ? selector.data('rel') : [];
+         selector.parent().find("label[class='error']").remove();
         $.ajax({
             url: messages.get_user_by_role,
             type: 'POST',
@@ -536,6 +541,10 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (result) {
                 var optionList = result.data;
+                if(result.success == false){
+                   selector.after('<label  class="error role_error" >'+result.messges+'</label>');
+                   selector.val('');
+                }
                 selector.parents('.parent_role_div').find('.role_user').empty();
                 $.each(optionList, function (index, data) {
                     let check = '';
@@ -563,11 +572,12 @@ $(document).ready(function () {
     });
 
 
+                        
     $(document).on('click', '.delete_role', function () {
         var selector = $(this);
         $.confirm({
             title: 'Confirm!',
-            content: 'Are you sure to Delete?',
+            content: 'Are you sure you want to delete this role from approver list?',
             buttons: {
                 Yes: {
                     action: function () {
@@ -578,7 +588,7 @@ $(document).ready(function () {
                     }
 
                 },
-                No: {
+                Cancel: {
                     action: function () {
                     }
                 },
@@ -587,6 +597,11 @@ $(document).ready(function () {
         });
 
     });
+    
+    
+     if ($('.parent_role_div').length > 1) {
+           $('.delete_role').last().show();
+       }
 
 
 

@@ -183,7 +183,7 @@
     if(interest_rate == '' || isNaN(interest_rate)){
         setError('input[name=interest_rate]', 'Please fill intereset rate');
         flag = false;
-    }else if(parseFloat(interest_rate) > 20){
+    }else if(parseFloat(interest_rate) > 100){
         setError('input[name=interest_rate]', 'Please fill correct intereset rate');
         flag = false;
     }
@@ -201,7 +201,7 @@
     if(margin == '' || isNaN(margin)){
         setError('input[name=margin]', 'Please fill margin');
         flag = false;
-    }else if(parseFloat(margin) > 10){
+    }else if(parseFloat(margin) > 100){
         setError('input[name=margin]', 'Please fill correct margin rate');
         flag = false;
     }
@@ -209,7 +209,7 @@
     if(overdue_interest_rate == '' || isNaN(overdue_interest_rate)){
         setError('input[name=overdue_interest_rate]', 'Please fill Overdue intereset rate');
         flag = false;
-    }else if(parseFloat(overdue_interest_rate) > 20){
+    }else if(parseFloat(overdue_interest_rate) > 100){
         setError('input[name=overdue_interest_rate]', 'Please fill correct overdue interest rate');
         flag = false;
     }
@@ -217,7 +217,7 @@
     if(adhoc_interest_rate == '' || isNaN(adhoc_interest_rate)){
         setError('input[name=adhoc_interest_rate]', 'Please fill adhoc interest rate');
         flag = false;
-    }else if(parseFloat(adhoc_interest_rate) > 20){
+    }else if(parseFloat(adhoc_interest_rate) > 100){
         setError('input[name=adhoc_interest_rate]', 'Please fill correct adhoc interest rate');
         flag = false;
     }

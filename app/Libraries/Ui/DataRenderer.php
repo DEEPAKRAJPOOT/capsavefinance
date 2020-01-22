@@ -1353,7 +1353,10 @@ class DataRenderer implements DataProviderInterface
                         $act.=  '<a title="Manage Program" href="'.route('manage_program',['anchor_id' => $users->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
                      }
                      if(Helpers::checkPermission('edit_anchor_reg')){                        
-                        $act .= "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></a>";
+                        $act .= "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></i></a>";
+                     }
+                     if(isset($users->file_path)){
+                        $act .= "<a  href=". Storage::url($users->file_path) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\" title=\"View CAM\"> <i class=\"fa fa-eye\"></i></a>";
                      }
                      return $act;
                     }
@@ -1970,6 +1973,7 @@ class DataRenderer implements DataProviderInterface
             '2' => 'Pre Sanction',
             '3' => 'Post Sanction',
         );
+        
         return DataTables::of($documents)
                 ->rawColumns(['is_active'])
                 ->addColumn(
@@ -1981,6 +1985,17 @@ class DataRenderer implements DataProviderInterface
                     'doc_name',
                     function ($documents) {
                     return $documents->doc_name;
+                })
+                ->addColumn(
+                    'product_type',
+                    function ($documents) {
+                        $productTypes = '';
+                        if(isset($documents->product_document)) {
+                            foreach ($documents->product_document as $value) {
+                                $productTypes .= $value->product->product_name.', ';
+                            }
+                        }
+                    return $productTypes;
                 })
                 ->addColumn(
                     'is_rcu',
@@ -2302,7 +2317,7 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($customer) {
                     if ($customer->is_assign == 0) {
-                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                        return "<label class=\"badge badge-warning current-status\">sanctioned</label>";
                     } else {
                         return "<span style='color:green'>Assigned</span>";
                     }
@@ -2533,6 +2548,76 @@ class DataRenderer implements DataProviderInterface
                             } else {
                                 return '<span class="badge badge-warning current-status">InActive</span>';
                             }
+                        })
+                        ->make(true);
+    }
+    
+    
+    function getColenderList($request, $data)
+    {
+        return DataTables::of($data)
+                        ->rawColumns(['action', 'is_active','email' ,'action' ,'status'])
+                        ->editColumn(
+                                'co_lender_id',
+                                function ($data) {
+                            return $data->co_lender_id;
+                        })
+                        ->editColumn(
+                                'f_name',
+                                function ($data) {
+                            return $data->f_name;
+                        })
+                        ->editColumn(
+                                'biz_name',
+                                function ($data) {
+                            return $data->biz_name;
+                        })
+                        ->editColumn(
+                                'email',
+                                function ($data) {
+                            return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >" . $data->comp_email . "</a> ";
+                        })
+                        ->editColumn(
+                                'comp_phone',
+                                function ($user) {
+                            $achorId = $user->comp_phone;
+                            return $achorId;
+                        })
+                        ->editColumn(
+                                'created_at',
+                                function ($user) {
+                            return ($user->created_at) ? date('d-M-Y', strtotime($user->created_at)) : '---';
+                        })
+                        ->editColumn(
+                                'status',
+                                function ($user) {
+                            
+                          
+                            if ($user->is_active) {
+                                return '<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
+                            } else {
+                                return '<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">In Active</label>
+                                             
+                                          </div></b>';
+                            }
+                        })
+                        ->editColumn(
+                                'action',
+                                function ($data) {
+                            $act = '';
+                             if (Helpers::checkPermission('add_co_lender')) {
+                                $act .= '<a data-toggle="modal"  data-height="550px" 
+                           data-width="100%" 
+                           data-target="#addcolenders"
+                           data-url="' . route('add_co_lender', ['co_lender_id' => $data->co_lender_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Co-lender"><i class="fa fa-edit"></i></a>';
+                            }
+                            
+                            return $act;
+                           
                         })
                         ->make(true);
     }

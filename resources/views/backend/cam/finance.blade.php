@@ -15,7 +15,7 @@
             <div class="col-lg-12 col-12 mb-4">
                <div class="card">
                   <div class="card-body">
-                  +  <div class="row">
+                  <!-- +  <div class="row">
                         <div class="col-sm-12">
                            <div class="table-responsive ">
                               <form method="post" action="{{ route('save_finance_detail') }}">
@@ -26,10 +26,10 @@
                               <table id="supplier-listing" class="table table-striped cell-border  no-footer overview-table mb-3" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                  <thead>
                                     <tr role="row">
-                                       <th>Condition</th>
+                                       <th>Parameter</th>
                                        <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Name: activate to sort column ascending">Criteria</th>
-                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending"> Yes/No</th>
-                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Mobile: activate to sort column ascending"> Comments</th>
+                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending"> Deviation</th>
+                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Mobile: activate to sort column ascending"> Remarks</th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -38,11 +38,11 @@
                                        <td>Positive for last 2 financial years</td>
                                        <td>
                                           <span class="mr-2">
-                                          <input type="radio" class="form-check-input" name="adj_net_worth_check" id="adj_net_worth_check_yes" value="Yes" {{isset($finDetailData->adj_net_worth_check) && $finDetailData->adj_net_worth_check == 'Yes' ? 'checked' : ''}}>
+                                          <input type="radio" class="" name="adj_net_worth_check" id="adj_net_worth_check_yes" value="Yes" {{isset($finDetailData->adj_net_worth_check) && $finDetailData->adj_net_worth_check == 'Yes' ? 'checked' : ''}}>
                                           <label for="adj_net_worth_check_yes">Yes</label>
                                           </span>
                                           <span>
-                                          <input type="radio" class="form-check-input" name="adj_net_worth_check" id="adj_net_worth_check_no" value="No" {{!isset($finDetailData->adj_net_worth_check) || $finDetailData->adj_net_worth_check == 'No' ? 'checked' : ''}}>
+                                          <input type="radio" class="" name="adj_net_worth_check" id="adj_net_worth_check_no" value="No" {{!isset($finDetailData->adj_net_worth_check) || $finDetailData->adj_net_worth_check == 'No' ? 'checked' : ''}}>
                                           <label for="adj_net_worth_check_no">No</label>
                                           </span>
                                        </td>
@@ -53,10 +53,10 @@
                                        <td>Positive for 2 out of last 3 financial years (positive in last year)</td>
                                        <td>
                                           <span class="mr-2">
-                                          <input type="radio" class="form-check-input" name="cash_profit_check" id="cash_profit_check_yes" value="Yes" {{isset($finDetailData->cash_profit_check) && $finDetailData->cash_profit_check == 'Yes' ? 'checked' : ''}}>
+                                          <input type="radio" class="" name="cash_profit_check" id="cash_profit_check_yes" value="Yes" {{isset($finDetailData->cash_profit_check) && $finDetailData->cash_profit_check == 'Yes' ? 'checked' : ''}}>
                                           <label for="cash_profit_check_yes">Yes</label></span>
                                           <span>
-                                          <input type="radio" class="form-check-input" name="cash_profit_check" id="cash_profit_check_no" value="No" {{!isset($finDetailData->cash_profit_check) || $finDetailData->cash_profit_check == 'No' ? 'checked' : ''}}>
+                                          <input type="radio" class="" name="cash_profit_check" id="cash_profit_check_no" value="No" {{!isset($finDetailData->cash_profit_check) || $finDetailData->cash_profit_check == 'No' ? 'checked' : ''}}>
                                           <label for="cash_profit_check_no">No</label></span>
                                        </td>
                                        <td><input type="text" class="form-control from-inline" id="cash_profit_cmnt" name="cash_profit_cmnt" value="{{isset($finDetailData->cash_profit_cmnt) ? $finDetailData->cash_profit_cmnt : ''}}"></td>									  
@@ -66,9 +66,9 @@
                                        <td>>1.2X</td>
                                        <td>
                                           <span class="mr-2">
-                                          <input type="radio" class="form-check-input" name="dscr_check" id="dscr_check_yes" value="Yes" {{isset($finDetailData->dscr_check) && $finDetailData->dscr_check == 'Yes' ? 'checked' : ''}}>
+                                          <input type="radio" class="" name="dscr_check" id="dscr_check_yes" value="Yes" {{isset($finDetailData->dscr_check) && $finDetailData->dscr_check == 'Yes' ? 'checked' : ''}}>
                                           <label for="dscr_check_yes">Yes</label></span>
-                                          <span><input type="radio" class="form-check-input" name="dscr_check" id="dscr_check_no" value="No" {{!isset($finDetailData->dscr_check) || $finDetailData->dscr_check == 'No' ? 'checked' : ''}}>
+                                          <span><input type="radio" class="" name="dscr_check" id="dscr_check_no" value="No" {{!isset($finDetailData->dscr_check) || $finDetailData->dscr_check == 'No' ? 'checked' : ''}}>
                                           <label for="dscr_check_no">No</label></span>
                                        </td>
                                        <td><input type="text" class="form-control from-inline" id="dscr_cmnt" name="dscr_cmnt" value="{{isset($finDetailData->dscr_cmnt) ? $finDetailData->dscr_cmnt : ''}}"></td>									  
@@ -78,20 +78,20 @@
                                        <td><5X</td>
                                        <td>
                                           <span class="mr-2">
-                                          <input type="radio" class="form-check-input" name="debt_check" id="debt_check_yes" value="Yes" {{isset($finDetailData->debt_check) && $finDetailData->debt_check == 'Yes' ? 'checked' : ''}}>
+                                          <input type="radio" class="" name="debt_check" id="debt_check_yes" value="Yes" {{isset($finDetailData->debt_check) && $finDetailData->debt_check == 'Yes' ? 'checked' : ''}}>
                                           <label for="debt_check_yes">Yes</label></span>
-                                          <span><input type="radio" class="form-check-input" name="debt_check" id="debt_check_no" value="No" {{!isset($finDetailData->debt_check) || $finDetailData->debt_check == 'No' ? 'checked' : ''}}>
+                                          <span><input type="radio" class="" name="debt_check" id="debt_check_no" value="No" {{!isset($finDetailData->debt_check) || $finDetailData->debt_check == 'No' ? 'checked' : ''}}>
                                           <label for="debt_check_no">No</label></span>
                                        </td>
                                        <td><input type="text" class="form-control from-inline" id="debt_cmnt" name="debt_cmnt" value="{{isset($finDetailData->debt_cmnt) ? $finDetailData->debt_cmnt : ''}}"></td>									  
                                     </tr>
                                  </tbody>
                               </table>
-                              <button type="submit" class="btn btn-success ml-auto  mt-3"> Save</button>
+                              <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
                               </form>
                            </div>
                         </div>
-                     </div>
+                     </div> -->
                      <form method="post" action="{{ route('cam_finance_store') }}">
                      @csrf
                      <div id="pullMsg"></div>
@@ -112,8 +112,8 @@
                      <div class="clearfix"></div>
                      <div style="text-align: right;">
                      
-                     @if(file_exists(storage_path('app/public/user/'.$appId.'_finance.xlsx')))
-                           <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_finance.xlsx') }}" download>Download</a>
+                     @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$active_xlsx_filename)))
+                           <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/banking/'.$active_xlsx_filename) }}" download>Download</a>
                      @endif 
                      @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
 
@@ -127,7 +127,10 @@
                      <div class="clearfix"></div>
                      <br/>
                      <hr>
-                     <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
+                     <?php 
+                     echo $xlsx_html;
+                     ?>
+                    <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
                         <div class="card">
                            <div class="card-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" role="tab" id="headingOne">
                               <a  class="">

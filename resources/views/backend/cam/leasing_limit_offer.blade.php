@@ -171,7 +171,7 @@
     if(security_deposit == '' || isNaN(security_deposit)){
         setError('input[name=security_deposit]', 'Please fill security deposit');
         flag = false;
-    }else if(parseFloat(security_deposit) > 20){
+    }else if(parseFloat(security_deposit) > 100){
         setError('input[name=security_deposit]', 'Please fill correct security deposit');
         flag = false;
     }
@@ -184,7 +184,7 @@
     if(ptpq == '' || isNaN(ptpq)){
         setError('input[name=ptpq]', 'Please fill PTPQ');
         flag = false;
-    }else if(parseFloat(ptpq) > 10){
+    }else if(parseFloat(ptpq) > 100){
         setError('input[name=ptpq]', 'Please fill correct PTPQ');
         flag = false;
     }
@@ -192,7 +192,7 @@
     if(xirr == '' || isNaN(xirr)){
         setError('input[name=xirr]', 'Please fill XIRR');
         flag = false;
-    }else if(parseFloat(xirr) > 20){
+    }else if(parseFloat(xirr) > 100){
         setError('input[name=xirr]', 'Please fill correct XIRR');
         flag = false;
     }

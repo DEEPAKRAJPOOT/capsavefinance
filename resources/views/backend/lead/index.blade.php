@@ -109,6 +109,26 @@
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+
+
+@php 
+$operation_status = session()->get('operation_status', false);
+@endphp
+@if( $operation_status == config('common.YES'))
+    
+<script>
+    try {
+        var p = window.parent;       
+        p.jQuery('#editLead').modal('hide');
+        window.parent.location.reload();
+    } catch (e) {
+        if (typeof console !== 'undefined') {
+            console.log(e);
+        }
+    }
+</script>
+
+@endif
 @endsection
 
 
