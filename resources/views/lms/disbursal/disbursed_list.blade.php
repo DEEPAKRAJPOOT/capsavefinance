@@ -21,7 +21,33 @@
 <div class="card">
         <div class="card-body">       
             <div class="row">
-                <div class="col-md-4">
+                
+                <div class="col-md-2">
+                    {!!
+                    Form::text('from_date',
+                    null,
+                    [
+                    'class' => 'form-control',
+                    'placeholder' => 'From Date',
+                    'id'=>'from_date'
+                    ])
+                    !!} 
+                </div>
+                 <div class="col-md-2">
+                    {!!
+                    Form::text('to_date',
+                    null,
+                    [
+                    'class' => 'form-control',
+                    'placeholder' => 'To Date',
+                    'id'=>'to_date'
+                    ])
+                    !!} 
+                </div>
+                
+                
+                
+                <div class="col-md-2">
                     {!!
                     Form::text('search_keyword',
                     null,
@@ -32,7 +58,7 @@
                     ])
                     !!}
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
 
                     {!!
                     Form::select('is_status',
@@ -42,7 +68,8 @@
                     'class'=>'form-control'))
                     !!}
                 </div>
-                <button id="searchB" type="button" class="btn  btn-success btn-sm float-right">Search</button>
+                <button id="searchB" type="button" class="btn  btn-success btn-sm float-right mr-4">Search</button>
+                 <button id="reset" type="button" class="btn  btn-danger btn-sm float-right">Reset</button>
 
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -95,6 +122,7 @@
 
     };
 </script>
+<script src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script src="{{ asset('backend/js/lms/disbursal.js') }}" type="text/javascript"></script>
 @endsection
 

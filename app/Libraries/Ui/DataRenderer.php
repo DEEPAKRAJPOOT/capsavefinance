@@ -2529,6 +2529,19 @@ class DataRenderer implements DataProviderInterface
                                     $query->where('disbursal.status_id', $is_status);
                                 });
                             }
+                            if ($request->get('from_date') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $from = str_replace('/', '-', $request->get('from_date'));
+                                    $converedDate = date("Y-m-d H:i:s", strtotime($from));
+                                    $query->whereDate('disbursal.disburse_date','>=' , $converedDate);
+                                });
+                            }
+                            if ($request->get('to_date') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $to_date = str_replace('/', '-', $request->get('to_date'));
+                                    $query->whereDate('disbursal.disburse_date','<=' , date('Y-m-d H:i:s', strtotime($to_date)) );
+                                });
+                            }
                         })
                         ->make(true);
     }
