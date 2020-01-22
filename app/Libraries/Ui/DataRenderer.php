@@ -1977,6 +1977,11 @@ class DataRenderer implements DataProviderInterface
                     'phone',
                     function ($user) {
                     return $user->mobile_no; 
+                })
+                ->editColumn(
+                    'status',
+                    function ($user) {
+                    return ($user->is_active == 1)? 'Active': 'In-active'; 
                 }) 
                 ->editColumn(
                     'created_at',

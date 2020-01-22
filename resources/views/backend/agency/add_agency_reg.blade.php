@@ -10,7 +10,7 @@
                        <label for="txtCreditPeriod">Agency Name
                        <span class="mandatory">*</span>
                        </label>
-                       <input type="text" name="comp_name" id="comp_name" value="{{old('comp_name')}}" class="form-control employee" tabindex="1" placeholder="Agency Name" >
+                       <input type="text" name="comp_name" id="comp_name" value="{{old('comp_name')}}" class="form-control employee" tabindex="1" placeholder="Agency Name" maxlength="50">
                        @error('comp_name')
                           <span class="error">{{ $message }}</span>
                        @enderror
@@ -38,7 +38,7 @@
                      <label for="txtEmail">Email
                      <span class="mandatory">*</span>
                      </label>
-                     <input type="email" name="comp_email" id="comp_email" value="{{old('comp_email')}}" class="form-control email" tabindex="2" placeholder="Email" >
+                     <input type="email" name="comp_email" id="comp_email" value="{{old('comp_email')}}" class="form-control email" tabindex="2" placeholder="Email" maxlength="50">
                      @error('comp_email')
                         <span class="error">{{ $message }}</span>
                      @enderror
@@ -63,7 +63,7 @@
                       <label for="txtMobile">Address
                       <span class="mandatory">*</span>
                       </label>
-                      <input class="form-control comp_addr" name="comp_addr" id="comp_addr" value="{{old('comp_addr')}}" tabindex="4" type="text" placeholder="Address">
+                      <input class="form-control comp_addr" name="comp_addr" id="comp_addr" value="{{old('comp_addr')}}" tabindex="4" type="text" placeholder="Address" maxlength="100">
                       @error('comp_addr')
                         <span class="error">{{ $message }}</span>
                      @enderror
@@ -78,7 +78,7 @@
                         <select class="form-control state" name="comp_state" id="comp_state"  tabindex="5">
                           <option value=""> Select State</option>
                           @foreach($states as $key => $state)
-                          <option value="{{$state->id}}" {{(old('state') == $state->id)? 'selected': ''}}> {{$state->name}} </option>
+                          <option value="{{$state->id}}" {{(old('comp_state') == $state->id)? 'selected': ''}}> {{$state->name}} </option>
                           @endforeach
                         </select>
                         @error('comp_state')
@@ -94,7 +94,7 @@
                           <label for="txtMobile">City
                           <span class="mandatory">*</span>
                           </label>
-                          <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city')}}" tabindex="6" type="text" maxlength="20" placeholder="City">
+                          <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city')}}" tabindex="6" type="text" maxlength="20" placeholder="City" maxlength="50">
                           @error('comp_city')
                               <span class="error">{{ $message }}</span>
                           @enderror
