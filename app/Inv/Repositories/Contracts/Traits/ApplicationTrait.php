@@ -29,7 +29,7 @@ trait ApplicationTrait
             }
             else  {
                 $whereCondition['doc_type_id'] =  3;
-                $preDocs = $this->appRepo->getTLDocs($whereCondition);
+                $preDocs = $this->appRepo->getTLDocs($whereCondition)->toArray();
             }
 
             $merged = array_merge($prgmDocs, $preDocs);
