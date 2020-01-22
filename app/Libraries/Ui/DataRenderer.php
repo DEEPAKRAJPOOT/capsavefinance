@@ -1195,7 +1195,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'timestamp',
                     function ($invoice) {
-                       return $invoice->created_at;
+                       return $invoice->created_at->format('j F Y H:i:s A'); 
                 })
                  
                  
