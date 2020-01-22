@@ -3124,8 +3124,21 @@ if ($err) {
         $result = $this->application->updateProgramData(['status' => $status], ['prgm_id' => $program_id]);
         return \Response::json(['success' => $result]);
     }
-    
-
+   
+     /**
+     * change Doa status
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeDoaStatus(Request $request)
+    {
+        $doa_level_id = $request->get('doa_level_id');
+        $status = $request->get('is_active');
+        $result = $this->application->updateDoaData(['is_active' => $status], ['doa_level_id' => $doa_level_id]);
+        return \Response::json(['success' => $result]);
+    }
+ 
     function uploadInvoice(Request $request) {
       
        $extension = $request['doc_file']->getClientOriginalExtension();
@@ -3335,6 +3348,19 @@ if ($err) {
         $getColenderList = $this->userRepo->getColenderList();
       return $dataProvider->getColenderList($this->request, $getColenderList);
         
+    }
+    
+    
+    /**
+     * Get disbursal list
+     * 
+     * @param DataProviderInterface $dataProvider
+     * @return mixed
+     */
+    public function getDisbursalList(DataProviderInterface $dataProvider)
+    {
+     $getDisList = $this->userRepo->getDisbursalList();
+     return $dataProvider->getDisbursalList($this->request , $getDisList);   
     }
 
 

@@ -153,4 +153,19 @@ class Disbursal extends BaseModel {
         
         return $result;
     }
+    
+    
+    
+    /**
+     * get getDisbursal list
+     * 
+     * @return mixed
+     */
+    public static function getDisbursalList()
+    {
+        $res = self::select('disbursal.*','invoice.invoice_no' ,'invoice.invoice_approve_amount', 'mst_status.status_name')
+                ->join('invoice','disbursal.invoice_id' ,'=','invoice.invoice_id')
+                ->join('mst_status','disbursal.status_id' ,'=','mst_status.id');
+        return $res?: false;
+    }
 }

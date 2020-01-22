@@ -15,7 +15,7 @@
             <div class="col-lg-12 col-12 mb-4">
                <div class="card">
                   <div class="card-body">
-                     <div class="row">
+                  <!-- +  <div class="row">
                         <div class="col-sm-12">
                            <div class="table-responsive ">
                               <form method="post" action="{{ route('save_finance_detail') }}">
@@ -26,10 +26,10 @@
                               <table id="supplier-listing" class="table table-striped cell-border  no-footer overview-table mb-3" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                  <thead>
                                     <tr role="row">
-                                       <th>Condition</th>
+                                       <th>Parameter</th>
                                        <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Name: activate to sort column ascending">Criteria</th>
-                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending"> Yes/No</th>
-                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Mobile: activate to sort column ascending"> Comments</th>
+                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending"> Deviation</th>
+                                       <th class="sorting" tabindex="0" aria-controls="supplier-listing" rowspan="1" colspan="1" aria-label="Mobile: activate to sort column ascending"> Remarks</th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -91,7 +91,7 @@
                               </form>
                            </div>
                         </div>
-                     </div>
+                     </div> -->
                      <form method="post" action="{{ route('cam_finance_store') }}">
                      @csrf
                      <div id="pullMsg"></div>
@@ -112,8 +112,9 @@
                      <div class="clearfix"></div>
                      <div style="text-align: right;">
                      
-                     @if(file_exists(storage_path('app/public/user/'.$appId.'_finance.xlsx')))
-                           <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_finance.xlsx') }}" download>Download</a>
+                     @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$active_xlsx_filename)))
+                           <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/finance/'.$active_xlsx_filename) }}" download>Download</a>
+                           <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
                      @endif 
                      @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
 
@@ -127,7 +128,19 @@
                      <div class="clearfix"></div>
                      <br/>
                      <hr>
-                     <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
+                     <div id="paginate">
+                        <?php 
+                           echo $xlsx_pagination;
+                        ?>
+                     </div>
+                     <div id="gridView">
+                        <?php 
+                           echo $xlsx_html;
+                        ?>
+                     </div>
+                     <div class="clearfix"></div>
+                     <br/>
+                    <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
                         <div class="card">
                            <div class="card-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" role="tab" id="headingOne">
                               <a  class="">
@@ -2590,7 +2603,8 @@
          </div>
       </form>
    </div>
-</div>   
+</div> 
+{!!Helpers::makeIframePopup('uploadXLSXdoc','Upload XLSX Document', 'modal-md')!!}  
 @endsection
 @section('jscript')
 <script type="text/javascript">

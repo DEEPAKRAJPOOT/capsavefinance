@@ -81,6 +81,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@updateBankDocument'
             ]);
             
+            Route::get('upload_xlsx_document', [
+                'as' => 'upload_xlsx_document',
+                'uses' => 'Backend\CamController@uploadBankXLSX'
+            ]);
+            
+            Route::post('save_xlsx_document', [
+                'as' => 'save_xlsx_document',
+                'uses' => 'Backend\CamController@saveBankXLSX'
+            ]);
+            
             Route::post('bank_document_save', [
                 'as' => 'bank_document_save',
                 'uses' => 'Backend\CamController@saveBankDocument'
@@ -523,15 +533,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@appList'
             ]);
             
-            /*Route::get('/fi', [
+            Route::get('/fi', [
                 'as' => 'backend_agency_fi',
                 'uses' => 'Backend\FiRcuController@listFI'
-            ]);*/
+            ]);
 
-            /*Route::get('/rcu', [
+            Route::get('/inspection', [
+                'as' => 'backend_agency_inspection',
+                'uses' => 'Backend\FiRcuController@listInspection'
+            ]);
+
+            Route::get('/rcu', [
                 'as' => 'backend_agency_rcu',
                 'uses' => 'Backend\FiRcuController@listRCU'
-            ]);*/   
+            ]);   
         });
         
         Route::group(['prefix' => 'anchor'], function () {

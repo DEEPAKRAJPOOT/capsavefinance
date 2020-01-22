@@ -34,8 +34,10 @@
                   <div class="clearfix"></div>
 
                   <div style="text-align: right;">                  
-                  @if(file_exists(storage_path('app/public/user/'.$appId.'_banking.xlsx')))
-                     <a class="btn btn-success btn-sm" href="{{ Storage::url('user/'.$appId.'_banking.xlsx') }}" download>Download</a>
+                  @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/banking/".$active_xlsx_filename)))
+                     <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/banking/'.$active_xlsx_filename) }}" download>Download</a>
+
+                     <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document', ['app_id' => request()->get('app_id'), 'file_type' => 'banking']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
                   @endif 
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
                      @php $class_enable="disabled"; @endphp
@@ -49,6 +51,18 @@
                   <div class="clearfix"></div>
                   <br/>
                   <hr>
+                  <div id="paginate">
+                        <?php 
+                           echo $xlsx_pagination;
+                        ?>
+                     </div>
+                     <div id="gridView">
+                        <?php 
+                           echo $xlsx_html;
+                        ?>
+                     </div>
+                     <div class="clearfix"></div>
+                     <br/>
                   <h2 class="sub-title mt-4">Banking Analysis</h2>
                   <div class=" pb-4 pt-2">
                      <table cellspacing="0" cellpadding="0" class="table overview-table">
@@ -428,6 +442,7 @@
    </div>
 </div>
 {!!Helpers::makeIframePopup('uploadBankDocument','Re-Upload Document', 'modal-md')!!}
+{!!Helpers::makeIframePopup('uploadXLSXdoc','Upload XLSX Document', 'modal-md')!!}
 @endsection
 @section('jscript')
 <script type="text/javascript">
@@ -512,5 +527,30 @@
          },
       })
     }
+
+    $(document).on('click','.pagination',function() {
+         pageNo = $(this).attr('id');
+         getExcel(pageNo);
+      })
+      function getExcel(page = 1) {
+         var fileType = 'banking';
+         data = {appId, page, _token, fileType};
+         $.ajax({
+            url  : '{{URL::route("getExcelSheet") }}',
+            type :'POST',
+            data : data,
+            dataType : 'json',
+            success:function(result) {
+               $('#gridView').html(result.response.data);
+               $('#paginate').html(result.response.paginate);
+            },
+            error:function(error) {
+
+            },
+            complete: function() {
+
+            },
+         })
+      }
 </script>
 @endsection

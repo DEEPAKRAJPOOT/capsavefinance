@@ -55,31 +55,33 @@
             </div>
             <div class="row">
                <div class="col-6">
-                   <div class="form-group">
-                      <label for="txtMobile">Type
-                      </label>
-                      <input class="form-control comp_addr" name="comp_addr" id="comp_addr" tabindex="5" type="text" value="Agency" placeholder="Type" disabled>
-                   </div>
-                </div>
-                    
-                 <div class="col-6">
-                    <div class="form-group">
-                       <label for="txtEmail">Agency
-                       <span class="mandatory">*</span>
-                       </label>                  
-                        <select class="form-control state" name="agency_id" id="agency_id" tabindex="6">
-                          <option value=""> Select Agency</option>
-                          @foreach($agencies as $key => $agency)
-                          <option value="{{$agency->agency_id}}" {{(old('agency_id') == $agency->agency_id)? 'selected': ''}}> {{$agency->comp_name}} </option>
-                          @endforeach
-                        </select>
-                        @error('agency_id')
-                          <span class="error">{{ $message }}</span>
-                       @enderror
-                    </div>
-                 </div>
-                </div>
-                <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
+                  <div class="form-group">
+                     <label for="txtEmail">Agency
+                     <span class="mandatory">*</span>
+                     </label>                  
+                      <select class="form-control state" name="agency_id" id="agency_id" tabindex="6">
+                        <option value=""> Select Agency</option>
+                        @foreach($agencies as $key => $agency)
+                        <option value="{{$agency->agency_id}}" {{(old('agency_id') == $agency->agency_id)? 'selected': ''}}> {{$agency->comp_name}} </option>
+                        @endforeach
+                      </select>
+                      @error('agency_id')
+                        <span class="error">{{ $message }}</span>
+                     @enderror
+                  </div>
+               </div>
+               <div class="col-6">
+                  <div class="form-group">
+                    <label for="txtMobile">Status
+                    </label>
+                    <select class="form-control" name="is_active" tabindex="7">
+                      <option value="1">Active</option>
+                      <option value="0">In-active</option>
+                    </select>
+                  </div>
+               </div>
+            </div>
+            <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
            </form>
          </div>
 @endsection

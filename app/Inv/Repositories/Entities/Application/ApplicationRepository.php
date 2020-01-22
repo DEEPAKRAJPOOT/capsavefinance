@@ -34,6 +34,7 @@ use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\UserBankAccount;
+use App\Inv\Repositories\Models\Master\DoaLevel;
 /**
  * Application repository class
  */
@@ -975,6 +976,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function updateProgramData($attributes, $conditions)
     {
         return Program::updateProgramData($attributes, $conditions);
+    }
+    
+    /**
+     * update Doa data
+     * 
+     * @param type $attributes
+     * @param type $conditions 
+     * @return mixed
+     */
+    public function updateDoaData($attributes, $conditions)
+    {
+        return DoaLevel::updateDoaLevelData($attributes, $conditions);
     }
     
     /**

@@ -27,7 +27,7 @@
                     <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
                 </div>
                 <div class="col-md-7 text-right">
-                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addDocumentsFrame" data-url ="{{route('add_documents')}}" data-height="400px" data-width="100%" data-placement="top" >
+                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addDocumentsFrame" data-url ="{{route('add_documents')}}" data-height="320px" data-width="100%" data-placement="top" >
                             <i class="fa fa-plus"></i>Add Documents
                     </a>
                 </div>
@@ -60,7 +60,7 @@
 </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('addDocumentsFrame','Add Documetns', 'modal-md')!!}
+{!!Helpers::makeIframePopup('addDocumentsFrame','Add Document', 'modal-md')!!}
 {!!Helpers::makeIframePopup('editDocumentsFrame','Edit Document Detail', 'modal-md')!!}
 @endsection
 

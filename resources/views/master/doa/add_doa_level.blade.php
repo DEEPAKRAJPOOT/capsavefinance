@@ -352,7 +352,7 @@ $(document).ready(function () {
         var selector = $(this);
         $.confirm({
             title: 'Confirm!',
-            content: 'Are you sure to Delete?',
+            content: 'Are you sure you want to delete this State from State list?',
             buttons: {
                 Yes: {
                     action: function () {
@@ -363,7 +363,7 @@ $(document).ready(function () {
                     }
 
                 },
-                No: {
+                Cancel: {
                     action: function () {
                     }
                 },
@@ -522,11 +522,15 @@ $(document).ready(function () {
         num++;
     });
 
+$(document).on('blur','.role_change', function (){
+     $(this).parent().find('.role_error').remove(); 
+});
 
     $(document).on('change', '.role_change', function () {
         var selector = $(this);
         var value = selector.val();
         var selected_value = (selector.data('rel')) ? selector.data('rel') : [];
+         selector.parent().find("label[class='error']").remove();
         $.ajax({
             url: messages.get_user_by_role,
             type: 'POST',
@@ -538,7 +542,8 @@ $(document).ready(function () {
             success: function (result) {
                 var optionList = result.data;
                 if(result.success == false){
-                     customAlert('Alert!', result.messges);
+                   selector.after('<label  class="error role_error" >'+result.messges+'</label>');
+                   selector.val('');
                 }
                 selector.parents('.parent_role_div').find('.role_user').empty();
                 $.each(optionList, function (index, data) {
@@ -572,7 +577,7 @@ $(document).ready(function () {
         var selector = $(this);
         $.confirm({
             title: 'Confirm!',
-            content: 'Are you sure to Delete?',
+            content: 'Are you sure you want to delete this role from approver list?',
             buttons: {
                 Yes: {
                     action: function () {
@@ -583,7 +588,7 @@ $(document).ready(function () {
                     }
 
                 },
-                No: {
+                Cancel: {
                     action: function () {
                     }
                 },

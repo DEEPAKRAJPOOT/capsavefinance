@@ -22,6 +22,7 @@ use App\Inv\Repositories\Models\Product;
 use App\Inv\Repositories\Models\ProductDoc;
 use App\Inv\Repositories\Models\Master\Bank;
 use App\Inv\Repositories\Models\DeoLevelStates;
+use App\Inv\Repositories\Models\Master\Status;
 /**
  * 
  */
@@ -421,6 +422,17 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function deleteDeoLevelStates($attributes)
     {
         return DeoLevelStates::deleteDeoLevelStates($attributes);
+    }
+    
+    
+    /**
+     * get app status
+     * 
+     * @return mixed
+     */
+    public function getAppStatus()
+    {
+        return Status::getStatusList();
     }
 
 

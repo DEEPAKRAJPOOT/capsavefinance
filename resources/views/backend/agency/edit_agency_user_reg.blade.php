@@ -55,14 +55,6 @@
                   </div>
             </div>
             <div class="row">
-               <div class="col-6">
-                   <div class="form-group">
-                      <label for="txtMobile">Type
-                      </label>
-                      <input class="form-control comp_addr" name="rolr_type" id="rolr_type" tabindex="5" type="text" value="Agency" placeholder="Type" disabled>
-                   </div>
-                </div>
-                    
                  <div class="col-6">
                     <div class="form-group">
                        <label for="txtEmail">Agency
@@ -79,8 +71,18 @@
                        @enderror
                     </div>
                  </div>
-                </div>
-                <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
+                 <div class="col-6">
+                  <div class="form-group">
+                    <label for="txtMobile">Status
+                    </label>
+                    <select class="form-control" name="is_active" tabindex="7">
+                      <option value="1" {{($agencyUser->is_active == 1)? 'selected': ''}}>Active</option>
+                      <option value="0" {{($agencyUser->is_active == 0)? 'selected': ''}}>In-active</option>
+                    </select>
+                  </div>
+                 </div>
+            </div>
+            <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
            </form>
          </div>
 @endsection

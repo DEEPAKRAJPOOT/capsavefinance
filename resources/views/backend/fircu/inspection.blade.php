@@ -15,7 +15,7 @@
             <a href="{{ route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">RCU Document</a>
         </li>
         @endcan
-        @can('backend_fi')
+        @can('backend_inspection')
         <li>
             <a href="{{ route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Inspection</a>
         </li>
