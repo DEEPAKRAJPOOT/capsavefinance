@@ -28,7 +28,7 @@
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Manage Application</li>
-                <li class="active">Manage Application</li>
+                <li class="active">My Application</li>
             </ol>
         </div>
     </section>
@@ -80,7 +80,7 @@
                                                 <th>{{ trans('backend.app_list_head.user_type') }}</th>
                                                 <th>{{ trans('backend.app_list_head.assignee') }}</th>
                                                 <th>{{ trans('backend.app_list_head.assigned_by') }}</th>
-                                                <th>{{ trans('backend.app_list_head.shared_detail') }}</th>
+                                                {{--<th>{{ trans('backend.app_list_head.shared_detail') }}</th>--}}
                                                 <th>{{ trans('backend.app_list_head.status') }}</th>
                                                 <th>{{ trans('backend.app_list_head.action') }}</th>
                                             </tr>
@@ -107,6 +107,8 @@
 {!!Helpers::makeIframePopup('appStatusFrame','Change Status', 'modal-md')!!}
 {!!Helpers::makeIframePopup('assignCaseFrame','Move to Back Stage', 'modal-md')!!}
 {!!Helpers::makeIframePopup('sendNextstage','Send Next Stage', 'modal-md')!!}
+{!!Helpers::makeIframePopup('viewApprovers','View Approver List', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('viewSharedDetails','View Shared Details', 'modal-lg')!!}
 
 @endsection
 

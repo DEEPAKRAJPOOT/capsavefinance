@@ -238,7 +238,8 @@ class DataRenderer implements DataProviderInterface
                 })                
                 ->addColumn(
                     'assignee',
-                    function ($app) {                    
+                    function ($app) {  
+                        $data = '';                  
                     //if ($app->to_id){
                     //    $userInfo = Helpers::getUserInfo($app->to_id);                    
                     //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
@@ -248,18 +249,22 @@ class DataRenderer implements DataProviderInterface
                     //return $assignName;
                     $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
                     if($userInfo){
-                        return $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
+                        $data .= $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
                     }
-                    return '';
+                    $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Approver List"><i class="fa fa-eye"></i></a>';
+                    return $data;
                 })
                 ->addColumn(
                     'assigned_by',
                     function ($app) {
+                        $data = '';
                         if ($app->from_role && !empty($app->from_role)) {
-                            return $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
+                            $data .= $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
                         } else {
-                            return $app->assigned_by ? $app->assigned_by : '';
+                            $data .= $app->assigned_by ? $app->assigned_by : '';
                         }
+                        $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
+                        return $data;
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
                 })                

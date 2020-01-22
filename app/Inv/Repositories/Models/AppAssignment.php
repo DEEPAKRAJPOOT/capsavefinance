@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Models\Master\User;
 
 class AppAssignment extends BaseModel
 {
@@ -260,7 +261,42 @@ class AppAssignment extends BaseModel
 
         $status =  self::where('app_assign_id', $app_assign_id)->update($attributes);        
         return true;
-    }    
+    }  
+    
+    /**
+     * Get Application shared details
+     *
+     * @param int $app_id
+     *
+     * @return type
+     *
+     */
+    public static function getAppAssignees($app_id){
+          /**
+         * Check Data is Array
+         */
+        
+        if (!is_numeric($app_id)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return  $result = self::select( DB::raw("concat_ws(' ',rta_from_u.f_name,rta_from_u.l_name ) as assignby"), 
+        DB::raw("concat_ws(' ',rta_to_u.f_name,rta_to_u.l_name ) as assignto"),
+        'app_assign.sharing_comment', 'app_assign.created_at','from_u.user_id as from_user_id' ,'to_u.user_id as to_user_id','app_assign.role_id')
+        ->leftjoin('users as from_u','from_u.user_id', '=', 'app_assign.from_id')
+        ->leftjoin('users as to_u','to_u.user_id', '=', 'app_assign.to_id')
+        ->where('app_assign.app_id', (int) $app_id)
+        ->get();
+
+    }
+
 }
   
 
