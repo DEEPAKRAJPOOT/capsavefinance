@@ -131,10 +131,10 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                           @if(request()->get('view_only')) 
+                           {{-- @if(request()->get('view_only')) --}}
                            <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for FI</button>
                            <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
-                           @endif
+                           {{-- @endif --}}
                            <a data-toggle="modal" data-target="#uploadFiDocFrame" data-url ="{{route('fi_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="200px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiDocModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
                            <input type="hidden" id="fiaid4upload" value="">
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->

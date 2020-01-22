@@ -36,6 +36,8 @@
                   <div style="text-align: right;">                  
                   @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/banking/".$active_xlsx_filename)))
                      <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/banking/'.$active_xlsx_filename) }}" download>Download</a>
+
+                     <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document', ['app_id' => request()->get('app_id'), 'file_type' => 'banking']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
                   @endif 
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
                      @php $class_enable="disabled"; @endphp
@@ -440,6 +442,7 @@
    </div>
 </div>
 {!!Helpers::makeIframePopup('uploadBankDocument','Re-Upload Document', 'modal-md')!!}
+{!!Helpers::makeIframePopup('uploadXLSXdoc','Upload XLSX Document', 'modal-md')!!}
 @endsection
 @section('jscript')
 <script type="text/javascript">
