@@ -78,6 +78,8 @@
     let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
     let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
     let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
+    let program_min_limit = "{{isset($limitData->program->min_loan_size)? $limitData->program->min_loan_size: 0}}"; //program minimum limit
+    let program_max_limit = "{{isset($limitData->program->max_loan_size)? $limitData->program->max_loan_size: 0}}"; //program maximum limit
 
     let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
     let balance_limit = total_limit - total_offered_amount + current_offer_amount;
@@ -101,6 +103,11 @@
     }else if((parseInt(limit_amt.replace(/,/g, '')) > ab)){
         setError('input[name=limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
+    }else if(pro_type == 1){
+        if((parseInt(limit_amt.replace(/,/g, '')) > program_min_limit) || (parseInt(limit_amt.replace(/,/g, '')) < program_max_limit)){
+            setError('input[name=limit_amt]', , 'Limit amount should be ('+program_min_limit+' - '+program_max_limit+') range');
+            flag = false;
+        }
     }
 
     if(flag){

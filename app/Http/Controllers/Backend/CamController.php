@@ -210,6 +210,27 @@ class CamController extends Controller
       }
     }
 
+    public function uploadBankXLSX(Request $request){
+      $app_id = $request->get('app_id');
+      $file_type = $request->get('file_type');
+      $request_data = _encrypt("$app_id|$file_type");
+      return view('backend.cam.upload_xlsx', ['request_data' => $request_data]);
+    }
+
+    public function saveBankXLSX(Request $request){
+      $arrFileData = $request->all();
+      $request_data = $request->get('request_data');
+      list($appId, $fileType) = explode('|', _decrypt($request_data));
+      $fileNames = $this->getLatestFileName($appId, $fileType, 'xlsx');
+      $filePath = $this->getToUploadPath($appId, $fileType);
+      $reqFile = $arrFileData['doc_file']['0'];
+      $fileName = $fileNames['new_file'];
+      if ($reqFile->move($filePath, $fileName)) {
+        return response()->json(['message' => 'File uploaded successfully','status' => 1]);
+      }
+       return response()->json(['message' => 'Unable to upload file','status' => 0]);
+    }
+
 
     private function getRangeFromdates(array $array=[]){
        if (empty($array)) {
@@ -543,7 +564,6 @@ class CamController extends Controller
        $prolitus_txn = $reupload_data['prolitus_txn_id'];
        $fin = new FinanceModel();
        $file_doc = $fin->getSingleBankStatement($app_id, $app_doc_file_id);
-       dd($file_doc);
        $bank_detail = $fin->getBankDetail($file_doc->file_bank_id);
        $perfios_bank_id = $bank_detail->perfios_bank_id ?? NULL;
        $filepath = $file_doc['file_path'];

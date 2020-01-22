@@ -47,14 +47,14 @@ $(document).ready(function(){
             rules: {
                 'doc_file': {
                     required: true,
-                    extension: "jpg,jpeg,png,pdf,doc,docx",
+                    extension: "jpg,png,pdf,doc,dox,xls,xlsx",
                     filesize : 200000000,
                 }
             },
             messages: {
                 'doc_file': {
                     required: "Please select file",
-                    extension:"Please select jpg, png, pdf, doc, docx type format only.",
+                    extension:"Please select jpg, png, pdf, doc, docx, xls, xlsx type format only.",
                     filesize:"Maximum size for upload 20 MB.",
                 }
             }
