@@ -180,7 +180,7 @@ class AgencyController extends Controller {
                     'biz_name' => '',
                     'user_type' => 2,
                     'is_email_verified' => 1,
-                    'is_active' => 1,
+                    'is_active' => $arrAgencyData['is_active'],
                     'password' => bcrypt($string)
                 ];
                 $current_user_info = $this->userRepo->save($arrAgencyUserData);
@@ -242,7 +242,7 @@ class AgencyController extends Controller {
                 //'email' => $arrAgencyData['email'],
                 'mobile_no' => $arrAgencyData['mobile_no'],
                 'biz_name' => '',
-                //'is_active' => 1,
+                'is_active' => $arrAgencyData['is_active']
             ];
             $current_user_info = $this->userRepo->save($arrAgencyUserData, $user_id);
             
