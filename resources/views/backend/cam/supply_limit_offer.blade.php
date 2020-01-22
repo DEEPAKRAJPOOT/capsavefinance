@@ -144,6 +144,10 @@
     let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
     let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
     let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
+    let program_min_limit = "{{$limitData->program->min_loan_size}}"; //program minimum limit
+    let program_max_limit = "{{$limitData->program->max_loan_size}}"; //program maximum limit
+    let program_min_rate = "{{$limitData->program->min_interest_rate}}"; //program minimum limit
+    let program_max_rate = "{{$limitData->program->max_interest_rate}}"; //program maximum limit
 
     let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
     let balance_limit = total_limit - total_offered_amount + current_offer_amount;
@@ -175,9 +179,14 @@
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
-    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > actual_balance)){
+    }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > actual_balance){
         setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
+    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > program_min_limit) || (parseInt(prgm_limit_amt.replace(/,/g, '')) < program_max_limit)){
+        setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+program_min_limit+' - '+program_max_limit+') range');
+        flag = false;
+    }else{
+        //TAKE REST
     }
 
     if(interest_rate == '' || isNaN(interest_rate)){
@@ -186,6 +195,11 @@
     }else if(parseFloat(interest_rate) > 100){
         setError('input[name=interest_rate]', 'Please fill correct intereset rate');
         flag = false;
+    }else if((parseFloat(interest_rate) < program_min_rate) || parseFloat(interest_rate) > program_max_rate){
+        setError('input[name=interest_rate]', 'Interest rate should be ('+program_min_rate+'% - '+program_max_rate+'%) range');
+        flag = false;
+    }else{
+        //TAKE REST
     }
 
     if(tenor == ''){

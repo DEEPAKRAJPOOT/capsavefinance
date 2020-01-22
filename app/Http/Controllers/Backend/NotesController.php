@@ -17,7 +17,7 @@ class NotesController extends Controller {
     public function __construct(InvAppRepoInterface $app_repo)
     {
         $this->middleware('auth');
-        $this->middleware('checkBackendLeadAccess');
+       // $this->middleware('checkBackendLeadAccess');
         $this->appRepo = $app_repo;
     }
 

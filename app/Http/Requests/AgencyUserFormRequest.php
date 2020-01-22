@@ -37,7 +37,8 @@ class AgencyUserFormRequest extends Request
             'email.required' => 'Email is required',
             'email.email' => trans('error_messages.invalid_email'),
             'mobile_no.required' => 'Mobile number is required',
-            'mobile_no.numeric'=>trans('error_messages.invalid_phone'), 
+            'mobile_no.numeric'=>trans('error_messages.invalid_phone'),
+            'mobile_no.digits'=>'Mobile number must be 10 digits.', 
             'agency_id.required' => 'Agency is required'
         ];
     }
