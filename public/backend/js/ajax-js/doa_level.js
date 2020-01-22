@@ -42,23 +42,29 @@ try {
         $(document).on('click', '.doa_status', function (e) {
             e.preventDefault();
             var url = $(this).attr('href');
-        
-            $.ajax({
-                url: url,
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    _token: messages.token
-                },
-                success: function (data) {
-                    if (data.success) {
-                        oTable.draw();
+            if(confirm('Are you sure? You want to change status.'))  
+            {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        _token: messages.token
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            oTable.draw();
+                        }
+                    },
+                    error: function () {
+            
                     }
-                },
-                error: function () {
-        
-                }
-            });
+                });
+            }
+            else
+            {
+                return false;
+            }
         });
     });
 } catch (e) {
