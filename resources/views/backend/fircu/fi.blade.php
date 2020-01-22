@@ -57,7 +57,7 @@
                                         </td>
                                         <td>
                                             <div class="btn-group ml-2 mb-1">
-                                                @if($fiList->fiAddress->count() && request()->get('view_only') && Auth::user()->agency_id == null)
+                                                @if($fiList->fiAddress->count() && Auth::user()->agency_id == null)
                                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
                                                     @foreach($status_lists as $status_id => $status_name)
