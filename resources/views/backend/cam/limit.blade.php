@@ -78,8 +78,8 @@
     let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
     let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
     let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
-    let program_min_limit = "{{$limitData->program->min_loan_size}}"; //program minimum limit
-    let program_max_limit = "{{$limitData->program->max_loan_size}}"; //program maximum limit
+    let program_min_limit = "{{isset($limitData->program->min_loan_size)? $limitData->program->min_loan_size: 0}}"; //program minimum limit
+    let program_max_limit = "{{isset($limitData->program->max_loan_size)? $limitData->program->max_loan_size: 0}}"; //program maximum limit
 
     let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
     let balance_limit = total_limit - total_offered_amount + current_offer_amount;
