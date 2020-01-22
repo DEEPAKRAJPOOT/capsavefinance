@@ -191,24 +191,7 @@
                                         <input type="text" name="t_o_f_covenants" id="last_approval_status_stipulated" class="form-control" value="{{isset($arrCamData->t_o_f_covenants) ? $arrCamData->t_o_f_covenants : ''}}">
                                     </td>
                                 </tr>
-                                 <tr>
-                                    <td><b>Brief Profile of the Company</b></td>
-                                    <td colspan="3">
-                                        <input type="text" name="t_o_f_profile_comp" id="profile_of_company" class="form-control" value="{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}}">
-                                    </td>
-                                </tr>
-                                 <tr>
-                                    <td><b>Risk Comments</b></td>
-                                    <td colspan="3">
-                                        <input type="text" name="risk_comments" id="last_approval_status_stipulated" class="form-control" value="{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}">
-                                    </td>
-                                </tr>
-                                 <tr>
-                                    <td><b>Recommendation and Comments of Credit Manager</b></td>
-                                    <td colspan="3">
-                                        <input type="text" name="cm_comment" id="anchor_risk_comments" class="form-control" value="{{isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}">
-                                    </td>
-                                </tr>
+                                 
                             </tbody>
                         </table>
                     </div>
