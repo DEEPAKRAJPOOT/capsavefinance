@@ -57,7 +57,7 @@
                                         </td>
                                         <td>
                                             <div class="btn-group ml-2 mb-1">
-                                                @if($fiList->fiAddress->count() && request()->get('view_only') && Auth::user()->agency_id == null)
+                                                @if($fiList->fiAddress->count() && Auth::user()->agency_id == null)
                                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-address_id="{{$fiList->biz_addr_id}}">
                                                     @foreach($status_lists as $status_id => $status_name)
@@ -131,10 +131,10 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                           @if(request()->get('view_only')) 
+                           {{-- @if(request()->get('view_only')) --}}
                            <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for Inspection</button>
                            <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign Inspection</a>
-                           @endif
+                           {{-- @endif --}}
                            <a data-toggle="modal" data-target="#uploadFiDocFrame" data-url ="{{route('inspection_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="200px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiDocModal" style="display: none;"><i class="fa fa-plus"></i>Assign Inspection</a>
                            <input type="hidden" id="fiaid4upload" value="">
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->

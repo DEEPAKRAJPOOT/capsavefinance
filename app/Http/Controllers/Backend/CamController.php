@@ -273,6 +273,9 @@ class CamController extends Controller
      $objPHPExcel =  new PHPExcel();
      $files = $this->getLatestFileName($appId, $fileType, 'xlsx');
      $file_name = $files['curr_file'];
+     if (empty($filename)) {
+       return ['', ''];
+     }
      $inputFileName = $this->getToUploadPath($appId, $fileType).'/'.$file_name;
      $objPHPExcel = PHPExcel_IOFactory::load($inputFileName);
      $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'HTML');
