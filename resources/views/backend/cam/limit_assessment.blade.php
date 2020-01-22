@@ -280,6 +280,8 @@ var messages = {
 
 var offers = {
     "program_limit":0,
+    "program_min_limit":0,
+    "program_max_limit":0,
     "program_balance_limit":0,
     "current_offer_limit":0,
     "total_offered_limit":{{$totOfferedLimit}},
@@ -356,6 +358,8 @@ $(document).ready(function(){
 
     $('#program_id').on('change',function(){
         offers.program_limit = parseInt($('#program_id option:selected').data('sub_limit'));
+        offers.program_min_limit = parseInt($('#program_id option:selected').data('min_limit'));
+        offers.program_max_limit = parseInt($('#program_id option:selected').data('max_limit'));
         let program_id = $('#program_id').val();
         setLimit('select[name=prgm_id]', '');
         if(program_id == ''){
@@ -443,6 +447,9 @@ function checkValidation(){
         if(product_id == 1 && (parseInt(limit_amt.replace(/,/g, '')) > offers.program_balance_limit)){
             setError('input[name=limit_amt]', 'Limit amount can not exceed from program limit');
             flag = false;
+        }else if(product_id == 1 && ((parseInt(limit_amt.replace(/,/g, '')) < offers.program_min_limit) || (parseInt(limit_amt.replace(/,/g, '')) < offers.program_max_limit))){
+            setError('input[name=limit_amt]', 'Limit amount should be ('+offers.program_min_limit+' - '+offers.program_max_limit+') range');
+            flag = false;
         }else{
             // TAKE REST
         }
@@ -465,10 +472,10 @@ function fillAnchors(programs){
 }
 
 function fillPrograms(programs){
-    let html = '<option value="" data-sub_limit="0">Select Program</option>';
+    let html = '<option value="" data-sub_limit="0" data-min_limit="0" data-max_limit="0">Select Program</option>';
     $.each(programs, function(i,program){
         if(program.prgm_name != null)
-            html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'">'+program.prgm_name+'</option>';
+            html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'">'+program.prgm_name+'</option>';
     });
     $('#program_id').html(html);
 }
