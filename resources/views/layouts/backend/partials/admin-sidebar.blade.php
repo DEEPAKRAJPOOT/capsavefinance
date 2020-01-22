@@ -18,7 +18,7 @@
     @can('lead_list')
         <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fa fa-files-o" aria-hidden="true"></i>
+                    <i class="fa fa-table" aria-hidden="true"></i>
                     <span class="menu-title">Manage Leads</span>
                    <i class="fa fa-angle-right" aria-hidden="true"></i>
                 </a>
@@ -61,7 +61,7 @@
     @can('applicaiton_list')  
         <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fa fa-files-o" aria-hidden="true"></i>
+                    <i class="fa fa-address-book-o" aria-hidden="true"></i>
                     <span class="menu-title">Manage FI/RCU</span>
                    <i class="fa fa-angle-right" aria-hidden="true"></i>
                 </a>
@@ -78,7 +78,7 @@
     @canany(['get_anchor_list','get_anchor_lead_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="fa fa-anchor" aria-hidden="true"></i>
                 <span class="menu-title">Manage Anchor</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>

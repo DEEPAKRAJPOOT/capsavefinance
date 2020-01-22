@@ -29,6 +29,7 @@ try {
                 {data: 'city'},
                 {data: 'amount'},
                 {data: 'role'},
+                {data: 'is_active'},
                 {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5]}]
@@ -36,6 +37,28 @@ try {
         //Search
         $('#searchbtn').on('click', function (e) {
             oTable.draw();
+        });
+  
+        $(document).on('click', '.doa_status', function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+        
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    _token: messages.token
+                },
+                success: function (data) {
+                    if (data.success) {
+                        oTable.draw();
+                    }
+                },
+                error: function () {
+        
+                }
+            });
         });
     });
 } catch (e) {

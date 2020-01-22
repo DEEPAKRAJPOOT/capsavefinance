@@ -44,6 +44,7 @@
                                     <th>City</th>
                                     <th>Amount</th>
                                     <th>Role(s)</th>
+                                    <th>Status</th>
                                     <th>Action</th>                                   
                                 </tr>
                             </thead>

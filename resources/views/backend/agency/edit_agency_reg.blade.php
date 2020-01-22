@@ -11,7 +11,7 @@
                <label for="txtCreditPeriod">Agency Name
                <span class="mandatory">*</span>
                </label>
-               <input type="text" name="comp_name" id="comp_name" value="{{old('comp_name', $agencyData->comp_name)}}" class="form-control employee" tabindex="1" placeholder="Agency Name">
+               <input type="text" name="comp_name" id="comp_name" value="{{old('comp_name', $agencyData->comp_name)}}" class="form-control employee" tabindex="1" placeholder="Agency Name" maxlength="50">
                @error('comp_name')
                   <span class="error">{{ $message }}</span>
                @enderror
@@ -23,9 +23,51 @@
                <span class="mandatory">*</span>
                </label><br/>
                <div id="check_block">
-                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="16" name="type_id[]" {{in_array(16, $type_ids)? 'checked': ''}}> FI</label>
-                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="17" name="type_id[]" {{in_array(17, $type_ids)? 'checked': ''}}> RCU</label>
-                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="18" name="type_id[]" {{in_array(18, $type_ids)? 'checked': ''}}> Inspection</label>
+                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;">
+                    @if(is_array(old('type_id')))
+                      @if(in_array(16, old('type_id')))
+                        <input type="checkbox" value="16" name="type_id[]" checked>FI
+                        @else
+                        <input type="checkbox" value="16" name="type_id[]">FI
+                      @endif
+                    @else
+                      @if(in_array(16, $type_ids))
+                        <input type="checkbox" value="16" name="type_id[]" checked>FI
+                      @else
+                        <input type="checkbox" value="16" name="type_id[]">FI
+                      @endif
+                    @endif
+                  </label>
+                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;">
+                    @if(is_array(old('type_id')))
+                      @if(in_array(17, old('type_id')))
+                        <input type="checkbox" value="17" name="type_id[]" checked>RCU
+                        @else
+                        <input type="checkbox" value="17" name="type_id[]">RCU
+                      @endif
+                    @else
+                      @if(in_array(17, $type_ids))
+                        <input type="checkbox" value="17" name="type_id[]" checked>RCU
+                      @else
+                        <input type="checkbox" value="17" name="type_id[]">RCU
+                      @endif
+                    @endif
+                  </label>
+                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;">
+                    @if(is_array(old('type_id')))
+                      @if(in_array(18, old('type_id')))
+                        <input type="checkbox" value="18" name="type_id[]" checked>Inspection
+                        @else
+                        <input type="checkbox" value="18" name="type_id[]">Inspection
+                      @endif
+                    @else
+                      @if(in_array(18, $type_ids))
+                        <input type="checkbox" value="18" name="type_id[]" checked>Inspection
+                      @else
+                        <input type="checkbox" value="18" name="type_id[]">Inspection
+                      @endif
+                    @endif
+                  </label>
                </div>
                @error('type_id')
                   <span class="error">{{ $message }}</span>
@@ -39,7 +81,7 @@
              <label for="txtEmail">Email
              <span class="mandatory">*</span>
              </label>
-             <input type="email" name="comp_email" id="comp_email" value="{{old('comp_email', $agencyData->comp_email)}}" class="form-control email" tabindex="2" placeholder="Email">
+             <input type="email" name="comp_email" id="comp_email" value="{{old('comp_email', $agencyData->comp_email)}}" class="form-control email" tabindex="2" placeholder="Email" maxlength="50">
              @error('comp_email')
                 <span class="error">{{ $message }}</span>
              @enderror
@@ -64,7 +106,7 @@
                     <label for="txtMobile">Address
                     <span class="mandatory">*</span>
                     </label>
-                    <input class="form-control comp_addr" name="comp_addr" id="comp_addr" value="{{old('comp_addr', $agencyData->comp_addr)}}" tabindex="4" type="text"  placeholder="Address">
+                    <input class="form-control comp_addr" name="comp_addr" id="comp_addr" value="{{old('comp_addr', $agencyData->comp_addr)}}" tabindex="4" type="text"  placeholder="Address" maxlength="100">
                     @error('comp_addr')
                       <span class="error">{{ $message }}</span>
                    @enderror
@@ -95,7 +137,7 @@
                         <label for="txtMobile">City
                         <span class="mandatory">*</span>
                         </label>
-                        <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city', $agencyData->comp_city)}}" tabindex="6" type="text" maxlength="10" placeholder="City">
+                        <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city', $agencyData->comp_city)}}" tabindex="6" type="text" maxlength="10" placeholder="City" maxlength="50">
                         @error('comp_city')
                             <span class="error">{{ $message }}</span>
                         @enderror
@@ -121,67 +163,22 @@
 @section('jscript')
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#editAgencyForm1').validate({ // initialize the plugin
+        $('#editAgencyForm').validate({ // initialize the plugin
             rules: {
-                'comp_name' : {
-                    required : true,
-                },
                 'type_id[]': {
                     required: true,
                 },
-                'comp_email' : {
-                    required : true,
-                    email: true,
-                },
-                'comp_phone' : {
-                    required : true,
-                    number: true,
-                    minlength:10,
-                    maxlength:10
-                },
-                'comp_addr' : {
-                    required : true,
-                },
-                'comp_state' : {
-                    required : true,
-                    number: true
-                },
-                'comp_city' : {
-                    required : true
-                },
-                'comp_zip' : {
-                    required : true,
-                    number : true,
-                    minlength : 6,
-                    maxlength : 6
-                }
             },
             messages: {
-                'comp_name': {
-                    required: "Please enter Agency Name",
-                },
                 'type_id[]': {
                     required: 'Please select at least one type',
                 },
-                'comp_email': {
-                    required: "Please enter Email Id",
-                },
-                'comp_phone': {
-                    required: "Please enter mobile number",
-                },
-                'comp_addr': {
-                    required: "Please enter agency address",
-                },
-                'comp_state': {
-                    required: "Please select state",
-                },
-                'comp_city': {
-                    required: "Please enter city name",
-                },
-                'comp_zip': {
-                    required: "Please enter pin code",
-                }
+            },
+            errorPlacement: function(error, element) {
+                error.appendTo('#check_block');
             }
+
+
         });
     });
 </script>

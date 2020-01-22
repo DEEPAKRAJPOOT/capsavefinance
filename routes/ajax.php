@@ -557,6 +557,14 @@ Route::group(
         ]
     ); 
 
+    Route::post(
+        'change-doa-status',
+        [
+        'as' => 'change_doa_status',
+        'uses' => 'AjaxController@changeDoaStatus'
+        ]
+    ); 
+
     /*lms route*/
     
     Route::post('lms-get-customer', [
