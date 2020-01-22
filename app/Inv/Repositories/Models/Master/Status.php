@@ -57,7 +57,7 @@ class Status extends BaseModel
     
     public static function getStatusList()
     {
-      $res =   self::where('is_active',1)->pluck('status_name','id');
+      $res =   self::where('is_active',1)->where('status_type',4)->pluck('status_name','id');
       return $res?:false;
     }
 }
