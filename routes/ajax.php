@@ -76,6 +76,11 @@ Route::group(
         'uses' => 'Backend\CamController@analyse_finance'
     ]);
 
+    Route::post('getExcelSheet', [
+        'as' => 'getExcelSheet',
+        'uses' => 'Backend\CamController@getExcelSheet'
+    ]);
+
 
     Route::post('gst_analysys', [
         'as' => 'gstAnalysis',

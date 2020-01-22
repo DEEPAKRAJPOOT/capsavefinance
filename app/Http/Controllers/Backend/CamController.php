@@ -141,79 +141,6 @@ class CamController extends Controller
         }
     }
 
-    private function getRangeFromdates(array $array=[]){
-       if (empty($array)) {
-         return array(
-          'from' => date('Y-m-01', strtotime('-6 months', strtotime(date('Y-m-01')))),
-          'to' => date("Y-m-d", strtotime('Last day of Last month')),
-         ); 
-       }
-       $temp=[];
-       foreach ($array as $key => $value) {
-        $no = preg_replace('#[^0-9]+#', '', $value);
-        $temp[] = strlen($no) >= 8 ? substr($no, 0, 8) : substr($no, 0, 6).'01';
-       }
-       $x = str_split(min($temp), 2);
-       $y = str_split(max($temp), 2);
-       $min_date = $x[0].$x[1].'-'.$x[2].'-'.$x[3];
-       $max_date = $y[0].$y[1].'-'.$y[2].'-'.$y[3];
-      return array(
-        'from' => $min_date,
-        'to' => $max_date,
-       );
-    }
-
-    public function _getXLSXTable($appId, $fileType = 'finance'){
-     $objPHPExcel =  new PHPExcel();
-     $files = $this->getLatestFileName($appId, $fileType, 'xlsx');
-     $file_name = $files['curr_file'];
-     $inputFileName = $this->getToUploadPath($appId, 'finance').'/'.$file_name;
-     $objPHPExcel = PHPExcel_IOFactory::load($inputFileName);
-     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'HTML');
-     $objWriter->setSheetIndex(0);
-     $html =  $objWriter->dump();
-     return $html;
-    }
-
-    public function finance(Request $request, FinanceModel $fin){
-        $appId = $request->get('app_id');
-        $xlsx_html = $this->_getXLSXTable($appId,'finance');
-        $json_files = $this->getLatestFileName($appId,'finance', 'json');
-        $active_json_filename = $json_files['curr_file'];
-        $xlsx_files = $this->getLatestFileName($appId,'finance', 'xlsx');
-        $active_xlsx_filename = $xlsx_files['curr_file'];
-        $bizId = $request->get('biz_id');
-        $pending_rec = $fin->getPendingFinanceStatement($appId);
-        $financedocs = $fin->getFinanceStatements($appId);
-        $contents = array();
-        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
-          $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)),true);
-        }
-        $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
-        $latest_finance_year = 2010;
-        $fy = $contents['FinancialStatement']['FY'] ?? array();
-        $financeData = [];
-        if (!empty($fy)) {
-          foreach ($fy as $k => $v) {
-            $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
-            $financeData[$v['year']] = $v;
-          }
-        }
-        $finDetailData = AppBizFinDetail::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
-        return view('backend.cam.finance', [
-          'financedocs' => $financedocs, 
-          'appId'=> $appId, 
-          'pending_rec'=> $pending_rec,
-          'borrower_name'=> $borrower_name,
-          'finance_data'=> $financeData,
-          'latest_finance_year'=> $latest_finance_year,
-          'finDetailData'=>$finDetailData,
-          'active_xlsx_filename'=> $active_xlsx_filename,
-          'active_json_filename'=> $active_json_filename,
-          'xlsx_html'=> $xlsx_html,
-        ]);
-
-    }
 
     public function saveFinanceDetail(Request $request) {
       try {
@@ -282,9 +209,79 @@ class CamController extends Controller
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
     }
-    
+
+
+    private function getRangeFromdates(array $array=[]){
+       if (empty($array)) {
+         return array(
+          'from' => date('Y-m-01', strtotime('-6 months', strtotime(date('Y-m-01')))),
+          'to' => date("Y-m-d", strtotime('Last day of Last month')),
+         ); 
+       }
+       $temp=[];
+       foreach ($array as $key => $value) {
+        $no = preg_replace('#[^0-9]+#', '', $value);
+        $temp[] = strlen($no) >= 8 ? substr($no, 0, 8) : substr($no, 0, 6).'01';
+       }
+       $x = str_split(min($temp), 2);
+       $y = str_split(max($temp), 2);
+       $min_date = $x[0].$x[1].'-'.$x[2].'-'.$x[3];
+       $max_date = $y[0].$y[1].'-'.$y[2].'-'.$y[3];
+      return array(
+        'from' => $min_date,
+        'to' => $max_date,
+       );
+    }
+
+    private function _getPaginate($sheets, $curr_sheet) {
+      $paginate = '';
+      $total_pages = count($sheets);
+      if ($total_pages <= 1) {
+        return "";
+      }
+      $curr_page = $curr_sheet + 1;
+      for($i = 1; $i <= $total_pages; $i++){
+        $selected = ($curr_page == $i) ? 'selected' : 'unselect';
+        $paginate .="<span class='pagination ". $selected ."' id='".$i."' title='".$sheets[$i-1]."'>".$i."</span>";
+      }
+      $paginate .="<div class='outof'>Sheet ".($curr_page)." out of ".$total_pages."</div>";
+      return $paginate;
+    }
+
+    private function _getXLSXTable($appId, $fileType = 'finance', $sheet_no = 0){
+     $objPHPExcel =  new PHPExcel();
+     $files = $this->getLatestFileName($appId, $fileType, 'xlsx');
+     $file_name = $files['curr_file'];
+     $inputFileName = $this->getToUploadPath($appId, $fileType).'/'.$file_name;
+     $objPHPExcel = PHPExcel_IOFactory::load($inputFileName);
+     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'HTML');
+     $allsheets = $objPHPExcel->getSheetNames();
+     $pagination = $this->_getPaginate($allsheets, $sheet_no);
+     $objWriter->setSheetIndex($sheet_no);
+     $html =  $objWriter->dump();
+     return [$html, $pagination];
+    }
+
+    public function getExcelSheet(Request $request){
+     $page = 0;
+     if ($request->get('page') && $request->get('page') > 0) {
+        $page = $_POST['page'] - 1;
+      }
+      $appId = $request->get('appId');
+      $fileType = $request->get('fileType');
+      $sheet_data = $this->_getXLSXTable($appId, $fileType, $page);
+      $response['data'] =  $sheet_data[0];
+      $response['paginate'] = $sheet_data[1];
+      return response()->json(['response' => $response,'status' => 1]);
+    }
+
     public function getLatestFileName($appId, $fileType='banking', $extType='json'){
-      $files = scandir($this->getToUploadPath($appId, $fileType), SCANDIR_SORT_DESCENDING);
+      $scanpath = $this->getToUploadPath($appId, $fileType);
+      if (is_dir($scanpath) == false) {
+        $files = [];
+      }else{
+        $files = scandir($scanpath, SCANDIR_SORT_DESCENDING);
+      }
       $files = array_diff($files, [".", ".."]);
       $filename = "";
       if (!empty($files)) {
@@ -314,8 +311,65 @@ class CamController extends Controller
       return $fileArr;
     }
 
+
+    private function getToUploadPath($appId, $type = 'banking'){
+      $touploadpath = storage_path('app/public/user/docs/'.$appId);
+      if(!Storage::exists('public/user/docs/' .$appId)) {
+          Storage::makeDirectory('public/user/docs/' .$appId.'/banking', 0777, true);
+          Storage::makeDirectory('public/user/docs/' .$appId.'/finance', 0777, true);
+          $touploadpath = storage_path('public/user/docs/' .$appId);
+      }
+      return $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+    }
+
+    public function finance(Request $request, FinanceModel $fin){
+        $appId = $request->get('app_id');
+        $xlsx_arr = $this->_getXLSXTable($appId,'finance');
+        $xlsx_html = $xlsx_arr[0];
+        $xlsx_pagination = $xlsx_arr[1];
+        $json_files = $this->getLatestFileName($appId,'finance', 'json');
+        $active_json_filename = $json_files['curr_file'];
+        $xlsx_files = $this->getLatestFileName($appId,'finance', 'xlsx');
+        $active_xlsx_filename = $xlsx_files['curr_file'];
+        $bizId = $request->get('biz_id');
+        $pending_rec = $fin->getPendingFinanceStatement($appId);
+        $financedocs = $fin->getFinanceStatements($appId);
+        $contents = array();
+        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
+          $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)),true);
+        }
+        $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
+        $latest_finance_year = 2010;
+        $fy = $contents['FinancialStatement']['FY'] ?? array();
+        $financeData = [];
+        if (!empty($fy)) {
+          foreach ($fy as $k => $v) {
+            $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
+            $financeData[$v['year']] = $v;
+          }
+        }
+        $finDetailData = AppBizFinDetail::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
+        return view('backend.cam.finance', [
+          'financedocs' => $financedocs, 
+          'appId'=> $appId, 
+          'pending_rec'=> $pending_rec,
+          'borrower_name'=> $borrower_name,
+          'finance_data'=> $financeData,
+          'latest_finance_year'=> $latest_finance_year,
+          'finDetailData'=>$finDetailData,
+          'active_xlsx_filename'=> $active_xlsx_filename,
+          'active_json_filename'=> $active_json_filename,
+          'xlsx_html'=> $xlsx_html,
+          'xlsx_pagination'=> $xlsx_pagination,
+        ]);
+
+    }
+
     public function banking(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
+        $xlsx_arr = $this->_getXLSXTable($appId,'banking');
+        $xlsx_html = $xlsx_arr[0];
+        $xlsx_pagination = $xlsx_arr[1];
         $json_files = $this->getLatestFileName($appId,'banking', 'json');
         $active_json_filename = $json_files['curr_file'];
         $xlsx_files = $this->getLatestFileName($appId,'banking', 'xlsx');
@@ -349,6 +403,8 @@ class CamController extends Controller
           'customers_info'=> $customers_info,
           'active_xlsx_filename'=> $active_xlsx_filename,
           'active_json_filename'=> $active_json_filename,
+          'xlsx_html'=> $xlsx_html,
+          'xlsx_pagination'=> $xlsx_pagination,
           ]);
     }
 
@@ -690,16 +746,6 @@ class CamController extends Controller
         }
         $files[] = $dates;
         return $files;
-    }
-
-    private function getToUploadPath($appId, $type = 'banking'){
-      $touploadpath = storage_path('app/public/user/docs/'.$appId);
-      if(!Storage::exists('public/user/docs/' .$appId)) {
-          Storage::makeDirectory('public/user/docs/' .$appId.'/banking', 0777, true);
-          Storage::makeDirectory('public/user/docs/' .$appId.'/finance', 0777, true);
-          $touploadpath = storage_path('public/user/docs/' .$appId);
-      }
-      return $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
     }
 
     private function _callBankApi($filespath, $appId){
