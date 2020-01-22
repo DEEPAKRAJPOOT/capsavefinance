@@ -49,6 +49,18 @@
                   <div class="clearfix"></div>
                   <br/>
                   <hr>
+                  <div id="paginate">
+                        <?php 
+                           echo $xlsx_pagination;
+                        ?>
+                     </div>
+                     <div id="gridView">
+                        <?php 
+                           echo $xlsx_html;
+                        ?>
+                     </div>
+                     <div class="clearfix"></div>
+                     <br/>
                   <h2 class="sub-title mt-4">Banking Analysis</h2>
                   <div class=" pb-4 pt-2">
                      <table cellspacing="0" cellpadding="0" class="table overview-table">
@@ -512,5 +524,30 @@
          },
       })
     }
+
+    $(document).on('click','.pagination',function() {
+         pageNo = $(this).attr('id');
+         getExcel(pageNo);
+      })
+      function getExcel(page = 1) {
+         var fileType = 'banking';
+         data = {appId, page, _token, fileType};
+         $.ajax({
+            url  : '{{URL::route("getExcelSheet") }}',
+            type :'POST',
+            data : data,
+            dataType : 'json',
+            success:function(result) {
+               $('#gridView').html(result.response.data);
+               $('#paginate').html(result.response.paginate);
+            },
+            error:function(error) {
+
+            },
+            complete: function() {
+
+            },
+         })
+      }
 </script>
 @endsection

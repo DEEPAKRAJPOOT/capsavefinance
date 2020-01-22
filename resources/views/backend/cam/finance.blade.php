@@ -127,9 +127,18 @@
                      <div class="clearfix"></div>
                      <br/>
                      <hr>
-                     <?php 
-                     echo $xlsx_html;
-                     ?>
+                     <div id="paginate">
+                        <?php 
+                           echo $xlsx_pagination;
+                        ?>
+                     </div>
+                     <div id="gridView">
+                        <?php 
+                           echo $xlsx_html;
+                        ?>
+                     </div>
+                     <div class="clearfix"></div>
+                     <br/>
                     <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
                         <div class="card">
                            <div class="card-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" role="tab" id="headingOne">
