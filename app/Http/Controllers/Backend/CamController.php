@@ -213,11 +213,18 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      $app_id = $request->get('app_id');
-      // Mail::to('kuldeep.singh@prolitus.com')
-      //   ->send(new ReviewerSummary());
-      // dd('Mail sended successfully');
-      return new \App\Mail\ReviewerSummary();      
+      Mail::to('kuldeep.singh@prolitus.com')
+        ->send(new ReviewerSummary());
+
+      if(count(Mail::failures()) > 0 ) {
+        Session::flash('error',trans('Mail not sended, try again later.'));
+      } else {
+        Session::flash('message',trans('Mail sended successfully.'));
+        
+       }
+       //dd('Mail sended successfully.');
+       //return new \App\Mail\ReviewerSummary(); 
+       return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
     }
 
     public function uploadBankXLSX(Request $request){

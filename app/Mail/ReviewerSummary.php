@@ -9,7 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
-use Illuminate\Support\Facades\Storage;
+use App\Inv\Repositories\Models\AppDocumentFile;
 
 class ReviewerSummary extends Mailable
 {
@@ -32,19 +32,26 @@ class ReviewerSummary extends Mailable
      */
     public function build(Request $request)
     {
-        //dd(storage_path('SomeFile.txt'));
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
         $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
         $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
-        //dd($appId);
+        $fileArray = AppDocumentFile::getReviewerSummaryPreDocs('183', [4,38]);
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData
         ]);
 
         $email->subject('Reviewer Summary Detail');
-        $email->attach(storage_path('SomeFile.txt'));
+
+        if($fileArray) {
+            foreach($fileArray as $key=>$val) {
+                if(file_exists(storage_path($val['file_path']))) {
+                    $email->attach(storage_path($val['file_path']));
+                }
+            }
+        }
+
         return $email;
     }
 }
