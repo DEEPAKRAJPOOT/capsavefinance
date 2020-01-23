@@ -155,7 +155,7 @@ public static function saveBulkTempInvoice($arrInvoice)
                         $data->created_by =  $result->created_by;
                         $data->created_at =  $result->created_at;
                $insert = $data->save();
-               InvoiceActivityLog::saveInvoiceActivityLog($data->invoice_id,7,null,$id);
+               InvoiceActivityLog::saveInvoiceActivityLog($data->invoice_id,7,null,$id,null);
             }
             
        }  

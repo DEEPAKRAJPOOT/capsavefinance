@@ -45,13 +45,14 @@ class InvoiceActivityLog extends BaseModel {
                 'status_id',
                 'activity_name',
                 'created_by',
+                'updated_by',
                 'created_at'
           
     ];
     
   
       /* invoice activity log  */
-      public static function  saveInvoiceActivityLog($invoice_id,$status_id,$activity_name=null,$created_by)
+      public static function  saveInvoiceActivityLog($invoice_id,$status_id,$activity_name,$created_by,$updated_by)
       {
           if($status_id!=0)
           {
@@ -59,16 +60,14 @@ class InvoiceActivityLog extends BaseModel {
               $activity_name = $res->status_name;
           }
            $created_at  = Carbon::now(); 
-           $arr  =  ['invoice_id' => $invoice_id,'status_id' =>$status_id,'activity_name' =>$activity_name,'created_by' => $created_by,'created_at' => $created_at ]; 
+           $arr  =  ['invoice_id' => $invoice_id,'status_id' =>$status_id,'activity_name' =>$activity_name,'created_by' => $created_by,'updated_by' => $updated_by,'created_at' => $created_at ]; 
            return self::insert($arr);  
      
        }
-       
-       
        public static function getAllActivityInvoiceLog($inv)
        {
            
-           return self::where(['invoice_id' => $inv])->get();
+           return self::where(['invoice_id' => $inv])->orderBy('invoice_log_id', 'desc')->get();
        }
 
 }

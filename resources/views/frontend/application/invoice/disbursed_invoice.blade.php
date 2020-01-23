@@ -312,7 +312,7 @@
       </div>
    </div>
 </div>
-    {!!Helpers::makeIframePopup('modalInvoiceDisbursed','Invoice Success Status', 'modal-md')!!}
+    {!!Helpers::makeIframePopup('modalInvoiceDisbursed','Invoice Success Status', 'modal-lg')!!}
     @endsection
     @section('jscript')
 <script>

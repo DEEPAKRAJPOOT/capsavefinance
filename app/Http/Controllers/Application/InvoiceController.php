@@ -30,8 +30,6 @@ class InvoiceController extends Controller {
     /* Invoice upload page  */
 
     public function getInvoice(Request $request) {
-       
-      
         $anchor_id = $request->anchor_id;
         $user_id = $request->user_id;
         $app_id = $request->app_id;
@@ -139,8 +137,8 @@ class InvoiceController extends Controller {
       
        /* success invoice status iframe    */
        public function invoiceSuccessStatus(Request $request){
-        
-         return view('frontend.application.invoice.invoice_success_status');
+          $result =  $this->invRepo->getDisbursedAmount($request->get('invoice_id'));
+         return view('frontend.application.invoice.invoice_success_status')->with(['result' => $result]);
       }
          /* success invoice status iframe    */
        public function viewInvoiceDetails(Request $request){
@@ -185,7 +183,7 @@ class InvoiceController extends Controller {
       
       
      /*   save invoice */
-    public function saveInvoice(Request $request) {
+     public function saveInvoice(Request $request) {
         $attributes = $request->all();
         $date = Carbon::now();
         $id = Auth::user()->user_id;
@@ -223,7 +221,7 @@ class InvoiceController extends Controller {
 
         if ($result) {
 
-            $this->invRepo->saveInvoiceActivityLog($result,7,null,$id);
+            $this->invRepo->saveInvoiceActivityLog($result,7,null,$id,null);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {
@@ -231,5 +229,5 @@ class InvoiceController extends Controller {
             return back();
         }
     }
-
+    
 }

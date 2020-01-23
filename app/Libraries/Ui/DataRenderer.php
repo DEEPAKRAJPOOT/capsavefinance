@@ -590,17 +590,16 @@ class DataRenderer implements DataProviderInterface
                         return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
                  ->addColumn(
-                    'program_name',
-                    function ($invoice) {                        
-                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
-                })
-                ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })  
+                 ->addColumn(
+                    'invoice_due_date',
+                    function ($invoice) {                        
+                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
                 })
-                
-                ->addColumn(
+               ->addColumn(
                     'tenor',
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
@@ -679,15 +678,15 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
-                 ->addColumn(
-                    'program_name',
-                    function ($invoice) {                        
-                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
-                })
-                ->addColumn(
+                   ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })  
+                 ->addColumn(
+                    'invoice_due_date',
+                    function ($invoice) {                        
+                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
                 })
                 ->addColumn(
                     'tenor',
@@ -751,15 +750,15 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
-                 ->addColumn(
-                    'program_name',
-                    function ($invoice) {                        
-                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
-                })
-                ->addColumn(
+                   ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })  
+                 ->addColumn(
+                    'invoice_due_date',
+                    function ($invoice) {                        
+                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
                 })
                 ->addColumn(
                     'tenor',
@@ -820,15 +819,15 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
-                 ->addColumn(
-                    'program_name',
-                    function ($invoice) {                        
-                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
-                })
-                ->addColumn(
+                   ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })  
+                 ->addColumn(
+                    'invoice_due_date',
+                    function ($invoice) {                        
+                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
                 })
                 ->addColumn(
                     'tenor',
@@ -889,15 +888,15 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
-                 ->addColumn(
-                    'program_name',
-                    function ($invoice) {                        
-                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
-                })
-                ->addColumn(
+                   ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })  
+                 ->addColumn(
+                    'invoice_due_date',
+                    function ($invoice) {                        
+                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
                 })
                 ->addColumn(
                     'tenor',
@@ -970,14 +969,14 @@ class DataRenderer implements DataProviderInterface
                         return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
                  ->addColumn(
-                    'program_name',
-                    function ($invoice) {                        
-                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
-                })
-                ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })  
+                 ->addColumn(
+                    'invoice_due_date',
+                    function ($invoice) {                        
+                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
                 })
                 ->addColumn(
                     'tenor',
@@ -1006,11 +1005,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                      if ($request->front) {         
-                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="450px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      }
                      else
                      {
-                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="450px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      
                      }
                 })
@@ -1050,14 +1049,14 @@ class DataRenderer implements DataProviderInterface
                         return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
                  ->addColumn(
-                    'program_name',
-                    function ($invoice) {                        
-                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
-                })
-                ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })  
+                 ->addColumn(
+                    'invoice_due_date',
+                    function ($invoice) {                        
+                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
                 })
                 ->addColumn(
                     'tenor',
@@ -1118,15 +1117,15 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
-                 ->addColumn(
-                    'program_name',
-                    function ($invoice) {                        
-                        return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
-                })
-                ->addColumn(
+                   ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })  
+                 ->addColumn(
+                    'invoice_due_date',
+                    function ($invoice) {                        
+                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
                 })
                 ->addColumn(
                     'tenor',
@@ -1168,7 +1167,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceActivityList(Request $request,$invoice)
     { 
-    
+       
       return DataTables::of($invoice)
                ->rawColumns(['anchor_id','action','status','comment'])
                 ->addIndexColumn()
@@ -1177,18 +1176,20 @@ class DataRenderer implements DataProviderInterface
                     'comment',
                     function ($invoice) { 
                       $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
-                        if($invoice->status_id==0) {
+                        if($invoice->status_id==0 && $invoice->updated_by==null) {
                               return $invoice->activity_name;
                       }
                 })
-                 
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
                       $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
                       if($invoice->status_id!=0) {
                       return '<button type="button" class="'.$color[$invoice->status_id] .' btn-sm">'.$invoice->activity_name.'</button>';
+                      }
+                      else if($invoice->status_id==0 && $invoice->updated_by!=null)
+                      {
+                            return '<button type="button" class="badge badge-warning btn-sm">'.$invoice->activity_name.'</button>';
                       }
 
                 })

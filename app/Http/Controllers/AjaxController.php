@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 use Auth;
 use Helpers;
@@ -2711,7 +2710,6 @@ if ($err) {
   
     //////////////////// use for invoice list/////////////////
      public function getInvoiceList(DataProviderInterface $dataProvider) {
-       
         $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
         return $invoice;

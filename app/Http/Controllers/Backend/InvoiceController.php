@@ -54,7 +54,7 @@ class InvoiceController extends Controller {
        
          $getAllInvoice    =   $this->invRepo->getAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();
-        return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+         return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
       
@@ -129,8 +129,8 @@ class InvoiceController extends Controller {
       
        /* success invoice status iframe    */
        public function invoiceSuccessStatus(Request $request){
-        
-         return view('backend.invoice.invoice_success_status');
+         $result =  $this->invRepo->getDisbursedAmount($request->get('invoice_id'));
+         return view('backend.invoice.invoice_success_status')->with(['result' => $result]);
       }
       
        /* success invoice status iframe    */
@@ -214,7 +214,7 @@ class InvoiceController extends Controller {
 
         if ($result) {
 
-            $this->invRepo->saveInvoiceActivityLog($result,7,null,$id);
+              $this->invRepo->saveInvoiceActivityLog($result,7,null,$id,null);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {

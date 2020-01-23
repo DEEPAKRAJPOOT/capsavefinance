@@ -170,12 +170,12 @@ use CommonRepositoryTraits;
     }
     
      /* save invoice activity log  */
-      public function saveInvoiceActivityLog($invoice_id,$status_id=0,$activity_name,$created_by=null)
+      public function saveInvoiceActivityLog($invoice_id,$status_id=0,$activity_name,$created_by,$updatedBy)
     {
        
          try
         {
-          return InvoiceActivityLog::saveInvoiceActivityLog($invoice_id,$status_id,$activity_name,$created_by);  
+          return InvoiceActivityLog::saveInvoiceActivityLog($invoice_id,$status_id,$activity_name,$created_by,$updatedBy);  
         } catch (Exception $ex) {
            return $ex;
         }
@@ -223,6 +223,17 @@ use CommonRepositoryTraits;
        return TempInvoiceModel::saveBulk($attributes);  
     }
     
+    
+     public function getDisbursedAmount($invid)
+    {
+        try
+        {
+           return InvoiceModel::getDisbursedAmount($invid);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }
     public function saveBatchNo($path)
     {
         try

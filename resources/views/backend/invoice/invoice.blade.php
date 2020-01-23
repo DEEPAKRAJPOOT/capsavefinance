@@ -38,7 +38,7 @@
          <a class="nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
     </li>
   <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursment Que</a>
+         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursment Queue</a>
     </li>
         
    <li class="nav-item">
@@ -124,8 +124,8 @@
                                               <th>Invoice  No</th>
                                                 <th>Anchor Name</th>
                                                 <th>Supplier Name</th>
-                                                <th>Program Name</th>
-                                                <th>Invoice Date</th>
+                                               <th>Invoice Date</th>
+                                                <th>Invoice Due Date</th>
                                                    <th>Tenor</th>
                                                  <th>Invoice  Amount</th>
                                                 <th>Invoice Approve Amount</th>

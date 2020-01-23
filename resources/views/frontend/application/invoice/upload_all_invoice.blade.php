@@ -81,7 +81,7 @@
 									<div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Date <span class="error_message_label">*</span> </label>
-                                            <input type="text" id="invoice_date" name="invoice_date" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate">
+                                            <input type="text" id="invoice_date" name="invoice_date" readonly="readonly" placeholder="Invoice Date" class="getInvoiceD form-control date_of_birth datepicker-dis-fdate">
                                         </div>
                                     </div>
 									
@@ -374,9 +374,9 @@ var messages = {
         $("#tenorMsg").hide();
         var first  = $('#invoice_due_date').val();
         var second = $('#invoice_date').val();
-        var getDays  = parseInt(findDaysWithDate(first,second));
-        var tenor  = parseInt($('#tenor').val());
-       
+        var getDays  = findDaysWithDate(first,second);
+        var tenor  = $('#tenor').val();
+     
      if ($('form#signupForm').validate().form()) {  
        $("#anchor_id" ).rules( "add", {
         required: true,
@@ -431,9 +431,8 @@ var messages = {
         required: "Please upload Invoice Copy",
         }
         }); 
-        if(getDays > tenor)
+         if(getDays < tenor)
         {
-         
            $("#tenorMsg").show(); 
            $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor); 
            e.preventDefault();
@@ -446,6 +445,20 @@ var messages = {
      });         
   });  
   
+  ////////////// get due date depend on tenor date ///////////
+   $(document).on('keyup change','.getInvoiceD',function(){
+        var date = $(this).val(); 
+        if($("#program_id").val()!='' && date!='')
+      {
+       
+        var date = ChangeDateFormat(date);
+        var oldDate = new Date(date);
+        var days  = parseInt($('#tenor').val());
+        var nextday =new Date(oldDate.getFullYear(),oldDate.getMonth(),oldDate.getDate()+days);
+        var dueDate  = (nextday.getDate()+'/'+(nextday.getMonth()+1)+'/'+nextday.getFullYear());
+        $("#invoice_due_date").val(dueDate);
+    }
+   });
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeAnchor',function(){
       
@@ -501,8 +514,12 @@ var messages = {
 });
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeSupplier',function(){
-    
+      $("#invoice_date").val('');
       var program_id =  $(this).val(); 
+      if(program_id=='')
+      {
+          return false; 
+      }
       $("#supplier_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
