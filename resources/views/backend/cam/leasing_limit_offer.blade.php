@@ -46,30 +46,12 @@
       <div class="form-group row  ">
         <label for="txtPassword" class="col-md-4"><b>Equipment Type:</b></label> 
         <div class="col-md-8">
-        <input type="text" name="equipment_type" class="form-control" value="{{isset($offerData->equipment_type)? $offerData->equipment_type: ''}}" placeholder="Equipment type" maxlength="80">
-        </div>
-      </div>
-    </div>
-    
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Security Deposit/Margin(%):</b></label> 
-        <div class="col-md-8">
-        <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? $offerData->security_deposit: ''}}" placeholder="Security Deposit/Margin" maxlength="5">
-        </div>
-      </div>
-    </div>
-    
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Rental Frequency:</b></label> 
-        <div class="col-md-8">
-        <select name="rental_frequency" class="form-control">
-            <option value="">Select rental frequency</option>
-            <option value="4" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 4)? 'selected': ''):''}}>Monthly</option>
-            <option value="3" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 3)? 'selected': ''):''}}>Quaterly</option>
-            <option value="2" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 2)? 'selected': ''):''}}>Bi-Yearly</option>
-            <option value="1" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 1)? 'selected': ''):''}}>Yearly</option>
+        <select class="form-control" name="equipment_type_id">
+            <option value="">Select Equipment type</option>
+            <option value="1" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == 1)? 'selected': ''}}>Equipment type 1</option>
+            <option value="2" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == 2)? 'selected': ''}}>Equipment type 2</option>
+            <option value="3" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == 3)? 'selected': ''}}>Equipment type 3</option>
+            <option value="4" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == 4)? 'selected': ''}}>Equipment type 4</option>
         </select>
         </div>
       </div>
@@ -77,18 +59,76 @@
     
     <div class="col-md-12">
       <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>PTPQ(%):</b></label> 
+        <label for="txtPassword" class="col-md-4"><b>Security Deposit:</b></label> 
         <div class="col-md-8">
-        <input type="text" name="ptpq" class="form-control" value="{{isset($offerData->ptpq)? $offerData->ptpq: ''}}" placeholder="PTPQ" maxlength="5">
+        <label class="radio-inline"><input type="radio" name="security_deposit_type" value="1" checked> Flat</label>&nbsp;&nbsp;&nbsp;&nbsp;
+        <label class="radio-inline"><input type="radio" name="security_deposit_type" value="2"> Percent</label>
         </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group row  ">
+        <label for="txtPassword" class="col-md-4"><b></b></label> 
+        <div class="col-md-4">
+        <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Security Deposit" maxlength="5">
+        </div>
+        <div class="col-md-4">
+        <select name="security_deposit_of" class="form-control">
+            <option value="">Select Deposit Type</option>
+            <option value="4" {{isset($offerData->security_deposit_of)? (($offerData->security_deposit_of == 4)? 'selected': ''):''}}>Sanction</option>
+            <option value="3" {{isset($offerData->security_deposit_of)? (($offerData->security_deposit_of == 3)? 'selected': ''):''}}>Asset Base Value</option>
+            <option value="2" {{isset($offerData->security_deposit_of)? (($offerData->security_deposit_of == 2)? 'selected': ''):''}}>Asset Value</option>
+            <option value="1" {{isset($offerData->security_deposit_of)? (($offerData->security_deposit_of == 1)? 'selected': ''):''}}>Loan Amount</option>
+        </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-12">
+      <div class="form-group row  ">
+        <label for="txtPassword" class="col-md-4"><b>Rental Frequency:</b></label> 
+        <div class="col-md-4">
+            <select name="rental_frequency" class="form-control">
+                <option value="">Select Rental Frequency</option>
+                <option value="4" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 4)? 'selected': ''):''}}>Monthly</option>
+                <option value="3" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 3)? 'selected': ''):''}}>Quaterly</option>
+                <option value="2" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 2)? 'selected': ''):''}}>Bi-Yearly</option>
+                <option value="1" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 1)? 'selected': ''):''}}>Yearly</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select name="rental_frequency_type" class="form-control">
+                <option value="">Select Frequency Type</option>
+                <option value="1" {{isset($offerData->rental_frequency_type)? (($offerData->rental_frequency_type == 1)? 'selected': ''):''}}>Advance</option>
+                <option value="2" {{isset($offerData->rental_frequency_type)? (($offerData->rental_frequency_type == 2)? 'selected': ''):''}}>Arrears</option>
+            </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-12">
+      <div class="form-group row  ">
+        <label for="txtPassword" class="col-md-4"><b>PTPQ:</b></label> 
+        <div class="col-md-4">
+        <input type="text" name="ptpq_from" class="form-control" value="{{isset($offerData->ptpq_from)? (int)$offerData->ptpq_from: ''}}" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+        </div>
+        <div class="col-md-4">
+        <input type="text" name="ptpq_to" class="form-control" value="{{isset($offerData->ptpq_to)? (int)$offerData->ptpq_to: ''}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+        </div>
+        <!-- <div class="col-md-2">
+        <input type="text" name="ptpq_rate" class="form-control" value="{{isset($offerData->ptpq_rate)? $offerData->ptpq_rate: ''}}" placeholder="PTPQ Rate" maxlength="5">
+        </div> -->
       </div>
     </div>
 
     <div class="col-md-12">
       <div class="form-group row  ">
         <label for="txtPassword" class="col-md-4"><b>XIRR(%):</b></label> 
-        <div class="col-md-8">
-        <input type="text" name="xirr" class="form-control" value="{{isset($offerData->xirr)? $offerData->xirr: ''}}" placeholder="Adhoc Interest Rate" maxlength="6">
+        <div class="col-md-4">
+        <input type="text" name="ruby_sheet_xirr" class="form-control" value="{{isset($offerData->ruby_sheet_xirr)? $offerData->ruby_sheet_xirr: ''}}" placeholder=" Cash Flow XIRR" maxlength="5">
+        </div>
+        <div class="col-md-4">
+        <input type="text" name="cash_flow_xirr" class="form-control" value="{{isset($offerData->cash_flow_xirr)? $offerData->cash_flow_xirr: ''}}" placeholder="Ruby Sheet XIRR" maxlength="5">
         </div>
       </div>
     </div>
@@ -132,23 +172,34 @@
 
     unsetError('input[name=prgm_limit_amt]');
     unsetError('input[name=tenor]');
-    unsetError('input[name=equipment_type]');
+    unsetError('select[name=equipment_type_id]');
     unsetError('input[name=security_deposit]');
     unsetError('select[name=rental_frequency]');
-    unsetError('input[name=ptpq]');
-    unsetError('input[name=xirr]');
+    unsetError('select[name=rental_frequency_type]');
+    unsetError('select[name=security_deposit_of]');
+    unsetError('input[name=ptpq_from]');
+    unsetError('input[name=ptpq_to]');
+    //unsetError('input[name=ptpq_rate]');
+    unsetError('input[name=ruby_sheet_xirr]');
+    unsetError('input[name=cash_flow_xirr]');
     unsetError('#check_block');
 
     let flag = true;
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
     let tenor = $('input[name=tenor]').val();
-    let equipment_type = $('input[name=equipment_type]').val();
+    let equipment_type_id = $('select[name=equipment_type_id]').val();
     let security_deposit = $('input[name=security_deposit]').val();
+    let security_deposit_of = $('select[name=security_deposit_of]').val();
     let rental_frequency = $('select[name=rental_frequency]').val();
-    let ptpq = $('input[name=ptpq]').val().trim();
-    let xirr = $('input[name=xirr]').val().trim();
+    let rental_frequency_type = $('select[name=rental_frequency_type]').val();
+    let ptpq_from = $('input[name=ptpq_from]').val().trim();
+    let ptpq_to = $('input[name=ptpq_from]').val().trim();
+    //let ptpq_rate = $('input[name=ptpq_rate]').val().trim();
+    let ruby_sheet_xirr = $('input[name=ruby_sheet_xirr]').val().trim();
+    let cash_flow_xirr = $('input[name=cash_flow_xirr]').val().trim();
     let addl_security = $('input[name*=addl_security]').is(':checked');
     let comment = $('input[name=comment]').val().trim();
+    let security_deposit_type = $('input[name=security_deposit_type]:checked').val();
 
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
@@ -163,37 +214,65 @@
         flag = false;
     }
 
-    if(equipment_type == ''){
-        setError('input[name=equipment_type]', 'Please fill equipment type');
+    if(equipment_type_id == ''){
+        setError('select[name=equipment_type_id]', 'Please select equipment type');
         flag = false;
     }
 
     if(security_deposit == '' || isNaN(security_deposit)){
         setError('input[name=security_deposit]', 'Please fill security deposit');
         flag = false;
-    }else if(parseFloat(security_deposit) > 100){
-        setError('input[name=security_deposit]', 'Please fill correct security deposit');
+    }else if(security_deposit_type == 2 && parseFloat(security_deposit) > 100){
+        setError('input[name=security_deposit]', 'Please fill correct security deposit percent');
+        flag = false;
+    }else if((security_deposit_type == 1) && (parseInt(security_deposit) != security_deposit)){
+        setError('input[name=security_deposit]', 'Please fill correct security deposit amount');
+        flag = false;
+    }
+
+    if(security_deposit_of == ''){
+        setError('select[name=security_deposit_of]', 'Please select security deposit type');
         flag = false;
     }
 
     if(rental_frequency == ''){
-        setError('input[name=rental_frequency]', 'Please select rental frequency');
+        setError('select[name=rental_frequency]', 'Please select rental frequency');
         flag = false;
     }
 
-    if(ptpq == '' || isNaN(ptpq)){
-        setError('input[name=ptpq]', 'Please fill PTPQ');
-        flag = false;
-    }else if(parseFloat(ptpq) > 100){
-        setError('input[name=ptpq]', 'Please fill correct PTPQ');
+    if(rental_frequency_type == ''){
+        setError('select[name=rental_frequency_type]', 'Please select frequency type');
         flag = false;
     }
 
-    if(xirr == '' || isNaN(xirr)){
-        setError('input[name=xirr]', 'Please fill XIRR');
+    if(ptpq_from == '' || isNaN(ptpq_from)){
+        setError('input[name=ptpq_from]', 'Please fill from PTPQ');
         flag = false;
-    }else if(parseFloat(xirr) > 100){
-        setError('input[name=xirr]', 'Please fill correct XIRR');
+    }
+
+    if(ptpq_to == '' || isNaN(ptpq_to)){
+        setError('input[name=ptpq_to]', 'Please fill to PTPQ');
+        flag = false;
+    }
+
+    /*if(ptpq_rate == '' || isNaN(ptpq_rate)){
+        setError('input[name=ptpq_rate]', 'Please fill PTPQ rate');
+        flag = false;
+    }*/
+
+    if(ruby_sheet_xirr == '' || isNaN(ruby_sheet_xirr)){
+        setError('input[name=ruby_sheet_xirr]', 'Please fill Ruby Sheet XIRR');
+        flag = false;
+    }else if(parseFloat(ruby_sheet_xirr) > 100){
+        setError('input[name=ruby_sheet_xirr]', 'Please fill correct Ruby Sheet XIRR');
+        flag = false;
+    }
+
+    if(cash_flow_xirr == '' || isNaN(cash_flow_xirr)){
+        setError('input[name=cash_flow_xirr]', 'Please fill Cash Flow XIRR');
+        flag = false;
+    }else if(parseFloat(cash_flow_xirr) > 100){
+        setError('input[name=cash_flow_xirr]', 'Please fill correct Cash Flow XIRR');
         flag = false;
     }
 

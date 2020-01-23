@@ -1293,6 +1293,7 @@ class CamController extends Controller
         return redirect()->back();
     }
 
+    /*function for showing offer data*/
     public function showLimitOffer(Request $request){
       $appId = $request->get('app_id');
       $biz_id = $request->get('biz_id');
@@ -1322,6 +1323,7 @@ class CamController extends Controller
       return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit]);
     }
 
+    /*function for updating offer data*/
     public function updateLimitOffer(Request $request){
       try{
         $appId = $request->get('app_id');
