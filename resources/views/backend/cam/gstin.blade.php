@@ -46,18 +46,21 @@
                $previous_year = $gstResponsShow['previous']['financial_year'];
                    @endphp
                   @if($gstResponsShow && $gstResponsShow['current']['turnover_and_customers'])
-                 <h3 class="text-center">Business Overview</h3>
-                 <span class="subBnShow">Turnover & Customers</span>
                <table id="" class="table  GST-detail overview-table" cellspacing="0" width="100%">
-                 
-                  <tbody>
-                  <tr>
-                        <th>Financial Year  </th>
-                        <th> Gross Turnover </th>
-                        <th>Net Turnover  </th>
-                        <th>Total Customers  </th>
-                        <th>Total Invoices </th>
+               <thead>
+                     <tr>
+                        <th colspan="5" >Business Overview</th>
+                     </tr>
+                     <tr>
+                  <th  style="background:#62b59b;">Financial Year  </th>
+                        <th style="background:#62b59b;"> Gross Turnover </th>
+                        <th style="background:#62b59b;">Net Turnover  </th>
+                        <th style="background:#62b59b;">Total Customers  </th>
+                        <th style="background:#62b59b;">Total Invoices </th>
                        </tr>  
+                  </thead>
+                  <tbody>
+                 
                        <tr>
                         <td> {{$previous_year}}</td>
                         <td>{!! \Helpers::formatCurreny($gstResponsShow['previous']['turnover_and_customers']['gross_turnover'])!!}   </td>
@@ -75,29 +78,31 @@
                   </tbody>
                   <tbody>
                   </tbody>
-               </table>               
+               </table> 
+               <br>
                @endif
 
 
 
 
 
-                 @if($currenttop3Cus) <!---start code for display top 3 customer-->
-                 <h3 class="text-center">Top 3 Customers</h3>
+                 @if($currenttop3Cus) <!---start code for display top 3 customer-->                
                <table id="" class="table  GST-detail overview-table" cellspacing="0" width="100%">
                   <thead>
-                     <tr align="center">
-                        <th colspan="5" >{{$current_year}}</th>
+                     <tr>
+                        <th colspan="5" >Top 3 Customers ({{$current_year}})</th>
                      </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                        <th>PAN  </th>
-                        <th> Name </th>
-                        <th>Turnover  </th>
-                        <th>Total Invoices  </th>
-                        <th>Share </th>
+                     <tr>
+                        <th  style="background:#62b59b;">PAN  </th>
+                        <th  style="background:#62b59b;"> Name </th>
+                        <th  style="background:#62b59b;">Turnover  </th>
+                        <th  style="background:#62b59b;">Total Invoices  </th>
+                        <th  style="background:#62b59b;">Share </th>
                        </tr>
+                  </thead>
+                
+                  <tbody>
+                  
                   @foreach($currenttop3Cus as $custVal)                   
                       <tr>
                         <td> {{ $custVal['pan']}}</td>
@@ -111,7 +116,8 @@
                   <tbody>
                   </tbody>
                </table>
-               <table id="" class="table  GST-detail overview-table" cellspacing="0" width="100%">
+               <br>
+               <!-- <table id="" class="table  GST-detail overview-table" cellspacing="0" width="100%">
                   <thead>
                      <tr align="center">
                         <th colspan="5" >{{$previous_year}}</th>
@@ -137,26 +143,26 @@
                   </tbody>
                   <tbody>
                   </tbody>
-               </table>
+               </table> -->
                @endif <!---end code for display top 3 customer-->
 
              <!---start code for display top 3 supplier-->
                @if($currenttop3Sup)
-                 <h3 class="text-center">Top 3 Suppliers</h3>
+             
                <table id="" class="table  GST-detail overview-table" cellspacing="0" width="100%">
                   <thead>
-                     <tr align="center">
-                        <th colspan="5" >{{$current_year}}</th>
+                     <tr >
+                        <th colspan="5" >Top 3 Suppliers ({{$current_year}})</th>
                      </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                        <th>PAN  </th>
-                        <th> Name </th>
-                        <th>Turnover  </th>
-                        <th>Total Invoices  </th>
-                        <th>Share </th>
+                     <tr>
+                     <th  style="background:#62b59b;">PAN  </th>
+                        <th  style="background:#62b59b;"> Name </th>
+                        <th  style="background:#62b59b;">Turnover  </th>
+                        <th  style="background:#62b59b;">Total Invoices  </th>
+                        <th  style="background:#62b59b;">Share </th>
                        </tr>
+                  </thead>
+                  <tbody>                  
                   @foreach($currenttop3Sup as $custVal)                   
                       <tr>
                         <td> {{ $custVal['pan']}} </td>
@@ -170,7 +176,8 @@
                   <tbody>
                   </tbody>
                </table>
-               <table id="" class="table  GST-detail overview-table" cellspacing="0" width="100%">
+               <br>
+               <!-- <table id="" class="table  GST-detail overview-table" cellspacing="0" width="100%">
                   <thead>
                      <tr align="center">
                         <th colspan="5" >{{$previous_year}}</th>
@@ -196,13 +203,13 @@
                   </tbody>
                   <tbody>
                   </tbody>
-               </table>
+               </table> -->
                @endif <!---end code for display top 3 supplier-->
         @endif    <!--end gst  display code-->
             </div>
          </div>
          @if(request()->get('view_only')) 
-         <button class="btn btn-success btn-sm pull-right  mt-3"> Save</button>
+         <!-- <button class="btn btn-success btn-sm pull-right  mt-3"> Save</button> -->
          @endif
       </div>
    </div>
