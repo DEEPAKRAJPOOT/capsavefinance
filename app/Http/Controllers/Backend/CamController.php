@@ -255,17 +255,28 @@ class CamController extends Controller
     }
 
     private function _getPaginate($sheets, $curr_sheet) {
-      $paginate = '';
+      $paginate = "";
       $total_pages = count($sheets);
       if ($total_pages <= 1) {
         return "";
       }
+      $middleEdges = 3;
       $curr_page = $curr_sheet + 1;
-      for($i = 1; $i <= $total_pages; $i++){
-        $selected = ($curr_page == $i) ? 'selected' : 'unselect';
-        $paginate .="<span class='pagination ". $selected ."' id='".$i."' title='".$sheets[$i-1]."'>".$i."</span>";
-      }
-      $paginate .="<div class='outof'>Sheet ".($curr_page)." out of ".$total_pages."</div>";
+      $k = (($curr_page+$middleEdges > $total_pages) ? $total_pages-$middleEdges : (($curr_page-$middleEdges < 1) ? ($middleEdges + 1) : $curr_page));
+      if($curr_page >= 2){ 
+        $paginate .="<span class='pagination unselect' id='1' title='".$sheets[0]."'>First</span>";
+        $paginate .="<span class='pagination unselect' id='".($curr_page-1)."' title='".$sheets[$curr_page-2]."'>Prev</span>";
+      } 
+      for ($i=-$middleEdges; $i<=$middleEdges; $i++) { 
+        if($k+$i == $curr_page)
+          $paginate .="<span class='pagination selected' id='".($k+$i)."' title='".$sheets[$k+$i-1]."'>".($k+$i)."</span>";
+        else
+          $paginate .="<span class='pagination unselect' id='".($k+$i)."' title='".$sheets[$k+$i-1]."'>".($k+$i)."</span>";  
+      };    
+      if($curr_page<$total_pages){ 
+        $paginate .="<span class='pagination unselect' id='".($curr_page+1)."' title='".$sheets[$curr_page]."'>Next</span>";
+        $paginate .="<span class='pagination unselect' id='".$total_pages."' title='".$sheets[$total_pages-1]."'>Last</span>";
+      } 
       return $paginate;
     }
 
@@ -359,8 +370,8 @@ class CamController extends Controller
         $pending_rec = $fin->getPendingFinanceStatement($appId);
         $financedocs = $fin->getFinanceStatements($appId);
         $contents = array();
-        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
-          $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)),true);
+        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
+          $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
         }
         $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
         $latest_finance_year = 2010;
