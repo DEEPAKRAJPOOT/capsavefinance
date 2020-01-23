@@ -8,6 +8,11 @@
 
 
 <div class="inner-container">
+    <div class="card mt-3">
+        <div class="card-body pt-3 pb-3">
+            <button onclick="downloadCam(49)" class="btn btn-primary float-right btn-sm "> Download Report</button>
+        </div>
+    </div>
    <div class="card mt-3">
       <div class="card-body pt-3 pb-3">
          <div class="row">
