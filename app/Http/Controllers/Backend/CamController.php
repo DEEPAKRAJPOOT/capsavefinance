@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Mail\ReviewerSummary;
+use Mail;
 
 class CamController extends Controller
 {
@@ -208,6 +210,15 @@ class CamController extends Controller
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
+    }
+
+    public function mailReviewerSummary(Request $request) {
+      $app_id = $request->get('app_id');
+      Mail::to('kuldeep.singh@prolitus.com')
+        //->subject('Reviewer Summary Detail')
+        ->send(new ReviewerSummary());
+      dd('Mail sended successfully');
+      //return new \App\Mail\ReviewerSummary();      
     }
 
     public function uploadBankXLSX(Request $request){

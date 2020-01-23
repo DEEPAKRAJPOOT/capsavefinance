@@ -5,6 +5,14 @@
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
    <div class="inner-container">
+      <div class="row">
+         <div class="col-md-12">
+            <a href="{{route('mail_reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}"><button type="submit" class="btn btn-success btn-sm float-right">
+            <h5><small>Send Mail</small></h5> 
+            </button>   
+            </a>                 
+         </div>
+      </div>
       <!--Start-->
       <form method="post" action="{{ route('save_reviewer_summary') }}">
       @csrf
