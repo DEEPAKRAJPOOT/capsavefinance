@@ -6,6 +6,7 @@ use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use Illuminate\Database\Eloquent\Builder;
 
 class AppProgramOffer extends BaseModel {
     /* The database table used by the model.
@@ -123,7 +124,7 @@ class AppProgramOffer extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getAllOffers($appId)
+    public static function getAllOffers($appId, $product_id=null)
     {
         /**
          * Check id is not blank
@@ -139,7 +140,11 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();      
+        if(is_null($product_id) || $product_id == ''){
+            $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
+        }else{
+            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->get();
+        }
         return $offers ? $offers : null;
     }
 

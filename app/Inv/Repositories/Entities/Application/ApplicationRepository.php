@@ -1002,8 +1002,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ProgramDoc::deleteDoc($conditions);
     }
 
-    public function getAllOffers($appId){
-        return AppProgramOffer::getAllOffers($appId);
+    public function getAllOffers($appId, $product_id=null){
+        return AppProgramOffer::getAllOffers($appId, $product_id);
     }    
     
     /**

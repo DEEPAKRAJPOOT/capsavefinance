@@ -6,92 +6,255 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <div class=" form-fields">
-                        <h5 class="card-title form-head mt-0">Offer</h5>
-                    </div>
                     <div class="row">
-                        @forelse($offerData as $key=>$offer)
-                        <div class="col-md-6" style="margin-bottom: 50px;">
-                            <table class="table-striped table">
-                                <tbody>
-                                    <tr>
-                                        <td><b>Apply Loan Amount :</b></td>
-                                        <td>{{ $offer->prgm_limit_amt }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Loan Offer :</b></td>
-                                        <td>{{ $offer->loan_offer }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><b>Interest Rate (%) :</b></td>
-                                        <td>{{ $offer->interest_rate }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><b>Tenor (Days) :</b></td>
-                                        <td>{{ $offer->tenor }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><b>Tenor for old invoice (Days) :</b></td>
-                                        <td>{{ $offer->tenor_old_invoice }}</td>
-                                    </tr> 
-
-                                    <tr>
-                                        <td><b>Margin (%) :</b></td>
-                                        <td>{{ $offer->margin }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><b>Overdue Interest Rate (%) :</b></td>
-                                        <td>{{ $offer->overdue_interest_rate }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><b>Adhoc Interest Rate (%) :</b></td>
-                                        <td>{{ $offer->adhoc_interest_rate }}</td>
-                                    </tr> 
-
-                                    <tr>
-                                        <td><b>Grace Period  (Days) :</b></td>
-                                        <td>{{ $offer->grace_period }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><b>Processing Fee :</b></td>
-                                        <td>{{ $offer->processing_fee }}</td>
-                                    </tr>  
-
-                                    <tr>
-                                        <td><b>Check Bounce Fee :</b></td>
-                                        <td>{{ $offer->check_bounce_fee }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><b>Comment :</b></td>
-                                        <td>{{ $offer->comment }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="col-sm-12">
+                            <div id="accordion" class="accordion">
+                                <!-- Start View Supply Chain Offer Block -->
+                                <div class="card card-color mb-0">
+                                    <div class="card-header" data-toggle="collapse" href="#collapseOne" aria-expanded="false"><h5 class="mb-0">Supply Chain Offer Details</h5>     
+                                    </div>
+                                    <div id="collapseOne" class="card-body bdr p-0 show" data-parent="#accordion" style="">
+                                        <table cellspacing="0" cellpadding="0" width="100%" class="table-i table-offer">
+                                            <thead>
+                                                <tr role="row">
+                                                   <th width="10%">Sr. No.</th>
+                                                   <th width="40%">Offer Details</th>
+                                                   <th width="25%">Created By</th>
+                                                   <th width="15%">Status</th>
+                                                   <th width="10%">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr role="row" class="odd">
+                                                    <td width="10%">1.</td>
+                                                    <td width="40%">
+                                                        <table class="" width="70%">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td><b>Apply Loan Amount : </b></td>
+                                                                    <td>2000000</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Loan Offer : </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td><b>Interest Rate(%) : </b></td>
+                                                                   <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td><b>Tenor (Days) : </b></td>
+                                                                   <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td><b>Tenor for old invoice (Days): </b></td>
+                                                                   <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Margin (%): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Overdue Interest Rate (%): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Adhoc Interest Rate (%): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Grace Period (Days): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Processing Fee: </b></td>
+                                                                    <td>0.00</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Check Bounce Fee: </b></td>
+                                                                    <td>0.00</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Comment: </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td width="25%">Admin</td>
+                                                    <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- End View Supply Chain Offer Block -->
+                                <!-- Start View Term loan Offer Block -->
+                                <div class="card card-color mb-0">
+                                    <div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false"><h5 class="mb-0">Term Loan Offer Details</h5>     
+                                    </div>
+                                    <div id="collapseTwo" class="card-body bdr p-0 collapse" data-parent="#accordion" style="">
+                                        <table cellspacing="0" cellpadding="0" width="100%" class="table-i table-offer">
+                                            <thead>
+                                                <tr role="row">
+                                                   <th width="10%">Sr. No.</th>
+                                                   <th width="40%">Offer Details</th>
+                                                   <th width="25%">Created By</th>
+                                                   <th width="15%">Status</th>
+                                                   <th width="10%">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr role="row" class="odd">
+                                                    <td width="10%">1.</td>
+                                                    <td width="40%">
+                                                        <table class="" width="70%">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td><b>Apply Loan Amount : </b></td>
+                                                                    <td>2000000</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Loan Offer : </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td><b>Interest Rate(%) : </b></td>
+                                                                   <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td><b>Tenor (Days) : </b></td>
+                                                                   <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td><b>Tenor for old invoice (Days): </b></td>
+                                                                   <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Margin (%): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Overdue Interest Rate (%): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Adhoc Interest Rate (%): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Grace Period (Days): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Processing Fee: </b></td>
+                                                                    <td>0.00</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Check Bounce Fee: </b></td>
+                                                                    <td>0.00</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Comment: </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td width="25%">Admin</td>
+                                                    <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- End View Term loan Offer Block -->
+                                <!-- Start View Leasing Offer Block -->
+                                <div class="card card-color mb-0">
+                                    <div class="card-header collapsed" data-toggle="collapse" href="#collapseThree" aria-expanded="false"><h5 class="mb-0">Leasing Offer Details</h5>     
+                                    </div>
+                                    <div id="collapseThree" class="card-body bdr p-0 collapse" data-parent="#accordion" style="">
+                                        <table cellspacing="0" cellpadding="0" width="100%" class="table-i table-offer">
+                                            <thead>
+                                                <tr role="row">
+                                                   <th width="10%">Sr. No.</th>
+                                                   <th width="40%">Offer Details</th>
+                                                   <th width="25%">Created By</th>
+                                                   <th width="15%">Status</th>
+                                                   <th width="10%">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr role="row" class="odd">
+                                                    <td width="10%">1.</td>
+                                                    <td width="40%">
+                                                        <table class="" width="70%">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td><b>Apply Loan Amount : </b></td>
+                                                                    <td>2000000</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Loan Offer : </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td><b>Interest Rate(%) : </b></td>
+                                                                   <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td><b>Tenor (Days) : </b></td>
+                                                                   <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td><b>Tenor for old invoice (Days): </b></td>
+                                                                   <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Margin (%): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Overdue Interest Rate (%): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Adhoc Interest Rate (%): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Grace Period (Days): </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Processing Fee: </b></td>
+                                                                    <td>0.00</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Check Bounce Fee: </b></td>
+                                                                    <td>0.00</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><b>Comment: </b></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td width="25%">Admin</td>
+                                                    <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- End View Leasing Offer Block -->
+                            </div>
                         </div>
-                        @empty
-                        <p>No offers found</p>
-                        @endforelse
                     </div>
-                    <form method="POST" action="{{route('accept_offer')}}">
-                        <div class="row">
-                        @csrf
-                        <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
-                        <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
-                        <div class="col-md-12">
-                            @if($offerData->count() && $offerData[0]->status == 0)
-                            <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button>
-                            <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept</button>
-                            @endif
-                        </div>
-                        </div>  
-                    </form>
                 </div>
             </div>
         </div>
