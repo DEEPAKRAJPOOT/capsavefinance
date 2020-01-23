@@ -273,7 +273,7 @@ class CamController extends Controller
      $objPHPExcel =  new PHPExcel();
      $files = $this->getLatestFileName($appId, $fileType, 'xlsx');
      $file_name = $files['curr_file'];
-     if (empty($filename)) {
+     if (empty($file_name)) {
        return ['', ''];
      }
      $inputFileName = $this->getToUploadPath($appId, $fileType).'/'.$file_name;
