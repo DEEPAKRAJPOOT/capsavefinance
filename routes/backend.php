@@ -504,6 +504,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@approveOffer'
                 ]);
 
+
+                Route::get('cam-report', [
+                    'as' => 'cam_report',
+                    'uses' => 'Backend\CamController@downloadCamReport'
+                ]);
+
             }); //end of cam   
         });//end of application
 
