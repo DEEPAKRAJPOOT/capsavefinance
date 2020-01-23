@@ -1643,7 +1643,6 @@ class CamController extends Controller
             if(isset($arrCamData['t_o_f_security_check'])){
                 $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
             }
-           
             return view('backend.cam.downloadCamReport')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData, 'arrOwner' =>$arrOwner]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
