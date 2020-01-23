@@ -238,7 +238,8 @@ class DataRenderer implements DataProviderInterface
                 })                
                 ->addColumn(
                     'assignee',
-                    function ($app) {                    
+                    function ($app) {  
+                        $data = '';                  
                     //if ($app->to_id){
                     //    $userInfo = Helpers::getUserInfo($app->to_id);                    
                     //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
@@ -248,18 +249,22 @@ class DataRenderer implements DataProviderInterface
                     //return $assignName;
                     $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
                     if($userInfo){
-                        return $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
+                        $data .= $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
                     }
-                    return '';
+                    $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Approver List"><i class="fa fa-eye"></i></a>';
+                    return $data;
                 })
                 ->addColumn(
                     'assigned_by',
                     function ($app) {
+                        $data = '';
                         if ($app->from_role && !empty($app->from_role)) {
-                            return $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
+                            $data .= $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
                         } else {
-                            return $app->assigned_by ? $app->assigned_by : '';
+                            $data .= $app->assigned_by ? $app->assigned_by : '';
                         }
+                        $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
+                        return $data;
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
                 })                
@@ -1821,8 +1826,6 @@ class DataRenderer implements DataProviderInterface
                       }else{
                            return $action.'<a title="Active" href="'.route('change_program_status', [ 'program_id'=> $program->prgm_id , 'status'=>1 ]).'"  class="btn btn-action-btn btn-sm  program_status"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>';
                       }
-                      
-                   
                     })
                     ->filter(function ($query) use ($request) {
                         
@@ -1974,7 +1977,6 @@ class DataRenderer implements DataProviderInterface
             '2' => 'Pre Sanction',
             '3' => 'Post Sanction',
         );
-        
         return DataTables::of($documents)
                 ->rawColumns(['is_active'])
                 ->addColumn(
@@ -2144,6 +2146,11 @@ class DataRenderer implements DataProviderInterface
                     'phone',
                     function ($user) {
                     return $user->mobile_no; 
+                })
+                ->editColumn(
+                    'status',
+                    function ($user) {
+                    return ($user->is_active == 1)? 'Active': 'In-active'; 
                 }) 
                 ->editColumn(
                     'created_at',
@@ -2453,7 +2460,7 @@ class DataRenderer implements DataProviderInterface
     function getDoaLevelsList($request, $doa)
     {
         return DataTables::of($doa)
-            ->rawColumns(['action', 'role', 'amount'])
+            ->rawColumns(['action', 'role', 'amount','is_active'])
 
             ->editColumn(
                     'level_code',
@@ -2485,13 +2492,23 @@ class DataRenderer implements DataProviderInterface
               $rolesName = implode(',', array_unique($roles->toArray()));
                 return rtrim($rolesName,', ');
             })                        
-             ->addColumn(
-                    'action',
-            function ($doa) {
-                $act = '';
-                $act = '<a  data-toggle="modal" data-target="#editDoaLevelFrame" data-url ="' . route('edit_doa_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Level"><i class="fa fa-edit"></i></a>';
-             //   $act .= '&nbsp;&nbsp;<a  data-toggle="modal" data-target="#assignRoleLevelFrame" data-url ="' . route('assign_role_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Assign Role"><i class="fa fa-angle-right"></i></a>';
-                return $act;
+            ->addColumn(
+                'is_active',
+                function ($doa) {
+                    return ($doa->is_active == '0')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label> </div></b>';
+            })   
+            ->addColumn(
+                'action',
+                function ($doa) {
+                    $action = '<a  data-toggle="modal" data-target="#editDoaLevelFrame" data-url ="' . route('edit_doa_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Level"><i class="fa fa-edit"></i></a>';
+                    
+                    //add_sub_program
+                
+                    if($doa->is_active){
+                        return $action.'<a title="In Active" href="'.route('change_doa_status', [ 'doa_level_id'=> $doa->doa_level_id , 'is_active'=>0 ]).'"  class="btn btn-action-btn btn-sm doa_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                    }else{
+                        return $action.'<a title="Active" href="'.route('change_doa_status', [ 'doa_level_id'=> $doa->doa_level_id , 'is_active'=>1 ]).'"  class="btn btn-action-btn btn-sm  doa_status"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>';
+                    }
             })
             ->filter(function ($query) use ($request) {
                 if ($request->get('search_keyword') != '') {
@@ -2619,6 +2636,105 @@ class DataRenderer implements DataProviderInterface
                             
                             return $act;
                            
+                        })
+                        ->make(true);
+    }
+    
+    
+    
+    /**
+     * get disbursal list
+     * 
+     * @param object $request
+     * @param object $data
+     * @return mixed
+     */
+    function getDisbursalList($request, $data)
+    {
+        return DataTables::of($data)
+                        ->rawColumns(['action', 'is_active', 'email', 'action', 'status'])
+                        ->editColumn(
+                                'disburse_date',
+                                function ($data) {
+                            return ($data->disburse_date) ? date('d-M-Y', strtotime($data->disburse_date)) : '---';
+                        })
+                        ->editColumn(
+                                'inv_due_date',
+                                function ($data) {
+                            return ($data->inv_due_date) ? date('d-M-Y', strtotime($data->inv_due_date)) : '---';
+                        })
+                        ->editColumn(
+                                'invoice_no',
+                                function ($data) {
+                            return $data->invoice_no;
+                        })
+                        ->editColumn(
+                                'invoice_approve_amount',
+                                function ($data) {
+                            return $data->invoice_approve_amount ? number_format($data->invoice_approve_amount) : '';
+                        })
+                        ->editColumn(
+                                'principal_amount',
+                                function ($data) {
+                            //s dd($data->principal_amount);
+                            return $data->principal_amount ? number_format($data->principal_amount) : '';
+                        })
+                        ->editColumn(
+                                'status_name',
+                                function ($data) {
+                            return $data->status_name;
+                        })
+                        ->editColumn(
+                                'disburse_amount',
+                                function ($data) {
+                            return $data->disburse_amount;
+                        })
+                        ->addColumn(
+                                'collection_date',
+                                function ($data) {
+                            return isset($data->collection_date) ? $data->collection_date : '-';
+                        })
+                        ->addColumn(
+                                'collection_amount',
+                                function ($data) {
+                            return isset($data->collection_amount) ? $data->collection_amount : '-';
+                        })
+                        ->editColumn(
+                                'accured_interest',
+                                function ($data) {
+                            return isset($data->accured_interest) ? $data->accured_interest : '-';
+                        })
+                        ->addColumn(
+                                'surplus_amount',
+                                function ($data) {
+                            return isset($data->surplus_amount) ? $data->surplus_amount : '-';
+                        })
+                        ->filter(function ($query) use ($request) {
+                            if ($request->get('search_keyword') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $search_keyword = trim($request->get('search_keyword'));
+                                    $query->where('invoice.invoice_no', 'like', "%$search_keyword%");
+                                });
+                            }
+                            if ($request->get('is_status') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $is_status = trim($request->get('is_status'));
+                                    $query->where('disbursal.status_id', $is_status);
+                                });
+                            }
+                            if ($request->get('from_date') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $from = str_replace('/', '-', $request->get('from_date'));
+                                    $converedDate = date("Y-m-d H:i:s", strtotime($from));
+                                    $query->whereDate('disbursal.disburse_date','>=' , $converedDate);
+                                });
+                            }
+                            if ($request->get('to_date') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $to_date = str_replace('/', '-', $request->get('to_date'));
+                                    $query->whereDate('disbursal.disburse_date','<=' , date('Y-m-d H:i:s', strtotime($to_date)) );
+                                });
+                            }
                         })
                         ->make(true);
     }

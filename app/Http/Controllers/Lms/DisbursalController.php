@@ -13,7 +13,7 @@ use Session;
 use Helpers;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
-
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 class DisbursalController extends Controller
 {
 	use ApplicationTrait;
@@ -23,6 +23,7 @@ class DisbursalController extends Controller
 	protected $userRepo;
 	protected $docRepo;
 	protected $lmsRepo;
+	protected $masterRepo;
 
 	/**
 	 * The pdf instance.
@@ -31,11 +32,12 @@ class DisbursalController extends Controller
 	 */
 	protected $pdf;
 	
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo ,InvMasterRepoInterface $master){
 		$this->appRepo = $app_repo;
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->lmsRepo = $lms_repo;
+                $this->masterRepo = $master;
 		$this->middleware('checkBackendLeadAccess');
 	}
 	
@@ -58,7 +60,7 @@ class DisbursalController extends Controller
 	{
 		$userId = $request->get('user_id');
 		$userIvoices = $this->lmsRepo->getAllUserInvoice($userId);
-
+		
 		return view('lms.disbursal.view_invoice')
 				->with([
 					'userIvoices'=>$userIvoices, 
@@ -168,14 +170,15 @@ class DisbursalController extends Controller
         }
     }
 
-	/**
-	 * Display a listing of the customer.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function disbursedList()
-	{
-		return view('lms.disbursal.disbursed_list');              
-	}
+    /**
+     * Display a listing of the customer.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function disbursedList()
+    {
+        $getAppStatus = ['' => 'Please select'] + $this->masterRepo->getAppStatus()->toArray();
+        return view('lms.disbursal.disbursed_list')->with(['getAppStatus'=> $getAppStatus]);
+    }
 
 }

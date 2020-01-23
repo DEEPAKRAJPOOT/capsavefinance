@@ -76,6 +76,11 @@ Route::group(
         'uses' => 'Backend\CamController@analyse_finance'
     ]);
 
+    Route::post('getExcelSheet', [
+        'as' => 'getExcelSheet',
+        'uses' => 'Backend\CamController@getExcelSheet'
+    ]);
+
 
     Route::post('gst_analysys', [
         'as' => 'gstAnalysis',
@@ -568,6 +573,14 @@ Route::group(
         ]
     ); 
 
+    Route::post(
+        'change-doa-status',
+        [
+        'as' => 'change_doa_status',
+        'uses' => 'AjaxController@changeDoaStatus'
+        ]
+    ); 
+
     /*lms route*/
     
     Route::post('lms-get-customer', [
@@ -601,6 +614,14 @@ Route::group(
     Route::post('set-default-account', [
         'as' => 'set_default_account',
         'uses' => 'AjaxController@setDefaultAccount'
+    ]);
+    
+    
+    
+    
+    Route::post('lms-get-disbursal-list', [
+        'as' => 'lms_get_disbursal_list',
+        'uses' => 'AjaxController@getDisbursalList'
     ]);
     
     

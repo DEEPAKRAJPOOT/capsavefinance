@@ -27,6 +27,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use DB;
 use App\Inv\Repositories\Models\CoLenderUsers;
+use App\Inv\Repositories\Models\Lms\Disbursal;
 
 class UserRepository extends BaseRepositories implements UserInterface
 {
@@ -1509,6 +1510,19 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getCoLenderData($where)
     {
        return CoLenderUsers::getCoLenderData($where);  
+    }
+    
+    
+    
+    
+    /**
+     * get disbursal list
+     * 
+     * @return mixed
+     */
+    public function getDisbursalList()
+    {
+        return Disbursal::getDisbursalList();
     }
        
 }

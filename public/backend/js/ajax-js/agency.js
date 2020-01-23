@@ -62,6 +62,7 @@ try {
                     {data: 'agency_name'},
                     {data: 'email'},
                     {data: 'phone'},
+                    {data: 'status'},
                     {data: 'created_at'},
                     {data: 'action'}
                 ],

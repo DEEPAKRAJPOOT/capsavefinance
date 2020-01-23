@@ -18,7 +18,7 @@
     @can('lead_list')
         <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fa fa-files-o" aria-hidden="true"></i>
+                    <i class="fa fa-table" aria-hidden="true"></i>
                     <span class="menu-title">Manage Leads</span>
                    <i class="fa fa-angle-right" aria-hidden="true"></i>
                 </a>
@@ -34,12 +34,12 @@
 
     @canany(['application_pool','application_list'])
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu2" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-address-card-o"></i>
                 <span class="menu-title">Manage Application</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenu">
+            <div class="collapse" id="layoutsSubmenu2">
                 <ul class="nav flex-column sub-menu">                    
                 @can('application_pool')
                     <li class="nav-item">
@@ -60,12 +60,12 @@
 
     @can('applicaiton_list')  
         <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fa fa-files-o" aria-hidden="true"></i>
+                <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu3" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-address-book-o" aria-hidden="true"></i>
                     <span class="menu-title">Manage FI/RCU</span>
                    <i class="fa fa-angle-right" aria-hidden="true"></i>
                 </a>
-                <div class="collapse" id="layoutsSubmenu1">
+                <div class="collapse" id="layoutsSubmenu3">
                     <ul class="nav flex-column sub-menu">
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('applicaiton_list') }}">FI/RCU Applications</a>
@@ -77,12 +77,12 @@
 
     @canany(['get_anchor_list','get_anchor_lead_list'])
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu4" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-anchor" aria-hidden="true"></i>
                 <span class="menu-title">Manage Anchor</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenu12">
+            <div class="collapse" id="layoutsSubmenu4">
                 <ul class="nav flex-column sub-menu">
                 @can('get_anchor_list')
                     <li class="nav-item">
@@ -102,12 +102,12 @@
 
     @can('get_co_lenders')
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu5" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-handshake-o" aria-hidden="true"></i>
                 <span class="menu-title">Manage Co-lenders</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenu12">
+            <div class="collapse" id="layoutsSubmenu5">
                 <ul class="nav flex-column sub-menu">
                   <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_co_lenders') }}">Co-lenders List</a>
@@ -118,12 +118,12 @@
     @endcan
     
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu20" aria-expanded="true" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="true" aria-controls="collapseExample">
               <i class="fa fa-user-plus" aria-hidden="true"></i>
                 <span class="menu-title">Manage Customer</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse show" id="layoutsSubmenu20" style="">
+            <div class="collapse show" id="layoutsSubmenu6" style="">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('lms_get_customer_list') }}">Manage Sanction Cases</a>
@@ -133,12 +133,12 @@
             </div>
         </li>
          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu123" aria-expanded="false" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu7" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-file-text-o" aria-hidden="true"></i>
                 <span class="menu-title">Manage Invoice</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenu123">
+            <div class="collapse" id="layoutsSubmenu7">
                 <ul class="nav flex-column sub-menu">
                   <li class="nav-item">
                         <a class="nav-link" href="{{ route('backend_upload_all_invoice') }}">Invoice Upload</a>
@@ -151,12 +151,12 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuDisbursal" aria-expanded="false" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-bank" aria-hidden="true"></i>
                 <span class="menu-title">Manage Disbursal</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenuDisbursal">
+            <div class="collapse" id="layoutsSubmenu8">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('lms_disbursal_request_list') }}">Disbursal Requests</a>
@@ -171,12 +171,12 @@
         </li>
     @canany(['get_agency_list','get_agency_user_list'])
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu9" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-user-secret" aria-hidden="true"></i>
                 <span class="menu-title">Manage Agency</span>
                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenu">
+            <div class="collapse" id="layoutsSubmenu9">
                 <ul class="nav flex-column sub-menu">
                 @can('get_agency_list')
                     <li class="nav-item">
@@ -197,12 +197,12 @@
         
         @if($roleData[0]->is_superadmin == 1)
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu10" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-bandcamp" aria-hidden="true"></i>
                 <span class="menu-title">Access Management</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse" id="layoutsSubmenu">
+            <div class="collapse" id="layoutsSubmenu10">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_role') }}">Manage Roles</a>
@@ -220,12 +220,12 @@
               
         @if($roleData[0]->is_superadmin == 1)
         <li class="nav-item">
-           <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu10" aria-expanded="false" aria-controls="collapseExample">
+           <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu11" aria-expanded="false" aria-controls="collapseExample">
            <i class="fa fa-tasks" aria-hidden="true"></i>
            <span class="menu-title">Masters</span>
            <i class="fa fa-angle-right" aria-hidden="true"></i>
            </a>
-           <div class="collapse" id="layoutsSubmenu10">
+           <div class="collapse" id="layoutsSubmenu11">
               <ul class="nav flex-column sub-menu">
                  @can('manage_doa')
                  <li class="nav-item">

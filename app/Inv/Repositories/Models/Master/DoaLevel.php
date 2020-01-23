@@ -77,7 +77,7 @@ class DoaLevel extends BaseModel {
         $groupBy = ['doa_level.city_id', 'doa_level.min_amount', 'doa_level.max_amount'];
         $res = self::select('doa_level.*')
                // ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')
-                ->where('doa_level.is_active', 1)
+                //->where('doa_level.is_active', 1)
                 ->groupBy($groupBy)
                 ->orderBy('doa_level.doa_level_id', 'DESC');
         //->get();
@@ -137,16 +137,41 @@ class DoaLevel extends BaseModel {
         }
     }
 
-    /**
-     * Update DoA Data
+     /**
+     * Update DoA 
      * 
-     * @param array $data
-     * @param array $whereCond
-     * @return mixed
+     * @param type $attributes
+     * @param type $conditions
+     * @return type
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
      */
-    public static function updateDoaLevelData($data, $whereCond = [])
+    public static function updateDoaLevelData($attributes = [], $conditions = [])
     {
-        return self::where($whereCond)->update($data);
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($conditions)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($conditions)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $res = self::where($conditions)->update($attributes);
+     
+        return ($res ?: false);
     }
 
     /**

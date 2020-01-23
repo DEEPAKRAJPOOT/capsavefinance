@@ -34,6 +34,8 @@ use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\UserBankAccount;
+use App\Inv\Repositories\Models\Master\DoaLevel;
+use App\Inv\Repositories\Models\Master\Documents;
 /**
  * Application repository class
  */
@@ -978,6 +980,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
     
     /**
+     * update Doa data
+     * 
+     * @param type $attributes
+     * @param type $conditions 
+     * @return mixed
+     */
+    public function updateDoaData($attributes, $conditions)
+    {
+        return DoaLevel::updateDoaLevelData($attributes, $conditions);
+    }
+    
+    /**
      * delete program doc
      * 
      * @param type $conditions
@@ -1152,6 +1166,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::with('products')
                 ->where('app_id', $app_id)
                 ->first();
+    }/**
+     * get Bank account 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getTLDocs($whereCondition)
+    {
+        return Documents::select('id as doc_id')
+                ->where($whereCondition)
+                ->whereHas('product_document')
+                ->get();
     }
 
 

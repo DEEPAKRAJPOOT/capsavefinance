@@ -170,8 +170,8 @@
                                                 <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
                                                 <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmLimit->offer->security_deposit}}</b></li>
                                                 <li class="col-md-2">Invoice Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
-                                                <li class="col-md-2">PTPQ(%) <br> <b>{{$prgmLimit->offer->ptpq}}</b></li>
-                                                <li class="col-md-2">XIRR(%) <br><i class="fa fa-inr"></i><b>{{$prgmLimit->offer->xirr}}</b></li>
+                                                <li class="col-md-2">PTPQ <br> <b>{{(int)$prgmLimit->offer->ptpq_from.' - '.(int)$prgmLimit->offer->ptpq_to}}</b></li>
+                                                <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmLimit->offer->ruby_sheet_xirr.' - '.$prgmLimit->offer->cash_flow_xirr}}</b></li>
                                                 <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
                                             @else
                                                 <li class="col-md-10" style="text-align: center;">No offer found</li>
@@ -229,8 +229,8 @@
                                                 <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
                                                 <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmLimit->offer->security_deposit}}</b></li>
                                                 <li class="col-md-2">Invoice Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
-                                                <li class="col-md-2">PTPQ(%) <br> <b>{{$prgmLimit->offer->ptpq}}</b></li>
-                                                <li class="col-md-2">XIRR(%) <br><i class="fa fa-inr"></i><b>{{$prgmLimit->offer->xirr}}</b></li>
+                                                <li class="col-md-2">PTPQ <br> <b>{{(int)$prgmLimit->offer->ptpq_from.' - '.(int)$prgmLimit->offer->ptpq_to}}</b></li>
+                                                <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmLimit->offer->ruby_sheet_xirr.' - '.$prgmLimit->offer->cash_flow_xirr}}</b></li>
                                                 <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
                                             @else
                                                 <li class="col-md-10" style="text-align: center;">No offer found</li>
@@ -280,6 +280,8 @@ var messages = {
 
 var offers = {
     "program_limit":0,
+    "program_min_limit":0,
+    "program_max_limit":0,
     "program_balance_limit":0,
     "current_offer_limit":0,
     "total_offered_limit":{{$totOfferedLimit}},
@@ -356,6 +358,8 @@ $(document).ready(function(){
 
     $('#program_id').on('change',function(){
         offers.program_limit = parseInt($('#program_id option:selected').data('sub_limit'));
+        offers.program_min_limit = parseInt($('#program_id option:selected').data('min_limit'));
+        offers.program_max_limit = parseInt($('#program_id option:selected').data('max_limit'));
         let program_id = $('#program_id').val();
         setLimit('select[name=prgm_id]', '');
         if(program_id == ''){
@@ -443,6 +447,9 @@ function checkValidation(){
         if(product_id == 1 && (parseInt(limit_amt.replace(/,/g, '')) > offers.program_balance_limit)){
             setError('input[name=limit_amt]', 'Limit amount can not exceed from program limit');
             flag = false;
+        }else if(product_id == 1 && ((parseInt(limit_amt.replace(/,/g, '')) < offers.program_min_limit) || (parseInt(limit_amt.replace(/,/g, '')) > offers.program_max_limit))){
+            setError('input[name=limit_amt]', 'Limit amount should be ('+offers.program_min_limit+' - '+offers.program_max_limit+') range');
+            flag = false;
         }else{
             // TAKE REST
         }
@@ -465,10 +472,10 @@ function fillAnchors(programs){
 }
 
 function fillPrograms(programs){
-    let html = '<option value="" data-sub_limit="0">Select Program</option>';
+    let html = '<option value="" data-sub_limit="0" data-min_limit="0" data-max_limit="0">Select Program</option>';
     $.each(programs, function(i,program){
         if(program.prgm_name != null)
-            html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'">'+program.prgm_name+'</option>';
+            html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'">'+program.prgm_name+'</option>';
     });
     $('#program_id').html(html);
 }

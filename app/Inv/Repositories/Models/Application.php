@@ -525,7 +525,7 @@ class Application extends BaseModel
         unset($whereCondition['stage_code']);
         unset($whereCondition['is_active']);
         
-        $prgmDocs = self::select('prgm_doc.*')
+        $prgmDocs = self::select('prgm_doc.doc_id')
                 ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
                 ->join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
                 ->join('prgm_doc', 'prgm_doc.prgm_id', '=', 'app_prgm_limit.prgm_id')
