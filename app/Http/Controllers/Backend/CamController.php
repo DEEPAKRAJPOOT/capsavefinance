@@ -214,11 +214,10 @@ class CamController extends Controller
 
     public function mailReviewerSummary(Request $request) {
       $app_id = $request->get('app_id');
-      Mail::to('kuldeep.singh@prolitus.com')
-        //->subject('Reviewer Summary Detail')
-        ->send(new ReviewerSummary());
-      dd('Mail sended successfully');
-      //return new \App\Mail\ReviewerSummary();      
+      // Mail::to('kuldeep.singh@prolitus.com')
+      //   ->send(new ReviewerSummary());
+      // dd('Mail sended successfully');
+      return new \App\Mail\ReviewerSummary();      
     }
 
     public function uploadBankXLSX(Request $request){
