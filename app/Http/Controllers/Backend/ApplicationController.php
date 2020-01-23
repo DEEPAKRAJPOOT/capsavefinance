@@ -408,6 +408,9 @@ class ApplicationController extends Controller
                     break;
             }
 
+            $wf_status = 1;                
+            Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 //Add/Update application workflow stages    
