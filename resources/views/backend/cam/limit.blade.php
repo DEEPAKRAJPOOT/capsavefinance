@@ -104,7 +104,7 @@
         setError('input[name=limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
     }else if(pro_type == 1){
-        if((parseInt(limit_amt.replace(/,/g, '')) > program_min_limit) || (parseInt(limit_amt.replace(/,/g, '')) < program_max_limit)){
+        if((parseInt(limit_amt.replace(/,/g, '')) < program_min_limit) || (parseInt(limit_amt.replace(/,/g, '')) > program_max_limit)){
             setError('input[name=limit_amt]', , 'Limit amount should be ('+program_min_limit+' - '+program_max_limit+') range');
             flag = false;
         }
