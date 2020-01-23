@@ -10,7 +10,7 @@
       <div class="col-md-12">
         <div class="form-group">
           <div class="custom-file upload-btn-cls mb-3 mt-2">
-	        <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file">
+	        <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file" accept="image/*,.xlsx,.xls,.doc,.docx,.pdf">
 	        <label class="custom-file-label" for="customFile">Choose file</label>
 	      </div>
         </div>

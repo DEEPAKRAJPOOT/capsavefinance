@@ -182,7 +182,7 @@
     }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > actual_balance){
         setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
-    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > program_min_limit) || (parseInt(prgm_limit_amt.replace(/,/g, '')) < program_max_limit)){
+    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) < program_min_limit) || (parseInt(prgm_limit_amt.replace(/,/g, '')) > program_max_limit)){
         setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+program_min_limit+' - '+program_max_limit+') range');
         flag = false;
     }else{

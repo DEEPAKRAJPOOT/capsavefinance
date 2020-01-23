@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
 use App\Http\Requests\DocumentRequest;
@@ -13,12 +14,15 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Master\Role;
 use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
 use App\Libraries\Pdf;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\AppAssignment;
 
 class ApplicationController extends Controller
 {
@@ -404,24 +408,27 @@ class ApplicationController extends Controller
                     break;
             }
 
+            $wf_status = 1;                
+            Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 //Add/Update application workflow stages    
                 $response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 //$wf_status = $response->count() < 1 ? 1 : 2;
-                $wf_status = 1;                
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                //$wf_status = 1;                
+                //Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status=2);
-                return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
+                //Helpers::updateWfStage('doc_upload', $appId, $wf_status=2);
+                //return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+            //Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
                 
             return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId])->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -1308,5 +1315,73 @@ class ApplicationController extends Controller
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }       
+    }
+
+    /**
+     * View Approver List
+     * 
+     * @param Request $request
+     * @return view
+     */    
+    public function viewApprovers(Request $request){
+        try{
+            $app_id = $request->get('app_id');
+            if($app_id){
+                $approvers = AppApprover::getAppApproversDetails($app_id);
+                $data = array();
+                foreach($approvers as $key => $approver){
+                    $data[$key]['approver'] = $approver->approver;
+                    $data[$key]['approver_email'] = $approver->approver_email;
+                    $data[$key]['approver_role'] = $approver->approver_role;
+                    $data[$key]['approved_date'] = ($approver->approver)? date('d-M-Y',strtotime($approver->approver)) : '---';
+                    $data[$key]['stauts'] = ($approver->is_active)?"Approved":"";
+                }
+                return view('backend.app.view_approvers')->with('approvers', $data);
+            }
+        } catch (Exception $ex){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    /**
+     * View Shared Details
+     * 
+     * @param Request $request
+     * @return view
+     */  
+    public function viewSharedDetails(Request $request){
+        try{
+            $app_id = $request->get('app_id');
+            if($app_id){
+                $assignees = AppAssignment::getAppAssignees($app_id);
+
+                $data = array();
+                foreach($assignees as $key => $assignee){
+                    $from_role_name = '';
+                    if($assignee->from_user_id){
+                        $from_role_name = User::getUserRoles($assignee->from_user_id);
+                        if($from_role_name->count()!=0)
+                        $from_role_name = $from_role_name[0];
+                    }
+                    if($assignee->to_user_id){
+                        $to_role_name = User::getUserRoles($assignee->to_user_id);
+                        if($to_role_name->count()!=0)
+                        $to_role_name = $to_role_name[0];
+                    }else{
+                        $to_role_name = Role::getRole($assignee->role_id);
+                    }
+
+                    $data[$key]['assignby'] = $assignee->assignby;
+                    $data[$key]['assignto'] = $assignee->assignto;
+                    $data[$key]['sharing_comment'] = $assignee->sharing_comment;
+                    $data[$key]['assigne_date'] = ($assignee->created_at)? date('d-M-Y',strtotime($assignee->created_at)) : '---';
+                    $data[$key]['assignby_role'] = ($from_role_name->count()!=0)? $from_role_name->name:'';
+                    $data[$key]['assignto_role'] = ($to_role_name->count()!=0)? $to_role_name->name:'';
+                }
+                return view('backend.app.view_shared_details')->with('approvers', $data);
+            }
+        } catch (Exception $ex){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
 }

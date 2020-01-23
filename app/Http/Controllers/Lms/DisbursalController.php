@@ -60,7 +60,7 @@ class DisbursalController extends Controller
 	{
 		$userId = $request->get('user_id');
 		$userIvoices = $this->lmsRepo->getAllUserInvoice($userId);
-
+		
 		return view('lms.disbursal.view_invoice')
 				->with([
 					'userIvoices'=>$userIvoices, 

@@ -12,7 +12,7 @@
           <!-- <label for="email">Select Agency</label> -->
           <div class="custom-file upload-btn-cls mb-3 mt-2">
             <input type="hidden" name="fi_addr_id">
-	        <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file">
+	        <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file" accept="image/*,.xlsx,.xls,.doc,.docx,.pdf">
 	        <label class="custom-file-label" for="customFile">Choose file</label>
 	      </div>
         </div>
@@ -60,7 +60,7 @@ $(document).ready(function(){
             }
         });
 
-        // $('#documentForm').validate();
+        //$('#documentForm').validate();
 
         $("#savedocument").click(function(){
             if($('#documentForm').valid()){

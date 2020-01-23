@@ -208,6 +208,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'send_case_confirmBox',
                 'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
             ]); 
+
+            Route::get('view-approvers', [
+                'as' => 'view_approvers',
+                'uses' => 'Backend\ApplicationController@viewApprovers'
+            ]); 
+
+            Route::get('view-shared-details', [
+                'as' => 'view_shared_details',
+                'uses' => 'Backend\ApplicationController@viewSharedDetails'
+            ]); 
             
             Route::post('accept-next-stage', [
                 'as' => 'accept_next_stage',
