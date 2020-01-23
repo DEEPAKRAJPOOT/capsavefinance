@@ -125,10 +125,10 @@
       <div class="form-group row  ">
         <label for="txtPassword" class="col-md-4"><b>XIRR(%):</b></label> 
         <div class="col-md-4">
-        <input type="text" name="ruby_sheet_xirr" class="form-control" value="{{isset($offerData->ruby_sheet_xirr)? $offerData->ruby_sheet_xirr: ''}}" placeholder=" Cash Flow XIRR" maxlength="5">
+        <input type="text" name="ruby_sheet_xirr" class="form-control" value="{{isset($offerData->ruby_sheet_xirr)? $offerData->ruby_sheet_xirr: ''}}" placeholder="Ruby Sheet XIRR" maxlength="5">
         </div>
         <div class="col-md-4">
-        <input type="text" name="cash_flow_xirr" class="form-control" value="{{isset($offerData->cash_flow_xirr)? $offerData->cash_flow_xirr: ''}}" placeholder="Ruby Sheet XIRR" maxlength="5">
+        <input type="text" name="cash_flow_xirr" class="form-control" value="{{isset($offerData->cash_flow_xirr)? $offerData->cash_flow_xirr: ''}}" placeholder="Cash Flow XIRR" maxlength="5">
         </div>
       </div>
     </div>
@@ -139,9 +139,10 @@
         <div class="col-md-8">
             <div id="check_block">
                 <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="1" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '1') !== false)? 'checked': ''): '')}}> BG</label>
-                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '2') !== false)? 'checked': ''): '')}}> MF</label>
-                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '3') !== false)? 'checked': ''): '')}}> Others</label>
-                <input type="text" name="comment" class="" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '3') !== false)? 'inline': 'none'): 'none')}}" value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Fill other security" maxlength="200">
+                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '2') !== false)? 'checked': ''): '')}}> FD</label>
+                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '3') !== false)? 'checked': ''): '')}}> MF</label>
+                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="4" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'checked': ''): '')}}> Others</label>
+                <input type="text" name="comment" class="" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'inline': 'none'): 'none')}}" value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Fill other security" maxlength="200">
             </div>
         </div>
       </div>
@@ -193,7 +194,7 @@
     let rental_frequency = $('select[name=rental_frequency]').val();
     let rental_frequency_type = $('select[name=rental_frequency_type]').val();
     let ptpq_from = $('input[name=ptpq_from]').val().trim();
-    let ptpq_to = $('input[name=ptpq_from]').val().trim();
+    let ptpq_to = $('input[name=ptpq_to]').val().trim();
     //let ptpq_rate = $('input[name=ptpq_rate]').val().trim();
     let ruby_sheet_xirr = $('input[name=ruby_sheet_xirr]').val().trim();
     let cash_flow_xirr = $('input[name=cash_flow_xirr]').val().trim();
