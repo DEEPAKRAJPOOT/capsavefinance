@@ -102,6 +102,7 @@ class Cam extends BaseModel
             't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
             'risk_comments'=>$attributes['risk_comments'],
             'cm_comment'=>$attributes['cm_comment'],
+            'rating_rational'=>$attributes['rating_rational'],
             'created_by'=>$userId
         );
         $cam = Cam::create($inputArr);
