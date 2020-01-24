@@ -778,9 +778,7 @@
         $(".findMobileverify").each(function (k, v) {
          mobileVeriCount++;   
          var mobileVeri =   $(this).text();
-         var otp =    $("#v11successpanverify"+mobileVeriCount).text();
- 
-         if($.trim(mobileVeri)!="Verified Successfully" && $.trim(otp)!="Verified Successfully")
+         if($.trim(mobileVeri)!="Verified Successfully")
          {
              
               $("#v5failurepanverify"+mobileVeriCount).html('<i class="fa fa-close" aria-hidden="true"></i><i>Not verified</i>');
