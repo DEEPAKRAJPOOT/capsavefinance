@@ -22,6 +22,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\AppProgramOfferSanction;
 use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\Master\Industry;
 use App\Inv\Repositories\Models\AppPdNote;
@@ -930,6 +931,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $offerData ? $offerData : false;
     }
 
+    public function saveSanctionData($sanctionData=[], $sactionId=null)
+    {
+        $sanctionData = AppProgramOfferSanction::saveSanctionData($sanctionData, $sactionId);
+        return $sanctionData ? $sanctionData : false;
+    }
+
+    public function getOfferSanction($offerId){
+        return AppProgramOfferSanction::getOfferSanction($offerId);
+    }
+    
     public function saveAppLimit($arr, $limit_id=null){
         return AppLimit::saveAppLimit($arr, $limit_id);
     }

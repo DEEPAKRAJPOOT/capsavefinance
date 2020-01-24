@@ -23,7 +23,7 @@ use App\Libraries\Pdf;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\AppAssignment;
-
+use Mail;
 class ApplicationController extends Controller
 {
     use ApplicationTrait;
@@ -991,37 +991,51 @@ class ApplicationController extends Controller
      * @return View
      */
     public function genSanctionLetter(Request $request)
-    {
+    {  
+        
+        $offerWhereCond = [];
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
+        $sanctionId = $request->get('sanction_id');
+        
         if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
             $offerId = $request->get('offer_id');
         } else {
-            $offerWhereCond = [];
             $offerWhereCond['app_id'] = $appId;   
             $offerWhereCond['is_active'] = 1; 
-            $offerWhereCond['status'] = 1;  
             $offerData = $this->appRepo->getOfferData($offerWhereCond);
             $offerId = $offerData ? $offerData->prgm_offer_id : 0;
         }
-        $offerWhereCond = [];
+       
         $offerWhereCond['prgm_offer_id'] = $offerId;        
         $offerData = $this->appRepo->getOfferData($offerWhereCond);
-        
-        //Update workflow stage
-        //Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 1);  
-        
-        //$appData = $this->appRepo->getAppDataByAppId($appId);               
-        //$userId  = $appData ? $appData->user_id : null;
-        //$prgmDocsWhere = [];
-        //$prgmDocsWhere['stage_code'] = 'upload_exe_doc';
-        //$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);  
-                
-        return view('backend.app.sanction_letter')
-                ->with('appId', $appId)
-                ->with('bizId', $bizId)
-                ->with('offerId', $offerId)
-                ->with('offerData', $offerData);          
+        $userData =  $this->userRepo->getUserByAppId($appId);
+        $sanctionData = $this->appRepo->getOfferSanction($offerId);
+        $businessData = $this->appRepo->getApplicationById($bizId); 
+        $programLimitData = $this->appRepo->getLimit($offerData->app_prgm_limit_id);
+
+        $data = [
+            'product_id' => $programLimitData->product_id,
+            'biz_entity_name' => $businessData->biz_entity_name,
+            'delay_pymt_chrg' => $sanctionData->delay_pymt_chrg,
+            'insurance' => $sanctionData->insurance,
+            'bank_chrg' => $sanctionData->bank_chrg,
+            'legal_cost' => $sanctionData->legal_cost,
+            'po' => $sanctionData->po,
+            'pdp' => $sanctionData->pdp,
+            'disburs_guide' => $sanctionData->disburs_guide,
+            'other_cond' => $sanctionData->other_cond,
+            'covenants' => $sanctionData->covenants,
+            'appId' => $appId,
+            'bizId' => $bizId,
+            'offerId' => $offerId,
+            'offerData' => $offerData,
+            'sanctionData'=>$sanctionData
+
+        ];
+
+        //dd($userData,$offerData,$sanctionData,$businessData,$programLimitData);
+        return view('backend.app.sanction_letter')->with($data);   
     }
 
    /* For Promoter pan verify iframe model    */
@@ -1249,22 +1263,36 @@ class ApplicationController extends Controller
         
         $appId = $request->get('app_id');
         $offerId = $request->get('offer_id');
+        $bizId = $request->get('biz_id');
+        $sanctionId = $request->get('sanction_id');
         
         try {
             $offerWhereCond = [];
             $offerWhereCond['prgm_offer_id'] = $offerId;
             $offerData = $this->appRepo->getOfferData($offerWhereCond);
-
+            $sanctionData = $this->appRepo->getOfferSanction($offerId);
+            $userData =  $this->userRepo->getUserByAppId($appId);
             $fileName = 'sanction_letter_'. time() . '.pdf';
-            $htmlContent = \View::make('backend.app.download_sanction_letter', 
-                    compact('offerData')+['appId' => $appId, 'offerId' => $offerId]
-                    )->render();
 
-            
-            return response($this->pdf->render($htmlContent), 200)->withHeaders([
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => ($request->has('download') ? 'attachment' : 'inline') . "; filename=" . $fileName,
-            ]);
+            $htmlContent = view('backend.app.download_sanction_letter')
+                    ->with('appId', $appId)
+                    ->with('offerId', $offerId)
+                    ->with('offerData', $offerData)
+                    ->with('userData',$userData)
+                    ->with('biz_id',$bizId)
+                    ->with('sanctionData',$sanctionData)->render();
+
+           
+
+            $emailData['email'] = $userData->email;
+            $emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
+            $emailData['body'] = $htmlContent;
+            $emailData['attachment'] = $this->pdf->render($htmlContent);
+            $emailData['subject'] ="Sanction Letter for $userData->biz_name Rsan";
+
+            \Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
+
+            return redirect()->back();
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -1403,4 +1431,83 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+      /**
+     * Save Sanction Letter
+     * 
+     * @param Request $request
+     * @return view
+     */  
+    public function saveSanctionLetter(Request $request){
+        try {
+            $arrFileData = $request->all();
+            $appId = (int)$request->app_id; //  fetch app id
+            $offerId = (int)$request->offer_id; 
+            $bizId = (int) $request->get('biz_id');
+            $sanctionId = null;
+
+            if($request->has('sanction_id')){
+                $sanctionId = (int) $request->sanction_id; //fetch sanction id
+            }
+            $sanctionData = array(
+                'prgm_offer_id' => $offerId,
+                'delay_pymt_chrg' => $request->delay_pymt_chrg,
+                'insurance' => $request->insurance,
+                'bank_chrg' => $request->bank_chrg,
+                'legal_cost' => $request->legal_cost,
+                'po' => $request->po,
+                'pdp' => $request->pdp,
+                'disburs_guide' => $request->disburs_guide,
+                'other_cond' => $request->other_cond,
+                'covenants' => $request->covenants,
+            );
+            $sanction_info = $this->appRepo->saveSanctionData($sanctionData,$sanctionId);
+            if($sanction_info){
+                Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
+                return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id,'biz_id' => $bizId]);
+            } 
+        } catch (Exception $ex) {
+            return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function previewSanctionLetter(Request $request){
+        $appId = $request->get('app_id');
+        $offerId = $request->get('offer_id');
+        $sanctionId = $request->get('sanction_id');
+        
+        try {
+            $offerWhereCond = [];
+            $offerWhereCond['prgm_offer_id'] = $offerId;
+            $offerData = $this->appRepo->getOfferData($offerWhereCond);
+            $sanctionData = $this->appRepo->getOfferSanction($offerId);
+            $userData =  $this->userRepo->getUserByAppId($appId);
+            $fileName = 'sanction_letter_'. time() . '.pdf';
+
+
+            $html = view('backend.app.download_sanction_letter')
+                    ->with('appId', $appId)
+                    ->with('offerId', $offerId)
+                    ->with('offerData', $offerData)
+                    ->with('userData',$userData)
+                    ->with('sanctionData',$sanctionData);
+            $html .='<div align="center">
+                    <a href="'. route('download_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'download'=>1, 'sanction_id'=>$sanctionData->sanction_id ]).'" class="btn btn-success btn-sm">Send Mail</a>
+                    </div>';
+
+
+            //$html .= '<div align="center"> <button type="button" class="btn btn-primary"> Send Mail </button> </div> ';
+            return  $html;
+            /*
+            return response($this->pdf->render($htmlContent), 200)->withHeaders([
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => ($request->has('download') ? 'attachment' : 'inline') . "; filename=" . $fileName,
+            ]);*/
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    
+
 }

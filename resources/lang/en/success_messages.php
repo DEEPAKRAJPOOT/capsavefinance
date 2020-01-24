@@ -30,5 +30,7 @@ return [
     'program_save_successfully'=>'Program details saved successfully!',   
     'sub_program_save_successfully'=>'Sub program details saved successfully!',
     'save_bank_account_successfully'=>'Bank Account details Saved successfuly! ',
-    'update_bank_account_successfully'=>'Bank Account details updated successfuly! '
+    'update_bank_account_successfully'=>'Bank Account details updated successfuly! ',
+    'save_sanction_letter_successfully' => 'Sanction letter save successfuly!',
+    'update_sanction_letter_successfully' => 'Sanction letter updated successfuly!',
 ];
