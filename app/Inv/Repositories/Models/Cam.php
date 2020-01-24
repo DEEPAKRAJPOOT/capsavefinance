@@ -80,7 +80,7 @@ class Cam extends BaseModel
         'updated_by'
     ];
 
-    public static function creeates($attributes, $userId){
+    public static function creates($attributes, $userId){
         $inputArr= array(
             'biz_id'=>$attributes['biz_id'],
             'app_id'=>$attributes['app_id'],
