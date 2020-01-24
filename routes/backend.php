@@ -278,7 +278,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'upload_sanction_letter',
                 'uses' => 'Backend\ApplicationController@uploadSanctionLetter'
             ]); 
-           
+            
+            Route::post('save-sanction-letter', [
+                'as' => 'save_sanction_letter',
+                'uses' => 'Backend\ApplicationController@saveSanctionLetter'
+            ]); 
+            
             //////////////// For Promoter Iframe///////////////////
              Route::get('show-pan-verify-data', [
                 'as' => 'show_pan_verify_data',
