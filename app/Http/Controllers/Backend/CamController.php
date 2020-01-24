@@ -213,7 +213,7 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      Mail::to('kuldeep.singh@prolitus.com')
+      Mail::to(config('common.review_summ_mails'))
         ->send(new ReviewerSummary());
 
       if(count(Mail::failures()) > 0 ) {
@@ -222,7 +222,6 @@ class CamController extends Controller
         Session::flash('message',trans('Mail sended successfully.'));        
       }
       return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
-      //dd('Mail sended successfully.');
       //return new \App\Mail\ReviewerSummary();        
     }
 

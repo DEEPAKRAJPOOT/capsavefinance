@@ -78,5 +78,7 @@ return [
         '2' => 'FD',
         '3' => 'MF',
         '4' => 'Others'
-    ]    
+    ],
+    'review_summ_mails' => ['kuldeep.singh@prolitus.com'],
+    'review_summ_mail_docs_id' => [55,56]    
 ];

@@ -36,7 +36,7 @@ class ReviewerSummary extends Mailable
         $bizId = $request->get('biz_id');
         $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
         $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
-        $fileArray = AppDocumentFile::getReviewerSummaryPreDocs('183', [4,38]);
+        $fileArray = AppDocumentFile::getReviewerSummaryPreDocs('183', config('common.review_summ_mail_docs_id'));
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData
