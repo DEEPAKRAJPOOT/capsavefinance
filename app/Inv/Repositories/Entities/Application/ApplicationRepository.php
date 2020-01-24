@@ -1002,8 +1002,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ProgramDoc::deleteDoc($conditions);
     }
 
-    public function getAllOffers($appId){
-        return AppProgramOffer::getAllOffers($appId);
+    public function getAllOffers($appId, $product_id=null){
+        return AppProgramOffer::getAllOffers($appId, $product_id);
     }    
     
     /**
@@ -1181,6 +1181,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 })
                 ->where('is_active', 1)
                 ->get();
+    }
+
+    public function getOfferStatus($appId){
+        return AppProgramOffer::getOfferStatus($appId);
+    }
+
+    public function changeOfferApprove($appId){
+        return AppProgramOffer::changeOfferApprove($appId);
     }
 
 
