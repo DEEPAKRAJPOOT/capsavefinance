@@ -13,7 +13,7 @@
             <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm " > Download Report</button>
         </div>
     </div>
-<div class="row" id="camReportDownload">    
+<form class="ui form">   
        <div class="card mt-3">
           <div class="card-body pt-3 pb-3">
              <div class="row">
@@ -1198,46 +1198,59 @@
           </div>
        </div>
     </div>
+</form>
 </div>
-
-
-
 
 
 
 </div>
 @endsection
 @section('jscript')
-<script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>
+
+
+<script type="text/javascript" src="//cdn.rawgit.com/niklasvh/html2canvas/0.5.0-alpha2/dist/html2canvas.min.js"></script>
+<script type="text/javascript" src="//cdn.rawgit.com/MrRio/jsPDF/master/dist/jspdf.min.js"></script>
+
 <script>
 
 function downloadCam(){
+    alert('asa');
     var camHtml = $("#camReportDownload").html();
-    var doc = new jsPDF();
-     var pdf = new jsPDF('p', 'pt', 'letter');
-        source = camHtml;
-        specialElementHandlers = {
-            '#bypassme': function (element, renderer) {
-                return true
-            }
-        };
-        margins = {
-            top: 80,
-            bottom: 60,
-            left: 40,
-            width: 522
-        };
-        pdf.fromHTML(
-        source,
-        margins.left,
-        margins.top, {
-            'width': margins.width,
-            'elementHandlers': specialElementHandlers
-        },
 
-        function (dispose) {
-            pdf.save('Test.pdf');
-        }, margins);
+       var 
+        form = $('.form'),
+        cache_width = form.width(),
+        a4  =[ 595.28,  841.89];  // for a4 size paper width and height
+
+        $('#create_pdf').on('click',function(){
+            $('body').scrollTop(0);
+            createPDF();
+        });
+        //create pdf
+        function createPDF(){
+            getCanvas().then(function(canvas){
+                var 
+                img = canvas.toDataURL("image/png"),
+                doc = new jsPDF({
+                  unit:'px', 
+                  format:'a4'
+                });     
+                doc.addImage(img, 'JPEG', 20, 20);
+                doc.save('techumber-html-to-pdf.pdf');
+                form.width(cache_width);
+            });
+        }
+
+        // create canvas object
+        function getCanvas(){
+            form.width((a4[0]*1.33333) -80).css('max-width','none');
+            return html2canvas(form,{
+                imageTimeout:2000,
+                removeContainer:true
+            }); 
+        }
+
+
 }
 
 </script>
