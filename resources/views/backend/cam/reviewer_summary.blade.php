@@ -34,7 +34,7 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Limit (₹ In Mn)</td>
-                                 <td class="">{{isset($limitOfferData->limit_amt) ? $limitOfferData->limit_amt : ''}}</td>
+                                 <td class="">₹ {{isset($limitOfferData->limit_amt) ? $limitOfferData->limit_amt : ''}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Tenor (Months)</td>
@@ -42,7 +42,7 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Equipment Type</td>
-                                 <td class="">{{isset($limitOfferData->equipment_type) ? $limitOfferData->equipment_type : ''}}</td>
+                                 <td class="">{{isset($limitOfferData->equipment_type_id) ? $limitOfferData->equipment_type_id : ''}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Security Deposit</td>
@@ -54,13 +54,17 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">PTPQ</td>
-                                 <td class="">{{isset($limitOfferData->ptpq) ? $limitOfferData->ptpq : ''}}</td>
+                                 <td class="">
+                                 {{isset($limitOfferData->ptpq_from) ? 'From Period '.$limitOfferData->ptpq_from : ''}}
+                                 {{isset($limitOfferData->ptpq_to) ? 'To Period '.$limitOfferData->ptpq_to : ''}}
+                                 {{isset($limitOfferData->ptpq_rate) ? 'Rate '.$limitOfferData->ptpq_rate : ''}}
+                                 </td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="" valign="top">XIRR</td>
-                                 <td class="" valign="top">{{isset($limitOfferData->xirr) ? $limitOfferData->xirr : ''}}
-                                    <!-- Ruby Sheet : 14.69%
-                                    <br/>Cash Flow : 13.79% -->
+                                 <td class="" valign="top">
+                                    Ruby Sheet : {{isset($limitOfferData->ruby_sheet_xirr) ? $limitOfferData->ruby_sheet_xirr : ''}}%
+                                    <br/>Cash Flow : {{isset($limitOfferData->cash_flow_xirr) ? $limitOfferData->cash_flow_xirr : ''}}%
                                  </td>
                            </tr>
                            <tr role="row" class="odd">

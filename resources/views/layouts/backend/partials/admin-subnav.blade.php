@@ -40,7 +40,6 @@
         <a href="{{ route('query_management_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/query-management') ? 'active' : '' }}"> QMS</a>
     </li>
 
-
     @php
         $wfStageData = \Helpers::getWfStageToProcess(request()->get('app_id'));
         $wfStageToProcess = $wfStageData ? $wfStageData->stage_code : '';
