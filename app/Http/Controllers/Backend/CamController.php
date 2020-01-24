@@ -1294,12 +1294,15 @@ class CamController extends Controller
     }
 
     public function approveOffer(Request $request){
+      $appId = $request->get('app_id');
         $appApprData = [
-            'app_id' => $request->get('app_id'),
+            'app_id' => $appId,
             'approver_user_id' => \Auth::user()->user_id,
             'status' => 1
           ];
         $this->appRepo->saveAppApprovers($appApprData);
+        //update approve status in offer table after all approver approve the offer.
+        $this->appRepo->changeOfferApprove($appId);
         Session::flash('message',trans('backend_messages.offer_approved'));
         return redirect()->back();
     }
@@ -1414,10 +1417,33 @@ class CamController extends Controller
       $gstdocs = $fin->getGSTStatements($appId);
       $user = $fin->getUserByAPP($appId);
       $user_id = $user['user_id'];
-      $gst_details = $fin->getSelectedGstForApp($user_id);
+      $gst_details = $fin->getSelectedGstForApp($biz_id);
       $all_gst_details = $fin->getAllGstForApp($biz_id);
       $gst_no = $gst_details['pan_gst_hash'];
-        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details]);
+
+      $currenttop3Cus ='';
+      $currenttop3Sup ='';
+      $previoustop3Cus ='';
+      $previoustop3Sup ='';
+      $gstRes='';
+      $fileName=$appId."_".$gst_no .".json";
+     $filePath=storage_path('app/public/user').'/'.$fileName;
+      
+      if(file_exists($filePath)){
+      $myfile = file_get_contents($filePath);
+      $gstRes=json_decode(base64_decode($myfile),TRUE);
+      $currenttop3Cus = ($gstRes) ? $gstRes['current']['top3Cus']:"";
+      $previoustop3Cus = ($gstRes) ? $gstRes['previous']['top3Cus']:"";
+      $currenttop3Sup =   ($gstRes) ? $gstRes['current']['top3Sup']:"";
+      $previoustop3Sup =   ($gstRes) ? $gstRes['previous']['top3Sup']:"";
+    }    
+   // dd($gstRes['current']['turnover_and_customers']);
+        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details, 'currenttop3Cus'=> $currenttop3Cus,
+         'currenttop3Sup'=> $currenttop3Sup,
+        'previoustop3Cus'=>$previoustop3Cus,
+        'previoustop3Sup'=>$previoustop3Sup,
+        'gstResponsShow'=>$gstRes,
+        ]);
     }
 
 
@@ -1624,6 +1650,43 @@ class CamController extends Controller
         }
     }
 
+    public function downloadCamReport(Request $request)
+    {
+      try{
+            $arrRequest['biz_id'] = $request->get('biz_id');
+            $arrRequest['app_id'] = $request->get('app_id');
+            $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
+            $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
+            foreach ($arrOwnerData as $key => $arr) {
+                  $arrOwner[$key] =  $arr['first_name'];
+            }
+            $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
+            if(isset($arrEntityData['industryType'])){
+                  $arrBizData['industryType'] = $arrEntityData['industryType'];
+            }
+            if(isset($arrEntityData['name'])){      
+                  $arrBizData['legalConstitution'] = $arrEntityData['name'];
+            }
 
+            $whereCondition = [];
+            //$whereCondition['anchor_id'] = $anchorId;
+            $prgmData = $this->appRepo->getProgramData($whereCondition);
+            if(!empty($prgmData))
+            {
+               $arrBizData['prgm_name'] = $prgmData['prgm_name'];
+            }
+            $arrBizData['email']  = $arrEntityData['email'];
+            $arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
+            $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+           
+            if(isset($arrCamData['t_o_f_security_check'])){
+                $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
+            }
+            return view('backend.cam.downloadCamReport')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData, 'arrOwner' =>$arrOwner]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+
+    }
 
 }

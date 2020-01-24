@@ -40,7 +40,6 @@
         <a href="{{ route('query_management_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/query-management') ? 'active' : '' }}"> QMS</a>
     </li>
 
-
     @php
         $wfStageData = \Helpers::getWfStageToProcess(request()->get('app_id'));
         $wfStageToProcess = $wfStageData ? $wfStageData->stage_code : '';
@@ -51,13 +50,13 @@
         $isNavAccessible = $currentStage->role_id == $roleData[0]->id ? 1 : 0;            
     @endphp
     
-    @if ($currentStage->stage_code == 'sales_queue' && $isNavAccessible)    
+    {{--@if ($currentStage->stage_code == 'sales_queue' && $isNavAccessible)--}}
     @can('view_offer')    
     <li>
-        <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('view-offer') ? 'active' : '' }}">View Offer</a>
+        <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/view-offer') ? 'active' : '' }}">View Offer</a>
     </li>
     @endcan
-    @endif
+    {{--@endif--}}
     
     @if ($currentStage->stage_code == 'sanction_letter' && $isNavAccessible)
     @can('view_offer')
