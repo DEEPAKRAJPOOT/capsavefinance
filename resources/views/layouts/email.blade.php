@@ -7,7 +7,7 @@
         </td>
     </tr>
     <tr>
-        <td class="header" style=" text-align: center;">
+        <td class="header">
             @yield('email_content')
         </td>
     </tr>

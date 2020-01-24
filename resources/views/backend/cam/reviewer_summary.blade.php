@@ -42,7 +42,7 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Limit (₹ In Mn)</td>
-                                 <td class="">₹ {{isset($limitOfferData->limit_amt) ? $limitOfferData->limit_amt : ''}}</td>
+                                 <td class="">{{isset($limitOfferData->limit_amt) ? '₹ '.$limitOfferData->limit_amt : ''}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Tenor (Months)</td>
@@ -71,8 +71,8 @@
                            <tr role="row" class="odd">
                                  <td class="" valign="top">XIRR</td>
                                  <td class="" valign="top">
-                                    Ruby Sheet : {{isset($limitOfferData->ruby_sheet_xirr) ? $limitOfferData->ruby_sheet_xirr : ''}}%
-                                    <br/>Cash Flow : {{isset($limitOfferData->cash_flow_xirr) ? $limitOfferData->cash_flow_xirr : ''}}%
+                                    Ruby Sheet : {{isset($limitOfferData->ruby_sheet_xirr) ? $limitOfferData->ruby_sheet_xirr.'%' : ''}}
+                                    <br/>Cash Flow : {{isset($limitOfferData->cash_flow_xirr) ? $limitOfferData->cash_flow_xirr.'%' : ''}}
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
