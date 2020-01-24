@@ -40,7 +40,7 @@
                                     
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span><span id="anc_limit" class="error"></span></label>
+                                            <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id"  name="anchor_id">
                                              
                                             @if(count($get_anchor) > 0)
@@ -59,7 +59,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Product Program Name
-                                                <span class="error_message_label">*</span>   <span id="pro_limit" class="error"></span>
+                                                <span class="error_message_label">*</span>   <!-- <span id="pro_limit" class="error"></span> -->
                                             </label>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Supplier Name <span class="error_message_label">*</span></label>
+                                            <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label>
                                             <select readonly="readonly" class="form-control" id="supplier_id" name="supplier_id">
                                              
                                             </select>
@@ -84,7 +84,7 @@
 									<div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Date <span class="error_message_label">*</span> </label>
-                                            <input type="text" id="invoice_date" name="invoice_date" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate">
+                                            <input type="text" id="invoice_date" name="invoice_date" readonly="readonly" placeholder="Invoice Date" class="getInvoiceD form-control date_of_birth datepicker-dis-fdate">
                                         </div>
                                     </div>
 									
@@ -117,7 +117,7 @@
                                     </div>
 									<div class="col-md-8">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Remarks <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Remarks <span class="error_message_label"></span> </label>
                                                <textarea class="form-control" name="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
                                     </div>
                                     </div>
@@ -131,8 +131,12 @@
                                 </div> 
 								   <div class="row">
                                     <div class="col-md-12">
+                                        <div class="col-md-8">
+                                            <label class="error" id="tenorMsg"></label>
+                                        </div>
                                         <div class="text-right mt-2">
                                             <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
+                                             <input type="hidden" value="" id="tenor" name="tenor">
                                             <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
                                             <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
                                         </div>
@@ -254,14 +258,6 @@
                                  <input type="email" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Email" required="">
                               </div>
                            </div>
-                         <!-- <div class="col-md-6">
-                              <div class="form-group password-input">
-                                 <label for="txtPassword">Password
-                                 <span class="mandatory">*</span>
-                                 </label>
-                     <input class="form-control" name="password" id="passwordRegistration" type="password" tabindex="5" placeholder="Password" oninput="removeSpace(this);">
-                              </div>
-                           </div>  -->
                            <div class="col-md-6">
                                  <div class="form-group">
                                     <label for="txtMobile">Mobile
@@ -341,7 +337,7 @@ var messages = {
      if(invoice_approve_amount  > pro_limit)
      {
        
-         $("#msgProLimit").text('Invoice amount should not more then program limit');
+         $("#msgProLimit").text('Invoice amount should not more than program limit');
          $("#submit").css("pointer-events","none");
          return false;
          
@@ -353,15 +349,39 @@ var messages = {
          return true;
      }
 });
+
+   function ChangeDateFormat(date)
+   {
+            var datearray = date.split("/");
+            return  newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
+
+   }
+
+    function findDaysWithDate(firstDate,secondDate)
+    {
+        var firstDate  =   ChangeDateFormat(firstDate);
+        var secondDate  =  ChangeDateFormat(secondDate);
+        var startDay = new Date(firstDate);
+        var endDay = new Date(secondDate);
+        var millisecondsPerDay = 1000 * 60 * 60 * 24;
+        var  millisBetween = startDay.getTime() - endDay.getTime();
+        var    days = millisBetween / millisecondsPerDay;
+        return  Math.floor(days);
+    }
    
  $(document).ready(function () {
        $("#program_id").append("<option value=''>No data found</option>");  
         $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
+        $("#tenorMsg").hide();
+        var first  = $('#invoice_due_date').val();
+        var second = $('#invoice_date').val();
+        var getDays  = findDaysWithDate(first,second);
+        var tenor  = $('#tenor').val();
      
-     if ($('form#signupForm').validate().form()) {     
-        $("#anchor_id" ).rules( "add", {
+     if ($('form#signupForm').validate().form()) {  
+       $("#anchor_id" ).rules( "add", {
         required: true,
         messages: {
         required: "Please enter Anchor name",
@@ -414,7 +434,13 @@ var messages = {
         required: "Please upload Invoice Copy",
         }
         }); 
-        
+         if(getDays < tenor)
+        {
+           $("#tenorMsg").show(); 
+           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor); 
+           e.preventDefault();
+        }
+      
          
         } else {
         /// alert();
@@ -422,6 +448,20 @@ var messages = {
      });         
   });  
   
+  ////////////// get due date depend on tenor date ///////////
+   $(document).on('keyup change','.getInvoiceD',function(){
+        var date = $(this).val(); 
+        if($("#program_id").val()!='' && date!='')
+      {
+       
+        var date = ChangeDateFormat(date);
+        var oldDate = new Date(date);
+        var days  = parseInt($('#tenor').val());
+        var nextday =new Date(oldDate.getFullYear(),oldDate.getMonth(),oldDate.getDate()+days);
+        var dueDate  = (nextday.getDate()+'/'+(nextday.getMonth()+1)+'/'+nextday.getFullYear());
+        $("#invoice_due_date").val(dueDate);
+    }
+   });
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeAnchor',function(){
       
@@ -477,8 +517,12 @@ var messages = {
 });
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeSupplier',function(){
-    
+      $("#invoice_date").val('');
       var program_id =  $(this).val(); 
+      if(program_id=='')
+      {
+          return false; 
+      }
       $("#supplier_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
@@ -499,7 +543,9 @@ var messages = {
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;
+                        var tenor   =  data.tenor;
                         $("#prgm_offer_id").val(offer_id);
+                        $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                          $("#supplier_id").append("<option value=''>Please Select</option>");  

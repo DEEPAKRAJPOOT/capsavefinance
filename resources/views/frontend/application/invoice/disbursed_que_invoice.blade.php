@@ -1,10 +1,5 @@
-@extends('layouts.backend.admin-layout')
-@section('additional_css')
-@endsection
+@extends('layouts.app')
 @section('content')
-
-
-
 <div class="content-wrapper">
 <div class="col-md-12 ">
    <section class="content-header">
@@ -26,38 +21,36 @@
    <div class="col-md-12 ">
       <div class="card">
          <div class="card-body">
-	 <ul class="nav nav-tabs" role="tablist">
-             <li class="nav-item ">
-      <a class="nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
+<ul class="nav nav-tabs" role="tablist">
+           <li class="nav-item ">
+      <a class="nav-link @if(Route::currentRouteName()=='get_invoice') active @endif"  href="{{Route('get_invoice')}}">Pending</a>
     </li>
     <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
+         <a class="nav-link @if(Route::currentRouteName()=='get_approve_invoice') active @endif"  href="{{Route('get_approve_invoice')}}">Approved</a>
     </li>
   <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursement Queue</a>
+         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_que_invoice') active @endif"  href="{{Route('get_disbursed_que_invoice')}}">Disbursement Queue</a>
     </li>
         
    <li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_sent_to_bank') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
+            <a class="nav-link @if(Route::currentRouteName()=='get_sent_to_bank') active @endif" href="{{Route('get_sent_to_bank')}}">Sent to Bank</a>
     </li>
 	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursement</a>
+            <a class="nav-link @if(Route::currentRouteName()=='get_failed_disbursed_invoice') active @endif" href="{{Route('get_failed_disbursed_invoice')}}">Failed Disbursement</a>
     </li>
-    <li class="nav-item">
-              <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
-         
+   <li class="nav-item">
+         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_invoice') active @endif"  href="{{Route('get_disbursed_invoice')}}">Disbursed</a>
     </li>
-      <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_repaid_invoice')}}">Repaid</a>
+	<li class="nav-item">
+         <a class="nav-link @if(Route::currentRouteName()=='get_repaid_invoice') active @endif" href="{{Route('get_repaid_invoice')}}">Repaid</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link @if(Route::currentRouteName()=='backend_get_reject_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
+   <li class="nav-item">
+      <a class="nav-link @if(Route::currentRouteName()=='get_reject_invoice') active @endif" href="{{Route('get_reject_invoice')}}">Reject</a>
 
     </li>
   
    
   </ul>
-
   <div class="tab-content">
     
     <div id="menu1" class=" active tab-pane "><br>
@@ -65,7 +58,7 @@
        
     <div class="card">
         <div class="card-body">
-                     <div class="row"><div class="col-md-4"></div>
+                     <div class="row"><div class="col-md-6"></div>
                  <div class="col-md-2">				 
                      <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                      <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
@@ -97,10 +90,7 @@
                          
                     </select>
                      </div>    
-                     
-                <div class="col-md-2">	          
-                <button type="button" id="bulkApprove" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Send to Disbursement</button>
-             </div>
+                 
             </div>
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -108,20 +98,20 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <table id="invoiceListApprove" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <input type="hidden" name="front" value="front">
+                                    <table id="invoiceListDisbursedQue" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                                <th><input type="checkbox" id="chkAll"></th> 
-                                              <th>Invoice  No</th>
-                                                <th>Anchor Name</th>
-                                                <th>Customer Name</th>
+                                                <th>Invoice No</th> 
+                                               <th>Anchor Name</th>
+                                                 <th>Customer Name</th>
+                                                <th>Program Name</th>
                                                 <th>Invoice Date</th>
-                                                <th>Invoice Due Date</th>
-                                                <th>Tenor</th>
+                                                   <th>Tenor</th>
                                                  <th>Invoice  Amount</th>
                                                 <th>Invoice Approve Amount</th>
                                                 <th>Status</th>
-                                                <th>Action</th>
+                                               
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -262,7 +252,7 @@
 <script>
 
     var messages = {
-            backend_get_invoice_list_approve: "{{ URL::route('backend_get_invoice_list_approve') }}",
+            backend_get_invoice_list_disbursed_que: "{{ URL::route('backend_get_invoice_list_disbursed_que') }}",
             upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
             get_program_supplier: "{{ URL::route('get_program_supplier') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
@@ -279,7 +269,41 @@
        $("#program_bulk_id").append("<option value=''>No data found</option>");  
         $("#program_bulk_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
-        
+  $('#submit').on('click', function (e) {
+     
+     if ($('form#signupForm').validate().form()) {     
+        $("#anchor_bulk_id" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter Anchor name",
+        }
+        });
+       
+      $("#supplier_id" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please Select Supplier Name",
+        }
+        });
+          $("#program_bulk_id" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please Select Product Program Name",
+        }
+        });
+       
+        $("#customFile" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please upload Invoice Copy",
+        }
+        }); 
+       
+         
+        } else {
+         alert();
+        }  
+     });         
   }); 
   
   
@@ -298,7 +322,7 @@
    
  ///////////////////////For Invoice Approve////////////////////////
   $(document).on('click','.approveInv',function(){
-    if(confirm('Are you sure? You want to disbursment queue.'))  
+    if(confirm('Are you sujre? You want to approve it'))  
     {
      var invoice_id =  $(this).attr('data-id'); 
       var postData =  ({'invoice_id':invoice_id,'status':9,'_token':messages.token});
@@ -549,10 +573,9 @@ $(document).on('click','#bulkApprove',function(){
             alert('Please select atleast one checked');
             return false;
         }
-        if(confirm('Are you sure? You want to disbursment queue.'))  
+        if(confirm('Are you sujre? You want to approve it'))  
     { 
-         var status =  $(this).attr('data-status');
-        var postData =  ({'invoice_id':arr,'status':status,'_token':messages.token});
+        var postData =  ({'invoice_id':arr,'status':9,'_token':messages.token});
          jQuery.ajax({
           url: messages.update_bulk_invoice,
                   method: 'post',
@@ -608,7 +631,7 @@ $(document).on('click','#UpdateInvoiceAmount',function(){
      }
  });
 </script>
-<script src="{{ asset('backend/js/ajax-js/invoice_list_approve.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/invoice_list_disbursment_que.js') }}"></script>
 
 @endsection
  
