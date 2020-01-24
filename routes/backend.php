@@ -283,7 +283,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_sanction_letter',
                 'uses' => 'Backend\ApplicationController@saveSanctionLetter'
             ]); 
-            
+
+            Route::get('preview-sanction-letter',[
+                'as' => 'preview_sanction_letter',
+                'uses' => 'Backend\ApplicationController@previewSanctionLetter'
+            ]);
+
             //////////////// For Promoter Iframe///////////////////
              Route::get('show-pan-verify-data', [
                 'as' => 'show_pan_verify_data',

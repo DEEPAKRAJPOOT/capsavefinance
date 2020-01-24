@@ -49,12 +49,12 @@
 
                                 <p>Ref No: CFPL/Apr19/198 <br><br>
                                 January 23, 2020<br><br>
-                                <b>Pepcart Logistics Pvt Ltd,
+                                <b>{{ $Lessee }},<br>
                                 Warehouse no 1, 2nd floor, The Integrated Park, 
                                 Np, Village Kurund, Bhiwandi, Mumbai, 
                                 Maharashtra - 421101 <br><br>
                                 Kind Attention: Mr. Madhusudan Bihani<br><br>
-                                Sub: Sanction Letter for Pepcart Logistics Pvt Ltd.</b><br><br>
+                                Sub: Sanction Letter for {{ $Lessee }}</b><br><br>
                                 Dear Sir, <br><br>
                                 Capsave Finance Private Limited is pleased to offer you rental facility subject to the following terms:</p> 
                                 <table class="table table-bordered overview-table">
@@ -62,27 +62,27 @@
                                         <tr>
                                             <td>1.</td>
                                             <td>Nature of facility</td>
-                                            <td></td>
+                                            <td>Rental Facility </td>
                                         </tr>
                                         <tr>
                                             <td>2.</td>
                                             <td>Lessor</td>
-                                            <td></td>
+                                            <td>Capsave Finance Private Limited (CFPL)</td>
                                         </tr>
                                         <tr>
                                             <td>3.</td>
                                             <td>Lessee</td>
-                                            <td></td>
+                                            <td>{{ $Lessee }}</td>
                                         </tr>
                                         <tr>
                                             <td>4.</td>
                                             <td>Sanction Amount</td>
-                                            <td></td>
+                                            <td>{!! $sanctionAmount ? \Helpers::formatCurreny($sanctionAmount) : '' !!}</td>
                                         </tr>
                                         <tr>
                                             <td>5.</td>
                                             <td>Sanction validity</td>
-                                            <td></td>
+                                            <td>{{ $sanctionValidity }}</td>
                                         </tr>
                                         <tr>
                                             <td>6.</td>
@@ -127,47 +127,47 @@
                                         <tr>
                                             <td>14.</td>
                                             <td>Delayed payment charges</td>
-                                            <td>{{ $delay_pymt_chrg }}</td>
+                                            <td>{!! $delay_pymt_chrg !!}</td>
                                         </tr>
                                         <tr>
                                             <td>15.</td>
                                             <td>Insurance</td>
-                                            <td>{{ $insurance }}</td>
+                                            <td>{!! $insurance !!}</td>
                                         </tr>
                                         <tr>
                                             <td>16.</td>
                                             <td>GST/Bank Charges</td>
-                                            <td>{{ $bank_chrg }}</td>
+                                            <td>{!! $bank_chrg !!}</td>
                                         </tr>
                                         <tr>
                                             <td>17.</td>
                                             <td>Legal Costs</td>
-                                            <td>{{ $legal_cost }}</td>
+                                            <td>{!! $legal_cost !!}</td>
                                         </tr>
                                         <tr>
                                             <td>18.</td>
                                             <td>Purchase Orders</td>
-                                            <td>{{ $po }}</td>
+                                            <td>{!! $po !!}</td>
                                         </tr>
                                         <tr>
                                             <td>19.</td>
                                             <td>Pre-disbursement conditions</td>
-                                            <td>{{ $pdp }}</td>
+                                            <td>{!! $pdp !!}</td>
                                         </tr>
                                         <tr>
                                             <td>20.</td>
                                             <td>Disbursement Guidelines/Documentation</td>
-                                            <td>{{ $disburs_guide }}</td>
+                                            <td>{!! $disburs_guide !!}</td>
                                         </tr>
                                         <tr>
                                             <td>21.</td>
                                             <td>Other Conditions </td>
-                                            <td>{{ $other_cond }}</td>
+                                            <td>{!! $other_cond !!}</td>
                                         </tr>
                                         <tr>
                                             <td>22.</td>
                                             <td>Information and other covenants</td>
-                                            <td>{{ $covenants }}</td>
+                                            <td>{!! $covenants !!}</td>
                                         </tr>
                                     </tbody>
                                 </table><br>

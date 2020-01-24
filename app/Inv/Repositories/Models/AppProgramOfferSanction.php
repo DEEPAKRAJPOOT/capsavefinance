@@ -106,8 +106,8 @@ class AppProgramOfferSanction extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $offers = self::where(['prgm_offer_id'=>$offerId, 'is_active'=>1])->get();      
-        return $offers ? $offers : null;
+        $sanction = self::where(['prgm_offer_id'=>$offerId, 'is_active'=>1])->first();;      
+        return $sanction ? $sanction : null;
     }
 
     /**
@@ -125,9 +125,14 @@ class AppProgramOfferSanction extends BaseModel {
         if (!is_array($sanctionData)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-        
+
         if (!is_null($sanctionId)) {
-            return self::where('sanction_id', $sanctionId)->update($sanctionData);
+            $sanctionId =  self::where('sanction_id', $sanctionId)->update($sanctionData);
+            if($sanctionId){
+                return self::find($sanctionId);
+            }else{
+                return $sanctionId;
+            }
         } else {
             return self::create($sanctionData);
         }
