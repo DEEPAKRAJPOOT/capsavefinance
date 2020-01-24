@@ -1,5 +1,12 @@
 @extends('layouts.backend.admin-layout')
 
+@section('additional_css')
+<style type="text/css">
+    .current-status {
+        width: 60px;
+    }
+</style>
+@endsection
 @section('content')
 
 <div class="content-wrapper">
