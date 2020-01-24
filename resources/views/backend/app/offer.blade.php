@@ -10,6 +10,8 @@
                         <div class="col-sm-12">
                             <div id="accordion" class="accordion">
                                 <!-- Start View Supply Chain Offer Block -->
+                                @foreach($supplyOfferData as $key=>$supplyOffer)
+                                @if($loop->first)
                                 <div class="card card-color mb-0">
                                     <div class="card-header" data-toggle="collapse" href="#collapseOne" aria-expanded="false"><h5 class="mb-0">Supply Chain Offer Details</h5>     
                                     </div>
@@ -25,22 +27,23 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                    @endif
                                                 <tr role="row" class="odd">
-                                                    <td width="10%">1.</td>
+                                                    <td width="10%">$key</td>
                                                     <td width="40%">
                                                         <table class="" width="70%">
                                                             <tbody>
                                                                 <tr>
                                                                     <td><b>Apply Loan Amount : </b></td>
-                                                                    <td>2000000</td>
+                                                                    <td>{{$supplyOffer->prgm_limit_amt}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><b>Loan Offer : </b></td>
-                                                                    <td></td>
+                                                                    <td>{{$supplyOffer->prgm_limit_amt}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                    <td><b>Interest Rate(%) : </b></td>
-                                                                   <td></td>
+                                                                   <td>{{$supplyOffer->prgm_limit_amt}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                    <td><b>Tenor (Days) : </b></td>
@@ -85,10 +88,13 @@
                                                     <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
                                                     <td></td>
                                                 </tr>
+                                    @if($loop->last)
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
+                                @endif
+                                @endforeach
                                 <!-- End View Supply Chain Offer Block -->
                                 <!-- Start View Term loan Offer Block -->
                                 <div class="card card-color mb-0">
