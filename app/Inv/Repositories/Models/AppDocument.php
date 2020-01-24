@@ -64,6 +64,11 @@ class AppDocument extends BaseModel
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')->whereIn('doc_type_id', [1]);;
     }
+
+    public function app_doc_product()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppDocProduct', 'app_doc_id');
+    }
     public function ppDocument()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')

@@ -447,7 +447,7 @@ function checkValidation(){
         if(product_id == 1 && (parseInt(limit_amt.replace(/,/g, '')) > offers.program_balance_limit)){
             setError('input[name=limit_amt]', 'Limit amount can not exceed from program limit');
             flag = false;
-        }else if(product_id == 1 && ((parseInt(limit_amt.replace(/,/g, '')) < offers.program_min_limit) || (parseInt(limit_amt.replace(/,/g, '')) < offers.program_max_limit))){
+        }else if(product_id == 1 && ((parseInt(limit_amt.replace(/,/g, '')) < offers.program_min_limit) || (parseInt(limit_amt.replace(/,/g, '')) > offers.program_max_limit))){
             setError('input[name=limit_amt]', 'Limit amount should be ('+offers.program_min_limit+' - '+offers.program_max_limit+') range');
             flag = false;
         }else{
