@@ -1434,7 +1434,8 @@ class CamController extends Controller
       $currenttop3Sup =   ($gstRes) ? $gstRes['current']['top3Sup']:"";
       $previoustop3Sup =   ($gstRes) ? $gstRes['previous']['top3Sup']:"";
     }    
-   // dd($gstRes['current']['turnover_and_customers']);
+    //dd($gstRes['current']['quarterly_summary']['quarter1'],"=====",$gstRes['current']['quarterly_summary']['quarter1']['months']);
+    //dd($gstRes['last_six_mnth_smry']);
         return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details, 'currenttop3Cus'=> $currenttop3Cus,
          'currenttop3Sup'=> $currenttop3Sup,
         'previoustop3Cus'=>$previoustop3Cus,
