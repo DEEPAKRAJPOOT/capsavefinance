@@ -101,8 +101,15 @@ class CamController extends Controller
                   $arrCamData['t_o_f_security_check'] = implode(',', $arrCamData['t_o_f_security_check']);
             }
             //dd($arrCamData);
+                  if(!isset($arrCamData['rating_rational'])){
+                  $arrCamData['rating_rational'] = NULL;
+                  }else{
+                  $arrCamData['rating_rational'] =  $arrCamData['rating_rational'] ;
+                  }
+                 // dd($arrCamData, $userId);
 
             if($arrCamData['cam_report_id'] != ''){
+              //dd($arrCamData, $userId);
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
                         Session::flash('message',trans('CAM information updated sauccessfully'));

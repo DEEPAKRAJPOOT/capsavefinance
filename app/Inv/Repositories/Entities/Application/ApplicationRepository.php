@@ -1012,9 +1012,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param array $where
      * @return mixed
      */
-    public function getRequiredDocs($where)
+    public function getRequiredDocs($where, $appProductIds)
     {
-        return DocumentMaster::getRequiredDocs($where);
+        return DocumentMaster::getRequiredDocs($where,$appProductIds);
     }
 
     /**
@@ -1172,11 +1172,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $where array
      * @return type mixed
      */
-    public function getSTLDocs($whereCondition)
+    public function getSTLDocs($whereCondition, $appProductIds)
     {
         return DocumentMaster::select('id as doc_id')
                 ->where($whereCondition)
-                ->whereHas('product_document')
+                ->whereHas('product_document', function ($query) use ($appProductIds) {
+                    $query->whereIn('product_id', $appProductIds);
+                })
                 ->where('is_active', 1)
                 ->get();
     }

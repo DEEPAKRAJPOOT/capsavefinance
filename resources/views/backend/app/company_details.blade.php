@@ -194,9 +194,9 @@
 
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="txtSupplierName">Tranche Tenor (Days)
+									<label for="txtSupplierName">Lease Tenor  (Months)
 									</label>
-									<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
+									<input type="text" name="tenor_days" value="{{old('tenor_days', $business_info->tenor_days)}}" class="form-control number_format" tabindex="11" placeholder="Enter Lease Tenor" maxlength="3">
 									@error('tenor_days')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
