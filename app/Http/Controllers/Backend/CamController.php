@@ -219,12 +219,11 @@ class CamController extends Controller
       if(count(Mail::failures()) > 0 ) {
         Session::flash('error',trans('Mail not sended, try again later.'));
       } else {
-        Session::flash('message',trans('Mail sended successfully.'));
-        
-       }
-       //dd('Mail sended successfully.');
-       //return new \App\Mail\ReviewerSummary(); 
-       return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
+        Session::flash('message',trans('Mail sended successfully.'));        
+      }
+      return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
+      //dd('Mail sended successfully.');
+      //return new \App\Mail\ReviewerSummary();        
     }
 
     public function uploadBankXLSX(Request $request){
