@@ -10,7 +10,7 @@ try {
             serverSide: false,
             pageLength: 25,
             searching: false,
-            bSort: true,
+            bSort: false,
             ajax: {
                "url": messages.get_documents_list, // json datasource
                 "method": 'POST',
@@ -32,7 +32,7 @@ try {
                     {data: 'created_by'},
                     {data: 'is_active'}
                 ],
-            aoColumnDefs: [{'bSortable': true, 'aTargets': [0,1,2,3,4]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4]}]
         });
         //Search
         $('#searchbtn').on('click', function (e) {

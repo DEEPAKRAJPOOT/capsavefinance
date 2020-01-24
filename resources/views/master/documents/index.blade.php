@@ -4,6 +4,7 @@
 <style type="text/css">
     .current-status {
         width: 60px;
+        padding: 0.7em 1em;
     }
 </style>
 @endsection
@@ -46,13 +47,13 @@
                         <table id="documentsList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>Document Type</th>
-                                    <th>Document Name</th>
-                                    <th>product Types</th>
-                                    <th>Is RCU</th>
-                                    <th>Created At</th>
-                                    <th>Created By</th>
-                                    <th>Status</th>
+                                    <th width="14%">Document Type</th>
+                                    <th width="25%">Document Name</th>
+                                    <th width="25%">product Types</th>
+                                    <th width="6%">Is RCU</th>
+                                    <th width="10%">Created At</th>
+                                    <th width="10%">Created By</th>
+                                    <th width="10%">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
