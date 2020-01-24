@@ -84,7 +84,7 @@ class DocumentMaster extends BaseModel {
      * @param array $where
      * @return mixed
      */
-    public static function getRequiredDocs($where)
+    public static function getRequiredDocs($where, $appProductIds)
     {
         if (empty($where)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
@@ -100,6 +100,9 @@ class DocumentMaster extends BaseModel {
 
         $res = self::select('*','id as doc_id')
                 ->where($where)
+                ->whereHas('product_document', function ($query) use ($appProductIds) {
+                    $query->whereIn('product_id', $appProductIds);
+                })
                 ->where('is_active', 1)
                 ->get();
         return $res ?: [];        
@@ -108,7 +111,6 @@ class DocumentMaster extends BaseModel {
     public function product_document()
     {
         return $this->hasMany('App\Inv\Repositories\Models\ProductDoc', 'doc_id')
-                ->whereIn('product_id', [2,3])
                 ->where('is_active', 1);
     }
 }

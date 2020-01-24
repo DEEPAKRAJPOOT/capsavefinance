@@ -98,6 +98,7 @@
             });
 
             datepickerDisFdate();
+             datepickerDisPdate();
 
             $('.number_format').on('input', function(event) {
                // skip for arrow keys
@@ -118,7 +119,14 @@
                 endDate: new Date()
             });
         }
-
+     function datepickerDisPdate(){
+            $(".datepicker-dis-pdate").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+               startDate: new Date()
+            });
+        }
         function unsetError(ele){
             $(ele+' +span').remove();
         }
