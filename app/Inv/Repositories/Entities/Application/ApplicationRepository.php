@@ -1177,6 +1177,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return DocumentMaster::select('id as doc_id')
                 ->where($whereCondition)
                 ->whereHas('product_document')
+                ->where('is_active', 1)
                 ->get();
     }
 
