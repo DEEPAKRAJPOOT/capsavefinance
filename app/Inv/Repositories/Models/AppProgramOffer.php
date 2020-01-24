@@ -6,6 +6,8 @@ use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\AppApprover;
+use Illuminate\Database\Eloquent\Builder;
 
 class AppProgramOffer extends BaseModel {
     /* The database table used by the model.
@@ -123,7 +125,7 @@ class AppProgramOffer extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getAllOffers($appId)
+    public static function getAllOffers($appId, $product_id=null)
     {
         /**
          * Check id is not blank
@@ -139,7 +141,11 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();      
+        if(is_null($product_id) || $product_id == ''){
+            $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
+        }else{
+            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->get();
+        }
         return $offers ? $offers : null;
     }
 
@@ -275,5 +281,34 @@ class AppProgramOffer extends BaseModel {
         $tot_offered_limit = AppProgramOffer::where(['app_id' => $app_id, 'is_active'=>1])->sum('prgm_limit_amt');
         
         return $tot_offered_limit;
+    }
+
+    public static function getOfferStatus($appId){
+        if(empty($appId)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+        if(!is_int($appId)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        return AppProgramOffer::where(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>NULL])->count();
+    }
+
+    public static function changeOfferApprove($appId){
+        if(empty($appId)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+        if(!is_int($appId)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $approverStatus = AppApprover::where(['app_id' => $appId, 'is_active'=>1])->where('status', '<>', 1)->count();
+
+        if($approverStatus == 0){
+            return AppProgramOffer::where(['app_id' => $appId, 'is_active'=>1])->update(['is_approve'=>1]);
+        }else{
+            return false;
+        }
+
     }
 }
