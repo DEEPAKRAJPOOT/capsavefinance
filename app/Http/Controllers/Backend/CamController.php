@@ -1679,7 +1679,15 @@ class CamController extends Controller
             $arrBizData['email']  = $arrEntityData['email'];
             $arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
             $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-           
+            $arrCamData['total_exposure']  = '';
+            if(isset($arrCamData['existing_exposure'])){
+                $arrCamData['total_exposure'] = str_replace(',', '', $arrCamData['existing_exposure']);
+            }
+            if(isset($arrCamData['existing_exposure'])){
+                $arrCamData['total_exposure'] += str_replace(',', '', $arrCamData['proposed_exposure']);
+            }
+
+           //dd($arrCamData);
             if(isset($arrCamData['t_o_f_security_check'])){
                 $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
             }
