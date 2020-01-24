@@ -1014,6 +1014,14 @@ class ApplicationController extends Controller
         $businessData = $this->appRepo->getApplicationById($bizId); 
         $programLimitData = $this->appRepo->getLimit($offerData->app_prgm_limit_id);
 
+        $security_deposit_of = ''; 
+        switch ($offerData->security_deposit_of) {
+            case(4): $security_deposit_of = 'Sanction'; break;
+            case(3): $security_deposit_of = 'Asset Base Value'; break;
+            case(2): $security_deposit_of = 'Asset value'; break;
+            case(1): $security_deposit_of = 'Loan Amount'; break;
+        }
+
         $data = [
             'product_id' => $programLimitData->product_id,
             'biz_entity_name' => $businessData->biz_entity_name,
@@ -1030,8 +1038,8 @@ class ApplicationController extends Controller
             'bizId' => $bizId,
             'offerId' => $offerId,
             'offerData' => $offerData,
-            'sanctionData'=>$sanctionData
-
+            'sanctionData' => $sanctionData,
+            'security_deposit_of' => $security_deposit_of
         ];
 
         //dd($userData,$offerData,$sanctionData,$businessData,$programLimitData);
@@ -1484,7 +1492,6 @@ class ApplicationController extends Controller
             $userData =  $this->userRepo->getUserByAppId($appId);
             $fileName = 'sanction_letter_'. time() . '.pdf';
 
-
             $html = view('backend.app.download_sanction_letter')
                     ->with('appId', $appId)
                     ->with('offerId', $offerId)
@@ -1494,15 +1501,7 @@ class ApplicationController extends Controller
             $html .='<div align="center">
                     <a href="'. route('download_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'download'=>1, 'sanction_id'=>$sanctionData->sanction_id ]).'" class="btn btn-success btn-sm">Send Mail</a>
                     </div>';
-
-
-            //$html .= '<div align="center"> <button type="button" class="btn btn-primary"> Send Mail </button> </div> ';
             return  $html;
-            /*
-            return response($this->pdf->render($htmlContent), 200)->withHeaders([
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => ($request->has('download') ? 'attachment' : 'inline') . "; filename=" . $fileName,
-            ]);*/
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

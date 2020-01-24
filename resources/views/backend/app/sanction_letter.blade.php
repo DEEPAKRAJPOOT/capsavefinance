@@ -145,9 +145,9 @@
                                                 <td with="25%"><b>Refundable Security Deposit</b></td>
                                                 <td with="25%">
                                                     @if($offerData->security_deposit_type == 1 &&  $offerData->security_deposit >0)
-                                                        Flat {{ $offerData->security_deposit }} of the {{ $offerData->security_deposit_of }}
+                                                        Flat {{ $offerData->security_deposit }} of the {{ $security_deposit_of }}
                                                     @elseif($offerData->security_deposit_type == 2 &&  $offerData->security_deposit >0)
-                                                        {{ $offerData->security_deposit }} % of the {{ $offerData->security_deposit_of }}
+                                                        {{ $offerData->security_deposit }} % of the {{ $security_deposit_of }}
                                                     @endif
                                                 </td>
                                                 <td with="25%"><b>Processing Fees</b></td>
@@ -158,8 +158,18 @@
                                                 <td with="25%"></td>
                                                 <td with="25%"><b>Rental payment frequency</b></td>
                                                 <td with="25%">
-                                                    {{ $offerData->rental_frequency }}
-                                                    {{ $offerData->rental_frequency_type }}
+                                                    Rentals are due 
+                                                    @switch ($offerData->rental_frequency) 
+                                                        @case(4) Monthly  @break
+                                                        @case(3) Quaterly  @break
+                                                        @case(2) Bi-Yearly  @break
+                                                        @case(1) Yearly  @break
+                                                    @endswitch 
+                                                    in 
+                                                    @switch($offerData->rental_frequency_type)
+                                                        @case(1) Advance @break
+                                                        @case(2) Arrears @break
+                                                    @endswitch
                                                 </td>
                                             </tr>
                                             <tr>
