@@ -1309,7 +1309,7 @@ class CamController extends Controller
           ];
         $this->appRepo->saveAppApprovers($appApprData);
         //update approve status in offer table after all approver approve the offer.
-        $this->appRepo->changeOfferApprove($appId);
+        $this->appRepo->changeOfferApprove((int)$appId);
         Session::flash('message',trans('backend_messages.offer_approved'));
         return redirect()->back();
     }
