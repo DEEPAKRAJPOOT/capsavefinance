@@ -410,11 +410,11 @@ class ApplicationController extends Controller
 
             $wf_status = 1;                
             Helpers::updateWfStage('doc_upload', $appId, $wf_status);
-                
+            
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 //Add/Update application workflow stages    
-                $response = $this->docRepo->isUploadedCheck($userId, $appId);            
+                //$response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 //$wf_status = $response->count() < 1 ? 1 : 2;
                 //$wf_status = 1;                
                 //Helpers::updateWfStage('doc_upload', $appId, $wf_status);
@@ -475,7 +475,9 @@ class ApplicationController extends Controller
             // if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
-                                                
+                                  
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
+             
                 //Add application workflow stages                
                 Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
                 
@@ -875,25 +877,42 @@ class ApplicationController extends Controller
     {
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-        
         //$appData = $this->appRepo->getAppDataByAppId($appId);        
         //$loanAmount = $appData ? $appData->loan_amt : 0;
         
-        $offerData = $this->appRepo->getAllOffers($appId);
-        //$offerId = $offerData ? $offerData->offer_id : 0;
-        //$prgmId = $offerData ? $offerData->prgm_id : 0;
-        //$loanAmount = $offerData ? $offerData->loan_amount : 0;
+        $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
+        $termOfferData = $this->appRepo->getAllOffers($appId, 2);//for term loan
+        $leaseOfferData = $this->appRepo->getAllOffers($appId, 3);//for lease loan
+        $offerStatus = $this->appRepo->getOfferStatus($appId);//to check the offer status
         $currentStage = Helpers::getCurrentWfStage($appId);   
         $roleData = Helpers::getUserRole();        
         $viewGenSancLettertBtn = $currentStage->role_id == $roleData[0]->id ? 1 : 0;
-        //dd($offerData);
+
+        /*code for getting the sales manager*/     
+        $appData = $this->appRepo->getAppDataByAppId($appId);               
+        $userId = $appData ? $appData->user_id : null;     
+        $userData = $this->userRepo->getfullUserDetail($userId);
+        if ($userData && !empty($userData->anchor_id)) {
+            $toUserId = $this->userRepo->getLeadSalesManager($userId);
+        } else {
+            $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+        }
+        $authUser = Auth::user();
+        if(($authUser->roles->first()->is_superadmin == 1) || ($authUser->user_id == $toUserId)){
+          $isAccessible = 1;
+        }else{
+          $isAccessible = 0;
+        }
+        /*code for getting the sales manager*/
+
         return view('backend.app.offer')
                 ->with('appId', $appId)
-                ->with('bizId', $bizId)
-                //->with('loanAmount', $loanAmount)
-                //->with('prgm_id', $prgmId)
-                //->with('offerId', $offerId)                
-                ->with('offerData', $offerData)
+                ->with('bizId', $bizId)                
+                ->with('supplyOfferData', $supplyOfferData)
+                ->with('termOfferData', $termOfferData)
+                ->with('leaseOfferData', $leaseOfferData)
+                ->with('offerStatus', $offerStatus)
+                ->with('isAccessible', $isAccessible)
                 ->with('currentStage', $currentStage)
                 ->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
     }

@@ -27,10 +27,21 @@
             </div>
 
 
+            
+                
+        @foreach($requiredDocs as $product)
+            <div class="card card-color mb-0">
+                <div class="card-header" style="background: #398864;">
+                    <a class="card-title ">
+                        <b>{{ $product['productInfo']->product_name }}</b>
+                    </a>
+
+                </div>
+            </div>
             <div class="row ">
-                @if($requiredDocs->count() > 0)
                 <div id="accordion" class="accordion d-table col-sm-12">
-                    @foreach($requiredDocs as $key=>$data)
+                @if($product['documents']->count() > 0)
+                    @foreach($product['documents'] as $key=>$data)
                     <div class="card card-color mb-0">
                         <div class="card-header" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
                             <a class="card-title ">
@@ -99,12 +110,14 @@
                     </div>
 
                     @endforeach
-                </div>
                 @endif
-                <a data-toggle="modal" data-target="#ppUploadDocument" data-url ="{{route('pp_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
-                <input type="hidden" name="uploadDocId" id="uploadDocId" value="" >
+                </div>
             </div>
+            @endforeach
         </div>
+        <a data-toggle="modal" data-target="#ppUploadDocument" data-url ="{{route('pp_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
+        <input type="hidden" name="uploadDocId" id="uploadDocId" value="" >
+            
     </div>
     
 </div>

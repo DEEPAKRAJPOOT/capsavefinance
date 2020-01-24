@@ -1002,8 +1002,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ProgramDoc::deleteDoc($conditions);
     }
 
-    public function getAllOffers($appId){
-        return AppProgramOffer::getAllOffers($appId);
+    public function getAllOffers($appId, $product_id=null){
+        return AppProgramOffer::getAllOffers($appId, $product_id);
     }    
     
     /**
@@ -1172,12 +1172,21 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $where array
      * @return type mixed
      */
-    public function getTLDocs($whereCondition)
+    public function getSTLDocs($whereCondition)
     {
-        return Documents::select('id as doc_id')
+        return DocumentMaster::select('id as doc_id')
                 ->where($whereCondition)
                 ->whereHas('product_document')
+                ->where('is_active', 1)
                 ->get();
+    }
+
+    public function getOfferStatus($appId){
+        return AppProgramOffer::getOfferStatus($appId);
+    }
+
+    public function changeOfferApprove($appId){
+        return AppProgramOffer::changeOfferApprove($appId);
     }
 
 
