@@ -69,14 +69,30 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Additional Security</td>
-                                 <td class="">{{ isset($limitOfferData->addl_security) ? config('common.addl_security.'.$limitOfferData->addl_security) : ''}}
+                                 <td class="">  
+                                 @php 
+                                 @$addSecArr = []      
+                                 @endphp                        
+                                 @if(isset($limitOfferData->addl_security))
+                                    @php 
+                                       $addSecArr = explode(',',$limitOfferData->addl_security)
+                                    @endphp                                     
+                                 @endif   
+                                 @if(count($addSecArr)>0)   
+                                    @foreach ($addSecArr as $k => $v)
+                                       {{ config('common.addl_security.'.$v).", " }}
+                                       @if($v==4)
+                                         {{isset($limitOfferData->comment) ? " Comment- ".$limitOfferData->comment : ''}}
+                                       @endif
+                                    @endforeach 
+                                 @endif                         
                                  </td>
                            </tr>
                         </tbody>
                      </table>
                </div>
                <div class="col-md-12 mt-4">
-                     <h4><small>Pre/ Post Disbursement Conditions:</small></h4>
+                     <h4><small>Pre Disbursement Conditions:</small></h4>
                      <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <thead>
                            <tr role="row">
@@ -116,7 +132,20 @@
                                  <td class="">
                                     <input type="text"  name="time_personal_guarantee" value="{{isset($reviewerSummaryData->time_personal_guarantee) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}" class="form-control form-control-sm">
                                  </td>
+                           </tr>                 
+                        </tbody>
+                     </table>
+               </div>
+               <div class="col-md-12 mt-4">
+                     <h4><small>Post Disbursement Conditions:</small></h4>
+                     <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                        <thead>
+                           <tr role="row">
+                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
+                                 <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
                            </tr>
+                        </thead>
+                        <tbody>           
                            <tr role="row" class="odd">
                                  <td class="">
                                     <input type="text"  name="cond_pbdit" value="{{isset($reviewerSummaryData->cond_pbdit) ? $reviewerSummaryData->cond_pbdit : ''}}" class="form-control form-control-sm">
