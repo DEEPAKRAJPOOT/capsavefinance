@@ -308,7 +308,16 @@ Route::group(
         'as' => 'backend_get_invoice_list_reject',
         'uses' => 'AjaxController@getBackendInvoiceListReject'
         ]
+    );  
+             Route::post(
+        'backend_activity_invoice_list',
+        [
+        'as' => 'backend_activity_invoice_list',
+        'uses' => 'AjaxController@getBackendInvoiceActivityList'
+        ]
     );   
+             
+             
        Route::post(
         'backend_get_invoice_list_bank',
         [
@@ -324,7 +333,9 @@ Route::group(
         'as' => 'backend_get_invoice_list_failed_disbursed',
         'uses' => 'AjaxController@getBackendInvoiceListFailedDisbursed'
         ]
-    );     
+    );  
+       
+       
      Route::post(
         'invoice_document_save',
         [

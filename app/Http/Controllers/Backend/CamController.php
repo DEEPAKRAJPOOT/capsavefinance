@@ -101,8 +101,15 @@ class CamController extends Controller
                   $arrCamData['t_o_f_security_check'] = implode(',', $arrCamData['t_o_f_security_check']);
             }
             //dd($arrCamData);
+                  if(!isset($arrCamData['rating_rational'])){
+                  $arrCamData['rating_rational'] = NULL;
+                  }else{
+                  $arrCamData['rating_rational'] =  $arrCamData['rating_rational'] ;
+                  }
+                 // dd($arrCamData, $userId);
 
             if($arrCamData['cam_report_id'] != ''){
+              //dd($arrCamData, $userId);
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
                         Session::flash('message',trans('CAM information updated sauccessfully'));
@@ -255,17 +262,28 @@ class CamController extends Controller
     }
 
     private function _getPaginate($sheets, $curr_sheet) {
-      $paginate = '';
+      $paginate = "";
       $total_pages = count($sheets);
       if ($total_pages <= 1) {
         return "";
       }
+      $middleEdges = 3;
       $curr_page = $curr_sheet + 1;
-      for($i = 1; $i <= $total_pages; $i++){
-        $selected = ($curr_page == $i) ? 'selected' : 'unselect';
-        $paginate .="<span class='pagination ". $selected ."' id='".$i."' title='".$sheets[$i-1]."'>".$i."</span>";
-      }
-      $paginate .="<div class='outof'>Sheet ".($curr_page)." out of ".$total_pages."</div>";
+      $k = (($curr_page+$middleEdges > $total_pages) ? $total_pages-$middleEdges : (($curr_page-$middleEdges < 1) ? ($middleEdges + 1) : $curr_page));
+      if($curr_page >= 2){ 
+        $paginate .="<span class='pagination unselect' id='1' title='".$sheets[0]."'>First</span>";
+        $paginate .="<span class='pagination unselect' id='".($curr_page-1)."' title='".$sheets[$curr_page-2]."'>Prev</span>";
+      } 
+      for ($i=-$middleEdges; $i<=$middleEdges; $i++) { 
+        if($k+$i == $curr_page)
+          $paginate .="<span class='pagination selected' id='".($k+$i)."' title='".$sheets[$k+$i-1]."'>".($k+$i)."</span>";
+        else
+          $paginate .="<span class='pagination unselect' id='".($k+$i)."' title='".$sheets[$k+$i-1]."'>".($k+$i)."</span>";  
+      };    
+      if($curr_page<$total_pages){ 
+        $paginate .="<span class='pagination unselect' id='".($curr_page+1)."' title='".$sheets[$curr_page]."'>Next</span>";
+        $paginate .="<span class='pagination unselect' id='".$total_pages."' title='".$sheets[$total_pages-1]."'>Last</span>";
+      } 
       return $paginate;
     }
 
@@ -273,7 +291,7 @@ class CamController extends Controller
      $objPHPExcel =  new PHPExcel();
      $files = $this->getLatestFileName($appId, $fileType, 'xlsx');
      $file_name = $files['curr_file'];
-     if (empty($filename)) {
+     if (empty($file_name)) {
        return ['', ''];
      }
      $inputFileName = $this->getToUploadPath($appId, $fileType).'/'.$file_name;
@@ -359,8 +377,8 @@ class CamController extends Controller
         $pending_rec = $fin->getPendingFinanceStatement($appId);
         $financedocs = $fin->getFinanceStatements($appId);
         $contents = array();
-        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
-          $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)),true);
+        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
+          $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
         }
         $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
         $latest_finance_year = 2010;
@@ -1283,16 +1301,20 @@ class CamController extends Controller
     }
 
     public function approveOffer(Request $request){
+      $appId = $request->get('app_id');
         $appApprData = [
-            'app_id' => $request->get('app_id'),
+            'app_id' => $appId,
             'approver_user_id' => \Auth::user()->user_id,
             'status' => 1
           ];
         $this->appRepo->saveAppApprovers($appApprData);
+        //update approve status in offer table after all approver approve the offer.
+        $this->appRepo->changeOfferApprove($appId);
         Session::flash('message',trans('backend_messages.offer_approved'));
         return redirect()->back();
     }
 
+    /*function for showing offer data*/
     public function showLimitOffer(Request $request){
       $appId = $request->get('app_id');
       $biz_id = $request->get('biz_id');
@@ -1322,6 +1344,7 @@ class CamController extends Controller
       return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit]);
     }
 
+    /*function for updating offer data*/
     public function updateLimitOffer(Request $request){
       try{
         $appId = $request->get('app_id');
@@ -1401,10 +1424,34 @@ class CamController extends Controller
       $gstdocs = $fin->getGSTStatements($appId);
       $user = $fin->getUserByAPP($appId);
       $user_id = $user['user_id'];
-      $gst_details = $fin->getSelectedGstForApp($user_id);
+      $gst_details = $fin->getSelectedGstForApp($biz_id);
       $all_gst_details = $fin->getAllGstForApp($biz_id);
       $gst_no = $gst_details['pan_gst_hash'];
-        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details]);
+
+      $currenttop3Cus ='';
+      $currenttop3Sup ='';
+      $previoustop3Cus ='';
+      $previoustop3Sup ='';
+      $gstRes='';
+      $fileName=$appId."_".$gst_no .".json";
+     $filePath=storage_path('app/public/user').'/'.$fileName;
+      
+      if(file_exists($filePath)){
+      $myfile = file_get_contents($filePath);
+      $gstRes=json_decode(base64_decode($myfile),TRUE);
+      $currenttop3Cus = ($gstRes) ? $gstRes['current']['top3Cus']:"";
+      $previoustop3Cus = ($gstRes) ? $gstRes['previous']['top3Cus']:"";
+      $currenttop3Sup =   ($gstRes) ? $gstRes['current']['top3Sup']:"";
+      $previoustop3Sup =   ($gstRes) ? $gstRes['previous']['top3Sup']:"";
+    }    
+    //dd($gstRes['current']['quarterly_summary']['quarter1'],"=====",$gstRes['current']['quarterly_summary']['quarter1']['months']);
+    //dd($gstRes['last_six_mnth_smry']);
+        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details, 'currenttop3Cus'=> $currenttop3Cus,
+         'currenttop3Sup'=> $currenttop3Sup,
+        'previoustop3Cus'=>$previoustop3Cus,
+        'previoustop3Sup'=>$previoustop3Sup,
+        'gstResponsShow'=>$gstRes,
+        ]);
     }
 
 
@@ -1611,6 +1658,43 @@ class CamController extends Controller
         }
     }
 
+    public function downloadCamReport(Request $request)
+    {
+      try{
+            $arrRequest['biz_id'] = $request->get('biz_id');
+            $arrRequest['app_id'] = $request->get('app_id');
+            $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
+            $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
+            foreach ($arrOwnerData as $key => $arr) {
+                  $arrOwner[$key] =  $arr['first_name'];
+            }
+            $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
+            if(isset($arrEntityData['industryType'])){
+                  $arrBizData['industryType'] = $arrEntityData['industryType'];
+            }
+            if(isset($arrEntityData['name'])){      
+                  $arrBizData['legalConstitution'] = $arrEntityData['name'];
+            }
 
+            $whereCondition = [];
+            //$whereCondition['anchor_id'] = $anchorId;
+            $prgmData = $this->appRepo->getProgramData($whereCondition);
+            if(!empty($prgmData))
+            {
+               $arrBizData['prgm_name'] = $prgmData['prgm_name'];
+            }
+            $arrBizData['email']  = $arrEntityData['email'];
+            $arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
+            $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+           
+            if(isset($arrCamData['t_o_f_security_check'])){
+                $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
+            }
+            return view('backend.cam.downloadCamReport')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData, 'arrOwner' =>$arrOwner]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+
+    }
 
 }

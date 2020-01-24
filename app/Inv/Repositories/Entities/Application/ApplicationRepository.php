@@ -1002,8 +1002,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ProgramDoc::deleteDoc($conditions);
     }
 
-    public function getAllOffers($appId){
-        return AppProgramOffer::getAllOffers($appId);
+    public function getAllOffers($appId, $product_id=null){
+        return AppProgramOffer::getAllOffers($appId, $product_id);
     }    
     
     /**
@@ -1012,9 +1012,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param array $where
      * @return mixed
      */
-    public function getRequiredDocs($where)
+    public function getRequiredDocs($where, $appProductIds)
     {
-        return DocumentMaster::getRequiredDocs($where);
+        return DocumentMaster::getRequiredDocs($where,$appProductIds);
     }
 
     /**
@@ -1172,12 +1172,23 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $where array
      * @return type mixed
      */
-    public function getTLDocs($whereCondition)
+    public function getSTLDocs($whereCondition, $appProductIds)
     {
-        return Documents::select('id as doc_id')
+        return DocumentMaster::select('id as doc_id')
                 ->where($whereCondition)
-                ->whereHas('product_document')
+                ->whereHas('product_document', function ($query) use ($appProductIds) {
+                    $query->whereIn('product_id', $appProductIds);
+                })
+                ->where('is_active', 1)
                 ->get();
+    }
+
+    public function getOfferStatus($appId){
+        return AppProgramOffer::getOfferStatus($appId);
+    }
+
+    public function changeOfferApprove($appId){
+        return AppProgramOffer::changeOfferApprove($appId);
     }
 
 

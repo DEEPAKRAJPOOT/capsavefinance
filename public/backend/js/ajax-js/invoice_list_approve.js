@@ -17,6 +17,7 @@ try {
                     d.anchor_id = $('select[name=search_anchor]').val();
                     d.supplier_id = $('select[name=search_supplier]').val();
                     d.biz_id = $('select[name=search_biz]').val();
+                    d.front = $('input[name=front]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -30,8 +31,9 @@ try {
                 {data: 'invoice_id'},
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},
-                {data: 'program_name'},
-                {data: 'invoice_date'},
+                 {data: 'invoice_date'},
+                {data: 'invoice_due_date'},
+                 {data: 'tenor'},
                 {data: 'invoice_amount'},
                 {data: 'invoice_approve_amount'},
                 {data: 'status'},

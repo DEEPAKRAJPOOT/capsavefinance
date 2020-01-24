@@ -127,6 +127,13 @@
                 </table>
 
                 <div class="data mt-4">
+                    <h2 class="sub-title bg">Rating Rational</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <textarea class="form-control" id="rating_rational" name="rating_rational" rows="3" spellcheck="false" >{{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}}</textarea>
+                    </div>
+                </div>
+
+                <div class="data mt-4">
                     <h2 class="sub-title bg">Terms Of Facility</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
                         <table class="table overview-table table-bordered" cellpadding="0" cellspacing="0" border="1">

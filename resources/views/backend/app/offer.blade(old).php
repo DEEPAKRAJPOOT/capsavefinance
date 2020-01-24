@@ -7,145 +7,91 @@
             <div class="card">
                 <div class="card-body">
                     <div class=" form-fields">
+                        <h5 class="card-title form-head mt-0">Offer</h5>
+                    </div>
+                    <div class="row">
+                        @forelse($offerData as $key=>$offer)
+                        <div class="col-md-6" style="margin-bottom: 50px;">
+                            <table class="table-striped table">
+                                <tbody>
+                                    <tr>
+                                        <td><b>Apply Loan Amount :</b></td>
+                                        <td>{{ $offer->prgm_limit_amt }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Loan Offer :</b></td>
+                                        <td>{{ $offer->loan_offer }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><b>Interest Rate (%) :</b></td>
+                                        <td>{{ $offer->interest_rate }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><b>Tenor (Days) :</b></td>
+                                        <td>{{ $offer->tenor }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><b>Tenor for old invoice (Days) :</b></td>
+                                        <td>{{ $offer->tenor_old_invoice }}</td>
+                                    </tr> 
+
+                                    <tr>
+                                        <td><b>Margin (%) :</b></td>
+                                        <td>{{ $offer->margin }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><b>Overdue Interest Rate (%) :</b></td>
+                                        <td>{{ $offer->overdue_interest_rate }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><b>Adhoc Interest Rate (%) :</b></td>
+                                        <td>{{ $offer->adhoc_interest_rate }}</td>
+                                    </tr> 
+
+                                    <tr>
+                                        <td><b>Grace Period  (Days) :</b></td>
+                                        <td>{{ $offer->grace_period }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><b>Processing Fee :</b></td>
+                                        <td>{{ $offer->processing_fee }}</td>
+                                    </tr>  
+
+                                    <tr>
+                                        <td><b>Check Bounce Fee :</b></td>
+                                        <td>{{ $offer->check_bounce_fee }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><b>Comment :</b></td>
+                                        <td>{{ $offer->comment }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        @empty
+                        <p>No offers found</p>
+                        @endforelse
+                    </div>
+                    <form method="POST" action="{{route('accept_offer')}}">
+                        <div class="row">
+                        @csrf
+                        <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
+                        <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         <div class="col-md-12">
-                            <h5 class="card-title form-head-h5">Offer</h5>
-
-                            <div class="col-md-12">
-
-                                {!!
-                                Form::open(
-                                array(
-                                'route' => 'accept_offer',
-                                'name' => 'frmAcceptOffer',
-                                'autocomplete' => 'off', 
-                                'id' => 'frmAcceptOffer',
-                                'class' => 'cmxform'
-                                )
-                                )
-                                !!}
-
-                                @php
-                                $loan_offer = \Helpers::customIsset($offerData, 'loan_offer');
-                                $interest_rate = \Helpers::customIsset($offerData, 'interest_rate');
-                                $tenor = \Helpers::customIsset($offerData, 'tenor');
-                                $tenor_old_invoice = \Helpers::customIsset($offerData, 'tenor_old_invoice');
-                                $margin = \Helpers::customIsset($offerData, 'margin');
-                                $overdue_interest_rate = \Helpers::customIsset($offerData, 'overdue_interest_rate');
-                                $adhoc_interest_rate = \Helpers::customIsset($offerData, 'adhoc_interest_rate');                                
-                                $grace_period = \Helpers::customIsset($offerData, 'grace_period');
-                                $processing_fee = \Helpers::customIsset($offerData, 'processing_fee');
-                                $check_bounce_fee = \Helpers::customIsset($offerData, 'check_bounce_fee');
-                                $comment = \Helpers::customIsset($offerData, 'comment');
-                                $offer_status = \Helpers::customIsset($offerData, 'status');
-                                @endphp
-
-
-                                <table class="table-striped table">
-                                    <tbody><tr>
-                                            <td><b>Apply Loan Amount :</b></td>
-                                            <td>{!! $loanAmount ? \Helpers::formatCurreny($loanAmount) : '' !!}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Loan Offer :</b></td>
-                                            <td>{{ $loan_offer }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Interest Rate (%) :</b></td>
-                                            <td>{{ $interest_rate }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Tenor (Days) :</b></td>
-                                            <td>{{ $tenor }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Tenor for old invoice (Days) :</b></td>
-                                            <td>{{ $tenor_old_invoice }}</td>
-                                        </tr> 
-
-                                        <tr>
-                                            <td><b>Margin (%) :</b></td>
-                                            <td>{{ $margin }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Overdue Interest Rate (%) :</b></td>
-                                            <td>{{ $overdue_interest_rate }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Adhoc Interest Rate (%) :</b></td>
-                                            <td>{{ $adhoc_interest_rate }}</td>
-                                        </tr> 
-
-                                        <tr>
-                                            <td><b>Grace Period  (Days) :</b></td>
-                                            <td>{{ $grace_period }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Processing Fee :</b></td>
-                                            <td>{{ $processing_fee }}</td>
-                                        </tr>  
-
-                                        <tr>
-                                            <td><b>Check Bounce Fee :</b></td>
-                                            <td>{{ $check_bounce_fee }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Comment :</b></td>
-                                            <td>{{ $comment }}</td>
-                                        </tr>                                        
-
-                                    </tbody>
-                                </table>
-
-
-
-                                {!! Form::hidden('app_id', $appId) !!}
-                                {!! Form::hidden('biz_id', $bizId) !!}
-                                {!! Form::hidden('offer_id', $offerId) !!}
-                                {!! Form::hidden('prgm_id', $prgm_id) !!}
-                                {!! Form::hidden('loan_amount', $loanAmount) !!}
-
-                                @if(request()->get('view_only'))
-                                @if(!in_array($offer_status, [1,2]))
-                                {{--
-                                {!! 
-                                Form::submit(
-                                'Reject', 
-                                [
-                                'name'=>'btn_reject_offer', 
-                                'class' => 'btn btn-success btn-sm float-right  mt-3 ml-3'
-                                ]
-                                )
-                                !!} 
-                                --}}
-                                
-                                {!! 
-                                Form::submit(
-                                'Accept', 
-                                [
-                                'name'=>'btn_accept_offer', 
-                                'class' => 'btn btn-success btn-sm float-right  mt-3 ml-3'
-                                ]
-                                )
-                                !!}                                                               
-                                @endif
-                                @endif
-                                {!!
-                                Form::close()
-                                !!}
-                                
-                                @if($offer_status == 1 && $currentStage->stage_code == 'sanction_letter' && $viewGenSancLettertBtn)
-                                <a href="{{ route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]) }}" class="btn btn-success btn-sm float-right  mt-3 ml-3">Generate Sanction Letter</a>
-                                @endif
-                            </div>
-                        </div>	
-                    </div>	 
+                            @if($offerData->count() && $offerData[0]->status == 0)
+                            <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button>
+                            <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept</button>
+                            @endif
+                        </div>
+                        </div>  
+                    </form>
                 </div>
             </div>
         </div>
