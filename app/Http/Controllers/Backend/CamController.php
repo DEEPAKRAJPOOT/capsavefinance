@@ -1294,12 +1294,15 @@ class CamController extends Controller
     }
 
     public function approveOffer(Request $request){
+      $appId = $request->get('app_id');
         $appApprData = [
-            'app_id' => $request->get('app_id'),
+            'app_id' => $appId,
             'approver_user_id' => \Auth::user()->user_id,
             'status' => 1
           ];
         $this->appRepo->saveAppApprovers($appApprData);
+        //update approve status in offer table after all approver approve the offer.
+        $this->appRepo->changeOfferApprove($appId);
         Session::flash('message',trans('backend_messages.offer_approved'));
         return redirect()->back();
     }

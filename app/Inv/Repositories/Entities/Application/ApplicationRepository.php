@@ -1180,5 +1180,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->get();
     }
 
+    public function getOfferStatus($appId){
+        return AppProgramOffer::getOfferStatus($appId);
+    }
+
+    public function changeOfferApprove($appId){
+        return AppProgramOffer::changeOfferApprove($appId);
+    }
+
 
 }
