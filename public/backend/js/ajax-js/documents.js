@@ -10,7 +10,7 @@ try {
             serverSide: false,
             pageLength: 25,
             searching: false,
-            bSort: false,
+            bSort: true,
             ajax: {
                "url": messages.get_documents_list, // json datasource
                 "method": 'POST',
