@@ -9,10 +9,10 @@ try {
             searching: false,
             bSort: true,
             ajax: {
-                "url": messages.backend_get_invoice_list, // json datasource
+                "url": messages.backend_activity_invoice_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.anchor_id = $('select[name=search_anchor]').val();
+                    d.inv_name = $('input[name=inv_name]').val();
                     d.supplier_id = $('select[name=search_supplier]').val();
                     d.biz_id = $('select[name=search_biz]').val();
                     d._token = messages.token;
@@ -24,8 +24,8 @@ try {
                 }
             },
             columns: [
-               
-                {data: 'approve_by'},
+                {data: 'DT_RowIndex'},
+                {data: 'comment'},
                 {data: 'status'},
                 {data: 'timestamp'}
             ],

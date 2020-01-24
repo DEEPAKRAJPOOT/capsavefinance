@@ -34,7 +34,7 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Limit (₹ In Mn)</td>
-                                 <td class="">{{isset($limitOfferData->limit_amt) ? $limitOfferData->limit_amt : ''}}</td>
+                                 <td class="">₹ {{isset($limitOfferData->limit_amt) ? $limitOfferData->limit_amt : ''}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Tenor (Months)</td>
@@ -42,7 +42,7 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Equipment Type</td>
-                                 <td class="">{{isset($limitOfferData->equipment_type) ? $limitOfferData->equipment_type : ''}}</td>
+                                 <td class="">{{isset($limitOfferData->equipment_type_id) ? $limitOfferData->equipment_type_id : ''}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Security Deposit</td>
@@ -54,25 +54,45 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">PTPQ</td>
-                                 <td class="">{{isset($limitOfferData->ptpq) ? $limitOfferData->ptpq : ''}}</td>
+                                 <td class="">
+                                 {{isset($limitOfferData->ptpq_from) ? 'From Period '.$limitOfferData->ptpq_from : ''}}
+                                 {{isset($limitOfferData->ptpq_to) ? 'To Period '.$limitOfferData->ptpq_to : ''}}
+                                 {{isset($limitOfferData->ptpq_rate) ? 'Rate '.$limitOfferData->ptpq_rate : ''}}
+                                 </td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="" valign="top">XIRR</td>
-                                 <td class="" valign="top">{{isset($limitOfferData->xirr) ? $limitOfferData->xirr : ''}}
-                                    <!-- Ruby Sheet : 14.69%
-                                    <br/>Cash Flow : 13.79% -->
+                                 <td class="" valign="top">
+                                    Ruby Sheet : {{isset($limitOfferData->ruby_sheet_xirr) ? $limitOfferData->ruby_sheet_xirr : ''}}%
+                                    <br/>Cash Flow : {{isset($limitOfferData->cash_flow_xirr) ? $limitOfferData->cash_flow_xirr : ''}}%
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Additional Security</td>
-                                 <td class="">{{ isset($limitOfferData->addl_security) ? config('common.addl_security.'.$limitOfferData->addl_security) : ''}}
+                                 <td class="">  
+                                 @php 
+                                 @$addSecArr = []      
+                                 @endphp                        
+                                 @if(isset($limitOfferData->addl_security))
+                                    @php 
+                                       $addSecArr = explode(',',$limitOfferData->addl_security)
+                                    @endphp                                     
+                                 @endif   
+                                 @if(count($addSecArr)>0)   
+                                    @foreach ($addSecArr as $k => $v)
+                                       {{ config('common.addl_security.'.$v).", " }}
+                                       @if($v==4)
+                                         {{isset($limitOfferData->comment) ? " Comment- ".$limitOfferData->comment : ''}}
+                                       @endif
+                                    @endforeach 
+                                 @endif                         
                                  </td>
                            </tr>
                         </tbody>
                      </table>
                </div>
                <div class="col-md-12 mt-4">
-                     <h4><small>Pre/ Post Disbursement Conditions:</small></h4>
+                     <h4><small>Pre Disbursement Conditions:</small></h4>
                      <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <thead>
                            <tr role="row">
@@ -112,7 +132,20 @@
                                  <td class="">
                                     <input type="text"  name="time_personal_guarantee" value="{{isset($reviewerSummaryData->time_personal_guarantee) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}" class="form-control form-control-sm">
                                  </td>
+                           </tr>                 
+                        </tbody>
+                     </table>
+               </div>
+               <div class="col-md-12 mt-4">
+                     <h4><small>Post Disbursement Conditions:</small></h4>
+                     <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                        <thead>
+                           <tr role="row">
+                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
+                                 <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
                            </tr>
+                        </thead>
+                        <tbody>           
                            <tr role="row" class="odd">
                                  <td class="">
                                     <input type="text"  name="cond_pbdit" value="{{isset($reviewerSummaryData->cond_pbdit) ? $reviewerSummaryData->cond_pbdit : ''}}" class="form-control form-control-sm">

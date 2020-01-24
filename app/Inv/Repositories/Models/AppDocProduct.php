@@ -59,6 +59,10 @@ class AppDocProduct extends BaseModel
     public function product(){
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Product', 'product_id')->where('is_active', 1);
     }
+
+    public function app_doc(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppDocument', 'app_doc_id');
+    }
 }
   
 

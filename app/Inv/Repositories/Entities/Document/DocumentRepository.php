@@ -116,10 +116,14 @@ class DocumentRepository implements DocumentInterface
      * @param mixed $ids
      */
     
-    public function findPPRequiredDocs($userId, $appId){
-        
+    public function findPPRequiredDocs($userId, $appId, $productId){
         $result = AppDocument::where('user_id', $userId)
                 ->where('app_id', $appId)
+                ->whereHas('app_doc_product', function ($query) use ($productId) {
+                    $query->where(function ($q) use ($productId) {
+                        $q->where('product_id', $productId);
+                    });
+                })
                 ->with('ppDocument')
                 ->whereHas('ppDocument')
                 ->get();

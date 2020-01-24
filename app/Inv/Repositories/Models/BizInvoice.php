@@ -64,6 +64,7 @@ class BizInvoice extends BaseModel
         'app_id',
         'biz_id',
         'invoice_no',
+        'tenor',
         'invoice_due_date',
         'invoice_date',
         'invoice_amount',
@@ -103,20 +104,32 @@ public static function saveBulkInvoice($arrInvoice)
 public static function updateInvoice($invoiceId,$status)
     {
         $id = Auth::user()->user_id;
-        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,$status,null,$id);
+        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,$status,null,$id,null);
         return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status]);
        
     } 
     
-    public static function updateInvoiceAmount($invoiceId,$amount)
+    public static function updateInvoiceAmount($attributes)
     {
+        $invoiceId  =    $attributes['invoice_id'];
+        $amount     =    $attributes['approve_invoice_amount'];
+        $comment    =    $attributes['comment'];
         $id = Auth::user()->user_id;
-        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,0,'Invoice Approved Amount',$id);
+        $result =  User::getSingleUserDetails($id);
+        $name =  "Update by ".$result->f_name." ".$result->l_name;
+        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,0,$comment,$id,null);
+        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,0,$name,null,$id);
         return self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount]);
        
     } 
     
-/* get invoice */    
+    public static function getDisbursedAmount($invid)
+    {
+       return self::with('disbursal')->where('invoice_id',$invid)->first();
+    }
+
+
+    /* get invoice */    
   public static function getInvoice()
     {
        return Anchor::get();
@@ -153,14 +166,26 @@ public static function updateInvoice($invoiceId,$status)
              $whr = [];
         }
        
-                    return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['anchor','supplier','userFile','program'])->get();
+                    return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['anchor','supplier','userFile','program'])->orderBy('invoice_id', 'asc')->get();
      } 
      
     public static function  getSingleInvoice($invId)
      {
-         return self::with('anchor')->with('supplier')->where(['invoice_id' =>$invId])->first();
+         return self::with(['anchor','supplier','gst','pan'])->where(['invoice_id' =>$invId])->first();
          
      }
+      function pan()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst', 'supplier_id','user_id')->where(['status' =>1,'type' =>1,]);  
+    
+     }
+      
+     function gst()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst', 'supplier_id','user_id')->where(['status' =>1,'type' =>2,]);  
+    
+     }
+     
      function anchor()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
