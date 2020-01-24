@@ -30,7 +30,7 @@
    <div class="col-md-12 ">
       <div class="card">
          <div class="card-body">
-	 <ul class="nav nav-tabs" role="tablist">
+ <ul class="nav nav-tabs" role="tablist">
              <li class="nav-item ">
       <a class="nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
     </li>
@@ -38,14 +38,14 @@
          <a class="nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
     </li>
   <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursment Queue</a>
+         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursement Queue</a>
     </li>
         
    <li class="nav-item">
             <a class="nav-link @if(Route::currentRouteName()=='backend_get_sent_to_bank') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
     </li>
 	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursment</a>
+            <a class="nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursement</a>
     </li>
     <li class="nav-item">
               <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
@@ -123,7 +123,7 @@
                                                 <th><input type="checkbox" id="chkAll"></th> 
                                               <th>Invoice  No</th>
                                                 <th>Anchor Name</th>
-                                                <th>Supplier Name</th>
+                                                 <th>Customer Name</th>
                                                <th>Invoice Date</th>
                                                 <th>Invoice Due Date</th>
                                                    <th>Tenor</th>
@@ -295,43 +295,9 @@
  
   $(document).ready(function () {
        $("#program_bulk_id").append("<option value=''>No data found</option>");  
-        $("#program_bulk_id").append("<option value=''>No data found</option>");                         
+       $("#program_bulk_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
-  $('#submit').on('click', function (e) {
-     
-     if ($('form#signupForm').validate().form()) {     
-        $("#anchor_bulk_id" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please enter Anchor name",
-        }
-        });
-       
-      $("#supplier_id" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please Select Supplier Name",
-        }
-        });
-          $("#program_bulk_id" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please Select Product Program Name",
-        }
-        });
-       
-        $("#customFile" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please upload Invoice Copy",
-        }
-        }); 
-       
-         
-        } else {
-         alert();
-        }  
-     });         
+        
   }); 
   
   
@@ -517,75 +483,7 @@
                 }
         }); }); 
     
-    
-    function uploadInvoice()
-    {
-       $('.isloader').show();
-       $("#submitInvoiceMsg").empty();
-        var file  = $("#customFile")[0].files[0];
-        var datafile = new FormData();
-        var anchor_bulk_id  = $("#anchor_bulk_id").val();
-        var program_bulk_id  = $("#program_bulk_id").val();
-        var supplier_bulk_id  = $("#supplier_bulk_id").val();
-        var pro_limit_hide  =  $("#pro_limit_hide").val();
-        datafile.append('_token', messages.token );
-        datafile.append('doc_file', file);
-        datafile.append('anchor_bulk_id', anchor_bulk_id);
-        datafile.append('program_bulk_id', program_bulk_id);
-        datafile.append('supplier_bulk_id', supplier_bulk_id);
-        datafile.append('pro_limit_hide', pro_limit_hide);
-        $.ajax({
-            headers: {'X-CSRF-TOKEN':  messages.token  },
-            url : messages.upload_invoice_csv,
-            type: "POST",
-            data: datafile,
-            processData: false,
-            contentType: false,
-            cache: false, // To unable request pages to be cached
-            enctype: 'multipart/form-data',
-
-            success: function(r){
-                $(".isloader").hide();
-
-                if(r.status==1)
-                {
-                     $("#submitInvoiceMsg").show();
-                     $("#submitInvoiceMsg").text('Invoice Successfully uploaded');
-                }
-                else
-                {
-                     $("#submitInvoiceMsg").show();
-                     $("#submitInvoiceMsg").text('Total Amount if invoice should not greater Program Limit');
-                 } 
-            }
-        });
-    }
- //////////////////// for upload invoice//////////////////////////////   
-function uploadFile(app_id,id)
-{
-   $(".isloader").show(); 
-   var file  = $("#file"+id)[0].files[0];
-   var extension = file.name.split('.').pop().toLowerCase();
-   var datafile = new FormData();
-   datafile.append('_token', messages.token );
-   datafile.append('app_id', app_id);
-   datafile.append('doc_file', file);
-   datafile.append('invoice_id', id);
-    $.ajax({
-        headers: {'X-CSRF-TOKEN':  messages.token  },
-        url : messages.invoice_document_save,
-        type: "POST",
-        data: datafile,
-        processData: false,
-        contentType: false,
-        cache: false, // To unable request pages to be cached
-        enctype: 'multipart/form-data',
-         success: function(r){
-            $(".isloader").hide();
-            location.reload();
-        }
-    });
-}
+  
 
 //////////////////////////// for bulk approve invoice////////////////////
 
@@ -603,7 +501,8 @@ $(document).on('click','#bulkApprove',function(){
         }
         if(confirm('Are you sure? You want to approve it.'))  
     { 
-        var postData =  ({'invoice_id':arr,'status':8,'_token':messages.token});
+        var status =  $(this).attr('data-status');
+        var postData =  ({'invoice_id':arr,'status':status,'_token':messages.token});
          jQuery.ajax({
           url: messages.update_bulk_invoice,
                   method: 'post',

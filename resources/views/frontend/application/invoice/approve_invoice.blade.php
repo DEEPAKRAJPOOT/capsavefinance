@@ -23,7 +23,7 @@
    <div class="col-md-12 ">
       <div class="card">
          <div class="card-body">
-	 <ul class="nav nav-tabs" role="tablist">
+<ul class="nav nav-tabs" role="tablist">
            <li class="nav-item ">
       <a class="nav-link @if(Route::currentRouteName()=='get_invoice') active @endif"  href="{{Route('get_invoice')}}">Pending</a>
     </li>
@@ -31,14 +31,14 @@
          <a class="nav-link @if(Route::currentRouteName()=='get_approve_invoice') active @endif"  href="{{Route('get_approve_invoice')}}">Approved</a>
     </li>
   <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_que_invoice') active @endif"  href="{{Route('get_disbursed_que_invoice')}}">Disbursment Que</a>
+         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_que_invoice') active @endif"  href="{{Route('get_disbursed_que_invoice')}}">Disbursement Queue</a>
     </li>
         
    <li class="nav-item">
             <a class="nav-link @if(Route::currentRouteName()=='get_sent_to_bank') active @endif" href="{{Route('get_sent_to_bank')}}">Sent to Bank</a>
     </li>
 	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='get_failed_disbursed_invoice') active @endif" href="{{Route('get_failed_disbursed_invoice')}}">Failed Disbursment</a>
+            <a class="nav-link @if(Route::currentRouteName()=='get_failed_disbursed_invoice') active @endif" href="{{Route('get_failed_disbursed_invoice')}}">Failed Disbursement</a>
     </li>
    <li class="nav-item">
          <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_invoice') active @endif"  href="{{Route('get_disbursed_invoice')}}">Disbursed</a>
@@ -53,7 +53,6 @@
   
    
   </ul>
-	 
 	
 
   <div class="tab-content">
@@ -113,7 +112,7 @@
                                                 <th><input type="checkbox" id="chkAll"></th> 
                                               <th>Invoice  No</th>
                                                 <th>Anchor Name</th>
-                                                <th>Supplier Name</th>
+                                                <th>Customer Name</th>
                                                 <th>Program Name</th>
                                                 <th>Invoice Date</th>
                                                 <th>Tenor</th>
@@ -331,7 +330,7 @@
    
  ///////////////////////For Invoice Approve////////////////////////
   $(document).on('click','.approveInv',function(){
-    if(confirm('Are you sure? You want to disbursment que.'))  
+    if(confirm('Are you sure? You want to disbursment Queue.'))  
     {
      var invoice_id =  $(this).attr('data-id'); 
       var postData =  ({'invoice_id':invoice_id,'status':9,'_token':messages.token});
@@ -582,7 +581,7 @@ $(document).on('click','#bulkApprove',function(){
             alert('Please select atleast one checked');
             return false;
         }
-        if(confirm('Are you sure? You want to disbursment que.'))  
+        if(confirm('Are you sure? You want to disbursment queue.'))  
     { 
         var postData =  ({'invoice_id':arr,'status':9,'_token':messages.token});
          jQuery.ajax({

@@ -66,7 +66,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Supplier Name <span class="error_message_label">*</span></label>
+                                            <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
                                             <select readonly="readonly" class="form-control" id="supplier_id" name="supplier_id">
                                              
                                             </select>

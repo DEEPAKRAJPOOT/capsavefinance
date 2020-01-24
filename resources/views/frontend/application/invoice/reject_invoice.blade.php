@@ -27,7 +27,7 @@
    <div class="col-md-12 ">
       <div class="card">
          <div class="card-body">
-	 <ul class="nav nav-tabs" role="tablist">
+	<ul class="nav nav-tabs" role="tablist">
            <li class="nav-item ">
       <a class="nav-link @if(Route::currentRouteName()=='get_invoice') active @endif"  href="{{Route('get_invoice')}}">Pending</a>
     </li>
@@ -35,14 +35,14 @@
          <a class="nav-link @if(Route::currentRouteName()=='get_approve_invoice') active @endif"  href="{{Route('get_approve_invoice')}}">Approved</a>
     </li>
   <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_que_invoice') active @endif"  href="{{Route('get_disbursed_que_invoice')}}">Disbursment Que</a>
+         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_que_invoice') active @endif"  href="{{Route('get_disbursed_que_invoice')}}">Disbursement Queue</a>
     </li>
         
    <li class="nav-item">
             <a class="nav-link @if(Route::currentRouteName()=='get_sent_to_bank') active @endif" href="{{Route('get_sent_to_bank')}}">Sent to Bank</a>
     </li>
 	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='get_failed_disbursed_invoice') active @endif" href="{{Route('get_failed_disbursed_invoice')}}">Failed Disbursment</a>
+            <a class="nav-link @if(Route::currentRouteName()=='get_failed_disbursed_invoice') active @endif" href="{{Route('get_failed_disbursed_invoice')}}">Failed Disbursement</a>
     </li>
    <li class="nav-item">
          <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_invoice') active @endif"  href="{{Route('get_disbursed_invoice')}}">Disbursed</a>
@@ -114,7 +114,7 @@
                                             <tr role="row">
                                                 <th>Invoice No</th> 
                                                <th>Anchor Name</th>
-                                                <th>Supplier Name</th>
+                                                 <th>Customer Name</th>
                                                 <th>Program Name</th>
                                                 <th>Invoice Date</th>
                                                    <th>Tenor</th>

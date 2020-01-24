@@ -37,14 +37,14 @@
          <a class="nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
     </li>
   <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursment Queue</a>
+         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursement Queue</a>
     </li>
         
    <li class="nav-item">
             <a class="nav-link @if(Route::currentRouteName()=='backend_get_sent_to_bank') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
     </li>
 	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursment</a>
+            <a class="nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursement</a>
     </li>
     <li class="nav-item">
               <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
@@ -60,8 +60,6 @@
   
    
   </ul>
-
-
 
   <div class="tab-content">
     
@@ -115,7 +113,7 @@
                                             <tr role="row">
                                                 <th>Invoice No</th> 
                                                <th>Anchor Name</th>
-                                                <th>Supplier Name</th>
+                                                  <th>Customer Name</th>
                                                <th>Invoice Date</th>
                                                 <th>Invoice Due Date</th>
                                                    <th>Tenor</th>

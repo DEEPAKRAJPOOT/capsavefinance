@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Libraries\Ui;
-
 use DataTables;
 use Helpers;
 use Illuminate\Http\Request;
@@ -640,7 +638,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
                     return '<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>'
-                     . '&nbsp;<a title="Approve"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                     . '&nbsp;<a title="Approve" data-status="8"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
 
                 })
               ->make(true);
@@ -719,7 +717,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'action',
                     function ($invoice) {
-                     return '<a title="Disbursed Que"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
+                     return '<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
 
                 })
               ->make(true);

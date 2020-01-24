@@ -30,10 +30,11 @@ class InvoiceController extends Controller {
     /* Invoice upload page  */
 
     public function getInvoice(Request $request) {
+        
         $anchor_id = $request->anchor_id;
-        $user_id = $request->user_id;
-        $app_id = $request->app_id;
-        $biz_id = $request->biz_id;
+        $user_id   = $request->user_id;
+        $app_id    = $request->app_id;
+        $biz_id    = $request->biz_id;
         $get_user = $this->invRepo->getUser($user_id);
         $get_anchor = $this->invRepo->getLimitAnchor($app_id);
         if(count($get_anchor)==1)
@@ -45,7 +46,7 @@ class InvoiceController extends Controller {
         else {
              $get_program = [];
         }
-
+      dd($get_program);
          return view('frontend.application.invoice.uploadinvoice')
                    ->with(['get_user' => $get_user,'get_program' => $get_program, 'get_anchor' => $get_anchor, 'app_id' => $app_id,'biz_id' => $biz_id]);
     }
