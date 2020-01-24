@@ -410,11 +410,11 @@ class ApplicationController extends Controller
 
             $wf_status = 1;                
             Helpers::updateWfStage('doc_upload', $appId, $wf_status);
-                
+            
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 //Add/Update application workflow stages    
-                $response = $this->docRepo->isUploadedCheck($userId, $appId);            
+                //$response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 //$wf_status = $response->count() < 1 ? 1 : 2;
                 //$wf_status = 1;                
                 //Helpers::updateWfStage('doc_upload', $appId, $wf_status);
@@ -475,7 +475,9 @@ class ApplicationController extends Controller
             // if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
-                                                
+                                  
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
+             
                 //Add application workflow stages                
                 Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
                 

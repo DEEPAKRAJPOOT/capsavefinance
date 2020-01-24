@@ -1172,9 +1172,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $where array
      * @return type mixed
      */
-    public function getTLDocs($whereCondition)
+    public function getSTLDocs($whereCondition)
     {
-        return Documents::select('id as doc_id')
+        return DocumentMaster::select('id as doc_id')
                 ->where($whereCondition)
                 ->whereHas('product_document')
                 ->get();

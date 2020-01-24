@@ -1414,10 +1414,33 @@ class CamController extends Controller
       $gstdocs = $fin->getGSTStatements($appId);
       $user = $fin->getUserByAPP($appId);
       $user_id = $user['user_id'];
-      $gst_details = $fin->getSelectedGstForApp($user_id);
+      $gst_details = $fin->getSelectedGstForApp($biz_id);
       $all_gst_details = $fin->getAllGstForApp($biz_id);
       $gst_no = $gst_details['pan_gst_hash'];
-        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details]);
+
+      $currenttop3Cus ='';
+      $currenttop3Sup ='';
+      $previoustop3Cus ='';
+      $previoustop3Sup ='';
+      $gstRes='';
+      $fileName=$appId."_".$gst_no .".json";
+     $filePath=storage_path('app/public/user').'/'.$fileName;
+      
+      if(file_exists($filePath)){
+      $myfile = file_get_contents($filePath);
+      $gstRes=json_decode(base64_decode($myfile),TRUE);
+      $currenttop3Cus = ($gstRes) ? $gstRes['current']['top3Cus']:"";
+      $previoustop3Cus = ($gstRes) ? $gstRes['previous']['top3Cus']:"";
+      $currenttop3Sup =   ($gstRes) ? $gstRes['current']['top3Sup']:"";
+      $previoustop3Sup =   ($gstRes) ? $gstRes['previous']['top3Sup']:"";
+    }    
+   // dd($gstRes['current']['turnover_and_customers']);
+        return view('backend.cam.gstin', ['gstdocs' => $gstdocs, 'appId'=> $appId, 'gst_no'=> $gst_no,'all_gst_details'=> $all_gst_details, 'currenttop3Cus'=> $currenttop3Cus,
+         'currenttop3Sup'=> $currenttop3Sup,
+        'previoustop3Cus'=>$previoustop3Cus,
+        'previoustop3Sup'=>$previoustop3Sup,
+        'gstResponsShow'=>$gstRes,
+        ]);
     }
 
 

@@ -25,11 +25,11 @@ trait ApplicationTrait
             $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere)->toArray();
             if($prgmDocsWhere['stage_code'] == 'upload_pre_sanction_doc'){
                 $whereCondition['doc_type_id'] =  2;
-                $preDocs = $this->appRepo->getTLDocs($whereCondition)->toArray();
+                $preDocs = $this->appRepo->getSTLDocs($whereCondition)->toArray();
             }
             else  {
                 $whereCondition['doc_type_id'] =  3;
-                $preDocs = $this->appRepo->getTLDocs($whereCondition)->toArray();
+                $preDocs = $this->appRepo->getSTLDocs($whereCondition)->toArray();
             }
 
             $merged = array_merge($prgmDocs, $preDocs);
@@ -72,7 +72,6 @@ trait ApplicationTrait
         if($reqDocs && count($reqDocs) == 0) {
             return;
         }
-        
         foreach($reqDocs as $doc) {
             //$appDocCheck = AppDocument::where('app_id', $app_id)->count();
             $appDocCheck = $this->docRepo->isAppDocFound($app_id, $doc['doc_id']);
@@ -92,7 +91,6 @@ trait ApplicationTrait
                     'updated_at' => $curData, 
                 ];
                 $appDocResponce = $this->docRepo->saveAppRequiredDocs($appDocs);
-
                 foreach ($doc['product_document']->product_document as $productDoc) {
                     if(in_array($productDoc->product_id, $appProductIds)) {
                         $appDocProduct = [
@@ -106,7 +104,6 @@ trait ApplicationTrait
                 }
             }
         }
-        
         return $reqDocs;
     }
 }

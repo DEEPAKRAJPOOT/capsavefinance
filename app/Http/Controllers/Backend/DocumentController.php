@@ -37,20 +37,27 @@ class DocumentController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userData = User::getUserByAppId($appId);
-                        
+            $allProductDoc = [];
+            $appProduct = $this->appRepo->getAppProducts($appId);
+
             if ($appId > 0) {
-                $requiredDocs = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId);
-                if($requiredDocs->count() != 0){
-                    $docData = $this->docRepo->appPPDocuments($requiredDocs, $appId);
-                }
-                else {
-                    Session::flash('message',trans('error_messages.documentExRequire'));
-                    return redirect()->back();
+                foreach ($appProduct->products as $key => $value) {
+                    $requiredDocs[$key]['productInfo'] = $value;
+                    $requiredDocs[$key]['documents'] = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId, $value->id);
+                    // dd($requiredDocs);
+                    if($requiredDocs[$key]['documents']->count() != 0){
+                        $docData = $this->docRepo->appPPDocuments($requiredDocs[$key]['documents'], $appId);
+                    }
+                    else {
+                        Session::flash('message',trans('error_messages.documentExRequire'));
+                        return redirect()->back();
+                    }
                 }
             }
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
+            // dd($requiredDocs);
             if ($docData) {
                 return view('backend.document.list', [
                     'requiredDocs' => $requiredDocs,
