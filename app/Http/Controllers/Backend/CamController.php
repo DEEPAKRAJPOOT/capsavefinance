@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AppProgramOffer;
+
 
 class CamController extends Controller
 {
@@ -1344,7 +1346,7 @@ class CamController extends Controller
         $prgmOfferedAmount = 0;
         $prgmLimit = 0;
       }
-
+      dd($offerData);
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
       return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit]);
     }
@@ -1601,19 +1603,6 @@ class CamController extends Controller
      public function camHygieneSave(Request $request){
       try {
             $arrHygieneData = $request->all();
-            if(isset($arrHygieneData['remarks'])){
-                $arrRemarkData = array();
-                foreach ($arrHygieneData['remarks'] as $key => $value) {
-                    $arrRemarkData[$arrHygieneData['promoterPan'][$key]]  = $value;
-                }
-                $arrHygieneData['remarks'] = json_encode($arrRemarkData);
-
-            }else{
-                $arrHygieneData['remarks'] = '';
-            }
-            if(!isset($arrHygieneData['comment'])){
-               $arrHygieneData['comment'] = '';
-            }
             $userId = Auth::user()->user_id;
             if($arrHygieneData['cam_hygiene_id'] != ''){
                  $updateHygieneDat = CamHygiene::updateHygieneData($arrHygieneData, $userId);
@@ -1667,43 +1656,66 @@ class CamController extends Controller
     {
       try{
             $arrRequest['biz_id'] = $request->get('biz_id');
-            $arrRequest['app_id'] = $request->get('app_id');
-            $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
-            $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
-            foreach ($arrOwnerData as $key => $arr) {
-                  $arrOwner[$key] =  $arr['first_name'];
-            }
-            $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
-            if(isset($arrEntityData['industryType'])){
-                  $arrBizData['industryType'] = $arrEntityData['industryType'];
-            }
-            if(isset($arrEntityData['name'])){      
-                  $arrBizData['legalConstitution'] = $arrEntityData['name'];
-            }
+            $arrRequest['app_id'] = $appId = $request->get('app_id');
+            $json_files = $this->getLatestFileName($appId,'finance', 'json');
+            $active_json_filename = $json_files['curr_file'];
+            if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
+                      $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
+              }
+              $fy = $contents['FinancialStatement']['FY'] ?? array();
+              $financeData = [];
+              $latest_finance_year = '2000';
+              $audited_years = [];
+              if (!empty($fy)) {
+                foreach ($fy as $k => $v) {
+                  $audited_years[] = $v['year'];
+                  $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
+                  $financeData[$v['year']] = $v;
+                }
+              }
+                $Columns = getColumns();
+                $FinanceColumns = [];
+                foreach ($Columns as $key => $cols) {
+                  $FinanceColumns = array_merge($FinanceColumns, $cols);
+                }
+                $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
+dd($leaseOfferData);
+                $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
+                $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
+                $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
+                $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+                $finacialDetails = AppBizFinDetail::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+                $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();        
+         
+                $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+                $arrCamData['total_exposure']  = '';
+                if(isset($arrCamData['existing_exposure'])){
+                    $arrCamData['total_exposure'] = is_int(intval(str_replace(',', '', $arrCamData['existing_exposure']))) ? intval(str_replace(',', '', $arrCamData['existing_exposure'])) : 0;
+                }
+                if(isset($arrCamData['existing_exposure'])){
 
-            $whereCondition = [];
-            //$whereCondition['anchor_id'] = $anchorId;
-            $prgmData = $this->appRepo->getProgramData($whereCondition);
-            if(!empty($prgmData))
-            {
-               $arrBizData['prgm_name'] = $prgmData['prgm_name'];
-            }
-            $arrBizData['email']  = $arrEntityData['email'];
-            $arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
-            $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-            $arrCamData['total_exposure']  = '';
-            if(isset($arrCamData['existing_exposure'])){
-                $arrCamData['total_exposure'] = str_replace(',', '', $arrCamData['existing_exposure']);
-            }
-            if(isset($arrCamData['existing_exposure'])){
-                $arrCamData['total_exposure'] += str_replace(',', '', $arrCamData['proposed_exposure']);
-            }
+                    $arrCamData['total_exposure'] += is_int(intval(str_replace(',', '', $arrCamData['proposed_exposure']))) ? intval(str_replace(',', '', $arrCamData['proposed_exposure'])) : 0;
+                }
 
-           //dd($arrCamData);
-            if(isset($arrCamData['t_o_f_security_check'])){
-                $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
-            }
-            return view('backend.cam.downloadCamReport')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData, 'arrOwner' =>$arrOwner]);
+               //dd($arrCamData);
+                if(isset($arrCamData['t_o_f_security_check'])){
+                    $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
+                }
+
+               // dd($arrHygieneData);
+                return view('backend.cam.downloadCamReport')
+                        ->with([
+                                 'arrCamData' =>$arrCamData ,
+                                 'arrBizData' => $arrBizData, 
+                                 'reviewerSummaryData' => $reviewerSummaryData,
+                                 'arrHygieneData' => $arrHygieneData,
+                                 'finacialDetails' => $finacialDetails,
+                                 'arrOwnerData' => $arrOwnerData,
+                                 'arrEntityData' => $arrEntityData,
+                                 'financeData' => $financeData,
+                                 'FinanceColumns' => $FinanceColumns,
+                                 'audited_years' => $audited_years,
+                               ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
