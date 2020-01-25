@@ -107,7 +107,8 @@
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>PTP Frequency</b></label>
             <div class="col-md-12" id="ptpq-block">
-                @forelse($offerData->offerPtpq as $key=>$ptpq)
+                @if(isset($offerData->offerPtpq))
+                @foreach($offerData->offerPtpq as $key=>$ptpq)
                 <div class="row {{($loop->first)? '': 'mt10'}}">
                     <div class="col-md-3">
                         @if($loop->first)
@@ -135,7 +136,8 @@
                      @endif
                     </div>
                 </div>
-                @empty
+                @endforeach
+                @else
                 <div class="row">
                     <div class="col-md-3">
                     <label for="txtPassword"><b>From Period</b></label>
@@ -153,7 +155,7 @@
                         <i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i>
                     </div>
                 </div>
-                @endforelse
+                @endif
             </div>
           </div>
         </div>
