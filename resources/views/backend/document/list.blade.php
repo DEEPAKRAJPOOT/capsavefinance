@@ -31,7 +31,7 @@
             @else 
             @foreach($requiredDocs as $product)
             <div class="card card-color mb-0">
-                <div class="card-header" style="background: #398864;">
+                <div class="card-header" style="background: #398864;color: white;">
                     <a class="card-title ">
                         <b>{{ $product['productInfo']->product_name }}</b>
                     </a>

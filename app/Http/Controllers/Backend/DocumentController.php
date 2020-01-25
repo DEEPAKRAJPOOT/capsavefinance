@@ -61,7 +61,7 @@ class DocumentController extends Controller
                     $noDocFlag = 1;
                 }
             }
-            // dd($requiredDocs);
+            // dd($docData);
             return view('backend.document.list', [
                 'requiredDocs' => $requiredDocs,
                 'documentData' => $docData,
