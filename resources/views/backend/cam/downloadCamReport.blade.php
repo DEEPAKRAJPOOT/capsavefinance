@@ -51,27 +51,29 @@
                <tbody>
                   <tr role="row" class="odd">
                      <td class="">Facility Type</td>
-                     <td class="">Rental facility</td>
+                     <td class="">Lease</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Limit (₹ In Mn)</td>
-                     <td class="">40</td>
+                     <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
+                           </td>
+                     
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Tenor (Months)</td>
-                     <td class="">60</td>
+                     <td class="">{{isset($leaseOfferData->tenor) ? $leaseOfferData->tenor : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Equipment Type</td>
-                     <td class="">Plant and Machinery</td>
+                     <td class="">{{isset($leaseOfferData->security_deposit_type) ? $leaseOfferData->security_deposit_type : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Security Deposit</td>
-                     <td class="">5 % of invoice value</td>
+                     <td class="">{{isset($leaseOfferData->security_deposit) ? $leaseOfferData->security_deposit : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Rental Frequency</td>
-                     <td class="">Quarterly in advance</td>
+                     <td class="">{{isset($leaseOfferData->rental_frequency) ? $leaseOfferData->rental_frequency : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">PTPQ</td>
@@ -79,12 +81,12 @@
                   </tr>
                   <tr role="row" class="odd">
                      <td class="" valign="top">XIRR</td>
-                     <td class="" valign="top">Ruby Sheet : 14.69%<br>Cash Flow : 13.79%
+                     <td class="" valign="top">Ruby Sheet : {{isset($leaseOfferData->ruby_sheet_xirr) ? $leaseOfferData->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOfferData->cash_flow_xirr) ? $leaseOfferData->cash_flow_xirr : ''}}%
                      </td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Additional Security</td>
-                     <td class="">Personal guarantee of Mr. Anand Desai
+                     <td class="">{{isset($leaseOfferData->addl_security) ? $leaseOfferData->addl_security : ''}}
                      </td>
                   </tr>
                </tbody>
@@ -451,7 +453,7 @@
 
 
 
-            <h5 class="mt-4">Brief Background of Mr. Anand Desai; Managing Director :</h5>
+            <h5 class="mt-4">Brief Background of {{$arrOwnerData['0']['first_name']}} Managing Director :</h5>
             <p>{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</p>
             <!-- <p class="text-center "><img class="img-fluid" src="assets/img/image.png"></p> -->
             <h5 class="mt-4"> Board of Directors as on December 2019</h5>
@@ -498,7 +500,7 @@
             <h5 class="mt-4">External Rating</h5>
             <p>{{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</p>
 
-            <h5>Rating rationale of Anupam Rasayan India Limited :</h5>
+            <h5>Rating rationale of {{$arrBizData->biz_entity_name}} :</h5>
             <p> {{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}} </p>
            
 
@@ -508,7 +510,7 @@
 
 
 
-            <h5 class="mt-3">Standalone Financials of ARIL:</h5>
+            <h5 class="mt-3">Standalone Financials of {{$arrBizData->biz_entity_name}}:</h5>
             <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr>
@@ -572,7 +574,7 @@
 
 
 
-            <h5 class="mt-4">Fin Comment:</h5>
+            <h5 class="mt-4">Financial Comment:</h5>
            
            
             

@@ -1691,7 +1691,10 @@ class CamController extends Controller
                   $FinanceColumns = array_merge($FinanceColumns, $cols);
                 }
                 $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
-dd($leaseOfferData);
+                if(count($leaseOfferData)){
+                  $leaseOfferData = $leaseOfferData['0'];
+                }
+
                 $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
                 $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
                 $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
@@ -1714,7 +1717,7 @@ dd($leaseOfferData);
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
 
-               // dd($arrHygieneData);
+                //dd($arrOwnerData['0']['first_name']);
                 return view('backend.cam.downloadCamReport')
                         ->with([
                                  'arrCamData' =>$arrCamData ,
@@ -1727,6 +1730,7 @@ dd($leaseOfferData);
                                  'financeData' => $financeData,
                                  'FinanceColumns' => $FinanceColumns,
                                  'audited_years' => $audited_years,
+                                 'leaseOfferData' => $leaseOfferData,
                                ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
