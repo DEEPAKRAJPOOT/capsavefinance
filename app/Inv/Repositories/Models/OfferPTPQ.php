@@ -67,7 +67,7 @@ class OfferPTPQ extends BaseModel
 
     public static function getOfferPTPQR($offer_id)
     {
-        $res =   self::select('ptpq_from', 'ptpq_to', 'ptpq_rate')->where('is_active',1)->where('prgm_offer_id',$offer_id)->get();
+        $res =   self::select('ptpq_from', 'ptpq_to', 'ptpq_rate')->where('prgm_offer_id',$offer_id)->get();
         return $res ?: false;
     }
     

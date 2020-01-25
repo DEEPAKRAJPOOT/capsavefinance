@@ -1405,7 +1405,7 @@ class ApplicationController extends Controller
             $sanctionId = null;
 
             if($request->has('sanction_id')){
-                $sanctionId = (int) $request->sanction_id; 
+                $sanctionId = $request->sanction_id; 
             }
             $sanctionData = array(
                 'prgm_offer_id' => $offerId,

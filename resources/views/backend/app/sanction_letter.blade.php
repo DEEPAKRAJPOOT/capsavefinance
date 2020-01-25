@@ -13,13 +13,13 @@
                     <div class=" form-fields">
                         <div class="col-md-12">
                             <h5 class="card-title form-head-h5">Sanction Letter
-                            @if($sanctionData->count())
+                            @if($sanctionData)
                           {{--
                             <a data-toggle="modal" data-target="#uploadSanctionLetter" data-height="200px" data-width="100%" data-placement="top" href="#" data-url="{{ route('show_upload_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'upload'=>1 ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Upload</a>
                                 
-                            <a href="{{ route('download_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'download'=>1, 'sanction_id'=>$sanctionData->sanction_id ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Download</a>  --}}                         
+                            <a href="{{ route('download_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'download'=>1, 'sanction_id'=>$sanction_id ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Download</a>  --}}                         
                                 
-                                <a data-toggle="modal" data-target="#previewSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="{{ route('preview_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'upload'=>1, 'sanction_id'=>$sanctionData->sanction_id ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Preview/Send Mail</a>
+                                <a data-toggle="modal" data-target="#previewSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="{{ route('preview_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'upload'=>1, 'sanction_id'=>$sanction_id ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Preview/Send Mail</a>
                             @endif
                             </h5> 
                             <div class="col-md-12">
@@ -108,17 +108,17 @@
                                                 <td with="25%" colspan="3">
                                                     <div class="row">
                                                         <div class="col">
-                                                            <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($sanctionData->validity_date)->format('d/m/Y'))}}" class="form-control datepicker-dis-pdate" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" readonly >
+                                                            <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($validity_date)->format('d/m/Y'))}}" class="form-control datepicker-dis-pdate" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" readonly >
                                                         </div>
                                                         <div class="col">
-                                                        <input type="text" class="form-control" placeholder="Enter Comment" name="sanction_validity_comment" value="{{ $sanctionData->validity_comment }}">
+                                                        <input type="text" class="form-control" placeholder="Enter Comment" name="sanction_validity_comment" value="{{ $validity_comment }}">
                                                         </div>
                                                     </div>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td with="25%"><b>Equipment Type</b></td>
-                                                <td with="25%" colspan="3">{{ $equipmentData->equipment_name }}</td>
+                                                <td with="25%" colspan="3"> @if($equipmentData) {{ $equipmentData->equipment_name }}@endif </td>
                                             </tr>
                                             <tr>
                                                 <td with="25%"><b>Lease Tenor</b></td>
@@ -140,7 +140,7 @@
                                                     @case(1) Yearly  @break
                                                 @endswitch </b></td>
                                                 <td with="25%">
-                                                    @if($ptpqrData->count())
+                                                    @if($ptpqrData)
                                                     <table class="table table-bordered">
                                                         <thead>
                                                             <tr>
@@ -212,15 +212,15 @@
                                                         <div class="col">
                                                             <select class="form-control" id="payment_type" name="payment_type">
                                                                 <option value="">Choose...</option>
-                                                                <option @if($sanctionData->payment_type == '1')selected @endif value="1">NACH</option>
-                                                                <option @if($sanctionData->payment_type == '2')selected @endif value="2">RTGS</option>
-                                                                <option @if($sanctionData->payment_type == '3')selected @endif value="3">NEFT</option>
-                                                                <option @if($sanctionData->payment_type == '4')selected @endif value="4">Advance Cheque</option>
-                                                                <option @if($sanctionData->payment_type == '5')selected @endif value="5">Other Specify</option>
+                                                                <option @if($payment_type == '1')selected @endif value="1">NACH</option>
+                                                                <option @if($payment_type == '2')selected @endif value="2">RTGS</option>
+                                                                <option @if($payment_type == '3')selected @endif value="3">NEFT</option>
+                                                                <option @if($payment_type == '4')selected @endif value="4">Advance Cheque</option>
+                                                                <option @if($payment_type == '5')selected @endif value="5">Other Specify</option>
                                                             </select>
                                                         </div>
                                                         <div class="col">
-                                                        <input type="text" class="form-control @if($sanctionData->payment_type != '5') hide @endif" name="payment_type_comment" id="payment_type_comment" placeholder="Enter Payment Mechanism" value="{{ $sanctionData->payment_type_other }}">
+                                                        <input type="text" class="form-control @if($payment_type != '5') hide @endif" name="payment_type_comment" id="payment_type_comment" placeholder="Enter Payment Mechanism" value="{{ $payment_type_other }}">
                                                         </div>
                                                     </div>
                                                 </td>
@@ -281,7 +281,7 @@
                                             </tr>                 
                                         </tbody>
                                     </table>
-                                    <input type="hidden" name="sanction_id" value="{{$sanctionData->sanction_id}}">
+                                    <input type="hidden" name="sanction_id" value="{{$sanction_id}}">
                                     <input type="hidden" name="app_id" value="{{$appId}}">
                                     <input type="hidden" name="offer_id" value="{{$offerId}}">
                                     <input type="hidden" name="biz_id" value="{{$bizId}}">
