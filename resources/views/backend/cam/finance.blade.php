@@ -502,12 +502,12 @@
    })
 </script>
 <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
-  <script>
-    CKEDITOR.replace('financial_risk_comments', {
-      fullPage: true,
-      extraPlugins: 'docprops',
-      allowedContent: true,
-      height: 320
-    });
-  </script>
+<script>
+  CKEDITOR.replace('financial_risk_comments', {
+    fullPage: true,
+    extraPlugins: 'docprops',
+    allowedContent: true,
+    height: 320
+  });
+</script>
 @endsection

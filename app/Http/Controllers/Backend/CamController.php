@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use Carbon\Carbon;
 
 class CamController extends Controller
 {
@@ -1710,4 +1711,22 @@ class CamController extends Controller
 
     }
 
+
+    public function saveBankDetail(Request $request) {
+      try {
+            $arrData['app_id'] = request()->get('app_id');
+            $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
+            $arrData['debt_position_comments'] = request()->get('debt_position_comments');
+            $arrData['created_by'] = Auth::user()->user_id;
+            $result = FinanceModel::insertPerfios($arrData, $table = 'app_biz_bank_detail');
+            if($result){
+                Session::flash('message',trans('Bank detail saved successfully'));
+            }else{
+                Session::flash('message',trans('Bank detail not saved'));
+            }
+            return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

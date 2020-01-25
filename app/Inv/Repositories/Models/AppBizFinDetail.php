@@ -105,4 +105,10 @@ class AppBizFinDetail extends BaseModel
         ]);
         return $finDetail ? true : false;
     }
+
+
+    public static function saveBankDetail($attributes, $userId){
+        $cam = DB::insert('insert into rta_app_biz_bank_detail (app_id, debt_on, debt_position_comments , created_by) values ($attributes["appId"], $attributes["debt_on"], $attributes["debt_position_comments"], $userId )');
+        return $cam ? true : false;
+    }
 }
