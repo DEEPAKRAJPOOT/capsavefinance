@@ -14,32 +14,37 @@
         <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/fircu/*') ? 'active' : '' }}">FI/RCU</a>
     </li>
     @endcan
-   
+    <!--
     <li>
         <a href="#" class="{{ request()->is('application/collateral/*') ? 'active' : '' }}">Collateral</a>
     </li>
-    
+    -->
     @can('notes_list')
     <li>
         <a href="{{ route('notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/notes') ? 'active' : '' }}">Notes</a>
     </li>
     @endcan
-    
+    <!--
     <li>
         <a href="#">Submit Commercial</a>
     </li>
-    
+    -->
+    @can('pp_document_list')
      <li>
         <a href="{{ route('pp_document_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('document/list') ? 'active' : '' }}"> Documents </a>
     </li>
+    @endcan
+    
      <!-- <li>
         <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/pd-notes') ? 'active' : '' }}"> Personal Discussion </a>
     </li> -->
-    
+     
+    @can('query_management_list')
     <li>
         <a href="{{ route('query_management_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/query-management') ? 'active' : '' }}"> QMS</a>
     </li>
-
+    @endcan
+    
     @php
         $wfStageData = \Helpers::getWfStageToProcess(request()->get('app_id'));
         $wfStageToProcess = $wfStageData ? $wfStageData->stage_code : '';

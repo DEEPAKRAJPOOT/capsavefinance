@@ -117,6 +117,7 @@
         </li>
     @endcan
     
+    @can('lms_get_customer_list')
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="true" aria-controls="collapseExample">
               <i class="fa fa-user-plus" aria-hidden="true"></i>
@@ -132,6 +133,9 @@
                 </ul>
             </div>
         </li>
+    @endcan
+    
+    @canany(['backend_upload_all_invoice','backend_get_invoice'])
          <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu7" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-file-text-o" aria-hidden="true"></i>
@@ -140,16 +144,22 @@
             </a>
             <div class="collapse" id="layoutsSubmenu7">
                 <ul class="nav flex-column sub-menu">
+                  @can('backend_upload_all_invoice')  
                   <li class="nav-item">
                         <a class="nav-link" href="{{ route('backend_upload_all_invoice') }}">Invoice Upload</a>
                     </li> 
+                  @endcan
+                  @can('backend_get_invoice')  
                         <li class="nav-item">
                         <a class="nav-link" href="{{route('backend_get_invoice')}}">Manage Invoice</a>
                     </li>                     
-                 
+                  @endcan
                 </ul>
             </div>
         </li>
+    @endcan
+    
+    @canany(['lms_disbursal_request_list','lms_disbursed_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-bank" aria-hidden="true"></i>
@@ -158,17 +168,22 @@
             </a>
             <div class="collapse" id="layoutsSubmenu8">
                 <ul class="nav flex-column sub-menu">
+                    @can('lms_disbursal_request_list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('lms_disbursal_request_list') }}">Disbursal Requests</a>
 
-                    </li> 
+                    </li>
+                    @endcan
+                    @can('lms_disbursed_list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('lms_disbursed_list')}}">Disbursal List</a>
                     </li>                     
-                 
+                    @endcan
                 </ul>
             </div>
         </li>
+    @endcan
+    
     @canany(['get_agency_list','get_agency_user_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu9" aria-expanded="false" aria-controls="collapseExample">
