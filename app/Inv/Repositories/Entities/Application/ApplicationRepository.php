@@ -37,6 +37,9 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\Master\DoaLevel;
 use App\Inv\Repositories\Models\Master\Documents;
+use App\Inv\Repositories\Models\Master\Equipment;
+use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\Cam;
 /**
  * Application repository class
  */
@@ -1200,6 +1203,62 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function changeOfferApprove($appId){
         return AppProgramOffer::changeOfferApprove($appId);
+    }
+
+    public function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
+        $offerWhereCond = [];
+        
+        if ($offerId) {
+            $offerWhereCond['prgm_offer_id'] = $offerId;
+        } else {
+            $offerWhereCond['app_id'] = $appId;   
+            $offerWhereCond['is_active'] = 1; 
+        }
+       
+        $offerData = self::getOfferData($offerWhereCond);
+        $sanctionData = self::getOfferSanction($offerData->prgm_offer_id);
+        $businessData = self::getApplicationById($bizId); 
+        $businessAddress = $businessData->address->where('address_type','2')->first();
+        $cam =  Cam::select('contact_person')->where('biz_id',$bizId)->where('app_id',$appId)->first();
+        
+        $programLimitData = self::getLimit($offerData->app_prgm_limit_id);
+        $ptpqrData = OfferPTPQ::getOfferPTPQR($offerData->prgm_offer_id);
+        if($offerData->equipment_type_id){
+            $equipmentData = Equipment::find($offerData->equipment_type_id);
+        }
+
+        $security_deposit_of = ''; 
+        switch ($offerData->security_deposit_of) {
+            case(4): $security_deposit_of = 'Sanction'; break;
+            case(3): $security_deposit_of = 'Asset Base Value'; break;
+            case(2): $security_deposit_of = 'Asset value'; break;
+            case(1): $security_deposit_of = 'Loan Amount'; break;
+        }
+
+        $data = [
+            'product_id' => $programLimitData->product_id,
+            'biz_entity_name' => $businessData->biz_entity_name,
+            'delay_pymt_chrg' => $sanctionData->delay_pymt_chrg,
+            'insurance' => $sanctionData->insurance,
+            'bank_chrg' => $sanctionData->bank_chrg,
+            'legal_cost' => $sanctionData->legal_cost,
+            'po' => $sanctionData->po,
+            'pdp' => $sanctionData->pdp,
+            'disburs_guide' => $sanctionData->disburs_guide,
+            'other_cond' => $sanctionData->other_cond,
+            'covenants' => $sanctionData->covenants,
+            'security_deposit_of' => $security_deposit_of,
+            'appId' => $appId,
+            'bizId' => $bizId,
+            'offerId' => $offerData->prgm_offer_id,
+            'offerData' => $offerData,
+            'sanctionData' => $sanctionData,
+            'equipmentData' =>$equipmentData,
+            'ptpqrData' => $ptpqrData,
+            'businessAddress' => $businessAddress,
+            'contact_person' => $cam->contact_person
+        ];
+        return $data;
     }
 
 

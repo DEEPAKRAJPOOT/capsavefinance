@@ -16,45 +16,16 @@
                             <h5 class="card-title form-head-h5 text-center">Sanction Letter</h5>                            
                             <div class="col-md-12">
 
-                                @php
-                                $Lessee = \Helpers::customIsset($userData, 'biz_name');
-                                $sanctionAmount = \Helpers::customIsset($offerData, 'prgm_limit_amt');
-                                $sanctionValidity = \Helpers::customIsset($offerData, 'tenor');
-
-                                $delay_pymt_chrg = \Helpers::customIsset($sanctionData,'delay_pymt_chrg');
-                                $insurance = \Helpers::customIsset($sanctionData,'insurance');
-                                $bank_chrg = \Helpers::customIsset($sanctionData,'bank_chrg');
-                                $legal_cost = \Helpers::customIsset($sanctionData,'legal_cost');
-                                $po = \Helpers::customIsset($sanctionData,'po');
-                                $pdp = \Helpers::customIsset($sanctionData,'pdp');
-                                $disburs_guide = \Helpers::customIsset($sanctionData,'disburs_guide');
-                                $other_cond = \Helpers::customIsset($sanctionData,'other_cond');
-                                $covenants = \Helpers::customIsset($sanctionData,'covenants');
-                               
-                                $loanAmount = \Helpers::customIsset($offerData, 'loan_amount');
-                                $loan_offer = \Helpers::customIsset($offerData, 'loan_offer');
-                                $interest_rate = \Helpers::customIsset($offerData, 'interest_rate');
-                                $tenor = \Helpers::customIsset($offerData, 'tenor');
-                                $tenor_old_invoice = \Helpers::customIsset($offerData, 'tenor_old_invoice');
-                                $margin = \Helpers::customIsset($offerData, 'margin');
-                                $overdue_interest_rate = \Helpers::customIsset($offerData, 'overdue_interest_rate');
-                                $adhoc_interest_rate = \Helpers::customIsset($offerData, 'adhoc_interest_rate');                                
-                                $grace_period = \Helpers::customIsset($offerData, 'grace_period');
-                                $processing_fee = \Helpers::customIsset($offerData, 'processing_fee');
-                                $check_bounce_fee = \Helpers::customIsset($offerData, 'check_bounce_fee');
-                                $comment = \Helpers::customIsset($offerData, 'comment');
-                                @endphp
-
-
-
-                                <p>Ref No: CFPL/Apr19/198 <br><br>
-                                January 23, 2020<br><br>
-                                <b>{{ $Lessee }},<br>
-                                Warehouse no 1, 2nd floor, The Integrated Park, 
-                                Np, Village Kurund, Bhiwandi, Mumbai, 
-                                Maharashtra - 421101 <br><br>
-                                Kind Attention: Mr. Madhusudan Bihani<br><br>
-                                Sub: Sanction Letter for {{ $Lessee }}</b><br><br>
+                            <p>Ref No: CFPL/{{$date->isoFormat('MMMYY') }}/{{$sanctionData->sanction_id}} <br><br>
+                                    {{ $date->isoFormat('MMMM D, Y') }}<br><br>
+                                <b>{{ $biz_entity_name }},<br>
+                                    {{ $businessAddress->addr_1 }}<br>
+                                    {{ $businessAddress->addr_2 }}<br>
+                                    {{ $businessAddress->city_name }}
+                                    {{ $businessAddress->state->name }}
+                                    @if( $businessAddress->pin_code) - {{ $businessAddress->pin_code }} @endif <br><br>
+                                Kind Attention:{{ $contact_person }}<br><br>
+                                Sub: Sanction Letter for {{ $biz_entity_name }}</b><br><br>
                                 Dear Sir, <br><br>
                                 Capsave Finance Private Limited is pleased to offer you rental facility subject to the following terms:</p> 
                                 <table class="table table-bordered overview-table">
@@ -72,57 +43,126 @@
                                         <tr>
                                             <td>3.</td>
                                             <td>Lessee</td>
-                                            <td>{{ $Lessee }}</td>
+                                            <td>{{ $biz_entity_name }}</td>
                                         </tr>
                                         <tr>
                                             <td>4.</td>
                                             <td>Sanction Amount</td>
-                                            <td>{!! $sanctionAmount ? \Helpers::formatCurreny($sanctionAmount) : '' !!}</td>
+                                            <td>{!! $offerData->prgm_limit_amt ? \Helpers::formatCurreny($offerData->prgm_limit_amt) : '' !!}</td>
                                         </tr>
                                         <tr>
                                             <td>5.</td>
                                             <td>Sanction validity</td>
-                                            <td>{{ $sanctionValidity }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($sanctionData->validity_date)->format('d/m/Y')}}</td>
                                         </tr>
                                         <tr>
                                             <td>6.</td>
                                             <td>Equipment type</td>
-                                            <td></td>
+                                            <td>{{ $equipmentData->equipment_name }}</td>
                                         </tr>
                                         <tr>
                                             <td>7.</td>
                                             <td>Lease Tenor</td>
-                                            <td></td>
+                                            <td> 
+                                                @if($offerData->tenor)
+                                                    {{ $offerData->tenor }}
+                                                    @if($product_id == 1)
+                                                        @if($offerData->tenor>1)Days @else Day @endif 
+                                                    @else
+                                                        @if($offerData->tenor>1)Months @else Month @endif 
+                                                    @endif
+                                                @endif
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>8.</td>
                                             <td>Rental Rate – Per Thousand Per Quarter </td>
-                                            <td></td>
+                                            <td>
+                                                @if($ptpqrData->count())
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <td>From Period</td>
+                                                            <td>To Period</td>
+                                                            <td>Rate</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($ptpqrData as $ptpqr)
+                                                        <tr>
+                                                            <td>{{ $ptpqr->ptpq_from }}</td>
+                                                            <td>{{ $ptpqr->ptpq_to }}</td>
+                                                            <td>{{ $ptpqr->ptpq_rate }}</td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                                @endif
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>9.</td>
                                             <td>Refundable Security Deposit</td>
-                                            <td></td>
+                                            <td>
+                                                @if($offerData->security_deposit_type == 1 &&  $offerData->security_deposit >0)
+                                                    Flat {{ $offerData->security_deposit }} of the {{ $security_deposit_of }}
+                                                @elseif($offerData->security_deposit_type == 2 &&  $offerData->security_deposit >0)
+                                                    {{ $offerData->security_deposit }} % of the {{ $security_deposit_of }}
+                                                @endif
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>10.</td>
                                             <td>Processing Fees</td>
-                                            <td></td>
+                                            <td>{!! $offerData->processing_fee ? \Helpers::formatCurreny($offerData->processing_fee) : '' !!}</td>
                                         </tr>
                                         <tr>
                                             <td>11.</td>
                                             <td>Security</td>
-                                            <td></td>
+                                            <td>
+                                                @switch($offerData->addl_security)
+                                                    @case(1)
+                                                        BG
+                                                        @break
+                                                    @case(2)
+                                                        MF
+                                                        @break
+                                                    @case(3)
+                                                        {{ $offerData->comment }}
+                                                        @break
+                                                @endswitch
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>12.</td>
                                             <td>Rental payment frequency</td>
-                                            <td></td>
+                                            <td>
+                                                Rentals are due 
+                                                @switch ($offerData->rental_frequency) 
+                                                    @case(4) Monthly  @break
+                                                    @case(3) Quaterly  @break
+                                                    @case(2) Bi-Yearly  @break
+                                                    @case(1) Yearly  @break
+                                                @endswitch 
+                                                in 
+                                                @switch($offerData->rental_frequency_type)
+                                                    @case(1) Advance @break
+                                                    @case(2) Arrears @break
+                                                @endswitch
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>13.</td>
                                             <td>Payment mechanism</td>
-                                            <td></td>
+                                            <td>
+                                                @switch($sanctionData->payment_type)
+                                                    @case(1) NACH @break
+                                                    @case(2) RTGS @break
+                                                    @case(3) NEFT @break
+                                                    @case(4) Advance Cheque @break
+                                                    @case(5) Other: {{$sanctionData->payment_type_other}} @break
+                                                @endswitch
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>14.</td>

@@ -992,57 +992,15 @@ class ApplicationController extends Controller
      */
     public function genSanctionLetter(Request $request)
     {  
-        
-        $offerWhereCond = [];
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
         $sanctionId = $request->get('sanction_id');
-        
+        $offerId = null;
         if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
             $offerId = $request->get('offer_id');
-        } else {
-            $offerWhereCond['app_id'] = $appId;   
-            $offerWhereCond['is_active'] = 1; 
-            $offerData = $this->appRepo->getOfferData($offerWhereCond);
-            $offerId = $offerData ? $offerData->prgm_offer_id : 0;
-        }
+        } 
+        $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
        
-        $offerWhereCond['prgm_offer_id'] = $offerId;        
-        $offerData = $this->appRepo->getOfferData($offerWhereCond);
-        $userData =  $this->userRepo->getUserByAppId($appId);
-        $sanctionData = $this->appRepo->getOfferSanction($offerId);
-        $businessData = $this->appRepo->getApplicationById($bizId); 
-        $programLimitData = $this->appRepo->getLimit($offerData->app_prgm_limit_id);
-
-        $security_deposit_of = ''; 
-        switch ($offerData->security_deposit_of) {
-            case(4): $security_deposit_of = 'Sanction'; break;
-            case(3): $security_deposit_of = 'Asset Base Value'; break;
-            case(2): $security_deposit_of = 'Asset value'; break;
-            case(1): $security_deposit_of = 'Loan Amount'; break;
-        }
-
-        $data = [
-            'product_id' => $programLimitData->product_id,
-            'biz_entity_name' => $businessData->biz_entity_name,
-            'delay_pymt_chrg' => $sanctionData->delay_pymt_chrg,
-            'insurance' => $sanctionData->insurance,
-            'bank_chrg' => $sanctionData->bank_chrg,
-            'legal_cost' => $sanctionData->legal_cost,
-            'po' => $sanctionData->po,
-            'pdp' => $sanctionData->pdp,
-            'disburs_guide' => $sanctionData->disburs_guide,
-            'other_cond' => $sanctionData->other_cond,
-            'covenants' => $sanctionData->covenants,
-            'appId' => $appId,
-            'bizId' => $bizId,
-            'offerId' => $offerId,
-            'offerData' => $offerData,
-            'sanctionData' => $sanctionData,
-            'security_deposit_of' => $security_deposit_of
-        ];
-
-        //dd($userData,$offerData,$sanctionData,$businessData,$programLimitData);
         return view('backend.app.sanction_letter')->with($data);   
     }
 
@@ -1262,45 +1220,36 @@ class ApplicationController extends Controller
     }
 
     /**
-     * Download sanction letter
+     * Send sanction letter
      * 
      * @return \Illuminate\Http\Response
      */
-    public function downloadSanctionLetter(Request $request)
+    public function sendSanctionLetter(Request $request)
     {
-        
-        $appId = $request->get('app_id');
-        $offerId = $request->get('offer_id');
-        $bizId = $request->get('biz_id');
-        $sanctionId = $request->get('sanction_id');
-        
         try {
-            $offerWhereCond = [];
-            $offerWhereCond['prgm_offer_id'] = $offerId;
-            $offerData = $this->appRepo->getOfferData($offerWhereCond);
-            $sanctionData = $this->appRepo->getOfferSanction($offerId);
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $sanctionId = $request->get('sanction_id');
+            $offerId = null;
+            if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+                $offerId = $request->get('offer_id');
+            } 
+
+            $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $date = \Carbon\Carbon::now();
+            $data['date'] = $date;
+            $htmlContent = view('backend.app.send_sanction_letter')->with($data)->render();
             $userData =  $this->userRepo->getUserByAppId($appId);
-            $fileName = 'sanction_letter_'. time() . '.pdf';
-
-            $htmlContent = view('backend.app.download_sanction_letter')
-                    ->with('appId', $appId)
-                    ->with('offerId', $offerId)
-                    ->with('offerData', $offerData)
-                    ->with('userData',$userData)
-                    ->with('biz_id',$bizId)
-                    ->with('sanctionData',$sanctionData)->render();
-
-           
 
             $emailData['email'] = $userData->email;
             $emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
             $emailData['body'] = $htmlContent;
             $emailData['attachment'] = $this->pdf->render($htmlContent);
-            $emailData['subject'] ="Sanction Letter for $userData->biz_name Rsan";
+            $emailData['subject'] ="Sanction Letter for ".$data['biz_entity_name'];
 
             \Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
-
-            return redirect()->back();
+            Session::flash('message',trans('success_messages.send_sanction_letter_successfully'));
+            return redirect()->back()->with('is_send',1);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -1447,18 +1396,23 @@ class ApplicationController extends Controller
      * @return view
      */  
     public function saveSanctionLetter(Request $request){
+        
         try {
             $arrFileData = $request->all();
-            $appId = (int)$request->app_id; //  fetch app id
+            $appId = (int)$request->app_id; 
             $offerId = (int)$request->offer_id; 
             $bizId = (int) $request->get('biz_id');
             $sanctionId = null;
 
             if($request->has('sanction_id')){
-                $sanctionId = (int) $request->sanction_id; //fetch sanction id
+                $sanctionId = (int) $request->sanction_id; 
             }
             $sanctionData = array(
                 'prgm_offer_id' => $offerId,
+                'validity_date'=>  Carbon::createFromFormat('d/m/Y', $request->sanction_validity_date)->format('Y-m-d')  , 
+                'validity_comment' =>  $request->sanction_validity_comment, 
+                'payment_type' =>  $request->payment_type, 
+                'payment_type_other' =>  $request->payment_type_comment,
                 'delay_pymt_chrg' => $request->delay_pymt_chrg,
                 'insurance' => $request->insurance,
                 'bank_chrg' => $request->bank_chrg,
@@ -1480,27 +1434,25 @@ class ApplicationController extends Controller
     }
 
     public function previewSanctionLetter(Request $request){
-        $appId = $request->get('app_id');
-        $offerId = $request->get('offer_id');
-        $sanctionId = $request->get('sanction_id');
-        
         try {
-            $offerWhereCond = [];
-            $offerWhereCond['prgm_offer_id'] = $offerId;
-            $offerData = $this->appRepo->getOfferData($offerWhereCond);
-            $sanctionData = $this->appRepo->getOfferSanction($offerId);
-            $userData =  $this->userRepo->getUserByAppId($appId);
-            $fileName = 'sanction_letter_'. time() . '.pdf';
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $sanctionId = $request->get('sanction_id');
+            $offerId = null;
+            if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+                $offerId = $request->get('offer_id');
+            } 
+            
+            $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $date = \Carbon\Carbon::now();
+            $data['date'] = $date;
+            $html = view('backend.app.send_sanction_letter')->with($data)->render();
+            if(!Session::get('is_send')){
 
-            $html = view('backend.app.download_sanction_letter')
-                    ->with('appId', $appId)
-                    ->with('offerId', $offerId)
-                    ->with('offerData', $offerData)
-                    ->with('userData',$userData)
-                    ->with('sanctionData',$sanctionData);
-            $html .='<div align="center">
-                    <a href="'. route('download_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'download'=>1, 'sanction_id'=>$sanctionData->sanction_id ]).'" class="btn btn-success btn-sm">Send Mail</a>
-                    </div>';
+                $html .='<div align="center">
+                <a href="'. route('send_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'download'=>1, 'sanction_id'=>$data['sanctionData']->sanction_id ]).'" class="btn btn-success btn-sm">Send Mail</a>
+                </div>';
+            }
             return  $html;
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
