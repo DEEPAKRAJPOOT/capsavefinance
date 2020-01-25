@@ -60,7 +60,7 @@ class Equipment extends BaseModel
     
     public static function getEquipmentList()
     {
-      $res =   self::where('is_active',1)->pluck('id','equipment_name');
+      $res =   self::where('is_active',1)->pluck('equipment_name', 'id');
       return $res ?: false;
     }
 }
