@@ -101,8 +101,15 @@ class CamController extends Controller
                   $arrCamData['t_o_f_security_check'] = implode(',', $arrCamData['t_o_f_security_check']);
             }
             //dd($arrCamData);
+                  if(!isset($arrCamData['rating_rational'])){
+                  $arrCamData['rating_rational'] = NULL;
+                  }else{
+                  $arrCamData['rating_rational'] =  $arrCamData['rating_rational'] ;
+                  }
+                 // dd($arrCamData, $userId);
 
             if($arrCamData['cam_report_id'] != ''){
+              //dd($arrCamData, $userId);
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
                         Session::flash('message',trans('CAM information updated sauccessfully'));
@@ -373,22 +380,27 @@ class CamController extends Controller
         if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
           $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
         }
+        
         $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
         $latest_finance_year = 2010;
         $fy = $contents['FinancialStatement']['FY'] ?? array();
         $financeData = [];
+        $audited_years = [];
         if (!empty($fy)) {
           foreach ($fy as $k => $v) {
+            $audited_years[] = $v['year'];
             $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
             $financeData[$v['year']] = $v;
           }
         }
+        // dd(getTotalFinanceData($financeData[2017]));
         $finDetailData = AppBizFinDetail::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
         return view('backend.cam.finance', [
           'financedocs' => $financedocs, 
           'appId'=> $appId, 
           'pending_rec'=> $pending_rec,
           'borrower_name'=> $borrower_name,
+          'audited_years'=> $audited_years,
           'finance_data'=> $financeData,
           'latest_finance_year'=> $latest_finance_year,
           'finDetailData'=>$finDetailData,
@@ -1302,7 +1314,7 @@ class CamController extends Controller
           ];
         $this->appRepo->saveAppApprovers($appApprData);
         //update approve status in offer table after all approver approve the offer.
-        $this->appRepo->changeOfferApprove($appId);
+        $this->appRepo->changeOfferApprove((int)$appId);
         Session::flash('message',trans('backend_messages.offer_approved'));
         return redirect()->back();
     }

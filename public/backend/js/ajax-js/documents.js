@@ -32,7 +32,7 @@ try {
                     {data: 'created_by'},
                     {data: 'is_active'}
                 ],
-            aoColumnDefs: [{'bSortable': true, 'aTargets': [0,1,2,3,4]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4]}]
         });
         //Search
         $('#searchbtn').on('click', function (e) {
