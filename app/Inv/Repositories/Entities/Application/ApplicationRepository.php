@@ -36,6 +36,7 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\Master\DoaLevel;
 use App\Inv\Repositories\Models\Master\Documents;
+use App\Inv\Repositories\Models\OfferPTPQ;
 /**
  * Application repository class
  */
@@ -1189,5 +1190,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppProgramOffer::changeOfferApprove($appId);
     }
 
-
+    public function addOfferPTPQ($data){
+        return OfferPTPQ::addOfferPTPQ($data);
+    }
 }
