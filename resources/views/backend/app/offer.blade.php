@@ -7,6 +7,9 @@
             <div class="card">
                 <div class="card-body">
                     @if($isAccessible)
+                    @if($supplyOfferData->count() == 0 && $termOfferData->count() == 0 && $termOfferData->count() == 0 )
+                    <div class="row"><h3>No offer found .</h3></div>
+                    @endif
                     <div class="row">
                         <div class="col-sm-12">
                             <div id="accordion" class="accordion">
