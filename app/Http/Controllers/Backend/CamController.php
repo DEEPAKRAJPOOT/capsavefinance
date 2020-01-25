@@ -1363,6 +1363,18 @@ class CamController extends Controller
         }
 
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
+        /*Start add offer PTPQ block*/
+        $ptpqArr =[];
+        foreach($request->ptpq_from as $key=>$val){
+          $ptpqArr[$key]['prgm_offer_id'] = $offerData->prgm_offer_id;
+          $ptpqArr[$key]['ptpq_from'] = $request->ptpq_from[$key];
+          $ptpqArr[$key]['ptpq_to'] = $request->ptpq_to[$key];
+          $ptpqArr[$key]['ptpq_rate'] = $request->ptpq_rate[$key];
+          $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
+          $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
+        }
+        $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
+        /*End add offer PTPQ block*/
 
         if($offerData){
           Session::flash('message',trans('backend_messages.limit_assessment_success'));
