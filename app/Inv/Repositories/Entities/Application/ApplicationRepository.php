@@ -37,6 +37,9 @@ use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\Master\DoaLevel;
 use App\Inv\Repositories\Models\Master\Documents;
 use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\Master\Equipment;
+
+
 /**
  * Application repository class
  */
@@ -1194,5 +1197,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function addOfferPTPQ($data){
         return OfferPTPQ::addOfferPTPQ($data);
+    }
+
+    public function getEquipmentList(){
+        return Equipment::getEquipmentList();
     }
 }
