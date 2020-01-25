@@ -60,7 +60,8 @@ class AppBizFinDetail extends BaseModel
                         'dscr_check', 
                         'dscr_cmnt', 
                         'debt_check', 
-                        'debt_cmnt',                         
+                        'debt_cmnt',
+                        'financial_risk_comments',                         
                         'created_by',
                         'created_at',
                         'updated_at',
@@ -80,6 +81,7 @@ class AppBizFinDetail extends BaseModel
                         'dscr_cmnt' => $attributes['dscr_cmnt'], 
                         'debt_check' => $attributes['debt_check'], 
                         'debt_cmnt' => $attributes['debt_cmnt'],                         
+                        'financial_risk_comments' => $attributes['financial_risk_comments'],                         
                         'created_by'=>$userId
         );
         $finDetail = self::create($inputArr);
@@ -98,6 +100,7 @@ class AppBizFinDetail extends BaseModel
             'dscr_cmnt' => $attributes['dscr_cmnt'], 
             'debt_check' => $attributes['debt_check'], 
             'debt_cmnt' => $attributes['debt_cmnt'], 
+            'financial_risk_comments' => $attributes['financial_risk_comments'], 
             'updated_by'=>$userId,
         ]);
         return $finDetail ? true : false;
