@@ -557,32 +557,32 @@
                     <form id="signupFormNew"  action="{{Route('frontend_update_invoice_amount')}}" method="post">
                         @csrf	
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="txtCreditPeriod">Invoice Amount
-                                        <span class="mandatory">*</span>
-                                    </label>
-                                    <input type="text" class="form-control" id="invoice_amount" value="{{($invoice->invoice_amount) ? $invoice->invoice_amount : '' }}" disabled="">
-                                    <input type="hidden" name="invoice_id" value="{{($invoice->invoice_id) ? $invoice->invoice_id : '' }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="txtCreditPeriod">Invoice Approved Amount
-                                        <span class="mandatory">*</span>
-                                    </label>
-                                    <input type="text" class="form-control" id="invoice_approve_amount" name="approve_invoice_amount" value="{{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }}">
-
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="txtCreditPeriod">Comment  <span class="error_message_label doc-error">*</span>
-
-                                    </label>
-                                    <textarea class="form-control" name="comment" id="comment" cols="4" rows="4"></textarea>
-
-                                </div>
-                            </div>
-
-
+                           <div class="col-md-12">
+                              <div class="form-group">
+                                 <label for="txtCreditPeriod">Invoice Amount
+                                 <span class="mandatory">*</span>
+                                 </label>
+                                  <input type="text" class="form-control" id="invoice_amount" value="{{($invoice->invoice_amount) ? number_format($invoice->invoice_amount) : '' }}" disabled="">
+                                  <input type="hidden" name="invoice_id" value="{{($invoice->invoice_id) ? $invoice->invoice_id : '' }}">
+                              </div>
+							   <div class="form-group">
+                                 <label for="txtCreditPeriod">Invoice Approved Amount
+                                 <span class="mandatory">*</span>
+                                 </label>
+			      <input type="text" class="form-control" id="invoice_approve_amount" name="approve_invoice_amount" value="{{($invoice->invoice_approve_amount) ? number_format($invoice->invoice_approve_amount) : '' }}">
+                                 
+                              </div>
+                               
+							   <div class="form-group">
+                                 <label for="txtCreditPeriod">Comment  <span class="error_message_label doc-error">*</span>
+                                 
+                                 </label>
+								<textarea class="form-control" name="comment" id="comment" cols="4" rows="4"></textarea>
+                                 
+                              </div>
+                           </div>
+						   
+						  
 
                         </div>
                         <span class="model7msg error"></span>			
@@ -603,11 +603,18 @@
 
 
 
-///////////////////////////////////////// change invoice amount////////////////
-    $(document).on('click', '#UpdateInvoiceAmount', function () {
+$(document).ready(function(){
+ ///////////// use for amount comma seprate//////////////////////////   
+document.getElementById('invoice_approve_amount').addEventListener('input', event =>
+event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
 
-        var amount = parseFloat($("#invoice_amount").val());
-        var approveAmount = parseFloat($("#invoice_approve_amount").val());
+});
+    
+///////////////////////////////////////// change invoice amount////////////////
+$(document).on('click','#UpdateInvoiceAmount',function(){
+    
+    var amount = parseFloat($("#invoice_amount").val().replace(/,/g, ''));
+        var approveAmount = parseFloat($("#invoice_approve_amount").val().replace(/,/g, ''));
         if (approveAmount > amount)
         {
             $(".model7msg").show();
@@ -618,7 +625,8 @@
             $(".model7msg").hide();
             return true;
         }
-    });
+ });
 </script>
 <script src="{{ asset('backend/js/ajax-js/view_invoice_detail.js') }}"></script>
 @endsection
+ 

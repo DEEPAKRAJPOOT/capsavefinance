@@ -36,27 +36,28 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                   
                                     <td>
                                           <b>    Funded Amount (₹):  </b> 
                                        </td>
-                                    <td>  {{($result->disbursal->principal_amount) ? $result->disbursal->principal_amount : '' }}
+                                    <td>  {{($result->disbursal) ? $result->disbursal->principal_amount : '' }}
                                     </td> 
                                     <td>
                                      <b>    Final Funded Amount (₹):  </b>
                                      </td>
-                                    <td>   {{($result->disbursal->disburse_amount) ? $result->disbursal->disburse_amount : '' }}
+                                    <td>   {{($result->disbursal) ? $result->disbursal->disburse_amount : '' }}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                      <b>    Funded Date:  </b>
                                        </td>
-                                    <td>   {{($result->disbursal->disburse_date) ? $result->disbursal->disburse_date : '' }}
+                                    <td>   {{($result->disbursal) ? $result->disbursal->disburse_date : '' }}
                                     </td> 
                                     <td>
                                      <b>    Tenor (in days): </b>
                                         </td>
-                                    <td> {{($result->disbursal->tenor_days) ? $result->disbursal->tenor_days : '' }}
+                                    <td> {{($result->disbursal) ? $result->disbursal->tenor_days : '' }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -68,7 +69,7 @@
                                     <td>
                                      <b>    Interest Per Annum (%):  </b>
                                        </td>
-                                    <td>  {{($result->disbursal->interest_rate) ? $result->disbursal->interest_rate : '' }}
+                                    <td>  {{($result->disbursal) ? $result->disbursal->interest_rate : '' }}
                                     </td>
                                 </tr>
                                 <tr>

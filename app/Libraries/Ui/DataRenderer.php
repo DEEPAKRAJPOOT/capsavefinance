@@ -610,12 +610,12 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
                 ->addColumn(
                     'view_upload_invoice',
@@ -699,14 +699,13 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -768,17 +767,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -837,17 +835,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -906,17 +903,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -986,17 +982,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -1066,17 +1061,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -1135,17 +1129,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {

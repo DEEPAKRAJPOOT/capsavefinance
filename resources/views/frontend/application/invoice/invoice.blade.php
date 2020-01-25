@@ -283,9 +283,13 @@
  };
  
  
-  $(document).ready(function () {
-       $("#program_bulk_id").append("<option value=''>No data found</option>");  
-        $("#program_bulk_id").append("<option value=''>No data found</option>");                         
+   $(document).ready(function () {
+         document.getElementById('invoice_approve_amount').addEventListener('input', event =>
+         event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+         $("#program_bulk_id").append("<option value=''>No data found</option>");
+         $("#program_bulk_id").append("<option value=''>No data found</option>");
+  
+                      
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
      
@@ -619,35 +623,36 @@ $(document).on('click','#bulkApprove',function(){
     }
     });
     
+
 ///////////////////////////////////////// change invoice amount////////////////
-$(document).on('click','.changeInvoiceAmount',function(){
-    
-    var limit  = $(this).attr('data-limit');
-    var approveAmount  = $(this).attr('data-approve');    
-    var amount  = $(this).attr('data-amount'); 
-    var invoiceId  = $(this).attr('data-id');
-    $("#invoice_id").val(invoiceId);
-    $("#invoice_amount").val(amount);
-    $("#invoice_approve_amount").val(approveAmount);
-    
-  });
+    $(document).on('click', '.changeInvoiceAmount', function () {
+
+        var limit = $(this).attr('data-limit');
+        var approveAmount = $(this).attr('data-approve').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var amount = $(this).attr('data-amount').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var invoiceId = $(this).attr('data-id');
+        $("#invoice_id").val(invoiceId);
+        $("#invoice_amount").val(amount);
+        $("#invoice_approve_amount").val(approveAmount);
+
+    });
     
 ///////////////////////////////////////// change invoice amount////////////////
-$(document).on('click','#UpdateInvoiceAmount',function(){
-    
-    var amount  = parseFloat($("#invoice_amount").val());
-    var approveAmount  = parseFloat($("#invoice_approve_amount").val());
-    if(approveAmount > amount)
-    {
-        $(".model7msg").show();
-        $(".model7msg").html('Invoice Approve Amount should not greater amount');
-        return false;
-     }
-     else
-     {   $(".model7msg").hide();
-         return true;
-     }
- });
+    $(document).on('click', '#UpdateInvoiceAmount', function () {
+
+        var amount = parseFloat($("#invoice_amount").val().replace(/,/g, ''));
+        var approveAmount = parseFloat($("#invoice_approve_amount").val().replace(/,/g, ''));
+        if (approveAmount > amount)
+        {
+            $(".model7msg").show();
+            $(".model7msg").html('Invoice Approve Amount should not greater amount');
+            return false;
+        } else
+        {
+            $(".model7msg").hide();
+            return true;
+        }
+    });
 </script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
 
