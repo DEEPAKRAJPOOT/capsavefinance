@@ -1267,4 +1267,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
         return $data;
     }
+    public function addOfferPTPQ($data){
+        return OfferPTPQ::addOfferPTPQ($data);
+    }
 }

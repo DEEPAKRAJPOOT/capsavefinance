@@ -35,14 +35,14 @@ class OfferPTPQ extends BaseModel
      *
      * @var boolean
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = true;
+    public $userstamps = false;
     
     /**
      * The attributes that are mass assignable.
@@ -54,7 +54,6 @@ class OfferPTPQ extends BaseModel
         'ptpq_from',
         'ptpq_to',
         'ptpq_rate',
-        'is_active',
         'created_at',
         'created_by',
         'updated_at',
@@ -73,46 +72,19 @@ class OfferPTPQ extends BaseModel
     }
     
     /**
-     * Get all Application Approvers
-     * 
-     * @param integer $app_id
-     * @return array
-     */
-    /*public static function getAppApprovers($app_id){
-        $apprUsers = self::select('*')
-            ->where('app_id', '=', $app_id)
-            ->where('is_active', '=', 1)
-            ->get();
-        return ($apprUsers ? $apprUsers : []);
-    }*/
-    
-    
-    /**
-     * Get all Application Approvers
+     * Create offer PTPQ
      * 
      * @param array $data
-     * @return array
+     * @return boolean
      */
-    /*public static function saveAppApprovers($data)
-    {
-        $apprUsers = self::where('app_id', '=', $data['app_id'])
-            ->where('approver_user_id', '=', $data['approver_user_id'])
-            ->where('is_active', '=', 1)
-            ->update(['status' => $data['status']]);
-        return ($apprUsers ? $apprUsers : []);
-    }*/    
-    
-    
-    /**
-     * Get all Application Approvers
-     * 
-     * @param array $data
-     * @return array
-     */
-    /*public static function updateAppApprActiveFlag($app_id)
-    {
-        $apprUsers = self::where('app_id', '=', $app_id)            
-            ->update(['is_active' => 0]);
-        return $apprUsers;
-    }*/ 
+
+    public static function addOfferPTPQ($data){
+        if(!is_array($data)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else{
+            $offerPtpq =  OfferPTPQ::insert($data);
+            return $offerPtpq ? true : false;
+        }
+    }
+
 }
