@@ -1,4 +1,11 @@
 @extends('layouts.backend.admin-layout')
+
+@section('additional_css')  
+{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js-bootstrap-css/1.2.1/typeaheadjs.min.css" /> --}}
+    
+@endsection
+
+
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
@@ -118,10 +125,26 @@
                             </td>
                         </tr>
                         <tr>
+                            <td width="25%"><b>Group Company</b></td>
+                            <td width="25%">
+                               {{--
+
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="input-group">
+                                            <input id="search" name="search" type="text" class="form-control group-company" placeholder="Search" />
+                                         </div>
+                                    </div>
+                                </div> --}}
+                                <input type="text" class="form-control group-company" name="group_company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" >
                             <td width="25%"><b>Existing Group Exposure</b></td>
                             <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" maxlength="20" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
+                        </tr>
+                        <tr>
                             <td width="25%"><b>Proposed Group Exposure</b></td>
                             <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
+                            <td width="25%"><b>Total Exposure</b></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" ></td>
                         </tr>
                     </tbody>
                 </table>
@@ -237,6 +260,8 @@
 </div>
 @endsection
 @section('jscript')
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 <script>
 
 function showSecurityComment(val){
@@ -245,7 +270,21 @@ function showSecurityComment(val){
     }else{
         $("#securityComment").hide();
     }
+
+
 }
 
+</script>
+
+
+<script type="text/javascript">
+    var path = "{{ route('get_group_company') }}";
+    $('input.group-company').typeahead({
+        source:  function (query, process) {
+        return $.get(path, { query: query }, function (data) {
+                return process(data);
+            });
+        }
+    });
 </script>
 @endsection

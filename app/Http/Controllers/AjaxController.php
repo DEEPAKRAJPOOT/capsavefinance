@@ -30,6 +30,7 @@ use App\Inv\Repositories\Models\UserReqDoc;
 use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Models\Master\Group;
 
 
 class AjaxController extends Controller {
@@ -3394,6 +3395,21 @@ if ($err) {
     {
      $getDisList = $this->userRepo->getDisbursalList();
      return $dataProvider->getDisbursalList($this->request , $getDisList);   
+    }
+
+    /**
+     * get Group company 
+     * 
+     * @param Request $request
+     * @return mixed
+     */
+    public function getGroupCompany(Request $request ){
+      
+        $data = Group::select("name")
+                ->where("name","LIKE","%{$request->input('query')}%")
+                ->get();
+    
+       return response()->json($data);
     }
 
 
