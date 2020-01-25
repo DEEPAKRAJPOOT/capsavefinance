@@ -1238,28 +1238,33 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $data = [
             'product_id' => $programLimitData->product_id,
             'biz_entity_name' => $businessData->biz_entity_name,
-            'delay_pymt_chrg' => $sanctionData->delay_pymt_chrg,
-            'insurance' => $sanctionData->insurance,
-            'bank_chrg' => $sanctionData->bank_chrg,
-            'legal_cost' => $sanctionData->legal_cost,
-            'po' => $sanctionData->po,
-            'pdp' => $sanctionData->pdp,
-            'disburs_guide' => $sanctionData->disburs_guide,
-            'other_cond' => $sanctionData->other_cond,
-            'covenants' => $sanctionData->covenants,
+            'sanctionData' => $sanctionData,
             'security_deposit_of' => $security_deposit_of,
             'appId' => $appId,
             'bizId' => $bizId,
             'offerId' => $offerData->prgm_offer_id,
             'offerData' => $offerData,
-            'sanctionData' => $sanctionData,
             'equipmentData' =>$equipmentData,
             'ptpqrData' => $ptpqrData,
             'businessAddress' => $businessAddress,
             'contact_person' => $cam->contact_person
         ];
+
+        $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
+        $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
+        $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
+        $data['payment_type'] = ($sanctionData)?$sanctionData->payment_type:'';
+        $data['payment_type_other'] = ($sanctionData)?$sanctionData->payment_type_other:'';
+        $data['delay_pymt_chrg'] = ($sanctionData)?$sanctionData->delay_pymt_chrg:'';
+        $data['insurance'] = ($sanctionData)?$sanctionData->insurance:'';
+        $data['bank_chrg'] = ($sanctionData)?$sanctionData->bank_chrg:'';
+        $data['legal_cost'] = ($sanctionData)?$sanctionData->legal_cost:'';
+        $data['po'] = ($sanctionData)?$sanctionData->po:'';
+        $data['pdp'] = ($sanctionData)?$sanctionData->pdp:'';
+        $data['disburs_guide'] = ($sanctionData)?$sanctionData->disburs_guide:'';
+        $data['other_cond'] = ($sanctionData)?$sanctionData->other_cond:'';
+        $data['covenants'] = ($sanctionData)?$sanctionData->covenants:'';
+
         return $data;
     }
-
-
 }

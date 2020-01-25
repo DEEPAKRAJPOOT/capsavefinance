@@ -1405,7 +1405,7 @@ class ApplicationController extends Controller
             $sanctionId = null;
 
             if($request->has('sanction_id')){
-                $sanctionId = (int) $request->sanction_id; 
+                $sanctionId = $request->sanction_id; 
             }
             $sanctionData = array(
                 'prgm_offer_id' => $offerId,
@@ -1424,6 +1424,7 @@ class ApplicationController extends Controller
                 'covenants' => $request->covenants,
             );
             $sanction_info = $this->appRepo->saveSanctionData($sanctionData,$sanctionId);
+
             if($sanction_info){
                 Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
                 return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id,'biz_id' => $bizId]);
