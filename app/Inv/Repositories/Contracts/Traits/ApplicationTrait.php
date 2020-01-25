@@ -11,12 +11,12 @@ trait ApplicationTrait
      * @param array $prgmDocsWhere
      * @return mixed
      */
-    protected function getProgramDocs($prgmDocsWhere)
+    protected function getProgramDocs($prgmDocsWhere, $appProductIds)
     {
         $array =[];
         $finalDocs =[];
         if ($prgmDocsWhere['stage_code'] == 'doc_upload') {
-            $prgmDocs = $this->appRepo->getRequiredDocs(['doc_type_id' => 1], $prgmDocsWhere['app_productids']);
+            $prgmDocs = $this->appRepo->getRequiredDocs(['doc_type_id' => 1], $appProductIds);
             foreach ($prgmDocs as $key => $value) {
                 $finalDocs[$key]['doc_id'] = $value->doc_id;
                 $finalDocs[$key]['product_document'] = $this->appRepo->getDocumentProduct($value->doc_id);
@@ -25,11 +25,11 @@ trait ApplicationTrait
             $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere)->toArray();
             if($prgmDocsWhere['stage_code'] == 'upload_pre_sanction_doc'){
                 $whereCondition['doc_type_id'] =  2;
-                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $prgmDocsWhere['app_productids'])->toArray();
+                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $appProductIds)->toArray();
             }
             else  {
                 $whereCondition['doc_type_id'] =  3;
-                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $prgmDocsWhere['app_productids'])->toArray();
+                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $appProductIds)->toArray();
             }
 
             $merged = array_merge($prgmDocs, $preDocs);
@@ -67,8 +67,8 @@ trait ApplicationTrait
         foreach($appProducts->products as $product){
             array_push($appProductIds, $product->pivot->product_id);
         }
-        $prgmDocsWhere['app_productids'] = $appProductIds;
-        $reqDocs = $this->getProgramDocs($prgmDocsWhere);
+
+        $reqDocs = $this->getProgramDocs($prgmDocsWhere, $appProductIds);
         if($reqDocs && count($reqDocs) == 0) {
             return;
         }
