@@ -214,7 +214,7 @@
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Risk Comments</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="profile_of_company" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
+                        <textarea class="form-control" id="risk_comments" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
                     </div>
                 </div>
 
@@ -222,6 +222,21 @@
                     <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
                         <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
+
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+                 <div class="data mt-4">
+                    <h2 class="sub-title bg">Contigent Liabilities & Auditors Observations</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <div class="form-group row">
+                         <label for="debt_on" class="col-sm-2 col-form-label">Date As On</label>
+                         <div class="col-sm-4">
+                           <input type="text" class="form-control" value="{{isset($arrCamData->debt_on) ? $arrCamData->debt_on : ''}}" name="debt_on" id="debt_on" placeholder="Select Date">
+                         </div>
+                       </div>
+                        <textarea class="form-control" id="contigent_observations" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations : ''}}</textarea>
 
                         <div class="clearfix"></div>
                     </div>
@@ -237,8 +252,48 @@
 </div>
 @endsection
 @section('jscript')
+<script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
 <script>
-
+   $('#debt_on').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+CKEDITOR.replace('contigent_observations', {
+    fullPage: true,
+    extraPlugins: 'docprops',
+    allowedContent: true,
+    height: 220
+  });
+CKEDITOR.replace('risk_comments', {
+    fullPage: true,
+    extraPlugins: 'docprops',
+    allowedContent: true,
+    height: 220
+  });
+CKEDITOR.replace('anchor_risk_comments', {
+    fullPage: true,
+    extraPlugins: 'docprops',
+    allowedContent: true,
+    height: 220
+  });
+CKEDITOR.replace('profile_of_company', {
+    fullPage: true,
+    extraPlugins: 'docprops',
+    allowedContent: true,
+    height: 220
+  });
+CKEDITOR.replace('rating_rational', {
+    fullPage: true,
+    extraPlugins: 'docprops',
+    allowedContent: true,
+    height: 220
+  });
+</script>
+<script>
 function showSecurityComment(val){
     if($("#othersCheckbox").is(':checked')){
         $("#securityComment").show();

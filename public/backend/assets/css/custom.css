@@ -826,9 +826,3 @@ ul.listing.listing1 li{float:left; width:33.33%;}
     float: right;
     margin-top: 9px;
 }
-.form-control {
-    background: #fff;
-    box-shadow: 0 1px 1px 2px #f5f5f5;
-    border-radius: 7px;
-    /*border: none;*/
-}

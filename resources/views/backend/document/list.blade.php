@@ -11,6 +11,10 @@
   position: absolute;
   top: -3px;
 }
+.card-title {
+    font-size: 0.9rem;
+    line-height: 1.375rem;
+}
 </style>
 @endsection
 @section('content')
@@ -19,15 +23,20 @@
 <div class="content-wrapper">
     <div class="card mt-4">
         <div class="card-body">
-            @if($noDocFlag != 1)
             <div class="form-heading pb-3 d-flex pr-0">
                 <h2>Document
                     <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX )</small>
                 </h2>
             </div>
-            @endif
             @if($noDocFlag == 1)
-                <div class="row"><h3>No document found .</h3></div>
+                 <div class="card card-color mb-0">
+                    <div class="card-header">
+                        <a class="card-title ">
+                            No document found.
+                        </a>
+
+                    </div>
+                </div>
             @else 
             @foreach($requiredDocs as $product)
             <div class="card card-color mb-0">

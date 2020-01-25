@@ -32,7 +32,7 @@
                </thead>
                <tbody>
                   <tr role="row" class="odd">
-                     <td class=""></td>
+                     <td class="">{{$arrCamData->group_company}}</td>
                      <td class="">{{$arrBizData->biz_entity_name}}</td>
                      <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
                      <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</td>
@@ -547,7 +547,7 @@
                             @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
                             @foreach($FinanceColumns as $key => $cols)
                               <tr>
-                                <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
+                                <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key] ?? '')}}"></td>
                              </tr>
                              @endforeach
                           </tbody>
