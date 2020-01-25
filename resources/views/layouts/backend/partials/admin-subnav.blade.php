@@ -14,21 +14,21 @@
         <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/fircu/*') ? 'active' : '' }}">FI/RCU</a>
     </li>
     @endcan
-   
+    <!--
     <li>
         <a href="#" class="{{ request()->is('application/collateral/*') ? 'active' : '' }}">Collateral</a>
     </li>
-    
+    -->
     @can('notes_list')
     <li>
         <a href="{{ route('notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/notes') ? 'active' : '' }}">Notes</a>
     </li>
     @endcan
-    
+    <!--
     <li>
         <a href="#">Submit Commercial</a>
     </li>
-    
+    -->
      <li>
         <a href="{{ route('pp_document_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('document/list') ? 'active' : '' }}"> Documents </a>
     </li>
