@@ -520,6 +520,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@downloadCamReport'
                 ]);
 
+                Route::post('save-bank-detail', [
+                    'as' => 'save_bank_detail',
+                    'uses' => 'Backend\CamController@saveBankDetail'
+                ]);
             }); //end of cam   
         });//end of application
 

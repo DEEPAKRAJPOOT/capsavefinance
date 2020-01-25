@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use Carbon\Carbon;
 
 class CamController extends Controller
 {
@@ -153,7 +154,6 @@ class CamController extends Controller
       try {
             $userId = Auth::user()->user_id;
             $arrData = $request->all();            
-            
             if(isset($arrData['fin_detail_id']) && $arrData['fin_detail_id']){
                   $result = AppBizFinDetail::updateHygieneData($arrData, $userId);
                   if($result){
@@ -393,7 +393,15 @@ class CamController extends Controller
             $financeData[$v['year']] = $v;
           }
         }
-        // dd(getTotalFinanceData($financeData[2017]));
+        $growth_data = [];
+        foreach ($audited_years as $Kolkata => $year) {
+          if (!empty($financeData[$year-2])) {
+             $growth_data[$year] =  getGrowth($financeData[$year], $financeData[$year-2]);
+          }else{
+             $growth_data[$year] = 0;
+          }
+        }
+
         $finDetailData = AppBizFinDetail::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
         return view('backend.cam.finance', [
           'financedocs' => $financedocs, 
@@ -402,6 +410,7 @@ class CamController extends Controller
           'borrower_name'=> $borrower_name,
           'audited_years'=> $audited_years,
           'finance_data'=> $financeData,
+          'growth_data'=> $growth_data,
           'latest_finance_year'=> $latest_finance_year,
           'finDetailData'=>$finDetailData,
           'active_xlsx_filename'=> $active_xlsx_filename,
@@ -1336,6 +1345,7 @@ class CamController extends Controller
       $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
       $totalOfferedAmount = $this->appRepo->getTotalOfferedLimit($appId);
       $totalLimit = $this->appRepo->getAppLimit($appId);
+      $equips = $this->appRepo->getEquipmentList();
 
       if(!is_null($limitData->prgm_id)){
         $prgmOfferedAmount= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
@@ -1346,7 +1356,7 @@ class CamController extends Controller
       }
 
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips]);
     }
 
     /*function for updating offer data*/
@@ -1363,6 +1373,18 @@ class CamController extends Controller
         }
 
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
+        /*Start add offer PTPQ block*/
+        $ptpqArr =[];
+        foreach($request->ptpq_from as $key=>$val){
+          $ptpqArr[$key]['prgm_offer_id'] = $offerData->prgm_offer_id;
+          $ptpqArr[$key]['ptpq_from'] = $request->ptpq_from[$key];
+          $ptpqArr[$key]['ptpq_to'] = $request->ptpq_to[$key];
+          $ptpqArr[$key]['ptpq_rate'] = $request->ptpq_rate[$key];
+          $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
+          $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
+        }
+        $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
+        /*End add offer PTPQ block*/
 
         if($offerData){
           Session::flash('message',trans('backend_messages.limit_assessment_success'));
@@ -1702,4 +1724,22 @@ class CamController extends Controller
 
     }
 
+
+    public function saveBankDetail(Request $request) {
+      try {
+            $arrData['app_id'] = request()->get('app_id');
+            $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
+            $arrData['debt_position_comments'] = request()->get('debt_position_comments');
+            $arrData['created_by'] = Auth::user()->user_id;
+            $result = FinanceModel::insertPerfios($arrData, $table = 'app_biz_bank_detail');
+            if($result){
+                Session::flash('message',trans('Bank detail saved successfully'));
+            }else{
+                Session::flash('message',trans('Bank detail not saved'));
+            }
+            return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

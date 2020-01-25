@@ -811,21 +811,18 @@ ul.listing.listing1 li{float:left; width:33.33%;}
     width: 40%;
     float: left;
 }
-.multiselect-native-select .btn-group{width: 100%;}
-.multiselect.dropdown-toggle{       width: 100%;
+.multiselect-native-select .btn-group{
+    width: 100%;
+}
+.multiselect.dropdown-toggle{
+    width: 100%;
     text-align: left;
     background: no-repeat;
     border: #d8d8d8 solid 1px;
     color: #495057;
-    font-size: 13px; letter-spacing: 1px;}
-    .dropdown-toggle::after {
-  
+    font-size: 13px; letter-spacing: 1px;
+}
+.dropdown-toggle::after {
     float: right;
     margin-top: 9px;
-}
-.form-control {
-    background: #fff;
-    box-shadow: 0 1px 1px 2px #f5f5f5;
-    border-radius: 7px;
-    border: none;
 }
