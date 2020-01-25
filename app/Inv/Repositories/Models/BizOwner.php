@@ -319,8 +319,7 @@ class BizOwner extends BaseModel
 
   public static function getCompanyOwnerByBizId($biz_id)
     {
-        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_owner.pan_number', 'biz_owner.email','biz_owner.mobile_no','biz_owner.cibil_score', 'biz_owner.is_cibil_pulled')
-       // ->leftjoin('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
+        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_owner.pan_number', 'biz_owner.email','biz_owner.mobile_no','biz_owner.cibil_score', 'biz_owner.is_cibil_pulled','biz_owner.is_promoter', 'biz_owner.designation', 'biz_owner.share_per')
         ->where('biz_owner.biz_id', $biz_id)
         ->get();
         return $arrData;
