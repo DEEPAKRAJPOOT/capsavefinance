@@ -92,7 +92,7 @@
                                     <table class="table table-bordered overview-table">
                                         <tbody>
                                             <tr>
-                                                <td with="25%"><b>Nature of facility</b></td>
+                                                <td with="25%"><b>Nature of Facility</b></td>
                                                 <td with="25%">Rental Facility </td>
                                                 <td with="25%"><b>Lessor</b></td>
                                                 <td with="25%">Capsave Finance Private Limited (CFPL)</td>
@@ -104,10 +104,21 @@
                                                 <td with="25%"> {!! $offerData->prgm_limit_amt ? \Helpers::formatCurreny($offerData->prgm_limit_amt) : '' !!}</td>
                                             </tr>
                                             <tr>
-                                                <td with="25%"><b>Sanction validity</b></td>
-                                                <td with="25%"></td>
-                                                <td with="25%"><b>Equipment type</b></td>
-                                                <td with="25%">{{ $offerData->equipment_type_id }}</td>
+                                                <td with="25%"><b>Sanction Validity</b></td>
+                                                <td with="25%" colspan="3">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($sanctionData->validity_date)->format('d/m/Y'))}}" class="form-control datepicker-dis-pdate" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" readonly >
+                                                        </div>
+                                                        <div class="col">
+                                                        <input type="text" class="form-control" placeholder="Enter Comment" name="sanction_validity_comment" value="{{ $sanctionData->validity_comment }}">
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td with="25%"><b>Equipment Type</b></td>
+                                                <td with="25%" colspan="3">{{ $equipmentData->equipment_name }}</td>
                                             </tr>
                                             <tr>
                                                 <td with="25%"><b>Lease Tenor</b></td>
@@ -121,24 +132,34 @@
                                                         @endif
                                                     @endif
                                                 </td>
-                                                <td with="25%"><b>Rental Rate – Per Thousand Per Quarter</b></td>
+                                                <td with="25%"><b>Rental Rate – Per Thousand Per 
+                                                @switch ($offerData->rental_frequency) 
+                                                    @case(4) Monthly  @break
+                                                    @case(3) Quaterly  @break
+                                                    @case(2) Bi-Yearly  @break
+                                                    @case(1) Yearly  @break
+                                                @endswitch </b></td>
                                                 <td with="25%">
+                                                    @if($ptpqrData->count())
                                                     <table class="table table-bordered">
                                                         <thead>
                                                             <tr>
-                                                                <th>From Period</th>
-                                                                <th>To Period</th>
-                                                                <th>Rate</th>
+                                                                <td>From Period</td>
+                                                                <td>To Period</td>
+                                                                <td>Rate</td>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
+                                                            @foreach ($ptpqrData as $ptpqr)
                                                             <tr>
-                                                                <td>{{ $offerData->ptpq_from }}</td>
-                                                                <td>{{ $offerData->ptpq_to }}</td>
-                                                                <td>{{ $offerData->ptpq_rate }}</td>
+                                                                <td>{{ $ptpqr->ptpq_from }}</td>
+                                                                <td>{{ $ptpqr->ptpq_to }}</td>
+                                                                <td>{{ $ptpqr->ptpq_rate }}</td>
                                                             </tr>
+                                                            @endforeach
                                                         </tbody>
                                                     </table>
+                                                    @endif
                                                 </td>
                                             </tr>
                                             <tr>
@@ -151,12 +172,24 @@
                                                     @endif
                                                 </td>
                                                 <td with="25%"><b>Processing Fees</b></td>
-                                                <td with="25%">{{ $offerData->processin_fee }}</td>
+                                                <td with="25%">{!! $offerData->processing_fee ? \Helpers::formatCurreny($offerData->processing_fee) : '' !!}</td>
                                             </tr>
                                             <tr>
                                                 <td with="25%"><b>Security</b></td>
-                                                <td with="25%"></td>
-                                                <td with="25%"><b>Rental payment frequency</b></td>
+                                                <td with="25%">
+                                                    @switch($offerData->addl_security)
+                                                        @case(1)
+                                                            BG
+                                                            @break
+                                                        @case(2)
+                                                            MF
+                                                            @break
+                                                        @case(3)
+                                                            {{ $offerData->comment }}
+                                                            @break
+                                                    @endswitch
+                                                </td>
+                                                <td with="25%"><b>Rental Payment Frequency</b></td>
                                                 <td with="25%">
                                                     Rentals are due 
                                                     @switch ($offerData->rental_frequency) 
@@ -173,8 +206,24 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td with="25%"><b>Payment mechanism</b></td>
-                                                <td colspan="3"></td>
+                                                <td with="25%"><b>Payment Mechanism</b></td>
+                                                <td colspan="3">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <select class="form-control" id="payment_type" name="payment_type">
+                                                                <option value="">Choose...</option>
+                                                                <option @if($sanctionData->payment_type == '1')selected @endif value="1">NACH</option>
+                                                                <option @if($sanctionData->payment_type == '2')selected @endif value="2">RTGS</option>
+                                                                <option @if($sanctionData->payment_type == '3')selected @endif value="3">NEFT</option>
+                                                                <option @if($sanctionData->payment_type == '4')selected @endif value="4">Advance Cheque</option>
+                                                                <option @if($sanctionData->payment_type == '5')selected @endif value="5">Other Specify</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col">
+                                                        <input type="text" class="form-control @if($sanctionData->payment_type != '5') hide @endif" name="payment_type_comment" id="payment_type_comment" placeholder="Enter Payment Mechanism" value="{{ $sanctionData->payment_type_other }}">
+                                                        </div>
+                                                    </div>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td><b>Delayed payment charges</b></td>
@@ -266,6 +315,15 @@
             fa: true
             }
         });
+        $('#payment_type').on('change', function(){
+            $('#payment_type_comment').val('');
+            if($(this).val()  == '5'){
+                $('#payment_type_comment').removeClass('hide');
+            }else{
+                $('#payment_type_comment').addClass('hide');
+            }
+        })
     });
+
 </script>
 @endsection

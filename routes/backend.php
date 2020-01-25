@@ -265,8 +265,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
             
             Route::get('download-sanction-letter', [
-                'as' => 'download_sanction_letter',
-                'uses' => 'Backend\ApplicationController@downloadSanctionLetter'
+                'as' => 'send_sanction_letter',
+                'uses' => 'Backend\ApplicationController@sendSanctionLetter'
             ]);
 
             Route::get('show-upload-sanction-letter', [
