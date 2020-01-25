@@ -226,7 +226,7 @@
                                     <div class="form-group INR">
                                                  <label for="txtEmail">Networth
                                                  </label><a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                 <input type="text" name="networth[]" maxlength='15' id="networth{{isset($row->first_name) ? $i : '1'}}" value="{{$row->networth}}" class="form-control networth"  placeholder="Enter Networth">
+                                                 <input type="text" name="networth[]" maxlength='15' id="networth{{isset($row->first_name) ? $i : '1'}}" value="{{number_format($row->networth)}}" class="form-control networth"  placeholder="Enter Networth">
                                              </div>
                                     </div>
                                         <div class="col-md-2">
@@ -609,7 +609,15 @@
       
       
       $(document).ready(function () {
-
+       ///////////////For Amount comma Seprate///////////
+        $(".networth").each(function(){
+            var id   =  $(this).attr('id');
+           document.getElementById(id).addEventListener('input', event =>
+           event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+           return true;
+        })
+        
+        
         $('.submit').on('click', function (event) {
         var button = $(this).attr("data-type");
      
@@ -1519,7 +1527,7 @@
                 },
                 dataType : 'json',
                 success:function(result) {
-                    $("#verify_mobile_otp_no"+count).html("Resend otp");
+                    $("#verify_mobile_otp_no"+count).html("Resend OTP");
                     request_id = result.request_id;
                     $("#toggleOtp"+count).show();
                 },
@@ -1621,11 +1629,13 @@
         if ($char < 48 || $char > 57) {
             return false;
         }
-            return true;
+           var id   =  $(this).attr('id');
+           document.getElementById(id).addEventListener('input', event =>
+           event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+           return true;
         })
         
-        
-          $(document).on('keypress', '.mobileveri', function(e){
+       $(document).on('keypress', '.mobileveri', function(e){
         $char = e.keyCode || e.which;
         if ($char < 48 || $char > 57) {
             return false;

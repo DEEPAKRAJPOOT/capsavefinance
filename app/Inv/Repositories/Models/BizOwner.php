@@ -210,7 +210,7 @@ class BizOwner extends BaseModel
                'designation' => $attributes['designation'][$i],    
            /// 'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
-            'networth' => $attributes['networth'][$i],
+            'networth' => str_replace(',','',$attributes['networth'][$i]),
             'pan_number' => isset($attributes['pan_no'][$i]) ? $attributes['pan_no'][$i] : null,
             'mobile'  =>  isset($attributes['mobile_no'][$i]) ? $attributes['mobile_no'][$i] : null,
             'pan_card'  =>isset($attributes['veripan'][$i]) ? $attributes['veripan'][$i] : null,
@@ -238,7 +238,7 @@ class BizOwner extends BaseModel
                'designation' => $attributes['designation'][$i],    
            /// 'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
-            'networth' => $attributes['networth'][$i],
+            'networth' => str_replace(',','',$attributes['networth'][$i]),
             'pan_number' => isset($attributes['pan_no'][$i]) ? $attributes['pan_no'][$i] : null,
             'mobile'  =>  isset($attributes['mobile_no'][$i]) ? $attributes['mobile_no'][$i] : null,
             'pan_card'  =>isset($attributes['veripan'][$i]) ? $attributes['veripan'][$i] : null,
@@ -291,7 +291,7 @@ class BizOwner extends BaseModel
             'designation' => $attributes['designation'][$i],    
            /// 'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
-            'networth' => $attributes['networth'][$i],
+            'networth' =>  str_replace(',','',$attributes['networth'][$i]),
             'created_by' =>  Auth::user()->user_id]);
             $biz_owner_id  = $ownerInputArr->biz_owner_id;
             ///////////////// save promoter address/////////////////////
