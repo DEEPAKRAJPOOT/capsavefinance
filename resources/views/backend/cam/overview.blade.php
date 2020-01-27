@@ -244,7 +244,7 @@
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
+                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{ isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
 
                         <div class="clearfix"></div>
                     </div>
@@ -256,10 +256,10 @@
                         <div class="form-group row">
                          <label for="debt_on" class="col-sm-2 col-form-label">Date As On</label>
                          <div class="col-sm-4">
-                           <input type="text" class="form-control" value="{{isset($arrCamData->debt_on) ? $arrCamData->debt_on : ''}}" name="debt_on" id="debt_on" placeholder="Select Date">
+                           <input type="text" class="form-control" value="{{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('d/m/Y') : '' }}" name="debt_on" id="debt_on" placeholder="Select Date">
                          </div>
                        </div>
-                        <textarea class="form-control" id="contigent_observations" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations : ''}}</textarea>
+                        <textarea class="form-control" id="contigent_observations" rows="3" spellcheck="false" name="contigent_observations">{{isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations : ''}}</textarea>
 
                         <div class="clearfix"></div>
                     </div>

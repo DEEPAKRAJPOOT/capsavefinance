@@ -103,16 +103,12 @@ class CamController extends Controller
             }else{
                   $arrCamData['t_o_f_security_check'] = implode(',', $arrCamData['t_o_f_security_check']);
             }
-            //dd($arrCamData);
-                  if(!isset($arrCamData['rating_rational'])){
-                  $arrCamData['rating_rational'] = NULL;
-                  }else{
-                  $arrCamData['rating_rational'] =  $arrCamData['rating_rational'] ;
-                  }
-                 // dd($arrCamData, $userId);
-
+            if(!isset($arrCamData['debt_on'])){
+                    $arrCamData['debt_on'] = NULL;
+            }else{
+                     $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
+            }
             if($arrCamData['cam_report_id'] != ''){
-              //dd($arrCamData, $userId);
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
                         Session::flash('message',trans('CAM information updated sauccessfully'));
@@ -1676,8 +1672,8 @@ class CamController extends Controller
     public function downloadCamReport(Request $request)
     {
       try{
-            $arrRequest['biz_id'] = $request->get('biz_id');
-            $arrRequest['app_id'] = $appId = $request->get('app_id');
+            echo $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
+           echo  $arrRequest['app_id'] = $appId = $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
             $active_json_filename = $json_files['curr_file'];
             if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
@@ -1707,8 +1703,18 @@ class CamController extends Controller
                 $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
                 $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
                 $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
+
+
+
+
+           
+
+
+
                 $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
                 $finacialDetails = AppBizFinDetail::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
+
+              //  dd($finacialDetails);
                 $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();        
          
                 $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
@@ -1740,6 +1746,7 @@ class CamController extends Controller
                                  'FinanceColumns' => $FinanceColumns,
                                  'audited_years' => $audited_years,
                                  'leaseOfferData' => $leaseOfferData,
+                   
                                ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

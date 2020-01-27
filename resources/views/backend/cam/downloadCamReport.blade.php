@@ -32,8 +32,8 @@
                </thead>
                <tbody>
                   <tr role="row" class="odd">
-                     <td class="">{{$arrCamData->group_company}}</td>
-                     <td class="">{{$arrBizData->biz_entity_name}}</td>
+                    <td class="">{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
+                     <td class="">{{isset($arrCamData->biz_entity_name) ? $arrCamData->biz_entity_name : ''}}</td>
                      <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
                      <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</td>
                      <td class="">{!! $arrCamData->total_exposure ? \Helpers::formatCurreny($arrCamData->total_exposure) : '' !!}</td>
@@ -448,7 +448,7 @@
             <h5 class="mt-4">Purpose of Rental Facility</h5>
             <p>{{isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : ''}}</p>
             <h5 class="mt-4"> About the Company</h5>
-            <p>{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}} </p>
+            <p>{!! isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : '' !!} </p>
             
 
 
@@ -501,7 +501,7 @@
             <p>{{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</p>
 
             <h5>Rating rationale of {{$arrBizData->biz_entity_name}} :</h5>
-            <p> {{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}} </p>
+            <p> {!! isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : '' !!} </p>
            
 
 
@@ -576,7 +576,7 @@
 
             <h5 class="mt-4">Financial Comment:</h5>
            
-           
+           <p>{!! isset($finacialDetails->debt_cmnt) ? $finacialDetails->debt_cmnt : '' !!}</p>
             
             
             
@@ -603,8 +603,8 @@
            
 
            
-            <h5 class="mt-4">Contingent Liabilities and Auditors Observations as on March 31, 2019:</h5>
-            <p>Nil as on March 31, 2019.</p>
+            <h5 class="mt-4">Contingent Liabilities and Auditors Observations as on {{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('j F, Y') : ''}}:</h5>
+            <p>{!! isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations: '' !!}</p>
             <h5 class="mt-4">Risk Comments:</h5>
             <h5 class="mt-2"><small>Deal Positives:</small></h5>
             <table class="table table-bordered overview-table">
