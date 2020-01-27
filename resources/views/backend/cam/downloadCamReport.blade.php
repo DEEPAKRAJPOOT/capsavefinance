@@ -73,20 +73,75 @@
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Rental Frequency</td>
-                     <td class="">{{isset($leaseOfferData->rental_frequency) ? $leaseOfferData->rental_frequency : ''}}</td>
+                     <td class="">{{isset($leaseOfferData->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOfferData->rental_frequency] : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">PTPQ</td>
-                     <td class="">Rs. 32 per quarter for first 8 quarters and Rs. 92 for balance 12 quarters</td>
+                     <td class="">
+                        @php 
+                           $i = 1;
+                           if(!empty($leaseOfferData->offerPtpq)){
+                           $total = count($leaseOfferData->offerPtpq);
+                        @endphp   
+
+                           @foreach($leaseOfferData->offerPtpq as $key => $arr) 
+
+                                 @if ($i > 1 && $i < $total)
+                                  ,
+                                 @elseif ($i > 1 && $i == $total)
+                                    and
+                                 @endif
+                                 Rs. {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOfferData->rental_frequency]}}
+
+                                  @php 
+                                    $i++;
+                                  @endphp     
+                           @endforeach
+                           @php 
+                             }
+                            @endphp 
+
+                     </td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="" valign="top">XIRR</td>
                      <td class="" valign="top">Ruby Sheet : {{isset($leaseOfferData->ruby_sheet_xirr) ? $leaseOfferData->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOfferData->cash_flow_xirr) ? $leaseOfferData->cash_flow_xirr : ''}}%
                      </td>
                   </tr>
+                 
                   <tr role="row" class="odd">
                      <td class="">Additional Security</td>
-                     <td class="">{{isset($leaseOfferData->addl_security) ? $leaseOfferData->addl_security : ''}}
+                     <td class="">
+
+
+
+
+                                       <div class="form-check" style="display: inline-block; margin-right:10px;">
+                                         <label class="form-check-label">
+                                         <input type="checkbox" class="form-check-input"  value="1" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '1') !== false) ? 'checked' : ''}} >BG
+                                         <i class="input-helper"></i></label>
+                                       </div>
+
+
+                                       <div class="form-check" style="display: inline-block;">
+                                         <label class="form-check-label">
+                                         <input type="checkbox" class="form-check-input"   value="2" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '2') !== false) ? 'checked' : ''}}>FD
+                                         <i class="input-helper"></i></label>
+                                      </div>
+                                      <div class="form-check" style="display: inline-block;">
+                                         <label class="form-check-label">
+                                         <input type="checkbox" class="form-check-input"   value="MF" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '3') !== false) ? 'checked' : ''}}>MF
+                                         <i class="input-helper"></i></label>
+                                      </div>
+                                      <div class="form-check" style="display: inline-block;">
+                                         <label class="form-check-label">
+                                         <input type="checkbox" class="form-check-input" id="othersCheckbox" name="t_o_f_security_check[]"  value="4" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '4') !== false) ? 'checked' : ''}}>Others
+                                         <i class="input-helper"></i></label>
+                                      </div>
+
+
+                                 <input type="text" name="t_o_f_security" id="securityComment" class="form-control" value="{{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}" style="display: {{isset($leaseOfferData->comment) && (strpos($leaseOfferData->addl_security, '4') !== false) ? '' : 'none'}} " />
+                    
                      </td>
                   </tr>
                </tbody>
@@ -671,24 +726,24 @@
  
  </div>
 </div>
+<div class="isloader" style="display:none;">  
+        <img src="http://admin.rent.local/backend/assets/images/loader.gif">
+    </div>
 @endsection
 @section('jscript')
-
-
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" ></script>
-
-
 
 <script>
 
 function downloadCam(){
     var pdf = new jsPDF('px', 'pt', [1150, 1500]);
-    pdf.html(document.getElementById('camReport'), {
+    var  res = pdf.html(document.getElementById('camReport'), {
         callback: function (pdf) {
             pdf.save('camReport');
         }
     });
+    
 }
 
 

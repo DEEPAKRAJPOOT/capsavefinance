@@ -1698,6 +1698,10 @@ class CamController extends Controller
             $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
             $arrRequest['app_id'] = $appId = $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
+            $arrStaticData = array();
+            $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quaterly','4'=>'Monthly');
+
+            $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quater','4'=>'Months');
             $active_json_filename = $json_files['curr_file'];
             if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
                       $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
@@ -1721,8 +1725,10 @@ class CamController extends Controller
                // dd(getTotalFinanceData($financeData['2017']));
                 $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
                 if(count($leaseOfferData)){
-                  $leaseOfferData = $leaseOfferData['0'];
+                    $leaseOfferData = $leaseOfferData['0'];
+                    
                 }
+
                 $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
                 $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
                 $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
@@ -1732,7 +1738,6 @@ class CamController extends Controller
                 $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
                 $finacialDetails = AppBizFinDetail::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
 
-              //  dd($finacialDetails);
                 $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();        
          
                 $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
@@ -1758,6 +1763,7 @@ class CamController extends Controller
                                  'arrBankDetails' => $arrBankDetails,
                                  'arrApproverData' => $arrApproverData,
                                  'arrCM' => $arrCM,
+                                 'arrStaticData' => $arrStaticData,
                    
                                ]);
         } catch (Exception $ex) {
