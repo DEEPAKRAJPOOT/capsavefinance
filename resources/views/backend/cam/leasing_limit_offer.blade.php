@@ -53,8 +53,10 @@
             <div class="form-group ">
                 <label for="txtPassword" ><b>Security Deposit</b></label> 
                 <br/>
-                <label class="radio-inline"><input type="radio" name="security_deposit_type" value="1" {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'checked': '') : ''}}> Flat</label>&nbsp;&nbsp;&nbsp;&nbsp;
-                <label class="radio-inline"><input type="radio" name="security_deposit_type" value="2" {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'checked': '') : ''}}> Percent</label>
+                <div id="radio_block">
+                    <label class="radio-inline"><input type="radio" name="security_deposit_type" value="1" {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'checked': '') : ''}}> Flat</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label class="radio-inline"><input type="radio" name="security_deposit_type" value="2" {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'checked': '') : ''}}> Percent</label>
+                </div>
             </div>
         </div>
 
@@ -221,6 +223,7 @@
     unsetError('input[name=tenor]');
     unsetError('select[name=equipment_type_id]');
     unsetError('input[name=security_deposit]');
+    unsetError('input[name=security_deposit_type]');
     unsetError('select[name=rental_frequency]');
     unsetError('select[name=rental_frequency_type]');
     unsetError('select[name=security_deposit_of]');
@@ -231,6 +234,7 @@
     unsetError('input[name=cash_flow_xirr]');
     unsetError('input[name=processing_fee]');
     unsetError('#check_block');
+    unsetError('#radio_block');
 
     let flag = true;
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
@@ -265,6 +269,11 @@
 
     if(equipment_type_id == ''){
         setError('select[name=equipment_type_id]', 'Please select equipment type');
+        flag = false;
+    }
+
+    if(typeof security_deposit_type == 'undefined'){
+        setError('#radio_block', 'Please select security deposit type');
         flag = false;
     }
 
