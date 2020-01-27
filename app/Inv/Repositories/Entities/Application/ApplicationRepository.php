@@ -1216,4 +1216,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getEquipmentList(){
         return Equipment::getEquipmentList();
     }
+    
+    /**
+     * get Bank account by Company ID 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getBankAccountDataByCompanyId($bank_acc_id,$comp_id)
+    {
+        return UserBankAccount::getBankAccountDataByCompanyId($bank_acc_id,$comp_id);
+    }
 }

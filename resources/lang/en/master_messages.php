@@ -10,5 +10,7 @@ return [
     'entity_edit_success' => 'Entity updated successfully',
     'industry_add_success' => 'Industry added successfully',
     'industry_edit_success' => 'Industry updated successfully',
+    'company_edit_success' => 'Company updated successfully',
+    'company_add_success' => 'Company added successfully',
 ];
 
