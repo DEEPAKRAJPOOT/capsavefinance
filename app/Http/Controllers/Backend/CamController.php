@@ -33,6 +33,8 @@ use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use Carbon\Carbon;
 use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\AppApprover;
+
 
 class CamController extends Controller
 {
@@ -1675,8 +1677,8 @@ class CamController extends Controller
     public function downloadCamReport(Request $request)
     {
       try{
-            echo $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
-           echo  $arrRequest['app_id'] = $appId = $request->get('app_id');
+            $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
+            $arrRequest['app_id'] = $appId = $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
             $active_json_filename = $json_files['curr_file'];
             if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
@@ -1706,14 +1708,9 @@ class CamController extends Controller
                 $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
                 $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
                 $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
-
-
-
-
-           
-
-
-
+                $arrBankDetails = FinanceModel::getDebtPosition($appId);
+                $arrApproverData =  $this->appRepo->getAppApproversDetails($appId);
+                $arrCM = $this->appRepo->getBackStageUsers($appId, array('6'));
                 $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
                 $finacialDetails = AppBizFinDetail::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
 
@@ -1721,16 +1718,7 @@ class CamController extends Controller
                 $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();        
          
                 $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-                $arrCamData['total_exposure']  = '';
-                if(isset($arrCamData['existing_exposure'])){
-                    $arrCamData['total_exposure'] = is_int(intval(str_replace(',', '', $arrCamData['existing_exposure']))) ? intval(str_replace(',', '', $arrCamData['existing_exposure'])) : 0;
-                }
-                if(isset($arrCamData['existing_exposure'])){
-
-                    $arrCamData['total_exposure'] += is_int(intval(str_replace(',', '', $arrCamData['proposed_exposure']))) ? intval(str_replace(',', '', $arrCamData['proposed_exposure'])) : 0;
-                }
-
-               //dd($arrCamData);
+               
                 if(isset($arrCamData['t_o_f_security_check'])){
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
@@ -1749,6 +1737,9 @@ class CamController extends Controller
                                  'FinanceColumns' => $FinanceColumns,
                                  'audited_years' => $audited_years,
                                  'leaseOfferData' => $leaseOfferData,
+                                 'arrBankDetails' => $arrBankDetails,
+                                 'arrApproverData' => $arrApproverData,
+                                 'arrCM' => $arrCM,
                    
                                ]);
         } catch (Exception $ex) {

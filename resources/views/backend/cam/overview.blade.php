@@ -132,7 +132,7 @@
                             <td width="25%"><b>Proposed Group Exposure</b></td>
                             <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
                             <td width="25%"><b>Total Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" ></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" ></td>
                         </tr>
                     </tbody>
                 </table>

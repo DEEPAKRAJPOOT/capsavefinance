@@ -33,10 +33,10 @@
                <tbody>
                   <tr role="row" class="odd">
                     <td class="">{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
-                     <td class="">{{isset($arrCamData->biz_entity_name) ? $arrCamData->biz_entity_name : ''}}</td>
-                     <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
-                     <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</td>
-                     <td class="">{!! $arrCamData->total_exposure ? \Helpers::formatCurreny($arrCamData->total_exposure) : '' !!}</td>
+                     <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
+                     <td class="">{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
+                     <td class="">{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</td>
+                     <td class="">{{ isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : '' }}</td>
                   </tr>
                </tbody>
             </table>
@@ -196,20 +196,43 @@
                      <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Recommended By</th>
                      <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="3" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="75%">Investment Committee Members</th>
                   </tr>
-                  <tr role="row">
-                     <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%" style="background:#62b59b;">Dhriti Barman</th>
-                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;">Vivek Tolat/Sharon Coorlawala</th>
-                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;">Jinesh Kumar Jain</th>
-                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;">Praveen Chauhan</th>
-                  </tr>
+                 
+                   
                </thead>
                <tbody>
-                  <tr role="row" class="odd">
-                     <td align="center">Text</td>
-                     <td align="center">Text</td>
-                     <td align="center">Text</td>
-                     <td align="center">Text</td>
+                    <tr role="row" >
+                        <td align="center" rowspan="">
+                          <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                                  @php 
+                                    $i=0;
+                                 @endphp
+                                 @while(!empty($arrCM[$i])) 
+                                    <tr>
+                                        <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;border-right: 2px solid #fff;">{{$arrCM[$i]->assignee}}</th>
+                                        @php $i++; @endphp
+                                   </tr>
+                               @endwhile
+                           </table> 
+                        </td>
+                     <td align="center" colspan="3">
+                        <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                              @php 
+                                 $i=0;
+                              @endphp
+                              @while(!empty($arrApproverData[$i])) 
+                                 <tr>
+                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;border-right: 2px solid #fff;">{{$arrApproverData[$i]->approver}}</th>
+                                     @php $i++; @endphp
+                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;border-right: 2px solid #fff;">{{$arrApproverData[$i]->approver}}</th>
+                                      @php $i++; @endphp
+                                </tr>
+                            @endwhile
+                        </table>
+                     </td>
                   </tr>
+
+
+
                </tbody>
             </table>
             <h5 class="mt-4">Minimum Acceptance Criteria as per NBFC Credit Policy:</h5>
@@ -578,31 +601,15 @@
            
            <p>{!! isset($finacialDetails->debt_cmnt) ? $finacialDetails->debt_cmnt : '' !!}</p>
             
-            
-            
-            <h5 class="mt-4">Debt Position as on March 31, 2019:</h5>
-            <table class="table table-bordered overview-table">
-               <thead>
-                  <tr>
-                     <th width="50%">Particulars</th>
-                     <th width="50%">Rs in Mn</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <tr>
-                     <td>Long term borrowings*</td>
-                     <td>4552.10</td>
-                  </tr>
-                  <tr>
-                     <td>Short term borrowings</td>
-                     <td>1538.80</td>
-                  </tr>
-               </tbody>
-            </table>
-            <p>*Includes long term ECB loan from Pref Shareholders (Kiran Pallavi Investments LLC) of Rs. 2343.70 Mn</p>
-           
+          
+
+
+           <h5 class="mt-4">Debt Position as on {{isset($arrBankDetails->debt_on) ? \Carbon\Carbon::createFromFormat('d/m/Y', $arrBankDetails->debt_on)->format('j F, Y') : ''}}:</h5>
+            <p>{!! isset($arrBankDetails->debt_position_comments) ? $arrBankDetails->debt_position_comments: '' !!}</p>
 
            
+
+
             <h5 class="mt-4">Contingent Liabilities and Auditors Observations as on {{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('j F, Y') : ''}}:</h5>
             <p>{!! isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations: '' !!}</p>
             <h5 class="mt-4">Risk Comments:</h5>
