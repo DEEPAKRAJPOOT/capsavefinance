@@ -14,79 +14,10 @@
                         <div class="col-md-12">
                             <h5 class="card-title form-head-h5">Sanction Letter
                             @if($sanctionData)
-                          {{--
-                            <a data-toggle="modal" data-target="#uploadSanctionLetter" data-height="200px" data-width="100%" data-placement="top" href="#" data-url="{{ route('show_upload_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'upload'=>1 ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Upload</a>
-                                
-                            <a href="{{ route('download_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'download'=>1, 'sanction_id'=>$sanction_id ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Download</a>  --}}                         
-                                
                                 <a data-toggle="modal" data-target="#previewSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="{{ route('preview_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'upload'=>1, 'sanction_id'=>$sanction_id ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Preview/Send Mail</a>
                             @endif
                             </h5> 
                             <div class="col-md-12">
-                                {{--
-                                <table class="table-striped table">
-                                    <tbody><tr>
-                                            <td><b>Apply Loan Amount :</b></td>
-                                            <td>{!! $loanAmount ? \Helpers::formatCurreny($loanAmount) : '' !!}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Loan Offer :</b></td>
-                                            <td>{{ $loan_offer }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Interest Rate (%) :</b></td>
-                                            <td>{{ $interest_rate }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Tenor (Days) :</b></td>
-                                            <td>{{ $tenor }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Tenor for old invoice (Days) :</b></td>
-                                            <td>{{ $tenor_old_invoice }}</td>
-                                        </tr> 
-
-                                        <tr>
-                                            <td><b>Margin (%) :</b></td>
-                                            <td>{{ $margin }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Overdue Interest Rate (%) :</b></td>
-                                            <td>{{ $overdue_interest_rate }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Adhoc Interest Rate (%) :</b></td>
-                                            <td>{{ $adhoc_interest_rate }}</td>
-                                        </tr> 
-
-                                        <tr>
-                                            <td><b>Grace Period  (Days) :</b></td>
-                                            <td>{{ $grace_period }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Processing Fee :</b></td>
-                                            <td>{{ $processing_fee }}</td>
-                                        </tr>  
-
-                                        <tr>
-                                            <td><b>Check Bounce Fee :</b></td>
-                                            <td>{{ $check_bounce_fee }}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><b>Comment :</b></td>
-                                            <td>{{ $comment }}</td>
-                                        </tr>                                        
-
-                                    </tbody>
-                                </table>--}}
-                              
                                 <form action="{{route('save_sanction_letter')}}" method="POST">
                                     @csrf
                                     <table class="table table-bordered overview-table">
@@ -299,9 +230,7 @@
 {!!Helpers::makeIframePopup('uploadSanctionLetter','Upload Sanction Letter', 'modal-md')!!}
 @endsection
 @section('jscript')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/wysihtml5/0.3.0/wysihtml5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.2/handlebars.runtime.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-wysiwyg/0.3.3/bootstrap3-wysihtml5.all.min.js"></script>
+<script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
 <script>
     var messages = {
         get_applications: "{{ URL::route('ajax_app_list') }}",
@@ -310,11 +239,68 @@
 
     };
     $(document).ready(function(){ 
-        $('.textarea').wysihtml5({
-            toolbar: {
-            fa: true
-            }
+
+        CKEDITOR.replace('delay_pymt_chrg',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
         });
+        CKEDITOR.replace('insurance',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
+        });
+        CKEDITOR.replace('bank_chrg',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
+        });
+        CKEDITOR.replace('legal_cost',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
+        });
+        CKEDITOR.replace('po',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
+        });
+        CKEDITOR.replace('pdp',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
+        });
+        CKEDITOR.replace('disburs_guide',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
+        });
+        CKEDITOR.replace('other_cond',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
+        });
+        CKEDITOR.replace('covenants',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
+        } );
+        CKEDITOR.replace('rating_rational',{
+            fullPage: true,
+            extraPlugins: 'docprops',
+            allowedContent: true,
+            height:220
+        });
+       
         $('#payment_type').on('change', function(){
             $('#payment_type_comment').val('');
             if($(this).val()  == '5'){
