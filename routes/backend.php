@@ -448,6 +448,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@saveReviewerSummary'
                 ]);
 
+                Route::get('mail-reviewer-summary', [
+                    'as' => 'mail_reviewer_summary',
+                    'uses' => 'Backend\CamController@mailReviewerSummary'
+                ]);
+
                 Route::get('gstin', [
                     'as' => 'cam_gstin',
                     'uses' => 'Backend\CamController@gstin'

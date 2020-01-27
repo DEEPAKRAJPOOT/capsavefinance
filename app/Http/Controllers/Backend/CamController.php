@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Mail\ReviewerSummary;
+use Mail;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use Carbon\Carbon;
 use App\Inv\Repositories\Models\OfferPTPQ;
@@ -221,6 +223,19 @@ class CamController extends Controller
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
+    }
+
+    public function mailReviewerSummary(Request $request) {
+      Mail::to(config('common.review_summ_mails'))
+        ->send(new ReviewerSummary());
+
+      if(count(Mail::failures()) > 0 ) {
+        Session::flash('error',trans('Mail not sended, try again later.'));
+      } else {
+        Session::flash('message',trans('Mail sended successfully.'));        
+      }
+      return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
+      //return new \App\Mail\ReviewerSummary();        
     }
 
     public function uploadBankXLSX(Request $request){
@@ -1323,13 +1338,13 @@ class CamController extends Controller
     }
 
     public function approveOffer(Request $request){
-      $appId = $request->get('app_id');
         $appApprData = [
-            'app_id' => $appId,
+            'app_id' => $request->get('app_id'),
             'approver_user_id' => \Auth::user()->user_id,
             'status' => 1
           ];
         $this->appRepo->saveAppApprovers($appApprData);
+
         //update approve status in offer table after all approver approve the offer.
         $this->appRepo->changeOfferApprove((int)$appId);
         Session::flash('message',trans('backend_messages.offer_approved'));
