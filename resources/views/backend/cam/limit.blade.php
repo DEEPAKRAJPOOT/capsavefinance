@@ -8,31 +8,25 @@
     <input type="hidden" value="{{request()->get('app_prgm_limit_id')}}" name="app_prgm_limit_id">
     
     <div class="row">
-    <div class="col-md-12">
-      <div class="form-group row">
-        <label for="txtPassword" class="col-md-4"><b>Product Type:</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Product Type:</b></label> 
         <input type="text" name="prgm_limit_amt" class="form-control" value="{{isset($limitData->product)? $limitData->product->product_name : ''}}" disabled>
-        </div>
       </div>
     </div>
     
     @if($limitData->product->id == 1)
-    <div class="col-md-12">
-      <div class="form-group row">
-        <label for="txtPassword" class="col-md-4"><b>Anchor:</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Anchor:</b></label> 
         <input type="text" name="anchor_id" class="form-control" value="{{isset($limitData->anchor)? $limitData->anchor->comp_name : ''}}" disabled>
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row">
-        <label for="txtPassword" class="col-md-4"><b>Program:</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Program:</b></label> 
         <input type="text" name="prgm_id" class="form-control" value="{{isset($limitData->prgm_id)? $limitData->program->prgm_name : ''}}" disabled>
-        </div>
       </div>
     </div>
     @endif
@@ -48,14 +42,12 @@
     }
     @endphp
     
-    <div class="col-md-12">
-      <div class="form-group row INR">
-        <label for="txtPassword" class="col-md-4"><b>Limit:</b></label>
-        <span>Balance: <i class="fa fa-inr" aria-hidden="true"></i>{{($ab > 0)? $ab: 0}}</span>
-        <div class="col-md-8">
-        <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+    <div class="col-md-6">
+      <div class="form-group INR">
+        <label for="txtPassword"><b>Limit:</b></label>
+        <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($ab > 0)? $ab: 0}}</span>
+        <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" name="limit_amt" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit amount" maxlength="15">
-        </div>
       </div>
     </div>
 

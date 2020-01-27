@@ -1,11 +1,5 @@
 @extends('layouts.backend.admin-layout')
 
-@section('additional_css')  
-{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js-bootstrap-css/1.2.1/typeaheadjs.min.css" /> --}}
-    
-@endsection
-
-
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
@@ -127,16 +121,10 @@
                         <tr>
                             <td width="25%"><b>Group Company</b></td>
                             <td width="25%">
-                               {{--
-
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="input-group">
-                                            <input id="search" name="search" type="text" class="form-control group-company" placeholder="Search" />
-                                         </div>
-                                    </div>
-                                </div> --}}
-                                <input type="text" class="form-control group-company" name="group_company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" >
+                                <div class="p-relative">
+                                    <input type="text" class="form-control group-company" name="group_company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}"  autocomplete="off" >
+                                </div> 
+                            </td>
                             <td width="25%"><b>Existing Group Exposure</b></td>
                             <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" maxlength="20" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
                         </tr>
@@ -275,12 +263,11 @@
 </div>
 @endsection
 @section('jscript')
-<<<<<<< HEAD
+<script src="{{url('common/js/typehead.js')}}"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
-=======
 <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
-<script>
+
+<script type="text/javascript">
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
      pickTime: false,
@@ -289,60 +276,56 @@
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
-CKEDITOR.replace('contigent_observations', {
-    fullPage: true,
-    extraPlugins: 'docprops',
-    allowedContent: true,
-    height: 220
-  });
-CKEDITOR.replace('risk_comments', {
-    fullPage: true,
-    extraPlugins: 'docprops',
-    allowedContent: true,
-    height: 220
-  });
-CKEDITOR.replace('anchor_risk_comments', {
-    fullPage: true,
-    extraPlugins: 'docprops',
-    allowedContent: true,
-    height: 220
-  });
-CKEDITOR.replace('profile_of_company', {
-    fullPage: true,
-    extraPlugins: 'docprops',
-    allowedContent: true,
-    height: 220
-  });
-CKEDITOR.replace('rating_rational', {
-    fullPage: true,
-    extraPlugins: 'docprops',
-    allowedContent: true,
-    height: 220
-  });
-</script>
->>>>>>> f4eb07c8e9eb412a6eae5779aa2d46e1cd7e275f
-<script>
-function showSecurityComment(val){
-    if($("#othersCheckbox").is(':checked')){
-        $("#securityComment").show();
-    }else{
-        $("#securityComment").hide();
+    CKEDITOR.replace('contigent_observations', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+    CKEDITOR.replace('risk_comments', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+    CKEDITOR.replace('anchor_risk_comments', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+    CKEDITOR.replace('profile_of_company', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+    CKEDITOR.replace('rating_rational', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+
+    function showSecurityComment(val){
+        if($("#othersCheckbox").is(':checked')){
+            $("#securityComment").show();
+        }else{
+            $("#securityComment").hide();
+        }
     }
 
-
-}
-
-</script>
-
-
-<script type="text/javascript">
     var path = "{{ route('get_group_company') }}";
+
+
+    
     $('input.group-company').typeahead({
         source:  function (query, process) {
-        return $.get(path, { query: query }, function (data) {
+            return $.get(path, { query: query }, function (data) {
                 return process(data);
             });
-        }
+        },
+        minLength: '3'
     });
 </script>
 @endsection
