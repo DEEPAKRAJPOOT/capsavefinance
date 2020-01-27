@@ -22,7 +22,10 @@
                                     {{ $businessAddress->addr_1 }}<br>
                                     {{ $businessAddress->addr_2 }}<br>
                                     {{ $businessAddress->city_name }}
+                                    @if($businessAddress->state)
                                     {{ $businessAddress->state->name }}
+                                    @endif
+                                    
                                     @if( $businessAddress->pin_code) - {{ $businessAddress->pin_code }} @endif <br><br>
                                 Kind Attention:{{ $contact_person }}<br><br>
                                 Sub: Sanction Letter for {{ $biz_entity_name }}</b><br><br>
@@ -58,7 +61,10 @@
                                         <tr>
                                             <td>6.</td>
                                             <td>Equipment type</td>
-                                            <td>{{ $equipmentData->equipment_name }}</td>
+                                            <td> @if($equipmentData)
+                                                {{ $equipmentData->equipment_name }}
+                                                @endif
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>7.</td>

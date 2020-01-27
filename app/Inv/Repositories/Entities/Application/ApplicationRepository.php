@@ -1223,6 +1223,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         
         $programLimitData = self::getLimit($offerData->app_prgm_limit_id);
         $ptpqrData = OfferPTPQ::getOfferPTPQR($offerData->prgm_offer_id);
+        $equipmentData = null;
         if($offerData->equipment_type_id){
             $equipmentData = Equipment::find($offerData->equipment_type_id);
         }
@@ -1238,7 +1239,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $data = [
             'product_id' => $programLimitData->product_id,
             'biz_entity_name' => $businessData->biz_entity_name,
-            'sanctionData' => $sanctionData,
             'security_deposit_of' => $security_deposit_of,
             'appId' => $appId,
             'bizId' => $bizId,
@@ -1246,10 +1246,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
             'offerData' => $offerData,
             'equipmentData' =>$equipmentData,
             'ptpqrData' => $ptpqrData,
-            'businessAddress' => $businessAddress,
-            'contact_person' => $cam->contact_person
+            'businessAddress' => $businessAddress
         ];
-
+        
+        $data['contact_person'] = ($cam)?$cam->contact_person:'';
         $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
         $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
         $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
@@ -1264,10 +1264,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $data['disburs_guide'] = ($sanctionData)?$sanctionData->disburs_guide:'';
         $data['other_cond'] = ($sanctionData)?$sanctionData->other_cond:'';
         $data['covenants'] = ($sanctionData)?$sanctionData->covenants:'';
+        $data['sanctionData'] = ($sanctionData)?$sanctionData:'';
 
         return $data;
     }
+
     public function addOfferPTPQ($data){
         return OfferPTPQ::addOfferPTPQ($data);
+    }
+
+    public function getEquipmentList(){
+        return Equipment::getEquipmentList();
     }
 }

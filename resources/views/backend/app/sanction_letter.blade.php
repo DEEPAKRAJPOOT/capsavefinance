@@ -118,7 +118,7 @@
                                             </tr>
                                             <tr>
                                                 <td with="25%"><b>Equipment Type</b></td>
-                                                <td with="25%" colspan="3">{{ $equipmentData->equipment_name }}</td>
+                                                <td with="25%" colspan="3"> @if($equipmentData) {{ $equipmentData->equipment_name }}@endif </td>
                                             </tr>
                                             <tr>
                                                 <td with="25%"><b>Lease Tenor</b></td>
@@ -140,7 +140,7 @@
                                                     @case(1) Yearly  @break
                                                 @endswitch </b></td>
                                                 <td with="25%">
-                                                    @if($ptpqrData->count())
+                                                    @if($ptpqrData)
                                                     <table class="table table-bordered">
                                                         <thead>
                                                             <tr>

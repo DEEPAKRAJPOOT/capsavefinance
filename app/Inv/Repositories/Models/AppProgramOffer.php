@@ -65,6 +65,9 @@ class AppProgramOffer extends BaseModel {
         'security_deposit_of',
         'rental_frequency',
         'rental_frequency_type',
+        'ptpq_from',
+        'ptpq_to',
+        'ptpq_rate',
         'ruby_sheet_xirr',
         'cash_flow_xirr',
         'addl_security',
@@ -306,10 +309,6 @@ class AppProgramOffer extends BaseModel {
         }else{
             return false;
         }
-    }
 
-    public function offerPtpq(){
-        return $this->hasMany('App\Inv\Repositories\Models\OfferPTPQ', 'prgm_offer_id', 'prgm_offer_id');
     }
-
 }
