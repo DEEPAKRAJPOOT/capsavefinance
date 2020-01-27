@@ -246,6 +246,7 @@ return [
         'Zip' => ZanySoft\Zip\ZipFacade::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'FinanceHelper' => App\Helpers\FinanceHelper::class,
+        'ApportionmentHelper' => App\Helpers\ApportionmentHelper::class,
      ],
 
 ];

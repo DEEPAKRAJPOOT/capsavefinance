@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\BizPanGst;
+use App\Helpers\ApportionmentHelper;
 
 trait LmsTrait
 {
@@ -302,7 +303,9 @@ trait LmsTrait
         return $calDate;
     }
     
-    
+    // protected function invoiceKnockOff($transId){
+    //     $Obj = new ApportionmentHelper($transId,$this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
+    // }
     protected function invoiceKnockOff($transId){
         $transDetail = Transactions::whereIn('is_settled',[0,1])->where(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->get()->first();
        
