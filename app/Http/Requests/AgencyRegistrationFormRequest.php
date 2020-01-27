@@ -22,7 +22,7 @@ class AgencyRegistrationFormRequest extends Request
             'comp_phone' => 'required|numeric|digits:10',
             'comp_addr'   => 'required|min:5|max:100',
             'comp_state'   => 'required',
-            'comp_city' => 'required|min:3|max:50|alpha',
+            'comp_city' => 'required|min:3|max:50|alpha_spaces',
             'comp_zip' => 'required|numeric|digits:6', 
             ];
     }
@@ -50,6 +50,7 @@ class AgencyRegistrationFormRequest extends Request
             'comp_city.required' => 'City name is required',
             'comp_city.min' => 'Please enter correct city name',
             'comp_city.max' => 'City name is too long',
+            'comp_city.alpha_spaces' => 'City name may only contain letters and spaces.',
             'comp_zip.required' => 'Pin code is required',
             'comp_zip.numeric'=>trans('error_messages.invalid_zip') 
         ];
