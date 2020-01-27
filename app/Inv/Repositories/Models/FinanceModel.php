@@ -220,6 +220,14 @@ class FinanceModel extends BaseModel
         return ($result ?? null);
     }
 
+    public static function getDebtPosition($appId){
+         $result = self::select(DB::raw("DATE_FORMAT(debt_on, '%d/%m/%Y') as debt_on"),'debt_position_comments','bank_detail_id')
+                ->from('app_biz_bank_detail')
+                ->where('app_id', $appId)
+                ->orderBy('bank_detail_id','desc')->first();
+        return ($result ?? null);
+    }
+
     public static function insertPerfios($data, $table = 'biz_perfios'){
       $inserted_id = DB::table($table)->insertGetId($data);
       return $inserted_id;
