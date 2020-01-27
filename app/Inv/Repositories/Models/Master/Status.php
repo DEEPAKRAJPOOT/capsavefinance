@@ -55,9 +55,16 @@ class Status extends BaseModel
      * @return mixed
      */
     
-    public static function getStatusList()
+    public static function getStatusList($status_type)
     {
-      $res =   self::where('is_active',1)->where('status_type',4)->pluck('status_name','id');
-      return $res?:false;
+        if (empty($status_type)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        if (!is_int($status_type)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $res = self::where('is_active',1)->where('status_type', $status_type)->pluck('status_name','id');
+        return $res ?: false;
     }
 }
