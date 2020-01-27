@@ -173,9 +173,9 @@
 											<label for="txtSupplierName">Product Type
 											</label><br/>
 											<div id="check_block">
-											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input class="product-type" type="checkbox" value="1" name="product_id[]"> Supply Chain</label>
-											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input class="product-type" type="checkbox" value="2" name="product_id[]"> Term Loan</label>
-											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input class="product-type" type="checkbox" value="3" name="product_id[]"> Leasing</label>
+											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input class="product-type" type="checkbox" value="1" name="product_id[1][checkbox]"> Supply Chain</label>
+											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input class="product-type" type="checkbox" value="2" name="product_id[2][checkbox]"> Term Loan</label>
+											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input class="product-type" type="checkbox" value="3" name="product_id[3][checkbox]"> Leasing</label>
 											</div>
 											@error('product_id')
 								                <span class="text-danger error">{{ $message }}</span>
@@ -578,6 +578,8 @@ $(document).ready(function () {
 			$("#product-type-"+productType).removeClass('hide');
 		}else{
 			$("#product-type-"+productType).addClass('hide');
+			$("input[name='product_id["+productType+"][loan_amount]']").val('');
+			$("input[name='product_id["+productType+"][tenor_days]']").val('');
 		}
 	});
 });

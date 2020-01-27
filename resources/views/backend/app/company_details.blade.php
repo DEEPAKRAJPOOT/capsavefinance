@@ -184,9 +184,9 @@
 									<label for="txtSupplierName">Product Type
 									</label><br/>
 									<div id="check_block">
-									<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="1" name="product_id[1]" {{array_key_exists(1, $product_ids)? 'checked': ''}}> Supply Chain</label>
-									<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="2" name="product_id[2]" {{array_key_exists(2, $product_ids)? 'checked': ''}}> Term Loan</label>
-									<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="3" name="product_id[3]" {{array_key_exists(3, $product_ids)? 'checked': ''}}> Leasing</label>
+									<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="1" name="product_id[1][checkbox]" {{array_key_exists(1, $product_ids)? 'checked': ''}}> Supply Chain</label>
+									<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="2" name="product_id[2][checkbox]" {{array_key_exists(2, $product_ids)? 'checked': ''}}> Term Loan</label>
+									<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="3" name="product_id[3][checkbox]" {{array_key_exists(3, $product_ids)? 'checked': ''}}> Leasing</label>
 									</div>
 									@error('product_id')
 						                <span class="text-danger error">{{ $message }}</span>
@@ -588,6 +588,8 @@ $(document).ready(function () {
 			$("#product-type-"+productType).removeClass('hide');
 		}else{
 			$("#product-type-"+productType).addClass('hide');
+			$("input[name='product_id["+productType+"][loan_amount]']").val('');
+			$("input[name='product_id["+productType+"][tenor_days]']").val('');
 		}
 	});
 });

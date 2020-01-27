@@ -111,7 +111,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
 		if(is_null($userId)){
 			throw new BlankDataExceptions('No Data Found');
-		}
+        }
+        //dd($attributes);
 		return Business::creates($attributes, $userId);
 	}
 

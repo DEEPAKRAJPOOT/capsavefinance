@@ -147,13 +147,20 @@ class Business extends BaseModel
         if(isset($attributes['product_id'])){
 
             $product_ids = $attributes['product_id'];
+          
+            $product_ids = array_filter($product_ids, function($var){
+               return (isset($var['checkbox']))?true:false; 
+            });
             array_walk($product_ids, function (&$var , $key) {
                 $var['loan_amount'] = str_replace(',', '', $var['loan_amount']);
+                unset($var['checkbox']);
             });
+
             // insert in rta_app_product table
             $app->products()->sync($product_ids);
-            
+
         }
+    
 
         Business::where('biz_id', $business->biz_id)->update([
             'panno_pan_gst_id'=>$bpg->biz_pan_gst_id,
@@ -306,12 +313,19 @@ class Business extends BaseModel
                 'updated_by'=>$userId
             ]);
 
+
         if(isset($attributes['product_id'])){
 
             $product_ids = $attributes['product_id'];
+          
+            $product_ids = array_filter($product_ids, function($var){
+               return (isset($var['checkbox']))?true:false; 
+            });
             array_walk($product_ids, function (&$var , $key) {
                 $var['loan_amount'] = str_replace(',', '', $var['loan_amount']);
+                unset($var['checkbox']);
             });
+
             // insert in rta_app_product table
             $app->products()->sync($product_ids);
 
