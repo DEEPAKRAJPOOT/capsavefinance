@@ -430,9 +430,9 @@ class MasterRepository extends BaseRepositories implements MasterInterface
      * 
      * @return mixed
      */
-    public function getAppStatus()
+    public function getAppStatus($status_type)
     {
-        return Status::getStatusList();
+        return Status::getStatusList($status_type);
     }
 
 

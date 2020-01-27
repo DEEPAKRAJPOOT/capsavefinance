@@ -126,11 +126,11 @@
                                 </div> 
                             </td>
                             <td width="25%"><b>Existing Group Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" maxlength="20" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format calTotalExposure" maxlength="20" name="existing_exposure"  value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
                         </tr>
                         <tr>
                             <td width="25%"><b>Proposed Group Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
                             <td width="25%"><b>Total Exposure</b></td>
                             <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" ></td>
                         </tr>
@@ -316,8 +316,6 @@
     }
 
     var path = "{{ route('get_group_company') }}";
-
-
     
     $('input.group-company').typeahead({
         source:  function (query, process) {
@@ -327,5 +325,16 @@
         },
         minLength: '3'
     });
+
+    $('input.calTotalExposure').on('change', function(){
+        var existing =  parseInt($("input[name='existing_exposure']").val().replace(/,/g, '')); 
+        var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, '')); 
+
+        existing = (!isNaN(existing))?existing:0;
+        proposed = (!isNaN(proposed))?proposed:0;
+        $("input[name='total_exposure']").val(proposed+existing);
+        $("input[name='total_exposure']").addClass('number_format');
+    })
+    
 </script>
 @endsection
