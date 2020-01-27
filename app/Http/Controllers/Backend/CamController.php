@@ -32,7 +32,7 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use Carbon\Carbon;
-
+use App\Inv\Repositories\Models\OfferPTPQ;
 
 class CamController extends Controller
 {
@@ -184,12 +184,13 @@ class CamController extends Controller
       $bizId = $request->get('biz_id');
       $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
       $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
-      
+      $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
         'appId'=> $appId,
         'limitOfferData'=> $limitOfferData,
-        'reviewerSummaryData'=> $reviewerSummaryData
+        'reviewerSummaryData'=> $reviewerSummaryData,
+        'offerPTPQ' => $offerPTPQ
       ]);
     }
 

@@ -20,6 +20,7 @@ use App\Inv\Repositories\Models\Master\PermissionRole;
 use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\Master\Equipment;
 
 class Helper extends PaypalHelper
 {
@@ -934,5 +935,15 @@ class Helper extends PaypalHelper
     public static function checkPermissionAssigntoRole($permission_id, $role_id)
     {
         return PermissionRole::checkPermissionAssigntoRole($permission_id, $role_id);
+    }
+
+    /**
+     * Get equipment type
+     *      
+     * @param integer $id
+     */
+    public static function getEquipmentTypeById($id) 
+    {        
+        return Equipment::getEquipmentTypeById($id);                      
     }
 }
