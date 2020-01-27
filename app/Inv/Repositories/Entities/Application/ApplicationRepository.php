@@ -1217,4 +1217,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getEquipmentList(){
         return Equipment::getEquipmentList();
     }
+
+
+    /**
+     * Get Approval 
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */    
+    public function getAppApproversDetails($app_id)
+    {
+        return AppApprover::getAppApproversDetails($app_id);
+    }
 }

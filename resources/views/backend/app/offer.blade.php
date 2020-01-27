@@ -87,7 +87,7 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="25%">{{$supplyOffer->created_by}}</td>
+                                                    <td width="25%">{{\Helpers::getUserName($supplyOffer->created_by)}}</td>
                                                     <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
                                                     <td></td>
                                                 </tr>
@@ -174,7 +174,7 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="25%">{{$termOffer->created_by}}</td>
+                                                    <td width="25%">{{\Helpers::getUserName($termOffer->created_by)}}</td>
                                                     <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
                                                     <td></td>
                                                 </tr>
@@ -262,7 +262,7 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="25%">{{$leaseOffer->created_by}}</td>
+                                                    <td width="25%">{{\Helpers::getUserName($leaseOffer->created_by)}}</td>
                                                     <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
                                                     <td></td>
                                                 </tr>
