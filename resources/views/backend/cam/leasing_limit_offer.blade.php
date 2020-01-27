@@ -26,13 +26,13 @@
             <label for="txtPassword" ><b>Limit</b></label> 
             <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
             <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
-            <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Loan Offer" maxlength="15">
+            <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Limit" maxlength="15">
           </div>
         </div>
     
         <div class="col-md-6">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Invoice Tenor (Months)</b></label> 
+            <label for="txtPassword" ><b>Tenor (Months)</b></label> 
             <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
           </div>
         </div>
@@ -42,10 +42,9 @@
             <label for="txtPassword" ><b>Equipment Type</b></label> 
             <select class="form-control" name="equipment_type_id">
                 <option value="">Select Equipment type</option>
-                <option value="1" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == 1)? 'selected': ''}}>Equipment type 1</option>
-                <option value="2" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == 2)? 'selected': ''}}>Equipment type 2</option>
-                <option value="3" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == 3)? 'selected': ''}}>Equipment type 3</option>
-                <option value="4" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == 4)? 'selected': ''}}>Equipment type 4</option>
+                @foreach($equips as $key => $equip)
+                <option value="{{$key}}" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == $key)? 'selected': ''}}>{{$equip}}</option>
+                @endforeach
             </select>
           </div>
         </div>
@@ -62,7 +61,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="txtPassword"><b>Deposit Amount</b></label> 
-                <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Security Deposit" maxlength="5">
+                <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Deposit Amount" maxlength="5">
             </div>
         </div>
 
@@ -107,7 +106,8 @@
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>PTP Frequency</b></label>
             <div class="col-md-12" id="ptpq-block">
-                @forelse($offerData->offerPtpq as $key=>$ptpq)
+                @if(isset($offerData->offerPtpq))
+                @foreach($offerData->offerPtpq as $key=>$ptpq)
                 <div class="row {{($loop->first)? '': 'mt10'}}">
                     <div class="col-md-3">
                         @if($loop->first)
@@ -135,7 +135,8 @@
                      @endif
                     </div>
                 </div>
-                @empty
+                @endforeach
+                @else
                 <div class="row">
                     <div class="col-md-3">
                     <label for="txtPassword"><b>From Period</b></label>
@@ -153,7 +154,7 @@
                         <i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i>
                     </div>
                 </div>
-                @endforelse
+                @endif
             </div>
           </div>
         </div>
@@ -174,7 +175,7 @@
 
         <div class="col-md-6">
           <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee</b></label>
+            <label for="txtPassword"><b>Processing Fee (%)</b></label>
             <input type="text" name="processing_fee" class="form-control number_format" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>

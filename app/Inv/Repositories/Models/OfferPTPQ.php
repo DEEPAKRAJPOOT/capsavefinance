@@ -60,6 +60,16 @@ class OfferPTPQ extends BaseModel
         'updated_by'
     ];
 
+    /**
+     * @param integer $offer_id
+     * @return array
+     */
+
+    public static function getOfferPTPQR($offer_id)
+    {
+        $res =   self::select('ptpq_from', 'ptpq_to', 'ptpq_rate')->where('prgm_offer_id',$offer_id)->get();
+        return $res ?: false;
+    }
     
     /**
      * Create offer PTPQ
