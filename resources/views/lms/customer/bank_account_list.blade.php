@@ -30,7 +30,7 @@
                            data-width="100%" 
                            data-target="#add_bank_account"
                            id="register" 
-                           data-url="{{ route('add_bank_account') }}" >
+                           data-url="{{ route('add_bank_account', ['user_id' => request()->get('user_id')]) }}" >
                             <button class="btn  btn-success btn-sm float-right mb-3" type="button">
                                 + Add Bank
                             </button>
