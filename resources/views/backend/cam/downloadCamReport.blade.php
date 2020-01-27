@@ -32,11 +32,11 @@
                </thead>
                <tbody>
                   <tr role="row" class="odd">
-                     <td class="">{{$arrCamData->group_company}}</td>
+                     <td class="">{{$arrCamData->group_company ?? ''}}</td>
                      <td class="">{{$arrBizData->biz_entity_name}}</td>
                      <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
                      <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</td>
-                     <td class="">{!! $arrCamData->total_exposure ? \Helpers::formatCurreny($arrCamData->total_exposure) : '' !!}</td>
+                     <td class="">{!! $arrCamData['total_exposure'] ? \Helpers::formatCurreny($arrCamData['total_exposure']) : '' !!}</td>
                   </tr>
                </tbody>
             </table>
