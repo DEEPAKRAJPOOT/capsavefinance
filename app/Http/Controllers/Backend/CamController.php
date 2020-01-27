@@ -182,11 +182,14 @@ class CamController extends Controller
 
 
     public function reviewerSummary(Request $request){
+      $offerPTPQ = '';
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
       $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
       $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
-      $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
+      if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
+        $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
+      }
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
         'appId'=> $appId,
