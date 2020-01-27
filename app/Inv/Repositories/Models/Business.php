@@ -145,6 +145,7 @@ class Business extends BaseModel
             ]);
 
         // insert in rta_app_product table
+        //$app->products()->sync($attributes['product_id']);
         $app->products()->sync($attributes['product_id']);
 
         Business::where('biz_id', $business->biz_id)->update([
