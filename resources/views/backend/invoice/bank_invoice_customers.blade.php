@@ -64,6 +64,7 @@
         </div>
     </div>
 </div>
+{!!Helpers::makeIframePopup('disburseInvoicePopUp','View Disburse Invoice', 'modal-lg')!!}
 @endsection
 @section('jscript')  
 <script>

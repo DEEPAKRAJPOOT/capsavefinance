@@ -182,7 +182,42 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Lms\CopyController@duplicateApp'
                 ]); 
             // end address
-            });            
+            });    
+            
+            Route::get('req-move-next-stage',[
+                'as' => 'lms_req_move_next_stage',
+                'uses' => 'Lms\RefundController@moveReqToNextStage'
+            ]);
+            Route::get('req-move-prev-stage',[
+                'as' => 'lms_req_move_prev_stage',
+                'uses' => 'Lms\RefundController@moveReqToNextStage'
+            ]);    
+            
+            Route::post('accept-request-stage',[
+                'as' => 'lms_accept_next_stage',
+                'uses' => 'Lms\RefundController@acceptReqStage'
+            ]); 
+            
+            Route::get('update-request-status',[
+                'as' => 'lms_update_request_status',
+                'uses' => 'Lms\RefundController@updateRequestStatus'
+            ]);    
+            
+            Route::post('save-request-status',[
+                'as' => 'lms_save_request_status',
+                'uses' => 'Lms\RefundController@saveRequestStatus'
+            ]); 
+              
+            Route::get('view-process-refund',[
+                'as' => 'lms_view_process_refund',
+                'uses' => 'Lms\RefundController@viewProcessRefund'
+            ]);   
+            
+            Route::post('process-refund',[
+                'as' => 'lms_process_refund',
+                'uses' => 'Lms\RefundController@processRefund'
+            ]); 
+            
         });
         
         //end of application

@@ -246,8 +246,15 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
-                    $("#moveCase").html('Invoice successfully sent to  approve ');
-                    $(th).parent('td').parent('tr').remove();
+                    if(data.uploadAcess==1)
+                    {
+                     $("#moveCase").html('Invoice successfully sent to  approve ');
+                     $(th).parent('td').parent('tr').remove();
+                    }
+                    else
+                    {
+                        $("#moveCase").html("<span style='color:red'>You don't have permission to approve invoice for this program.</span>");
+                    }
                 }
             });
         } else

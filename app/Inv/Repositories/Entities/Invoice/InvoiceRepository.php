@@ -20,7 +20,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\InvoiceActivityLog;
 use App\Inv\Repositories\Models\Application;
-
+use App\Inv\Repositories\Models\Lms\DisbursalBatch;
 
 class InvoiceRepository extends BaseRepositories implements InvoiceInterface
 {
@@ -811,8 +811,9 @@ use CommonRepositoryTraits;
     {
        try
        {
-           return Transactions::select('transactions.*', 'users.f_name','users.m_name','users.l_name')
+           return Transactions::select('transactions.*', 'users.f_name','users.m_name','users.l_name','req.req_id')
                             ->join('users', 'transactions.user_id', '=', 'users.user_id')
+                            ->leftJoin('lms_approval_request as req', 'req.trans_id', '=', 'transactions.trans_id')
                             ->where('trans_type','=', 17)
                             ->orderBy('trans_id', 'asc');  
        } catch (Exception $ex) {
@@ -892,11 +893,22 @@ use CommonRepositoryTraits;
 
     public function getAllBankInvoice()
     {
-        $this->result = Disbursal::getAllBankInvoice();
+        $this->result = DisbursalBatch::getAllBatches();
         return $this->result;
     }
 
-    public function getAllBankInvoiceCustomers($batch_id)
+    public function checkSingleInvoice($invNo)
+    {
+        try
+        {
+            $this->result = BizInvoice::checkSingleInvoice($invNo);
+            return $this->result;
+        } catch (Exception $ex) {
+            return $ex;
+        }
+        
+    } 
+   public function getAllBankInvoiceCustomers($batch_id)
     {
         $this->result = Disbursal::getAllBankInvoiceCustomers($batch_id);
         return $this->result;
@@ -907,4 +919,5 @@ use CommonRepositoryTraits;
         $this->result = Disbursal::getAllDisburseInvoice($batch_id, $disbursed_user_id);
         return $this->result;
     }   
+
 }

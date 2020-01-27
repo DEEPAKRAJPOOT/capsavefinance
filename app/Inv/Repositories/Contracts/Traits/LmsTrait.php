@@ -970,4 +970,668 @@ trait LmsTrait
     {
        dd($attr);
     } 
+    
+    protected function getRefundData($transId, $includeTrans=true)
+    {   
+        $data = [];
+        $result = $this->lmsRepo->getRefundData($transId);        
+        foreach($result as $row) {
+            if ($row->name == 'MARGIN') {
+                $data[$row->name][] = $row;
+            } else {
+                $data[$row->name] = $row;
+            }
+        }
+        
+        if ($includeTrans) {
+            $repayment = $this->lmsRepo->getTransactions(['trans_id' => $transId, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')])->first();
+            $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id' => $transId]);
+
+            $transaction = [];
+            $transactions = [];
+
+            $transaction['TRANS_DATE'] = $repayment->trans_date;
+            $transaction['VALUE_DATE'] = $repayment->created_at;
+
+            if ($repayment->trans_detail->chrg_master_id != '0') {
+                $transaction['TRANS_TYPE'] = $repayment->trans_detail->charge->chrg_name;
+            } else {
+                $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
+            }
+
+            if ($repayment->disburse && $repayment->disburse->invoice) {
+                $transaction['INV_NO'] = $repayment->disburse->invoice->invoice_no;
+            } else {
+                $transaction['INV_NO'] = '';
+            }      
+
+            if ($repayment->entry_type == '0') {
+                $transaction['DEBIT'] = $repayment->amount;
+            } else {
+                $transaction['DEBIT'] = '';
+            }
+
+            if ($repayment->entry_type == '1') {
+                $transaction['CREDIT'] = $repayment->amount;
+            } else {
+                $transaction['CREDIT'] = '';
+            }
+
+            $transactions[] = $transaction;
+
+            foreach ($repaymentTrails as $repay) {
+                $transaction = [];
+                
+                
+                $transaction['TRANS_DATE'] = $repay->trans_date;
+                $transaction['VALUE_DATE'] = $repay->created_at;
+
+                if ($repay->trans_detail->chrg_master_id != '0') {
+                    $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+                } else {
+                    $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+                }
+
+                if (isset($repay->disburse->invoice) && $repay->disburse->invoice->invoice_no) {
+                    $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
+                } else {
+                    $transaction['INV_NO'] = '';
+                }      
+
+                if ($repay->entry_type == '0') {
+                    $transaction['DEBIT'] = $repay->amount;
+                } else {
+                    $transaction['DEBIT'] = '';
+                }
+
+                if ($repay->entry_type == '1') {
+                    $transaction['CREDIT'] = $repay->amount;
+                } else {
+                    $transaction['CREDIT'] = '';
+                }
+
+                $transactions[] = $transaction;   
+            }
+
+            $data['TRANSACTIONS'] = $transactions;
+        }
+        return $data;
+    }
+    
+    protected function createApprRequest($requestType, $addlData=[]) 
+    {
+        $wf_stage_types = config('lms.REQUEST_TYPE');
+        
+        $assignRequest = false;        
+        //$wf_stage_type = isset($wf_stage_types[$requestType]) ? $wf_stage_types[$requestType] : '';
+        $wf_stage_type = $requestType;
+        
+        $reqData=[];
+        $reqLogData=[];
+        
+        //Prepare Request Data        
+        $reqData['req_type'] = $wf_stage_type;
+        $reqData['status'] = config('lms.REQUEST_STATUS.NEW_REQUEST');        
+        
+        //Prepare Request Log Data
+        $reqLogData['status'] = $reqData['status'];        
+            
+        if ($requestType == config('lms.REQUEST_TYPE.REFUND') ) {
+            $reqData['trans_id'] = $addlData['trans_id'];
+            $reqData['amount'] = $addlData['amount'];            
+        }
+        
+        $saveReqData = $this->lmsRepo->saveApprRequestData($reqData);
+        $req_id = $saveReqData->req_id;        
+        $saveReqData = $this->lmsRepo->saveApprRequestData(['ref_code' => \Helpers::formatIdWithPrefix($req_id, $type='REFUND')], $req_id);
+        $reqLogData['req_id'] = $req_id;
+        
+        $wf_stages = $this->lmsRepo->getWfStages($wf_stage_type);
+        foreach($wf_stages as $wf_stage) {
+            $wf_stage_code = $wf_stage->stage_code;
+            $wf_order_no = $wf_stage->order_no;
+            
+            $wfData = $this->lmsRepo->getWfDetailById($wf_stage_code);
+            if ($wfData) {
+                $wfAppStageData = $this->lmsRepo->getRequestWfStage($wf_stage_code, $req_id);
+                if (!$wfAppStageData) {
+                    $arrData = [
+                        'wf_stage_id' => $wfData->wf_stage_id,
+                        'req_id' => $req_id,
+                        'wf_status' => config('lms.WF_STAGE_STATUS.PENDING'),
+                    ];
+                    $this->lmsRepo->saveWfDetail($arrData);
+                }
+            }
+            if ($wf_order_no == '0') {
+                $result = $wf_stage;
+                $assignRequest = true;
+            }
+        }
+        
+        if ($assignRequest) {
+            
+            $data = $result;
+            $this->lmsRepo->updateRequestAssignById((int) $req_id, ['is_owner' => 0]);
+            //update assign table
+            $assignRequests=[];
+            $allReqLogData=[];
+            $assignRoles = explode(',', $data->assign_role);
+            foreach($assignRoles as $role_id) {
+                $assignedUsers = $this->lmsRepo->getBackendUsersByRoleId($role_id);
+                if (count($assignedUsers) > 0) {
+                    foreach($assignedUsers as $auser) {
+                        $dataArr = [];
+                        $dataArr['from_id'] = \Auth::user()->user_id;
+                        $dataArr['to_id'] = $auser->user_id;
+                        $dataArr['role_id'] = null;
+                        $dataArr['req_id'] = $req_id;
+                        $dataArr['assign_status'] = '0';
+                        $dataArr['assign_type'] = '2';
+                        $dataArr['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
+                        $dataArr['is_owner'] = 1;  
+                        
+                        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+                        $dataArr['created_by'] = Auth::user()->user_id;
+                        $dataArr['created_at'] = $curData;
+                        $dataArr['updated_by'] = Auth::user()->user_id;
+                        $dataArr['updated_at'] = $curData;
+                        
+                        $assignRequests[] = $dataArr;
+                        
+                        //Save Request Log Data
+                        $allReqLogData[] = $reqLogData + [
+                            'comment' => isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '',
+                            'assigned_user_id' => $auser->user_id, 
+                            'wf_stage_id' => $data->wf_stage_id,
+                            'created_by' => \Auth::user()->user_id,
+                            'created_at' => $curData,
+                            'updated_by' => \Auth::user()->user_id,
+                            'updated_at' => $curData               
+                        ];
+                    }
+                } 
+                /*else { 
+                    $assignRequests['from_id'] = \Auth::user()->user_id;    
+                    $assignRequests['req_id'] = $req_id;
+                    $assignRequests['assign_status'] = '0';
+                    $assignRequests['assign_type'] = '2';
+                    $assignRequests['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
+                    $assignRequests['is_owner'] = 1;                
+                    $assignRequests['to_id'] = null;
+                    $assignRequests['role_id'] = $role->role_id;
+                }*/
+            }
+            $this->lmsRepo->assignRequest($assignRequests);
+            $this->lmsRepo->saveApprRequestLogData($allReqLogData);
+            return $data;
+        }
+        
+    }
+    
+    protected function updateApprRequest($reqId, $addlData=[]) 
+    {        
+        $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return false;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        $reqStatus = $addlData['status'];
+                
+        //Get Current workflow stage
+        $wfStage = $this->lmsRepo->getCurrentWfStage($reqId);
+        $wf_stage_code = $wfStage ? $wfStage->stage_code : '';
+        $wf_stage_id = $wfStage ? $wfStage->wf_stage_id : '';
+                        
+        //Update Request Log Data
+        $updateReqLogData = ['is_active' => '0'];
+        $whereCond=[];
+        $whereCond['req_id'] = $reqId;
+        $whereCond['assigned_user_id'] = \Auth::user()->user_id;
+        $whereCond['wf_stage_id'] = $wf_stage_id;
+        $this->lmsRepo->updateApprRequestLogData($whereCond, $updateReqLogData);
+                        
+        //Insert Request Log Data
+        $reqLogData=[];
+        $reqLogData['req_id'] = $reqId;
+        $reqLogData['status'] = $reqStatus;
+        $reqLogData['comment'] = $addlData['sharing_comment'];
+        $reqLogData['assigned_user_id'] = \Auth::user()->user_id;
+        $reqLogData['wf_stage_id'] = $wf_stage_id;
+        $this->lmsRepo->saveApprRequestLogData($reqLogData);
+                             
+        if (in_array($wf_stage_code, ['refund_approval', 'adjustment_approval']) && config('lms.REQUEST_STATUS.PROCESSED') != $reqStatus) {
+            
+            //Get Assigned Request for Approval
+            $whereCond=[];
+            $whereCond['req_id'] = $reqId;
+            $assignedReqData = $this->lmsRepo->getAssignedReqData($whereCond);            
+            $cntAssignedReqStatus = count($assignedReqData);
+                                     
+            //Get Request Log with Status for Approval
+            $whereCond=[];
+            $whereCond['req_id'] = $reqId;
+            $whereCond['wf_stage_id'] = $wf_stage_id;
+            $apprReqLogData = $this->lmsRepo->getApprRequestLogData($whereCond);
+            $cntUpdatedReqStatus=count($apprReqLogData);            
+            
+            $cntApprReqStatus=0;
+            foreach($apprReqLogData as $rLog) {
+                if ($rLog->status == config('lms.REQUEST_STATUS.APPROVED')) {
+                    $cntApprReqStatus++;
+                }
+            }
+            if ($cntAssignedReqStatus == $cntUpdatedReqStatus) {
+                $reqStatus = $cntUpdatedReqStatus == $cntApprReqStatus ? config('lms.REQUEST_STATUS.APPROVED') : config('lms.REQUEST_STATUS.REJECTED');
+
+                //$wf_stage_status = config('lms.WF_STAGE_STATUS.COMPLETED');
+            }
+        }
+        
+        $updateReqData=[];
+        $updateReqData['status'] = $reqStatus;
+        $this->lmsRepo->saveApprRequestData($updateReqData, $reqId);
+                
+        $wf_stage_status = config('lms.REQUEST_STATUS.PROCESSED') == $reqStatus ? config('lms.WF_STAGE_STATUS.COMPLETED') : config('lms.WF_STAGE_STATUS.IN_PROGRESS');
+        $updateWfStage=[];
+        $updateWfStage['wf_status'] = $wf_stage_status;        
+        $this->lmsRepo->updateWfStage($wf_stage_id, $reqId, $updateWfStage);
+                       
+        return true;
+    }    
+    
+    protected function assignRequest($reqId, $wfStage, $reqStatus, $addlData)
+    {
+        
+        $data = $wfStage;
+        $this->lmsRepo->updateRequestAssignById((int) $reqId, ['is_owner' => 0]);
+        //update assign table
+        $assignRequests=[];
+        $allReqLogData=[];
+        $assignRoles = explode(',', $data->assign_role);
+        
+        $reqLogData=[];
+        $reqLogData['req_id'] = $reqId;
+        $reqLogData['status'] = $reqStatus;
+        
+        foreach($assignRoles as $role_id) {
+            $assignedUsers = $this->lmsRepo->getBackendUsersByRoleId($role_id);
+            if (count($assignedUsers) > 0) {
+                foreach($assignedUsers as $auser) {
+                    $dataArr = [];
+                    $dataArr['from_id'] = \Auth::user()->user_id;
+                    $dataArr['to_id'] = $auser->user_id;
+                    $dataArr['role_id'] = null;
+                    $dataArr['req_id'] = $reqId;
+                    $dataArr['assign_status'] = '0';
+                    $dataArr['assign_type'] = '2';
+                    $dataArr['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
+                    $dataArr['is_owner'] = 1;
+                    
+                    $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+
+                    $dataArr['created_by'] = \Auth::user()->user_id;
+                    $dataArr['created_at'] = $curData;
+                    $dataArr['updated_by'] = \Auth::user()->user_id;
+                    $dataArr['updated_at'] = $curData;
+                        
+                    $assignRequests[] = $dataArr;
+
+                    //Save Request Log Data
+                    $allReqLogData[] = $reqLogData + [
+                        'comment' => isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '',
+                        'assigned_user_id' => $auser->user_id, 
+                        'wf_stage_id' => $data->wf_stage_id,
+                        'created_by' => \Auth::user()->user_id,
+                        'created_at' => $curData,
+                        'updated_by' => \Auth::user()->user_id,
+                        'updated_at' => $curData                          
+                    ];
+                }
+            } 
+            /*else { 
+                $assignRequests['from_id'] = \Auth::user()->user_id;    
+                $assignRequests['req_id'] = $reqId;
+                $assignRequests['assign_status'] = '0';
+                $assignRequests['assign_type'] = '2';
+                $assignRequests['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
+                $assignRequests['is_owner'] = 1;                
+                $assignRequests['to_id'] = null;
+                $assignRequests['role_id'] = $role->role_id;
+            }*/
+        }
+        $this->lmsRepo->assignRequest($assignRequests);
+        
+        $updateReqLogData = ['is_active' => '0'];
+        $whereCond=[];
+        $whereCond['req_id'] = $reqId;
+        //$whereCond['assigned_user_id'] = \Auth::user()->user_id;
+        //$whereCond['wf_stage_id'] = $data->wf_stage_id;          
+        $this->lmsRepo->updateApprRequestLogData($whereCond, $updateReqLogData);
+        
+        $this->lmsRepo->saveApprRequestLogData($allReqLogData);        
+    }
+
+    protected function moveRequestToNextStage($reqId, $addlData=[])
+    {
+        $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return false;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        
+        //Get Current workflow stage
+        $curWfStage = $this->lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return false;
+                
+        $cur_wf_stage_code = $curWfStage ? $curWfStage->stage_code : '';
+        $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
+        $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';
+        
+        $cur_wf_stage_status = config('lms.WF_STAGE_STATUS.COMPLETED');
+        $updateWfStage=[];
+        $updateWfStage['wf_status'] = $cur_wf_stage_status;        
+        $this->lmsRepo->updateWfStage($cur_wf_stage_id, $reqId, $updateWfStage);
+        
+        //Get Next workflow stage
+        $nextWfStage = $this->lmsRepo->getNextWfStage($wf_stage_type, $cur_wf_order_no);
+        if (!$nextWfStage) return false;
+                       
+        $next_wf_stage_code = $nextWfStage ? $nextWfStage->stage_code : '';
+        $next_wf_stage_id = $nextWfStage ? $nextWfStage->wf_stage_id : '';
+        $next_wf_order_no = $nextWfStage ? $nextWfStage->order_no : '';
+        
+        $next_wf_stage_status = config('lms.WF_STAGE_STATUS.IN_PROGRESS');
+        $updateWfStage=[];
+        $updateWfStage['wf_status'] = $next_wf_stage_status;
+        $this->lmsRepo->updateWfStage($next_wf_stage_id, $reqId, $updateWfStage);
+        
+        //Assign Request
+        $reqStatus =  config('lms.REQUEST_STATUS.IN_PROCESS');
+        $this->assignRequest($reqId, $nextWfStage, $reqStatus, $addlData);
+        
+        $updateReqData=[];
+        $updateReqData['status'] = $reqStatus;
+        $this->lmsRepo->saveApprRequestData($updateReqData, $reqId);
+        
+        return $nextWfStage;
+    }
+    
+    protected function getRequestPrevStage($reqId)
+    {
+        $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return false;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        
+        //Get Current workflow stage
+        $curWfStage = $this->lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return false;
+                
+        $cur_wf_stage_code = $curWfStage ? $curWfStage->stage_code : '';
+        $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
+        $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';        
+        
+        //Get Previous workflow stage
+        $prevWfStage = $this->lmsRepo->getPrevWfStage($wf_stage_type, $cur_wf_order_no);
+        if (!$prevWfStage) return false;
+
+        return $prevWfStage;
+    }
+    
+    protected function getRequestNextStage($reqId)
+    {
+        $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return false;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        
+        //Get Current workflow stage
+        $curWfStage = $this->lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return false;
+                
+        $cur_wf_stage_code = $curWfStage ? $curWfStage->stage_code : '';
+        $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
+        $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';        
+        
+        //Get Previous workflow stage
+        $nextWfStage = $this->lmsRepo->getNextWfStage($wf_stage_type, $cur_wf_order_no);
+        if (!$nextWfStage) return false;
+
+        return $nextWfStage;
+    }    
+    
+    protected function moveRequestToPrevStage($reqId, $addlData=[])
+    {
+        $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return false;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        
+        //Get Current workflow stage
+        $curWfStage = $this->lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return false;
+                
+        $cur_wf_stage_code = $curWfStage ? $curWfStage->stage_code : '';
+        $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
+        $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';        
+        
+        //Get Previous workflow stage
+        $prevWfStage = $this->lmsRepo->getPrevWfStage($wf_stage_type, $cur_wf_order_no);
+        if (!$prevWfStage) return false;
+        
+        $prev_wf_stage_code = $prevWfStage ? $prevWfStage->stage_code : '';
+        $prev_wf_stage_id = $prevWfStage ? $prevWfStage->wf_stage_id : '';
+        $prev_wf_order_no = $prevWfStage ? $prevWfStage->order_no : '';
+        
+        for ($wf_order_no=$prev_wf_order_no;$wf_order_no<=$cur_wf_order_no;$wf_order_no++) {
+            $wf_stage_status = config('lms.WF_STAGE_STATUS.IN_PROGRESS');
+            
+            $wfStage = $this->lmsRepo->getWfDetailByOrderNo($wf_stage_type, $wf_order_no);
+            if ($wfStage) {
+                $wf_stage_id = $wfStage->wf_stage_id;
+                $updateWfStage=[];
+                $updateWfStage['wf_status'] = $wf_stage_status;
+                $this->lmsRepo->updateWfStage($wf_stage_id, $reqId, $updateWfStage);
+            }
+        }
+        
+        //Assign Request
+        $reqStatus =  config('lms.REQUEST_STATUS.NEW_REQUEST');
+        $this->assignRequest($reqId, $prevWfStage, $reqStatus, $addlData);
+        
+        $updateReqData=[];
+        $updateReqData['status'] = $reqStatus;
+        $this->lmsRepo->saveApprRequestData($updateReqData, $reqId);
+        
+        return $prevWfStage;
+    }
+    
+    protected function calculateRefund($transId)
+    {
+        $totalFactoredAmount = 0;
+        $overdueInterest = 0;
+        $interestRefund = 0;
+        $totalMarginAmount = 0;
+        $nonFactoredAmount = 0;
+        $data = [];
+
+        $repayment = $this->lmsRepo->getTransactions(['trans_id' => $transId, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')])->first();
+        $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id' => $transId]);
+
+        $disbursalIds = Transactions::where('parent_trans_id', '=', $transId)
+                ->whereNotNull('disbursal_id')
+                ->where('trans_type', '=', config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
+                ->distinct('disbursal_id')
+                ->pluck('disbursal_id')
+                ->toArray();
+
+        $principalSettled = Transactions::where('parent_trans_id', '=', $transId)
+                ->whereNotNull('disbursal_id')
+                ->whereIn('trans_type', [config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'), config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
+                ->sum('amount');
+
+        $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id', $disbursalIds)
+                ->sum('invoice_approve_amount');
+        $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id', $disbursalIds)
+                        ->groupBy('margin')
+                        ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
+
+        $totalFactoredAmount = $repayment ? $repayment->amount : 0;
+
+        $transaction = [];
+        $transactions = [];
+        
+        $transaction['TRANS_DATE'] = $repayment->trans_date;
+        $transaction['VALUE_DATE'] = $repayment->created_at;
+        
+        if ($repayment->trans_detail->chrg_master_id != '0') {
+            $transaction['TRANS_TYPE'] = $repayment->trans_detail->charge->chrg_name;
+        } else {
+            $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
+        }
+                                        
+        if ($repayment->disburse && $repayment->disburse->invoice) {
+            $transaction['INV_NO'] = $repayment->disburse->invoice->invoice_no;
+        } else {
+            $transaction['INV_NO'] = '';
+        }      
+        
+        if ($repayment->entry_type == '0') {
+            $transaction['DEBIT'] = $repayment->amount;
+        } else {
+            $transaction['DEBIT'] = '';
+        }
+
+        if ($repayment->entry_type == '1') {
+            $transaction['CREDIT'] = $repayment->amount;
+        } else {
+            $transaction['CREDIT'] = '';
+        }
+        
+        $transactions[] = $transaction;
+        
+        $data['TOTAL_AMT_FOR_MARGIN'] = $amountForMargin;
+        $data['TOTAL_FACTORED'] = $totalFactoredAmount;
+
+        if ($principalSettled > 0) {
+            $nonFactoredAmount = $totalFactoredAmount - $principalSettled;
+        }
+        $nonFactoredAmount = 0;
+        $data['NON_FACTORED'] = $nonFactoredAmount;
+
+        foreach ($repaymentTrails as $repay) {
+            $transaction = [];
+            $transaction['TRANS_DATE'] = $repay->trans_date;
+            $transaction['VALUE_DATE'] = $repay->created_at;
+
+            if ($repay->trans_detail->chrg_master_id != '0') {
+                $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+            } else {
+                $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+            }
+
+            if ($repay->disburse->invoice->invoice_no) {
+                $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
+            } else {
+                $transaction['INV_NO'] = '';
+            }      
+
+            if ($repay->entry_type == '0') {
+                $transaction['DEBIT'] = $repay->amount;
+            } else {
+                $transaction['DEBIT'] = '';
+            }
+
+            if ($repay->entry_type == '1') {
+                $transaction['CREDIT'] = $repay->amount;
+            } else {
+                $transaction['CREDIT'] = '';
+            }
+            
+            if ($repay->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                $overdueInterest += $repay->amount;
+            }
+
+            if ($repay->trans_type == config('lms.TRANS_TYPE.INTEREST_REFUND')) {
+                $interestRefund += $repay->amount;
+            }
+            
+            $transactions[] = $transaction;   
+        }
+
+        $data['TRANSACTIONS'] = $transactions;
+        $data['OVERDUE_INTEREST'] = $overdueInterest;
+        $data['INTEREST_REFUND'] = $interestRefund;
+
+        $item = [];
+        foreach ($marginAmountData as $margin) {
+            $item[] = ['MARGIN_TYPE' => 1, 'MARGIN_PER_OR_FIXED' => $margin['margin'], 'MARGIN_AMOUNT' => $margin['margin_amount']];
+            $totalMarginAmount += $margin['margin_amount'];
+        }
+
+        $data['MARGIN'] = $item;
+
+        $totalMarginAmount -= $overdueInterest;
+
+        $data['MARGIN_RELEASED'] = $totalMarginAmount;
+
+        $totalMarginAmount += $interestRefund;
+
+        //Total Refundable Amount
+        $data['TOTAL_REFUNDABLE_AMT'] = $totalMarginAmount;
+
+        return $data;
+    }
+    
+    protected function saveRefundData($transId, $refundData=[])
+    {
+        if (empty($refundData)) {
+            $refundData = $this->calculateRefund($transId);
+        }
+        
+        $saveRefundData=[];
+        $variables = $this->lmsRepo->getVariables();
+        foreach($variables as $variable) {
+            if (isset($refundData[$variable->name])) {
+                $refund=[];
+                if ($variable->name == 'MARGIN') {
+                    foreach($refundData[$variable->name] as $key => $item) {
+                        $refund['trans_id'] = $transId;
+                        $refund['variable_id'] = $variable->id;                        
+                        $refund['variable_type'] = $item['MARGIN_TYPE'];
+                        $refund['variable_value'] = $item['MARGIN_PER_OR_FIXED'];
+                        $refund['amount'] = $item['MARGIN_AMOUNT'];
+                        
+                        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+
+                        $refund['created_by'] = \Auth::user()->user_id;
+                        $refund['created_at'] = $curData;
+                        $refund['updated_by'] = \Auth::user()->user_id;
+                        $refund['updated_at'] = $curData;
+                        
+                        $saveRefundData[] = $refund;
+                    }
+                } else {
+                    $refund['trans_id'] = $transId;
+                    $refund['variable_id'] = $variable->id;                    
+                    $refund['variable_type'] = null;
+                    $refund['variable_value'] = null;
+                    $refund['amount'] = $refundData[$variable->name];
+                    
+                    $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                    
+                    $refund['created_by'] = \Auth::user()->user_id;
+                    $refund['created_at'] = $curData;
+                    $refund['updated_by'] = \Auth::user()->user_id;
+                    $refund['updated_at'] = $curData;
+                    
+                    $saveRefundData[] = $refund;                        
+                }                
+            }
+        }
+        
+        $result = $this->lmsRepo->saveRefundData($saveRefundData);
+        return $result;
+    }
+    
 }

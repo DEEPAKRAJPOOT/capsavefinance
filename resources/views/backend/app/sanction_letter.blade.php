@@ -877,7 +877,7 @@
                   <div id="SanctionLeasing" class="tab-pane fade">
                      <div class="card card-color mb-0 {{isset($sanction_expire_msg) && empty($sanction_expire_msg) ? 'hide' : '' }}">
                         <div class="card-header">
-                           <a class="card-title ">{{isset($sanction_expire_msg) ? $sanction_expire_msg : ''}}</a>
+                           <a class="card-title ">{{$sanction_expire_msg ?? ''}}</a>
                         </div>
                      </div>
                      @if( is_array($offerData)?count($offerData):$offerData->count())
@@ -1161,7 +1161,8 @@
    }
    
    $(document).on('click','.clone_covenants', function() {
-     covenants_clone_tr_html =  $('.covenants_clone_tr').html();
+     // covenants_clone_tr_html =  $('.covenants_clone_tr').html();
+     covenants_clone_tr_html = '<td><input maxlength="100" value="" type="text" name="covenants[name][]" class="input_sanc" placeholder="Enter Covenants"></td><td><input maxlength="10" value="" type="text" name="covenants[ratio][]" class="input_sanc" placeholder="Enter Minimum/Maximum ratio"></td><td><select class="select" name="covenants[ratio_applicability][]"><option selected="">Applicable</option><option>Not Applicable</option></select></td>';
      $('.FinancialCovenantsTBody').append("<tr>"+ covenants_clone_tr_html +"</tr>");
    })
    $(document).on('click','.remove_covenants', function() {
@@ -1173,7 +1174,7 @@
    
    $(document).ready(function(){
       jQuery.validator.addMethod("alphanumeric", function(value, element) {
-         return this.optional(element) || /^[\w.]+$/i.test(value);
+         return this.optional(element) || /^[\w\s.]+$/i.test(value);
       }, "Letters, numbers, and underscores only please");
 
       jQuery.validator.addMethod("ratio", function(value, element) {

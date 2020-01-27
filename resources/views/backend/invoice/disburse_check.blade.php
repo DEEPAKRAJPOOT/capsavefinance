@@ -1,5 +1,47 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
+@php 
+$finalDisburseAmt = 0;
+@endphp
+@foreach($customersDisbursalList as $customer)
+
+@php 
+$disburseAmount = 0;
+$interest = 0;
+$apps = $customer->app;
+foreach ($apps as $app) {
+	foreach ($app->invoices as $inv) {
+		$invoice = $inv->toArray();
+		$margin = $invoice['program_offer']['margin'];
+		$fundedAmount =  $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
+		$disburseAmount += round($fundedAmount, 2);
+	}
+}
+
+$finalDisburseAmt +=  $disburseAmount;
+@endphp
+
+
+@endforeach
+
+<div class="row">
+	<div class="col-12 row">
+
+		<div class="col-4">
+			<div class="form-group">
+				<label for="marginAmount"># No of Cust.</label>
+				<input type="text" name="" class="form-control" readonly="true" value="{{ $customersDisbursalList->count() }}">
+			</div>
+		</div>
+		<div class="col-4">
+			<div class="form-group">
+				<label for="nonFactoredAmount"># Amount Disburse</label>
+				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ $finalDisburseAmt }}">
+			</div>
+		</div>
+	</div>
+</div>
+
 <div class="row">
 	<div class="col-6">
 		<form id="manualDisburse" method="POST" action="{{ Route('disburse_offline') }}" target="_top">
@@ -8,15 +50,19 @@
 			<div class="col-6">
 				<div class="form-group">
 					<label for="txtCreditPeriod">Disburse Date <span class="error_message_label">*</span> </label>
-					<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate">
+					<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
+					 @if(Session::has('error'))
+					 <div class="error">{{ Session::get('error') }}</div>
+					  
+					@endif
 				</div>
 			</div>
 			<div class="col-6">
-				<input type="submit" id="submitManualDisburse" value="Disburse Ofline" class="btn btn-success btn-sm ml-2">
+				<input type="submit" id="submitManualDisburse" value="Disburse Offline" class="btn btn-success btn-sm ml-2">
 			</div>
 		</form>
 	</div>
-	<div class="col-6 row">
+	<!-- <div class="col-6 row">
 		<div class="col-6"></div>
 		<div class="col-3">
 			<form id="manualDisburse" method="POST" action="{{ Route('disburse_online') }}">
@@ -26,10 +72,8 @@
 				<input type="submit" id="submitManualDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2 disabled">
 			</form>
 		</div>
-	</div>
-</div>
-<div class="row">	
-	
+	</div> -->
+
 </div>
 <div class="col-12 dataTables_wrapper mt-4">
 	<div class="overflow">
@@ -136,19 +180,7 @@
 											$invoice = $inv->toArray();
 											$margin = $invoice['program_offer']['margin'];
 											$fundedAmount =  $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
-											
-											$now = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : '');
-									        $your_date = strtotime((isset($invoice['invoice_date'])) ? $invoice['invoice_date'] : '');
-									        $datediff = abs($now - $your_date);
-
-									        $tenorDays = round($datediff / (60 * 60 * 24));
-
-									        $tInterest = $fundedAmount * $tenorDays * ($invoice['program_offer']['interest_rate'] / 360) ;                
-
-											if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
-												$interest = $tInterest;
-											}
-											$disburseAmount += round($fundedAmount - $interest, 2);
+											$disburseAmount += round($fundedAmount, 2);
 										}
 									}
 									@endphp
@@ -163,20 +195,6 @@
 							</tbody>
 						</table>
 					</div>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-4">
-				<div class="form-group">
-					<label for="marginAmount"># No of Cust.</label>
-					<input type="text" name="" class="form-control" readonly="true" value="{{ $customersDisbursalList->count() }}">
-				</div>
-			</div>
-			<div class="col-md-4">
-				<div class="form-group">
-					<label for="nonFactoredAmount"># Amount Disburse</label>
-					<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ $finalDisburseAmt }}">
 				</div>
 			</div>
 		</div>

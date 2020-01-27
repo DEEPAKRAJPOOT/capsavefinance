@@ -109,8 +109,9 @@ public static function saveAnchor($arrAnchor = [])
      * @return type
      */
     public static function getAllAnchor($orderBy='anchor_id') {
-        $result = self::select('anchor.*', 'u.user_id', 'u.f_name','f.file_path')
+        $result = self::select('anchor.*', 'u.user_id', 'u.f_name','f.file_path','bank.bank_account_id')
                 ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id')
+                ->leftjoin('user_bank_account as bank', 'anchor.anchor_id', '=', 'bank.anchor_id')
                 ->leftjoin('user_app_doc as u_doc', function($join)
                 {
                     $join->on( 'u.user_id', '=', 'u_doc.user_id')
