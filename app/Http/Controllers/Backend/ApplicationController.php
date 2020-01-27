@@ -905,10 +905,10 @@ class ApplicationController extends Controller
             $toUserId = $this->userRepo->getAssignedSalesManager($userId);
         }
         $authUser = Auth::user();
-        if(($authUser->roles->first()->is_superadmin == 1) || ($authUser->user_id == $toUserId)){
-          $isAccessible = 1;
+        if($authUser->user_id == $toUserId){
+          $isSalesManager = 1;
         }else{
-          $isAccessible = 0;
+          $isSalesManager = 0;
         }
         /*code for getting the sales manager*/
 
@@ -919,7 +919,7 @@ class ApplicationController extends Controller
                 ->with('termOfferData', $termOfferData)
                 ->with('leaseOfferData', $leaseOfferData)
                 ->with('offerStatus', $offerStatus)
-                ->with('isAccessible', $isAccessible)
+                ->with('isSalesManager', $isSalesManager)
                 ->with('currentStage', $currentStage)
                 ->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
     }

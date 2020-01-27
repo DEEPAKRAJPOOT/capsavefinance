@@ -6,10 +6,9 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
-                    @if($isAccessible)
                     @if($supplyOfferData->count() == 0 && $termOfferData->count() == 0 && $termOfferData->count() == 0 )
                     <div class="row"><h3>No offer found .</h3></div>
-                    @endif
+                    @else
                     <div class="row">
                         <div class="col-sm-12">
                             <div id="accordion" class="accordion">
@@ -283,15 +282,13 @@
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         <div class="col-md-12">
-                            @if($offerStatus != 0)
+                            @if($offerStatus != 0 && $isSalesManager == 1)
                             <!-- <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button> -->
                             <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept</button>
                             @endif
                         </div>
                         </div>  
                     </form>
-                    @else
-                    <div class="row"><h3>You are not authorised</h3></div>
                     @endif
                 </div>
             </div>
