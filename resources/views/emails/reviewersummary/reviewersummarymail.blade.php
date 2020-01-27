@@ -39,7 +39,16 @@
 
                 <tr>
                     <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Equipment Type</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($limitOfferData->equipment_type_id) ? $limitOfferData->equipment_type_id : 'dddddddddddddddddddddddd'}}</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    @php 
+                    @$equipType = ''     
+                    @endphp 
+                    @if(isset($limitOfferData->equipment_type_id) && $limitOfferData->equipment_type_id)
+                    @php
+                        $equipType = Helpers::getEquipmentTypeById($limitOfferData->equipment_type_id)->equipment_name  
+                    @endphp
+                    @endif
+                    {{@$equipType}}</td>
                 </tr>
 
                 <tr>
@@ -54,9 +63,14 @@
                 <tr>
                     <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">PTPQ</td>
                     <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                    {{isset($limitOfferData->ptpq_from) ? 'From Period '.$limitOfferData->ptpq_from : ''}}
-                    {{isset($limitOfferData->ptpq_to) ? 'To Period '.$limitOfferData->ptpq_to : ''}}
-                    {{isset($limitOfferData->ptpq_rate) ? 'Rate '.$limitOfferData->ptpq_rate : ''}}
+                    @if(count($offerPTPQ)>0)   
+                        @foreach ($offerPTPQ as $ok => $ov)
+                            {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
+                            {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
+                            {{isset($ov->ptpq_rate) ? 'Rate '.$ov->ptpq_rate : ''}}
+                            <br/>
+                        @endforeach 
+                    @endif
                     </td>
                 </tr>
                 <tr>
