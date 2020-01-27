@@ -14,24 +14,27 @@ use App\Http\Requests\AgencyRegistrationFormRequest;
 use App\Http\Requests\AgencyUserFormRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use Event;
 
 class AgencyController extends Controller {
 
     protected $userRepo;
     protected $appRepo;
+    protected $masterRepo;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo) {
+    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo, InvMasterRepoInterface $master_repo) {
         $this->middleware('guest')->except('logout');
         $this->middleware('checkBackendLeadAccess');
 
         $this->userRepo = $user;
         $this->appRepo = $app_repo;
+        $this->masterRepo = $master_repo;
     }
 
     /**
@@ -58,7 +61,8 @@ class AgencyController extends Controller {
     public function addAgencyReg(Request $request) {
         try {
             $states = State::getStateList()->get();
-            return view('backend.agency.add_agency_reg')->with(['states'=>$states]);
+            $agency_types = $this->masterRepo->getAppStatus(5);
+            return view('backend.agency.add_agency_reg')->with(['states'=>$states, 'agency_types'=>$agency_types]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -107,8 +111,9 @@ class AgencyController extends Controller {
             }
 
             $states = State::getStateList()->get();
+            $agency_types = $this->masterRepo->getAppStatus(5);
             return view('backend.agency.edit_agency_reg')
-                    ->with(['agencyData'=>$agencyData, 'type_ids'=>$type_ids, 'states'=>$states]);
+                    ->with(['agencyData'=>$agencyData, 'type_ids'=>$type_ids, 'states'=>$states, 'agency_types'=>$agency_types]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
