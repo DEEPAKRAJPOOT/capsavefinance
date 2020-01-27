@@ -276,16 +276,16 @@
                             </div>
                         </div>
                     </div>
+                    @endif
+                    @if($offerStatus != 0 && $isSalesManager == 1)
                     <form method="POST" action="{{route('accept_offer')}}">
                         <div class="row">
                         @csrf
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         <div class="col-md-12">
-                            @if($offerStatus != 0 && $isSalesManager == 1)
                             <!-- <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button> -->
                             <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept</button>
-                            @endif
                         </div>
                         </div>  
                     </form>
