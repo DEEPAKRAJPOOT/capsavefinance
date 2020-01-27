@@ -159,14 +159,14 @@ class CamController extends Controller
                   if($result){
                         Session::flash('message',trans('Finance detail updated successfully'));
                   }else{
-                        Session::flash('message',trans('Finance detail not updated'));
+                        Session::flash('error',trans('Finance detail not updated'));
                   }
             }else{
                 $result = AppBizFinDetail::creates($arrData, $userId);
                 if($result){
                         Session::flash('message',trans('Finance detail saved successfully'));
                   }else{
-                        Session::flash('message',trans('Finance detail not saved'));
+                        Session::flash('error',trans('Finance detail not saved'));
                   }
             }    
             return redirect()->route('cam_finance', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
@@ -432,6 +432,7 @@ class CamController extends Controller
         $active_xlsx_filename = $xlsx_files['curr_file'];
         $pending_rec = $fin->getPendingBankStatement($appId);        
         $bankdocs = $fin->getBankStatements($appId);
+        $debtPosition = $fin->getDebtPosition($appId);
         $contents = array();
         if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
           $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'.$active_json_filename)),true);
@@ -461,6 +462,7 @@ class CamController extends Controller
           'active_json_filename'=> $active_json_filename,
           'xlsx_html'=> $xlsx_html,
           'xlsx_pagination'=> $xlsx_pagination,
+          'debtPosition'=> $debtPosition,
           ]);
     }
 
@@ -1728,14 +1730,25 @@ class CamController extends Controller
     public function saveBankDetail(Request $request) {
       try {
             $arrData['app_id'] = request()->get('app_id');
-            $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
+            $date = $request->get('debt_on');
+             if (empty($date)) {
+               Session::flash('error',trans("Debt on field can'\t be empty"));
+               return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+            }
+            $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
             $arrData['debt_position_comments'] = request()->get('debt_position_comments');
             $arrData['created_by'] = Auth::user()->user_id;
-            $result = FinanceModel::insertPerfios($arrData, $table = 'app_biz_bank_detail');
+            $bank_detail_id = $request->get('bank_detail_id');
+            if (!empty($bank_detail_id)) {
+              $result = FinanceModel::updatePerfios($arrData,'app_biz_bank_detail', $bank_detail_id ,'bank_detail_id');
+            }else{
+              $result = FinanceModel::insertPerfios($arrData, 'app_biz_bank_detail');
+            }
+            
             if($result){
                 Session::flash('message',trans('Bank detail saved successfully'));
             }else{
-                Session::flash('message',trans('Bank detail not saved'));
+                Session::flash('error',trans('Bank detail not saved'));
             }
             return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
         } catch (Exception $ex) {
