@@ -60,7 +60,7 @@ class DisbursalController extends Controller
 	{
 		$userId = $request->get('user_id');
 		$userIvoices = $this->lmsRepo->getAllUserInvoice($userId);
-
+		
 		return view('lms.disbursal.view_invoice')
 				->with([
 					'userIvoices'=>$userIvoices, 
@@ -177,7 +177,7 @@ class DisbursalController extends Controller
      */
     public function disbursedList()
     {
-        $getAppStatus = ['' => 'Please select'] + $this->masterRepo->getAppStatus()->toArray();
+        $getAppStatus = ['' => 'Please select'] + $this->masterRepo->getAppStatus(4)->toArray();
         return view('lms.disbursal.disbursed_list')->with(['getAppStatus'=> $getAppStatus]);
     }
 

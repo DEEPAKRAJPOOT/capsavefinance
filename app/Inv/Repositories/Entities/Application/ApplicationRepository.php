@@ -22,6 +22,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\AppProgramOfferSanction;
 use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\Master\Industry;
 use App\Inv\Repositories\Models\AppPdNote;
@@ -35,6 +36,10 @@ use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\Master\DoaLevel;
+use App\Inv\Repositories\Models\Master\Documents;
+use App\Inv\Repositories\Models\Master\Equipment;
+use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\Cam;
 /**
  * Application repository class
  */
@@ -929,6 +934,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $offerData ? $offerData : false;
     }
 
+    public function saveSanctionData($sanctionData=[], $sactionId=null)
+    {
+        $sanctionData = AppProgramOfferSanction::saveSanctionData($sanctionData, $sactionId);
+        return $sanctionData ? $sanctionData : false;
+    }
+
+    public function getOfferSanction($offerId){
+        return AppProgramOfferSanction::getOfferSanction($offerId);
+    }
+    
     public function saveAppLimit($arr, $limit_id=null){
         return AppLimit::saveAppLimit($arr, $limit_id);
     }
@@ -1001,8 +1016,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ProgramDoc::deleteDoc($conditions);
     }
 
-    public function getAllOffers($appId){
-        return AppProgramOffer::getAllOffers($appId);
+    public function getAllOffers($appId, $product_id=null){
+        return AppProgramOffer::getAllOffers($appId, $product_id);
     }    
     
     /**
@@ -1011,9 +1026,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param array $where
      * @return mixed
      */
-    public function getRequiredDocs($where)
+    public function getRequiredDocs($where, $appProductIds)
     {
-        return DocumentMaster::getRequiredDocs($where);
+        return DocumentMaster::getRequiredDocs($where,$appProductIds);
     }
 
     /**
@@ -1165,7 +1180,40 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::with('products')
                 ->where('app_id', $app_id)
                 ->first();
+    }/**
+     * get Bank account 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getSTLDocs($whereCondition, $appProductIds)
+    {
+        return DocumentMaster::select('id as doc_id')
+                ->where($whereCondition)
+                ->whereHas('product_document', function ($query) use ($appProductIds) {
+                    $query->whereIn('product_id', $appProductIds);
+                })
+                ->where('is_active', 1)
+                ->get();
     }
 
+    public function getOfferStatus($appId){
+        return AppProgramOffer::getOfferStatus($appId);
+    }
 
+    public function changeOfferApprove($appId){
+        return AppProgramOffer::changeOfferApprove($appId);
+    }
+
+    public function getOfferPTPQR($offerId){
+        return OfferPTPQ::getOfferPTPQR($offerId);
+    }
+
+    public function addOfferPTPQ($data){
+        return OfferPTPQ::addOfferPTPQ($data);
+    }
+
+    public function getEquipmentList(){
+        return Equipment::getEquipmentList();
+    }
 }

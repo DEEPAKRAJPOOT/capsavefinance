@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Http\Requests\BusinessInformationRequest;
 use App\Http\Requests\PartnerFormRequest;
 use App\Http\Requests\DocumentRequest;
@@ -13,13 +14,16 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Master\Role;
 use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
 use App\Libraries\Pdf;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
-
+use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\AppAssignment;
+use Mail;
 class ApplicationController extends Controller
 {
     use ApplicationTrait;
@@ -404,24 +408,27 @@ class ApplicationController extends Controller
                     break;
             }
 
+            $wf_status = 1;                
+            Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+            
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 //Add/Update application workflow stages    
-                $response = $this->docRepo->isUploadedCheck($userId, $appId);            
+                //$response = $this->docRepo->isUploadedCheck($userId, $appId);            
                 //$wf_status = $response->count() < 1 ? 1 : 2;
-                $wf_status = 1;                
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                //$wf_status = 1;                
+                //Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status=2);
-                return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
+                //Helpers::updateWfStage('doc_upload', $appId, $wf_status=2);
+                //return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+            //Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
                 
             return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId])->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -468,7 +475,9 @@ class ApplicationController extends Controller
             // if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
-                                                
+                                  
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
+             
                 //Add application workflow stages                
                 Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
                 
@@ -868,25 +877,42 @@ class ApplicationController extends Controller
     {
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-        
         //$appData = $this->appRepo->getAppDataByAppId($appId);        
         //$loanAmount = $appData ? $appData->loan_amt : 0;
         
-        $offerData = $this->appRepo->getAllOffers($appId);
-        //$offerId = $offerData ? $offerData->offer_id : 0;
-        //$prgmId = $offerData ? $offerData->prgm_id : 0;
-        //$loanAmount = $offerData ? $offerData->loan_amount : 0;
+        $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
+        $termOfferData = $this->appRepo->getAllOffers($appId, 2);//for term loan
+        $leaseOfferData = $this->appRepo->getAllOffers($appId, 3);//for lease loan
+        $offerStatus = $this->appRepo->getOfferStatus($appId);//to check the offer status
         $currentStage = Helpers::getCurrentWfStage($appId);   
         $roleData = Helpers::getUserRole();        
         $viewGenSancLettertBtn = $currentStage->role_id == $roleData[0]->id ? 1 : 0;
-        //dd($offerData);
+
+        /*code for getting the sales manager*/     
+        $appData = $this->appRepo->getAppDataByAppId($appId);               
+        $userId = $appData ? $appData->user_id : null;     
+        $userData = $this->userRepo->getfullUserDetail($userId);
+        if ($userData && !empty($userData->anchor_id)) {
+            $toUserId = $this->userRepo->getLeadSalesManager($userId);
+        } else {
+            $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+        }
+        $authUser = Auth::user();
+        if(($authUser->roles->first()->is_superadmin == 1) || ($authUser->user_id == $toUserId)){
+          $isAccessible = 1;
+        }else{
+          $isAccessible = 0;
+        }
+        /*code for getting the sales manager*/
+
         return view('backend.app.offer')
                 ->with('appId', $appId)
-                ->with('bizId', $bizId)
-                //->with('loanAmount', $loanAmount)
-                //->with('prgm_id', $prgmId)
-                //->with('offerId', $offerId)                
-                ->with('offerData', $offerData)
+                ->with('bizId', $bizId)                
+                ->with('supplyOfferData', $supplyOfferData)
+                ->with('termOfferData', $termOfferData)
+                ->with('leaseOfferData', $leaseOfferData)
+                ->with('offerStatus', $offerStatus)
+                ->with('isAccessible', $isAccessible)
                 ->with('currentStage', $currentStage)
                 ->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
     }
@@ -965,37 +991,16 @@ class ApplicationController extends Controller
      * @return View
      */
     public function genSanctionLetter(Request $request)
-    {
+    {  
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
+        $sanctionId = $request->get('sanction_id');
+        $offerId = null;
         if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
             $offerId = $request->get('offer_id');
-        } else {
-            $offerWhereCond = [];
-            $offerWhereCond['app_id'] = $appId;   
-            $offerWhereCond['is_active'] = 1; 
-            $offerWhereCond['status'] = 1;  
-            $offerData = $this->appRepo->getOfferData($offerWhereCond);
-            $offerId = $offerData ? $offerData->prgm_offer_id : 0;
-        }
-        $offerWhereCond = [];
-        $offerWhereCond['prgm_offer_id'] = $offerId;        
-        $offerData = $this->appRepo->getOfferData($offerWhereCond);
-        
-        //Update workflow stage
-        //Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 1);  
-        
-        //$appData = $this->appRepo->getAppDataByAppId($appId);               
-        //$userId  = $appData ? $appData->user_id : null;
-        //$prgmDocsWhere = [];
-        //$prgmDocsWhere['stage_code'] = 'upload_exe_doc';
-        //$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);  
-                
-        return view('backend.app.sanction_letter')
-                ->with('appId', $appId)
-                ->with('bizId', $bizId)
-                ->with('offerId', $offerId)
-                ->with('offerData', $offerData);          
+        } 
+        $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+        return view('backend.app.sanction_letter')->with($data);   
     }
 
    /* For Promoter pan verify iframe model    */
@@ -1214,31 +1219,36 @@ class ApplicationController extends Controller
     }
 
     /**
-     * Download sanction letter
+     * Send sanction letter
      * 
      * @return \Illuminate\Http\Response
      */
-    public function downloadSanctionLetter(Request $request)
+    public function sendSanctionLetter(Request $request)
     {
-        
-        $appId = $request->get('app_id');
-        $offerId = $request->get('offer_id');
-        
         try {
-            $offerWhereCond = [];
-            $offerWhereCond['prgm_offer_id'] = $offerId;
-            $offerData = $this->appRepo->getOfferData($offerWhereCond);
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $sanctionId = $request->get('sanction_id');
+            $offerId = null;
+            if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+                $offerId = $request->get('offer_id');
+            } 
 
-            $fileName = 'sanction_letter_'. time() . '.pdf';
-            $htmlContent = \View::make('backend.app.download_sanction_letter', 
-                    compact('offerData')+['appId' => $appId, 'offerId' => $offerId]
-                    )->render();
+            $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $date = \Carbon\Carbon::now();
+            $data['date'] = $date;
+            $htmlContent = view('backend.app.send_sanction_letter')->with($data)->render();
+            $userData =  $this->userRepo->getUserByAppId($appId);
 
-            
-            return response($this->pdf->render($htmlContent), 200)->withHeaders([
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => ($request->has('download') ? 'attachment' : 'inline') . "; filename=" . $fileName,
-            ]);
+            $emailData['email'] = $userData->email;
+            $emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
+            $emailData['body'] = $htmlContent;
+            $emailData['attachment'] = $this->pdf->render($htmlContent);
+            $emailData['subject'] ="Sanction Letter for ".$data['biz_entity_name'];
+
+            \Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
+            Session::flash('message',trans('success_messages.send_sanction_letter_successfully'));
+            return redirect()->back()->with('is_send',1);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -1309,4 +1319,146 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }       
     }
+
+    /**
+     * View Approver List
+     * 
+     * @param Request $request
+     * @return view
+     */    
+    public function viewApprovers(Request $request){
+        try{
+            $app_id = $request->get('app_id');
+            if($app_id){
+                $approvers = AppApprover::getAppApproversDetails($app_id);
+                $data = array();
+                foreach($approvers as $key => $approver){
+                    $data[$key]['approver'] = $approver->approver;
+                    $data[$key]['approver_email'] = $approver->approver_email;
+                    $data[$key]['approver_role'] = $approver->approver_role;
+                    $data[$key]['approved_date'] = ($approver->approver)? date('d-M-Y',strtotime($approver->approver)) : '---';
+                    $data[$key]['stauts'] = ($approver->is_active)?"Approved":"";
+                }
+                return view('backend.app.view_approvers')->with('approvers', $data);
+            }
+        } catch (Exception $ex){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    /**
+     * View Shared Details
+     * 
+     * @param Request $request
+     * @return view
+     */  
+    public function viewSharedDetails(Request $request){
+        try{
+            $app_id = $request->get('app_id');
+            if($app_id){
+                $assignees = AppAssignment::getAppAssignees($app_id);
+
+                $data = array();
+                foreach($assignees as $key => $assignee){
+                    $from_role_name = '';
+                    if($assignee->from_user_id){
+                        $from_role_name = User::getUserRoles($assignee->from_user_id);
+                        if($from_role_name->count()!=0)
+                        $from_role_name = $from_role_name[0];
+                    }
+                    if($assignee->to_user_id){
+                        $to_role_name = User::getUserRoles($assignee->to_user_id);
+                        if($to_role_name->count()!=0)
+                        $to_role_name = $to_role_name[0];
+                    }else{
+                        $to_role_name = Role::getRole($assignee->role_id);
+                    }
+
+                    $data[$key]['assignby'] = $assignee->assignby;
+                    $data[$key]['assignto'] = $assignee->assignto;
+                    $data[$key]['sharing_comment'] = $assignee->sharing_comment;
+                    $data[$key]['assigne_date'] = ($assignee->created_at)? date('d-M-Y',strtotime($assignee->created_at)) : '---';
+                    $data[$key]['assignby_role'] = ($from_role_name->count()!=0)? $from_role_name->name:'';
+                    $data[$key]['assignto_role'] = ($to_role_name->count()!=0)? $to_role_name->name:'';
+                }
+                return view('backend.app.view_shared_details')->with('approvers', $data);
+            }
+        } catch (Exception $ex){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+      /**
+     * Save Sanction Letter
+     * 
+     * @param Request $request
+     * @return view
+     */  
+    public function saveSanctionLetter(Request $request){
+
+        try {
+            $arrFileData = $request->all();
+            $appId = (int)$request->app_id; 
+            $offerId = (int)$request->offer_id; 
+            $bizId = (int) $request->get('biz_id');
+            $sanctionId = null;
+
+            if($request->has('sanction_id')){
+                $sanctionId = $request->sanction_id; 
+            }
+            $sanctionData = array(
+                'prgm_offer_id' => $offerId,
+                'validity_date'=>  Carbon::createFromFormat('d/m/Y', $request->sanction_validity_date)->format('Y-m-d')  , 
+                'validity_comment' =>  $request->sanction_validity_comment, 
+                'payment_type' =>  $request->payment_type, 
+                'payment_type_other' =>  $request->payment_type_comment,
+                'delay_pymt_chrg' => $request->delay_pymt_chrg,
+                'insurance' => $request->insurance,
+                'bank_chrg' => $request->bank_chrg,
+                'legal_cost' => $request->legal_cost,
+                'po' => $request->po,
+                'pdp' => $request->pdp,
+                'disburs_guide' => $request->disburs_guide,
+                'other_cond' => $request->other_cond,
+                'covenants' => $request->covenants,
+            );
+            $sanction_info = $this->appRepo->saveSanctionData($sanctionData,$sanctionId);
+
+            if($sanction_info){
+                Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
+                return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id,'biz_id' => $bizId]);
+            } 
+        } catch (Exception $ex) {
+            return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function previewSanctionLetter(Request $request){
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $sanctionId = $request->get('sanction_id');
+            $offerId = null;
+            if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+                $offerId = $request->get('offer_id');
+            } 
+            
+            $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $date = \Carbon\Carbon::now();
+            $data['date'] = $date;
+            $html = view('backend.app.send_sanction_letter')->with($data)->render();
+            if(!Session::get('is_send')){
+
+                $html .='<div align="center">
+                <a href="'. route('send_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'download'=>1, 'sanction_id'=>$data['sanctionData']->sanction_id ]).'" class="btn btn-success btn-sm">Send Mail</a>
+                </div>';
+            }
+            return  $html;
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    
+
 }

@@ -10,7 +10,7 @@
       <div class="col-md-12">
         <div class="form-group">
           <div class="custom-file upload-btn-cls mb-3 mt-2">
-	        <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file">
+	        <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file" accept="image/*,.xlsx,.xls,.doc,.docx,.pdf">
 	        <label class="custom-file-label" for="customFile">Choose file</label>
 	      </div>
         </div>
@@ -50,14 +50,14 @@
             rules: {
                 'doc_file': {
                     required: true,
-                    extension: "jpg,jpeg,png,pdf,doc,docx",
+                    extension: "jpg,png,pdf,doc,dox,xls,xlsx",
                     filesize : 200000000,
                 }
             },
             messages: {
                 'doc_file': {
                     required: "Please select file",
-                    extension:"Please select jpg,jpeg,png,pdf,doc,docx type format only.",
+                    extension:"Please select jpg, png, pdf, doc, docx, xls, xlsx type format only.",
                     filesize:"maximum size for upload 20 MB.",
                 }
             }

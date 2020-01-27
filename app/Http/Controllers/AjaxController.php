@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 use Auth;
 use Helpers;
@@ -31,6 +30,7 @@ use App\Inv\Repositories\Models\UserReqDoc;
 use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Models\Master\Group;
 
 
 class AjaxController extends Controller {
@@ -2711,7 +2711,6 @@ if ($err) {
   
     //////////////////// use for invoice list/////////////////
      public function getInvoiceList(DataProviderInterface $dataProvider) {
-       
         $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
         return $invoice;
@@ -2779,6 +2778,13 @@ if ($err) {
         $invoice = $dataProvider->getBackendInvoiceListReject($this->request, $invoice_data);
         return $invoice;
     } 
+    
+      //////////////////// use for Invoice Activity  list/////////////////
+     public function getBackendInvoiceActivityList(DataProviderInterface $dataProvider) {
+        $invoice_activity_data = $this->invRepo->getAllActivityInvoiceLog($this->request->inv_name);
+        $invoice_activity_data = $dataProvider->getBackendInvoiceActivityList($this->request, $invoice_activity_data);
+        return $invoice_activity_data;
+    } 
     /**
       * 
       * @param DataProviderInterface $dataProvider
@@ -2787,6 +2793,7 @@ if ($err) {
       * 
       * 
       */
+    
    public function updateInvoiceApprove(Request $request)
    {
      return  $this->invRepo->updateInvoice($request->invoice_id,$request->status);
@@ -3107,7 +3114,7 @@ if ($err) {
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'get_supplier' =>$get_supplier]);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'get_supplier' =>$get_supplier]);
      }
            
 
@@ -3182,28 +3189,55 @@ if ($err) {
                 $invoice_date  = $row[1];
                 $invoice_due_date  = $row[2];
                 $invoice_amount  = $row[3];
+                $invoice_amount  = str_replace("\n","",$invoice_amount);
                 $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
                 $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
+               
+               
+                 if(strlen($invoice_date) < 10)
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It Should be "dd/mm/yy" format']); 
+               } 
+               if(strlen($invoice_due_date) < 10)
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
+               } 
+                if($invoice_no=='')
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check invoice , Invoice should not be null']); 
+               } 
                 if( $invoice_due_date_validate==false)
                {
-                    return response()->json(['status' => 0]); 
+                    return response()->json(['status' => 0,'message' => 'Please check the invoice date, It should be "dd/mm/yy" format']); 
                }
                if( $invoice_date_validate==false)
                {
-                    return response()->json(['status' => 0]); 
+                    return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
                } 
-               if($this->twoDateDiff($date,$invoice_due_date)==1)
+                if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_due_date)) < strtotime(Carbon::parse($date)->format('d-m-Y')))
                {
-                   return response()->json(['status' => 0]); 
+                   return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It should be greater than current date']); 
                }
-               
-                $invoice_amount = str_replace("\n","",$invoice_amount);
+                if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_date)) > strtotime(Carbon::parse($date)->format('d-m-Y')))
+               {
+                   return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It should be less than current date']); 
+               }
+                if($invoice_amount=='')
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check invoice amount, Amount should not be null']); 
+               } 
+                if(!is_numeric($invoice_amount))
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check invoice amount, string value not allowed']); 
+               } 
+                $invoice_amount =  $invoice_amount;
                 $data[$i]['anchor_id'] =  $request['anchor_bulk_id'];
                 $data[$i]['supplier_id'] = $request['supplier_bulk_id']; 
                 $data[$i]['program_id'] = $request['program_bulk_id'];
                 $data[$i]['app_id']    = $appId;
                 $data[$i]['biz_id']  = $biz_id;
                 $data[$i]['invoice_no'] = $invoice_no;
+                $data[$i]['tenor'] =  $request['tenor']; 
                 $data[$i]['invoice_due_date'] = ($invoice_due_date) ? Carbon::createFromFormat('d/m/Y', $invoice_due_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_approve_amount'] =  $invoice_amount;
@@ -3226,11 +3260,11 @@ if ($err) {
                       return response()->json(['status' => 1,'data' =>$getTempInvoice]); 
                   }
                     else {
-                        return response()->json(['status' => 0]); 
+                        return response()->json(['status' => 0,'message' => 'Something wrong, Please try again']); 
                     }
                 }  
                   else {
-                        return response()->json(['status' => 0]); 
+                        return response()->json(['status' => 0,'message' => 'Something wrong, Please try again']); 
                     }
      }
     function twoDateDiff($fdate,$tdate)
@@ -3361,6 +3395,21 @@ if ($err) {
     {
      $getDisList = $this->userRepo->getDisbursalList();
      return $dataProvider->getDisbursalList($this->request , $getDisList);   
+    }
+
+    /**
+     * get Group company 
+     * 
+     * @param Request $request
+     * @return mixed
+     */
+    public function getGroupCompany(Request $request ){
+      
+        $data = Group::select("name")
+                ->where("name","LIKE","%{$request->input('query')}%")
+                ->get();
+    
+       return response()->json($data);
     }
 
 

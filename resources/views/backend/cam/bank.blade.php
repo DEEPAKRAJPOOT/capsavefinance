@@ -51,18 +51,7 @@
                   <div class="clearfix"></div>
                   <br/>
                   <hr>
-                  <div id="paginate">
-                        <?php 
-                           echo $xlsx_pagination;
-                        ?>
-                     </div>
-                     <div id="gridView">
-                        <?php 
-                           echo $xlsx_html;
-                        ?>
-                     </div>
-                     <div class="clearfix"></div>
-                     <br/>
+                  <div class="clearfix"></div>
                   <h2 class="sub-title mt-4">Banking Analysis</h2>
                   <div class=" pb-4 pt-2">
                      <table cellspacing="0" cellpadding="0" class="table overview-table">
@@ -84,358 +73,42 @@
                                  <p style="margin-bottom: 0.5rem;"><b>Pan :</b>  &nbsp; {{ !empty($customers_info) ? strtolower($customers_info[0]['pan']) : '' }}</p>
                               </td>
                            </tr>
-                           <tr>
-                              <td>&nbsp;</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Credit Entries    (Without Returns)</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >I/W Returns</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7">Cash Deposit</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7">Salary</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Loan Credit</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7">Other Credits</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Contra Credits (Counter of O/W Returns)</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Credit Entries (With Returns)</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Debit Entries    (Without Returns)</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >O/W Returns</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Bouncing Charges</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7">Cash Withdrawl</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >EMI</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7">Tax Payments</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7">Interest    Debited</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Charges</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Other Debits</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Contra Debits (Counter of I/W Returns)</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Debit Entries (With Returns)</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Opening    Balance</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7">Closing    Balance</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Cheque Issued</td>
-                           </tr>
-                           <tr>
-                              <td>Count</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7">Cheque Percentage</td>
-                           </tr>
-                           <tr>
-                              <td>Value(Percentage Of Number)</td>
-                              <td></td>
-                           </tr>
-                           <tr>
-                              <td>Value(Percentage Of Value)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Lifestyle</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
-                           <tr bgcolor="#f2f2f2">
-                              <td colspan="7" >Investment Debit</td>
-                           </tr>
-                           <tr>
-                              <td>Value    (in Lakhs)</td>
-                              <td></td>
-                           </tr>
                         </tbody>
                      </table>
                      <div class="clearfix"></div>
                   </div>
-                  <div class="data mt-4">
-                     <h2 class="sub-title bg">Details of Banking Relationships</h2>
-                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <p ><b>A. Working Capital Facility: </b></p>
-                        <table class="table table-bordered overview-table" id="myTable3">
-                           <thead>
-                              <tr bgcolor="#ccc">
-                                 <th style="vertical-align: top;">Name of Bank/ NBFC</th>
-                                 <th style="vertical-align: top;">Fund based Facility</th>
-                                 <th style="vertical-align: top;">Facility Amount</th>
-                                 <th style="vertical-align: top;">O/S as on
-                                    <input type="text" name="" id="fund_facility_date" class="form-control" value="">
-                                 </th>
-                                 <th style="vertical-align: top;">Non-fund based Facility</th>
-                                 <th style="vertical-align: top;">Facility Amount</th>
-                                 <th style="vertical-align: top;">O/S as on
-                                    <input type="text" name="" id="non_fund_facility_date" class="form-control" value="">
-                                 </th>
-                                 <th style="vertical-align: top;">Length of Relationship</th>
-                              </tr>
-                           </thead>
-                           <tbody id="working_capital_facility">
-                           </tbody>
-                           <thead>
-                              <tr>
-                                 <td>TOTAL</td>
-                                 <td></td>
-                                 <td id="total_facility_amt" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">0</td>
-                                 <td id="total_os" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">0</td>
-                                 <td></td>
-                                 <td id="total_non_facility_amt" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">0</td>
-                                 <td id="total_non_total_os" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">0</td>
-                                 <td></td>
-                              </tr>
-                           </thead>
-                        </table>
-                        @if(request()->get('view_only'))
-                        <button class="btn btn-success pull-right btn-sm mt-3"> + Add Row</button>
-                        @endif
-                        <div class="clearfix"></div>
-                        <p class="mt-3">
-                           <b>B. Term Loans &amp; Business Loans: </b>
-                        </p>
-                        <table class="table table-bordered overview-table" id="myTable8">
-                           <thead>
-                              <tr bgcolor="#ccc">
-                                 <th style="vertical-align: top;">Name of Bank/ NBFC</th>
-                                 <th style="vertical-align: top;">Facility</th>
-                                 <th style="vertical-align: top;">Facility Amount</th>
-                                 <th style="vertical-align: top;">O/S as on
-                                    <input type="text" name="" id="loans_date" class="form-control" value="">
-                                 </th>
-                                 <th style="vertical-align: top;">Non-fund based Facility</th>
-                              </tr>
-                           </thead>
-                           <tbody id="loans_cam">
-                           </tbody>
-                           <thead>
-                              <tr>
-                                 <td>TOTAL</td>
-                                 <td></td>
-                                 <td id="loans_total_facility_amt" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">0</td>
-                                 <td id="loans_total_facility_os" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">0</td>
-                                 <td></td>
-                              </tr>
-                           </thead>
-                        </table>
-                        @if(request()->get('view_only'))
-                        <button class="btn btn-success pull-right btn-sm mt-3"> + Add Row</button>
-                        @endif
-                        <div class="clearfix"></div>
-                     </div>
+                  <div id="paginate">
+                        <?php 
+                           echo $xlsx_pagination;
+                        ?>
                   </div>
-                  <div class="data mt-4">
-                     <h2 class="sub-title bg">Inter-Group Transactions:</h2>
-                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <table class="table overview-table" id="myTable6">
-                           <thead>
-                              <tr>
-                                 <td>Sister Concern</td>
-                                 <td>Nature of Transaction</td>
-                                 <td>
-                                    <select class="form-control form-control-select" id="deb_first_years">
-                                       <option value="">Select</option>
-                                       <option value="2017">2017</option>
-                                       <option value="2018">2018</option>
-                                       <option value="2019">2019</option>
-                                    </select>
-                                    <small>Amount (Rs Lakh)</small>
-                                 </td>
-                              </tr>
-                           </thead>
-                           <tbody id="inter_group_transaction">
-                           </tbody>
-                        </table>
-                        @if(request()->get('view_only'))
-                        <button class="btn btn-success pull-right btn-sm mt-3"> + Add Row</button>
-                        @endif
-                        <div class="clearfix"></div>
-                     </div>
-                  </div>
-                  <div class="row">
-                     <div class="col-md-12 mt-3">
-                        <div class="form-group text-right">
-                           @if(request()->get('view_only')) 
-                           <button  class="btn btn-success btn-sm btn-ext submitBtnBank" data-toggle="modal" data-target="#myModal">Submit</button>                                        
-                           @endif
-                        </div>
-                     </div>
+                  <div id="gridView">
+                     <?php 
+                        echo $xlsx_html;
+                     ?>
                   </div>
                </div>
+               <div class="clearfix"></div>
+               <br/>
+               <form method="POST" action="{{route('save_bank_detail')}}">
+                  <input type="hidden" name="app_id" value="{{$appId}}">  
+                  <input type="hidden" name="bank_detail_id" value="{{$debtPosition->bank_detail_id ?? ''}}">  
+                  @csrf
+                  <div class="mt-4">
+                     <h2 class="sub-title bg">Debt Position</h2>
+                     <div class="pl-4 pr-4 pb-4 pt-2">
+                        <div class="form-group row">
+                         <label for="debt_on" class="col-sm-2 col-form-label">Date As On</label>
+                         <div class="col-sm-4">
+                           <input type="text" class="form-control" value="{{$debtPosition->debt_on ?? '' }}" name="debt_on" id="debt_on" placeholder="Select Date">
+                         </div>
+                        </div>
+                        <textarea class="form-control form-control-sm" id="debt_position_comments" name="debt_position_comments" rows="3" spellcheck="false">{{$debtPosition->debt_position_comments ?? '' }}</textarea>
+                     </div>
+                 </div>
+                 <br/>
+                 <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
+              </form>
             </div>
          </div>
       </div>
@@ -552,5 +225,22 @@
             },
          })
       }
+</script>
+<script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
+<script>
+   $('#debt_on').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+CKEDITOR.replace('debt_position_comments', {
+    fullPage: true,
+    extraPlugins: 'docprops',
+    allowedContent: true,
+    height: 320
+  });
 </script>
 @endsection

@@ -222,13 +222,15 @@ class AppProgramLimit extends BaseModel {
 
     public static function getLimitWithOffer($appId, $bizId, $productId){
         return self::select('app_prgm_limit.limit_amt', 
+                'app_prgm_offer.prgm_offer_id',
                 'app_prgm_offer.tenor',
-                'app_prgm_offer.equipment_type', 
+                'app_prgm_offer.equipment_type_id', 
                 'app_prgm_offer.security_deposit',
                 'app_prgm_offer.rental_frequency',
-                'app_prgm_offer.ptpq',
-                'app_prgm_offer.xirr',
-                'app_prgm_offer.addl_security'
+                'app_prgm_offer.ruby_sheet_xirr',
+                'app_prgm_offer.cash_flow_xirr',
+                'app_prgm_offer.addl_security',
+                'app_prgm_offer.comment'
                 )
                 ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
                 ->where('app_prgm_limit.app_id',$appId)

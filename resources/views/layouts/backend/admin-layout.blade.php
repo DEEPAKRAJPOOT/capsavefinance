@@ -43,7 +43,7 @@
     </style>
 </head>
 
-<body class="sidebar-icon-only">
+<body class="sidebar-icon-only" style="margin: 0px !important">
     <div class=" container-scroller">
         @include('layouts.backend.partials.admin-header')
         <div class="container-fluid page-body-wrapper">
@@ -162,7 +162,7 @@
         }
 
         function setError(ele, msg){
-            $(ele).after('<span class="text-danger error">'+msg+'</span>');
+            $(ele).after('<span class="error">'+msg+'</span>');
         }
 
         function setLimit(ele, msg){

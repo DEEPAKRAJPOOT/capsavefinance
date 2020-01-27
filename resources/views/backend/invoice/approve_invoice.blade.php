@@ -6,11 +6,7 @@
 
 
 <div class="content-wrapper">
-				
-				
-
-               
-                  <div class="col-md-12 ">
+<div class="col-md-12 ">
    <section class="content-header">
    <div class="header-icon">
       <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -30,7 +26,6 @@
    <div class="col-md-12 ">
       <div class="card">
          <div class="card-body">
-		 
 	 <ul class="nav nav-tabs" role="tablist">
              <li class="nav-item ">
       <a class="nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
@@ -39,14 +34,14 @@
          <a class="nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
     </li>
   <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursment Que</a>
+         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursement Queue</a>
     </li>
         
    <li class="nav-item">
             <a class="nav-link @if(Route::currentRouteName()=='backend_get_sent_to_bank') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
     </li>
 	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursment</a>
+            <a class="nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursement</a>
     </li>
     <li class="nav-item">
               <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
@@ -62,7 +57,6 @@
   
    
   </ul>
-
 
   <div class="tab-content">
     
@@ -120,9 +114,10 @@
                                                 <th><input type="checkbox" id="chkAll"></th> 
                                               <th>Invoice  No</th>
                                                 <th>Anchor Name</th>
-                                                <th>Supplier Name</th>
-                                                <th>Program Name</th>
+                                                <th>Customer Name</th>
                                                 <th>Invoice Date</th>
+                                                <th>Invoice Due Date</th>
+                                                <th>Tenor</th>
                                                  <th>Invoice  Amount</th>
                                                 <th>Invoice Approve Amount</th>
                                                 <th>Status</th>
@@ -284,41 +279,7 @@
        $("#program_bulk_id").append("<option value=''>No data found</option>");  
         $("#program_bulk_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
-  $('#submit').on('click', function (e) {
-     
-     if ($('form#signupForm').validate().form()) {     
-        $("#anchor_bulk_id" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please enter Anchor name",
-        }
-        });
-       
-      $("#supplier_id" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please Select Supplier Name",
-        }
-        });
-          $("#program_bulk_id" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please Select Product Program Name",
-        }
-        });
-       
-        $("#customFile" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please upload Invoice Copy",
-        }
-        }); 
-       
-         
-        } else {
-         alert();
-        }  
-     });         
+        
   }); 
   
   
@@ -337,7 +298,7 @@
    
  ///////////////////////For Invoice Approve////////////////////////
   $(document).on('click','.approveInv',function(){
-    if(confirm('Are you sure? You want to disbursment que.'))  
+    if(confirm('Are you sure? You want to disbursment queue.'))  
     {
      var invoice_id =  $(this).attr('data-id'); 
       var postData =  ({'invoice_id':invoice_id,'status':9,'_token':messages.token});
@@ -588,9 +549,10 @@ $(document).on('click','#bulkApprove',function(){
             alert('Please select atleast one checked');
             return false;
         }
-        if(confirm('Are you sure? You want to disbursment que.'))  
+        if(confirm('Are you sure? You want to disbursment queue.'))  
     { 
-        var postData =  ({'invoice_id':arr,'status':9,'_token':messages.token});
+         var status =  $(this).attr('data-status');
+        var postData =  ({'invoice_id':arr,'status':status,'_token':messages.token});
          jQuery.ajax({
           url: messages.update_bulk_invoice,
                   method: 'post',

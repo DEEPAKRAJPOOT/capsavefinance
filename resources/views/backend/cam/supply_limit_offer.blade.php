@@ -8,12 +8,10 @@
     <input type="hidden" value="{{request()->get('app_prgm_limit_id')}}" name="app_prgm_limit_id">
     
     <div class="row">
-    <div class="col-md-12">
-      <div class="form-group row">
-        <label for="txtPassword" class="col-md-4"><b>Facility Type:</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Facility Type:</b></label> 
         <input type="text" class="form-control" value="Supply Chain" placeholder="Facility Type" maxlength="15" disabled>
-        </div>
       </div>
     </div>
 
@@ -23,107 +21,85 @@
     $actualBalance = ($programBalanceLimit < $balanceLimit)? $programBalanceLimit: $balanceLimit;
     @endphp
 
-    <div class="col-md-12">
-      <div class="form-group row INR ">
-        <label for="txtPassword" class="col-md-4"><b>Loan Offer:</b></label> 
-        <div class="col-md-8">
-        <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+    <div class="col-md-6">
+      <div class="form-group INR">
+        <label for="txtPassword"><b>Loan Offer:</b></label> 
+        <span class="s_value" style="margin-left: 60px;">(<i class="fa fa-inr"></i>{{(int)$limitData->program->min_loan_size.' - '.(int)$limitData->program->max_loan_size}})</span><span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($actualBalance > 0)? $actualBalance: 0}}</span>
+        <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Loan Offer" maxlength="15">
-        <span class="s_value"><i class="fa fa-inr"></i>{{$limitData->program->min_loan_size}} - <i class="fa fa-inr"></i>{{$limitData->program->max_loan_size}}</span><span class="float-right">Balance: <i class="fa fa-inr"></i>{{($actualBalance > 0)? $actualBalance: 0}}</span>
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Interest(%):</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Interest(%):</b></label> 
+        <span class="float-right text-success">{{$limitData->program->min_interest_rate}}%-{{$limitData->program->max_interest_rate}}%</span>
         <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
-        <span class="s_value">{{$limitData->program->min_interest_rate}}%-{{$limitData->program->max_interest_rate}}%</span>
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Invoice Tenor(Days):</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Invoice Tenor(Days):</b></label> 
         <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Old Invoice Tenor(Days):</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Old Invoice Tenor(Days):</b></label> 
         <input type="text" name="tenor_old_invoice" class="form-control" value="{{isset($offerData->tenor_old_invoice)? $offerData->tenor_old_invoice: ''}}" placeholder="Tenor for old invoice" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Margin(%):</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Margin(%):</b></label> 
         <input type="text" name="margin" class="form-control" value="{{isset($offerData->margin)? $offerData->margin: ''}}" placeholder="Margin" maxlength="5">
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Overdue Interest(%):</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Overdue Interest(%):</b></label> 
         <input type="text" name="overdue_interest_rate" class="form-control" value="{{isset($offerData->overdue_interest_rate)? $offerData->overdue_interest_rate: ''}}" placeholder="Overdue Interest Rate" maxlength="5">
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Adhoc Interest(%):</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Adhoc Interest(%):</b></label> 
         <input type="text" name="adhoc_interest_rate" class="form-control" value="{{isset($offerData->adhoc_interest_rate)? $offerData->adhoc_interest_rate: ''}}" placeholder="Adhoc Interest Rate" maxlength="5">
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Grace Period(Days):</b></label> 
-        <div class="col-md-8">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Grace Period(Days):</b></label> 
         <input type="text" name="grace_period" class="form-control" value="{{isset($offerData->grace_period)? $offerData->grace_period: ''}}" placeholder="Grace Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  INR">
-        <label for="txtPassword" class="col-md-4"><b>Processing Fee:</b></label> 
-        <div class="col-md-8">
-        <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+    <div class="col-md-6">
+      <div class="form-group INR">
+        <label for="txtPassword"><b>Processing Fee:</b></label> 
+        <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" name="processing_fee" class="form-control number_format" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  INR">
-        <label for="txtPassword" class="col-md-4"><b>Check Bounce Fee:</b></label> 
-        <div class="col-md-8">
-        <a href="javascript:void(0);" class="verify-owner-no" style="top:2px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+    <div class="col-md-6">
+      <div class="form-group INR">
+        <label for="txtPassword"><b>Check Bounce Fee:</b></label> 
+        <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" name="check_bounce_fee" class="form-control number_format" value="{{isset($offerData->check_bounce_fee)? number_format($offerData->check_bounce_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
-        </div>
       </div>
     </div>
     
-    <div class="col-md-12">
-      <div class="form-group row  ">
-        <label for="txtPassword" class="col-md-4"><b>Comment:</b></label> 
-        <div class="col-md-8">
-          <textarea class="form-control" name="comment" rows="3" col="3" placeholder="Comment" maxlength="250">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
-        </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Comment:</b></label> 
+        <textarea class="form-control" name="comment" rows="3" col="3" placeholder="Comment" maxlength="250">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
       </div>
     </div>
     </div>
@@ -144,6 +120,10 @@
     let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
     let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
     let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
+    let program_min_limit = "{{$limitData->program->min_loan_size}}"; //program minimum limit
+    let program_max_limit = "{{$limitData->program->max_loan_size}}"; //program maximum limit
+    let program_min_rate = "{{$limitData->program->min_interest_rate}}"; //program minimum limit
+    let program_max_rate = "{{$limitData->program->max_interest_rate}}"; //program maximum limit
 
     let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
     let balance_limit = total_limit - total_offered_amount + current_offer_amount;
@@ -175,9 +155,14 @@
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
-    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > actual_balance)){
+    }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > actual_balance){
         setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
+    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) < program_min_limit) || (parseInt(prgm_limit_amt.replace(/,/g, '')) > program_max_limit)){
+        setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+program_min_limit+' - '+program_max_limit+') range');
+        flag = false;
+    }else{
+        //TAKE REST
     }
 
     if(interest_rate == '' || isNaN(interest_rate)){
@@ -186,6 +171,11 @@
     }else if(parseFloat(interest_rate) > 100){
         setError('input[name=interest_rate]', 'Please fill correct intereset rate');
         flag = false;
+    }else if((parseFloat(interest_rate) < program_min_rate) || parseFloat(interest_rate) > program_max_rate){
+        setError('input[name=interest_rate]', 'Interest rate should be ('+program_min_rate+'% - '+program_max_rate+'%) range');
+        flag = false;
+    }else{
+        //TAKE REST
     }
 
     if(tenor == ''){

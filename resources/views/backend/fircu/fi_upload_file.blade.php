@@ -12,7 +12,7 @@
           <!-- <label for="email">Select Agency</label> -->
           <div class="custom-file upload-btn-cls mb-3 mt-2">
             <input type="hidden" name="fi_addr_id">
-	        <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file">
+	        <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file" accept="image/*,.xlsx,.xls,.doc,.docx,.pdf">
 	        <label class="custom-file-label" for="customFile">Choose file</label>
 	      </div>
         </div>
@@ -47,20 +47,20 @@ $(document).ready(function(){
             rules: {
                 'doc_file': {
                     required: true,
-                    extension: "jpg,jpeg,png,pdf,doc,docx",
+                    extension: "jpg,png,pdf,doc,dox,xls,xlsx",
                     filesize : 200000000,
                 }
             },
             messages: {
                 'doc_file': {
                     required: "Please select file",
-                    extension:"Please select jpg, png, pdf, doc, docx type format only.",
+                    extension:"Please select jpg, png, pdf, doc, docx, xls, xlsx type format only.",
                     filesize:"Maximum size for upload 20 MB.",
                 }
             }
         });
 
-        // $('#documentForm').validate();
+        //$('#documentForm').validate();
 
         $("#savedocument").click(function(){
             if($('#documentForm').valid()){

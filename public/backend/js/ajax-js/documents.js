@@ -2,12 +2,12 @@
 /* global messages, message */
 
 try {
-    var oTable, otable1;
+    var oTable;
     jQuery(document).ready(function ($) {
         //Documents Listing code
         oTable = $('#documentsList').DataTable({
             processing: true,
-            serverSide: false,
+            serverSide: true,
             pageLength: 25,
             searching: false,
             bSort: true,
@@ -15,7 +15,8 @@ try {
                "url": messages.get_documents_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.search_keyword = $('input[name=search_keyword]').val();
+                    d.doc_type_id = $('select[name=doc_type_id]').val();
+                    d.product_type = $('select[name=product_type]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -32,7 +33,7 @@ try {
                     {data: 'created_by'},
                     {data: 'is_active'}
                 ],
-            aoColumnDefs: [{'bSortable': true, 'aTargets': [0,1,2,3,4]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4]}]
         });
         //Search
         $('#searchbtn').on('click', function (e) {

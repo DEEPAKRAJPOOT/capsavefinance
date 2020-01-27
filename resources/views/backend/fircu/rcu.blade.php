@@ -29,9 +29,11 @@
             <a href="{{ route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Inspection</a>
         </li>
         @endcan
+        @can('pd_notes_list')
         <li>
             <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}"> Personal Discussion </a>
         </li>
+        @endcan
     </ul>
 
 
@@ -69,7 +71,7 @@
                                             <td>
                                                 @if($value['agencies']->count())
                                                 <div class="btn-group ml-2 mb-1">
-                                                    @if(request()->get('view_only') && Auth::user()->agency_id == null)
+                                                    @if(Auth::user()->agency_id == null)
                                                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Action
                                                     </button>
@@ -102,7 +104,7 @@
                                                       <td width="25%">{{ $document->userFile->file_name }}</td>
                                                       <td width="25%">{{\Carbon\Carbon::parse($document->created_at)->format('d/m/Y h:i A')}}</td>
                                                     <td width="25%">
-                                                        <a class="btn-sm" title="Download Document" href="{{ Storage::url($document->userFile->file_path) }}" download>
+                                                        <a class="btn-sm" title="Download Document" href="{{ Storage::url($document->userFile->file_path) }}" download="{{$document->userFile->file_name}}">
                                                             <button class="btn-upload btn-sm" type="button"> <i class="fa fa-download"></i>
                                                             </button>
                                                         </a>
@@ -160,7 +162,7 @@
                                                        <td width="15%">
                                                            
                                                         @if(isset($value2->userFile->file_path))
-                                                        <a title="Download Report Document" href="{{ Storage::url($value2->userFile->file_path) }}" download><i class="fa fa-download"></i></a>
+                                                        <a title="Download Report Document" href="{{ Storage::url($value2->userFile->file_path) }}" download="{{$document->userFile->file_name}}"><i class="fa fa-download"></i></a>
                                                         @endif
                                                         @if($value2->is_active)
                                                         <button class="btn-upload btn-sm trigger-for-rcu-doc" style="padding: 1px 8px;" type="button" data-rcu_doc_id="{{$value2->rcu_doc_id}}"> <i class="fa fa-upload"></i></button>

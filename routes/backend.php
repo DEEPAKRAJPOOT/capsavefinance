@@ -208,6 +208,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'send_case_confirmBox',
                 'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
             ]); 
+
+            Route::get('view-approvers', [
+                'as' => 'view_approvers',
+                'uses' => 'Backend\ApplicationController@viewApprovers'
+            ]); 
+
+            Route::get('view-shared-details', [
+                'as' => 'view_shared_details',
+                'uses' => 'Backend\ApplicationController@viewSharedDetails'
+            ]); 
             
             Route::post('accept-next-stage', [
                 'as' => 'accept_next_stage',
@@ -255,8 +265,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
             
             Route::get('download-sanction-letter', [
-                'as' => 'download_sanction_letter',
-                'uses' => 'Backend\ApplicationController@downloadSanctionLetter'
+                'as' => 'send_sanction_letter',
+                'uses' => 'Backend\ApplicationController@sendSanctionLetter'
             ]);
 
             Route::get('show-upload-sanction-letter', [
@@ -268,7 +278,17 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'upload_sanction_letter',
                 'uses' => 'Backend\ApplicationController@uploadSanctionLetter'
             ]); 
-           
+            
+            Route::post('save-sanction-letter', [
+                'as' => 'save_sanction_letter',
+                'uses' => 'Backend\ApplicationController@saveSanctionLetter'
+            ]); 
+
+            Route::get('preview-sanction-letter',[
+                'as' => 'preview_sanction_letter',
+                'uses' => 'Backend\ApplicationController@previewSanctionLetter'
+            ]);
+
             //////////////// For Promoter Iframe///////////////////
              Route::get('show-pan-verify-data', [
                 'as' => 'show_pan_verify_data',
@@ -428,6 +448,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@saveReviewerSummary'
                 ]);
 
+                Route::get('mail-reviewer-summary', [
+                    'as' => 'mail_reviewer_summary',
+                    'uses' => 'Backend\CamController@mailReviewerSummary'
+                ]);
+
                 Route::get('gstin', [
                     'as' => 'cam_gstin',
                     'uses' => 'Backend\CamController@gstin'
@@ -494,6 +519,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@approveOffer'
                 ]);
 
+
+                Route::get('cam-report', [
+                    'as' => 'cam_report',
+                    'uses' => 'Backend\CamController@downloadCamReport'
+                ]);
+
+                Route::post('save-bank-detail', [
+                    'as' => 'save_bank_detail',
+                    'uses' => 'Backend\CamController@saveBankDetail'
+                ]);
             }); //end of cam   
         });//end of application
 

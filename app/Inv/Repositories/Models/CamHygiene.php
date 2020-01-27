@@ -54,8 +54,9 @@ class CamHygiene extends BaseModel
     protected $fillable = [
                         'biz_id',
                         'app_id',
-                        'remarks', 
+                        'cibil_defaulters_chk', 
                         'rbi_willful_defaulters', 
+                        'watchout_investors_chk', 
                         'watchout_investors', 
                         'cibil_check', 
                         'politically_check', 
@@ -105,9 +106,10 @@ class CamHygiene extends BaseModel
         $inputArr= array(
                         'biz_id' => $attributes['biz_id'],
                         'app_id' => $attributes['app_id'],
-                        'remarks' => $attributes['remarks'], 
+                        'cibil_defaulters_chk' => $attributes['cibil_defaulters_chk'], 
                         'comment' => $attributes['comment'], 
                         'rbi_willful_defaulters' => $attributes['rbi_willful_defaulters'], 
+                        'watchout_investors_chk' => $attributes['watchout_investors_chk'], 
                         'watchout_investors' => $attributes['watchout_investors'], 
                         'cibil_check' => $attributes['cibil_check'], 
                         'politically_check' => $attributes['politically_check'], 
@@ -155,9 +157,10 @@ class CamHygiene extends BaseModel
         $cam = CamHygiene::where('app_id', $attributes['app_id'])->where('biz_id','=',$attributes['biz_id'])->first();
         //update cam_hygiene table
         $updateCamData = $cam->update([
-                        'remarks' => $attributes['remarks'], 
+                        'cibil_defaulters_chk' => $attributes['cibil_defaulters_chk'], 
                         'comment' => $attributes['comment'], 
                         'rbi_willful_defaulters' => $attributes['rbi_willful_defaulters'], 
+                        'watchout_investors_chk' => $attributes['watchout_investors_chk'], 
                         'watchout_investors' => $attributes['watchout_investors'], 
                         'cibil_check' => $attributes['cibil_check'], 
                         'politically_check' => $attributes['politically_check'], 

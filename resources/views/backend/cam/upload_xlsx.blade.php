@@ -51,5 +51,14 @@
        },
     })
   }
+  
+  $('.getFileName').change(function(){
+      $(this).parent('div').children('.custom-file-label').html('Choose file');
+  });
+  
+  $('.getFileName').change(function(e) {
+      var fileName = e.target.files[0].name;
+      $(this).parent('div').children('.custom-file-label').html(fileName);
+  });
 </script>
 @endsection

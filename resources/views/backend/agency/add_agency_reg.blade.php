@@ -22,9 +22,9 @@
                        <span class="mandatory">*</span>
                        </label><br/>
                        <div id="check_block">
-                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="16" name="type_id[]" {{(is_array(old('type_id')) && in_array(16,old('type_id')))? 'checked': ''}}> FI</label>
-                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="17" name="type_id[]" {{(is_array(old('type_id')) && in_array(17,old('type_id')))? 'checked': ''}}> RCU</label>
-                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="18" name="type_id[]" {{(is_array(old('type_id')) && in_array(18,old('type_id')))? 'checked': ''}}> Inspection</label>
+                        @foreach($agency_types as $key=>$agency_type)
+                          <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="{{$key}}" name="type_id[]" {{(is_array(old('type_id')) && in_array($key,old('type_id')))? 'checked': ''}}> {{$agency_type}}</label>
+                        @endforeach
                        </div>
                        @error('type_id')
                           <span class="error">{{ $message }}</span>
@@ -94,7 +94,7 @@
                           <label for="txtMobile">City
                           <span class="mandatory">*</span>
                           </label>
-                          <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city')}}" tabindex="6" type="text" maxlength="20" placeholder="City" maxlength="50">
+                          <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city')}}" tabindex="6" type="text" placeholder="City" maxlength="50">
                           @error('comp_city')
                               <span class="error">{{ $message }}</span>
                           @enderror

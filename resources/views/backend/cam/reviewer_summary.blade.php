@@ -5,6 +5,14 @@
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
    <div class="inner-container">
+      <div class="row">
+         <div class="col-md-12">
+            <a href="{{route('mail_reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}"><button type="submit" class="btn btn-success btn-sm float-right">
+            <h5><small>Send Mail</small></h5> 
+            </button>   
+            </a>                 
+         </div>
+      </div>
       <!--Start-->
       <form method="post" action="{{ route('save_reviewer_summary') }}">
       @csrf
@@ -34,7 +42,7 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Limit (₹ In Mn)</td>
-                                 <td class="">{{isset($limitOfferData->limit_amt) ? $limitOfferData->limit_amt : ''}}</td>
+                                 <td class="">{{isset($limitOfferData->limit_amt) ? '₹ '.$limitOfferData->limit_amt : ''}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Tenor (Months)</td>
@@ -42,7 +50,15 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Equipment Type</td>
-                                 <td class="">{{isset($limitOfferData->equipment_type) ? $limitOfferData->equipment_type : ''}}</td>
+                                 @php 
+                                 @$equipType = ''     
+                                 @endphp 
+                                 @if(isset($limitOfferData->equipment_type_id) && $limitOfferData->equipment_type_id)
+                                    @php
+                                       $equipType = Helpers::getEquipmentTypeById($limitOfferData->equipment_type_id)->equipment_name  
+                                    @endphp
+                                 @endif
+                                 <td class="">{{$equipType}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Security Deposit</td>
@@ -54,25 +70,50 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">PTPQ</td>
-                                 <td class="">{{isset($limitOfferData->ptpq) ? $limitOfferData->ptpq : ''}}</td>
+                                 <td class="">
+                                 @if(count($offerPTPQ)>0)   
+                                    @foreach ($offerPTPQ as $ok => $ov)
+                                       {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
+                                       {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
+                                       {{isset($ov->ptpq_rate) ? 'Rate '.$ov->ptpq_rate : ''}}
+                                       <br/>
+                                    @endforeach 
+                                 @endif                                 
+                                 </td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="" valign="top">XIRR</td>
-                                 <td class="" valign="top">{{isset($limitOfferData->xirr) ? $limitOfferData->xirr : ''}}
-                                    <!-- Ruby Sheet : 14.69%
-                                    <br/>Cash Flow : 13.79% -->
+                                 <td class="" valign="top">
+                                    Ruby Sheet : {{isset($limitOfferData->ruby_sheet_xirr) ? $limitOfferData->ruby_sheet_xirr.'%' : ''}}
+                                    <br/>Cash Flow : {{isset($limitOfferData->cash_flow_xirr) ? $limitOfferData->cash_flow_xirr.'%' : ''}}
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Additional Security</td>
-                                 <td class="">{{ isset($limitOfferData->addl_security) ? config('common.addl_security.'.$limitOfferData->addl_security) : ''}}
+                                 <td class="">  
+                                 @php 
+                                 @$addSecArr = []      
+                                 @endphp                        
+                                 @if(isset($limitOfferData->addl_security))
+                                    @php 
+                                       $addSecArr = explode(',',$limitOfferData->addl_security)
+                                    @endphp                                     
+                                 @endif   
+                                 @if(count($addSecArr)>0)   
+                                    @foreach ($addSecArr as $k => $v)
+                                       {{ config('common.addl_security.'.$v).", " }}
+                                       @if($v==4)
+                                         {{isset($limitOfferData->comment) ? " Comment- ".$limitOfferData->comment : ''}}
+                                       @endif
+                                    @endforeach 
+                                 @endif                         
                                  </td>
                            </tr>
                         </tbody>
                      </table>
                </div>
                <div class="col-md-12 mt-4">
-                     <h4><small>Pre/ Post Disbursement Conditions:</small></h4>
+                     <h4><small>Pre Disbursement Conditions:</small></h4>
                      <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <thead>
                            <tr role="row">
@@ -112,7 +153,20 @@
                                  <td class="">
                                     <input type="text"  name="time_personal_guarantee" value="{{isset($reviewerSummaryData->time_personal_guarantee) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}" class="form-control form-control-sm">
                                  </td>
+                           </tr>                 
+                        </tbody>
+                     </table>
+               </div>
+               <div class="col-md-12 mt-4">
+                     <h4><small>Post Disbursement Conditions:</small></h4>
+                     <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                        <thead>
+                           <tr role="row">
+                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
+                                 <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
                            </tr>
+                        </thead>
+                        <tbody>           
                            <tr role="row" class="odd">
                                  <td class="">
                                     <input type="text"  name="cond_pbdit" value="{{isset($reviewerSummaryData->cond_pbdit) ? $reviewerSummaryData->cond_pbdit : ''}}" class="form-control form-control-sm">
@@ -156,6 +210,139 @@
                         </tbody>
                      </table>
                </div>
+               <div class="col-md-12 mt-4">
+                     <h4><small>Approval criteria for IC:</small></h4>
+                     <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                        <thead>
+                           <tr role="row">
+                                 <th class="" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending">Parameter</th>
+                                 <th class="" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Criteria</th>
+                                 <th class="" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Deviation</th>
+                                 <th class="" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Remarks</th>
+                           </tr>
+                        </thead>
+                        <tbody>  
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Nominal RV Position
+                                 </td>
+                                 <td class="">
+                                    Max 5% over the values mentionedin the matrix
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_rv_position_yes" class="form-check-input" name="criteria_rv_position" value="Yes" {{((isset($reviewerSummaryData->criteria_rv_position) && $reviewerSummaryData->criteria_rv_position == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_rv_position_no" class="form-check-input" name="criteria_rv_position" value="No"  {{!isset($reviewerSummaryData->criteria_rv_position) || $reviewerSummaryData->criteria_rv_position == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_rv_position_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_rv_position_remark) ? $reviewerSummaryData->criteria_rv_position_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>         
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Asset concentration as % of the total portfolio
+                                 </td>
+                                 <td class="">
+                                    - IT assets and telecommunications max 70%<br/>
+                                    - Plant and machinery max 50%<br/>
+                                    - Furniture and fit outs max 30%<br/>
+                                    - Any other asset type max 20%
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_asset_portfolio_yes" class="form-check-input" name="criteria_asset_portfolio" value="Yes" {{((isset($reviewerSummaryData->criteria_asset_portfolio) && $reviewerSummaryData->criteria_asset_portfolio == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_asset_portfolio_no" class="form-check-input" name="criteria_asset_portfolio" value="No"  {{!isset($reviewerSummaryData->criteria_asset_portfolio) || $reviewerSummaryData->criteria_asset_portfolio == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_asset_portfolio_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_asset_portfolio_remark) ? $reviewerSummaryData->criteria_asset_portfolio_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Single Borrower Limit
+                                 </td>
+                                 <td class="">
+                                    Max 15% of Net owned funds (Rs150 Mn)
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_sing_borr_limit_yes" class="form-check-input" name="criteria_sing_borr_limit" value="Yes" {{((isset($reviewerSummaryData->criteria_sing_borr_limit) && $reviewerSummaryData->criteria_sing_borr_limit == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_sing_borr_limit_no" class="form-check-input" name="criteria_sing_borr_limit" value="No"  {{!isset($reviewerSummaryData->criteria_sing_borr_limit) || $reviewerSummaryData->criteria_sing_borr_limit == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_sing_borr_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_sing_borr_remark) ? $reviewerSummaryData->criteria_sing_borr_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Borrower Group Limit 
+                                 </td>
+                                 <td class="">
+                                    Max 25% of Net owned funds (Rs250 Mn)
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_borr_grp_limit_yes" class="form-check-input" name="criteria_borr_grp_limit" value="Yes" {{((isset($reviewerSummaryData->criteria_borr_grp_limit) && $reviewerSummaryData->criteria_borr_grp_limit == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_borr_grp_limit_no" class="form-check-input" name="criteria_borr_grp_limit" value="No"  {{!isset($reviewerSummaryData->criteria_borr_grp_limit) || $reviewerSummaryData->criteria_borr_grp_limit == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_borr_grp_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_borr_grp_remark) ? $reviewerSummaryData->criteria_borr_grp_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Exposure on customers below investment grade <br/>
+                                    (BBB -CRISIL/CARE/ICRA/India Ratings) and unrated customers
+                                 </td>
+                                 <td class="">
+                                    Max 50% of CFPL portfolio
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_invest_grade_yes" class="form-check-input" name="criteria_invest_grade" value="Yes" {{((isset($reviewerSummaryData->criteria_invest_grade) && $reviewerSummaryData->criteria_invest_grade == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_invest_grade_no" class="form-check-input" name="criteria_invest_grade" value="No"  {{!isset($reviewerSummaryData->criteria_invest_grade) || $reviewerSummaryData->criteria_invest_grade == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_invest_grade_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_invest_grade_remark) ? $reviewerSummaryData->criteria_invest_grade_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Exposure to a particular industry/sector as a percentage of total portfolio
+                                 </td>
+                                 <td class="">
+                                    Max 50% of the total CFPL portfolio
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_particular_portfolio_yes" class="form-check-input" name="criteria_particular_portfolio" value="Yes" {{((isset($reviewerSummaryData->criteria_particular_portfolio) && $reviewerSummaryData->criteria_particular_portfolio == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_particular_portfolio_no" class="form-check-input" name="criteria_particular_portfolio" value="No"  {{!isset($reviewerSummaryData->criteria_particular_portfolio) || $reviewerSummaryData->criteria_particular_portfolio == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_particular_portfolio_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_particular_portfolio_remark) ? $reviewerSummaryData->criteria_particular_portfolio_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>                           
+                        </tbody>
+                  </table>
+               </div>                  
                <div class="col-md-12 mt-4">
                      <h4><small>Risk Comments:</small></h4>
                      <h5><small>Deal Positives:</small></h5>

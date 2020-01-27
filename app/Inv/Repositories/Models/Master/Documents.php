@@ -50,7 +50,8 @@ class Documents extends Authenticatable
 
     public function product_document()
     {
-        return $this->hasMany('App\Inv\Repositories\Models\ProductDoc', 'doc_id')->where('is_active', 1);
+        return $this->hasMany('App\Inv\Repositories\Models\ProductDoc', 'doc_id')
+                ->where('is_active', 1);
     }
 }
 

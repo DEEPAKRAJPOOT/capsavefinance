@@ -340,6 +340,27 @@ class UserEventsListener extends BaseEvent
        
        
     }
+
+
+    /**
+     * Sanction Letter
+     * 
+     * @param Array $attributes
+     */
+    public function sactionLetterMail($attributes)
+    {
+        $data = unserialize($attributes); 
+        Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $data['body']],
+            function ($message) use ($data) {
+            $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                config('common.FRONTEND_FROM_EMAIL_NAME'));
+            if(isset($data['attachment'])){
+                $message->attachData($data['attachment'], 'sanction.pdf');
+            }
+            $message->bcc('sudesh.kumar@prolitus.com', 'Sudesh kumar');
+            $message->to($data["email"], $data["name"])->subject($data['subject']);
+        }); 
+    }
     
 
     /**
@@ -410,12 +431,15 @@ class UserEventsListener extends BaseEvent
         );
         
         
-         $events->listen(
+        $events->listen(
             'CO_LENDER_USER_REGISTER_MAIL',
             'App\Inv\Repositories\Events\UserEventsListener@coLenderUserRegMail'
         );
         
-        
+        $events->listen(
+            'SANCTION_LETTER_MAIL',
+            'App\Inv\Repositories\Events\UserEventsListener@sactionLetterMail'
+        );
         
         //
     }
