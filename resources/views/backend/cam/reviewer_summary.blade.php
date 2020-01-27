@@ -42,7 +42,15 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Equipment Type</td>
-                                 <td class="">{{isset($limitOfferData->equipment_type_id) ? $limitOfferData->equipment_type_id : ''}}</td>
+                                 @php 
+                                 @$equipType = ''     
+                                 @endphp 
+                                 @if(isset($limitOfferData->equipment_type_id) && $limitOfferData->equipment_type_id)
+                                    @php
+                                       $equipType = Helpers::getEquipmentTypeById($limitOfferData->equipment_type_id)->equipment_name  
+                                    @endphp
+                                 @endif
+                                 <td class="">{{$equipType}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Security Deposit</td>
@@ -55,9 +63,14 @@
                            <tr role="row" class="odd">
                                  <td class="">PTPQ</td>
                                  <td class="">
-                                 {{isset($limitOfferData->ptpq_from) ? 'From Period '.$limitOfferData->ptpq_from : ''}}
-                                 {{isset($limitOfferData->ptpq_to) ? 'To Period '.$limitOfferData->ptpq_to : ''}}
-                                 {{isset($limitOfferData->ptpq_rate) ? 'Rate '.$limitOfferData->ptpq_rate : ''}}
+                                 @if(count($offerPTPQ)>0)   
+                                    @foreach ($offerPTPQ as $ok => $ov)
+                                       {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
+                                       {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
+                                       {{isset($ov->ptpq_rate) ? 'Rate '.$ov->ptpq_rate : ''}}
+                                       <br/>
+                                    @endforeach 
+                                 @endif                                 
                                  </td>
                            </tr>
                            <tr role="row" class="odd">

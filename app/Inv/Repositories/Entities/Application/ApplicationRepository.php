@@ -1239,7 +1239,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $data = [
             'product_id' => $programLimitData->product_id,
             'biz_entity_name' => $businessData->biz_entity_name,
-
             'security_deposit_of' => $security_deposit_of,
             'appId' => $appId,
             'bizId' => $bizId,
@@ -1247,11 +1246,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
             'offerData' => $offerData,
             'equipmentData' =>$equipmentData,
             'ptpqrData' => $ptpqrData,
-            'businessAddress' => $businessAddress,
-            'contact_person' => $cam->contact_person
+            'businessAddress' => $businessAddress
         ];
-
-
+        
+        $data['contact_person'] = ($cam)?$cam->contact_person:'';
         $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
         $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
         $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';

@@ -90,24 +90,23 @@
                </div>
                <div class="clearfix"></div>
                <br/>
-               <form class="form-control" method="POST" action="{{route('save_bank_detail')}}">
+               <form method="POST" action="{{route('save_bank_detail')}}">
                   <input type="hidden" name="app_id" value="{{$appId}}">  
+                  <input type="hidden" name="bank_detail_id" value="{{$debtPosition->bank_detail_id ?? ''}}">  
                   @csrf
-                  <div class="data mt-4">
+                  <div class="mt-4">
                      <h2 class="sub-title bg">Debt Position</h2>
                      <div class="pl-4 pr-4 pb-4 pt-2">
                         <div class="form-group row">
                          <label for="debt_on" class="col-sm-2 col-form-label">Date As On</label>
                          <div class="col-sm-4">
-                           <input type="text" class="form-control" name="debt_on" id="debt_on" placeholder="Select Date">
+                           <input type="text" class="form-control" value="{{$debtPosition->debt_on ?? '' }}" name="debt_on" id="debt_on" placeholder="Select Date">
                          </div>
-                       </div>
-                     </div>
-                     <div class="pl-4 pr-4 pb-4 pt-2">
-                          <textarea class="form-control form-control-sm" id="debt_position_comments" name="debt_position_comments" rows="3" value="" spellcheck="false">{{isset($finDetailData->financial_risk_comments) ? $finDetailData->financial_risk_comments : ''}}</textarea>
+                        </div>
+                        <textarea class="form-control form-control-sm" id="debt_position_comments" name="debt_position_comments" rows="3" spellcheck="false">{{$debtPosition->debt_position_comments ?? '' }}</textarea>
                      </div>
                  </div>
-                 <div class="clearfix"></div>
+                 <br/>
                  <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
               </form>
             </div>
