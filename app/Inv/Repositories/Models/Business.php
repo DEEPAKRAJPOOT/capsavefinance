@@ -83,7 +83,7 @@ class Business extends BaseModel
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
         'turnover_amt'=>($attributes['biz_turnover'])? str_replace(',', '', $attributes['biz_turnover']): 0,
-        'tenor_days'=>$attributes['tenor_days'],
+       // 'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
         'org_id'=>1,
@@ -138,15 +138,22 @@ class Business extends BaseModel
 
         // insert into rta_app table
         $app = Application::create([
-                'user_id'=>$userId,
-                'biz_id'=>$business->biz_id,
-                'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
-                'created_by'=>$userId
-            ]);
+            'user_id'=>$userId,
+            'biz_id'=>$business->biz_id,
+            // 'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
+            'created_by'=>$userId
+        ]);
 
-        // insert in rta_app_product table
-        //$app->products()->sync($attributes['product_id']);
-        $app->products()->sync($attributes['product_id']);
+        if(isset($attributes['product_id'])){
+
+            $product_ids = $attributes['product_id'];
+            array_walk($product_ids, function (&$var , $key) {
+                $var['loan_amount'] = str_replace(',', '', $var['loan_amount']);
+            });
+            // insert in rta_app_product table
+            $app->products()->sync($product_ids);
+            
+        }
 
         Business::where('biz_id', $business->biz_id)->update([
             'panno_pan_gst_id'=>$bpg->biz_pan_gst_id,
@@ -217,7 +224,7 @@ class Business extends BaseModel
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
         'turnover_amt'=>($attributes['biz_turnover'])? str_replace(',', '', $attributes['biz_turnover']): 0,
-        'tenor_days'=>$attributes['tenor_days'],
+        //'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
         'org_id'=>1,
@@ -295,12 +302,20 @@ class Business extends BaseModel
         // update into rta_app table
         $app = Application::where('biz_id',$bizId)->first();
         $app->update([
-                'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
+                //'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
                 'updated_by'=>$userId
             ]);
 
-        // insert in rta_app_product table
-        $app->products()->sync($attributes['product_id']);
+        if(isset($attributes['product_id'])){
+
+            $product_ids = $attributes['product_id'];
+            array_walk($product_ids, function (&$var , $key) {
+                $var['loan_amount'] = str_replace(',', '', $var['loan_amount']);
+            });
+            // insert in rta_app_product table
+            $app->products()->sync($product_ids);
+
+        }
 
 
         //get id from address and then update address into rta_biz_addr
