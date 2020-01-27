@@ -79,6 +79,6 @@ return [
         '3' => 'MF',
         '4' => 'Others'
     ],
-    'review_summ_mails' => ['gaurav.agarwal@zuron.in','varun.dudani@zuron.in'],
+    'review_summ_mails' => ['gaurav.agarwal@zuron.in','varun.dudani@zuron.in','vilesh.modi@rentalpha.com'],
     'review_summ_mail_docs_id' => [55,56]    
 ];
