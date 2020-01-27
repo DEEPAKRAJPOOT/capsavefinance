@@ -67,6 +67,7 @@ class BizOwner extends BaseModel
         'gender',
         'share_per',
         'edu_qualification',
+        'designation',
         'comment',
         'other_ownership',
         'networth',
@@ -206,7 +207,8 @@ class BizOwner extends BaseModel
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1, 
             'share_per' => $attributes['share_per'][$i],
-            'edu_qualification' => $attributes['edu_qualification'][$i],
+               'designation' => $attributes['designation'][$i],    
+           /// 'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
             'networth' => $attributes['networth'][$i],
             'pan_number' => isset($attributes['pan_no'][$i]) ? $attributes['pan_no'][$i] : null,
@@ -233,7 +235,8 @@ class BizOwner extends BaseModel
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1, 
             'share_per' => $attributes['share_per'][$i],
-            'edu_qualification' => $attributes['edu_qualification'][$i],
+               'designation' => $attributes['designation'][$i],    
+           /// 'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
             'networth' => $attributes['networth'][$i],
             'pan_number' => isset($attributes['pan_no'][$i]) ? $attributes['pan_no'][$i] : null,
@@ -285,7 +288,8 @@ class BizOwner extends BaseModel
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1, 
             'share_per' => $attributes['share_per'][$i],
-            'edu_qualification' => $attributes['edu_qualification'][$i],
+            'designation' => $attributes['designation'][$i],    
+           /// 'edu_qualification' => $attributes['edu_qualification'][$i],
             'other_ownership' => $attributes['other_ownership'][$i],
             'networth' => $attributes['networth'][$i],
             'created_by' =>  Auth::user()->user_id]);
@@ -315,8 +319,7 @@ class BizOwner extends BaseModel
 
   public static function getCompanyOwnerByBizId($biz_id)
     {
-        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_owner.pan_number', 'biz_owner.email','biz_owner.mobile_no','biz_owner.cibil_score', 'biz_owner.is_cibil_pulled')
-       // ->leftjoin('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz_owner.biz_pan_gst_id')
+        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_owner.pan_number', 'biz_owner.email','biz_owner.mobile_no','biz_owner.cibil_score', 'biz_owner.is_cibil_pulled','biz_owner.is_promoter', 'biz_owner.designation', 'biz_owner.share_per')
         ->where('biz_owner.biz_id', $biz_id)
         ->get();
         return $arrData;

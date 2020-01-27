@@ -532,7 +532,7 @@ class User extends Authenticatable
     public static function getBackendUser($user_id)
     {
          $users = self::getUserRoles($user_id);
-          return $users;
+         return $users;
     }
     
     /**
@@ -665,6 +665,12 @@ class User extends Authenticatable
                 ->where('is_active', 1)
                 ->get();        
         return $result ? $result : [];
+    }
+    //////// get single user behalf of user id    */
+    public static function getSingleUserDetails($uid)
+    {
+        
+        return self::where(['user_id' => $uid])->first();
     }
     
 }

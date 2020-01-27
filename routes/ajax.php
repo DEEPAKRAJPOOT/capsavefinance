@@ -308,7 +308,16 @@ Route::group(
         'as' => 'backend_get_invoice_list_reject',
         'uses' => 'AjaxController@getBackendInvoiceListReject'
         ]
+    );  
+             Route::post(
+        'backend_activity_invoice_list',
+        [
+        'as' => 'backend_activity_invoice_list',
+        'uses' => 'AjaxController@getBackendInvoiceActivityList'
+        ]
     );   
+             
+             
        Route::post(
         'backend_get_invoice_list_bank',
         [
@@ -324,7 +333,9 @@ Route::group(
         'as' => 'backend_get_invoice_list_failed_disbursed',
         'uses' => 'AjaxController@getBackendInvoiceListFailedDisbursed'
         ]
-    );     
+    );  
+       
+       
      Route::post(
         'invoice_document_save',
         [
@@ -622,39 +633,39 @@ Route::group(
     
     
     //////////////// ajax request for upload invoice///////////////////////
-      Route::POST('front_program_list', [
-                 'as' => 'front_program_list',
-                 'uses' => 'AjaxController@getProgramSingleList'
-            ]); 
-               Route::POST('front_supplier_list', [
-                 'as' => 'front_supplier_list',
-                 'uses' => 'AjaxController@getSupplierList'
-            ]); 
+    Route::POST('front_program_list', [
+            'as' => 'front_program_list',
+            'uses' => 'AjaxController@getProgramSingleList'
+    ]); 
+        Route::POST('front_supplier_list', [
+            'as' => 'front_supplier_list',
+            'uses' => 'AjaxController@getSupplierList'
+    ]); 
                
 
-     Route::POST('upload_invoice_csv', [
-                 'as' => 'upload_invoice_csv',
-                 'uses' => 'AjaxController@uploadInvoice'
-            ]); 
-       Route::POST('delete_temp_invoice', [
-                 'as' => 'delete_temp_invoice',
-                 'uses' => 'AjaxController@DeleteTempInvoice'
-            ]); 
-
+    Route::POST('upload_invoice_csv', [
+            'as' => 'upload_invoice_csv',
+            'uses' => 'AjaxController@uploadInvoice'
+    ]); 
+    Route::POST('delete_temp_invoice', [
+            'as' => 'delete_temp_invoice',
+            'uses' => 'AjaxController@DeleteTempInvoice'
+    ]);    
                
-               
-               
-          Route::POST('get-ueser-by-role', [
-                 'as' => 'get_ueser_by_role',
-                 'uses' => 'AjaxController@getUserByRole'
-            ]); 
+    Route::POST('get-ueser-by-role', [
+        'as' => 'get_ueser_by_role',
+        'uses' => 'AjaxController@getUserByRole'
+    ]); 
+    
+    Route::POST('get-co-lender-list', [
+        'as' => 'get_co_lender_list',
+        'uses' => 'AjaxController@getColenderList'
+    ]); 
           
-          Route::POST('get-co-lender-list', [
-                 'as' => 'get_co_lender_list',
-                 'uses' => 'AjaxController@getColenderList'
-            ]); 
-          
-          
+    Route::get('get-group-company', [
+        'as' => 'get_group_company',
+        'uses' => 'AjaxController@getGroupCompany'
+    ]);   
           
           
 

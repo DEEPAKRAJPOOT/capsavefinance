@@ -20,6 +20,7 @@ use App\Inv\Repositories\Models\Master\PermissionRole;
 use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\Master\Equipment;
 
 class Helper extends PaypalHelper
 {
@@ -675,6 +676,28 @@ class Helper extends PaypalHelper
         return $formattedAmount;
     }
     
+
+
+     /**
+     * Format Currency
+     * 
+     * @param decimal $amount
+     * @param string $locale | optional
+     * @return string
+     */
+    public static function roundFormatCurreny($amount, $locale='en_IN', $decimal=false, $prefixCurrency=true)
+    {        
+        //setlocale(LC_MONETARY, $locale);
+        //$formattedAmount = money_format('%!i', $amount);
+        $currency = '&#8377;';
+        $amount = !$decimal ? round($amount) : $amount;        
+        $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
+        if ($prefixCurrency) {
+            $formattedAmount = $currency.$formattedAmount;
+        }
+        return $formattedAmount;
+    }
+    
     /**
      * Workflow stage to process
      * 
@@ -912,5 +935,15 @@ class Helper extends PaypalHelper
     public static function checkPermissionAssigntoRole($permission_id, $role_id)
     {
         return PermissionRole::checkPermissionAssigntoRole($permission_id, $role_id);
+    }
+
+    /**
+     * Get equipment type
+     *      
+     * @param integer $id
+     */
+    public static function getEquipmentTypeById($id) 
+    {        
+        return Equipment::getEquipmentTypeById($id);                      
     }
 }

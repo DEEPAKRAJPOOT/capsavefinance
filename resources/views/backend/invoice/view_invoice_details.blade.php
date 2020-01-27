@@ -38,10 +38,10 @@
                     
                   <div class="col-md-6">
                                      @php 
-                                   $color  = ['7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
+                                   $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
                                    @endphp
 				   @foreach($status as $row)
-                                   @if($row->id==$invoice->status_id)
+                                   @if($row->id==$invoice->status_id && $row->id!=7)
                                     <button type="button" class="{{$color[$row->id]}} btn-sm float-right">{{$row->status_name}}
                                     </button>
                                     @endif
@@ -72,22 +72,17 @@
                               {{($invoice->supplier->mobile_no) ? $invoice->supplier->mobile_no : '' }}
                            </div>
                         </li>
-                        <li class="row mb-2">
-                           <div class="supplier-left col-md-6"><b>Address</b> </div>
-                           <div class="supplier-right col-md-6">
-                              N/A
-                           </div>
-                        </li>
+                       
                         <li class="row mb-2">
                            <div class="supplier-left col-md-6"> <b>GST</b></div>
                            <div class="supplier-right col-md-6">
-                            N/A
+                           {{($invoice->gst->pan_gst_hash) ? $invoice->gst->pan_gst_hash : '' }}
                            </div>
                         </li>
                         <li class="row ">
                            <div class="supplier-left col-md-6"><b>PAN</b></div>
                            <div class="supplier-right col-md-6">
-                           N/A
+                          {{($invoice->pan->pan_gst_hash) ? $invoice->pan->pan_gst_hash : '' }}
                            </div>
                         </li>
                        
@@ -117,19 +112,7 @@
                                {{($invoice->anchor->comp_phone) ? $invoice->anchor->comp_phone : '' }}
                            </div>
                         </li>
-                        <li class="row mb-2">
-                           <div class="supplier-left col-md-6"><b>GST</b> </div>
-                           <div class="supplier-right col-md-6">
-                            N/A
-                           </div>
-                        </li>
-                     
-                        <li class="row mb-2">
-                           <div class="supplier-left col-md-6"><b>PAN</b></div>
-                           <div class="supplier-right col-md-6">
-                            N/A
-                           </div>
-                        </li>
+                      
 						 <li class="row mb-2">
                            <div class="supplier-left col-md-6"><b>Street</b></div>
                            <div class="supplier-right col-md-6">
@@ -153,12 +136,12 @@
          <div class="card-body">
             <h4><small>Invoice Details</small></h4>
 			
-			
+            <input type="hidden" value="{{($invoice->invoice_id) ? $invoice->invoice_id : '' }}" name="inv_name">
 			
 			 <table class="table table-striped dataTable no-footer overview-table" cellspacing="0" cellpadding="0">
                         <thead>
                            <tr>
-                            
+                             
                               <th>Invoice Amount (₹)</th>
                               <th>Invoice Approved Amount (₹)</th>
                               <th>Issue Date</th>
@@ -185,8 +168,13 @@
                                  {{($invoice->invoice_date) ? $invoice->invoice_date : '' }} 
                               </td>
                                                             
-                              <td>                                    
-                                90                               
+                              <td>  
+                            @php                                  
+                                $now = strtotime($invoice->invoice_date); // or your date as well
+                                $your_date = strtotime($invoice->invoice_due_date);
+                                $datediff = abs($now - $your_date);
+                               echo  $tenor = round($datediff / (60 * 60 * 24));     
+                               @endphp
                               </td>
                               
 
@@ -219,8 +207,7 @@
                                     <table id="invoiceActivityList" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                               <th>Sr.No</th>
-                                                <th>Docs</th>
+                                              <th>Sr. No.</th>
                                                 <th>Comment </th> 
                                                 <th>Status</th>
                                                 <th>Timestamp</th>
@@ -642,6 +629,14 @@
 			      <input type="text" class="form-control" id="invoice_approve_amount" name="approve_invoice_amount" value="{{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }}">
                                  
                               </div>
+                               
+							   <div class="form-group">
+                                 <label for="txtCreditPeriod">Comment  <span class="error_message_label doc-error">*</span>
+                                 
+                                 </label>
+								<textarea class="form-control" name="comment" id="comment" cols="4" rows="4"></textarea>
+                                 
+                              </div>
                            </div>
 						   
 						  
@@ -658,7 +653,11 @@
     @endsection
     @section('jscript')
 <script>
-
+    var messages = {
+            backend_activity_invoice_list: "{{ URL::route('backend_activity_invoice_list') }}",
+            token: "{{ csrf_token() }}",
+ };
+ 
 
     
 ///////////////////////////////////////// change invoice amount////////////////

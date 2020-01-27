@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Backend;
-
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -55,7 +54,7 @@ class InvoiceController extends Controller {
        
          $getAllInvoice    =   $this->invRepo->getAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();
-        return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+         return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
       
@@ -130,8 +129,8 @@ class InvoiceController extends Controller {
       
        /* success invoice status iframe    */
        public function invoiceSuccessStatus(Request $request){
-           dd( $request->invoice_id);
-         return view('backend.invoice.invoice_success_status');
+         $result =  $this->invRepo->getDisbursedAmount($request->get('invoice_id'));
+         return view('backend.invoice.invoice_success_status')->with(['result' => $result]);
       }
       
        /* success invoice status iframe    */
@@ -163,10 +162,10 @@ class InvoiceController extends Controller {
       public function saveInvoiceAmount(Request $request)
       {     $id = Auth::user()->user_id;
             $attributes = $request->all();
-            $res =  $this->invRepo->updateInvoiceAmount($attributes['invoice_id'],$attributes['approve_invoice_amount']);
+            $res =  $this->invRepo->updateInvoiceAmount($attributes);
            if($res)
            {
-                  
+                
                   Session::flash('message', 'Invoice Amount successfully Updated');
                   return back();
            }
@@ -201,6 +200,7 @@ class InvoiceController extends Controller {
             'app_id'    => $appId,
             'biz_id'  => $biz_id,
             'invoice_no' => $attributes['invoice_no'],
+            'tenor' => $attributes['tenor'],
             'invoice_due_date' => ($attributes['invoice_due_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'])->format('Y-m-d') : '',
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
             'invoice_approve_amount' => $attributes['invoice_approve_amount'],
@@ -214,7 +214,7 @@ class InvoiceController extends Controller {
 
         if ($result) {
 
-            $this->invRepo->saveInvoiceActivityLog($result,7,null,$id);
+              $this->invRepo->saveInvoiceActivityLog($result,7,null,$id,null);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {

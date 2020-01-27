@@ -50,7 +50,15 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Equipment Type</td>
-                                 <td class="">{{isset($limitOfferData->equipment_type_id) ? $limitOfferData->equipment_type_id : ''}}</td>
+                                 @php 
+                                 @$equipType = ''     
+                                 @endphp 
+                                 @if(isset($limitOfferData->equipment_type_id) && $limitOfferData->equipment_type_id)
+                                    @php
+                                       $equipType = Helpers::getEquipmentTypeById($limitOfferData->equipment_type_id)->equipment_name  
+                                    @endphp
+                                 @endif
+                                 <td class="">{{$equipType}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Security Deposit</td>
@@ -63,9 +71,14 @@
                            <tr role="row" class="odd">
                                  <td class="">PTPQ</td>
                                  <td class="">
-                                 {{isset($limitOfferData->ptpq_from) ? 'From Period '.$limitOfferData->ptpq_from : ''}}
-                                 {{isset($limitOfferData->ptpq_to) ? 'To Period '.$limitOfferData->ptpq_to : ''}}
-                                 {{isset($limitOfferData->ptpq_rate) ? 'Rate '.$limitOfferData->ptpq_rate : ''}}
+                                 @if(count($offerPTPQ)>0)   
+                                    @foreach ($offerPTPQ as $ok => $ov)
+                                       {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
+                                       {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
+                                       {{isset($ov->ptpq_rate) ? 'Rate '.$ov->ptpq_rate : ''}}
+                                       <br/>
+                                    @endforeach 
+                                 @endif                                 
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
@@ -197,6 +210,139 @@
                         </tbody>
                      </table>
                </div>
+               <div class="col-md-12 mt-4">
+                     <h4><small>Approval criteria for IC:</small></h4>
+                     <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                        <thead>
+                           <tr role="row">
+                                 <th class="" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending">Parameter</th>
+                                 <th class="" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Criteria</th>
+                                 <th class="" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Deviation</th>
+                                 <th class="" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Remarks</th>
+                           </tr>
+                        </thead>
+                        <tbody>  
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Nominal RV Position
+                                 </td>
+                                 <td class="">
+                                    Max 5% over the values mentionedin the matrix
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_rv_position_yes" class="form-check-input" name="criteria_rv_position" value="Yes" {{((isset($reviewerSummaryData->criteria_rv_position) && $reviewerSummaryData->criteria_rv_position == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_rv_position_no" class="form-check-input" name="criteria_rv_position" value="No"  {{!isset($reviewerSummaryData->criteria_rv_position) || $reviewerSummaryData->criteria_rv_position == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_rv_position_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_rv_position_remark) ? $reviewerSummaryData->criteria_rv_position_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>         
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Asset concentration as % of the total portfolio
+                                 </td>
+                                 <td class="">
+                                    - IT assets and telecommunications max 70%<br/>
+                                    - Plant and machinery max 50%<br/>
+                                    - Furniture and fit outs max 30%<br/>
+                                    - Any other asset type max 20%
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_asset_portfolio_yes" class="form-check-input" name="criteria_asset_portfolio" value="Yes" {{((isset($reviewerSummaryData->criteria_asset_portfolio) && $reviewerSummaryData->criteria_asset_portfolio == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_asset_portfolio_no" class="form-check-input" name="criteria_asset_portfolio" value="No"  {{!isset($reviewerSummaryData->criteria_asset_portfolio) || $reviewerSummaryData->criteria_asset_portfolio == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_asset_portfolio_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_asset_portfolio_remark) ? $reviewerSummaryData->criteria_asset_portfolio_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Single Borrower Limit
+                                 </td>
+                                 <td class="">
+                                    Max 15% of Net owned funds (Rs150 Mn)
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_sing_borr_limit_yes" class="form-check-input" name="criteria_sing_borr_limit" value="Yes" {{((isset($reviewerSummaryData->criteria_sing_borr_limit) && $reviewerSummaryData->criteria_sing_borr_limit == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_sing_borr_limit_no" class="form-check-input" name="criteria_sing_borr_limit" value="No"  {{!isset($reviewerSummaryData->criteria_sing_borr_limit) || $reviewerSummaryData->criteria_sing_borr_limit == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_sing_borr_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_sing_borr_remark) ? $reviewerSummaryData->criteria_sing_borr_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Borrower Group Limit 
+                                 </td>
+                                 <td class="">
+                                    Max 25% of Net owned funds (Rs250 Mn)
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_borr_grp_limit_yes" class="form-check-input" name="criteria_borr_grp_limit" value="Yes" {{((isset($reviewerSummaryData->criteria_borr_grp_limit) && $reviewerSummaryData->criteria_borr_grp_limit == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_borr_grp_limit_no" class="form-check-input" name="criteria_borr_grp_limit" value="No"  {{!isset($reviewerSummaryData->criteria_borr_grp_limit) || $reviewerSummaryData->criteria_borr_grp_limit == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_borr_grp_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_borr_grp_remark) ? $reviewerSummaryData->criteria_borr_grp_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Exposure on customers below investment grade <br/>
+                                    (BBB -CRISIL/CARE/ICRA/India Ratings) and unrated customers
+                                 </td>
+                                 <td class="">
+                                    Max 50% of CFPL portfolio
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_invest_grade_yes" class="form-check-input" name="criteria_invest_grade" value="Yes" {{((isset($reviewerSummaryData->criteria_invest_grade) && $reviewerSummaryData->criteria_invest_grade == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_invest_grade_no" class="form-check-input" name="criteria_invest_grade" value="No"  {{!isset($reviewerSummaryData->criteria_invest_grade) || $reviewerSummaryData->criteria_invest_grade == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_invest_grade_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_invest_grade_remark) ? $reviewerSummaryData->criteria_invest_grade_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>
+                           <tr role="row" class="odd">
+                                 <td class="">
+                                    Exposure to a particular industry/sector as a percentage of total portfolio
+                                 </td>
+                                 <td class="">
+                                    Max 50% of the total CFPL portfolio
+                                 </td>
+                                 <td class="">
+                                    <label for="cibil_check_yes" class="form-check-label">
+                                    <input type="radio" id="criteria_particular_portfolio_yes" class="form-check-input" name="criteria_particular_portfolio" value="Yes" {{((isset($reviewerSummaryData->criteria_particular_portfolio) && $reviewerSummaryData->criteria_particular_portfolio == 'Yes')) ? 'checked' : ''}} >Yes
+                                    <i class="input-helper"></i></label>
+                                    <label for="cibil_check_no" class="form-check-label">
+                                    <input type="radio" id="criteria_particular_portfolio_no" class="form-check-input" name="criteria_particular_portfolio" value="No"  {{!isset($reviewerSummaryData->criteria_particular_portfolio) || $reviewerSummaryData->criteria_particular_portfolio == 'No' ? 'checked' : ''}} >No
+                                    <i class="input-helper"></i></label>
+                                 </td>
+                                 <td class="">
+                                    <textarea name="criteria_particular_portfolio_remark" class="form-control form-control-sm">{{isset($reviewerSummaryData->criteria_particular_portfolio_remark) ? $reviewerSummaryData->criteria_particular_portfolio_remark : ''}}</textarea>                                 
+                                 </td>
+                           </tr>                           
+                        </tbody>
+                  </table>
+               </div>                  
                <div class="col-md-12 mt-4">
                      <h4><small>Risk Comments:</small></h4>
                      <h5><small>Deal Positives:</small></h5>

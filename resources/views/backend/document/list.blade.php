@@ -11,6 +11,10 @@
   position: absolute;
   top: -3px;
 }
+.card-title {
+    font-size: 0.9rem;
+    line-height: 1.375rem;
+}
 </style>
 @endsection
 @section('content')
@@ -19,19 +23,24 @@
 <div class="content-wrapper">
     <div class="card mt-4">
         <div class="card-body">
-
             <div class="form-heading pb-3 d-flex pr-0">
                 <h2>Document
                     <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX )</small>
                 </h2>
             </div>
+            @if($noDocFlag == 1)
+                 <div class="card card-color mb-0">
+                    <div class="card-header">
+                        <a class="card-title ">
+                            No document found.
+                        </a>
 
-
-            
-                
-        @foreach($requiredDocs as $product)
+                    </div>
+                </div>
+            @else 
+            @foreach($requiredDocs as $product)
             <div class="card card-color mb-0">
-                <div class="card-header" style="background: #398864;">
+                <div class="card-header" style="background: #398864;color: white;">
                     <a class="card-title ">
                         <b>{{ $product['productInfo']->product_name }}</b>
                     </a>
@@ -114,6 +123,7 @@
                 </div>
             </div>
             @endforeach
+            @endif
         </div>
         <a data-toggle="modal" data-target="#ppUploadDocument" data-url ="{{route('pp_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
         <input type="hidden" name="uploadDocId" id="uploadDocId" value="" >

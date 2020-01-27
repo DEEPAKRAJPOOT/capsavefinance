@@ -61,6 +61,8 @@ class Cam extends BaseModel
         'rating_comment',
         'existing_exposure',
         'proposed_exposure',
+        'group_company',
+        'total_exposure',
         't_o_f_limit',
         't_o_f_purpose', 
         't_o_f_takeout',   
@@ -73,6 +75,7 @@ class Cam extends BaseModel
         'risk_comments',
         'cm_comment',
         'promoter_cmnt',
+        'rating_rational',
         'created_by',
         'created_at',
         'updated_at',
@@ -90,6 +93,8 @@ class Cam extends BaseModel
             'rating_comment'=>$attributes['rating_comment'],
             'existing_exposure'=>$attributes['existing_exposure'],
             'proposed_exposure'=>$attributes['proposed_exposure'],
+            'group_company'=>$attributes['group_company'],
+            'total_exposure'=>$attributes['total_exposure'],
             't_o_f_limit'=>$attributes['t_o_f_limit'],
             't_o_f_purpose'=>$attributes['t_o_f_purpose'],
             't_o_f_takeout'=>$attributes['t_o_f_takeout'],
@@ -101,6 +106,7 @@ class Cam extends BaseModel
             't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
             'risk_comments'=>$attributes['risk_comments'],
             'cm_comment'=>$attributes['cm_comment'],
+            'rating_rational'=>$attributes['rating_rational'],
             'created_by'=>$userId
         );
         $cam = Cam::create($inputArr);
@@ -110,7 +116,6 @@ class Cam extends BaseModel
 
     public static function updateCamData($attributes, $userId){
         $cam = Cam::where('app_id', $attributes['app_id'])->first();
-
         //update Cam table
         $updateCamData = $cam->update([
                     'contact_person'=>$attributes['contact_person'],
@@ -120,6 +125,8 @@ class Cam extends BaseModel
                     'rating_comment'=>$attributes['rating_comment'],
                     'existing_exposure'=>$attributes['existing_exposure'],
                     'proposed_exposure'=>$attributes['proposed_exposure'],
+                    'group_company'=>$attributes['group_company'],
+                    'total_exposure'=>$attributes['total_exposure'],
                     't_o_f_limit'=>$attributes['t_o_f_limit'],
                     't_o_f_purpose'=>$attributes['t_o_f_purpose'],
                     't_o_f_takeout'=>$attributes['t_o_f_takeout'],
@@ -131,6 +138,7 @@ class Cam extends BaseModel
                     't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
                     'risk_comments'=>$attributes['risk_comments'],
                     'cm_comment'=>$attributes['cm_comment'],
+                    'rating_rational'=>$attributes['rating_rational'],
                     'updated_by'=>$userId,
         ]);
         return $updateCamData ? true : false;
