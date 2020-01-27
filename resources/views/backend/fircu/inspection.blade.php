@@ -20,9 +20,11 @@
             <a href="{{ route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Inspection</a>
         </li>
         @endcan
+        @can('pd_notes_list')
         <li>
             <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}"> Personal Discussion </a>
         </li>
+        @endcan
     </ul>
 
 
@@ -92,7 +94,7 @@
                                                     <td width="15%">
 
                                                         @if(isset($fiAdd->userFile->file_path))
-                                                        <a title="Download Document" href="{{ Storage::url($fiAdd->userFile->file_path) }}" download="{{{{$document->userFile->file_name}}}}"><i class="fa fa-download"></i></a>
+                                                        <a title="Download Document" href="{{ Storage::url($fiAdd->userFile->file_path) }}" download="{{$document->userFile->file_name}}"><i class="fa fa-download"></i></a>
                                                         @endif
 
                                                         @if($fiList->cmFiStatus && $fiList->cmFiStatus->cmStatus->status_name == 'Positive')

@@ -1,4 +1,5 @@
 @extends('layouts.backend.admin-layout')
+
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
@@ -118,10 +119,20 @@
                             </td>
                         </tr>
                         <tr>
+                            <td width="25%"><b>Group Company</b></td>
+                            <td width="25%">
+                                <div class="p-relative">
+                                    <input type="text" class="form-control group-company" name="group_company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}"  autocomplete="off" >
+                                </div> 
+                            </td>
                             <td width="25%"><b>Existing Group Exposure</b></td>
                             <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" maxlength="20" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
+                        </tr>
+                        <tr>
                             <td width="25%"><b>Proposed Group Exposure</b></td>
                             <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
+                            <td width="25%"><b>Total Exposure</b></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" ></td>
                         </tr>
                     </tbody>
                 </table>
@@ -214,7 +225,7 @@
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Risk Comments</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="profile_of_company" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
+                        <textarea class="form-control" id="risk_comments" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
                     </div>
                 </div>
 
@@ -222,6 +233,21 @@
                     <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
                         <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
+
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+                 <div class="data mt-4">
+                    <h2 class="sub-title bg">Contigent Liabilities & Auditors Observations</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <div class="form-group row">
+                         <label for="debt_on" class="col-sm-2 col-form-label">Date As On</label>
+                         <div class="col-sm-4">
+                           <input type="text" class="form-control" value="{{isset($arrCamData->debt_on) ? $arrCamData->debt_on : ''}}" name="debt_on" id="debt_on" placeholder="Select Date">
+                         </div>
+                       </div>
+                        <textarea class="form-control" id="contigent_observations" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations : ''}}</textarea>
 
                         <div class="clearfix"></div>
                     </div>
@@ -237,15 +263,69 @@
 </div>
 @endsection
 @section('jscript')
-<script>
+<script src="{{url('common/js/typehead.js')}}"></script>
 
-function showSecurityComment(val){
-    if($("#othersCheckbox").is(':checked')){
-        $("#securityComment").show();
-    }else{
-        $("#securityComment").hide();
+<script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
+
+<script type="text/javascript">
+   $('#debt_on').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+    CKEDITOR.replace('contigent_observations', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+    CKEDITOR.replace('risk_comments', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+    CKEDITOR.replace('anchor_risk_comments', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+    CKEDITOR.replace('profile_of_company', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+    CKEDITOR.replace('rating_rational', {
+        fullPage: true,
+        extraPlugins: 'docprops',
+        allowedContent: true,
+        height: 220
+    });
+
+    function showSecurityComment(val){
+        if($("#othersCheckbox").is(':checked')){
+            $("#securityComment").show();
+        }else{
+            $("#securityComment").hide();
+        }
     }
-}
 
+    var path = "{{ route('get_group_company') }}";
+
+
+    
+    $('input.group-company').typeahead({
+        source:  function (query, process) {
+            return $.get(path, { query: query }, function (data) {
+                return process(data);
+            });
+        },
+        minLength: '3'
+    });
 </script>
 @endsection

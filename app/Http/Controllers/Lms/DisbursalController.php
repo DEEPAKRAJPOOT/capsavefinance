@@ -177,7 +177,7 @@ class DisbursalController extends Controller
      */
     public function disbursedList()
     {
-        $getAppStatus = ['' => 'Please select'] + $this->masterRepo->getAppStatus()->toArray();
+        $getAppStatus = ['' => 'Please select'] + $this->masterRepo->getAppStatus(4)->toArray();
         return view('lms.disbursal.disbursed_list')->with(['getAppStatus'=> $getAppStatus]);
     }
 

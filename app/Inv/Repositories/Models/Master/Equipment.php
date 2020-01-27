@@ -63,4 +63,13 @@ class Equipment extends BaseModel
       $res =   self::where('is_active',1)->pluck('equipment_name', 'id');
       return $res ?: false;
     }
+
+    public static function getEquipmentTypeById($id)
+    {
+      $res =   self::select('equipment_name')
+                    ->where('id',$id)
+                    ->where('is_active',1)
+                    ->first();
+      return $res ?: false;
+    }
 }

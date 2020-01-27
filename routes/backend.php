@@ -265,8 +265,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
             
             Route::get('download-sanction-letter', [
-                'as' => 'download_sanction_letter',
-                'uses' => 'Backend\ApplicationController@downloadSanctionLetter'
+                'as' => 'send_sanction_letter',
+                'uses' => 'Backend\ApplicationController@sendSanctionLetter'
             ]);
 
             Route::get('show-upload-sanction-letter', [
@@ -278,7 +278,17 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'upload_sanction_letter',
                 'uses' => 'Backend\ApplicationController@uploadSanctionLetter'
             ]); 
-           
+            
+            Route::post('save-sanction-letter', [
+                'as' => 'save_sanction_letter',
+                'uses' => 'Backend\ApplicationController@saveSanctionLetter'
+            ]); 
+
+            Route::get('preview-sanction-letter',[
+                'as' => 'preview_sanction_letter',
+                'uses' => 'Backend\ApplicationController@previewSanctionLetter'
+            ]);
+
             //////////////// For Promoter Iframe///////////////////
              Route::get('show-pan-verify-data', [
                 'as' => 'show_pan_verify_data',
@@ -510,6 +520,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@downloadCamReport'
                 ]);
 
+                Route::post('save-bank-detail', [
+                    'as' => 'save_bank_detail',
+                    'uses' => 'Backend\CamController@saveBankDetail'
+                ]);
             }); //end of cam   
         });//end of application
 

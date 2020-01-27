@@ -7,7 +7,7 @@
                 <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <div class="row">
                         <div class="col-sm-12">
-                            <table id="approver" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                            <table id="approver" {{--class="table white-space table-striped cell-border dataTable no-footer overview-table"--}} cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                 <thead>
                                     <tr role="row">
                                         <th>Assigned By</th>
@@ -20,15 +20,16 @@
                                     @if(count($approvers) != 0)
                                     @foreach($approvers as $approver)
                                     <tr>
-                                    <td>{{ $approver['assignby'] }} <small> ( {{ $approver['assignby_role'] }} )</small></td>
-                                    <td>{{ $approver['assignto'] }} <small> ( {{ $approver['assignto_role'] }} )</small> </td>
-                                    <td>{{ $approver['sharing_comment'] }}</td>
-                                    <td>{{ $approver['assigne_date'] }}</td>
+                                        <td>{{ $approver['assignby'] }} @if($approver['assignby_role'])<small> ( {{ $approver['assignby_role'] }} )</small>@endif</td>
+                                        <td>{{ $approver['assignto'] }} @if($approver['assignto_role'])<small> ( {{ $approver['assignto_role'] }} )</small>@endif</td>
+                                        <td>{{ $approver['sharing_comment'] }}</td>
+                                        <td>{{ $approver['assigne_date'] }}</td>
                                     </tr>
                                     @endforeach
                                     @else
-
-                                    
+                                    <tr>
+                                        <td colspan="4"> No record found </td>
+                                    </tr>
                                     @endIf
                                 </tbody>
                             </table>
@@ -43,7 +44,8 @@
 
 @section('jscript')
 <script>
-   try {
+/*   
+try {
     jQuery(document).ready(function ($) {
         $('#approver').DataTable({ 
            
@@ -54,6 +56,7 @@
     if (typeof console !== 'undefined') {
         console.log(e);
     }
-}           
+}    
+*/       
 </script>
 @endsection  

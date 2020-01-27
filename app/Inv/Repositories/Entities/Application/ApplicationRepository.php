@@ -22,6 +22,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\AppProgramOfferSanction;
 use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\Master\Industry;
 use App\Inv\Repositories\Models\AppPdNote;
@@ -36,10 +37,9 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\Master\DoaLevel;
 use App\Inv\Repositories\Models\Master\Documents;
-use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\Master\Equipment;
-
-
+use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\Cam;
 /**
  * Application repository class
  */
@@ -934,6 +934,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $offerData ? $offerData : false;
     }
 
+    public function saveSanctionData($sanctionData=[], $sactionId=null)
+    {
+        $sanctionData = AppProgramOfferSanction::saveSanctionData($sanctionData, $sactionId);
+        return $sanctionData ? $sanctionData : false;
+    }
+
+    public function getOfferSanction($offerId){
+        return AppProgramOfferSanction::getOfferSanction($offerId);
+    }
+    
     public function saveAppLimit($arr, $limit_id=null){
         return AppLimit::saveAppLimit($arr, $limit_id);
     }
@@ -1193,6 +1203,70 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function changeOfferApprove($appId){
         return AppProgramOffer::changeOfferApprove($appId);
+    }
+
+    public function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
+        $offerWhereCond = [];
+        
+        if ($offerId) {
+            $offerWhereCond['prgm_offer_id'] = $offerId;
+        } else {
+            $offerWhereCond['app_id'] = $appId;   
+            $offerWhereCond['is_active'] = 1; 
+        }
+       
+        $offerData = self::getOfferData($offerWhereCond);
+        $sanctionData = self::getOfferSanction($offerData->prgm_offer_id);
+        $businessData = self::getApplicationById($bizId); 
+        $businessAddress = $businessData->address->where('address_type','2')->first();
+        $cam =  Cam::select('contact_person')->where('biz_id',$bizId)->where('app_id',$appId)->first();
+        
+        $programLimitData = self::getLimit($offerData->app_prgm_limit_id);
+        $ptpqrData = OfferPTPQ::getOfferPTPQR($offerData->prgm_offer_id);
+        $equipmentData = null;
+        if($offerData->equipment_type_id){
+            $equipmentData = Equipment::find($offerData->equipment_type_id);
+        }
+
+        $security_deposit_of = ''; 
+        switch ($offerData->security_deposit_of) {
+            case(4): $security_deposit_of = 'Sanction'; break;
+            case(3): $security_deposit_of = 'Asset Base Value'; break;
+            case(2): $security_deposit_of = 'Asset value'; break;
+            case(1): $security_deposit_of = 'Loan Amount'; break;
+        }
+
+        $data = [
+            'product_id' => $programLimitData->product_id,
+            'biz_entity_name' => $businessData->biz_entity_name,
+            'security_deposit_of' => $security_deposit_of,
+            'appId' => $appId,
+            'bizId' => $bizId,
+            'offerId' => $offerData->prgm_offer_id,
+            'offerData' => $offerData,
+            'equipmentData' =>$equipmentData,
+            'ptpqrData' => $ptpqrData,
+            'businessAddress' => $businessAddress
+        ];
+        
+        $data['contact_person'] = ($cam)?$cam->contact_person:'';
+        $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
+        $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
+        $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
+        $data['payment_type'] = ($sanctionData)?$sanctionData->payment_type:'';
+        $data['payment_type_other'] = ($sanctionData)?$sanctionData->payment_type_other:'';
+        $data['delay_pymt_chrg'] = ($sanctionData)?$sanctionData->delay_pymt_chrg:'';
+        $data['insurance'] = ($sanctionData)?$sanctionData->insurance:'';
+        $data['bank_chrg'] = ($sanctionData)?$sanctionData->bank_chrg:'';
+        $data['legal_cost'] = ($sanctionData)?$sanctionData->legal_cost:'';
+        $data['po'] = ($sanctionData)?$sanctionData->po:'';
+        $data['pdp'] = ($sanctionData)?$sanctionData->pdp:'';
+        $data['disburs_guide'] = ($sanctionData)?$sanctionData->disburs_guide:'';
+        $data['other_cond'] = ($sanctionData)?$sanctionData->other_cond:'';
+        $data['covenants'] = ($sanctionData)?$sanctionData->covenants:'';
+        $data['sanctionData'] = ($sanctionData)?$sanctionData:'';
+
+        return $data;
     }
 
     public function addOfferPTPQ($data){

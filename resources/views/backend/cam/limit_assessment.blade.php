@@ -26,8 +26,8 @@
                                 <div class="form-group INR">
                                     <label>Available Exposure</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Available Exposure" disabled>
-                                </div>
+                                    <input type="text" class="form-control form-control-sm number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure" disabled>
+                                </div>totOfferedLimit
                             </div>
                         </div>
                         <div class="row">
@@ -254,8 +254,8 @@
                         @endforeach
                         <div class="clearfix"></div>
                         <div>
-                            <a data-toggle="modal" data-target="#limitOfferFrame" data-url ="" data-height="700px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openOfferModal" style="display: none;"><i class="fa fa-plus"></i>Add Offer</a>
-                            <a data-toggle="modal" data-target="#editLimitFrame" data-url ="" data-height="350px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openLimitModal" style="display: none;"><i class="fa fa-plus"></i>Edit Limit</a>
+                            <a data-toggle="modal" data-target="#limitOfferFrame" data-url ="" data-height="600px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openOfferModal" style="display: none;"><i class="fa fa-plus"></i>Add Offer</a>
+                            <a data-toggle="modal" data-target="#editLimitFrame" data-url ="" data-height="400px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openLimitModal" style="display: none;"><i class="fa fa-plus"></i>Edit Limit</a>
                             @if((request()->get('view_only') || $currStageCode == 'approver') && ($approveStatus && $approveStatus->status ==0))
                                 <form method="POST" action="{{route('approve_offer')}}">
                                 @csrf
@@ -273,7 +273,7 @@
 </div>
 
 {!!Helpers::makeIframePopup('limitOfferFrame','Add Offer', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('editLimitFrame','Edit Limit', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editLimitFrame','Edit Limit', 'modal-md')!!}
 
 @endsection
 @section('jscript')

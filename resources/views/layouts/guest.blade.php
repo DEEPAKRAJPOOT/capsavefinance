@@ -91,7 +91,7 @@
             }
 
             function setError(ele, msg){
-                $(ele).after('<span class="text-danger error">'+msg+'</span>');
+                $(ele).after('<span class="error">'+msg+'</span>');
             }
         </script>
         @yield('scripts')
