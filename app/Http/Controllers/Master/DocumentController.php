@@ -17,8 +17,11 @@ class DocumentController extends Controller {
     }
 
 
-     public function index(){
-        return view('master.documents.index');
+     public function index(Request $request){
+        $filter['filter_product_type'] = $request->filter_product_type;
+        $filter['filter_doc_type_id'] = $request->filter_doc_type_id;
+        // dd($filter);
+        return view('master.documents.index', ['filter' => $filter]);
     }
 
     public function addDocument(){
@@ -46,7 +49,9 @@ class DocumentController extends Controller {
     public function saveDocuments(Request $request) {
         try {
             $arrDocumentsData = $request->all();
-            // dd($arrDocumentsData);
+            $filter['filter_product_type'] = $request->filter_product_type;
+            $filter['filter_doc_type_id'] = $request->filter_doc_type_id;
+            // dd($filter);
             $status = false;
             $document_id = false;
             if(!empty($request->get('id'))){
@@ -64,10 +69,11 @@ class DocumentController extends Controller {
             }
             if($result){
                 Session::flash('message', $document_id ? trans('master_messages.documents_edit_success') :trans('master_messages.documents_add_success'));
-                return redirect()->route('get_documents_list');
+
+                return redirect()->route('get_documents_list', ['filter_product_type' => $filter['filter_product_type'], 'filter_doc_type_id' => $filter['filter_doc_type_id']]);
             }else{
                 Session::flash('error', trans('master_messages.something_went_wrong'));
-                return redirect()->route('get_documents_list');
+                return redirect()->route('get_documents_list', ['filter' => $filter]);
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
