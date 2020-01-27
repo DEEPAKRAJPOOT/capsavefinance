@@ -441,7 +441,6 @@ class CamController extends Controller
           $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'.$active_json_filename)),true);
         }
 
-        dd($contents);
         $customers_info = [];
         if (!empty($contents)) {
           foreach ($contents['statementdetails'] as $key => $value) {
@@ -1758,7 +1757,7 @@ class CamController extends Controller
             $arrData['app_id'] = request()->get('app_id');
             $date = $request->get('debt_on');
              if (empty($date)) {
-               Session::flash('error',trans("Debt on field can'\t be empty"));
+               Session::flash('error',trans('Debt on field can\'t be empty'));
                return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
             }
             $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
