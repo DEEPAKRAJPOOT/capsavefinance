@@ -894,7 +894,7 @@ class ApplicationController extends Controller
         $currentStage = Helpers::getCurrentWfStage($appId);   
         $roleData = Helpers::getUserRole();        
         $viewGenSancLettertBtn = $currentStage->role_id == $roleData[0]->id ? 1 : 0;
-dd($leaseOfferData);
+
         /*code for getting the sales manager*/     
         $appData = $this->appRepo->getAppDataByAppId($appId);               
         $userId = $appData ? $appData->user_id : null;     
