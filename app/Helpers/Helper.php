@@ -21,6 +21,8 @@ use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\Master\Equipment;
+use App\Inv\Repositories\Models\LeadAssign;
+use App\Inv\Repositories\Models\UserBankAccount;
 
 class Helper extends PaypalHelper
 {
@@ -181,7 +183,13 @@ class Helper extends PaypalHelper
                     $dataArr = []; 
                     $dataArr['from_id'] = \Auth::user()->user_id;
                     if ($data->role_id == 4) {
-                        $toUserId = User::getLeadSalesManager($user_id);
+                        //$toUserId = User::getLeadSalesManager($user_id);
+                        $userData = User::getfullUserDetail($user_id);
+                        if ($userData && !empty($userData->anchor_id)) {
+                            $toUserId = User::getLeadSalesManager($user_id);
+                        } else {
+                            $toUserId = LeadAssign::getAssignedSalesManager($user_id);
+                        }                        
                         $dataArr['to_id'] = $toUserId;
                         $dataArr['role_id'] = null;                        
                     } else if (isset($addl_data['to_id']) && !empty($addl_data['to_id'])) {
@@ -946,4 +954,25 @@ class Helper extends PaypalHelper
     {        
         return Equipment::getEquipmentTypeById($id);                      
     }
+
+    
+    public static function getBankAccListByCompId($id)
+    {
+//        dd($id);
+       $bank_acc = UserBankAccount::getAllCompanyBankAcc($id);
+        
+        return  $bank_acc;
+    }  
+
+    /**
+     * Get User detail by user_id
+     *      
+     * @param integer $user_id
+     */
+    public static function getUserName($user_id) 
+    {        
+        $user =  User::findOrFail($user_id);
+        return ucwords($user->f_name.' '. $user->l_name);                    
+    }
+
 }

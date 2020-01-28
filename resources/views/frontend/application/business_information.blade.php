@@ -193,11 +193,12 @@
 									<div class="col-md-4">
 										<div class="form-group">
 											<label for="txtSupplierName">Product Type
+												<span class="mandatory">*</span>
 											</label><br/>
 											<div id="check_block">
-											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="1" name="product_id[]"> Supply Chain</label>
-											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="product_id[]"> Term Loan</label>
-											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="product_id[]"> Lease Loan</label>
+											@foreach($product_types as $key=>$product_type)
+												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="{{$key}}" name="product_id[]"> {{$product_type}}</label>
+											@endforeach
 											</div>
 											@error('product_id')
 								                <span class="text-danger error">{{ $message }}</span>
