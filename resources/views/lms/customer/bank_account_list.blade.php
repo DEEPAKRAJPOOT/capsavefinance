@@ -1,8 +1,7 @@
 @extends('layouts.backend.admin-layout')
-
 @section('content')
-
 @include('layouts.backend.partials.admin_customer_links',['active'=>'bank'])
+
 <div class="content-wrapper">
 	<div class="row grid-margin mt-3">
 		<div class="  col-md-12  ">
@@ -12,7 +11,6 @@
 				</div>
 				<div class="header-title">
 					<h3 class="mt-2">Bank Account</h3>
-
 					<ol class="breadcrumb">
 						<li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
 						<li class="active">Bank Account</li>
@@ -36,7 +34,6 @@
 							</button>
 						</a>
 						@endcan
-
 					</div>
 				</div>
 			</div>
@@ -94,10 +91,13 @@
 	</div>
 </div>
 @endsection
+
 {!!Helpers::makeIframePopup('add_bank_account','Add Bank', 'modal-lg')!!}
+
 @section('additional_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 @endsection
+
 @section('jscript')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
