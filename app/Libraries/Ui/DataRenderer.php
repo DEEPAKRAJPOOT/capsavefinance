@@ -1996,7 +1996,7 @@ class DataRenderer implements DataProviderInterface
                                 $productTypes .= $value->product->product_name.', ';
                             }
                         }
-                    return $productTypes;
+                    return rtrim($productTypes, ', ');
                 })
                 ->addColumn(
                     'is_rcu',
