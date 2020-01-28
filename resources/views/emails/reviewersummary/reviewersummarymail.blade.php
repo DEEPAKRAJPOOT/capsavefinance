@@ -1,26 +1,30 @@
 @extends('layouts.email')
 @section('email_content')
 
-<table width="700" align="center" cellpadding="0" cellspacing="0" border="0" style="font-size:14px; font-family:Arial; ">
+<table width="700" align="center" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;margin-top:10px; font-family:Arial; ">
     <tr>
-        <td align="left">
-            <h2 style="font-size:18px; margin:0px 0px 10px;">Cover Note</h2></td>
+        <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
+            <h2 style="font-size:18px; margin:0px 0px 0;">Cover Note</h2></td>
     </tr>
     <tr>
-        <td align="left">{{isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : ''}}</td>
+        <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
+            <tr>
+                <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" align="left">{{isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : ''}}</td>
+            </tr>
+        </table>
     </tr>
     <tr>
-        <td align="left">
-            <h3 style="font-size:16px; margin:20px 0px 10px;">Deal Structure:</h3></td>
+        <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
+            <h3 style="font-size:18px; margin:0px 0px 0;">Deal Structure:</h3></td>
     </tr>
 
     <tr>
         <td align="left">
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                 <tr>
-        <th width="50%" style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
+        <th width="50%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
         border-bottom: #ccc solid 1px;">Criteria</th>
-                    <th width="50%" style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+                    <th width="50%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Particulars</th>
                 </tr>
                 <tr>
@@ -106,17 +110,17 @@
         </td>
     </tr>
     <tr>
-        <td align="left">
-            <h3 style="font-size:16px; margin:20px 0px 10px;">Pre Disbursement Conditions:</h3></td>
+        <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
+            <h3 style="font-size:18px; margin:0px 0px 0;">Pre Disbursement Conditions:</h3></td>
     </tr>
     <tr>
         <td align="left">
 
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                 <tr>
-                    <th width="50%" style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
+                    <th width="50%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
         border-bottom: #ccc solid 1px;">Condition</th>
-                    <th style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Timeline</th>
                 </tr>
                 <tr>
@@ -151,17 +155,17 @@
         </td>
     </tr>
     <tr>
-        <td align="left">
-            <h3 style="font-size:16px; margin:20px 0px 10px;">Post Disbursement Conditions:</h3></td>
+        <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
+            <h3 style="font-size:18px; margin:0px 0px 0;">Post Disbursement Conditions:</h3></td>
     </tr>
     <tr>
         <td align="left">
 
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                 <tr>
-                    <th width="50%" style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
+                    <th width="50%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
         border-bottom: #ccc solid 1px;">Condition</th>
-                    <th style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Timeline</th>
                 </tr>
                 <tr>
@@ -209,21 +213,21 @@
         </td>
     </tr>
     <tr>
-        <td align="left">
-            <h3 style="font-size:16px; margin:20px 0px 10px;">Approval criteria for IC:</h3></td>
+        <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
+            <h3 style="font-size:18px; margin:0px 0px 0;">Approval criteria for IC:</h3></td>
     </tr>
     <tr>
         <td align="left">
 
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                 <tr>
-                    <th width="25%" style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
+                    <th width="25%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
         border-bottom: #ccc solid 1px;">Parameter</th>
-                    <th style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Criteria</th>
-                    <th style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Deviation</th>
-                    <th style="background:#8a8989;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Remarks</th>
                 </tr>
                 <tr>
@@ -318,11 +322,11 @@
         </td>
     </tr>
     <tr>
-        <td align="left">
-            <h2 style="font-size:18px; margin:20px 0px 10px;">Risk Comments:</h2></td>
+        <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
+            <h2 style="font-size:18px; margin:0px 0px 10px;">Risk Comments:</h2></td>
     </tr>
     <tr>
-        <td align="left">
+        <td align="left" style="background:#b7b7b7; color:#fff;padding:10px;">
             <h3 style="font-size:16px; margin:0px 0px 10px;">Deal Positives:</h3></td>
     </tr>
     <tr>
@@ -364,8 +368,8 @@
         </td>
     </tr>
     <tr>
-        <td align="left">
-            <h3 style="font-size:16px; margin:20px 0px 10px;">Deal Negatives:</h3></td>
+        <td align="left" style="background:#b7b7b7; color:#fff;padding:10px;">
+            <h3 style="font-size:18px; margin:0px 0px 0;">Deal Negatives:</h3></td>
     </tr>
     <tr>
         <td>
@@ -398,8 +402,8 @@
         </td>
     </tr>
     <tr>
-        <td align="left">
-            <h3 style="font-size:16px; margin:20px 0px 10px;">Recommendation:</h3></td>
+        <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
+            <h3 style="font-size:18px; margin:0px 0px 0;">Recommendation:</h3></td>
     </tr>
     <tr>
         <td align="left">{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}}</td>

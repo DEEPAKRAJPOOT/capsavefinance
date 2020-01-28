@@ -228,9 +228,9 @@ class CamController extends Controller
         ->send(new ReviewerSummary());
 
       if(count(Mail::failures()) > 0 ) {
-        Session::flash('error',trans('Mail not sended, try again later.'));
+        Session::flash('error',trans('Mail not sent, try again later.'));
       } else {
-        Session::flash('message',trans('Mail sended successfully.'));        
+        Session::flash('message',trans('Mail sent successfully.'));        
       }
       return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
       //return new \App\Mail\ReviewerSummary();        
