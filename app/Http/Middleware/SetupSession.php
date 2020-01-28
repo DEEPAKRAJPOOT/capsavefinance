@@ -17,7 +17,7 @@ class SetupSession
     {
         $domain = $request->server('HTTP_HOST');
         $path = $request->path();
-        
+        dd($domain, config('proin.backend_uri'), config('proin.backend_cookie_name'), $request->url(), $request->getHost(), $request->getHttpHost(), parse_url(request()->root())['host'], $_SERVER['SERVER_PORT']  );
         switch ($domain) {
             case config('proin.frontend_uri'):
                 config(['session.cookie' => config('proin.frontend_cookie_name')]);
