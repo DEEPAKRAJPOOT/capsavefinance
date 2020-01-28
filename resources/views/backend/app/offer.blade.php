@@ -16,80 +16,65 @@
                                 @foreach($supplyOfferData as $key=>$supplyOffer)
                                 @if($loop->first)
                                 <div class="card card-color mb-0">
-                                    <div class="card-header" data-toggle="collapse" href="#collapseOne" aria-expanded="false"><h5 class="mb-0">Supply Chain Offer Details</h5>     
+                                    <div class="card-header" data-toggle="collapse" href="#collapseOne" aria-expanded="false" style="background: #138864;color: #fff;"><h5 class="mb-0">Supply Chain Offer Details</h5>     
                                     </div>
                                     <div id="collapseOne" class="card-body bdr p-0 show" data-parent="#accordion" style="">
-                                        <table cellspacing="0" cellpadding="0" width="100%" class="table-i table-offer">
+                                        <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
-                                                <tr role="row">
-                                                   <th width="10%">Sr. No.</th>
-                                                   <th width="40%">Offer Details</th>
-                                                   <th width="25%">Created By</th>
-                                                   <th width="15%">Status</th>
-                                                   <th width="10%">Action</th>
+                                                <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
+                                                   <th width="5%">Sr. No.</th>
+                                                   <th width="75%">Offer Details</th>
+                                                   <th width="10%">Created By</th>
+                                                   <th width="10%">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             @endif
                                                 <tr role="row" class="odd">
                                                     <td width="10%">{{$key+1}}</td>
-                                                    <td width="40%">
-                                                        <table class="" width="70%">
+                                                    <td width="75%">
+                                                        <table class="table table-bordered table-striped" width="100%">
                                                             <tbody>
                                                                 <tr>
                                                                     <td><b>Apply Loan Amount : </b></td>
                                                                     <td>{{$supplyOffer->prgm_limit_amt}}</td>
+                                                                    <td><b>Check Bounce Fee: </b></td>
+                                                                    <td>{{$supplyOffer->check_bounce_fee}}</td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td><b>Loan Offer : </b></td>
-                                                                    <td>{{$supplyOffer->prgm_limit_amt}}</td>
-                                                                </tr>
+                                                                
                                                                 <tr>
                                                                    <td><b>Interest Rate(%) : </b></td>
                                                                    <td>{{$supplyOffer->interest_rate}}</td>
-                                                                </tr>
-                                                                <tr>
                                                                    <td><b>Tenor (Days) : </b></td>
                                                                    <td>{{$supplyOffer->tenor}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                    <td><b>Tenor for old invoice (Days): </b></td>
                                                                    <td>{{$supplyOffer->tenor_old_invoice}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Margin (%): </b></td>
-                                                                    <td>{{$supplyOffer->margin}}</td>
+                                                                   <td><b>Margin (%): </b></td>
+                                                                   <td>{{$supplyOffer->margin}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><b>Overdue Interest Rate (%): </b></td>
                                                                     <td>{{$supplyOffer->overdue_interest_rate}}</td>
-                                                                </tr>
-                                                                <tr>
                                                                     <td><b>Adhoc Interest Rate (%): </b></td>
                                                                     <td>{{$supplyOffer->adhoc_interest_rate}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><b>Grace Period (Days): </b></td>
                                                                     <td>{{$supplyOffer->grace_period}}</td>
-                                                                </tr>
-                                                                <tr>
                                                                     <td><b>Processing Fee: </b></td>
                                                                     <td>{{$supplyOffer->processing_fee}}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td><b>Check Bounce Fee: </b></td>
-                                                                    <td>{{$supplyOffer->check_bounce_fee}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Comment: </b></td>
-                                                                    <td>{{$supplyOffer->comment}}</td>
+                                                                    <td colspan="2"><b>Comment: </b></td>
+                                                                    <td colspan="2">{{$supplyOffer->comment}}</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="25%">{{\Helpers::getUserName($supplyOffer->created_by)}}</td>
-                                                    <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
-                                                    <td></td>
+                                                    <td width="10%">{{\Helpers::getUserName($supplyOffer->created_by)}}</td>
+                                                    <td width="10%"><label class="badge badge-success current-status">{{($supplyOffer->is_approve == 1)? 'Approved': 'Not Approve'}}</label></td>
                                                 </tr>
                                                 @if($loop->last)
                                             </tbody>
@@ -103,80 +88,65 @@
                                 @foreach($termOfferData as $key=>$termOffer)
                                 @if($loop->first)
                                 <div class="card card-color mb-0">
-                                    <div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false"><h5 class="mb-0">Term Loan Offer Details</h5>     
+                                    <div class="card-header collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false" style="background: #138864;color: #fff;"><h5 class="mb-0">Term Loan Offer Details</h5>     
                                     </div>
                                     <div id="collapseTwo" class="card-body bdr p-0 collapse" data-parent="#accordion" style="">
-                                        <table cellspacing="0" cellpadding="0" width="100%" class="table-i table-offer">
+                                        <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
-                                                <tr role="row">
-                                                   <th width="10%">Sr. No.</th>
-                                                   <th width="40%">Offer Details</th>
-                                                   <th width="25%">Created By</th>
-                                                   <th width="15%">Status</th>
-                                                   <th width="10%">Action</th>
+                                                <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
+                                                   <th width="5%">Sr. No.</th>
+                                                   <th width="75%">Offer Details</th>
+                                                   <th width="10%">Created By</th>
+                                                   <th width="10%">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             @endif
                                                 <tr role="row" class="odd">
                                                     <td width="10%">{{$key+1}}</td>
-                                                    <td width="40%">
-                                                        <table class="" width="70%">
+                                                    <td width="75%">
+                                                        <table class="table table-bordered table-striped" width="100%">
                                                             <tbody>
                                                                 <tr>
                                                                     <td><b>Apply Loan Amount : </b></td>
                                                                     <td>{{$termOffer->prgm_limit_amt}}</td>
+                                                                    <td><b>Check Bounce Fee: </b></td>
+                                                                    <td>{{$termOffer->check_bounce_fee}}</td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td><b>Loan Offer : </b></td>
-                                                                    <td>{{$termOffer->prgm_limit_amt}}</td>
-                                                                </tr>
+                                                                
                                                                 <tr>
                                                                    <td><b>Interest Rate(%) : </b></td>
                                                                    <td>{{$termOffer->interest_rate}}</td>
-                                                                </tr>
-                                                                <tr>
                                                                    <td><b>Tenor (Days) : </b></td>
                                                                    <td>{{$termOffer->tenor}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                    <td><b>Tenor for old invoice (Days): </b></td>
                                                                    <td>{{$termOffer->tenor_old_invoice}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Margin (%): </b></td>
-                                                                    <td>{{$termOffer->margin}}</td>
+                                                                   <td><b>Margin (%): </b></td>
+                                                                   <td>{{$termOffer->margin}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><b>Overdue Interest Rate (%): </b></td>
                                                                     <td>{{$termOffer->overdue_interest_rate}}</td>
-                                                                </tr>
-                                                                <tr>
                                                                     <td><b>Adhoc Interest Rate (%): </b></td>
                                                                     <td>{{$termOffer->adhoc_interest_rate}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><b>Grace Period (Days): </b></td>
                                                                     <td>{{$termOffer->grace_period}}</td>
-                                                                </tr>
-                                                                <tr>
                                                                     <td><b>Processing Fee: </b></td>
                                                                     <td>{{$termOffer->processing_fee}}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td><b>Check Bounce Fee: </b></td>
-                                                                    <td>{{$termOffer->check_bounce_fee}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Comment: </b></td>
-                                                                    <td>{{$termOffer->comment}}</td>
+                                                                    <td colspan="2"><b>Comment: </b></td>
+                                                                    <td colspan="2">{{$termOffer->comment}}</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="25%">{{\Helpers::getUserName($termOffer->created_by)}}</td>
-                                                    <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
-                                                    <td></td>
+                                                    <td width="10%">{{\Helpers::getUserName($termOffer->created_by)}}</td>
+                                                    <td width="10%"><label class="badge badge-success current-status">{{($termOffer->is_approve == 1)? 'Approved': 'Not Approve'}}</label></td>
                                                 </tr>
                                                 @if($loop->last)
                                             </tbody>
@@ -190,82 +160,67 @@
                                 @foreach($leaseOfferData as $key=>$leaseOffer)
                                 @if($loop->first)
                                 <div class="card card-color mb-0">
-                                    <div class="card-header collapsed" data-toggle="collapse" href="#collapseThree" aria-expanded="false"><h5 class="mb-0">Leasing Offer Details</h5>     
+                                    <div class="card-header collapsed" data-toggle="collapse" href="#collapseThree" aria-expanded="false" style="background: #138864;color: #fff;"><h5 class="mb-0">Leasing Offer Details</h5>     
                                     </div>
                                     <div id="collapseThree" class="card-body bdr p-0 collapse" data-parent="#accordion" style="">
-                                        <table cellspacing="0" cellpadding="0" width="100%" class="table-i table-offer">
+                                        <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
-                                                <tr role="row">
-                                                   <th width="10%">Sr. No.</th>
-                                                   <th width="40%">Offer Details</th>
-                                                   <th width="25%">Created By</th>
-                                                   <th width="15%">Status</th>
-                                                   <th width="10%">Action</th>
+                                                <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
+                                                   <th width="5%">Sr. No.</th>
+                                                   <th width="75%">Offer Details</th>
+                                                   <th width="10%">Created By</th>
+                                                   <th width="10%">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             @endif
                                                 <tr role="row" class="odd">
                                                     <td width="10%">{{$key+1}}</td>
-                                                    <td width="40%">
-                                                        <table class="" width="70%">
+                                                    <td width="75%">
+                                                        <table class="table table-bordered table-striped" width="100%">
                                                             <tbody>
                                                                 <tr>
                                                                     <td><b>Apply Loan Amount : </b></td>
                                                                     <td>{{$leaseOffer->prgm_limit_amt}}</td>
+                                                                    <td><b>Check Bounce Fee: </b></td>
+                                                                    <td>{{$leaseOffer->check_bounce_fee}}</td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td><b>Loan Offer : </b></td>
-                                                                    <td>{{$leaseOffer->prgm_limit_amt}}</td>
-                                                                </tr>
+                                                                
                                                                 <tr>
                                                                    <td><b>Interest Rate(%) : </b></td>
                                                                    <td>{{$leaseOffer->interest_rate}}</td>
-                                                                </tr>
-                                                                <tr>
                                                                    <td><b>Tenor (Days) : </b></td>
                                                                    <td>{{$leaseOffer->tenor}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                    <td><b>Tenor for old invoice (Days): </b></td>
                                                                    <td>{{$leaseOffer->tenor_old_invoice}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Margin (%): </b></td>
-                                                                    <td>{{$leaseOffer->margin}}</td>
+                                                                   <td><b>Margin (%): </b></td>
+                                                                   <td>{{$leaseOffer->margin}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><b>Overdue Interest Rate (%): </b></td>
                                                                     <td>{{$leaseOffer->overdue_interest_rate}}</td>
-                                                                </tr>
-                                                                <tr>
                                                                     <td><b>Adhoc Interest Rate (%): </b></td>
                                                                     <td>{{$leaseOffer->adhoc_interest_rate}}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><b>Grace Period (Days): </b></td>
                                                                     <td>{{$leaseOffer->grace_period}}</td>
-                                                                </tr>
-                                                                <tr>
                                                                     <td><b>Processing Fee: </b></td>
                                                                     <td>{{$leaseOffer->processing_fee}}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td><b>Check Bounce Fee: </b></td>
-                                                                    <td>{{$leaseOffer->check_bounce_fee}}</td>
+                                                                    <td colspan="2"><b>Comment: </b></td>
+                                                                    <td colspan="2">{{$leaseOffer->comment}}</td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td><b>Comment: </b></td>
-                                                                    <td>{{$leaseOffer->comment}}</td>
-                                                                </tr>
-                                                                @if($loop->last)
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="25%">{{\Helpers::getUserName($leaseOffer->created_by)}}</td>
-                                                    <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
-                                                    <td></td>
+                                                    <td width="10%">{{\Helpers::getUserName($leaseOffer->created_by)}}</td>
+                                                    <td width="10%"><label class="badge badge-success current-status">{{($leaseOffer->is_approve == 1)? 'Approved': 'Not Approve'}}</label></td>
                                                 </tr>
+                                                @if($loop->last)
                                             </tbody>
                                         </table>
                                     </div>
