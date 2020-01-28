@@ -1698,7 +1698,7 @@ class CamController extends Controller
                   $financeData[$v['year']] = $v;
                 }
               }
-                $Columns = getColumns();
+                $Columns = getFinancialDetailSummaryColumns();
                 $FinanceColumns = [];
                 foreach ($Columns as $key => $cols) {
                   $FinanceColumns = array_merge($FinanceColumns, $cols);
