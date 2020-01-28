@@ -9,7 +9,7 @@
     <tr>
         <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
             <tr>
-                <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" align="left">{{isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : ''}}</td>
+                <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" align="left">{!!isset($reviewerSummaryData->cover_note) ? nl2br($reviewerSummaryData->cover_note) : ''!!}</td>
             </tr>
         </table>
     </tr>
@@ -67,7 +67,7 @@
                 <tr>
                     <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">PTPQ</td>
                     <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                    @if(count($offerPTPQ)>0)   
+                    @if(isset($offerPTPQ) && $offerPTPQ && offerPTPQ!='')   
                         @foreach ($offerPTPQ as $ok => $ov)
                             {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
                             {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
@@ -95,7 +95,7 @@
                         $addSecArr = explode(',',$limitOfferData->addl_security)
                     @endphp                                     
                     @endif   
-                    @if(count($addSecArr)>0)   
+                    @if(isset($addSecArr) && count($addSecArr)>0)  
                     @foreach ($addSecArr as $k => $v)
                         {{ config('common.addl_security.'.$v).", " }}
                         @if($v==4)
