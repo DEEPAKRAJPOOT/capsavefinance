@@ -456,6 +456,7 @@ class CamController extends Controller
         if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
           $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'.$active_json_filename)),true);
         }
+
         $customers_info = [];
         if (!empty($contents)) {
           foreach ($contents['statementdetails'] as $key => $value) {
@@ -1718,7 +1719,7 @@ class CamController extends Controller
                   $financeData[$v['year']] = $v;
                 }
               }
-                $Columns = getColumns();
+                $Columns = getFinancialDetailSummaryColumns();
                 $FinanceColumns = [];
                 foreach ($Columns as $key => $cols) {
                   $FinanceColumns = array_merge($FinanceColumns, $cols);
@@ -1740,7 +1741,18 @@ class CamController extends Controller
                 $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();        
          
                 $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-               
+
+                $arrCamData['total_exposure']  = 0;
+
+                if(isset($arrCamData['existing_exposure'])){
+                    $arrCamData['total_exposure'] = is_int(intval(str_replace(',', '', $arrCamData['existing_exposure']))) ? intval(str_replace(',', '', $arrCamData['existing_exposure'])) : 0;
+                }
+                if(isset($arrCamData['proposed_exposure'])){
+                    $arrCamData['total_exposure'] += is_int(intval(str_replace(',', '', $arrCamData['proposed_exposure']))) ? intval(str_replace(',', '', $arrCamData['proposed_exposure'])) : 0;
+                }
+
+               //dd($arrCamData);
+
                 if(isset($arrCamData['t_o_f_security_check'])){
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
@@ -1777,7 +1789,7 @@ class CamController extends Controller
             $arrData['app_id'] = request()->get('app_id');
             $date = $request->get('debt_on');
              if (empty($date)) {
-               Session::flash('error',trans("Debt on field can'\t be empty"));
+               Session::flash('error',trans('Debt on field can\'t be empty'));
                return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
             }
             $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
