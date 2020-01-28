@@ -67,7 +67,7 @@
                 <tr>
                     <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">PTPQ</td>
                     <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                    @if(isset($offerPTPQ) && $offerPTPQ && offerPTPQ!='')   
+                    @if(isset($offerPTPQ) && $offerPTPQ && $offerPTPQ!='')   
                         @foreach ($offerPTPQ as $ok => $ov)
                             {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
                             {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}

@@ -68,7 +68,7 @@
                            <tr role="row" class="odd">
                                  <td class="">PTPQ</td>
                                  <td class="">
-                                 @if(isset($offerPTPQ) && $offerPTPQ && offerPTPQ!='')   
+                                 @if(isset($offerPTPQ) && $offerPTPQ && $offerPTPQ!='')   
                                     @foreach ($offerPTPQ as $ok => $ov)
                                        {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
                                        {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
