@@ -279,9 +279,9 @@ table.remove-tr-bg tbody tr{
     content: "+";
     position: absolute;
     right: 15px;
-    color: #138864;
+    color: #000;
     cursor: pointer;
-	font-size: 20px;
+	font-size: 25px;
 }
 .accordion .card-header:after {
     font-family: 'FontAwesome';
@@ -289,9 +289,10 @@ table.remove-tr-bg tbody tr{
     float: right;
     position: absolute;
     right: 15px;
-    color: #138864;
+    color: #000;
     cursor: pointer;
-	top:9px;
+	top:4px;
+    font-size: 25px;
 }
 
 

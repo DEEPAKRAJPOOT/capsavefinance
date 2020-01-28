@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\User;
@@ -31,6 +32,7 @@ class ApplicationController extends Controller
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
+    protected $masterRepo;
 
     /**
      * The pdf instance.
@@ -39,10 +41,11 @@ class ApplicationController extends Controller
      */
     protected $pdf;
     
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvMasterRepoInterface $master_repo, Pdf $pdf){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
+        $this->masterRepo = $master_repo;
         $this->pdf = $pdf;
         $this->middleware('checkBackendLeadAccess');
     }
@@ -78,12 +81,14 @@ class ApplicationController extends Controller
             }
 
             $states = State::getStateList()->get();
+            $product_types = $this->masterRepo->getProductDataList();
             //dd($business_info->gst->pan_gst_hash);
 
             if ($business_info) {
                 return view('backend.app.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
                         ->with('user_id',$userId)
+                        ->with('product_types',$product_types)
                         ->with('app_id',$appId)
                         ->with('biz_id',$bizId);
             } else {
@@ -830,7 +835,9 @@ class ApplicationController extends Controller
     public function showBusinessInformation()
     {
         $states = State::getStateList()->get();
-        return view('backend.app.business_information',compact('states'));
+        $product_types = $this->masterRepo->getProductDataList();
+
+        return view('backend.app.business_information',compact(['states', 'product_types']));
     }
 
     /**
@@ -898,10 +905,10 @@ class ApplicationController extends Controller
             $toUserId = $this->userRepo->getAssignedSalesManager($userId);
         }
         $authUser = Auth::user();
-        if(($authUser->roles->first()->is_superadmin == 1) || ($authUser->user_id == $toUserId)){
-          $isAccessible = 1;
+        if($authUser->user_id == $toUserId){
+          $isSalesManager = 1;
         }else{
-          $isAccessible = 0;
+          $isSalesManager = 0;
         }
         /*code for getting the sales manager*/
 
@@ -912,7 +919,7 @@ class ApplicationController extends Controller
                 ->with('termOfferData', $termOfferData)
                 ->with('leaseOfferData', $leaseOfferData)
                 ->with('offerStatus', $offerStatus)
-                ->with('isAccessible', $isAccessible)
+                ->with('isSalesManager', $isSalesManager)
                 ->with('currentStage', $currentStage)
                 ->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
     }
@@ -999,7 +1006,8 @@ class ApplicationController extends Controller
         if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
             $offerId = $request->get('offer_id');
         } 
-        $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+        $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+       
         return view('backend.app.sanction_letter')->with($data);   
     }
 
@@ -1234,7 +1242,7 @@ class ApplicationController extends Controller
                 $offerId = $request->get('offer_id');
             } 
 
-            $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
             $date = \Carbon\Carbon::now();
             $data['date'] = $date;
             $htmlContent = view('backend.app.send_sanction_letter')->with($data)->render();
@@ -1395,7 +1403,7 @@ class ApplicationController extends Controller
      * @return view
      */  
     public function saveSanctionLetter(Request $request){
-
+        
         try {
             $arrFileData = $request->all();
             $appId = (int)$request->app_id; 
@@ -1443,7 +1451,7 @@ class ApplicationController extends Controller
                 $offerId = $request->get('offer_id');
             } 
             
-            $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
             $date = \Carbon\Carbon::now();
             $data['date'] = $date;
             $html = view('backend.app.send_sanction_letter')->with($data)->render();

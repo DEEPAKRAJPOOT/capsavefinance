@@ -43,6 +43,7 @@ class UserBankAccount extends BaseModel {
      */
     protected $fillable = [
         'user_id',
+        'company_id',
         'acc_name',
         'bank_id',
         'is_default',
@@ -147,4 +148,40 @@ class UserBankAccount extends BaseModel {
         return $res ?: false;
     }
 
+    /**
+     * get Bank account data by company id
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function getAllCompanyBankAcc($comp_id)
+    {
+
+        $res = self::select('user_bank_account.*', 'mb.bank_name as bank_name')
+                ->leftjoin('mst_bank as mb', 'user_bank_account.bank_id', '=', 'mb.id')
+                ->where('company_id','=',(int)$comp_id)
+                ->get();
+        
+        return $res ?: false;
+    }
+    
+    /**
+     * get Bank account data
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function getBankAccountDataByCompanyId($acc_id, $comp_id)
+    {
+
+        $res = self::where('bank_account_id','=',(int)$acc_id)
+                ->where('company_id','=',(int)$comp_id)
+                ->get();
+        
+        return $res ?: false;
+    }
 }

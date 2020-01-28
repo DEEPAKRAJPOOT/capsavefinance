@@ -76,6 +76,8 @@ class Cam extends BaseModel
         'cm_comment',
         'promoter_cmnt',
         'rating_rational',
+        'debt_on',
+        'contigent_observations',
         'created_by',
         'created_at',
         'updated_at',
@@ -107,6 +109,8 @@ class Cam extends BaseModel
             'risk_comments'=>$attributes['risk_comments'],
             'cm_comment'=>$attributes['cm_comment'],
             'rating_rational'=>$attributes['rating_rational'],
+            'debt_on'=>$attributes['debt_on'],
+            'contigent_observations'=>$attributes['contigent_observations'],
             'created_by'=>$userId
         );
         $cam = Cam::create($inputArr);
@@ -139,6 +143,8 @@ class Cam extends BaseModel
                     'risk_comments'=>$attributes['risk_comments'],
                     'cm_comment'=>$attributes['cm_comment'],
                     'rating_rational'=>$attributes['rating_rational'],
+                    'debt_on'=>$attributes['debt_on'],
+                    'contigent_observations'=>$attributes['contigent_observations'],
                     'updated_by'=>$userId,
         ]);
         return $updateCamData ? true : false;
