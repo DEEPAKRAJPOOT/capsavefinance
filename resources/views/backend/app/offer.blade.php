@@ -66,7 +66,7 @@
                                                    <td>{{$supplyOffer->tenor_old_invoice}}</td>
                                                    <td><b>Margin (%): </b></td>
                                                    <td>{{$supplyOffer->margin}}</td>
-                                                   <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Helpers::getUserName($supplyOffer->created_by)}}</td>
+                                                   <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($supplyOffer->created_at)->format('d-m-Y')}}</td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
@@ -138,7 +138,7 @@
                                                     <td>{{$termOffer->security_deposit}}</td>
                                                     <td><b>Rental Frequency: </b></td>
                                                     <td>{{(($termOffer->rental_frequency == 1)?'Yearly':(($termOffer->rental_frequency == 2)? 'Bi-Yearly':(($termOffer->rental_frequency == 3)? 'Quaterly': 'Monthly')))}}</td>
-                                                    <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Helpers::getUserName($termOffer->created_by)}}</td>
+                                                    <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($termOffer->created_at)->format('d-m-Y')}}</td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
@@ -227,7 +227,7 @@
                                                     <td>{{$leaseOffer->security_deposit}}</td>
                                                     <td><b>Rental Frequency: </b></td>
                                                     <td>{{(($leaseOffer->rental_frequency == 1)?'Yearly':(($leaseOffer->rental_frequency == 2)? 'Bi-Yearly':(($leaseOffer->rental_frequency == 3)? 'Quaterly': 'Monthly')))}}</td>
-                                                    <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Helpers::getUserName($leaseOffer->created_by)}}</td>
+                                                    <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($leaseOffer->created_at)->format('d-m-Y')}}</td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
