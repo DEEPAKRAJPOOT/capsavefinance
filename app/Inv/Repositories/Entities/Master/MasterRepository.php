@@ -23,6 +23,7 @@ use App\Inv\Repositories\Models\ProductDoc;
 use App\Inv\Repositories\Models\Master\Bank;
 use App\Inv\Repositories\Models\DeoLevelStates;
 use App\Inv\Repositories\Models\Master\Status;
+use App\Inv\Repositories\Models\Master\Company;
 /**
  * 
  */
@@ -441,6 +442,34 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         $result = Product::where('is_active', 1)
                 ->get();
         return $result ?: false;
+    }
+    
+    public function saveCompanies($attributes) {
+
+        $status = Company::saveCompanies($attributes);
+
+        return $status ?: false;
+    }    
+    
+    public function getAllCompanies($keyword) {
+
+        $result = Company::getAllCompanies($keyword);
+        
+        return $result ?: false;
+    }
+    
+    public function findCompanyById($companyId) {
+        
+        $result = Company::findCompanyById($companyId)->toarray();
+  
+        return $result ?: false;
+    }
+    
+    public function updateCompanies($attributes, $companyId) {
+        
+        $status = Company::updateCompanies($attributes, $companyId);
+        
+        return $status ?: false;
     }
 
 }
