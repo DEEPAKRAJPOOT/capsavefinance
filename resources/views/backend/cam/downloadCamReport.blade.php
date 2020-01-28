@@ -65,7 +65,7 @@
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Equipment Type</td>
-                     <td class="">{{isset($leaseOfferData->security_deposit_type) ? $leaseOfferData->security_deposit_type : ''}}</td>
+                     <td class="">{{isset($leaseOfferData->security_deposit_type) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->security_deposit_type)['equipment_name']) : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Security Deposit</td>
