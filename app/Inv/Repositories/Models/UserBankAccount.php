@@ -43,6 +43,7 @@ class UserBankAccount extends BaseModel {
      */
     protected $fillable = [
         'user_id',
+        'company_id',
         'acc_name',
         'bank_id',
         'is_default',

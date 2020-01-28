@@ -12,5 +12,11 @@ return [
     'industry_edit_success' => 'Industry updated successfully',
     'company_edit_success' => 'Company updated successfully',
     'company_add_success' => 'Company added successfully',
+    'gstno' => 'Please Enter Valid GST No',
+    'panno' => 'Please Enter Valid PAN No',
+    'cinno' => 'Please Enter Valid CIN No',
+    'required' => 'This field is required',
+    'state_add_success' => 'State added successfully',
+    'state_edit_success' => 'State updated successfully',
 ];
 

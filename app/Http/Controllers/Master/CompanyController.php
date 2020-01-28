@@ -118,10 +118,11 @@ class CompanyController extends Controller {
     public function saveCompanyBankAccount(BankAccountRequest $request)
     {
         try {
-            //dd($request->all());
+//            dd($request->all());
             $by_default = ($request->get('by_default')) ? ((int)$request->get('by_default')) : 0;
             $bank_acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $compId = ($request->get('company_id')) ? \Crypt::decrypt($request->get('company_id')) : null;
+//            dd($compId);
             $prepareData = [
                 'acc_name' => $request->get('acc_name'),
                 'acc_no' => $request->get('acc_no'),

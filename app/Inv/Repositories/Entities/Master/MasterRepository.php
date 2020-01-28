@@ -444,6 +444,12 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return $result ?: false;
     }
     
+    public function saveCompanies($attributes) {
+
+        $status = Company::saveCompanies($attributes);
+
+        return $status ?: false;
+    }    
     
     public function getAllCompanies($keyword) {
 
