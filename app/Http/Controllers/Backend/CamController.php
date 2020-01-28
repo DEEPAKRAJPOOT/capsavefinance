@@ -1727,9 +1727,7 @@ class CamController extends Controller
                 $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
                 if(count($leaseOfferData)){
                     $leaseOfferData = $leaseOfferData['0'];
-                    
                 }
-
                 $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
                 $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
                 $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
