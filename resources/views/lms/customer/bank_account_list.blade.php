@@ -26,7 +26,7 @@
                         @can('add_bank_account')
                         <a data-toggle="modal" 
                            title="Add Bank" 
-                           data-height="400px" 
+                           data-height="450px" 
                            data-width="100%" 
                            data-target="#add_bank_account"
                            id="register" 
@@ -45,7 +45,7 @@
                     <div class="row">
                         <div class="col-sm-12">
 
-                            <table id="bank_listing" class="table table-striped dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="invoive-listing_info" style="width: 100%;">
+                            <table class="table table-striped dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="invoive-listing_info" style="width: 100%;">
                                 <thead>
                                     <tr role="row">
                                         <th>Acc. Holder Name </th>
@@ -58,6 +58,32 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @foreach($bankAccounts  as $account) 
+                                        <tr>
+                                            <td>{{ $account->acc_name }}</td>
+                                            <td>{{ $account->acc_no }}</td>
+                                            <td>{{ $account->bank->bank_name }}</td>
+                                            <td>{{ $account->ifsc_code }}</td>
+                                            <td>{{ $account->branch_name }}</td>
+                                            <td>{!! ($account->is_active == 1) ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-warning current-status">InActive</span>' !!}</td>
+                                            @php
+
+                                            $checked = ($account->is_default == 1) ? 'checked' : null;
+                                            $act = '';
+                                            if($account->is_active){
+                                              $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($account->bank_account_id) . '"  class="make_default" name="add"><label for="add">Default</label> ';
+                                            }
+                                          
+                                            if (Helpers::checkPermission('add_bank_account')) {
+                                                $act .= '<a data-toggle="modal"  data-height="450px" 
+                                           data-width="100%" 
+                                           data-target="#add_bank_account"
+                                           data-url="' . route('add_bank_account', ['bank_account_id' => $account->bank_account_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Bank Account"><i class="fa fa-edit"></i></a>';
+                                            }
+                                            @endphp
+                                            <td>{!! $act !!}</td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -148,13 +174,14 @@ var messages = {
 
             window.reloadDataTable = function ()
             {
-                bank_listing.draw();
+                window.reload();
             }
 
 
 
 
             $(document).on('click', '.make_default', function () {
+                $this = $(this);
                 var currentValue = ($(this).prop('checked')) ? 1 : 0;
                 var acc_id = $(this).data('rel');
                 $.confirm({
@@ -172,7 +199,7 @@ var messages = {
                                    },
                                     success: function (data) {
                                         $('.isloader').hide();
-                                        window.reloadDataTable();
+                                        location.reload();
                                     }
                                 });
                             }
@@ -180,7 +207,7 @@ var messages = {
                         },
                         Cancel: {
                             action: function () {
-                                window.reloadDataTable();
+                                $this.prop('checked', false);
                             }
                         },
                     },

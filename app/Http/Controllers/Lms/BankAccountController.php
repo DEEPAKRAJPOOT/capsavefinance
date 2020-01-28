@@ -51,7 +51,12 @@ class BankAccountController extends Controller {
         try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
-            return view('lms.customer.bank_account_list')->with(['userInfo' => $userInfo]);
+            $bankAccounts = $this->userRepo->getUserBankAccounts($user_id);
+            return view('lms.customer.bank_account_list')
+                    ->with([
+                        'userInfo' => $userInfo,
+                        'bankAccounts' => $bankAccounts
+                        ]);
         } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
