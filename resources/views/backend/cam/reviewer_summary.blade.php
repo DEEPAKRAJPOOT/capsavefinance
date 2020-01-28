@@ -71,7 +71,7 @@
                            <tr role="row" class="odd">
                                  <td class="">PTPQ</td>
                                  <td class="">
-                                 @if(count($offerPTPQ)>0)   
+                                 @if(isset($offerPTPQ) && $offerPTPQ && count($offerPTPQ)>0)   
                                     @foreach ($offerPTPQ as $ok => $ov)
                                        {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
                                        {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
@@ -99,7 +99,7 @@
                                        $addSecArr = explode(',',$limitOfferData->addl_security)
                                     @endphp                                     
                                  @endif   
-                                 @if(count($addSecArr)>0)   
+                                 @if(isset($addSecArr) && count($addSecArr)>0)   
                                     @foreach ($addSecArr as $k => $v)
                                        {{ config('common.addl_security.'.$v).", " }}
                                        @if($v==4)
