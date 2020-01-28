@@ -224,7 +224,7 @@
 									</div>
 									<div class="col-md-4">
 										<div class="form-group">
-											<label for="txtSupplierName">Tranche Tenor (Days)
+											<label for="txtSupplierName">Tranche Tenor (Months)
 											</label>
 											<input type="text" name="product_id.2.tenor_days" value="{{old('product_id.2.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
 											@error('product_id.2.tenor_days')
@@ -249,7 +249,7 @@
 									</div>
 									<div class="col-md-4">
 										<div class="form-group">
-											<label for="txtSupplierName">Tranche Tenor (Days)
+											<label for="txtSupplierName">Tranche Tenor (Months)
 											</label>
 											<input type="text" name="product_id[3][tenor_days]" value="{{old('product_id.3.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
 											@error('product_id.3.tenor_days')

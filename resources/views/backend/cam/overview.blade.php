@@ -326,7 +326,7 @@
         minLength: '3'
     });
 
-    $('input.calTotalExposure').on('change', function(){
+    $('input.calTotalExposure').on('change keyup blur', function(){
         var existing =  parseInt($("input[name='existing_exposure']").val().replace(/,/g, '')); 
         var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, '')); 
 

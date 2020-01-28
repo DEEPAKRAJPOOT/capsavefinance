@@ -211,7 +211,7 @@
 
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="txtSupplierName">Lease Tenor  (Months)
+									<label for="txtSupplierName">Lease Tenor  (Days)
 									</label>
 									<input type="text" name="product_id[1][tenor_days]" value="@if(array_key_exists(1, $product_ids)){{ old('product_id.1.tenor_days', number_format($product_ids[1]['tenor_days'])) }}@else{{ old('product_id.1.tenor_days', '') }} @endif" class="form-control number_format" tabindex="11" placeholder="Enter Lease Tenor" maxlength="3">
 									@error('product_id.1.tenor_days')
