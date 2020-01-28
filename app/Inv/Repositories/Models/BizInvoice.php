@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -125,10 +126,15 @@ public static function updateInvoice($invoiceId,$status)
     
     public static function getDisbursedAmount($invid)
     {
-       return self::with('disbursal')->where('invoice_id',$invid)->first();
+       return self::with(['disbursal','invoicePayment'])->where('invoice_id',$invid)->first();
     }
 
-
+    function invoicePayment()
+     {
+          return $this->hasMany('App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail', 'invoice_id','invoice_id');  
+     
+     }
+    
     /* get invoice */    
   public static function getInvoice()
     {

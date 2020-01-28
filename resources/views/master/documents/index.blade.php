@@ -40,6 +40,7 @@
 				array('id' => 'product_type',
 				'class'=>'form-control'))
 				!!}
+                                {
 				</div>
 				<div class="col-md-4">
 

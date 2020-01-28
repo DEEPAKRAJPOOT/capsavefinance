@@ -10,6 +10,8 @@ use App\Inv\Repositories\Models\BizInvoice as InvoiceModel;
 use App\Inv\Repositories\Models\BizInvoiceTemp as TempInvoiceModel;
 use App\Inv\Repositories\Models\BizBatchInvoice as BizBatchInvoice;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
+use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
+use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
@@ -221,6 +223,46 @@ use CommonRepositoryTraits;
         }
 
        return TempInvoiceModel::saveBulk($attributes);  
+    }
+    
+       public function saveRepayment($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return InvoiceRepaymentTrail::saveRepay($attributes);  
+    } 
+    
+        public function saveRepaymentTrans($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return Transactions::saveRepaymentTrans($attributes);  
     }
     
     

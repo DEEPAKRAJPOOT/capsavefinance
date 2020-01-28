@@ -190,8 +190,15 @@ Route::group(
         'uses' => 'AjaxController@getUsersDetailAPIDummy'
         ]
     );
+   Route::post(
+        'save_repayment',
+        [
+        'as' => 'save_repayment',
+        'uses' => 'AjaxController@saveRepayment'
+        ]
+    );
 
-
+  
    //
     Route::post(
         'shareholder-save-ajax',
