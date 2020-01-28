@@ -954,6 +954,7 @@ class Helper extends PaypalHelper
     {        
         return Equipment::getEquipmentTypeById($id);                      
     }
+
     
     public static function getBankAccListByCompId($id)
     {
@@ -962,4 +963,16 @@ class Helper extends PaypalHelper
         
         return  $bank_acc;
     }  
+
+    /**
+     * Get User detail by user_id
+     *      
+     * @param integer $user_id
+     */
+    public static function getUserName($user_id) 
+    {        
+        $user =  User::findOrFail($user_id);
+        return ucwords($user->f_name.' '. $user->l_name);                    
+    }
+
 }

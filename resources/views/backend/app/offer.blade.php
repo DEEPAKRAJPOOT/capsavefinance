@@ -6,10 +6,9 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
-                    @if($isAccessible)
-                    @if($supplyOfferData->count() == 0 && $termOfferData->count() == 0 && $termOfferData->count() == 0 )
+                    @if($supplyOfferData->count() == 0 && $termOfferData->count() == 0 && $leaseOfferData->count() == 0 )
                     <div class="row"><h3>No offer found .</h3></div>
-                    @endif
+                    @else
                     <div class="row">
                         <div class="col-sm-12">
                             <div id="accordion" class="accordion">
@@ -88,7 +87,7 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="25%">{{$supplyOffer->created_by}}</td>
+                                                    <td width="25%">{{\Helpers::getUserName($supplyOffer->created_by)}}</td>
                                                     <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
                                                     <td></td>
                                                 </tr>
@@ -175,7 +174,7 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="25%">{{$termOffer->created_by}}</td>
+                                                    <td width="25%">{{\Helpers::getUserName($termOffer->created_by)}}</td>
                                                     <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
                                                     <td></td>
                                                 </tr>
@@ -263,7 +262,7 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="25%">{{$leaseOffer->created_by}}</td>
+                                                    <td width="25%">{{\Helpers::getUserName($leaseOffer->created_by)}}</td>
                                                     <td width="15%"><label class="badge badge-success current-status">Approved</label></td>
                                                     <td></td>
                                                 </tr>
@@ -277,21 +276,19 @@
                             </div>
                         </div>
                     </div>
+                    @endif
+                    @if($offerStatus != 0 && $isSalesManager == 1)
                     <form method="POST" action="{{route('accept_offer')}}">
                         <div class="row">
                         @csrf
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         <div class="col-md-12">
-                            @if($offerStatus != 0)
                             <!-- <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button> -->
                             <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept</button>
-                            @endif
                         </div>
                         </div>  
                     </form>
-                    @else
-                    <div class="row"><h3>You are not authorised</h3></div>
                     @endif
                 </div>
             </div>
