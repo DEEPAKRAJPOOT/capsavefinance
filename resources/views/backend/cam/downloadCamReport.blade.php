@@ -25,9 +25,9 @@
                   <tr role="row">
                      <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Group</th>
                      <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Borrower</th>
-                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit (₹ Mn)</th>
-                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure (₹ Mn)</th>
-                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure (₹ Mn)</th>
+                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit (Mn)</th>
+                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure (Mn)</th>
+                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure (Mn)</th>
                   </tr>
                </thead>
                <tbody>
@@ -54,7 +54,7 @@
                      <td class="">Lease</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class="">Limit (₹ In Mn)</td>
+                     <td class="">Limit (In Mn)</td>
                      <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
                            </td>
                      
@@ -112,36 +112,29 @@
                   <tr role="row" class="odd">
                      <td class="">Additional Security</td>
                      <td class="">
+                           <div class="form-check" style="display: inline-block; margin-right:10px;">
+                             <label class="form-check-label">
+                             <input type="checkbox" class="form-check-input"  value="1" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '1') !== false) ? 'checked' : ''}} >BG
+                             <i class="input-helper"></i></label>
+                           </div>
+                           <div class="form-check" style="display: inline-block;">
+                             <label class="form-check-label">
+                             <input type="checkbox" class="form-check-input"   value="2" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '2') !== false) ? 'checked' : ''}}>FD
+                             <i class="input-helper"></i></label>
+                          </div>
+                          <div class="form-check" style="display: inline-block;">
+                             <label class="form-check-label">
+                             <input type="checkbox" class="form-check-input"   value="MF" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '3') !== false) ? 'checked' : ''}}>MF
+                             <i class="input-helper"></i></label>
+                          </div>
+                          <div class="form-check" style="display: inline-block;">
+                             <label class="form-check-label">
+                             <input type="checkbox" class="form-check-input" id="othersCheckbox" name="t_o_f_security_check[]"  value="4" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '4') !== false) ? 'checked' : ''}}>Others
+                             <i class="input-helper"></i></label>
+                          </div>
+                          <textarea class="form-control col-sm-6" style="display: {{isset($leaseOfferData->comment) && (strpos($leaseOfferData->addl_security, '4') !== false) ? '' : 'none'}} " >{{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}</textarea>
 
-
-
-
-                                       <div class="form-check" style="display: inline-block; margin-right:10px;">
-                                         <label class="form-check-label">
-                                         <input type="checkbox" class="form-check-input"  value="1" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '1') !== false) ? 'checked' : ''}} >BG
-                                         <i class="input-helper"></i></label>
-                                       </div>
-
-
-                                       <div class="form-check" style="display: inline-block;">
-                                         <label class="form-check-label">
-                                         <input type="checkbox" class="form-check-input"   value="2" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '2') !== false) ? 'checked' : ''}}>FD
-                                         <i class="input-helper"></i></label>
-                                      </div>
-                                      <div class="form-check" style="display: inline-block;">
-                                         <label class="form-check-label">
-                                         <input type="checkbox" class="form-check-input"   value="MF" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '3') !== false) ? 'checked' : ''}}>MF
-                                         <i class="input-helper"></i></label>
-                                      </div>
-                                      <div class="form-check" style="display: inline-block;">
-                                         <label class="form-check-label">
-                                         <input type="checkbox" class="form-check-input" id="othersCheckbox" name="t_o_f_security_check[]"  value="4" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '4') !== false) ? 'checked' : ''}}>Others
-                                         <i class="input-helper"></i></label>
-                                      </div>
-
-
-                                 <input type="text" name="t_o_f_security" id="securityComment" class="form-control" value="{{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}" style="display: {{isset($leaseOfferData->comment) && (strpos($leaseOfferData->addl_security, '4') !== false) ? '' : 'none'}} " />
-                    
+                        <!--  <input type="text" id="securityComment" class="form-control" value="{{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}" style="display: {{isset($leaseOfferData->comment) && (strpos($leaseOfferData->addl_security, '4') !== false) ? '' : 'none'}} " /> -->
                      </td>
                   </tr>
                </tbody>
@@ -473,7 +466,7 @@
                </tbody>
             </table>
             <h5 class="mt-4">Approval criteria for IC:</h5>
-            <table id="invoice_history" class="table   table-striped no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+            <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr>
                      <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Sr. No.</th>
@@ -644,9 +637,9 @@
 
             <h5 class="mt-4">Notes:</h5>
             <ul class="pl-3">
-               <li><i class="fa fa-check" aria-hidden="true"></i> Cash profit = PAT + Depreciation + Non-operating non-cash outflow items – Provisions</li>
-               <li><i class="fa fa-check" aria-hidden="true"></i> Total Outside liabilities = Current Liabilities + Term Liabilities</li>
-               <li><i class="fa fa-check" aria-hidden="true"></i> Net Worth = Share Capital + Reserves – Revaluation reserve</li>
+               <li>&#x2714; Cash profit = PAT + Depreciation + Non-operating non-cash outflow items – Provisions</li>
+               <li>&#x2714; Total Outside liabilities = Current Liabilities + Term Liabilities</li>
+               <li>&#x2714; Net Worth = Share Capital + Reserves – Revaluation reserve</li>
             </ul>
 
 
@@ -737,7 +730,7 @@
 <script>
 
 function downloadCam(){
-    var pdf = new jsPDF('px', 'pt', [1150, 1500]);
+    var pdf = new jsPDF('px', 'pt', [1180, 1200]);
     var  res = pdf.html(document.getElementById('camReport'), {
         callback: function (pdf) {
             pdf.save('camReport');

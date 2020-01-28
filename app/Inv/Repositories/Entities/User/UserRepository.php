@@ -20,6 +20,7 @@ use App\Inv\Repositories\Models\Agency;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
@@ -1523,6 +1524,18 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getDisbursalList()
     {
         return Disbursal::getDisbursalList();
+    }
+
+    /**
+     * user bank account list 
+     * 
+     * @return type mixed
+     */
+    public function getUserBankAccounts($userId)
+    {
+        return UserBankAccount::with('bank')
+            ->where('user_id', $userId)
+            ->get();
     }
        
 }
