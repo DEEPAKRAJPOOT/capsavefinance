@@ -1344,8 +1344,8 @@ class ApplicationController extends Controller
                     $data[$key]['approver'] = $approver->approver;
                     $data[$key]['approver_email'] = $approver->approver_email;
                     $data[$key]['approver_role'] = $approver->approver_role;
-                    $data[$key]['approved_date'] = ($approver->approver)? date('d-M-Y',strtotime($approver->approver)) : '---';
-                    $data[$key]['stauts'] = ($approver->is_active)?"Approved":"";
+                    $data[$key]['approved_date'] = ($approver->updated_at)? date('d-M-Y',strtotime($approver->updated_at)) : '---';
+                    $data[$key]['stauts'] = ($approver->is_active == '1')?"Approved":"";
                 }
                 return view('backend.app.view_approvers')->with('approvers', $data);
             }
@@ -1369,11 +1369,14 @@ class ApplicationController extends Controller
                 $data = array();
                 foreach($assignees as $key => $assignee){
                     $from_role_name = '';
+
+                   
                     if($assignee->from_user_id){
                         $from_role_name = User::getUserRoles($assignee->from_user_id);
                         if($from_role_name->count()!=0)
-                        $from_role_name = $from_role_name[0];
+                            $from_role_name = $from_role_name[0];
                     }
+
                     if($assignee->to_user_id){
                         $to_role_name = User::getUserRoles($assignee->to_user_id);
                         if($to_role_name->count()!=0)
@@ -1381,13 +1384,15 @@ class ApplicationController extends Controller
                     }else{
                         $to_role_name = Role::getRole($assignee->role_id);
                     }
-
+                    
+                   // dump($to_role_name);
+                    
                     $data[$key]['assignby'] = $assignee->assignby;
                     $data[$key]['assignto'] = $assignee->assignto;
                     $data[$key]['sharing_comment'] = $assignee->sharing_comment;
                     $data[$key]['assigne_date'] = ($assignee->created_at)? date('d-M-Y',strtotime($assignee->created_at)) : '---';
-                    $data[$key]['assignby_role'] = ($from_role_name->count()!=0)? $from_role_name->name:'';
-                    $data[$key]['assignto_role'] = ($to_role_name->count()!=0)? $to_role_name->name:'';
+                    $data[$key]['assignby_role'] = ($from_role_name && $from_role_name->count()!=0)? $from_role_name->name:'';
+                    $data[$key]['assignto_role'] = ($to_role_name && $to_role_name->count()!=0)? $to_role_name->name:'';
                 }
                 return view('backend.app.view_shared_details')->with('approvers', $data);
             }
