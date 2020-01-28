@@ -4,7 +4,8 @@
  <div class="modal-body text-left">
 	<form id="documetsForm" name="documetsForm" method="POST" action="{{route('save_documents')}}" target="_top">
 		@csrf
-
+		<input type="hidden" name="filter_product_type" id="filter_product_type" value="">
+		<input type="hidden" name="filter_doc_type_id" id ="filter_doc_type_id" value="">
 		<div class="row">
 			<div class="form-group col-12">
 				<label for="chrg_name">Document Name</label>
@@ -38,9 +39,9 @@
 			</div>
 		</div>
 		<div class="row">
-	 		<div class="form-group col-6">
-			 	<label for="chrg_type">Doc Type</label>
-			 	<select class="form-control" name="doc_type_id" id="doc_type_id">
+			<div class="form-group col-6">
+				<label for="chrg_type">Doc Type</label>
+				<select class="form-control" name="doc_type_id" id="doc_type_id">
 					<option value="" selected>Select</option>
 					<option {{$document_data->doc_type_id == 1 ? 'selected' : ''}} value="1">On-boarding</option>
 					<option {{$document_data->doc_type_id == 2 ? 'selected' : ''}} value="2">Pre-Sanction</option>
@@ -48,8 +49,8 @@
 				</select>
 			</div>
 			<div class="form-group col-6">
-			 	<label for="chrg_type">Status</label><br />
-			 	<select class="form-control" name="is_active" id="is_active">
+				<label for="chrg_type">Status</label><br />
+				<select class="form-control" name="is_active" id="is_active">
 					<option value="" selected>Select</option>
 					 <option {{$document_data->is_active == 1 ? 'selected' : ''}} value="1">Active</option>
 					<option {{$document_data->is_active == 2 ? 'selected' : ''}} value="2">In-Active</option>
@@ -73,43 +74,48 @@
 <script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
 
 <script type="text/javascript">
+		$(document).ready(function(){
+				$('#filter_product_type').val(parent.$('#product_type').val());
+				$('#filter_doc_type_id').val(parent.$('#doc_type_id').val());
+		});
 
 		$('.multi-select-checkbox').multiselect({
-				maxHeight: 400,
-				enableFiltering: false,
-				selectAll: true,
+			maxHeight: 400,
+			enableFiltering: false,
+			selectAll: true,
 		});
+		
 		$(document).ready(function () {
-				$('#documetsForm').validate({ // initialize the plugin
-						rules: {
-								'doc_name' : {
-										required : true,
-								},
-								'is_rcu' : {
-										required : true,
-								},
-								'doc_type_id' : {
-										required : true,
-								},
-								'is_active' : {
-										required : true,
-								},
-						},
-						messages: {
-								'doc_name': {
-										required: "Please enter Document Name",
-								},
-								'is_rcu': {
-										required: "Please enter Document Description",
-								},
-								'doc_type_id': {
-										required: "Please select Document type",
-								},
-								'is_active': {
-										required: "Please Select Status of Document",
-								},
-						}
-				});
+			$('#documetsForm').validate({ // initialize the plugin
+				rules: {
+					'doc_name' : {
+						required : true,
+					},
+					'is_rcu' : {
+						required : true,
+					},
+					'doc_type_id' : {
+						required : true,
+					},
+					'is_active' : {
+						required : true,
+					},
+				},
+				messages: {
+					'doc_name': {
+						required: "Please enter Document Name",
+					},
+					'is_rcu': {
+						required: "Please enter Document Description",
+					},
+					'doc_type_id': {
+						required: "Please select Document type",
+					},
+					'is_active': {
+						required: "Please Select Status of Document",
+					},
+				}
+			});
 		});
 </script>
 @endsection

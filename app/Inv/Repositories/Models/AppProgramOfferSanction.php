@@ -129,7 +129,6 @@ class AppProgramOfferSanction extends BaseModel {
         if (!is_array($sanctionData)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-
         if (!is_null($sanctionId)) {
             $sanctionId =  self::where('sanction_id', $sanctionId)->update($sanctionData);
             if($sanctionId){

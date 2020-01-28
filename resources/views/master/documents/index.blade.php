@@ -29,14 +29,14 @@
 		<div class="card-body">
 			<div class="row" style="margin-bottom: 25px;">
 				<div class="col-md-4">
-
 				{!!
 				Form::select('product_type',
-				[ ''=>'Product Type', 
+				[ 	''=>'Product Type', 
 					'1' => 'Supply Chain', 
 					'2' => 'Term Loan', 
-					'3' => 'Lease Loan'],
-				null,
+					'3' => 'Lease Loan'
+				], 
+				(isset($filter['filter_product_type'])) ? $filter['filter_product_type'] : null,
 				array('id' => 'product_type',
 				'class'=>'form-control'))
 				!!}
@@ -51,13 +51,13 @@
 					'2' => 'Pre Sanction', 
 					'3' => 'Post	 Sanction'
 				],
-				null,
+				(isset($filter['filter_doc_type_id'])) ? $filter['filter_doc_type_id'] : null,
 				array('id' => 'doc_type_id',
 				'class'=>'form-control'))
 				!!}
 				</div>
 				<div class="col-md-1">
-					<button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+					<button type="submit" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
 				</div>
 				<div class="col-md-3 text-right">
 					<a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addDocumentsFrame" data-url ="{{route('add_documents')}}" data-height="320px" data-width="100%" data-placement="top" >

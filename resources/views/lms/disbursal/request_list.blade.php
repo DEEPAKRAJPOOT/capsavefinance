@@ -47,7 +47,7 @@
                 <div class="col-md-3 ml-auto text-right">
 
                     <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_disburse', ['disburse_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Send To Bank</a>
-                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_disburse', ['disburse_type' => 2]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Disburse Manually</a>
+                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_disburse', ['disburse_type' => 2]) }}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Disburse Manually</a>
                 </div>
                 <input type="hidden" value="" name="invoice_ids" id="invoice_ids">  
 

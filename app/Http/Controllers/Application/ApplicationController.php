@@ -14,6 +14,7 @@ use Eastwest\Json\Facades\Json;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\User;
 use App\Libraries\KarzaTxn_lib;
@@ -29,11 +30,13 @@ class ApplicationController extends Controller
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
+    protected $masterRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvMasterRepoInterface $master_repo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
+        $this->masterRepo = $master_repo;
     }
     
     /**
@@ -47,6 +50,7 @@ class ApplicationController extends Controller
         $userArr = [];
         $product_ids = [];
         $states = State::getStateList()->get();
+        $product_types = $this->masterRepo->getProductDataList();
 
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
@@ -58,12 +62,12 @@ class ApplicationController extends Controller
               array_push($product_ids, $product->pivot->product_id);
             }
             return view('frontend.application.company_details')
-                        ->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
+                        ->with(['business_info'=>$business_info, 'states'=>$states, 'product_types'=>$product_types, 'product_ids'=> $product_ids])
                         ->with('user_id',$request->get('user_id'))
                         ->with('app_id',$request->get('app_id'))
                         ->with('biz_id',$request->get('biz_id'));
         }else{
-            return view('frontend.application.business_information', compact(['userArr','states']));
+            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types']));
         }
     }
 
@@ -436,8 +440,8 @@ class ApplicationController extends Controller
         try {
             $appId  = $request->get('app_id');
             $userId = Auth::user()->user_id;
-            $response = $this->docRepo->isUploadedCheck($userId, $appId);
-            if ($response->count() < 1) {
+            // $response = $this->docRepo->isUploadedCheck($userId, $appId);
+            // if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
                 
@@ -445,12 +449,12 @@ class ApplicationController extends Controller
                 Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
                 
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
-            } else {
-                //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+            // } else {
+            //     //Add application workflow stages                
+            //     Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
                 
-                return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
-            }
+            //     return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
+            // }
         } catch (Exception $ex) {
             //Add application workflow stages                
             Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);

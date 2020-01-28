@@ -23,51 +23,23 @@
                <span class="mandatory">*</span>
                </label><br/>
                <div id="check_block">
+                @foreach($agency_types as $key=>$agency_type)
                   <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;">
                     @if(is_array(old('type_id')))
-                      @if(in_array(16, old('type_id')))
-                        <input type="checkbox" value="16" name="type_id[]" checked>FI
+                      @if(in_array($key, old('type_id')))
+                        <input type="checkbox" value="{{$key}}" name="type_id[]" checked>{{$agency_type}}
                         @else
-                        <input type="checkbox" value="16" name="type_id[]">FI
+                        <input type="checkbox" value="{{$key}}" name="type_id[]">{{$agency_type}}
                       @endif
                     @else
-                      @if(in_array(16, $type_ids))
-                        <input type="checkbox" value="16" name="type_id[]" checked>FI
+                      @if(in_array($key, $type_ids))
+                        <input type="checkbox" value="{{$key}}" name="type_id[]" checked>{{$agency_type}}
                       @else
-                        <input type="checkbox" value="16" name="type_id[]">FI
+                        <input type="checkbox" value="{{$key}}" name="type_id[]">{{$agency_type}}
                       @endif
                     @endif
                   </label>
-                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;">
-                    @if(is_array(old('type_id')))
-                      @if(in_array(17, old('type_id')))
-                        <input type="checkbox" value="17" name="type_id[]" checked>RCU
-                        @else
-                        <input type="checkbox" value="17" name="type_id[]">RCU
-                      @endif
-                    @else
-                      @if(in_array(17, $type_ids))
-                        <input type="checkbox" value="17" name="type_id[]" checked>RCU
-                      @else
-                        <input type="checkbox" value="17" name="type_id[]">RCU
-                      @endif
-                    @endif
-                  </label>
-                  <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;">
-                    @if(is_array(old('type_id')))
-                      @if(in_array(18, old('type_id')))
-                        <input type="checkbox" value="18" name="type_id[]" checked>Inspection
-                        @else
-                        <input type="checkbox" value="18" name="type_id[]">Inspection
-                      @endif
-                    @else
-                      @if(in_array(18, $type_ids))
-                        <input type="checkbox" value="18" name="type_id[]" checked>Inspection
-                      @else
-                        <input type="checkbox" value="18" name="type_id[]">Inspection
-                      @endif
-                    @endif
-                  </label>
+                @endforeach
                </div>
                @error('type_id')
                   <span class="error">{{ $message }}</span>
@@ -137,7 +109,7 @@
                         <label for="txtMobile">City
                         <span class="mandatory">*</span>
                         </label>
-                        <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city', $agencyData->comp_city)}}" tabindex="6" type="text" maxlength="10" placeholder="City" maxlength="50">
+                        <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city', $agencyData->comp_city)}}" tabindex="6" type="text" placeholder="City" maxlength="50">
                         @error('comp_city')
                             <span class="error">{{ $message }}</span>
                         @enderror

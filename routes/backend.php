@@ -448,6 +448,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@saveReviewerSummary'
                 ]);
 
+                Route::get('mail-reviewer-summary', [
+                    'as' => 'mail_reviewer_summary',
+                    'uses' => 'Backend\CamController@mailReviewerSummary'
+                ]);
+
                 Route::get('gstin', [
                     'as' => 'cam_gstin',
                     'uses' => 'Backend\CamController@gstin'
@@ -792,6 +797,37 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);  
             
             
+            //Company
+            
+            Route::get('company', [
+                'as' => 'get_companies_list',
+                'uses' => 'Master\CompanyController@index'
+            ]);
+            
+            Route::get('add-company', [
+                'as' => 'add_companies',
+                'uses' => 'Master\CompanyController@addCompanyForm'
+            ]);
+            
+            Route::post('save-company', [
+                'as' => 'save_companies',
+                'uses' => 'Master\CompanyController@saveCompanies'
+            ]);
+            
+            Route::get('edit-company', [
+                'as' => 'edit_companies',
+                'uses' => 'Master\CompanyController@addCompanyForm'
+            ]);
+            
+            Route::get('/add-company-bank-account', [
+                'as' => 'add_company_bank_account',
+                'uses' => 'Master\CompanyController@addCompanyBankAccount'
+            ]);
+            
+            Route::post('/save-company-bank-account', [
+                'as' => 'save_company_bank_account',
+                'uses' => 'Master\CompanyController@saveCompanyBankAccount'
+            ]);
             
             
             

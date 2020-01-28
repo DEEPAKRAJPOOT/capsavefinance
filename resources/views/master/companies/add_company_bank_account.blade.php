@@ -3,22 +3,22 @@
 {!!
 Form::open(
 [
-'route' => 'save_bank_account',
+'route' => 'save_company_bank_account',
 'name' => 'bank_account',
 'autocomplete' => 'off', 
-'id' => 'bank_account',
-'files' => true
+'id' => 'bank_account'
 ]
 )
 !!}
 
 {!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
-<input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
+{!! Form::hidden('company_id', isset($companyId) ? \Crypt::encrypt($companyId)  : null ) !!}
+
 <div class="modal-body text-left">
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod">Account Holder Name
+                <label for="acc_name">Account Holder Name
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('acc_name', 
@@ -29,32 +29,7 @@ Form::open(
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod">Account Number
-                    <span class="mandatory">*</span>
-                </label>
-                {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
-                ['class'=>'form-control form-control-sm' ,
-                'id'=>'acc_no','placeholder'=>'Enter Account Number']) !!}
-                {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
-            </div>
-        </div>
-        
-        @if(!isset($bankAccount->bank_account_id))
-         <div class="col-md-6">
-            <div class="form-group">
-                <label for="txtCreditPeriod">Confirm Account Number
-                    <span class="mandatory">*</span>
-                </label>
-                {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number']) !!}
-                
-            </div>
-        </div>
-        @endif
-       
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="txtCreditPeriod">Bank Name
+                <label for="bank_id">Bank Name
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::select('bank_id', $bank_list,isset($bankAccount->bank_id) ? $bankAccount->bank_id : null,['class'=>'form-control form-control-sm'])!!}
@@ -63,7 +38,32 @@ Form::open(
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod">IFSC Code
+                <label for="acc_no">Account Number
+                    <span class="mandatory">*</span>
+                </label>
+                {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
+                ['class'=>'form-control form-control-sm' ,
+                'id'=>'account_no','placeholder'=>'Enter Account Number']) !!}
+                {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        
+        
+         <div class="col-md-6">
+            <div class="form-group">
+                <label for="confim_acc_no">Confirm Account Number
+                    <span class="mandatory">*</span>
+                </label>
+                {!! Form::password('confim_acc_no',
+                ['class'=>'form-control form-control-sm', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number']) !!}
+                
+            </div>
+        </div>
+        
+       
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="ifsc_code">IFSC Code
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code']) !!}
@@ -72,7 +72,7 @@ Form::open(
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod">Branch Name
+                <label for="branch_name">Branch Name
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('branch_name',isset($bankAccount->branch_name) ? $bankAccount->branch_name : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Branch Name']) !!}
@@ -81,17 +81,15 @@ Form::open(
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod">Status</label> <span class="mandatory">*</span><br>
-                
+                <label for="is_active">Status</label><br>
                 {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($bankAccount->is_active) ? $bankAccount->is_active : null,['class'=>'form-control form-control-sm']) !!}
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod">Upload</label>  <span class="mandatory">*</span><br>
-               
-                 <input type="file" {{isset($bankAccount->bank_account_id) ?  null : 'required' }} class="form-control" id="customFile" name="doc_file">
+                <span style="background-color:yellow">Do you want to set this bank account as by default for all transactions?</span>
+                <span style="margin-left:10px"></span><input type='checkbox' name='by_default' id='by_name' {{ ($bankAccount['is_default']) == 1 ? 'checked' : '' }} value='1'>
             </div>
         </div>
     </div>
@@ -124,11 +122,8 @@ try {
 @endif
 
 <script>
-    
-   
-
+    $('#confim_acc_no').val($('#account_no').val());
     $(function () {
-        
         $("form[name='bank_account']").validate({
             rules: {
                 'acc_name': {
@@ -138,11 +133,12 @@ try {
                 'acc_no': {
                     required: true,
                     number: true,
+                    maxlength: 15,
                 },
                 'confim_acc_no': {
                     required: true,
-                    equalTo: "#acc_no"
-                    
+                    equalTo: "#account_no",
+                    maxlength: 15,
                 },
                 
                 'bank_id': {
@@ -162,7 +158,6 @@ try {
                     required: true,
 
                 },
-               
             },
             messages: {
                 confim_acc_no:{

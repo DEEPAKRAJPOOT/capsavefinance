@@ -257,6 +257,18 @@ class AppDocumentFile extends BaseModel
     {
         return $this->hasOne('App\Inv\Repositories\Models\RcuDocument', 'doc_id', 'app_doc_file_id')->where('app_id', $appId);
     }
+
+    public static function getReviewerSummaryPreDocs($appId, $docIdArray)
+    {
+        $outQry = self::select('file.file_id','file.file_path')
+                ->join('file', 'file.file_id', '=', 'app_doc_file.file_id')                
+                ->where('app_doc_file.app_id', $appId)
+                ->where('app_doc_file.is_upload', 1)
+                ->whereIn('app_doc_file.doc_id', $docIdArray)
+                ->where('file.is_active', 1)
+                ->get();   
+        return  ($outQry->count() > 0) ? $outQry->toArray() : false;   
+    }
 }
   
 

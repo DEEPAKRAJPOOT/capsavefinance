@@ -25,18 +25,18 @@
                   <tr role="row">
                      <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Group</th>
                      <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Borrower</th>
-                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit (₹ Mn)</th>
-                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure (₹ Mn)</th>
-                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure (₹ Mn)</th>
+                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit (Mn)</th>
+                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure (Mn)</th>
+                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure (Mn)</th>
                   </tr>
                </thead>
                <tbody>
                   <tr role="row" class="odd">
-                     <td class="">{{$arrCamData->group_company}}</td>
-                     <td class="">{{$arrBizData->biz_entity_name}}</td>
-                     <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
-                     <td class=""><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:4px -9px;  "></span>{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</td>
-                     <td class="">{!! $arrCamData->total_exposure ? \Helpers::formatCurreny($arrCamData->total_exposure) : '' !!}</td>
+                    <td class="">{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
+                     <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
+                     <td class="">{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
+                     <td class="">{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</td>
+                     <td class="">{{ isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : '' }}</td>
                   </tr>
                </tbody>
             </table>
@@ -54,7 +54,7 @@
                      <td class="">Lease</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class="">Limit (₹ In Mn)</td>
+                     <td class="">Limit (In Mn)</td>
                      <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
                            </td>
                      
@@ -73,20 +73,68 @@
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Rental Frequency</td>
-                     <td class="">{{isset($leaseOfferData->rental_frequency) ? $leaseOfferData->rental_frequency : ''}}</td>
+                     <td class="">{{isset($leaseOfferData->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOfferData->rental_frequency] : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">PTPQ</td>
-                     <td class="">Rs. 32 per quarter for first 8 quarters and Rs. 92 for balance 12 quarters</td>
+                     <td class="">
+                        @php 
+                           $i = 1;
+                           if(!empty($leaseOfferData->offerPtpq)){
+                           $total = count($leaseOfferData->offerPtpq);
+                        @endphp   
+
+                           @foreach($leaseOfferData->offerPtpq as $key => $arr) 
+
+                                 @if ($i > 1 && $i < $total)
+                                  ,
+                                 @elseif ($i > 1 && $i == $total)
+                                    and
+                                 @endif
+                                 Rs. {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOfferData->rental_frequency]}}
+
+                                  @php 
+                                    $i++;
+                                  @endphp     
+                           @endforeach
+                           @php 
+                             }
+                            @endphp 
+
+                     </td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="" valign="top">XIRR</td>
                      <td class="" valign="top">Ruby Sheet : {{isset($leaseOfferData->ruby_sheet_xirr) ? $leaseOfferData->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOfferData->cash_flow_xirr) ? $leaseOfferData->cash_flow_xirr : ''}}%
                      </td>
                   </tr>
+                 
                   <tr role="row" class="odd">
                      <td class="">Additional Security</td>
-                     <td class="">{{isset($leaseOfferData->addl_security) ? $leaseOfferData->addl_security : ''}}
+                     <td class="">
+                           <div class="form-check" style="display: inline-block; margin-right:10px;">
+                             <label class="form-check-label">
+                             <input type="checkbox" class="form-check-input"  value="1" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '1') !== false) ? 'checked' : ''}} >BG
+                             <i class="input-helper"></i></label>
+                           </div>
+                           <div class="form-check" style="display: inline-block;">
+                             <label class="form-check-label">
+                             <input type="checkbox" class="form-check-input"   value="2" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '2') !== false) ? 'checked' : ''}}>FD
+                             <i class="input-helper"></i></label>
+                          </div>
+                          <div class="form-check" style="display: inline-block;">
+                             <label class="form-check-label">
+                             <input type="checkbox" class="form-check-input"   value="MF" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '3') !== false) ? 'checked' : ''}}>MF
+                             <i class="input-helper"></i></label>
+                          </div>
+                          <div class="form-check" style="display: inline-block;">
+                             <label class="form-check-label">
+                             <input type="checkbox" class="form-check-input" id="othersCheckbox" name="t_o_f_security_check[]"  value="4" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '4') !== false) ? 'checked' : ''}}>Others
+                             <i class="input-helper"></i></label>
+                          </div>
+                          <textarea class="form-control col-sm-6" style="display: {{isset($leaseOfferData->comment) && (strpos($leaseOfferData->addl_security, '4') !== false) ? '' : 'none'}} " >{{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}</textarea>
+
+                        <!--  <input type="text" id="securityComment" class="form-control" value="{{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}" style="display: {{isset($leaseOfferData->comment) && (strpos($leaseOfferData->addl_security, '4') !== false) ? '' : 'none'}} " /> -->
                      </td>
                   </tr>
                </tbody>
@@ -196,20 +244,43 @@
                      <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Recommended By</th>
                      <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="3" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="75%">Investment Committee Members</th>
                   </tr>
-                  <tr role="row">
-                     <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%" style="background:#62b59b;">Dhriti Barman</th>
-                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;">Vivek Tolat/Sharon Coorlawala</th>
-                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;">Jinesh Kumar Jain</th>
-                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;">Praveen Chauhan</th>
-                  </tr>
+                 
+                   
                </thead>
                <tbody>
-                  <tr role="row" class="odd">
-                     <td align="center">Text</td>
-                     <td align="center">Text</td>
-                     <td align="center">Text</td>
-                     <td align="center">Text</td>
+                    <tr role="row" >
+                        <td align="center" rowspan="">
+                          <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                                  @php 
+                                    $i=0;
+                                 @endphp
+                                 @while(!empty($arrCM[$i])) 
+                                    <tr>
+                                        <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;border-right: 2px solid #fff;">{{$arrCM[$i]->assignee}}</th>
+                                        @php $i++; @endphp
+                                   </tr>
+                               @endwhile
+                           </table> 
+                        </td>
+                     <td align="center" colspan="3">
+                        <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                              @php 
+                                 $i=0;
+                              @endphp
+                              @while(!empty($arrApproverData[$i])) 
+                                 <tr>
+                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;border-right: 2px solid #fff;">{{$arrApproverData[$i]->approver}}</th>
+                                     @php $i++; @endphp
+                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;border-right: 2px solid #fff;">{{$arrApproverData[$i]->approver}}</th>
+                                      @php $i++; @endphp
+                                </tr>
+                            @endwhile
+                        </table>
+                     </td>
                   </tr>
+
+
+
                </tbody>
             </table>
             <h5 class="mt-4">Minimum Acceptance Criteria as per NBFC Credit Policy:</h5>
@@ -395,7 +466,7 @@
                </tbody>
             </table>
             <h5 class="mt-4">Approval criteria for IC:</h5>
-            <table id="invoice_history" class="table   table-striped no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+            <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr>
                      <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Sr. No.</th>
@@ -448,7 +519,7 @@
             <h5 class="mt-4">Purpose of Rental Facility</h5>
             <p>{{isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : ''}}</p>
             <h5 class="mt-4"> About the Company</h5>
-            <p>{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}} </p>
+            <p>{!! isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : '' !!} </p>
             
 
 
@@ -501,7 +572,7 @@
             <p>{{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</p>
 
             <h5>Rating rationale of {{$arrBizData->biz_entity_name}} :</h5>
-            <p> {{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}} </p>
+            <p> {!! isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : '' !!} </p>
            
 
 
@@ -566,9 +637,9 @@
 
             <h5 class="mt-4">Notes:</h5>
             <ul class="pl-3">
-               <li><i class="fa fa-check" aria-hidden="true"></i> Cash profit = PAT + Depreciation + Non-operating non-cash outflow items – Provisions</li>
-               <li><i class="fa fa-check" aria-hidden="true"></i> Total Outside liabilities = Current Liabilities + Term Liabilities</li>
-               <li><i class="fa fa-check" aria-hidden="true"></i> Net Worth = Share Capital + Reserves – Revaluation reserve</li>
+               <li>&#x2714; Cash profit = PAT + Depreciation + Non-operating non-cash outflow items – Provisions</li>
+               <li>&#x2714; Total Outside liabilities = Current Liabilities + Term Liabilities</li>
+               <li>&#x2714; Net Worth = Share Capital + Reserves – Revaluation reserve</li>
             </ul>
 
 
@@ -576,35 +647,19 @@
 
             <h5 class="mt-4">Financial Comment:</h5>
            
-           
+           <p>{!! isset($finacialDetails->debt_cmnt) ? $finacialDetails->debt_cmnt : '' !!}</p>
             
-            
-            
-            <h5 class="mt-4">Debt Position as on March 31, 2019:</h5>
-            <table class="table table-bordered overview-table">
-               <thead>
-                  <tr>
-                     <th width="50%">Particulars</th>
-                     <th width="50%">Rs in Mn</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <tr>
-                     <td>Long term borrowings*</td>
-                     <td>4552.10</td>
-                  </tr>
-                  <tr>
-                     <td>Short term borrowings</td>
-                     <td>1538.80</td>
-                  </tr>
-               </tbody>
-            </table>
-            <p>*Includes long term ECB loan from Pref Shareholders (Kiran Pallavi Investments LLC) of Rs. 2343.70 Mn</p>
-           
+          
+
+
+           <h5 class="mt-4">Debt Position as on {{isset($arrBankDetails->debt_on) ? \Carbon\Carbon::createFromFormat('d/m/Y', $arrBankDetails->debt_on)->format('j F, Y') : ''}}:</h5>
+            <p>{!! isset($arrBankDetails->debt_position_comments) ? $arrBankDetails->debt_position_comments: '' !!}</p>
 
            
-            <h5 class="mt-4">Contingent Liabilities and Auditors Observations as on March 31, 2019:</h5>
-            <p>Nil as on March 31, 2019.</p>
+
+
+            <h5 class="mt-4">Contingent Liabilities and Auditors Observations as on {{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('j F, Y') : ''}}:</h5>
+            <p>{!! isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations: '' !!}</p>
             <h5 class="mt-4">Risk Comments:</h5>
             <h5 class="mt-2"><small>Deal Positives:</small></h5>
             <table class="table table-bordered overview-table">
@@ -664,24 +719,24 @@
  
  </div>
 </div>
+<div class="isloader" style="display:none;">  
+        <img src="http://admin.rent.local/backend/assets/images/loader.gif">
+    </div>
 @endsection
 @section('jscript')
-
-
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" ></script>
-
-
 
 <script>
 
 function downloadCam(){
-    var pdf = new jsPDF('px', 'pt', [1150, 1500]);
-    pdf.html(document.getElementById('camReport'), {
+    var pdf = new jsPDF('px', 'pt', [1180, 1200]);
+    var  res = pdf.html(document.getElementById('camReport'), {
         callback: function (pdf) {
             pdf.save('camReport');
         }
     });
+    
 }
 
 
