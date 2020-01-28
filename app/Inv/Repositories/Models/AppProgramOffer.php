@@ -65,9 +65,9 @@ class AppProgramOffer extends BaseModel {
         'security_deposit_of',
         'rental_frequency',
         'rental_frequency_type',
-        'ptpq_from',
-        'ptpq_to',
-        'ptpq_rate',
+        //'ptpq_from',
+        //'ptpq_to',
+        //'ptpq_rate',
         'ruby_sheet_xirr',
         'cash_flow_xirr',
         'addl_security',
@@ -260,7 +260,6 @@ class AppProgramOffer extends BaseModel {
             if($prgmOffer){
                 $prgmOffer->update(['is_active'=>0]);
             }
-
             AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
             return AppProgramOffer::create($data);
         }
@@ -309,6 +308,10 @@ class AppProgramOffer extends BaseModel {
         }else{
             return false;
         }
-
     }
+
+    public function offerPtpq(){
+        return $this->hasMany('App\Inv\Repositories\Models\OfferPTPQ', 'prgm_offer_id', 'prgm_offer_id');
+    }
+    
 }

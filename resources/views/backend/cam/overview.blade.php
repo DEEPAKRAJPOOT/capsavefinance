@@ -126,13 +126,13 @@
                                 </div> 
                             </td>
                             <td width="25%"><b>Existing Group Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" maxlength="20" name="existing_exposure" value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format calTotalExposure" maxlength="20" name="existing_exposure"  value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
                         </tr>
                         <tr>
                             <td width="25%"><b>Proposed Group Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format" value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
                             <td width="25%"><b>Total Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" ></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" ></td>
                         </tr>
                     </tbody>
                 </table>
@@ -232,7 +232,7 @@
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
+                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{ isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
 
                         <div class="clearfix"></div>
                     </div>
@@ -244,10 +244,10 @@
                         <div class="form-group row">
                          <label for="debt_on" class="col-sm-2 col-form-label">Date As On</label>
                          <div class="col-sm-4">
-                           <input type="text" class="form-control" value="{{isset($arrCamData->debt_on) ? $arrCamData->debt_on : ''}}" name="debt_on" id="debt_on" placeholder="Select Date">
+                           <input type="text" class="form-control" value="{{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('d/m/Y') : '' }}" name="debt_on" id="debt_on" placeholder="Select Date">
                          </div>
                        </div>
-                        <textarea class="form-control" id="contigent_observations" rows="3" spellcheck="false" name="cm_comment">{{isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations : ''}}</textarea>
+                        <textarea class="form-control" id="contigent_observations" rows="3" spellcheck="false" name="contigent_observations">{{isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations : ''}}</textarea>
 
                         <div class="clearfix"></div>
                     </div>
@@ -316,8 +316,6 @@
     }
 
     var path = "{{ route('get_group_company') }}";
-
-
     
     $('input.group-company').typeahead({
         source:  function (query, process) {
@@ -327,5 +325,16 @@
         },
         minLength: '3'
     });
+
+    $('input.calTotalExposure').on('change', function(){
+        var existing =  parseInt($("input[name='existing_exposure']").val().replace(/,/g, '')); 
+        var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, '')); 
+
+        existing = (!isNaN(existing))?existing:0;
+        proposed = (!isNaN(proposed))?proposed:0;
+        $("input[name='total_exposure']").val(proposed+existing);
+        $("input[name='total_exposure']").addClass('number_format');
+    })
+    
 </script>
 @endsection

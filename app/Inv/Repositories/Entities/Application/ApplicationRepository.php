@@ -1205,68 +1205,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppProgramOffer::changeOfferApprove($appId);
     }
 
-    public function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
-        $offerWhereCond = [];
-        
-        if ($offerId) {
-            $offerWhereCond['prgm_offer_id'] = $offerId;
-        } else {
-            $offerWhereCond['app_id'] = $appId;   
-            $offerWhereCond['is_active'] = 1; 
-        }
-       
-        $offerData = self::getOfferData($offerWhereCond);
-        $sanctionData = self::getOfferSanction($offerData->prgm_offer_id);
-        $businessData = self::getApplicationById($bizId); 
-        $businessAddress = $businessData->address->where('address_type','2')->first();
-        $cam =  Cam::select('contact_person')->where('biz_id',$bizId)->where('app_id',$appId)->first();
-        
-        $programLimitData = self::getLimit($offerData->app_prgm_limit_id);
-        $ptpqrData = OfferPTPQ::getOfferPTPQR($offerData->prgm_offer_id);
-        $equipmentData = null;
-        if($offerData->equipment_type_id){
-            $equipmentData = Equipment::find($offerData->equipment_type_id);
-        }
-
-        $security_deposit_of = ''; 
-        switch ($offerData->security_deposit_of) {
-            case(4): $security_deposit_of = 'Sanction'; break;
-            case(3): $security_deposit_of = 'Asset Base Value'; break;
-            case(2): $security_deposit_of = 'Asset value'; break;
-            case(1): $security_deposit_of = 'Loan Amount'; break;
-        }
-
-        $data = [
-            'product_id' => $programLimitData->product_id,
-            'biz_entity_name' => $businessData->biz_entity_name,
-            'security_deposit_of' => $security_deposit_of,
-            'appId' => $appId,
-            'bizId' => $bizId,
-            'offerId' => $offerData->prgm_offer_id,
-            'offerData' => $offerData,
-            'equipmentData' =>$equipmentData,
-            'ptpqrData' => $ptpqrData,
-            'businessAddress' => $businessAddress
-        ];
-        
-        $data['contact_person'] = ($cam)?$cam->contact_person:'';
-        $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
-        $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
-        $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
-        $data['payment_type'] = ($sanctionData)?$sanctionData->payment_type:'';
-        $data['payment_type_other'] = ($sanctionData)?$sanctionData->payment_type_other:'';
-        $data['delay_pymt_chrg'] = ($sanctionData)?$sanctionData->delay_pymt_chrg:'';
-        $data['insurance'] = ($sanctionData)?$sanctionData->insurance:'';
-        $data['bank_chrg'] = ($sanctionData)?$sanctionData->bank_chrg:'';
-        $data['legal_cost'] = ($sanctionData)?$sanctionData->legal_cost:'';
-        $data['po'] = ($sanctionData)?$sanctionData->po:'';
-        $data['pdp'] = ($sanctionData)?$sanctionData->pdp:'';
-        $data['disburs_guide'] = ($sanctionData)?$sanctionData->disburs_guide:'';
-        $data['other_cond'] = ($sanctionData)?$sanctionData->other_cond:'';
-        $data['covenants'] = ($sanctionData)?$sanctionData->covenants:'';
-        $data['sanctionData'] = ($sanctionData)?$sanctionData:'';
-
-        return $data;
+    public function getOfferPTPQR($offerId){
+        return OfferPTPQ::getOfferPTPQR($offerId);
     }
 
     public function addOfferPTPQ($data){
@@ -1275,5 +1215,29 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function getEquipmentList(){
         return Equipment::getEquipmentList();
+    }
+
+    
+    /**
+     * get Bank account by Company ID 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getBankAccountDataByCompanyId($bank_acc_id,$comp_id)
+    {
+        return UserBankAccount::getBankAccountDataByCompanyId($bank_acc_id,$comp_id);
+    }
+
+
+    /**
+     * Get Approval 
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */    
+    public function getAppApproversDetails($app_id)
+    {
+        return AppApprover::getAppApproversDetails($app_id);
     }
 }

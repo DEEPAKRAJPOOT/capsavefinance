@@ -4,7 +4,12 @@
 @include('layouts.backend.partials.admin-subnav')
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
-   <div class="inner-container">
+   <div class="inner-container mt-4">
+      <div class="row">
+         <div class="col-md-12">
+            <a href="{{route('mail_reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}"><button type="" class="btn btn-success btn-sm float-right">Send Mail</button></a>                 
+         </div>
+      </div>
       <!--Start-->
       <form method="post" action="{{ route('save_reviewer_summary') }}">
       @csrf
@@ -34,7 +39,7 @@
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Limit (₹ In Mn)</td>
-                                 <td class="">₹ {{isset($limitOfferData->limit_amt) ? $limitOfferData->limit_amt : ''}}</td>
+                                 <td class="">{{isset($limitOfferData->limit_amt) ? '₹ '.$limitOfferData->limit_amt : ''}}</td>
                            </tr>
                            <tr role="row" class="odd">
                                  <td class="">Tenor (Months)</td>
@@ -63,7 +68,7 @@
                            <tr role="row" class="odd">
                                  <td class="">PTPQ</td>
                                  <td class="">
-                                 @if(count($offerPTPQ)>0)   
+                                 @if(isset($offerPTPQ) && $offerPTPQ && count($offerPTPQ)>0)   
                                     @foreach ($offerPTPQ as $ok => $ov)
                                        {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
                                        {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
@@ -76,8 +81,8 @@
                            <tr role="row" class="odd">
                                  <td class="" valign="top">XIRR</td>
                                  <td class="" valign="top">
-                                    Ruby Sheet : {{isset($limitOfferData->ruby_sheet_xirr) ? $limitOfferData->ruby_sheet_xirr : ''}}%
-                                    <br/>Cash Flow : {{isset($limitOfferData->cash_flow_xirr) ? $limitOfferData->cash_flow_xirr : ''}}%
+                                    Ruby Sheet : {{isset($limitOfferData->ruby_sheet_xirr) ? $limitOfferData->ruby_sheet_xirr.'%' : ''}}
+                                    <br/>Cash Flow : {{isset($limitOfferData->cash_flow_xirr) ? $limitOfferData->cash_flow_xirr.'%' : ''}}
                                  </td>
                            </tr>
                            <tr role="row" class="odd">
@@ -91,7 +96,7 @@
                                        $addSecArr = explode(',',$limitOfferData->addl_security)
                                     @endphp                                     
                                  @endif   
-                                 @if(count($addSecArr)>0)   
+                                 @if(isset($addSecArr) && count($addSecArr)>0)   
                                     @foreach ($addSecArr as $k => $v)
                                        {{ config('common.addl_security.'.$v).", " }}
                                        @if($v==4)
