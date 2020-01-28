@@ -1016,6 +1016,7 @@ var iframe_ids = [
     'editAddressFrame',
     'addStateFrame',
     'editStatesFrame',
+    'addCompaniesFrame',
 ];
 iframe_ids.forEach(function(id) {
     $("#" + id).on('show.bs.modal', function (e) {

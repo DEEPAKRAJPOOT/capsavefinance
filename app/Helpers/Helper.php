@@ -22,6 +22,7 @@ use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\LeadAssign;
+use App\Inv\Repositories\Models\UserBankAccount;
 
 class Helper extends PaypalHelper
 {
@@ -954,6 +955,15 @@ class Helper extends PaypalHelper
         return Equipment::getEquipmentTypeById($id);                      
     }
 
+    
+    public static function getBankAccListByCompId($id)
+    {
+//        dd($id);
+       $bank_acc = UserBankAccount::getAllCompanyBankAcc($id);
+        
+        return  $bank_acc;
+    }  
+
     /**
      * Get User detail by user_id
      *      
@@ -964,4 +974,5 @@ class Helper extends PaypalHelper
         $user =  User::findOrFail($user_id);
         return ucwords($user->f_name.' '. $user->l_name);                    
     }
+
 }

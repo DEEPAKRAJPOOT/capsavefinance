@@ -303,5 +303,22 @@
            </div>
         </li>
         @endif
+        
+        @if($roleData[0]->is_superadmin == 1)
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-th-large" aria-hidden="true"></i>
+                <span class="menu-title">Company Setting</span>
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_companies_list') }}">Manage Companies</a>
+                    </li>                                   
+                </ul>
+            </div>
+        </li>
+        @endif
     </ul>
 </nav>
