@@ -166,7 +166,100 @@
 										</div>
 									</div>
 								</div>
+
 								<div class="row">
+									<div class="col-md-12" >
+										<div class="form-group">
+											<label for="txtSupplierName">Product Type
+											</label><br/>
+											<div id="check_block">
+											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input  {{ (old('product_id.1.checkbox') == '1')? 'checked': ''}} class="product-type" type="checkbox" value="1" name="product_id[1][checkbox]"> Supply Chain</label>
+											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.2.checkbox') == '2')? 'checked': ''}} class="product-type" type="checkbox" value="2" name="product_id[2][checkbox]"> Term Loan</label>
+											<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.3.checkbox') == '3')? 'checked': ''}} class="product-type" type="checkbox" value="3" name="product_id[3][checkbox]"> Leasing</label>
+											</div>
+											@error('product_id')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+								</div>
+								<div class="row {{ (old('product_id.1.checkbox') == '1')? '': 'hide'}}" id="product-type-1">
+									<div class="col-md-4">Supply Chain</div>
+									<div class="col-md-4">
+										<div class="form-group INR">
+											<label for="txtCreditPeriod">Applied Loan Amount
+												<span class="mandatory">*</span>
+											</label>
+											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											<input type="text" name="product_id[1][loan_amount]" value="{{old('product_id.1.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19">
+											@error('product_id.1.loan_amount')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-group">
+											<label for="txtSupplierName">Tranche Tenor (Days)
+											</label>
+											<input type="text" name="product_id[1][tenor_days]" value="{{old('product_id.1.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
+											@error('product_id.1.tenor_days')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+								</div>
+								<div class="row {{ (old('product_id.2.checkbox') == '2')? '': 'hide'}}" id="product-type-2">
+									<div class="col-md-4">Term Loan</div>
+									<div class="col-md-4">
+										<div class="form-group INR">
+											<label for="txtCreditPeriod">Applied Loan Amount
+												<span class="mandatory">*</span>
+											</label>
+											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											<input type="text" name="product_id[2][loan_amount]" value="{{old('product_id.2.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19">
+											@error('product_id.2.loan_amount')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-group">
+											<label for="txtSupplierName">Tranche Tenor (Days)
+											</label>
+											<input type="text" name="product_id.2.tenor_days" value="{{old('product_id.2.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
+											@error('product_id.2.tenor_days')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+								</div>
+								<div class="row {{ (old('product_id.3.checkbox') == '3')? '': 'hide'}}" id="product-type-3">
+									<div class="col-md-4">Leasing</div>
+									<div class="col-md-4">
+										<div class="form-group INR">
+											<label for="txtCreditPeriod">Applied Loan Amount
+												<span class="mandatory">*</span>
+											</label>
+											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											<input type="text" name="product_id[3][loan_amount]" value="{{old('product_id.3.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19">
+											@error('product_id.3.loan_amount')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-group">
+											<label for="txtSupplierName">Tranche Tenor (Days)
+											</label>
+											<input type="text" name="product_id[3][tenor_days]" value="{{old('product_id.3.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
+											@error('product_id.3.tenor_days')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+								</div>
+
+								{{-- <div class="row">
 									<div class="col-md-4">
 										<div class="form-group INR">
 											<label for="txtCreditPeriod">Applied Loan Amount
@@ -205,7 +298,7 @@
 								            @enderror
 										</div>
 									</div>
-								</div>
+								</div> --}}
 							</div>
 						</div>
 
@@ -514,6 +607,21 @@ var messages = {
 	data_not_found: "{{ trans('error_messages.data_not_found') }}",
 	token: "{{ csrf_token() }}"
 };
+
+$(document).ready(function () {
+	$(".product-type"). click(function(){
+		var productType = $(this).val();
+		var isChecked  = $(this).prop("checked");
+
+		if(isChecked){
+			$("#product-type-"+productType).removeClass('hide');
+		}else{
+			$("#product-type-"+productType).addClass('hide');
+			$("input[name='product_id["+productType+"][loan_amount]']").val('');
+			$("input[name='product_id["+productType+"][tenor_days]']").val('');
+		}
+	});
+});
 </script>
 <!-- <script src="{{url('common/js/business_information.js?v=1')}}"></script> -->
 <script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
