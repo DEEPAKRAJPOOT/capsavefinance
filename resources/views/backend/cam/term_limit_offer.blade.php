@@ -62,7 +62,7 @@
 
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtPassword"><b>Deposit Amount</b></label> 
+                <label for="txtPassword"><b>Deposit <span id="sdt">Amount</span></b></label> 
                 <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Deposit Amount" maxlength="5">
             </div>
         </div>
@@ -367,7 +367,21 @@
             $('input[name=comment]').css('display', 'none');
             $('input[name=comment]').val('');
         }
-    })
+    });
+
+    $('input[name=security_deposit_type]').on('change', function(){
+        let sdt = $('input[name=security_deposit_type]:checked').val();
+        if(sdt == 1){
+            $('#sdt').text('Amount');
+            $('input[name=security_deposit]').val('');
+            $('input[name=security_deposit]').attr('Placeholder', 'Deposit Amount');
+        }else{
+            $('#sdt').text('Percent');
+            $('input[name=security_deposit]').val('');
+            $('input[name=security_deposit]').attr('Placeholder', 'Deposit Percent');
+        }
+    });
+
   })
 
   $(document).on('click', '.add-ptpq-block', function(){
