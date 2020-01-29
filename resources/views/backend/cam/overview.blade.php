@@ -93,7 +93,7 @@
                             <td>{{$arrBizData->prgm_name}}</td>
                             <td><b>External Rating ( If any )</b></td>
                             <td style="text-align: center;">
-                                <fieldset class="rating" id="goof" name="goof">
+                                {{-- <fieldset class="rating" id="goof" name="goof">
                                     <input type="radio" id="star5" name="rating_no" value="5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 5 ? 'checked' : ''}}>
                                     <label class="full" for="star5" title="Awesome - 5 stars"></label>
                                     <input type="radio" id="star4half" name="rating_no" value="4.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 4.5 ? 'checked' : ''}}>
@@ -114,7 +114,7 @@
                                     <label class="full" for="star1" title="Sucks big time - 1 star"></label>
                                     <input type="radio" id="starhalf" name="rating_no" value=".5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == .5 ? 'checked' : ''}}>
                                     <label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
-                                </fieldset>
+                                </fieldset> --}}
                                 <textarea class="form-control" id="external_rating_comments" rows="2" name="rating_comment"> {{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</textarea>
                             </td>
                         </tr>
