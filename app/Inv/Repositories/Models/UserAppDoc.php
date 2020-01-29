@@ -28,6 +28,7 @@ class UserAppDoc extends BaseModel
      */
     protected $fillable = [
         'user_id',
+        'app_id',
         'file_id',
         'product_id',
         'file_type',

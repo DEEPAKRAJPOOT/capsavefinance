@@ -6,6 +6,11 @@
  
 <div class="inner-container">
     <div class="card mt-3">
+         <div class="card-body pt-3 pb-3">
+            <a href="{{route('cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'is_pdf_generate' => '1'])}}">
+               <button type="button" class="btn btn-primary float-right btn-sm" > Generate Cam Report</button>
+            </a>
+         </div>
         <div class="card-body pt-3 pb-3">
             <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm " > Download Report</button>
         </div>

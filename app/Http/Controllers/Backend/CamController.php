@@ -36,7 +36,8 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use Carbon\Carbon;
 use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\AppApprover;
-
+use App\Libraries\Pdf;
+use App\Inv\Repositories\Models\UserAppDoc;
 
 class CamController extends Controller
 {
@@ -44,10 +45,12 @@ class CamController extends Controller
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo){
+    protected $pdf;
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
+        $this->pdf = $pdf;
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
     }
@@ -1701,6 +1704,7 @@ class CamController extends Controller
       try{
             $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
             $arrRequest['app_id'] = $appId = $request->get('app_id');
+            $is_pdf_generate = $request->get('is_pdf_generate');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
             $arrStaticData = array();
             $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quaterly','4'=>'Monthly');
@@ -1749,7 +1753,36 @@ class CamController extends Controller
                 }
 
                 //dd($arrOwnerData['0']['first_name']);
-                return view('backend.cam.downloadCamReport')
+                
+                if(isset($is_pdf_generate) && ($is_pdf_generate == '1')) {                    
+                    $htmlContent = view('backend.cam.downloadCamReportPdf')
+                                ->with([
+                                 'arrCamData' =>$arrCamData ,
+                                 'arrBizData' => $arrBizData, 
+                                 'reviewerSummaryData' => $reviewerSummaryData,
+                                 'arrHygieneData' => $arrHygieneData,
+                                 'finacialDetails' => $finacialDetails,
+                                 'arrOwnerData' => $arrOwnerData,
+                                 'arrEntityData' => $arrEntityData,
+                                 'financeData' => $financeData,
+                                 'FinanceColumns' => $FinanceColumns,
+                                 'audited_years' => $audited_years,
+                                 'leaseOfferData' => $leaseOfferData,
+                                 'arrBankDetails' => $arrBankDetails,
+                                 'arrApproverData' => $arrApproverData,
+                                 'arrCM' => $arrCM,
+                                 'arrStaticData' => $arrStaticData,                   
+                               ])->render();
+                    $pdfContent = $this->pdf->render($htmlContent);
+                    self::generateCamPdf($appId, $bizId, $pdfContent);
+                    Session::flash('message',trans('Pdf generated successfully.'));        
+                    return redirect()->route('cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
+      
+                    //$x= storage_path("anyname.pdf");
+                    //file_put_contents($x, $pdfContent);
+                    dd($pdfContent);
+                } else {
+                  return view('backend.cam.downloadCamReport')
                         ->with([
                                  'arrCamData' =>$arrCamData ,
                                  'arrBizData' => $arrBizData, 
@@ -1768,12 +1801,30 @@ class CamController extends Controller
                                  'arrStaticData' => $arrStaticData,
                    
                                ]);
+                }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
 
     }
 
+    private function generateCamPdf($appId, $bizId, $pdfContent) {
+      $uploadData = Helpers::generateCamPdf($appId, $bizId, $pdfContent);
+      $docFile = $this->docRepo->saveFile($uploadData);
+      if(!empty($docFile->file_id)) {
+          UserAppDoc::where('app_id', '=', $appId)
+          ->where('file_type', '=', 2)        
+          ->update(['is_active' => '0']);
+
+          UserAppDoc::create(array(
+              'app_id' => $appId,
+              'file_id' => $docFile->file_id,
+              'file_type' => 2,
+              'created_by' => \Auth::user()->user_id,
+              'updated_by' => \Auth::user()->user_id
+          ));
+      }
+    } 
 
     public function saveBankDetail(Request $request) {
       try {
