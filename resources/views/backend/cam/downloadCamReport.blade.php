@@ -216,7 +216,7 @@
                   </tr>
                   <tr role="row" class="odd">
                       <td class="">
-                         <p> {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}}" </p>
+                         <p> {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}} </p>
                      </td>
                      <td class="">
                          <p> {{isset($reviewerSummaryData->time_dscr) ? $reviewerSummaryData->time_dscr : ''}} </p>
