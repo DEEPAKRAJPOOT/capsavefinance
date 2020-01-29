@@ -103,7 +103,7 @@
 									<label for="txtPassword">Sub Industry
 										<span class="mandatory">*</span>
 									</label>
-									{!! Form::select('entity_type_id', [''=>trans('backend.please_select')], $business_info->entity_type_id, ['class'=>'form-control sub_industry', 'tabindex'=>'5']) !!}
+									{!! Form::select('entity_type_id', [''=>trans('backend.please_select')], $business_info->entity_type_id, ['id'=>'entity_type_id','class'=>'form-control sub_industry', 'tabindex'=>'5']) !!}
 									@error('entity_type_id')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
@@ -509,4 +509,8 @@ var messages = {
 </script>
 <!-- <script src="{{url('common/js/company_details.js?v=1')}}"></script> -->
 <script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
+<script>
+var subind={{$business_info->entity_type_id}};
+handleIndustryChange($("#biz_type_id").val(),subind);
+</script>
 @endsection
