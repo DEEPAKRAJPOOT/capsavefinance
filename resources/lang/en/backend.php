@@ -9,6 +9,7 @@ return [
         'name' => 'Name',
         'email' => 'Email',
         'mobile_no' => 'Mobile',
+        'contact' => 'Contact',
         'anchor' => 'Associate Anchor',
         'user_type' => 'User Type',
         'assignee' => 'Assignee',
