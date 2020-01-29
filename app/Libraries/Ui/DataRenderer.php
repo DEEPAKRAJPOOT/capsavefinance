@@ -172,7 +172,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -195,18 +195,34 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'name',
                     function ($app) {                        
-                        return $app->name ? $app->name : '';
+                        if($app->user_type && $app->user_type==1){
+                            $anchorUserType='<small>( Supplier )</small>'; 
+                        }else if($app->user_type && $app->user_type==2){
+                            $anchorUserType='<small>( Buyer )</small>';
+                        }else{
+                            $anchorUserType='';
+                        }
+                        return $app->name ? $app->name .'<br>'. $anchorUserType : $anchorUserType;
                 })
                 ->addColumn(
-                    'email',
-                    function ($app) {                        
-                        return $app->email ? $app->email : '';
-                })
-                ->addColumn(
-                    'mobile_no',
-                    function ($app) {                        
-                        return $app->mobile_no ? $app->mobile_no : '';
-                })                
+                    'contact',
+                    function ($app) {
+                        $contact = '';
+                        $contact .= $app->email ? '<span><b>Email:&nbsp;</b>'.$app->email.'</span>' : '';
+                        $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
+                        return $contact;
+                    }
+                )
+                // ->addColumn(
+                //     'email',
+                //     function ($app) {                        
+                //         return $app->email ? $app->email : '';
+                // })
+                // ->addColumn(
+                //     'mobile_no',
+                //     function ($app) {                        
+                //         return $app->mobile_no ? $app->mobile_no : '';
+                // })                
                 ->addColumn(
                     'assoc_anchor',
                     function ($app) {
@@ -222,18 +238,18 @@ class DataRenderer implements DataProviderInterface
                     return $achorName;
                     
                 })
-                ->addColumn(
-                    'user_type',
-                    function ($app) {
-                    if($app->user_type && $app->user_type==1){
-                       $anchorUserType='Supplier'; 
-                    }else if($app->user_type && $app->user_type==2){
-                        $anchorUserType='Buyer';
-                    }else{
-                        $anchorUserType='';
-                    }
-                       return $anchorUserType;
-                })                
+                // ->addColumn(
+                //     'user_type',
+                //     function ($app) {
+                //     if($app->user_type && $app->user_type==1){
+                //        $anchorUserType='Supplier'; 
+                //     }else if($app->user_type && $app->user_type==2){
+                //         $anchorUserType='Buyer';
+                //     }else{
+                //         $anchorUserType='';
+                //     }
+                //        return $anchorUserType;
+                // })                
                 ->addColumn(
                     'assignee',
                     function ($app) {  
@@ -1996,7 +2012,7 @@ class DataRenderer implements DataProviderInterface
                                 $productTypes .= $value->product->product_name.', ';
                             }
                         }
-                    return $productTypes;
+                    return rtrim($productTypes, ', ');
                 })
                 ->addColumn(
                     'is_rcu',

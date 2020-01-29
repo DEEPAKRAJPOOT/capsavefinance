@@ -15,7 +15,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Event;
 use App\Http\Requests\Backend\CreateLeadRequest;
-use App\Inv\Repositories\Models\UserDoc;
+use App\Inv\Repositories\Models\UserAppDoc;
 use Illuminate\Support\Facades\Validator;
 
 class LeadController extends Controller {
@@ -364,11 +364,14 @@ class LeadController extends Controller {
         $anchorFile = $this->docRepo->saveFile($uploadData);
         if(!empty($anchorFile->file_id)) {
 
-            UserDoc::where('user_id', '=', $userId)->update(['is_active' => '0']);
+            UserAppDoc::where('user_id', '=', $userId)
+            ->where('file_type', '=', 1)        
+            ->update(['is_active' => '0']);
 
-            UserDoc::create(array(
+            UserAppDoc::create(array(
                 'user_id' => $userId,
                 'file_id' => $anchorFile->file_id,
+                'file_type' => 1,
                 'created_by' => \Auth::user()->user_id,
                 'updated_by' => \Auth::user()->user_id
             ));

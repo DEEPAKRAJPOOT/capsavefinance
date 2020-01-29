@@ -111,7 +111,7 @@ public static function saveAnchor($arrAnchor = [])
     public static function getAllAnchor($orderBy='anchor_id') {
         $result = self::select('anchor.*', 'u.user_id', 'u.f_name','f.file_path')
                 ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id')
-                ->leftjoin('user_doc as u_doc', function($join)
+                ->leftjoin('user_app_doc as u_doc', function($join)
                 {
                     $join->on( 'u.user_id', '=', 'u_doc.user_id')
                     ->where('u_doc.is_active', 1);

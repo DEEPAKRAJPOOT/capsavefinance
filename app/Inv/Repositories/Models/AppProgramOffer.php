@@ -29,14 +29,14 @@ class AppProgramOffer extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = true;
+    public $userstamps = false;
 
     /**
      * The attributes that are mass assignable.

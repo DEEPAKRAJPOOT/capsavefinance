@@ -110,7 +110,7 @@ function getGrowth($curr_year, $prev_year) {
 	);
 }
 
-function getColumns() {
+function getFinancialDetailSummaryColumns() {
 	$fields = array(
 		'performance_analysis_cols' => array(
 			'TotalOperatingIncome' => 'NET SALES (incl. Trading and Other Operating Income)',
@@ -149,7 +149,220 @@ function getColumns() {
 			'RecievableTurnover' => 'RECEIVABLE TURNOVER DAYS (TOTAL , Inc. DEBTORS > 6 MONTHS)',
 		),
 		'fundsFlowAnalysis_cols' => array(
-			'CashAndBankBalances' => 'CASH ADN BANK BALANCE',
+			'CashAndBankBalances' => 'CASH AND BANK BALANCE',
+		),
+	);
+	return $fields;
+}
+
+
+function CalculateGrossSale($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateNetSales($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateIncreaseInNetSales($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateTotalOperatingIncome($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateIncreaseInNetIncome($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateCostofProduction($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateCOPSofGrossIncome($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateCostofSales($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateCostofSalesasPerGrossIncome($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateCostofSalesPlusSGA($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateProfitBeforeInterestTax($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateTotalNonOperatingIncome($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateTotalNonOperatingExpenses($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateNetofNonOperatingIncomeExpenses($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateProfitBeforeInterestDepreciationTax($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateProfitBeforeTaxLoss($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateDefferedTaxes($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateProvisionForTaxesTotal($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculatePATasPerGrossIncome($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateTotalExtraordinaryItems($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateAdjustedPAT($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateRetainedProfit($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateSubTotal($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateInterestOtherFinanceCharge($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateInttFinChargeasPerGrossSale($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateOperatingProfitBeforeTax($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateOPBTasPerGrossIncome($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculatePBITasPerGrossSale($year_array)
+{
+	return "Need To Calculate";
+}
+function CalculateNetProfitLoss($year_array)
+{
+	return "Need To Calculate";
+}
+
+function getProfitandLossColumns(){
+	$fields = array(
+		'income_cols' => array(
+			'GrossDomesticSales' => 'Gross Domestic Sales',
+			'ExportSales' => 'Export Sales',
+			'CalculateGrossSale' => 'Gross Sales',
+			'LessExciseDuty' => 'Less Excise duty',
+			'CalculateNetSales' => 'Net Sales',
+			'CalculateIncreaseInNetSales' => 'Increase in Net Sales (%)',
+			'AddTradingOtherOperatingIncome' => 'ADD: Trading / Other Operating Income',
+			'ExportIncentives' => 'Export Incentives',
+			'DutyDrawback' => 'Duty Drawback',
+			'Others' => 'Others',
+			'CalculateTotalOperatingIncome' => 'Total Operating Income',
+			'CalculateIncreaseInNetIncome' => 'Increase In Net Income (%)',
+		),
+		'costofsales_cols' => array(
+			'RawMaterials' => array('Imported'=>'Imported','Indigenous' => 'Indigenous'),
+			'OtherSpares' => array('Imported'=>'Imported','Indigenous' => 'Indigenous'),
+			'PowerFuel' => 'POWER & FUEL',
+			'DirectLabour' => 'DIRECT LABOUR',
+			'OtherManufacturingExpenses' => 'OTHER MANUFACTURING EXPENSES',
+			'Depreciation' => 'DEPRECIATION',
+			'RepairsMaintenance' => 'REPAIRS & MAINTENANCE',
+			'CostOfTradingGoods' => 'COST OF TRADING GOODS',
+			'CalculateSubTotal' => 'SUB TOTAL',
+			'AddOpeningStockInProcess' => 'ADD: OPENING STOCK IN PROCESS',
+			'DeductClosingStockInProcess' => 'DEDUCT: CLOSING STOCK IN PROCESS',
+			'CalculateCostofProduction' => 'COST OF PRODUCTION:',
+			'CalculateCOPSofGrossIncome' => 'C O P AS % OF GROSS INCOME',
+			'AddOpeningStockOfFinishedGoods' => 'ADD: OPENING STOCK OF FINISHED GOODS',
+			'DeductClosingStockOfFinishedGoods' => 'DEDUCT: CLOSING STOCK OF FINISHED GOODS',
+			'CalculateCostofSales' => 'COST OF SALES:',
+			'CalculateCostofSalesasPerGrossIncome' => 'COST OF SALES AS % OF GROSS INCOME',
+			'SellingGeneralAdmExpenses' => 'SELLING, GENERAL & ADM EXPENSES',
+			'CalculateCostofSalesPlusSGA' => 'Cost of Sales + SGA',
+			'CalculateProfitBeforeInterestTax' => 'PROFIT BEFORE INTEREST & TAX (PBIT)',
+			'CalculatePBITasPerGrossSale' => 'PBIT AS % OF GROSS SALES',
+			'InterestPaymentToBanks' => array('InterestWc'=>'Interest - WC','InterestTermLoans' => 'Interest - Term Loans'),
+			'InterestPaymentToFIs' => array('InterestWc'=>'Interest - WC','InterestTermLoans' => 'Interest - Term Loans'),
+			'BankCharges' => 'Bank Charges',
+			'CalculateInterestOtherFinanceCharge' => 'INTEREST & OTHER FINANCE CHARGES:',
+			'CalculateInttFinChargeasPerGrossSale' => 'INTT. & FIN. CHARGES AS % OF GROSS SALES',
+			'CalculateOperatingProfitBeforeTax' => 'OPERATING PROFIT BEFORE TAX (OPBT)',
+			'CalculateOPBTasPerGrossIncome' => 'OPBT AS % OF GROSS INCOME',
+		),
+		'othernonoperativeincome_cols' => array(
+			'InterestOnDepositsDividendReceived' => 'Interest On Deposits & Dividend Received',
+			'ForexGains' => 'Forex Gains',
+			'NonOperatingIncomeFromSubsidiaries' => ' Non Operating Income from Subsidiaries',
+			'TaxRefund' => ' Tax Refund',
+			'MiscIncome' => 'Misc Income',
+			'ProfitOnSaleOfAssetsInvestments' => 'Profit on sale of assets & Investments',
+			'OtherIncome' => 'Other Income',
+			'ProvisionsExpensesWrittenBack' => 'Provisions / Expenses Written Back',
+			'CalculateTotalNonOperatingIncome' => 'Total Non Operating Income',
+		),
+		'othernonoperatingexp_cols' => array(
+			'LossOnSaleOfInvestments' => 'Loss on sale of Investments',
+			'LossOnSaleOfFa' => 'Loss on sale of FA',
+			'DerivativeLossesBooked' => 'Derivative Losses booked',
+			'NetLossOnForeignCurrencyTranslationAndTransactionsLossDueToFire' => ' Net Loss on Foreign Currency Translation and Transactions',
+			'PreliExpOneTimeExpensesWrittenOff' => 'Preli.Exp / One Time Expenses Written Off',
+			'MiscExpWrittenOff' => 'Misc Exp. Written Off',
+			'ProvForDoubDebtsDimInTheValOfInv' => 'Prov. for doub.debts & Dim.in the val. of Inv.',
+			'WealthTax' => 'Wealth Tax',
+			'CalculateTotalNonOperatingExpenses' => 'TOTAL NON OPERATING EXPENSES',
+			'CalculateNetofNonOperatingIncomeExpenses' => 'NET OF NON OPERATING INCOME/EXPENSES',
+			'CalculateProfitBeforeInterestDepreciationTax' => 'PROFIT BEFORE INTEREST, DEPRECIATION & TAX (PBIDT)',
+			'CalculateProfitBeforeTaxLoss' => 'PROFIT BEFORE TAX / LOSS (PBT)',
+			'TaxPaid' => 'TAX PAID',
+			'ProvisionForTaxesCurrentPeriod' => 'PROVISION FOR TAXES - Current Period',
+			'CalculateDefferedTaxes' => 'Deffered Taxes',
+			'CalculateProvisionForTaxesTotal' => 'PROVISION FOR TAXES - TOTAL',
+			'CalculateNetProfitLoss' => 'NET PROFIT/LOSS (PAT)',
+			'CalculatePATasPerGrossIncome' => 'PAT AS % OF GROSS Income',
+		),
+		'extraordinaryitemadjustments_cols' => array(
+			'ExtraordinaryIncomeAdjustments' => 'Extraordinary Income adjustments (+)',
+			'ExtraordinaryExpensesAdjustments' => 'Extraordinary Expenses adjustments (-)',
+			'CalculateTotalExtraordinaryItems' => 'Total Extraordinary items',
+			'CalculateAdjustedPAT' => 'Adjusted PAT (excl Extraordinary Items)',
+		),
+		'equityDividendPaid_cols' => array(
+			'EquityDividendPaidAmount' => 'AMOUNT',
+			'EquityDividendPaidRate' => 'RATE',
+			'DividendTax' => 'Dividend tax',
+			'DividendPreference' => 'Dividend -Preference',
+			'PartnersWithdrawal' => 'Partners withdrawal',
+			'CalculateRetainedProfit' => 'RETAINED PROFIT',
 		),
 	);
 	return $fields;
@@ -194,147 +407,5 @@ function getTotalFinanceData($fullArray){
 
 	return $response;
 }
-
-
-function getNetSales($ProfitAndLoss) {
-	extract($ProfitAndLoss);
- $TotalOperatingIncome = $GrossDomesticSales + $ExportSales - $LessExciseDuty+ $AddTradingOtherOperatingIncome+ $ExportIncentives+ $DutyDrawback+ $Others;
- return $TotalOperatingIncome; 
-}
-
-function getTotalNonOperatingIncome($ProfitAndLoss) {
-	extract($ProfitAndLoss);
-	$TotalNonOperatingIncome = $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack;
- return $TotalNonOperatingIncome; 
-}
-
-function getPBDITOperatingProfit($ProfitAndLoss) {
-	$TotalOperatingIncome = getNetSales($ProfitAndLoss);
-	extract($ProfitAndLoss);
-	$AddOpeningStockInProcessRawMaterials = $RawMaterials['Imported'] + $RawMaterials['Indigenous'];
-	$OtherSpares = $OtherSpares['Imported'] + $OtherSpares['Indigenous'] ;
-	$PBDITOperatingProfit = $TotalOperatingIncome -($AddOpeningStockInProcessRawMaterials + $OtherSpares + $PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses ) + $Depreciation;
- return $PBDITOperatingProfit; 
-}
-
-function getDepreciation($ProfitAndLoss) {
-	extract($ProfitAndLoss);
- return $Depreciation; 
-}
-
-function  getDeprecationAverageNetFixedAssetsPer($fullArray) {
-	extract($fullArray['ProfitAndLoss']);
-	extract($fullArray['BalanceSheet']['Liabilities']);
-	extract($fullArray['BalanceSheet']['Assets']);
-	$DeprecationAverageNetFixedAssetsPer = ($Depreciation / (($Land+$Building+$Vehicles+$PlantMachinery+$FurnitureFixtures + $OtherFixedAssets + $CapitalWip-$LessAccumulatedDepreciation-$RevaluationReserve)/2))  * 100;
- return $DeprecationAverageNetFixedAssetsPer; 
-}
-
-function  getInterest($ProfitAndLoss) {
-	extract($ProfitAndLoss);
-	$InterestPaymentToBanks = array_sum($InterestPaymentToBanks);
-	$InterestPaymentToFIs = array_sum($InterestPaymentToFIs);
-	$Interest = $InterestPaymentToBanks+$InterestPaymentToFIs+$BankCharges;
- return $Interest; 
-}
-
-function  getInterestNetSalesPer($ProfitAndLoss) {
-	$Interest = getInterest($ProfitAndLoss);
-	$NetSales =  getNetSales($ProfitAndLoss);
-	return ($Interest/$NetSales)*100; 
-}
-
-function  getPbditInterestPer($ProfitAndLoss) {
-	$Interest = getInterest($ProfitAndLoss);
-	$Pbdit =  getPBDITOperatingProfit($ProfitAndLoss);
-	return ($Pbdit/$Interest); 
-}
-
-function  getNetProfit($ProfitAndLoss) {
-	extract($ProfitAndLoss);
-	$TotalOperatingIncome = getNetSales($ProfitAndLoss);
-	$TotalNonOperatingIncome = getTotalNonOperatingIncome($ProfitAndLoss);
-	$Interest = getInterest($ProfitAndLoss);
-	$AddOpeningStockInProcessRawMaterials = $RawMaterials['Imported'] + $RawMaterials['Indigenous'];
-	$OtherSpares = $OtherSpares['Imported'] + $OtherSpares['Indigenous'] ;
-
-	$NetProfit = $TotalOperatingIncome-($AddOpeningStockInProcessRawMaterials+$OtherSpares+$PowerFuel+$DirectLabour+$OtherManufacturingExpenses+$Depreciation+$RepairsMaintenance+$CostOfTradingGoods+0+$AddOpeningStockInProcess-$DeductClosingStockInProcess+$AddOpeningStockOfFinishedGoods-$DeductClosingStockOfFinishedGoods+$SellingGeneralAdmExpenses)-$Interest+$getTotalNonOperatingIncome -($LossOnSaleOfInvestments+$LossOnSaleOfFa+$DerivativeLossesBooked+$NetLossOnForeignCurrencyTranslationAndTransactionsLossDueToFire
-+$PreliExpOneTimeExpensesWrittenOff+$MiscExpWrittenOff+$ProvForDoubDebtsDimInTheValOfInv+$WealthTax)-$TaxPaid-($ProvisionForTaxesCurrentPeriod+$ProvisionForTaxesDefferedTaxes);;
-	return $NetProfit; 
-}
-
-function  getCashProfit($ProfitAndLoss) {
-	extract($ProfitAndLoss);
-	$TotalOperatingIncome = getNetSales($ProfitAndLoss);
-	$AddOpeningStockInProcessRawMaterials = $RawMaterials['Imported'] + $RawMaterials['Indigenous'];
-	$OtherSpares = $OtherSpares['Imported'] + $OtherSpares['Indigenous'] ;
-	$InterestPaymentToBanks = array_sum($InterestPaymentToBanks);
-	$InterestPaymentToFIs = array_sum($InterestPaymentToFIs);
-
-
-	$CashProfit = ($TotalOperatingIncome -($AddOpeningStockInProcessRawMaterials+$OtherSpares+$PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + 
-		$CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + 
-		$AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses)) - ($InterestPaymentToBanks + $InterestPaymentToFIs + $BankCharges) + ( $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack) - ($LossOnSaleOfInvestments+$LossOnSaleOfFa+$DerivativeLossesBooked+$NetLossOnForeignCurrencyTranslationAndTransactionsLossDueToFire+$PreliExpOneTimeExpensesWrittenOff+$MiscExpWrittenOff +$ProvForDoubDebtsDimInTheValOfInv +$WealthTax) - $TaxPaid - ($ProvisionForTaxesCurrentPeriod + $ProvisionForTaxesDefferedTaxes) +$Depreciation - $ProvisionsExpensesWrittenBack;
-
-	return $CashProfit; 
-}
-
-function  getTangibleNetWorth($fullArray) {
-	extract($fullArray['ProfitAndLoss']);
-	extract($fullArray['BalanceSheet']['Liabilities']);
-	extract($fullArray['BalanceSheet']['Assets']);
-	$TangibleNetWorth = ($PartnersCapitalProprietorSCapital+ $ShareCapitalPaidUp + $ShareApplicationFinalizedForAllotment+$StatutoryAndCapitalReserves+ $GeneralReserve+ $RevaluationReserve+ $OtherReservesExcludingProvisions + $SurplusOrDeficitInPLAccount+ $SharePremiumAC + $CapitalSubsidy + $InvestmentAllowanceUtilizationReserve - $RevaluationReserve) - ($AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses + $DeferredTaxAsset);
-
-	return $TangibleNetWorth; 
-}
-
-function  getTolTnw($fullArray) {
-	extract($fullArray['ProfitAndLoss']);
-	extract($fullArray['BalanceSheet']['Liabilities']);
-	extract($fullArray['BalanceSheet']['Assets']);
-	$TangibleNetWorth = getTangibleNetWorth($fullArray);
-	$TolTnw = ($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $SundryCreditorsTrade + $ShortTermBorrowingsFromAssociatesGroupConcerns + $ShortTermBorrowingsCommercialPaper + $ShortTermBorrowingsFromOthers + $AdvancesPaymentsFromCustomersDepositsFromDealers + $ProvisionForTaxation + $ProposedDividend + $OtherStatutoryLiabilitiesDueWithinOneYear + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $OtherCurrentLiabilitiesProvisionsDueWithin1Year + $InterestAccButNotDue + $ProvisionForNpa + $ProvisionForLeaveEncashmentGratuity + $UnclaimedDividend + $OtherLiabilities + $DueToSubsidiaryCompaniesAffiliates + $TaxOnInterimDividendPayable + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)/ $TangibleNetWorth;
-
-	return $TolTnw; 
-}
-
-function  getTolAdjTnwAtnw($fullArray) {
-	extract($fullArray['ProfitAndLoss']);
-	extract($fullArray['BalanceSheet']['Liabilities']);
-	extract($fullArray['BalanceSheet']['Assets']);
-	$TangibleNetWorth = getTangibleNetWorth($fullArray);
-	$TolAdjTnwAtnw = ((($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $SundryCreditorsTrade + $ShortTermBorrowingsFromAssociatesGroupConcerns + $ShortTermBorrowingsCommercialPaper + $ShortTermBorrowingsFromOthers + $AdvancesPaymentsFromCustomersDepositsFromDealers + $ProvisionForTaxation + $ProposedDividend + $OtherStatutoryLiabilitiesDueWithinOneYear + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $OtherCurrentLiabilitiesProvisionsDueWithin1Year + $InterestAccButNotDue + $ProvisionForNpa + $ProvisionForLeaveEncashmentGratuity + $UnclaimedDividend + $OtherLiabilities + $DueToSubsidiaryCompaniesAffiliates + $TaxOnInterimDividendPayable + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)) - $BorrowingsFromSubsidiariesAffiliatesQuasiEquity) / ( $TangibleNetWorth -$InvestmentsInSubsidiaryCompaniesAffiliates + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity);
-
-	return $TolAdjTnwAtnw; 
-}
-
-
-function  getDebtPbdit($fullArray) {
-	extract($fullArray['ProfitAndLoss']);
-	extract($fullArray['BalanceSheet']['Liabilities']);
-	extract($fullArray['BalanceSheet']['Assets']);
-	$Pbdit =  getPBDITOperatingProfit($fullArray['ProfitAndLoss']);
-	$DebtPbdit = ($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $ShortTermBorrowingsCommercialPaper + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)/ $Pbdit;
-
-	return $DebtPbdit; 
-}
-
-function  getRecievableTurnover($fullArray) {
-	extract($fullArray['ProfitAndLoss']);
-	extract($fullArray['BalanceSheet']['Liabilities']);
-	extract($fullArray['BalanceSheet']['Assets']);
-	$RecievableTurnover = (($ReceivablesOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanks+$ExportReceivablesIncludingBillPurchasedAndDiscounted+$RetentionMoneySecurityDeposit+$DebtorsMoreThan6Months) / ($GrossDomesticSales+$ExportSales+$AddTradingOtherOperatingIncome))*365;
-
-	return $RecievableTurnover; 
-}
-
-function getCashAndBankBalances($fullArray){
-	extract($fullArray['BalanceSheet']['Assets']);
-	return $CashAndBankBalances;
-}
-
-
-
-
 
 ?>
