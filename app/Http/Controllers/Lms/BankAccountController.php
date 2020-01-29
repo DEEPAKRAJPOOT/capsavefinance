@@ -51,7 +51,12 @@ class BankAccountController extends Controller {
         try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
-            return view('lms.customer.bank_account_list')->with(['userInfo' => $userInfo]);
+            $bankAccounts = $this->userRepo->getUserBankAccounts($user_id);
+            return view('lms.customer.bank_account_list')
+                    ->with([
+                        'userInfo' => $userInfo,
+                        'bankAccounts' => $bankAccounts
+                        ]);
         } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -87,13 +92,13 @@ class BankAccountController extends Controller {
         try {
             $acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $prepareData = [
+                'user_id' => $request->get('user_id'),
                 'acc_name' => $request->get('acc_name'),
                 'acc_no' => $request->get('acc_no'),
                 'bank_id' => $request->get('bank_id'),
                 'ifsc_code' => $request->get('ifsc_code'),
                 'branch_name' => $request->get('branch_name'),
-                'is_active' => $request->get('is_active'),
-                'user_id' => auth()->user()->user_id
+                'is_active' => $request->get('is_active')
             ];
 
             $lastInsertId = $this->appRepo->saveBankAccount($prepareData, $acc_id);
