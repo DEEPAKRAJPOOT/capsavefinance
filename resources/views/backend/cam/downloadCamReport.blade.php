@@ -582,7 +582,7 @@
 
 
                <div class="data mt-4">
-             <h2 class="sub-title bg">Board of Directors as on December 2019</h2>
+             <h2 class="sub-title bg">Board of Directors as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
              <table class="table table-bordered overview-table">
                <thead>
@@ -601,7 +601,7 @@
                   
                </tbody>
             </table>
-            <h5 class="mt-4">  Shareholding Pattern as on October 30, 2019</h5>
+            <h5 class="mt-4">Shareholding Pattern as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</h5>
             <table class="table table-bordered overview-table">
                <thead>
                   <tr>

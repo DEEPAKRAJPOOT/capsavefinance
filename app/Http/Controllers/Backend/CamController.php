@@ -1748,7 +1748,7 @@ class CamController extends Controller
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
 
-                //dd($arrCamData);
+               // dd($arrBankDetails);
                 return view('backend.cam.downloadCamReport')
                         ->with([
                                  'arrCamData' =>$arrCamData ,
