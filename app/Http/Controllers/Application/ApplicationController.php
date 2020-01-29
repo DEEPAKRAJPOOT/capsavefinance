@@ -61,11 +61,15 @@ class ApplicationController extends Controller
             foreach($app_data->products as $product){
               array_push($product_ids, $product->pivot->product_id);
             }
+            $industryList = $this->appRepo->getIndustryDropDown()->toArray();
+            $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
             return view('frontend.application.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_types'=>$product_types, 'product_ids'=> $product_ids])
                         ->with('user_id',$request->get('user_id'))
                         ->with('app_id',$request->get('app_id'))
-                        ->with('biz_id',$request->get('biz_id'));
+                        ->with('biz_id',$request->get('biz_id'))
+                        ->with('industryList',$industryList)
+                        ->with('constitutionList',$constitutionList);
         }else{
             return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types']));
         }
