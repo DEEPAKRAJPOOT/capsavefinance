@@ -40,8 +40,12 @@
                   </tr>
                </tbody>
             </table>
-            <h5 class="mt-4">Deal Structure:</h5>
-            <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+           
+
+            <div class="data mt-4">
+             <h2 class="sub-title bg">Deal Structure:</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+              <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr role="row">
                      <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
@@ -65,7 +69,7 @@
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Equipment Type</td>
-                     <td class="">{{isset($leaseOfferData->security_deposit_type) ? $leaseOfferData->security_deposit_type : ''}}</td>
+                     <td class="">{{isset($leaseOfferData->security_deposit_type) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->security_deposit_type)['equipment_name']) : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">Security Deposit</td>
@@ -114,33 +118,36 @@
                      <td class="">
                            <div class="form-check" style="display: inline-block; margin-right:10px;">
                              <label class="form-check-label">
-                             <input type="checkbox" class="form-check-input"  value="1" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '1') !== false) ? 'checked' : ''}} >BG
+                             <input type="checkbox" class="form-check-input"  disabled value="1" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '1') !== false) ? 'checked' : ''}} >BG
                              <i class="input-helper"></i></label>
                            </div>
                            <div class="form-check" style="display: inline-block;">
                              <label class="form-check-label">
-                             <input type="checkbox" class="form-check-input"   value="2" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '2') !== false) ? 'checked' : ''}}>FD
+                             <input type="checkbox" class="form-check-input"   disabled value="2" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '2') !== false) ? 'checked' : ''}}>FD
                              <i class="input-helper"></i></label>
                           </div>
                           <div class="form-check" style="display: inline-block;">
                              <label class="form-check-label">
-                             <input type="checkbox" class="form-check-input"   value="MF" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '3') !== false) ? 'checked' : ''}}>MF
+                             <input type="checkbox" class="form-check-input"   disabled value="MF" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '3') !== false) ? 'checked' : ''}}>MF
                              <i class="input-helper"></i></label>
                           </div>
                           <div class="form-check" style="display: inline-block;">
                              <label class="form-check-label">
-                             <input type="checkbox" class="form-check-input" id="othersCheckbox" name="t_o_f_security_check[]"  value="4" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '4') !== false) ? 'checked' : ''}}>Others
+                             <input type="checkbox" class="form-check-input" id="othersCheckbox" name="t_o_f_security_check[]"  disabled value="4" {{isset($leaseOfferData->addl_security) && (strpos($leaseOfferData->addl_security, '4') !== false) ? 'checked' : ''}}>Others
                              <i class="input-helper"></i></label>
                           </div>
-                          <textarea class="form-control col-sm-6" style="display: {{isset($leaseOfferData->comment) && (strpos($leaseOfferData->addl_security, '4') !== false) ? '' : 'none'}} " >{{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}</textarea>
-
-                        <!--  <input type="text" id="securityComment" class="form-control" value="{{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}" style="display: {{isset($leaseOfferData->comment) && (strpos($leaseOfferData->addl_security, '4') !== false) ? '' : 'none'}} " /> -->
+                          <p style="display: {{isset($leaseOfferData->comment) && (strpos($leaseOfferData->addl_security, '4') !== false) ? '' : 'none'}} " >{{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}} </p>
                      </td>
                   </tr>
                </tbody>
             </table>
-            <h5 class="mt-4">Pre Disbursement Conditions:</h5>
-            <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+              </div>
+            </div>
+
+             <div class="data mt-4">
+             <h2 class="sub-title bg">Pre Disbursement Conditions:</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+               <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr role="row">
                      <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
@@ -150,42 +157,48 @@
                <tbody>
                   <tr role="row" class="odd">
                      <td class="">
-                        <input type="text"  value="{{isset($reviewerSummaryData->cond_nach) ? $reviewerSummaryData->cond_nach : ''}}" class="form-control form-control-sm">
+                        <p>{{isset($reviewerSummaryData->cond_nach) ? $reviewerSummaryData->cond_nach : ''}}</p> 
+                       
                      </td>
                      <td class="">
-                        <input type="text" value="{{isset($reviewerSummaryData->time_nach) ? $reviewerSummaryData->time_nach : ''}}" class="form-control form-control-sm">
+                        <p>{{isset($reviewerSummaryData->time_nach) ? $reviewerSummaryData->time_nach : ''}}</p>
                      </td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">
-                        <input type="text" name="cond_insp_asset" value="{{isset($reviewerSummaryData->cond_insp_asset) ? $reviewerSummaryData->cond_insp_asset : ''}}" class="form-control form-control-sm">
+                        <p>{{isset($reviewerSummaryData->cond_insp_asset) ? $reviewerSummaryData->cond_insp_asset : ''}} </p>
                      </td>
                      <td class="">
-                        <input type="text" name="time_insp_asset" value="{{isset($reviewerSummaryData->time_insp_asset) ? $reviewerSummaryData->time_insp_asset : ''}}" class="form-control form-control-sm">
+                        <p> {{isset($reviewerSummaryData->time_insp_asset) ? $reviewerSummaryData->time_insp_asset : ''}} </p>
                      </td>
                   </tr>
                   <tr role="row" class="odd">
                     <td class="">
-                        <input type="text" name="cond_insu_pol_cfpl" value="{{isset($reviewerSummaryData->cond_insu_pol_cfpl) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}" class="form-control form-control-sm">
+                        <p>{{isset($reviewerSummaryData->cond_insu_pol_cfpl) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}} </p>
                      </td>
                      <td class="">
-                        <input type="text" name="time_insu_pol_cfpl" value="{{isset($reviewerSummaryData->time_insu_pol_cfpl) ? $reviewerSummaryData->time_insu_pol_cfpl : ''}}" class="form-control form-control-sm">
+                        <p>{{isset($reviewerSummaryData->time_insu_pol_cfpl) ? $reviewerSummaryData->time_insu_pol_cfpl : ''}} </p>
                      </td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">
-                        <input type="text"  name="cond_personal_guarantee" value="{{isset($reviewerSummaryData->cond_personal_guarantee) ? $reviewerSummaryData->cond_personal_guarantee : ''}}" class="form-control form-control-sm">
+                        <p>{{isset($reviewerSummaryData->cond_personal_guarantee) ? $reviewerSummaryData->cond_personal_guarantee : ''}} </p>
                      </td>
                      <td class="">
-                        <input type="text"  name="time_personal_guarantee" value="{{isset($reviewerSummaryData->time_personal_guarantee) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}" class="form-control form-control-sm">
+                        <p>{{isset($reviewerSummaryData->time_personal_guarantee) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}} </p>
                      </td>
                   </tr>
                   
                </tbody>
             </table>
-
-            <h5 class="mt-4">Post Disbursement Conditions:</h5>
-            <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+              </div>
+             </div>
+            
+           
+           <div class="data mt-4">
+             <h2 class="sub-title bg">Post Disbursement Conditions:</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+               <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr role="row">
                      <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
@@ -195,50 +208,56 @@
                <tbody>
                   <tr role="row" class="odd">
                        <td class="">
-                           <input type="text"  name="cond_pbdit" value="{{isset($reviewerSummaryData->cond_pbdit) ? $reviewerSummaryData->cond_pbdit : ''}}" class="form-control form-control-sm">
+                            <p> {{isset($reviewerSummaryData->cond_pbdit) ? $reviewerSummaryData->cond_pbdit : ''}} </p>
                         </td>
                         <td class="">
-                           <input type="text"  name="time_pbdit" value="{{isset($reviewerSummaryData->time_pbdit) ? $reviewerSummaryData->time_pbdit : ''}}" class="form-control form-control-sm">
+                            <p> {{isset($reviewerSummaryData->time_pbdit) ? $reviewerSummaryData->time_pbdit : ''}} </p>
                         </td>
                   </tr>
                   <tr role="row" class="odd">
                       <td class="">
-                        <input type="text" name="cond_dscr" value="{{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}}"  class="form-control form-control-sm">
+                         <p> {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}}" </p>
                      </td>
                      <td class="">
-                        <input type="text"  name="time_dscr" value="{{isset($reviewerSummaryData->time_dscr) ? $reviewerSummaryData->time_dscr : ''}}" class="form-control form-control-sm">
+                         <p> {{isset($reviewerSummaryData->time_dscr) ? $reviewerSummaryData->time_dscr : ''}} </p>
                      </td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">
-                        <input type="text" name="cond_lender_cfpl" value="{{isset($reviewerSummaryData->cond_lender_cfpl) ? $reviewerSummaryData->cond_lender_cfpl : ''}}" class="form-control form-control-sm">
+                         <p> {{isset($reviewerSummaryData->cond_lender_cfpl) ? $reviewerSummaryData->cond_lender_cfpl : ''}} </p>
                      </td>
                      <td class="">
-                        <input type="text"  name="time_lender_cfpl" value="{{isset($reviewerSummaryData->time_lender_cfpl) ? $reviewerSummaryData->time_lender_cfpl : ''}}" class="form-control form-control-sm">
+                         <p> {{isset($reviewerSummaryData->time_lender_cfpl) ? $reviewerSummaryData->time_lender_cfpl : ''}} </p>
                      </td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="" valign="top">
-                        <input type="text" name="cond_ebidta" value="{{isset($reviewerSummaryData->cond_ebidta) ? $reviewerSummaryData->cond_ebidta : ''}}" class="form-control form-control-sm">
+                         <p> {{isset($reviewerSummaryData->cond_ebidta) ? $reviewerSummaryData->cond_ebidta : ''}} </p>
                      </td>
                      <td class="">
-                        <input type="text"  name="time_ebidta" value="{{isset($reviewerSummaryData->time_ebidta) ? $reviewerSummaryData->time_ebidta : ''}}" class="form-control form-control-sm">
+                         <p> {{isset($reviewerSummaryData->time_ebidta) ? $reviewerSummaryData->time_ebidta : ''}} </p>
                      </td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class="">
-                        <input type="text" name="cond_credit_rating" value="{{isset($reviewerSummaryData->cond_credit_rating) ? $reviewerSummaryData->cond_credit_rating : ''}}" class="form-control form-control-sm">
+                         <p> {{isset($reviewerSummaryData->cond_credit_rating) ? $reviewerSummaryData->cond_credit_rating : ''}} </p>
                      </td>
                      <td class="">
-                        <input type="text" name="time_credit_rating" value="{{isset($reviewerSummaryData->time_credit_rating) ? $reviewerSummaryData->time_credit_rating : ''}}" class="form-control form-control-sm">
+                         <p> {{isset($reviewerSummaryData->time_credit_rating) ? $reviewerSummaryData->time_credit_rating : ''}} </p>
                      </td>
                      
                   </tr>
                </tbody>
             </table>
+              </div>
+              </div>
 
-            <h5 class="mt-4">The proposed deal is approved/declined/deferred subject to above conditions and any other conditions mentioned below.</h5>
-            <table id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+           
+
+            <div class="data mt-4">
+             <h2 class="sub-title bg">The proposed deal is approved/declined/deferred subject to above conditions and any other conditions mentioned below.</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+              <table id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr>
                      <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Recommended By</th>
@@ -256,7 +275,7 @@
                                  @endphp
                                  @while(!empty($arrCM[$i])) 
                                     <tr>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;border-right: 2px solid #fff;">{{$arrCM[$i]->assignee}}</th>
+                                        <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrCM[$i]->assignee}}</th>
                                         @php $i++; @endphp
                                    </tr>
                                @endwhile
@@ -269,9 +288,9 @@
                               @endphp
                               @while(!empty($arrApproverData[$i])) 
                                  <tr>
-                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;border-right: 2px solid #fff;">{{$arrApproverData[$i]->approver}}</th>
+                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
                                      @php $i++; @endphp
-                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%" style="background:#62b59b;border-right: 2px solid #fff;">{{$arrApproverData[$i]->approver}}</th>
+                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
                                       @php $i++; @endphp
                                 </tr>
                             @endwhile
@@ -283,8 +302,17 @@
 
                </tbody>
             </table>
-            <h5 class="mt-4">Minimum Acceptance Criteria as per NBFC Credit Policy:</h5>
-            <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+              </div>
+              </div>
+           
+
+           
+
+
+           <div class="data mt-4">
+             <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy:</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+              <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr>
                      <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Parameter</th>
@@ -465,8 +493,18 @@
                   </tr>
                </tbody>
             </table>
-            <h5 class="mt-4">Approval criteria for IC:</h5>
-            <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+
+              </div>
+              </div>
+            
+              
+
+
+              <div class="data mt-4">
+             <h2 class="sub-title bg">Approval criteria for IC:</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+
+              <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr>
                      <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Sr. No.</th>
@@ -516,19 +554,37 @@
                   </tr>
                </tbody>
             </table>
-            <h5 class="mt-4">Purpose of Rental Facility</h5>
-            <p>{{isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : ''}}</p>
-            <h5 class="mt-4"> About the Company</h5>
-            <p>{!! isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : '' !!} </p>
-            
+           
+
+              </div>
+              </div>
+
+              <div class="data mt-4">
+             <h2 class="sub-title bg">Purpose of Rental Facility</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+               <p>{{isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : ''}}</p>
+              </div>
+              </div>
+
+               <div class="data mt-4">
+             <h2 class="sub-title bg">About the Company</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+              <p>{!! isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : '' !!} </p>
+              </div>
+              </div>
+
+               <div class="data mt-4">
+             <h2 class="sub-title bg">Brief Background of {{$arrOwnerData['0']['first_name']}} Managing Director :</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+              <p>{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</p>
+              </div>
+              </div>
 
 
-
-            <h5 class="mt-4">Brief Background of {{$arrOwnerData['0']['first_name']}} Managing Director :</h5>
-            <p>{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</p>
-            <!-- <p class="text-center "><img class="img-fluid" src="assets/img/image.png"></p> -->
-            <h5 class="mt-4"> Board of Directors as on December 2019</h5>
-            <table class="table table-bordered overview-table">
+               <div class="data mt-4">
+             <h2 class="sub-title bg">Board of Directors as on December 2019</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+             <table class="table table-bordered overview-table">
                <thead>
                   <tr>
                      <th width="50%">Name of Director</th>
@@ -565,24 +621,50 @@
                   
                </tbody>
             </table>
-            <br>       
+              </div>
+              </div>
+
+
+            
            
             
-            <h5 class="mt-4">External Rating</h5>
-            <p>{{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</p>
 
-            <h5>Rating rationale of {{$arrBizData->biz_entity_name}} :</h5>
-            <p> {!! isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : '' !!} </p>
+
+
+          
+            
+           
+            
+               <div class="data mt-4">
+             <h2 class="sub-title bg">External Rating</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+               <p>{{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</p>
+              </div>
+              </div>
+
+               <div class="data mt-4">
+             <h2 class="sub-title bg">Rating rationale of {{$arrBizData->biz_entity_name}} :</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+               <p> {!! isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : '' !!} </p>
+              </div>
+              </div>
+
+
+           
+            
+          
+           
+
+           
+           
            
 
 
 
-
-
-
-
-            <h5 class="mt-3">Standalone Financials of {{$arrBizData->biz_entity_name}}:</h5>
-            <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+           <div class="data mt-4">
+             <h2 class="sub-title bg">Standalone Financials of {{$arrBizData->biz_entity_name}}:</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+              <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr>
                      <tr>
@@ -628,88 +710,120 @@
                   </tr>
                </tbody>
             </table>
-
-
-
-
-
-
-
-            <h5 class="mt-4">Notes:</h5>
+             <h5 class="mt-4">Notes:</h5>
             <ul class="pl-3">
                <li>&#x2714; Cash profit = PAT + Depreciation + Non-operating non-cash outflow items – Provisions</li>
                <li>&#x2714; Total Outside liabilities = Current Liabilities + Term Liabilities</li>
                <li>&#x2714; Net Worth = Share Capital + Reserves – Revaluation reserve</li>
             </ul>
+              </div>
+              </div>
 
 
 
-
-            <h5 class="mt-4">Financial Comment:</h5>
            
-           <p>{!! isset($finacialDetails->debt_cmnt) ? $finacialDetails->debt_cmnt : '' !!}</p>
             
-          
+
+            <div class="data mt-4">
+             <h2 class="sub-title bg">Financial Comment:</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+                 <p>{!! isset($finacialDetails->debt_cmnt) ? $finacialDetails->debt_cmnt : '' !!}</p>
+              </div>
+              </div>
 
 
-           <h5 class="mt-4">Debt Position as on {{isset($arrBankDetails->debt_on) ? \Carbon\Carbon::createFromFormat('d/m/Y', $arrBankDetails->debt_on)->format('j F, Y') : ''}}:</h5>
-            <p>{!! isset($arrBankDetails->debt_position_comments) ? $arrBankDetails->debt_position_comments: '' !!}</p>
+              <div class="data mt-4">
+             <h2 class="sub-title bg">Debt Position as on {{isset($arrBankDetails->debt_on) ? \Carbon\Carbon::createFromFormat('d/m/Y', $arrBankDetails->debt_on)->format('j F, Y') : ''}}:</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+               <p> {!! isset($arrBankDetails->debt_position_comments) ? $arrBankDetails->debt_position_comments: '' !!}</p>
+              </div>
+              </div>
 
-           
+
+            <div class="data mt-4">
+             <h2 class="sub-title bg">Contingent Liabilities and Auditors Observations as on {{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('j F, Y') : ''}}:</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+              <p>{!! isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations: '' !!}</p>
+              </div>
+              </div>
 
 
-            <h5 class="mt-4">Contingent Liabilities and Auditors Observations as on {{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('j F, Y') : ''}}:</h5>
-            <p>{!! isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations: '' !!}</p>
-            <h5 class="mt-4">Risk Comments:</h5>
-            <h5 class="mt-2"><small>Deal Positives:</small></h5>
-            <table class="table table-bordered overview-table">
-               <tbody>
-                  <tr>
-                     <td width="50%"><strong>{{isset($reviewerSummaryData->cond_pos_track_rec) ? $reviewerSummaryData->cond_pos_track_rec : ''}}</strong></td>
-                     <td width="50%">
-                           {{isset($reviewerSummaryData->cmnt_pos_track_rec) ? $reviewerSummaryData->cmnt_pos_track_rec : ''}}
-                     </td>
-                  </tr>
-                  <tr>
-                     <td><strong>{{isset($reviewerSummaryData->cond_pos_credit_rating) ? $reviewerSummaryData->cond_pos_credit_rating : ''}}</strong></td>
-                     <td>{{isset($reviewerSummaryData->cmnt_pos_credit_rating) ? $reviewerSummaryData->cmnt_pos_credit_rating : ''}}
-                     </td>
-                  </tr>
-                  <tr>
-                     <td><strong>{{isset($reviewerSummaryData->cond_pos_fin_matric) ? $reviewerSummaryData->cond_pos_fin_matric : ''}}</strong></td>
-                     <td>{{isset($reviewerSummaryData->cmnt_pos_fin_matric) ? $reviewerSummaryData->cmnt_pos_fin_matric : ''}}
-                     </td>
-                  </tr>
-                  <tr>
-                     <td><strong>{{isset($reviewerSummaryData->cond_pos_establish_client) ? $reviewerSummaryData->cond_pos_establish_client : ''}}</strong></td>
-                     <td>{{isset($reviewerSummaryData->cmnt_pos_establish_client) ? $reviewerSummaryData->cmnt_pos_establish_client : ''}}
-                     </td>
-                  </tr>
-               </tbody>
-            </table>
-            <h5 class="mt-2"><small>Deal Negatives:</small></h5>
-            <table class="table table-bordered overview-table">
-               <tbody>
-                  <tr>
-                     <td width="50%"><strong>{{isset($reviewerSummaryData->cond_neg_competition) ? $reviewerSummaryData->cond_neg_competition : ''}}</strong></td>
-                     <td width="50%">{{isset($reviewerSummaryData->cmnt_neg_competition) ? $reviewerSummaryData->cmnt_neg_competition : ''}}
-                     </td>
-                  </tr>
-                  <tr>
-                     <td><strong>{{isset($reviewerSummaryData->cond_neg_forex_risk) ? $reviewerSummaryData->cond_neg_forex_risk : ''}}</strong></td>
-                     <td>{{isset($reviewerSummaryData->cmnt_neg_forex_risk) ? $reviewerSummaryData->cmnt_neg_forex_risk : ''}}
-                     </td>
-                  </tr>
-                  <tr>
-                     <td><strong>{{isset($reviewerSummaryData->cond_neg_pbdit) ? $reviewerSummaryData->cond_neg_pbdit : ''}}</strong></td>
-                     <td>{{isset($reviewerSummaryData->cmnt_neg_pbdit) ? $reviewerSummaryData->cmnt_neg_pbdit : ''}}
-                     </td>
-                  </tr>
-               </tbody>
-            </table>
-            <h5 class="mt-4">Recommendation:</h5>
-            <p>{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}}
-            </p>
+
+
+           <div class="data mt-4">
+           <h2 class="sub-title bg">Risk Comments:</h2>
+            <div class="pl-4 pr-4 pb-4 pt-2">
+                 <div class="data mt-4">
+                 <h2 class="sub-title bg">Deal Positives:</h2>
+                  <div class="pl-4 pr-4 pb-4 pt-2">
+                    
+                    <table class="table table-bordered overview-table">
+                       <tbody>
+                          <tr>
+                             <td width="50%"><strong>{{isset($reviewerSummaryData->cond_pos_track_rec) ? $reviewerSummaryData->cond_pos_track_rec : ''}}</strong></td>
+                             <td width="50%">
+                                   {{isset($reviewerSummaryData->cmnt_pos_track_rec) ? $reviewerSummaryData->cmnt_pos_track_rec : ''}}
+                             </td>
+                          </tr>
+                          <tr>
+                             <td><strong>{{isset($reviewerSummaryData->cond_pos_credit_rating) ? $reviewerSummaryData->cond_pos_credit_rating : ''}}</strong></td>
+                             <td>{{isset($reviewerSummaryData->cmnt_pos_credit_rating) ? $reviewerSummaryData->cmnt_pos_credit_rating : ''}}
+                             </td>
+                          </tr>
+                          <tr>
+                             <td><strong>{{isset($reviewerSummaryData->cond_pos_fin_matric) ? $reviewerSummaryData->cond_pos_fin_matric : ''}}</strong></td>
+                             <td>{{isset($reviewerSummaryData->cmnt_pos_fin_matric) ? $reviewerSummaryData->cmnt_pos_fin_matric : ''}}
+                             </td>
+                          </tr>
+                          <tr>
+                             <td><strong>{{isset($reviewerSummaryData->cond_pos_establish_client) ? $reviewerSummaryData->cond_pos_establish_client : ''}}</strong></td>
+                             <td>{{isset($reviewerSummaryData->cmnt_pos_establish_client) ? $reviewerSummaryData->cmnt_pos_establish_client : ''}}
+                             </td>
+                          </tr>
+                       </tbody>
+                    </table>
+                   </div>
+                  </div>  
+
+                  <div class="data mt-4">
+                 <h2 class="sub-title bg">Deal Negatives:</h2>
+                  <div class="pl-4 pr-4 pb-4 pt-2">
+               
+                    <table class="table table-bordered overview-table">
+                       <tbody>
+                          <tr>
+                             <td width="50%"><strong>{{isset($reviewerSummaryData->cond_neg_competition) ? $reviewerSummaryData->cond_neg_competition : ''}}</strong></td>
+                             <td width="50%">{{isset($reviewerSummaryData->cmnt_neg_competition) ? $reviewerSummaryData->cmnt_neg_competition : ''}}
+                             </td>
+                          </tr>
+                          <tr>
+                             <td><strong>{{isset($reviewerSummaryData->cond_neg_forex_risk) ? $reviewerSummaryData->cond_neg_forex_risk : ''}}</strong></td>
+                             <td>{{isset($reviewerSummaryData->cmnt_neg_forex_risk) ? $reviewerSummaryData->cmnt_neg_forex_risk : ''}}
+                             </td>
+                          </tr>
+                          <tr>
+                             <td><strong>{{isset($reviewerSummaryData->cond_neg_pbdit) ? $reviewerSummaryData->cond_neg_pbdit : ''}}</strong></td>
+                             <td>{{isset($reviewerSummaryData->cmnt_neg_pbdit) ? $reviewerSummaryData->cmnt_neg_pbdit : ''}}
+                             </td>
+                          </tr>
+                       </tbody>
+                    </table>
+                    </div>
+                  </div>
+            </div>
+            </div>
+
+
+              <div class="data mt-4">
+                 <h2 class="sub-title bg">Recommendation:</h2>
+                  <div class="pl-4 pr-4 pb-4 pt-2">
+                    <p>{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}}
+                  </p>
+                 </div>
+            </div>
+
+
+
          </div>
       </div>
    </div>
@@ -730,7 +844,7 @@
 <script>
 
 function downloadCam(){
-    var pdf = new jsPDF('px', 'pt', [1180, 1200]);
+    var pdf = new jsPDF('px', 'pt', [1180, 1155]);
     var  res = pdf.html(document.getElementById('camReport'), {
         callback: function (pdf) {
             pdf.save('camReport');
