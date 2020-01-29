@@ -88,7 +88,7 @@
 						<div class="row">
 							<div class="col-md-4">
 								<div class="form-group password-input">
-									<label for="txtPassword">Industry
+									<label for="txtPassword">Industrys
 										<span class="mandatory">*</span>
 									</label>
 									{!! Form::select('biz_type_id', [''=>trans('backend.please_select')] + $industryList, $business_info->nature_of_biz, ['id'=>'biz_type_id','class'=>'form-control industry_change', 'tabindex'=>'4']) !!}					
