@@ -177,12 +177,12 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                     
-                    if(Helpers::checkPermission('company_details')){
-                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
-                    }else{
-                        return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
-                    }
+                        if(Helpers::checkPermission('company_details')){
+                            $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                            return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
+                        }else{
+                            return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
+                        }
                     
                         
                     }
@@ -349,7 +349,7 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                         $link = route('backend_fi', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
                     }
                 )
                 ->addColumn(
