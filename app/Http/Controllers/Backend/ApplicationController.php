@@ -1006,7 +1006,7 @@ class ApplicationController extends Controller
         if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
             $offerId = $request->get('offer_id');
         } 
-        $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+        $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
        
         return view('backend.app.sanction_letter')->with($data);   
     }
@@ -1242,7 +1242,7 @@ class ApplicationController extends Controller
                 $offerId = $request->get('offer_id');
             } 
 
-            $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
             $date = \Carbon\Carbon::now();
             $data['date'] = $date;
             $htmlContent = view('backend.app.send_sanction_letter')->with($data)->render();
@@ -1456,7 +1456,7 @@ class ApplicationController extends Controller
                 $offerId = $request->get('offer_id');
             } 
             
-            $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
             $date = \Carbon\Carbon::now();
             $data['date'] = $date;
             $html = view('backend.app.send_sanction_letter')->with($data)->render();
