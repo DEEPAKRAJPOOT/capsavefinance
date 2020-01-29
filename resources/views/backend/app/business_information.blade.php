@@ -81,7 +81,7 @@
 											<label for="txtPassword">Industry
 												<span class="mandatory">*</span>
 											</label>
-											{!! Form::select('biz_type_id', [''=>trans('backend.please_select')] + $industryList, old('biz_type_id'), ['id'=>'biz_type_id','class'=>'form-control industry_change', 'tabindex'=>'4']) !!}		
+											{!! Form::select('biz_type_id', [''=>trans('backend.please_select')] + $industryList, old('biz_type_id'), ['id'=>'biz_type_id','class'=>'form-control industry_change', 'tabindex'=>'4']) !!}
 											@error('biz_type_id')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -92,7 +92,7 @@
 											<label for="txtPassword">Sub Industry
 												<span class="mandatory">*</span>
 											</label>											
-											{!! Form::select('entity_type_id', [''=>trans('backend.please_select')], old('entity_type_id'), ['class'=>'form-control sub_industry', 'tabindex'=>'5']) !!}
+											{!! Form::select('entity_type_id', [''=>trans('backend.please_select')], old('entity_type_id'), ['class'=>'form-control sub_industry' , 'tabindex'=>'5']) !!}
 
 											@error('entity_type_id')
 								                <span class="text-danger error">{{ $message }}</span>
@@ -120,7 +120,7 @@
 											<label for="txtEmail">Business Constitution
 												<span class="mandatory">*</span>
 											</label>
-												{!! Form::select('biz_constitution', [''=>trans('backend.please_select')] + $constitutionList, old('biz_constitution'), ['class'=>'form-control constitution_id', 'tabindex'=>'7']) !!}
+												{!! Form::select('biz_constitution', [''=>trans('backend.please_select')] + $constitutionList, old('biz_constitution') , ['class'=>'form-control constitution_id', 'tabindex'=>'7']) !!}
 												@error('biz_constitution')
 									                <span class="text-danger error">{{ $message }}</span>
 									            @enderror
@@ -504,6 +504,8 @@ var messages = {
 	biz_gst_to_entity_karza: "{{ URL::route('chk_biz_gst_to_entity') }}",
 	biz_entity_to_cin_karza: "{{ URL::route('chk_biz_entity_to_cin') }}",
 	data_not_found: "{{ trans('error_messages.data_not_found') }}",
+	get_sub_industry: "{{ URL::route('get_sub_industry') }}",
+	please_select: "{{ trans('backend.please_select') }}",
 	token: "{{ csrf_token() }}"
 };
 </script>

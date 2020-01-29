@@ -355,5 +355,5 @@ $(document).ready(function(){
 		var industryVal=$("#biz_type_id").val();
 		handleIndustryChange(industryVal,null);
 	});
-   handleIndustryChange($("#biz_type_id").val(),$(".sub_industry").val());
+  handleIndustryChange($("#biz_type_id").val(),$(".sub_industry").val());
 });

@@ -841,7 +841,7 @@ class ApplicationController extends Controller
         $product_types = $this->masterRepo->getProductDataList();
         $industryList = $this->appRepo->getIndustryDropDown()->toArray();
         $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
-        return view('backend.app.business_information',compact(['states', 'product_types','industryList ','constitutionList']));
+        return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList']));
     }
 
     /**
