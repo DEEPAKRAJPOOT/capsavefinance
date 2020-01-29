@@ -208,8 +208,8 @@ class DataRenderer implements DataProviderInterface
                     'contact',
                     function ($app) {
                         $contact = '';
-                        $contact .= $app->email ? '<label><b>Email: </b>'.$app->email.'</label>' : '';
-                        $contact .= $app->mobile_no ? '<label><b>Mob: </b>'.$app->mobile_no.'</label>' : '';
+                        $contact .= $app->email ? '<span><b>Email:&nbsp;</b>'.$app->email.'</span>' : '';
+                        $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
                         return $contact;
                     }
                 )
