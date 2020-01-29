@@ -58,7 +58,7 @@
                          </div>
                          <div id="gridView">
                             <?php 
-                              // echo $xlsx_html;
+                               echo $xlsx_html;
                             ?>
                          </div>
                           <div class="clearfix"></div>
