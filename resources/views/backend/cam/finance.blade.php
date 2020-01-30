@@ -51,27 +51,40 @@
                          @endif
                          </div>
                          <div class="clearfix"></div>
-                         <br/>
-                         <hr>
-                         <div id="paginate">
-                            <?php 
-                               echo $xlsx_pagination;
-                            ?>
-                         </div>
-                         <div id="gridView">
-                            <?php 
-                               echo $xlsx_html;
-                            ?>
-                         </div>
-                          <div class="clearfix"></div>
+                         <br />
                           <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
                              <div class="card">
-                                <div class="card-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" role="tab" id="headingOne">
+                                <div class="card-header" data-toggle="collapse" data-parent="#accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero" role="tab" id="headingZero">
+                                   <a class="">
+                                   View XLSX
+                                   </a>
+                                </div>
+                                <div id="collapseZero" class="collapse show colsp" role="tabpanel" aria-labelledby="headingZero">
+                                  <div class="card-body pt-3 pl-0 pr-0 pb-0">
+                                    <div class="card">
+                                      @if(!empty($xlsx_pagination))
+                                        <div id="paginate">
+                                          <?php 
+                                             echo $xlsx_pagination;
+                                          ?>
+                                       </div>
+                                       @endif
+                                       <div id="gridView">
+                                          <?php 
+                                             echo $xlsx_html;
+                                          ?>
+                                       </div>
+                                    </div>
+                                  </div>
+                                </div>
+                             </div>
+                             <div class="card">
+                                <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" role="tab" id="headingOne">
                                    <a class="">
                                    Financial Detail Summary
                                    </a>
                                 </div>
-                                <div id="collapseOne" class="collapse show colsp" role="tabpanel" aria-labelledby="headingOne">
+                                <div id="collapseOne" class="collapse colsp" role="tabpanel" aria-labelledby="headingOne">
                                    <div class="card-body pt-3 pl-0 pr-0 pb-0">
                                       <div class="card">
                                          <table class="table table-bordered overview-table" cellspacing="0">
