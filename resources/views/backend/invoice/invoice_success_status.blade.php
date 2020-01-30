@@ -34,6 +34,7 @@
             $sum+=$row->repaid_amount;
           }
         }
+        $repaymentAmount  = $result->disbursal->disburse_amount - $result->disbursal->repayment_amount;
         @endphp
         <table  border="1" align="center" cellspacing="0" cellpadding="0" style="font-size:15px;padding:20px;font-family:Montserrat,Arial,sans-serif;line-height: 24px;width: 100%">
             <tbody>
@@ -61,12 +62,12 @@
                                      <td style="border-right:none;">
                                           <b>    Disburse Amount (₹):  </b> 
                                        </td>
-                                    <td style="border-left:none;">   {{($result->disbursal) ? number_format($result->disbursal->principal_amount) : '' }}
+                                    <td style="border-left:none;"> {{($result->disbursal) ? number_format($result->disbursal->disburse_amount) : '' }}  
                                     </td> 
                                      <td style="border-right:none;">
                                      <b>    Actual Funded Amount (₹):  </b>
                                      </td>
-                                   <td style="border-left:none;">     {{($result->disbursal) ? number_format($result->disbursal->disburse_amount) : '' }}
+                                   <td style="border-left:none;"> {{($result->disbursal) ? number_format($result->disbursal->principal_amount) : '' }}    
                                     </td>
                                 </tr>
                                 <tr>
@@ -150,7 +151,7 @@
                                      <td style="border-right:none;">
                                      <b>    Total Amount to Repay:  </b>
                                       </td>
-                                      <td style="border-left:none;">    ₹  <span id="totalAmountMsg">{{($result->disbursal->repayment_amount-$sum > 0) ?  number_format($result->disbursal->repayment_amount-$sum) : 0 }}</span>
+                                      <td style="border-left:none;">   ₹  <span id="totalAmountMsg">{{($repaymentAmount-$sum > 0) ?  number_format($repaymentAmount-$sum) : 0 }}</span>
                                     </td>
                                 </tr>
 
@@ -174,13 +175,16 @@
                        <tr>
                        <td colspan="2">
                            <label for="repaid_amount" class="form-control-label">Payment Type*</label> </br>
-                           <select class="form-control amountRepay" name="payment_type" id="payment_type">
-                                        <option value=""> Select Payment Type </option>
-                                        <option value="1"> Online RTGS/NEFT </option>
-                                        <option value="2"> Cheque</option>
-                                         <option value="3"> NACH</option>
-                                        <option value="4"> Other </option>
-                                    </select>
+                           @php 
+                                               $get = Config::get('payment.type');
+                                              @endphp
+                                                
+                                                <select class="form-control amountRepay" name="payment_type" id="payment_type">
+                                                    <option value=""> Select Payment Type </option>
+                                                     @foreach($get as $key=>$val)
+                                                    <option value="{{$key}}"> {{$val}}</option>
+                                                     @endforeach  
+                                                </select>
                            <span id="payment_type_msg" class="error"></span>
                        </td>
                        <td colspan="2">
@@ -209,7 +213,7 @@
                         </td>
                       <td>
                          
-                     <input type="hidden" value="{{($result->disbursal->repayment_amount-$sum > 0) ?  $result->disbursal->repayment_amount-$sum : 0 }}" id='final_amount'>
+                     <input type="hidden" value="{{($repaymentAmount-$sum > 0) ?  $repaymentAmount-$sum : 0 }}" id='final_amount'>
                      <input type="hidden" value="{{($result->invoice_id) ?  $result->invoice_id : ''}}" id='invoice_id'>
                      <input type="hidden" value="{{($result->app_id) ?  $result->app_id : '' }}" id='app_id'>
                      <input type="hidden" value="{{($result->supplier_id) ?  $result->supplier_id : '' }}" id='supplier_id'>

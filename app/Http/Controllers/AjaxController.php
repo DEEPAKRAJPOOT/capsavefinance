@@ -2811,7 +2811,10 @@ if ($err) {
                $amount =  $arrFileData['final_amount'] - $arrFileData['repaid_amount'];
             }
         if($result)
-        {
+        {   ///////////// update repayment here////////////////////////
+            $data['invoice_id']        = $arrFileData['invoice_id'];
+            $data['repaid_amount']  = $arrFileData['repaid_amount'];
+            $result = $this->invRepo->updateRepayment($data);
             $utr  ="";
             $check  ="";
             $unr  ="";
@@ -2856,9 +2859,16 @@ if ($err) {
            return \Response::json(['status' => 0,'amount' =>0]);
         }
     }
-    /**
-      * 
-      * @param DataProviderInterface $dataProvider
+    
+    /* get customer id    /**
+     */
+    public function getCustomerId(Request $request) 
+    {
+        $result  =  $this->invRepo->getCustomerId();
+        return \Response::json(['status' => $request->status,'result' => $result]); 
+    }
+     
+   /* @param DataProviderInterface $dataProvider
       * @param Request $request
       * @return type
       * 

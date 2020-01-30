@@ -316,6 +316,14 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListReject'
         ]
     );  
+           
+           Route::post(
+        'get_customer_id',
+        [
+        'as' => 'get_customer_id',
+        'uses' => 'AjaxController@getCustomerId'
+        ]
+    );       
              Route::post(
         'backend_activity_invoice_list',
         [

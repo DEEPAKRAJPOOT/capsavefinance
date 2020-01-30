@@ -184,6 +184,26 @@
         </li>
     @endcan
     
+    
+     @canany(['payment_list','payment_list'])
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-credit-card" aria-hidden="true"></i>
+                <span class="menu-title">Manage Payment</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu8">
+                <ul class="nav flex-column sub-menu">
+                    @can('payment_list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('payment_list')}}">Manage Payment</a>
+                    </li>                     
+                    @endcan
+                </ul>
+            </div>
+        </li>
+    @endcan
+    
     @canany(['get_agency_list','get_agency_user_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu9" aria-expanded="false" aria-controls="collapseExample">

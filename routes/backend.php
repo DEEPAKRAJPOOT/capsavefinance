@@ -1002,7 +1002,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@saveDocument'
             ]);
             
-        });         
+        });   
+        
+          Route::group(['prefix' => 'payment'], function () {
+               Route::get('payment_list', [
+                 'as' => 'payment_list',
+                'uses' => 'Backend\PaymentController@paymentList'
+            ]); 
+               
+            Route::get('add_payment', [
+                 'as' => 'add_payment',
+                'uses' => 'Backend\PaymentController@addPayment'
+            ]);      
+            
+             Route::post('save_payment', [
+                 'as' => 'save_payment',
+                'uses' => 'Backend\PaymentController@savePayment'
+            ]);  
+               
+         }); 
     });
 
   });

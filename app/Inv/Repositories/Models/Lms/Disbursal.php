@@ -168,4 +168,24 @@ class Disbursal extends BaseModel {
                 ->join('mst_status','disbursal.status_id' ,'=','mst_status.id');
         return $res?: false;
     }
+    /////////////* get customer id   */////////////////
+    public static function  getCustomerId()
+    {
+        return self::with('user')->where(['disburse_type' => 2])->groupBy('user_id')->get();
+    }
+    public function  user()
+    {
+          return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }
+    public static function   updateRepayment($attr)
+    {
+         $res =   self::where(['invoice_id' => $attr['invoice_id']])->first();
+         if($res)
+         {
+             $sumAmount   =  $res->disburse_amount - $attr['repaid_amount'];
+             return self::where(['invoice_id' => $attr['invoice_id']])->update(['repayment_amount' =>  $sumAmount]);
+         }
+    }
+    
+    
 }
