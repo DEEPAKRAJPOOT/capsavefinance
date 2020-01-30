@@ -12,9 +12,10 @@
                                  </label>
                                  <input type="file" name="anchor_lead" id="anchor_lead" value="" class="form-control anchor_lead" >
                               </div>-->
-
-                          @if ($is_superadmin == '1')
-                
+                                @php 
+                                $role_id=Helpers::getUserRole(Auth::user()->user_id);
+                                @endphp
+                                @if ($role_id[0]->pivot->role_id!= '11')               
                               <div class="form-group">
                                  <label for="txtEmail">Anchor
                                  <span class="mandatory">*</span>

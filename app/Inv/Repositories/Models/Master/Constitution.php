@@ -42,18 +42,16 @@ class Constitution extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'constitution_name',
+        'name',
         'is_active',
         'created_at',
         'updated_at'
     ];
 
 
-    
-    /**
-     * Get all State
-     *
-     * @return type array
-     */
-    
+    public static function getConstitutionDropDown()
+    {
+        $res = self::where('is_active', 1)->pluck('name', 'id');
+        return $res ?: [];
+    }
 }
