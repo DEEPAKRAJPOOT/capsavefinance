@@ -176,9 +176,12 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'app_id',
                     function ($app) {
-                    
+                        $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
                         if(Helpers::checkPermission('company_details')){
-                            $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                            if($user_role == 8)
+                                $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                            else
+                                $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                             return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
                         }else{
                             return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
