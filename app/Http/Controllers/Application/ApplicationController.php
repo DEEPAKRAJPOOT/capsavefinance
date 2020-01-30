@@ -445,8 +445,10 @@ class ApplicationController extends Controller
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
                 
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
+             
                 //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);                
                 
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             // } else {
