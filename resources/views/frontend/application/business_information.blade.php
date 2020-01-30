@@ -80,15 +80,21 @@
 											<label for="txtPassword">Industry
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="biz_type_id" tabindex="4" >
-												<option value=""> Select Industry</option>
-												<option value="1" {{(old('biz_type_id') == 1)? 'selected':''}}> Industry 1 </option>
-												<option value="2" {{(old('biz_type_id') == 2)? 'selected':''}}> Industry 2 </option>
-												<option value="3" {{(old('biz_type_id') == 3)? 'selected':''}}> Industry 3 </option>
-											</select>
+											{!! Form::select('biz_type_id', [''=>trans('backend.please_select')] + $industryList, old('biz_type_id'), ['id'=>'biz_type_id','class'=>'form-control industry_change', 'tabindex'=>'4']) !!}
 											@error('biz_type_id')
 												<span class="text-danger error">{{ $message }}</span>
 											@enderror
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Sub Industry
+												<span class="mandatory">*</span>
+											</label>
+											{!! Form::select('entity_type_id', [''=>trans('backend.please_select')], old('entity_type_id'), ['class'=>'form-control sub_industry' , 'tabindex'=>'5']) !!}
+											@error('entity_type_id')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
 									
@@ -102,18 +108,15 @@
 												<span class="text-danger error">{{ $message }}</span>
 											@enderror
 										</div>
-									</div>
+									</div>									
+								</div>
+								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group">
 											<label for="txtEmail">Business Constitution
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="biz_constitution" tabindex="6" >
-													<option value=""> Select Business Constitution</option>
-													<option value="1" {{(old('biz_constitution') == 1)? 'selected':''}}> Business Constitution 1 </option>
-													<option value="2" {{(old('biz_constitution') == 2)? 'selected':''}}> Business Constitution 2 </option>
-													<option value="3" {{(old('biz_constitution') == 3)? 'selected':''}}> Business Constitution 3 </option>
-												</select>
+											{!! Form::select('biz_constitution', [''=>trans('backend.please_select')] + $constitutionList, old('biz_constitution') , ['class'=>'form-control constitution_id', 'tabindex'=>'7']) !!}
 												@error('biz_constitution')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -578,7 +581,9 @@ var messages = {
 	biz_pan_to_gst_karza: "{{ URL::route('chk_biz_pan_to_gst') }}",
 	biz_gst_to_entity_karza: "{{ URL::route('chk_biz_gst_to_entity') }}",
 	biz_entity_to_cin_karza: "{{ URL::route('chk_biz_entity_to_cin') }}",
-	data_not_found: "{{ trans('error_messages.data_not_found') }}",
+	data_not_found: "{{ trans('error_messages.data_not_found') }}",	
+	get_sub_industry: "{{ URL::route('get_sub_industry') }}",
+	please_select: "{{ trans('backend.please_select') }}",
 	token: "{{ csrf_token() }}"
 };
 

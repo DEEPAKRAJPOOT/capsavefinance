@@ -40,6 +40,7 @@ use App\Inv\Repositories\Models\Master\Documents;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\Cam;
+use App\Inv\Repositories\Models\Master\Constitution;
 /**
  * Application repository class
  */
@@ -1241,4 +1242,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return AppApprover::getAppApproversDetails($app_id);
     }
+    /**
+     * Get Constitution 
+     * 
+     * @return type mixed
+     */
+    public function getConstitutionDropDown()
+    {
+        return Constitution::getConstitutionDropDown();
+    }
+    
 }

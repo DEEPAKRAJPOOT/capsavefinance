@@ -94,77 +94,71 @@
 										@enderror
 									</div>
 								</div>
-								<div class="col-md-4">
-									<div class="form-group password-input">
-										<label for="txtPassword">Date of Incorporation
-											<span class="mandatory">*</span>
-										</label>
-										<input type="text" name="incorporation_date" value="{{old('incorporation_date', \Carbon\Carbon::parse($business_info->date_of_in_corp)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Entity Name" autocomplete="off" readonly >
-										@error('incorporation_date')
-											<span class="text-danger error">{{ $message }}</span>
-										@enderror
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Industry
+												<span class="mandatory">*</span>
+											</label>
+											{!! Form::select('biz_type_id', [''=>trans('backend.please_select')] + $industryList, $business_info->nature_of_biz, ['id'=>'biz_type_id','class'=>'form-control industry_change', 'tabindex'=>'4']) !!}	
+											@error('biz_type_id')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
 									</div>
+
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Sub Industry
+												<span class="mandatory">*</span>
+											</label>
+											{!! Form::select('entity_type_id', [''=>trans('backend.please_select')], $business_info->entity_type_id, ['id'=>'entity_type_id','class'=>'form-control sub_industry', 'tabindex'=>'5']) !!}
+											@error('entity_type_id')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Date of Incorporation
+												<span class="mandatory">*</span>
+											</label>
+											<input type="text" name="incorporation_date" value="{{old('incorporation_date', \Carbon\Carbon::parse($business_info->date_of_in_corp)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Entity Name" autocomplete="off" readonly >
+											@error('incorporation_date')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>								
 								</div>
-								<div class="col-md-4">
-									<div class="form-group">
-										<label for="txtEmail">Business Constitution
-											<span class="mandatory">*</span>
-										</label>
-										<select class="form-control" name="biz_constitution" tabindex="6" >
-												<option value=""> Select Business Constitution</option>
-												<option value="1" {{(old('biz_constitution', $business_info->biz_constitution) == 1)? 'selected':''}}> Business Constitution 1 </option>
-												<option value="2" {{(old('biz_constitution', $business_info->biz_constitution) == 2)? 'selected':''}}> Business Constitution 2 </option>
-												<option value="3" {{(old('biz_constitution', $business_info->biz_constitution) == 3)? 'selected':''}}> Business Constitution 3 </option>
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group">
+											<label for="txtEmail">Business Constitution
+												<span class="mandatory">*</span>
+											</label>
+												{!! Form::select('biz_constitution', [''=>trans('backend.please_select')] + $constitutionList, $business_info->biz_constitution, ['class'=>'form-control constitution_id', 'tabindex'=>'7']) !!}
+												@error('biz_constitution')
+									                <span class="text-danger error">{{ $message }}</span>
+									            @enderror
+										</div>
+									</div>
+									
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Segment
+												<span class="mandatory">*</span>
+											</label>
+											<select class="form-control" name="segment" tabindex="8" >
+												<option value=""> Select Segment</option>
+												<option value="1" {{(old('segment', $business_info->biz_segment) == 1)? 'selected':''}}> Segment 1 </option>
+												<option value="2" {{(old('segment', $business_info->biz_segment) == 2)? 'selected':''}}> Segment 2 </option>
+												<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
 											</select>
-											@error('biz_constitution')
-												<span class="text-danger error">{{ $message }}</span>
-											@enderror
-									</div>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-4">
-									<div class="form-group password-input">
-										<label for="txtPassword">Nature of Business
-											<span class="mandatory">*</span>
-										</label>
-										<select class="form-control" name="entity_type_id" tabindex="7" >
-											<option value=""> Select Nature of Business</option>
-											<option value="1" {{(old('entity_type_id', $business_info->entity_type_id) == 1)? 'selected':''}}> Nature of Business 1 </option>
-											<option value="2" {{(old('entity_type_id', $business_info->entity_type_id) == 2)? 'selected':''}}> Nature of Business 2 </option>
-											<option value="3" {{(old('entity_type_id', $business_info->entity_type_id) == 3)? 'selected':''}}> Nature of Business 3 </option>
-										</select>
-										@error('entity_type_id')
-											<span class="text-danger error">{{ $message }}</span>
-										@enderror
-									</div>
-								</div>
-								
-								<div class="col-md-4">
-									<div class="form-group password-input">
-										<label for="txtPassword">Segment
-											<span class="mandatory">*</span>
-										</label>
-										<select class="form-control" name="segment" tabindex="8" >
-											<option value=""> Select Segment</option>
-											<option value="1" {{(old('segment', $business_info->biz_segment) == 1)? 'selected':''}}> Segment 1 </option>
-											<option value="2" {{(old('segment', $business_info->biz_segment) == 2)? 'selected':''}}> Segment 2 </option>
-											<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
-										</select>
-										@error('segment')
-											<span class="text-danger error">{{ $message }}</span>
-										@enderror
-									</div>
-								</div>
-								
-								<div class="col-md-4">
-									<div class="form-group password-input INR">
-										<label for="txtPassword">Business Turnover
-										</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-										<input type="text" name="biz_turnover" value="{{old('biz_turnover', number_format($business_info->turnover_amt))}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
-										@error('biz_turnover')
-											<span class="text-danger error">{{ $message }}</span>
-										@enderror
+											@error('segment')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
 									</div>
 								</div>
 							</div>
@@ -579,6 +573,8 @@ var messages = {
 	biz_gst_to_entity_karza: "{{ URL::route('chk_biz_gst_to_entity') }}",
 	biz_entity_to_cin_karza: "{{ URL::route('chk_biz_entity_to_cin') }}",
 	data_not_found: "{{ trans('error_messages.data_not_found') }}",
+	get_sub_industry: "{{ URL::route('get_sub_industry') }}",
+	please_select: "{{ trans('backend.please_select') }}",
 	token: "{{ csrf_token() }}"
 };
 $(document).ready(function () {
@@ -598,4 +594,8 @@ $(document).ready(function () {
 </script>
 <!-- <script src="{{url('common/js/company_details.js?v=1')}}"></script> -->
 <script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
+<script>
+var subind={{$business_info->entity_type_id}};
+handleIndustryChange($("#biz_type_id").val(),subind);
+</script>
 @endsection
