@@ -3,7 +3,7 @@
 namespace App\Inv\Repositories\Models;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class UserDoc extends BaseModel
+class UserAppDoc extends BaseModel
 {
  
 
@@ -12,7 +12,7 @@ class UserDoc extends BaseModel
      *
      * @var string
      */
-    protected $table = 'user_doc';
+    protected $table = 'user_app_doc';
 
     /**
      * Custom primary key is set for the table
@@ -29,6 +29,8 @@ class UserDoc extends BaseModel
     protected $fillable = [
         'user_id',
         'file_id',
+        'product_id',
+        'file_type',
         'created_by',
         'updated_by'
      ];

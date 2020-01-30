@@ -118,8 +118,8 @@
                                                 <td>{{$row->share_per}}</td>
                                              </tr>
                                              <tr>
-                                                <td><b>Educational Qualification</b></td>
-                                                <td>{{$row->edu_qualification}}</td>
+                                                <td><b>Designation</b></td>
+                                                <td>{{$row->designation}}</td>
                                                 <td><b>Other Ownerships</b></td>
                                                 <td>{{$row->other_ownership}}</td>
                                              </tr>

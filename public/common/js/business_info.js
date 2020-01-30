@@ -134,6 +134,7 @@ function checkValidation(){
 	unsetError('input[name=biz_city]');
 	unsetError('input[name=biz_pin]');
 	unsetError('#check_block');
+	unsetError('input[name=share_holding_date]');
 	
 	let flag = true;
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
@@ -152,6 +153,7 @@ function checkValidation(){
 	let biz_city = $('input[name=biz_city]').val().trim();
 	let biz_pin = $('input[name=biz_pin]').val().trim();
 	let product_id = $('input[name*=product_id]:checked');
+	let share_holding_date = $('input[name=share_holding_date]').val();
 
 	if(biz_pan_number.length != 10){
 		setError('input[name=biz_pan_number]', 'Enter valid PAN Number');
@@ -185,6 +187,11 @@ function checkValidation(){
 
 	if(incorporation_date == ''){
 		setError('input[name=incorporation_date]', 'Incorporation date is required');
+		flag = false;
+	}
+
+	if(share_holding_date == ''){
+		setError('input[name=share_holding_date]', 'Share Holding is required');
 		flag = false;
 	}
 
@@ -313,3 +320,47 @@ function fillRegisteredAddress(addr_str){
 	  console.error(err);
 	}
 }
+
+$(document).ready(function(){
+	//$.fn.handleIndustryChange = function () {
+	/**
+	 *  Handle change event
+	 */
+	$(document).on('change', '.industry_change', function () {
+		var industryVal=$("#biz_type_id").val();
+		handleIndustryChange(industryVal,null);
+	});
+  //handleIndustryChange($("#biz_type_id").val(),$(".sub_industry").val());
+});
+
+function handleIndustryChange(intdustval,subIndId){
+	//let selector = $(this);
+	let currentValue = intdustval;
+	let subIndus = $('.sub_industry');
+
+	let selected = (subIndId)?subIndId:null;	
+	$.ajax({
+		url: messages.get_sub_industry,
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			id: currentValue,
+			_token: messages.token
+		},
+		success: function (data) {
+			subIndus.removeClass('error');
+			subIndus.find('option').remove().end();
+			subIndus.append('<option value="">' + messages.please_select + '</option>');
+			$.each(data, function (index, data) {
+				var check = '';
+				if (data.id == selected) {
+					check = 'selected="selected"';
+				}
+				subIndus.append('<option  value="' + data.id + '" ' + check + ' >' + data.name + '</option>');
+			});
+		},
+		error: function () {
+			console.log('Error while getting city');
+		}
+	});
+};

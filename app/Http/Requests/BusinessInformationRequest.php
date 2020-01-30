@@ -39,6 +39,8 @@ class BusinessInformationRequest extends Request
             'biz_city' => 'required|string|max:50',
             'biz_state' => 'required|string|max:50',
             'biz_pin' => 'required|numeric|digits:6',
+            'share_holding_date' =>'required|date_format:d/m/Y',
+            'product_id' => 'required'
             // 'biz_corres_address' => 'required|string|max:100',
             // 'biz_corres_city' => 'required|string|max:50',
             // 'biz_corres_state' => 'required|string|max:50',
@@ -65,6 +67,9 @@ class BusinessInformationRequest extends Request
             'biz_city.required' => 'Business city is required',
             'biz_state.required' => 'Business state is required',
             'biz_pin.required' => 'Business PIN is required',
+            'share_holding_date.required' => 'Share Holding is required',
+            'product_id' => 'Product type is required'
+
             // 'biz_corres_address.required' => 'Correspondence address is required',
             // 'biz_corres_city.required' => 'Correspondence city is required',
             // 'biz_corres_state.required' => 'Correspondence state is required',

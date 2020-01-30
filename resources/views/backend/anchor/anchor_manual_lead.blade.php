@@ -84,8 +84,11 @@
                                   </select>
                               </div>
                            </div>
-                     </div>             
-                @if ($is_superadmin == '1')
+                     </div>  
+                   @php 
+                   $role_id=Helpers::getUserRole(Auth::user()->user_id);
+                   @endphp
+                @if ($role_id[0]->pivot->role_id!= '11')
                 <div  class="row">                    
                       <div class="col-6">
                               <div class="form-group">

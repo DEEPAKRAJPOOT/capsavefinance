@@ -120,8 +120,8 @@ class AppApprover extends BaseModel
         }
        
         $appApprovers =  self::select(DB::raw("CONCAT_WS(' ',rta_u.f_name,rta_u.l_name) AS approver"), 
-        'u.email as approver_email', 'r.name as approver_role', 'app_approval_status.is_active', 
-        'app_approval_status.created_at')
+        'u.email as approver_email', 'r.name as approver_role', 'app_approval_status.status', 
+        'app_approval_status.updated_at')
         ->join('users as u', 'app_approval_status.approver_user_id', '=', 'u.user_id')
         ->join('role_user as ru', 'ru.user_id', '=', 'u.user_id')
         ->join('roles as r', 'r.id', '=','ru.role_id')
