@@ -52,8 +52,11 @@ class ReviewerSummary extends Mailable
 
         if($fileArray) {
             foreach($fileArray as $key=>$val) {
-                if(file_exists(storage_path($val['file_path']))) {
-                    $email->attach(storage_path($val['file_path']));
+                if(file_exists(storage_path('app/public/'.$val['file_path']))) {
+                    $email->attach(storage_path('app/public/'.$val['file_path']),
+                    [
+                        'as' => $val['file_name']
+                    ]);
                 }
             }
         }
