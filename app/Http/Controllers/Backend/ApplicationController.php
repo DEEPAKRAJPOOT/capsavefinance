@@ -740,7 +740,7 @@ class ApplicationController extends Controller
                     $requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_post_sanction_doc']);
                     $docIds = [];
                     foreach($requiredDocs as $doc) {
-                        $docIds[] = $doc->doc_id;
+                        $docIds[] = $doc['doc_id'];
                     }
                     $uploadDocStatus = $this->appRepo->isDocsUploaded($app_id, $docIds);                    
                     if(count($docIds) == 0 || !$uploadDocStatus)  {                    
@@ -749,10 +749,10 @@ class ApplicationController extends Controller
                     }                                  
                 } else if ($currStage->stage_code == 'upload_pre_sanction_doc') {
                     
-                    $requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_pre_sanction_doc']);
+                    $requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_pre_sanction_doc']);                    
                     $docIds = [];
                     foreach($requiredDocs as $doc) {
-                        $docIds[] = $doc->doc_id;
+                        $docIds[] = $doc['doc_id'];
                     }
                     $uploadDocStatus = $this->appRepo->isDocsUploaded($app_id, $docIds);                    
                     if(count($docIds) == 0 || !$uploadDocStatus)  {                    

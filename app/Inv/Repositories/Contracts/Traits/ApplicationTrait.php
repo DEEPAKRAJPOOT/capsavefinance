@@ -13,8 +13,11 @@ trait ApplicationTrait
      * @param array $prgmDocsWhere
      * @return mixed
      */
-    protected function getProgramDocs($prgmDocsWhere, $appProductIds)
+    protected function getProgramDocs($prgmDocsWhere, $appProductIds=[])
     {
+        if (count($appProductIds) == 0) {
+            $appProductIds = $this->getAppProductIds($prgmDocsWhere['app_id']);
+        }
         $array =[];
         $finalDocs =[];
         if ($prgmDocsWhere['stage_code'] == 'doc_upload') {
@@ -50,6 +53,16 @@ trait ApplicationTrait
         return $finalDocs ;
     }
     
+    protected function getAppProductIds($app_id)
+    {
+        $appProductIds = [];
+        $appProducts = $this->appRepo->getAppProducts($app_id);
+        foreach($appProducts->products as $product){
+            array_push($appProductIds, $product->pivot->product_id);
+        }
+        return $appProductIds;       
+    }
+    
     /**
      * Create Application Required Docs
      * 
@@ -60,15 +73,17 @@ trait ApplicationTrait
      */
     protected function createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id)
     {   
-        $appProductIds = [];
+        //$appProductIds = [];
         $appDocProduct = [];
         $appDocs = [];
         $prgmDocsWhere['app_id'] = $app_id;
 
-        $appProducts = $this->appRepo->getAppProducts($app_id);
-        foreach($appProducts->products as $product){
-            array_push($appProductIds, $product->pivot->product_id);
-        }
+        //$appProducts = $this->appRepo->getAppProducts($app_id);
+        //foreach($appProducts->products as $product){
+        //    array_push($appProductIds, $product->pivot->product_id);
+        //}
+        
+        $appProductIds = $this->getAppProductIds($app_id);
 
         $reqDocs = $this->getProgramDocs($prgmDocsWhere, $appProductIds);
         if($reqDocs && count($reqDocs) == 0) {
