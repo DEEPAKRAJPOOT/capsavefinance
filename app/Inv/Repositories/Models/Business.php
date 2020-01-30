@@ -112,6 +112,7 @@ class Business extends BaseModel
             ]);
 
         //entry for parent GST
+        
         BizPanGst::create([
                 'user_id'=>$userId,
                 'biz_id'=>$business->biz_id,
