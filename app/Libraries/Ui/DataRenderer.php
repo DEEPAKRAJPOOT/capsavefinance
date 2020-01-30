@@ -177,12 +177,12 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                     
-                    if(Helpers::checkPermission('company_details')){
-                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
-                    }else{
-                        return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
-                    }
+                        if(Helpers::checkPermission('company_details')){
+                            $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                            return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
+                        }else{
+                            return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
+                        }
                     
                         
                     }
@@ -208,8 +208,8 @@ class DataRenderer implements DataProviderInterface
                     'contact',
                     function ($app) {
                         $contact = '';
-                        $contact .= $app->email ? '<label><b>Email: </b>'.$app->email.'</label>' : '';
-                        $contact .= $app->mobile_no ? '<label><b>Mob: </b>'.$app->mobile_no.'</label>' : '';
+                        $contact .= $app->email ? '<span><b>Email:&nbsp;</b>'.$app->email.'</span>' : '';
+                        $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
                         return $contact;
                     }
                 )
@@ -349,7 +349,7 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                         $link = route('backend_fi', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
                     }
                 )
                 ->addColumn(
