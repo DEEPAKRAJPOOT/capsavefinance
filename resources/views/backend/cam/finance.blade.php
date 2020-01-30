@@ -5,6 +5,8 @@
    $class_enable = 'getAnalysis';
    extract(getFinancialDetailSummaryColumns());
    extract(getProfitandLossColumns());
+   extract(getBalanceSheetLiabilitiesColumns());
+   extract(getBalanceSheetAssetsColumns());
 ?>
 @extends('layouts.backend.admin-layout')
 @section('content')
@@ -58,7 +60,7 @@
                          </div>
                          <div id="gridView">
                             <?php 
-                              // echo $xlsx_html;
+                               echo $xlsx_html;
                             ?>
                          </div>
                           <div class="clearfix"></div>
@@ -415,7 +417,7 @@
                                                           </tr>
                                                           @foreach($costofsales_col as $arr_key => $arr_val)
                                                           <tr>
-                                                            <td height="46" align="right"><input type="text" class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key][$arr_key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key][$arr_key]) : (function_exists($arr_key) ? $arr_key($fin_data) : $arr_key)}}"></td>
+                                                            <td height="46" align="right"><input type="text" <?php echo function_exists($arr_key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key][$arr_key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key][$arr_key]) : (function_exists($arr_key) ? $arr_key($fin_data) : $arr_key)}}"></td>
                                                          </tr>
                                                           @endforeach
                                                           @else
@@ -567,590 +569,83 @@
                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($currentLiabilities_cols as $col_key => $currentLiabilities_col)
                                                     <tr>
-                                                       <td>(i) from applicant bank (CC / WCDL)</td>
+                                                       <td height="46">{{$currentLiabilities_col}}</td>
                                                     </tr>
-                                                    <tr>
-                                                       <td>(ii) from other banks</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(of (i) and (ii) in which Bill purchased & disc.)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td align="right" height="46">SUB TOTAL</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Sundry Creditors (Trade)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Short term borrowings from Associates & Group Concerns</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Short Term borrowings / Commercial Paper</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Short term borrowings from Others</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Advances/ payments from customers/deposits from dealers.</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Provision for taxation</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Proposed dividend</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other Statutory Liabilities( Due within One Year)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Installments of Term loans / Debentures / DPGs etc. (due within 1 year)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Deposits due for repayment (due within 1 year)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Preference Shares redeemable (within 1 year)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>TOTAL REPAYMENTS DUE WITHIN 1 YEAR</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other Current liabilities & provisions (due within 1 year)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Interest acc but not due</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Provision for NPA</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Provision for leave encashment & gratuity</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Unclaimed dividend</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other Liabilities</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Due to Subsidiary companies/ affiliates</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Tax on Interim Dividend Payable</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td align="right" height="46">SUB TOTAL</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">TOTAL CURRENT LIABILITIES</td>
-                                                    </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($currentLiabilities_cols as $key => $currentLiabilities_col)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                            <tr>
                                               <td colspan="4"><b>TERM LIABILITIES</b></td>
                                            </tr>
-                                           <tr>
+                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($termLiabilities_cols as $col_key => $termLiabilities_col)
                                                     <tr>
-                                                       <td>WCTL</td>
+                                                       <td height="46">{{$termLiabilities_col}}</td>
                                                     </tr>
-                                                    <tr>
-                                                       <td>Pref. Shares (portion redeemable after 1 Yr)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Term Loans (Excluding installments payable within one year)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Term Loans - From Fis</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Debentures</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Term deposits</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Unsecured loans</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Borrowings from subsidiaries / affiliates (Quasi Equity)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Deposit from Dealers (only if considered as available for long term)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other term liabilities</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Deferred Tax Liability</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other Loan & Advances</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">TOTAL TERM LIABILITIES</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">TOTAL OUTSIDE LIABILITIES (TOL)</td>
-                                                    </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($termLiabilities_cols as $key => $termLiabilities_col)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                            <tr>
                                               <td colspan="4"><b>NET WORTH</b></td>
                                            </tr>
-                                           <tr>
+                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($networthLiabilities_cols as $col_key => $networthLiabilities_col)
                                                     <tr>
-                                                       <td>Partners capital / Proprietor's capital</td>
+                                                       <td height="46">{{$networthLiabilities_col}}</td>
                                                     </tr>
-                                                    <tr>
-                                                       <td>Share Capital (Paid-up)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Share Application (finalized for allotment)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Total Share Capital</td>
-                                                    </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td ><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($networthLiabilities_cols as $key => $networthLiabilities_col)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                            <tr>
                                               <td colspan="4"><b>RESERVES</b></td>
@@ -1158,257 +653,55 @@
                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($reserveLiabilities_cols as $col_key => $reserveLiabilities_col)
                                                     <tr>
-                                                       <td>Statutory and Capital Reserves</td>
+                                                       <td height="46">{{$reserveLiabilities_col}}</td>
                                                     </tr>
-                                                    <tr>
-                                                       <td>General Reserve</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Revaluation Reserve</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Sub Total</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other Reserves ( Excluding provisions)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Surplus (+) or deficit (-) in P & L Account</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Share Premium A/c</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Capital Subsidy</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Investment Allowance Utilization Reserve</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">TOTAL NET WORTH</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">TOTAL LIABILITIES</td>
-                                                    </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($reserveLiabilities_cols as $key => $reserveLiabilities_col)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                            <tr>
                                               <td colspan="4"><b>CONTINGENT LIABILITIES</b></td>
                                            </tr>
-                                           <tr>
+                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($contingentLiabilities_cols as $col_key => $contingentLiabilities_col)
                                                     <tr>
-                                                       <td>Arrears of cumulative dividends</td>
+                                                       <td height="46">{{$contingentLiabilities_col}}</td>
                                                     </tr>
-                                                    <tr>
-                                                       <td>Disputed excise / customs / Income tax / Sales tax Liabilities</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Gratuity Liability not provided for</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td >Guarantees issued (relating to business)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Guarantees issued (for group companies)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>LCs</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>All other contingent liabilities -(incldg. Bills purchased - Under LC)</td>
-                                                    </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($contingentLiabilities_cols as $key => $contingentLiabilities_col)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                            <tr>
                                               <td colspan="4" bgcolor="#e6e4e4"><b class="bold">ASSETS</b></td>
@@ -1416,35 +709,30 @@
                                            <tr>
                                               <td colspan="4"><b>CURRENT ASSETS</b></td>
                                            </tr>
-                                           <tr>
+                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($assetsCurrent_cols as $col_key => $assetsCurrent_col)
                                                     <tr>
-                                                       <td>Cash and Bank Balances</td>
+                                                       <td height="46">{{$assetsCurrent_col}}</td>
                                                     </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($assetsCurrent_cols as $key => $assetsCurrent_col)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                            <tr>
                                               <td colspan="4"><b>INVESTMENTS (Other than Long Term)</b></td>
@@ -1452,473 +740,55 @@
                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($aasetsInvestments_cols as $col_key => $aasetsInvestments_col)
                                                     <tr>
-                                                       <td>(i) Govt. & other securities</td>
+                                                       <td height="46">{{$aasetsInvestments_col}}</td>
                                                     </tr>
-                                                    <tr>
-                                                       <td>(ii) Fixed deposits with banks</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(iii) Others</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>RECEIVABLES</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>RECEIVABLES other than deferred & exports (Incl. bills purchased & discounted by banks)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Export Receivables (including bill purchased and discounted)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Retention Money / Security Deposit</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>INVENTORY</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Raw Material - Indigenous</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Raw Material - Imported</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Stock in process</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Finished Goods</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other Consumable spares - Indigenous</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other Consumable spares - Imported</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td align="right" height="46">Sub Total: Other Consumable spares</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other stocks</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td align="right" height="46">Sub Total: Inventory</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Advances to suppliers of raw material</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Advance payment of tax</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other Current Assets:</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Interest Accrued</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td align="right">Advance receivable in cash or kind</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Sundry Deposit</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td align="right">Modvat Credit Receivable</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Other current assets</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">TOTAL CURRENT ASSETS</td>
-                                                    </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($aasetsInvestments_cols as $key => $aasetsInvestments_col)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                            <tr>
                                               <td colspan="4"><b>FIXED ASSETS</b></td>
                                            </tr>
-                                           <tr>
+                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($aasetsFixed_cols as $col_key => $aasetsFixed_col)
                                                     <tr>
-                                                       <td>(I) Land</td>
+                                                       <td height="46">{{$aasetsFixed_col}}</td>
                                                     </tr>
-                                                    <tr>
-                                                       <td>(ii) Building</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(iii) Vehicles</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(IV) Plant & Machinery</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(v) Furniture & Fixtures</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(vi) Other Fixed Assets</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(vii) Capital WIP</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">GROSS BLOCK</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>Less: Accumulated Depreciation</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">NET BLOCK</td>
-                                                    </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($aasetsFixed_cols as $key => $aasetsFixed_col)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                            <tr>
                                               <td colspan="4"><b>OTHER NON CURRENT ASSETS</b></td>
@@ -1926,140 +796,27 @@
                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($otherNonCurrentAssets as $col_key => $otherNonCurrentAsset)
                                                     <tr>
-                                                       <td>(I) Investments in Subsidiary companies/ affiliates</td>
+                                                       <td height="46">{{$otherNonCurrentAsset}}</td>
                                                     </tr>
-                                                    <tr>
-                                                       <td>(ii) Other Investments & Investment for acquisition</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(iii) Due from subsidiaries</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(iv) Deferred receivables (maturity exceeding 1 year)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(v) Margin money kept with banks.</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(vi)Debtors more than 6 months</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(vii) Advance against mortgage of house property</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>(viii) Deferred Revenue Expenditure</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td >(ix) Other Non current assets (surplus for Future expansion, Loans & Advances non current in nature, ICD's, Dues from Directors)</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td >TOTAL OTHER NON CURRENT ASSETS</td>
-                                                    </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="59">&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="59">&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="59">&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($otherNonCurrentAssets as $key => $otherNonCurrentAsset)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                            <tr>
                                               <td colspan="4"><b>INTANGIBLE ASSETS (Patents, goodwill, prelim. expenses, bad/doubtful expenses not provided for)</b></td>
@@ -2067,308 +824,27 @@
                                            <tr>
                                               <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                  <table class="table-border-none" width="100%">
+                                                    @foreach($inTangibleAssets_cols as $col_key => $inTangibleAssets_col)
                                                     <tr>
-                                                       <td>(i) Accumulated Losses, Preliminary expenses, Miscellaneous expenditure not w/off, Other deferred revenue expenses</td>
+                                                       <td height="46">{{$inTangibleAssets_col}}</td>
                                                     </tr>
-                                                    <tr>
-                                                       <td>(ii) Deferred Tax Asset</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td align="right" height="46">Sub Total</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">TOTAL ASSETS</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">TANGIBLE NETWORTH</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Total Liabilities - Total Assets</td>
-                                                    </tr>
+                                                    @endforeach
                                                  </table>
                                               </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td height="59">&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td height="59">&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td height="59">&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td>&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                           </tr>
-                                           <tr>
-                                              <td colspan="4" bgcolor="#e6e4e4"><b class="bold">Build Up of Current Assets</b></td>
-                                           </tr>
-                                           <tr>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td height="46">Raw Material - Indigenous AMOUNT</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">MONTH'S CONSUMPTION</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Raw Material - Imported AMOUNT</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">MONTH'S CONSUMPTION</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Consumable spares indigenous AMOUNT</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">MONTH'S CONSUMPTION</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Consumable spares- Imported AMOUNT</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">MONTH'S CONSUMPTION</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Stock in process - AMOUNT</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">MONTH'S COST OF PRODUCTION</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">Finished Goods - AMOUNT</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">MONTH'S COST OF SALES</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="59">RECEIVABLES (DOMESTIC) other than deferred & exports (Incl. bills purchased & discounted by banks) AMOUNT</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">MONTH'S DOMESTIC Income</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">EXPORT RECV.(Incl. bills purchased & discounted by banks) AMOUNT</td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="46">MONTH'S EXPORT Income</td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="59"><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="59"><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                              <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                                 <table class="table-border-none" width="100%">
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td height="59"><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00"></td>
-                                                    </tr>
-                                                    <tr>
-                                                       <td><input type="text" class="form-control form-control-sm" placeholder="0.00" disabled=""></td>
-                                                    </tr>
-                                                 </table>
-                                              </td>
-                                           </tr>
-                                           <tr>
-                                              <td colspan="4" bgcolor="#e6e4e4"><b class="bold">BUILD UP OF CURRENT LIABILITY</b></td>
+                                              @foreach($finance_data as $year => $fin_data)
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      <tbody>
+                                                        @foreach($inTangibleAssets_cols as $key => $inTangibleAssets_col)
+                                                          <tr>
+                                                            <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : '' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                         </tr>
+    
+                                                         @endforeach
+                                                      </tbody>
+                                                   </table>
+                                                </td>
+                                                @endforeach
                                            </tr>
                                         </tbody>
                                      </table>
