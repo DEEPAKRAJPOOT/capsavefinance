@@ -237,35 +237,35 @@ function checkValidation(){
 	}
 
 	if(product_id_supply || parseInt(loan_amount_supply.replace(/,/g, '')) == 0){
-		setError('input[name="product[1][loan_amount]" ]', 'Applied Loan Amount is required');
+		setError('input[name="product_id[1][loan_amount]" ]', 'Applied Loan Amount is required');
 		flag = false;
 	}
 	if(product_id_term || parseInt(loan_amount_term.replace(/,/g, '')) == 0){
-		setError('input[name="product[2][loan_amount]" ]', 'Applied Loan Amount is required');
+		setError('input[name="product_id[2][loan_amount]" ]', 'Applied Loan Amount is required');
 		flag = false;
 	}
 	if(product_id_leasing || parseInt(loan_amount_leasing.replace(/,/g, '')) == 0){
-		setError('input[name="product[3][loan_amount]" ]', 'Applied Loan Amount is required');
+		setError('input[name="product_id[3][loan_amount]" ]', 'Applied Loan Amount is required');
 		flag = false;
 	}
 
 	if(tenor_days_supply == 0){
 		// OK
 	}else if(tenor_days_supply.length != 0 && parseInt(tenor_days_supply) == 0){
-		setError('input[name="product[1][tenor_days]"]', 'Enter valid Tranche Tenor');
+		setError('input[name="product_id[1][tenor_days]"]', 'Enter valid Tranche Tenor');
 		flag = false;
 	}
 
 	if(tenor_days_term == 0){
 		// OK
 	}else if(tenor_days_term.length != 0 && parseInt(tenor_days_term) == 0){
-		setError('input[name="product[2][tenor_days]"]', 'Enter valid Tranche Tenor');
+		setError('input[name="product_id[2][tenor_days]"]', 'Enter valid Tranche Tenor');
 		flag = false;
 	}
 	if(tenor_days_leasing == 0){
 		// OK
 	}else if(tenor_days_leasing.length != 0 && parseInt(tenor_days_leasing) == 0){
-		setError('input[name="product[3][tenor_days]"]', 'Enter valid Tranche Tenor');
+		setError('input[name="product_id[3][tenor_days]"]', 'Enter valid Tranche Tenor');
 		flag = false;
 	}
 
