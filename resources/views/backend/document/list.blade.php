@@ -15,6 +15,11 @@
     font-size: 0.9rem;
     line-height: 1.375rem;
 }
+.tag {
+    font-size: 0.8rem;
+    line-height: 1.375rem;
+    color: #28a745;
+}
 </style>
 @endsection
 @section('content')
@@ -55,7 +60,8 @@
                     <div class="card card-color mb-0">
                         <div class="card-header" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
                             <a class="card-title ">
-                                <b>{{ $data->ppDocument->doc_name }} ( {{ ($data->ppDocument->doc_type_id == 2) ? 'Pre Sanction' : 'Post Sanction' }} )</b>
+                                <b>{{ $data->ppDocument->doc_name }} </b>
+                                <span class="tag"> ( {{ ($data->ppDocument->doc_type_id == 2) ? 'Pre Sanction' : 'Post Sanction' }} ) </span>
                             </a>
 
                         </div>
