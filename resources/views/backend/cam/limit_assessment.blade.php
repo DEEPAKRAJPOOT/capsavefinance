@@ -255,13 +255,13 @@
                         <div>
                             <a data-toggle="modal" data-target="#limitOfferFrame" data-url ="" data-height="600px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openOfferModal" style="display: none;"><i class="fa fa-plus"></i>Add Offer</a>
                             <a data-toggle="modal" data-target="#editLimitFrame" data-url ="" data-height="400px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openLimitModal" style="display: none;"><i class="fa fa-plus"></i>Edit Limit</a>
-                            @if((request()->get('view_only') || $currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
+                            {{--@if((request()->get('view_only') || $currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
                                 <form method="POST" action="{{route('approve_offer')}}">
                                 @csrf
                                 <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                                 <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve">
                                 </form>
-                            @endif
+                            @endif --}}
                         </div>
                         <div class="clearfix"></div>
                     </div>

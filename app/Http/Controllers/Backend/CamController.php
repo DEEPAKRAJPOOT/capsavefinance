@@ -1755,7 +1755,13 @@ class CamController extends Controller
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
 
-               // dd($arrBankDetails);
+                /*start code for approve button */
+                $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$bizId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
+                $currStage = Helpers::getCurrentWfStage($bizId);                
+                $currStageCode = $currStage->stage_code; 
+                /*end code for approve button */
+
+                // dd($arrBankDetails);
                 return view('backend.cam.downloadCamReport')
                         ->with([
                                  'arrCamData' =>$arrCamData ,
@@ -1773,6 +1779,8 @@ class CamController extends Controller
                                  'arrApproverData' => $arrApproverData,
                                  'arrCM' => $arrCM,
                                  'arrStaticData' => $arrStaticData,
+                                 'approveStatus' => $approveStatus,
+                                 'currStageCode' => $currStageCode,
                    
                                ]);
         } catch (Exception $ex) {
