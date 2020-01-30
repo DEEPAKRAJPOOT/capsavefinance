@@ -81,7 +81,7 @@ class BusinessInformationRequest extends Request
             'biz_state.required' => 'Business state is required',
             'biz_pin.required' => 'Business PIN is required',
             'share_holding_date.required' => 'Share Holding is required',
-            'product_id' => 'Product type is required'
+            'product_id.required' => 'Product type is required'
 
             // 'biz_corres_address.required' => 'Correspondence address is required',
             // 'biz_corres_city.required' => 'Correspondence city is required',

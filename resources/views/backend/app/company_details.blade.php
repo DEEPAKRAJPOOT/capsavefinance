@@ -191,7 +191,6 @@
 							</div>
 						</div>
 					</div>
-					
 					<div class="form-sections">
 						<div class="row">
 							<div class="col-md-12">
