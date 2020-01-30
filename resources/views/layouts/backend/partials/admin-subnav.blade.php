@@ -62,11 +62,11 @@
     </li>
     @endcan
     {{--@endif--}}
-    
+
     {{--@if ($currentStage->stage_code == 'sanction_letter' && $isNavAccessible)--}}
     @can('gen_sanction_letter')
     <li>
-        <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('view-offer') ? 'active' : '' }}">Sanction Letter</a>
+        <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/sanction-letter') ? 'active' : '' }}">Sanction Letter</a>
     </li>
     @endcan
     {{--@endif--}}   
