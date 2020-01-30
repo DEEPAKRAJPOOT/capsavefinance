@@ -208,6 +208,7 @@
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[1][loan_amount]" value="@if(array_key_exists(1, $product_ids)){{ old('product_id.1.loan_amount', number_format($product_ids['1']['loan_amount'])) }}@else{{ old('product_id.1.loan_amount','')}}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Supply Chain Loan Amount" maxlength="19" >
 												<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+												<div id="product_type_1_loan"></div>
 												@error('product_id.1.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -219,6 +220,7 @@
 												<label for="txtSupplierName">Supply Chain Tenor (Days)
 												</label>
 												<input type="text" name="product_id[1][tenor_days]" value="@if(array_key_exists(1, $product_ids)){{ old('product_id.1.tenor_days', number_format($product_ids[1]['tenor_days'])) }}@else{{ old('product_id.1.tenor_days', '') }} @endif" class="form-control number_format" tabindex="11" placeholder="Enter Supply Chain Tenor (Days)" maxlength="3">
+												<div id="product_type_1_tenor"></div>
 												@error('product_id.1.tenor_days')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -233,6 +235,7 @@
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[2][loan_amount]" value="@if(array_key_exists(2, $product_ids)){{ old('product_id.2.loan_amount', number_format($product_ids[2]['loan_amount'])) }}@else{{ old('product_id.2.loan_amount','')}}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Term Loan Amount" maxlength="19" >
 												<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+												<div id="product_type_2_loan"></div>
 												@error('product_id.2.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -244,6 +247,7 @@
 												<label for="txtSupplierName">Term Tenor (Months)
 												</label>
 												<input type="text" name="product_id[2][tenor_days]" value="@if(array_key_exists(2, $product_ids)){{ old('product_id.2.tenor_days',number_format($product_ids[2]['tenor_days']))}}@else{{ old('product_id.2.tenor_days', '') }} @endif" class="form-control number_format" tabindex="11" placeholder="Enter Term Tenor (Months)" maxlength="3">
+												<div id="product_type_2_tenor"></div>
 												@error('product_id.2.tenor_days')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -258,6 +262,7 @@
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[3][loan_amount]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.loan_amount', number_format($product_ids[3]['loan_amount']))}}@else{{ old('product_id.3.loan_amount', '') }}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Leasing Loan Amount" maxlength="19" >
 												<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+												<div id="product_type_3_loan"></div>
 												@error('product_id.3.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -269,6 +274,7 @@
 												<label for="txtSupplierName">Leasing Tenor (Months)
 												</label>
 												<input type="text" name="product_id[3][tenor_days]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.tenor_days', number_format($product_ids[3]['tenor_days'])) }}@else{{ old('product_id.3.tenor_days', '') }}@endif" class="form-control number_format" tabindex="11" placeholder="Enter Leasing Tenor (Months)" maxlength="3">
+												<div id="product_type_3_tenor"></div>
 												@error('product_id.3.tenor_days')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
