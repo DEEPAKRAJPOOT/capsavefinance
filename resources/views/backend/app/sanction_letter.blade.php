@@ -39,7 +39,7 @@
                                                 <td with="25%" colspan="3">
                                                     <div class="row">
                                                         <div class="col">
-                                                            <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($validity_date)->format('d/m/Y'))}}" class="form-control datepicker-dis-pdate" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" readonly >
+                                                            <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($validity_date)->format('d/m/Y'))}}" class="form-control" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" readonly >
                                                         </div>
                                                         <div class="col">
                                                         <input type="text" class="form-control" placeholder="Enter Comment" name="sanction_validity_comment" value="{{ $validity_comment }}">
@@ -63,12 +63,12 @@
                                                         @endif
                                                     @endif
                                                 </td>
-                                                <td with="25%"><b>Rental Rate – Per Thousand Per 
-                                                @switch ($offerData->rental_frequency) 
-                                                    @case(4) Monthly  @break
-                                                    @case(3) Quaterly  @break
-                                                    @case(2) Bi-Yearly  @break
-                                                    @case(1) Yearly  @break
+                                                <td with="25%"><b>Rental Rate – 
+                                                @switch ($offerData->rental_frequency)
+                                                    @case(4) PTPM  @break
+                                                    @case(3) PTPQ  @break
+                                                    @case(2) PTPBi-Y  @break
+                                                    @case(1) PTPY  @break
                                                 @endswitch </b></td>
                                                 <td with="25%">
                                                     @if($ptpqrData)
@@ -103,7 +103,7 @@
                                                     @endif
                                                 </td>
                                                 <td with="25%"><b>Processing Fees</b></td>
-                                                <td with="25%">{!! $offerData->processing_fee ? \Helpers::formatCurreny($offerData->processing_fee) : '' !!}</td>
+                                                <td with="25%">{!! $offerData->processing_fee ? $offerData->processing_fee . ' %' : '' !!}</td>
                                             </tr>
                                             <tr>
                                                 <td with="25%"><b>Security</b></td>
@@ -137,12 +137,12 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td with="25%"><b>Payment Mechanism</b></td>
+                                                <td with="25%"><b>Payment Mechanism</b> <span class="mandatory">*</span></td>
                                                 <td colspan="3">
                                                     <div class="row">
                                                         <div class="col">
                                                             <select class="form-control" id="payment_type" name="payment_type">
-                                                                <option value="">Choose...</option>
+                                                                <option value="">Please Select...</option>
                                                                 <option @if($payment_type == '1')selected @endif value="1">NACH</option>
                                                                 <option @if($payment_type == '2')selected @endif value="2">RTGS</option>
                                                                 <option @if($payment_type == '3')selected @endif value="3">NEFT</option>
@@ -309,6 +309,13 @@
                 $('#payment_type_comment').addClass('hide');
             }
         })
+
+        $("input[name='sanction_validity_date']").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+                startDate: '+1m'
+            });
     });
 
 </script>
