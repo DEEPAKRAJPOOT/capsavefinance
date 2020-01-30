@@ -2023,6 +2023,12 @@ class DataRenderer implements DataProviderInterface
                     }
                 )
                 ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = $request->get('search_keyword');
+                            $query->where('doc_name', 'like', "%$search_keyword%");
+                        });
+                    }
                     if ($request->get('doc_type_id') != '') {
                         $query->where(function ($query) use ($request) {
                             $doc_type_id = $request->get('doc_type_id');
