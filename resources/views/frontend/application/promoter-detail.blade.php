@@ -1443,17 +1443,17 @@
           //////////////////////for otp verified///////////////////
           
         $(document).on('click', '.verify_otp', function () { 
-        //$(".isloader").css('display', 'inline');
         var count    = $(this).attr('data-id');
         var  mobile_no  =  $("#mobile_no"+count).val();
         var biz_owner_id    = $("#ownerid"+count).val();
         var appId   =  $("#app_id").val();
         var otp =  $("#verify_otp_no"+count).val();
-        if(otp=='')
+       if(otp=='')
         {
-            $("#v6failurepanverify"+count).text('Please enter OTP');
+            $("#v6failurepanverify"+count).html('<i>Please enter OTP</i>');
             return false;
         }
+        $("#v5failurepanverify"+count).html(''); 
         data = {_token, otp,request_id, appId, biz_owner_id};
         $.ajax({
                 url  : otpurl,
@@ -1464,35 +1464,20 @@
                 },
                 dataType : 'json',
                 success:function(result) {
-                 ///   $(".isloader").css('display', 'none');
-                   
-//                    let mclass = result['status'] ? 'success' : 'danger';
-//                    let micon = result['status'] ? 'circle' : 'close';
-//                    var html = result['message'];
-                 if (result.status==1) {
+                if (result.status==1) {
                      $("#verify_mobile_otp_no"+count).hide();
                      $("#toggleOtp"+count).hide();
                      $("#pOtpVeriView"+count).show();
                      $("#v11successpanverify"+count).show();
-                     
-//                            var request_id = result['request_id'];
-//                            span_target.html('<span class="text-' + mclass + '"><i class="fa fa-check-' + micon + '" aria-hidden="true"></i> <i>' + html + '</i> </span>');
-//                            span_target.css('pointer-events', 'none');
-//                            $("#mobile_no"+count).attr('readonly', 'readonly');
-//                            $("#verify_mobile_no"+count).css('pointer-events', 'none');
-//                         ///   $("#toggleOtp"+count).hide();
-//                            $('#modalOtp').show();
-//                            $('#modalOtp iframe').attr({'src':'{{URL::route("mobile_verify") }}?type=otp&request_id=' + request_id, 'width':'100%'});
-                    }
+                  }
                    else
                    {
-                        $("#v6failurepanverify"+count).html('Not Verified');      
+                        $("#v6failurepanverify"+count).html('<i>Not Verified</i>');     
                    }
                 },
                 error:function(error) {
-                     $(".isloader").css('display', 'none');
-                      var html = 'Some error occured.';
-                    $("#v6failurepanverify"+count).html(html);
+                      var html = '<i>Please enter currect OTP</i>';
+                      $("#v6failurepanverify"+count).html(html);
                       },
                 complete: function() {
                 $(".isloader").hide();
@@ -1509,7 +1494,7 @@
         var appId   =  $("#app_id").val();
         var  mobile_no  =  $("#mobile_no"+count).val();
         if (mobile_no=='') {
-            $("#v5failurepanverify"+count).html('<i>Please enter mobile no.</i>');
+            $("#v5failurepanverify"+count).html('<i>Please enter currect mobile no.</i>');
               return false;
         }
         else if(mobile_no.length < 10)
@@ -1527,14 +1512,22 @@
                 },
                 dataType : 'json',
                 success:function(result) {
-                    $("#verify_mobile_otp_no"+count).html("Resend OTP");
+                  if(result.status==1)
+                   {
+                    $("#v5failurepanverify"+count).html('<i>'+result.message+'</i>');
                     request_id = result.request_id;
                     $("#toggleOtp"+count).show();
-                },
+                    $("#verify_mobile_otp_no"+count).html("Resend OTP");
+                }
+                else
+                {
+                    $("#v5failurepanverify"+count).html('<i>Please enter currect mobile no.</i>');
+                    
+                 }
+                 },
                 error:function(error) {
-                var html = 'Some error occured.';
-                $("#v6failurepanverify"+count).html(html);
-         //        $("#toggleOtp"+count).hide();
+                    var html = '<i>Please enter currect mobile no</i>';
+                     $("#v6failurepanverify"+count).html(html);
               },
                 complete: function() {
                     $(".isloader").hide();
@@ -1550,7 +1543,7 @@
         var  biz_owner_id    = $("#ownerid"+count).val();
         var  mobile_no  =  $("#mobile_no"+count).val();
          if (mobile_no=='') {
-            $("#v5failurepanverify"+count).html('<i>Please enter mobile no.</i>');
+            $("#v5failurepanverify"+count).html('<i>Please enter currect mobile no.</i>');
               return false;
         }
         else if(mobile_no.length < 10)
@@ -1577,28 +1570,24 @@
                         $(this).hide();
                         $("#v5successpanverify"+count).show();
                         $("#v5successpanverify"+count).html('<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>'); 
-                        ///$("#toggleOtp"+count).show();
                         $("#verify_mobile_no"+count).text('Verified');
                         $("#mobile_no"+count).attr('readonly','readonly');
                         $("#verify_mobile_no"+count).hide();
                          request_id = result.request_id;
                         $("#verify_mobile_otp_no"+count).css('pointer-events','auto');
                         $("#pMobileVeriView"+count).show();
-                       //  $('#modalMobile').show();
-                          ///  $('#modalMobile iframe').attr({'src':'{{URL::route("mobile_verify") }}?type=mobile&mobile=' + mobile_no, 'width':'100%'});
                     }
                     else
                     {
-                         $("#v5failurepanverify"+count).show();
-                         var html = 'Some error occured.';
-                         $("#v5failurepanverify"+count).html(html);
+                        $("#v5failurepanverify"+count).show();
+                        var html = '<i>Please enter currect mobile no.</i>';
+                        $("#v5failurepanverify"+count).html(html);
                     }
                 },
                 error:function(error) {
-                $("#v5failurepanverify"+count).show();
-                var html = 'Some error occured.';
-                $("#v5failurepanverify"+count).html(html);
-         //         $("#toggleOtp"+count).hide();
+                    $("#v5failurepanverify"+count).show();
+                     var html = '<i>Please enter currect mobile no.</i>';
+                     $("#v5failurepanverify"+count).html(html);
               },
                 complete: function() {
                     $(".isloader").hide();
