@@ -779,9 +779,7 @@ ul.listing{float:left; width:50%; margin:0px;}
 ul.listing.listing1{float:left; width:100%; margin:0px;}
 ul.listing li{ padding:5px 0;}
 ul.listing.listing1 li{float:left; width:33.33%;}
-.sub-title{    border-bottom: #dadada solid 1px;
-    color:#03bb83;
-    padding-bottom: 6px;}
+.sub-title{  border-bottom: #dadada solid 1px;padding-bottom: 6px;}
 	.sub-menu{ max-height:150px; overflow:auto !important;}
 	.repayment-form-modal {
     border-right: 1px solid #dddddd;

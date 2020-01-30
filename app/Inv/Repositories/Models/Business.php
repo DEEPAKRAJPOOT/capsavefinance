@@ -68,6 +68,7 @@ class Business extends BaseModel
         'is_gst_verified',
         'panno_pan_gst_id',
         'gstno_pan_gst_id',
+        'share_holding_date',
         'org_id',
         'created_by',
         'created_at',
@@ -86,6 +87,7 @@ class Business extends BaseModel
         'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
+        'share_holding_date'=>Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d'),
         'org_id'=>1,
         'created_by'=>$userId,
         ]);
@@ -219,6 +221,7 @@ class Business extends BaseModel
         'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
+        'share_holding_date'=>Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d'),
         'org_id'=>1,
         'updated_by'=>$userId,
         ]);

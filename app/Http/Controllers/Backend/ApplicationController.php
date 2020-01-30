@@ -851,6 +851,7 @@ class ApplicationController extends Controller
     public function saveBusinessInformation(BusinessInformationRequest $request)
     {
         try {
+
             $arrFileData = $request->all();
             $user_id = $request->user_id;
             $business_info = $this->appRepo->saveBusinessInfo($arrFileData, $user_id);
@@ -1010,7 +1011,7 @@ class ApplicationController extends Controller
         if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
             $offerId = $request->get('offer_id');
         } 
-        $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+        $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
        
         return view('backend.app.sanction_letter')->with($data);   
     }
@@ -1246,7 +1247,7 @@ class ApplicationController extends Controller
                 $offerId = $request->get('offer_id');
             } 
 
-            $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
             $date = \Carbon\Carbon::now();
             $data['date'] = $date;
             $htmlContent = view('backend.app.send_sanction_letter')->with($data)->render();
@@ -1348,8 +1349,8 @@ class ApplicationController extends Controller
                     $data[$key]['approver'] = $approver->approver;
                     $data[$key]['approver_email'] = $approver->approver_email;
                     $data[$key]['approver_role'] = $approver->approver_role;
-                    $data[$key]['approved_date'] = ($approver->approver)? date('d-M-Y',strtotime($approver->approver)) : '---';
-                    $data[$key]['stauts'] = ($approver->is_active)?"Approved":"";
+                    $data[$key]['approved_date'] = ($approver->updated_at)? date('d-M-Y',strtotime($approver->updated_at)) : '---';
+                    $data[$key]['stauts'] = ($approver->is_active == '1')?"Approved":"";
                 }
                 return view('backend.app.view_approvers')->with('approvers', $data);
             }
@@ -1373,11 +1374,14 @@ class ApplicationController extends Controller
                 $data = array();
                 foreach($assignees as $key => $assignee){
                     $from_role_name = '';
+
+                   
                     if($assignee->from_user_id){
                         $from_role_name = User::getUserRoles($assignee->from_user_id);
                         if($from_role_name->count()!=0)
-                        $from_role_name = $from_role_name[0];
+                            $from_role_name = $from_role_name[0];
                     }
+
                     if($assignee->to_user_id){
                         $to_role_name = User::getUserRoles($assignee->to_user_id);
                         if($to_role_name->count()!=0)
@@ -1385,13 +1389,15 @@ class ApplicationController extends Controller
                     }else{
                         $to_role_name = Role::getRole($assignee->role_id);
                     }
-
+                    
+                   // dump($to_role_name);
+                    
                     $data[$key]['assignby'] = $assignee->assignby;
                     $data[$key]['assignto'] = $assignee->assignto;
                     $data[$key]['sharing_comment'] = $assignee->sharing_comment;
                     $data[$key]['assigne_date'] = ($assignee->created_at)? date('d-M-Y',strtotime($assignee->created_at)) : '---';
-                    $data[$key]['assignby_role'] = ($from_role_name->count()!=0)? $from_role_name->name:'';
-                    $data[$key]['assignto_role'] = ($to_role_name->count()!=0)? $to_role_name->name:'';
+                    $data[$key]['assignby_role'] = ($from_role_name && $from_role_name->count()!=0)? $from_role_name->name:'';
+                    $data[$key]['assignto_role'] = ($to_role_name && $to_role_name->count()!=0)? $to_role_name->name:'';
                 }
                 return view('backend.app.view_shared_details')->with('approvers', $data);
             }
@@ -1455,7 +1461,7 @@ class ApplicationController extends Controller
                 $offerId = $request->get('offer_id');
             } 
             
-            $data = $this->appRepo->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+            $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
             $date = \Carbon\Carbon::now();
             $data['date'] = $date;
             $html = view('backend.app.send_sanction_letter')->with($data)->render();

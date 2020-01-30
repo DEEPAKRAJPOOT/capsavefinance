@@ -77,6 +77,7 @@ class CamController extends Controller
             $whereCondition = [];
             //$whereCondition['anchor_id'] = $anchorId;
             $prgmData = $this->appRepo->getProgramData($whereCondition);
+            $limitData = $this->appRepo->getAppLimit($arrRequest['app_id']);
             if(!empty($prgmData))
             {
                $arrBizData['prgm_name'] = $prgmData['prgm_name'];
@@ -88,7 +89,13 @@ class CamController extends Controller
             if(isset($arrCamData['t_o_f_security_check'])){
                 $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
             }
-            return view('backend.cam.overview')->with(['arrCamData' =>$arrCamData ,'arrRequest' =>$arrRequest, 'arrBizData' => $arrBizData, 'arrOwner' =>$arrOwner]);
+            return view('backend.cam.overview')->with([
+                'arrCamData' =>$arrCamData ,
+                'arrRequest' =>$arrRequest, 
+                'arrBizData' => $arrBizData, 
+                'arrOwner' =>$arrOwner,
+                'limitData' =>$limitData
+                ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -1748,7 +1755,7 @@ class CamController extends Controller
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
 
-                //dd($arrOwnerData['0']['first_name']);
+               // dd($arrBankDetails);
                 return view('backend.cam.downloadCamReport')
                         ->with([
                                  'arrCamData' =>$arrCamData ,

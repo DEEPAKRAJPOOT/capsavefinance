@@ -196,6 +196,22 @@
 										</div>
 									</div>
 								</div>
+
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Share Holding % as on
+												<span class="mandatory">*</span>
+											</label>
+											<input type="text" name="share_holding_date" value="{{old('share_holding_date')}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Share Holding Date" autocomplete="off" readonly >
+											@error('share_holding_date')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+								</div>
+
+
 							</div>
 						</div>
 
