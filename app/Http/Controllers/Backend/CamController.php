@@ -1875,7 +1875,8 @@ class CamController extends Controller
       $docFile = $this->docRepo->saveFile($uploadData);
       if(!empty($docFile->file_id)) {
           UserAppDoc::where('app_id', '=', $appId)
-          ->where('file_type', '=', 2)        
+          ->where('file_type', '=', 2)  
+          ->where('product_id', '=', config('common.PRODUCT.LEASE_LOAN'))       
           ->update(['is_active' => '0']);
 
           UserAppDoc::create(array(

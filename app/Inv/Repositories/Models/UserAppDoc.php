@@ -36,6 +36,18 @@ class UserAppDoc extends BaseModel
         'updated_by'
      ];
   
+     public static function getLatestDoc($appId, $productId, $fileType)
+     {
+         $outQry = self::select('file.file_id','file.file_path','file.file_name')
+                 ->join('file', 'file.file_id', '=', 'user_app_doc.file_id')                
+                 ->where('user_app_doc.app_id', $appId)
+                 ->where('user_app_doc.product_id', $productId)
+                 ->where('user_app_doc.file_type', $fileType)
+                 ->where('user_app_doc.is_active', 1)
+                 ->where('file.is_active', 1)
+                 ->first();   
+         return  ($outQry) ? $outQry->toArray() : false;   
+     }
 }
   
 
