@@ -194,18 +194,22 @@ class ApplicationController extends Controller
                 $prgmDocsWhere = [];
                 $prgmDocsWhere['stage_code'] = 'doc_upload';
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-            
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);                                                
-                $userData = $this->userRepo->getfullUserDetail($userId);
-                if ($userData && !empty($userData->anchor_id)) {
-                    $toUserId = $this->userRepo->getLeadSalesManager($userId);
-                } else {
-                    $toUserId = $this->userRepo->getAssignedSalesManager($userId);
-                }                
-                
-                if ($toUserId) {
-                   Helpers::assignAppToUser($toUserId, $appId);
+                            
+                $currentStage = \Helpers::getCurrentWfStage($appId);
+                if ($currentStage && $currentStage->stage_code == 'promo_detail') {
+                    $userData = $this->userRepo->getfullUserDetail($userId);
+                    if ($userData && !empty($userData->anchor_id)) {
+                        $toUserId = $this->userRepo->getLeadSalesManager($userId);
+                    } else {
+                        $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+                    }                
+
+                    if ($toUserId) {
+                       Helpers::assignAppToUser($toUserId, $appId);
+                    }
                 }
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+
                 return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1]);
             }
             else {
@@ -380,25 +384,28 @@ class ApplicationController extends Controller
                 
             }
             
+            $wf_status = 1;                
+            Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+            
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
-                $appId = $arrFileData['appId'];       
-                $response = $this->docRepo->isUploadedCheck($userId, $appId);            
-                $wf_status = $response->count() < 1 ? 1 : 2;
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                //$appId = $arrFileData['appId'];       
+                //$response = $this->docRepo->isUploadedCheck($userId, $appId);            
+                //$wf_status = $response->count() < 1 ? 1 : 2;
+                //Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
                 Session::flash('message',trans('success_messages.uploaded'));
 
                 return redirect()->route('document', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+                //Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
 
                 return redirect()->route('document', ['app_id' => $appId, 'biz_id' => $bizId]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+            //Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
         
             return redirect()->route('document', ['app_id' => $appId, 'biz_id' => $bizId])->withErrors(Helpers::getExceptionMessage($ex));
         }

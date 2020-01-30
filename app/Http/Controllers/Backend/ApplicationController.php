@@ -199,18 +199,21 @@ class ApplicationController extends Controller
                 $prgmDocsWhere['stage_code'] = 'doc_upload';
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
             
+                $currentStage = \Helpers::getCurrentWfStage($appId);
+                if ($currentStage && $currentStage->stage_code == 'promo_detail') {
+                    $userData = $this->userRepo->getfullUserDetail($userId);
+                    if ($userData && !empty($userData->anchor_id)) {
+                        $toUserId = $this->userRepo->getLeadSalesManager($userId);
+                    } else {
+                        $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+                    }
+
+                    if ($toUserId) {
+                       Helpers::assignAppToUser($toUserId, $appId);
+                    }                    
+                }                
                 Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1); 
                 
-                $userData = $this->userRepo->getfullUserDetail($userId);
-                if ($userData && !empty($userData->anchor_id)) {
-                    $toUserId = $this->userRepo->getLeadSalesManager($userId);
-                } else {
-                    $toUserId = $this->userRepo->getAssignedSalesManager($userId);
-                }
-                
-                if ($toUserId) {
-                   Helpers::assignAppToUser($toUserId, $appId);
-                }
                 return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1]);
             }
             else {
