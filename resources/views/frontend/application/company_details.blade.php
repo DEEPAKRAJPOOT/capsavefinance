@@ -30,7 +30,7 @@
 				<input type="hidden" name="biz_cin" value="">
 				<input type="hidden" name="pan_api_res" value="">
 				<div class=" form-fields">
-					<div class="form-sections">
+						<div class="form-sections">
 							<div class="row">
 								<div class="col-md-4">
 									<div class="form-group">
@@ -43,8 +43,8 @@
 										<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="pointer-events: none;">Verified</a>
 										<input type="text" name="biz_pan_number" value="{{old('biz_pan_number', $business_info->pan->pan_gst_hash)}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" readonly>
 										@error('biz_pan_number')
-							                <span class="text-danger error">{{ $message }}</span>
-							            @enderror
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
 									</div>
 								</div>
 								<div class="col-md-4">
@@ -61,8 +61,8 @@
 											@endforelse
 										</select>
 										@error('biz_gst_number')
-							                <span class="text-danger error">{{ $message }}</span>
-							            @enderror
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
 									</div>
 								</div>
 								<div class="col-md-4">
@@ -72,102 +72,115 @@
 										</label>
 										<input type="text" name="biz_entity_name" value="{{old('biz_entity_name', $business_info->biz_entity_name)}}" class="form-control" tabindex="3" placeholder="Enter Entity Name" maxlength="100" >
 										@error('biz_entity_name')
-							                <span class="text-danger error">{{ $message }}</span>
-							            @enderror
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
 									</div>
 								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group password-input">
+										<label for="txtPassword">Industry
+											<span class="mandatory">*</span>
+										</label>
+										<select class="form-control" name="biz_type_id" tabindex="4" >
+											<option value=""> Select Industry</option>
+											<option value="1" {{(old('biz_type_id', $business_info->nature_of_biz) == 1)? 'selected':''}}> Industry 1 </option>
+											<option value="2" {{(old('biz_type_id', $business_info->nature_of_biz) == 2)? 'selected':''}}> Industry 2 </option>
+											<option value="3" {{(old('biz_type_id', $business_info->nature_of_biz) == 3)? 'selected':''}}> Industry 3 </option>
+										</select>
+										@error('biz_type_id')
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
+									</div>
 								</div>
-								<div class="row">
-									<div class="col-md-4">
-										<div class="form-group password-input">
-											<label for="txtPassword">Industry
-												<span class="mandatory">*</span>
-											</label>
-											<select class="form-control" name="biz_type_id" tabindex="4" >
-												<option value=""> Select Industry</option>
-												<option value="1" {{(old('biz_type_id', $business_info->nature_of_biz) == 1)? 'selected':''}}> Industry 1 </option>
-												<option value="2" {{(old('biz_type_id', $business_info->nature_of_biz) == 2)? 'selected':''}}> Industry 2 </option>
-												<option value="3" {{(old('biz_type_id', $business_info->nature_of_biz) == 3)? 'selected':''}}> Industry 3 </option>
+								<div class="col-md-4">
+									<div class="form-group password-input">
+										<label for="txtPassword">Date of Incorporation
+											<span class="mandatory">*</span>
+										</label>
+										<input type="text" name="incorporation_date" value="{{old('incorporation_date', \Carbon\Carbon::parse($business_info->date_of_in_corp)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Entity Name" autocomplete="off" readonly >
+										@error('incorporation_date')
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label for="txtEmail">Business Constitution
+											<span class="mandatory">*</span>
+										</label>
+										<select class="form-control" name="biz_constitution" tabindex="6" >
+												<option value=""> Select Business Constitution</option>
+												<option value="1" {{(old('biz_constitution', $business_info->biz_constitution) == 1)? 'selected':''}}> Business Constitution 1 </option>
+												<option value="2" {{(old('biz_constitution', $business_info->biz_constitution) == 2)? 'selected':''}}> Business Constitution 2 </option>
+												<option value="3" {{(old('biz_constitution', $business_info->biz_constitution) == 3)? 'selected':''}}> Business Constitution 3 </option>
 											</select>
-											@error('biz_type_id')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-									<div class="col-md-4">
-										<div class="form-group password-input">
-											<label for="txtPassword">Date of Incorporation
-												<span class="mandatory">*</span>
-											</label>
-											<input type="text" name="incorporation_date" value="{{old('incorporation_date', \Carbon\Carbon::parse($business_info->date_of_in_corp)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Entity Name" autocomplete="off" readonly >
-											@error('incorporation_date')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-									<div class="col-md-4">
-										<div class="form-group">
-											<label for="txtEmail">Business Constitution
-												<span class="mandatory">*</span>
-											</label>
-											<select class="form-control" name="biz_constitution" tabindex="6" >
-													<option value=""> Select Business Constitution</option>
-													<option value="1" {{(old('biz_constitution', $business_info->biz_constitution) == 1)? 'selected':''}}> Business Constitution 1 </option>
-													<option value="2" {{(old('biz_constitution', $business_info->biz_constitution) == 2)? 'selected':''}}> Business Constitution 2 </option>
-													<option value="3" {{(old('biz_constitution', $business_info->biz_constitution) == 3)? 'selected':''}}> Business Constitution 3 </option>
-												</select>
-												@error('biz_constitution')
-									                <span class="text-danger error">{{ $message }}</span>
-									            @enderror
-										</div>
+											@error('biz_constitution')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
 									</div>
 								</div>
-								<div class="row">
-									<div class="col-md-4">
-										<div class="form-group password-input">
-											<label for="txtPassword">Nature of Business
-												<span class="mandatory">*</span>
-											</label>
-											<select class="form-control" name="entity_type_id" tabindex="7" >
-												<option value=""> Select Nature of Business</option>
-												<option value="1" {{(old('entity_type_id', $business_info->entity_type_id) == 1)? 'selected':''}}> Nature of Business 1 </option>
-												<option value="2" {{(old('entity_type_id', $business_info->entity_type_id) == 2)? 'selected':''}}> Nature of Business 2 </option>
-												<option value="3" {{(old('entity_type_id', $business_info->entity_type_id) == 3)? 'selected':''}}> Nature of Business 3 </option>
-											</select>
-											@error('entity_type_id')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-									
-									<div class="col-md-4">
-										<div class="form-group password-input">
-											<label for="txtPassword">Segment
-												<span class="mandatory">*</span>
-											</label>
-											<select class="form-control" name="segment" tabindex="8" >
-												<option value=""> Select Segment</option>
-												<option value="1" {{(old('segment', $business_info->biz_segment) == 1)? 'selected':''}}> Segment 1 </option>
-												<option value="2" {{(old('segment', $business_info->biz_segment) == 2)? 'selected':''}}> Segment 2 </option>
-												<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
-											</select>
-											@error('segment')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-									
-									<div class="col-md-4">
-										<div class="form-group password-input INR">
-											<label for="txtPassword">Business Turnover
-											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover', number_format($business_info->turnover_amt))}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
-											@error('biz_turnover')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
+							</div>
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group password-input">
+										<label for="txtPassword">Nature of Business
+											<span class="mandatory">*</span>
+										</label>
+										<select class="form-control" name="entity_type_id" tabindex="7" >
+											<option value=""> Select Nature of Business</option>
+											<option value="1" {{(old('entity_type_id', $business_info->entity_type_id) == 1)? 'selected':''}}> Nature of Business 1 </option>
+											<option value="2" {{(old('entity_type_id', $business_info->entity_type_id) == 2)? 'selected':''}}> Nature of Business 2 </option>
+											<option value="3" {{(old('entity_type_id', $business_info->entity_type_id) == 3)? 'selected':''}}> Nature of Business 3 </option>
+										</select>
+										@error('entity_type_id')
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
 									</div>
 								</div>
+								
+								<div class="col-md-4">
+									<div class="form-group password-input">
+										<label for="txtPassword">Segment
+											<span class="mandatory">*</span>
+										</label>
+										<select class="form-control" name="segment" tabindex="8" >
+											<option value=""> Select Segment</option>
+											<option value="1" {{(old('segment', $business_info->biz_segment) == 1)? 'selected':''}}> Segment 1 </option>
+											<option value="2" {{(old('segment', $business_info->biz_segment) == 2)? 'selected':''}}> Segment 2 </option>
+											<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
+										</select>
+										@error('segment')
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
+									</div>
+								</div>
+								
+								<div class="col-md-4">
+									<div class="form-group password-input INR">
+										<label for="txtPassword">Business Turnover
+										</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+										<input type="text" name="biz_turnover" value="{{old('biz_turnover', number_format($business_info->turnover_amt))}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
+										@error('biz_turnover')
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group password-input">
+										<label for="txtPassword">Share Holding % as on
+											<span class="mandatory">*</span>
+										</label>
+										<input type="text" name="share_holding_date" value="{{old('share_holding_date', \Carbon\Carbon::parse($business_info->share_holding_date)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Share Holding Date" autocomplete="off" readonly >
+										@error('share_holding_date')
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="form-sections">
 							<div class="row">
