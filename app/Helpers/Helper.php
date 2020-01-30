@@ -325,11 +325,13 @@ class Helper extends PaypalHelper
             if(!Storage::exists('/public/cam/' .$appId)) {
                 Storage::makeDirectory('/public/cam/' .$appId, 0777, true);
             }
+            if(!Storage::exists('/public/cam/'.$appId."/".config('common.PRODUCT.LEASE_LOAN'))) {
+                Storage::makeDirectory('/public/cam/'.$appId."/".config('common.PRODUCT.LEASE_LOAN'), 0777, true);
+            }
             $fileName = time().".pdf";
-            $path = "/cam/" .$appId."/".$fileName;            
-            Storage::disk('public')->put($path, $pdfContent);
-            $dbpath = "cam/" .$appId."/".$fileName;
-            $inputArr['file_path'] = $dbpath;
+            $path = "/cam/" .$appId."/".config('common.PRODUCT.LEASE_LOAN')."/".$fileName;            
+            $tempPath = Storage::disk('public')->put($path, $pdfContent);
+            $inputArr['file_path'] = $path;
         }
              
         $inputArr['file_type'] = Storage::disk('public')->mimeType($path);
