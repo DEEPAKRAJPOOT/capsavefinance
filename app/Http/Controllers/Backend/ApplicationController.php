@@ -1346,7 +1346,7 @@ class ApplicationController extends Controller
                     $data[$key]['approver_email'] = $approver->approver_email;
                     $data[$key]['approver_role'] = $approver->approver_role;
                     $data[$key]['approved_date'] = ($approver->updated_at)? date('d-M-Y',strtotime($approver->updated_at)) : '---';
-                    $data[$key]['stauts'] = ($approver->is_active == '1')?"Approved":"";
+                    $data[$key]['stauts'] = ($approver->status == '1')?"Approved":"";
                 }
                 return view('backend.app.view_approvers')->with('approvers', $data);
             }
