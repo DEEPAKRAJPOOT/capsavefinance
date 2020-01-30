@@ -25,9 +25,9 @@
                   <tr role="row">
                      <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Group</th>
                      <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Borrower</th>
-                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit (Mn)</th>
-                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure (Mn)</th>
-                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure (Mn)</th>
+                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit</th>
+                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure</th>
+                     <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure</th>
                   </tr>
                </thead>
                <tbody>
@@ -43,7 +43,7 @@
            
 
             <div class="data mt-4">
-             <h2 class="sub-title bg">Deal Structure:</h2>
+             <h2 class="sub-title bg">Deal Structure</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
               <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
@@ -54,33 +54,33 @@
                </thead>
                <tbody>
                   <tr role="row" class="odd">
-                     <td class="">Facility Type</td>
+                     <td class=""><b>Facility Type</td>
                      <td class="">Lease</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class="">Limit (In Mn)</td>
+                     <td class=""><b>Limit (In Mn)</b></td>
                      <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
                            </td>
                      
                   </tr>
                   <tr role="row" class="odd">
-                     <td class="">Tenor (Months)</td>
+                     <td class=""><b>Tenor (Months)</b></td>
                      <td class="">{{isset($leaseOfferData->tenor) ? $leaseOfferData->tenor : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class="">Equipment Type</td>
+                     <td class=""><b>Equipment Type</b></td>
                      <td class="">{{isset($leaseOfferData->security_deposit_type) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->security_deposit_type)['equipment_name']) : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class="">Security Deposit</td>
+                     <td class=""><b>Security Deposit</b></td>
                      <td class="">{{isset($leaseOfferData->security_deposit) ? $leaseOfferData->security_deposit : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class="">Rental Frequency</td>
+                     <td class=""><b>Rental Frequency</b></td>
                      <td class="">{{isset($leaseOfferData->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOfferData->rental_frequency] : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class="">PTPQ</td>
+                     <td class=""><b>PTPQ</b></td>
                      <td class="">
                         @php 
                            $i = 1;
@@ -108,13 +108,13 @@
                      </td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class="" valign="top">XIRR</td>
+                     <td class="" valign="top"><b>XIRR</b></td>
                      <td class="" valign="top">Ruby Sheet : {{isset($leaseOfferData->ruby_sheet_xirr) ? $leaseOfferData->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOfferData->cash_flow_xirr) ? $leaseOfferData->cash_flow_xirr : ''}}%
                      </td>
                   </tr>
                  
                   <tr role="row" class="odd">
-                     <td class="">Additional Security</td>
+                     <td class=""><b>Additional Security</b></td>
                      <td class="">
                            <div class="form-check" style="display: inline-block; margin-right:10px;">
                              <label class="form-check-label">
@@ -145,7 +145,7 @@
             </div>
 
              <div class="data mt-4">
-             <h2 class="sub-title bg">Pre Disbursement Conditions:</h2>
+             <h2 class="sub-title bg">Pre Disbursement Conditions</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
                <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
@@ -196,7 +196,7 @@
             
            
            <div class="data mt-4">
-             <h2 class="sub-title bg">Post Disbursement Conditions:</h2>
+             <h2 class="sub-title bg">Post Disbursement Conditions</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
                <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
@@ -216,7 +216,7 @@
                   </tr>
                   <tr role="row" class="odd">
                       <td class="">
-                         <p> {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}}" </p>
+                         <p> {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}} </p>
                      </td>
                      <td class="">
                          <p> {{isset($reviewerSummaryData->time_dscr) ? $reviewerSummaryData->time_dscr : ''}} </p>
@@ -310,7 +310,7 @@
 
 
            <div class="data mt-4">
-             <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy:</h2>
+             <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
               <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
@@ -501,7 +501,7 @@
 
 
               <div class="data mt-4">
-             <h2 class="sub-title bg">Approval criteria for IC:</h2>
+             <h2 class="sub-title bg">Approval Criteria for IC</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
 
               <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
@@ -574,7 +574,7 @@
               </div>
 
                <div class="data mt-4">
-             <h2 class="sub-title bg">Brief Background of {{$arrOwnerData['0']['first_name']}} Managing Director :</h2>
+             <h2 class="sub-title bg">Brief Background of {{isset($arrCamData->contact_person) ? $arrCamData->contact_person : ''}} Managing Director </h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
               <p>{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</p>
               </div>
@@ -582,7 +582,7 @@
 
 
                <div class="data mt-4">
-             <h2 class="sub-title bg">Board of Directors as on December 2019</h2>
+             <h2 class="sub-title bg">Board of Directors as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
              <table class="table table-bordered overview-table">
                <thead>
@@ -601,7 +601,7 @@
                   
                </tbody>
             </table>
-            <h5 class="mt-4">  Shareholding Pattern as on October 30, 2019</h5>
+            <h5 class="mt-4">Shareholding Pattern as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</h5>
             <table class="table table-bordered overview-table">
                <thead>
                   <tr>
@@ -624,14 +624,6 @@
               </div>
               </div>
 
-
-            
-           
-            
-
-
-
-          
             
            
             
@@ -643,32 +635,21 @@
               </div>
 
                <div class="data mt-4">
-             <h2 class="sub-title bg">Rating rationale of {{$arrBizData->biz_entity_name}} :</h2>
+             <h2 class="sub-title bg">Rating Rationale of {{$arrBizData->biz_entity_name}} </h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
                <p> {!! isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : '' !!} </p>
               </div>
               </div>
 
 
-           
-            
-          
-           
-
-           
-           
-           
-
-
-
            <div class="data mt-4">
-             <h2 class="sub-title bg">Standalone Financials of {{$arrBizData->biz_entity_name}}:</h2>
+             <h2 class="sub-title bg">Standalone Financials of {{$arrBizData->biz_entity_name}}</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
               <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                <thead>
                   <tr>
                      <tr>
-                          <th valign="middle" bgcolor="#efefef">Perticular</th>
+                          <th valign="middle" bgcolor="#efefef">Particular</th>
                           @foreach($audited_years as $year_aud)
                           <th valign="middle" bgcolor="#efefef">{{$year_aud}}</th>
                           @endforeach
@@ -725,7 +706,7 @@
             
 
             <div class="data mt-4">
-             <h2 class="sub-title bg">Financial Comment:</h2>
+             <h2 class="sub-title bg">Financial Comment</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
                  <p>{!! isset($finacialDetails->debt_cmnt) ? $finacialDetails->debt_cmnt : '' !!}</p>
               </div>
@@ -733,7 +714,7 @@
 
 
               <div class="data mt-4">
-             <h2 class="sub-title bg">Debt Position as on {{isset($arrBankDetails->debt_on) ? \Carbon\Carbon::createFromFormat('d/m/Y', $arrBankDetails->debt_on)->format('j F, Y') : ''}}:</h2>
+             <h2 class="sub-title bg">Debt Position as on {{isset($arrBankDetails->debt_on) ? \Carbon\Carbon::createFromFormat('d/m/Y', $arrBankDetails->debt_on)->format('j F, Y') : ''}}</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
                <p> {!! isset($arrBankDetails->debt_position_comments) ? $arrBankDetails->debt_position_comments: '' !!}</p>
               </div>
@@ -741,7 +722,7 @@
 
 
             <div class="data mt-4">
-             <h2 class="sub-title bg">Contingent Liabilities and Auditors Observations as on {{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('j F, Y') : ''}}:</h2>
+             <h2 class="sub-title bg">Contingent Liabilities and Auditors Observations as on {{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('j F, Y') : ''}}</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
               <p>{!! isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations: '' !!}</p>
               </div>
@@ -751,10 +732,10 @@
 
 
            <div class="data mt-4">
-           <h2 class="sub-title bg">Risk Comments:</h2>
+           <h2 class="sub-title bg">Risk Comments</h2>
             <div class="pl-4 pr-4 pb-4 pt-2">
                  <div class="data mt-4">
-                 <h2 class="sub-title bg">Deal Positives:</h2>
+                 <h2 class="sub-title bg">Deal Positives</h2>
                   <div class="pl-4 pr-4 pb-4 pt-2">
                     
                     <table class="table table-bordered overview-table">
@@ -786,7 +767,7 @@
                   </div>  
 
                   <div class="data mt-4">
-                 <h2 class="sub-title bg">Deal Negatives:</h2>
+                 <h2 class="sub-title bg">Deal Negatives</h2>
                   <div class="pl-4 pr-4 pb-4 pt-2">
                
                     <table class="table table-bordered overview-table">
@@ -815,7 +796,7 @@
 
 
               <div class="data mt-4">
-                 <h2 class="sub-title bg">Recommendation:</h2>
+                 <h2 class="sub-title bg">Recommendation</h2>
                   <div class="pl-4 pr-4 pb-4 pt-2">
                     <p>{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}}
                   </p>

@@ -134,6 +134,7 @@ function checkValidation(){
 	unsetError('input[name=biz_city]');
 	unsetError('input[name=biz_pin]');
 	unsetError('#check_block');
+	unsetError('input[name=share_holding_date]');
 	
 	let flag = true;
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
@@ -152,6 +153,7 @@ function checkValidation(){
 	let biz_city = $('input[name=biz_city]').val().trim();
 	let biz_pin = $('input[name=biz_pin]').val().trim();
 	let product_id = $('input[name*=product_id]:checked');
+	let share_holding_date = $('input[name=share_holding_date]').val();
 
 	if(biz_pan_number.length != 10){
 		setError('input[name=biz_pan_number]', 'Enter valid PAN Number');
@@ -185,6 +187,11 @@ function checkValidation(){
 
 	if(incorporation_date == ''){
 		setError('input[name=incorporation_date]', 'Incorporation date is required');
+		flag = false;
+	}
+
+	if(share_holding_date == ''){
+		setError('input[name=share_holding_date]', 'Share Holding is required');
 		flag = false;
 	}
 

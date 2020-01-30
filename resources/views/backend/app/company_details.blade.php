@@ -177,107 +177,102 @@
 								</div>
 							</div>
 						</div>
+					</div>
+					<div class="form-sections">
 						<div class="row">
 							<div class="col-md-12">
-								<div class="form-group">
-									<label for="txtSupplierName">Product Type
-									</label><br/>
-									<div id="check_block">
-										<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="1" name="product_id[1][checkbox]" {{ (array_key_exists(1, $product_ids) || (old('product_id.1.checkbox') == '1'))? 'checked': ''}} > Supply Chain</label>
-										<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="2" name="product_id[2][checkbox]" {{ (array_key_exists(2, $product_ids) || (old('product_id.2.checkbox') == '2'))? 'checked': ''}} > Term Loan</label>
-										<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="3" name="product_id[3][checkbox]" {{ (array_key_exists(3, $product_ids) || (old('product_id.3.checkbox') == '3'))? 'checked': ''}} > Leasing</label>
+								<h5 class="form-head">Product Type</h5>
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group">
+											<div id="check_block">
+												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="1" name="product_id[1][checkbox]" {{ (array_key_exists(1, $product_ids) || (old('product_id.1.checkbox') == '1'))? 'checked': ''}} > Supply Chain</label>
+												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="2" name="product_id[2][checkbox]" {{ (array_key_exists(2, $product_ids) || (old('product_id.2.checkbox') == '2'))? 'checked': ''}} > Term Loan</label>
+												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="3" name="product_id[3][checkbox]" {{ (array_key_exists(3, $product_ids) || (old('product_id.3.checkbox') == '3'))? 'checked': ''}} > Leasing</label>
+											</div>
+											@error('product_id')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
+										</div>
 									</div>
-									@error('product_id')
-						                <span class="text-danger error">{{ $message }}</span>
-						            @enderror
-								</div>
-							</div>
-						</div>
-						<div class="row  {{ (array_key_exists(1, $product_ids) || (old('product_id.1.checkbox') == '1'))? '': 'hide'}}" id="product-type-1">
-							<div class="col-md-4">Supply Chain</div>
-							<div class="col-md-4">
-								<div class="form-group INR">
-									<label for="txtCreditPeriod">Applied Loan Amount
-										<span class="mandatory">*</span>
-									</label>
-									<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-									<input type="text" name="product_id[1][loan_amount]" value="@if(array_key_exists(1, $product_ids)){{ old('product_id.1.loan_amount', number_format($product_ids['1']['loan_amount'])) }}@else{{ old('product_id.1.loan_amount','')}}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" >
-									<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
-									@error('product_id.1.loan_amount')
-						                <span class="text-danger error">{{ $message }}</span>
-						            @enderror
-								</div>
-							</div>
+									
+									<div class="col-md-4 product-type-1 {{ (array_key_exists(1, $product_ids) || (old('product_id.1.checkbox') == '1'))? '': 'hide'}}">
+										<div class="form-group INR">
+											<label for="txtCreditPeriod">Supply Chain Loan Amount
+												<span class="mandatory">*</span>
+											</label>
+											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											<input type="text" name="product_id[1][loan_amount]" value="@if(array_key_exists(1, $product_ids)){{ old('product_id.1.loan_amount', number_format($product_ids['1']['loan_amount'])) }}@else{{ old('product_id.1.loan_amount','')}}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Supply Chain Loan Amount" maxlength="19" >
+											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+											@error('product_id.1.loan_amount')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
+										</div>
+									</div>
 
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="txtSupplierName">Lease Tenor  (Days)
-									</label>
-									<input type="text" name="product_id[1][tenor_days]" value="@if(array_key_exists(1, $product_ids)){{ old('product_id.1.tenor_days', number_format($product_ids[1]['tenor_days'])) }}@else{{ old('product_id.1.tenor_days', '') }} @endif" class="form-control number_format" tabindex="11" placeholder="Enter Lease Tenor" maxlength="3">
-									@error('product_id.1.tenor_days')
-						                <span class="text-danger error">{{ $message }}</span>
-						            @enderror
-								</div>
-							</div>
-						</div>
-						
-						<div class="row {{ (array_key_exists(2, $product_ids) || (old('product_id.2.checkbox') == '2'))? '': 'hide'}}" id="product-type-2">
-							<div class="col-md-4">Term Loan</div>
-							<div class="col-md-4">
-								<div class="form-group INR">
-									<label for="txtCreditPeriod">Applied Loan Amount
-										<span class="mandatory">*</span>
-									</label>
-									<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-									<input type="text" name="product_id[2][loan_amount]" value="@if(array_key_exists(2, $product_ids)){{ old('product_id.2.loan_amount', number_format($product_ids[2]['loan_amount'])) }}@else{{ old('product_id.2.loan_amount','')}}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" >
-									<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
-									@error('product_id.2.loan_amount')
-						                <span class="text-danger error">{{ $message }}</span>
-						            @enderror
-								</div>
-							</div>
+									<div class="col-md-4 product-type-1 {{ (array_key_exists(1, $product_ids) || (old('product_id.1.checkbox') == '1'))? '': 'hide'}}">
+										<div class="form-group">
+											<label for="txtSupplierName">Supply Chain Tenor (Days)
+											</label>
+											<input type="text" name="product_id[1][tenor_days]" value="@if(array_key_exists(1, $product_ids)){{ old('product_id.1.tenor_days', number_format($product_ids[1]['tenor_days'])) }}@else{{ old('product_id.1.tenor_days', '') }} @endif" class="form-control number_format" tabindex="11" placeholder="Enter Supply Chain Tenor (Days)" maxlength="3">
+											@error('product_id.1.tenor_days')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
+										</div>
+									</div>
 
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="txtSupplierName">Lease Tenor  (Months)
-									</label>
-									<input type="text" name="product_id[2][tenor_days]" value="@if(array_key_exists(2, $product_ids)){{ old('product_id.2.tenor_days',number_format($product_ids[2]['tenor_days']))}}@else{{ old('product_id.2.tenor_days', '') }} @endif" class="form-control number_format" tabindex="11" placeholder="Enter Lease Tenor" maxlength="3">
-									@error('product_id.2.tenor_days')
-						                <span class="text-danger error">{{ $message }}</span>
-						            @enderror
-								</div>
-							</div>
-						</div>
-						
-						<div class="row {{ (array_key_exists(3, $product_ids) || (old('product_id.3.checkbox') == '3'))? '': 'hide'}}" id="product-type-3">
-							<div class="col-md-4">Leasing</div>
-							<div class="col-md-4">
-								<div class="form-group INR">
-									<label for="txtCreditPeriod">Applied Loan Amount
-										<span class="mandatory">*</span>
-									</label>
-									<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-									<input type="text" name="product_id[3][loan_amount]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.loan_amount', number_format($product_ids[3]['loan_amount']))}}@else{{ old('product_id.3.loan_amount', '') }}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" >
-									<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
-									@error('product_id.3.loan_amount')
-						                <span class="text-danger error">{{ $message }}</span>
-						            @enderror
-								</div>
-							</div>
+									<div class="col-md-4 product-type-2 {{ (array_key_exists(2, $product_ids) || (old('product_id.2.checkbox') == '2'))? '': 'hide'}}">
+										<div class="form-group INR">
+											<label for="txtCreditPeriod">Term Loan Amount
+												<span class="mandatory">*</span>
+											</label>
+											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											<input type="text" name="product_id[2][loan_amount]" value="@if(array_key_exists(2, $product_ids)){{ old('product_id.2.loan_amount', number_format($product_ids[2]['loan_amount'])) }}@else{{ old('product_id.2.loan_amount','')}}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Term Loan Amount" maxlength="19" >
+											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+											@error('product_id.2.loan_amount')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
+										</div>
+									</div>
 
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="txtSupplierName">Lease Tenor  (Months)
-									</label>
-									<input type="text" name="product_id[3][tenor_days]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.tenor_days', number_format($product_ids[3]['tenor_days'])) }}@else{{ old('product_id.3.tenor_days', '') }}@endif" class="form-control number_format" tabindex="11" placeholder="Enter Lease Tenor" maxlength="3">
-									@error('product_id.3.tenor_days')
-						                <span class="text-danger error">{{ $message }}</span>
-						            @enderror
+									<div class="col-md-4 product-type-2 {{ (array_key_exists(2, $product_ids) || (old('product_id.2.checkbox') == '2'))? '': 'hide'}}">
+										<div class="form-group">
+											<label for="txtSupplierName">Term Tenor (Months)
+											</label>
+											<input type="text" name="product_id[2][tenor_days]" value="@if(array_key_exists(2, $product_ids)){{ old('product_id.2.tenor_days',number_format($product_ids[2]['tenor_days']))}}@else{{ old('product_id.2.tenor_days', '') }} @endif" class="form-control number_format" tabindex="11" placeholder="Enter Term Tenor (Months)" maxlength="3">
+											@error('product_id.2.tenor_days')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
+										</div>
+									</div>
+
+									<div class="col-md-4 product-type-3 {{ (array_key_exists(3, $product_ids) || (old('product_id.3.checkbox') == '3'))? '': 'hide'}}">
+										<div class="form-group INR">
+											<label for="txtCreditPeriod">Leasing Loan Amount
+												<span class="mandatory">*</span>
+											</label>
+											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											<input type="text" name="product_id[3][loan_amount]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.loan_amount', number_format($product_ids[3]['loan_amount']))}}@else{{ old('product_id.3.loan_amount', '') }}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Leasing Loan Amount" maxlength="19" >
+											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+											@error('product_id.3.loan_amount')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
+										</div>
+									</div>
+
+									<div class="col-md-4 product-type-3 {{ (array_key_exists(3, $product_ids) || (old('product_id.3.checkbox') == '3'))? '': 'hide'}}">
+										<div class="form-group">
+											<label for="txtSupplierName">Leasing Tenor (Months)
+											</label>
+											<input type="text" name="product_id[3][tenor_days]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.tenor_days', number_format($product_ids[3]['tenor_days'])) }}@else{{ old('product_id.3.tenor_days', '') }}@endif" class="form-control number_format" tabindex="11" placeholder="Enter Leasing Tenor (Months)" maxlength="3">
+											@error('product_id.3.tenor_days')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-						
-						
 					</div>
 
 					<div class="form-sections">
@@ -584,9 +579,9 @@ $(document).ready(function () {
 		var isChecked  = $(this).prop("checked");
 
 		if(isChecked){
-			$("#product-type-"+productType).removeClass('hide');
+			$(".product-type-"+productType).removeClass('hide');
 		}else{
-			$("#product-type-"+productType).addClass('hide');
+			$(".product-type-"+productType).addClass('hide');
 			$("input[name='product_id["+productType+"][loan_amount]']").val('');
 			$("input[name='product_id["+productType+"][tenor_days]']").val('');
 		}

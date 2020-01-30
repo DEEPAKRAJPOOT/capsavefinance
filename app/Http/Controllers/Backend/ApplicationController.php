@@ -852,6 +852,7 @@ class ApplicationController extends Controller
     public function saveBusinessInformation(BusinessInformationRequest $request)
     {
         try {
+
             $arrFileData = $request->all();
             $user_id = $request->user_id;
             $business_info = $this->appRepo->saveBusinessInfo($arrFileData, $user_id);
