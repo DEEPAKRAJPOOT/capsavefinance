@@ -17,6 +17,7 @@ try {
                 data: function (d) {
                     d.doc_type_id = $('select[name=doc_type_id]').val();
                     d.product_type = $('select[name=product_type]').val();
+                    d.search_keyword = $('input[name=search_keyword]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling

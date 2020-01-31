@@ -55,6 +55,9 @@ class ApplicationController extends Controller
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
+        $industryList = $this->appRepo->getIndustryDropDown()->toArray();
+        $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
+        
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
@@ -65,9 +68,11 @@ class ApplicationController extends Controller
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_types'=>$product_types, 'product_ids'=> $product_ids])
                         ->with('user_id',$request->get('user_id'))
                         ->with('app_id',$request->get('app_id'))
-                        ->with('biz_id',$request->get('biz_id'));
+                        ->with('biz_id',$request->get('biz_id'))
+                        ->with('industryList',$industryList)
+                        ->with('constitutionList',$constitutionList);
         }else{
-            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types']));
+            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList']));
         }
     }
 

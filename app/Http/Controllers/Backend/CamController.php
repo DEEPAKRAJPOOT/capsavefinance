@@ -1758,28 +1758,34 @@ class CamController extends Controller
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
 
-                //dd($arrOwnerData['0']['first_name']);                
-                
+                /*start code for approve button */
+                $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$bizId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
+                $currStage = Helpers::getCurrentWfStage($bizId);                
+                $currStageCode = $currStage->stage_code; 
+                /*end code for approve button */
+
+                // dd($arrBankDetails);
                 return view('backend.cam.downloadCamReport')
-                      ->with([
-                              'arrCamData' =>$arrCamData ,
-                              'arrBizData' => $arrBizData, 
-                              'reviewerSummaryData' => $reviewerSummaryData,
-                              'arrHygieneData' => $arrHygieneData,
-                              'finacialDetails' => $finacialDetails,
-                              'arrOwnerData' => $arrOwnerData,
-                              'arrEntityData' => $arrEntityData,
-                              'financeData' => $financeData,
-                              'FinanceColumns' => $FinanceColumns,
-                              'audited_years' => $audited_years,
-                              'leaseOfferData' => $leaseOfferData,
-                              'arrBankDetails' => $arrBankDetails,
-                              'arrApproverData' => $arrApproverData,
-                              'arrCM' => $arrCM,
-                              'arrStaticData' => $arrStaticData,
-                
-                            ]);
-                
+                        ->with([
+                                 'arrCamData' =>$arrCamData ,
+                                 'arrBizData' => $arrBizData, 
+                                 'reviewerSummaryData' => $reviewerSummaryData,
+                                 'arrHygieneData' => $arrHygieneData,
+                                 'finacialDetails' => $finacialDetails,
+                                 'arrOwnerData' => $arrOwnerData,
+                                 'arrEntityData' => $arrEntityData,
+                                 'financeData' => $financeData,
+                                 'FinanceColumns' => $FinanceColumns,
+                                 'audited_years' => $audited_years,
+                                 'leaseOfferData' => $leaseOfferData,
+                                 'arrBankDetails' => $arrBankDetails,
+                                 'arrApproverData' => $arrApproverData,
+                                 'arrCM' => $arrCM,
+                                 'arrStaticData' => $arrStaticData,
+                                 'approveStatus' => $approveStatus,
+                                 'currStageCode' => $currStageCode,
+                   
+                               ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 

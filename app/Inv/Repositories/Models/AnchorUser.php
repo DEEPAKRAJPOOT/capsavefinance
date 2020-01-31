@@ -106,7 +106,8 @@ class AnchorUser extends BaseModel {
         $result = self::select('anchor_user.*');
              //->join('users', 'users.user_id', '=', 'anchor_user.user_id')
         if ($roleData[0]->is_superadmin != 1) {        
-             $result->where('anchor_user.anchor_id', \Auth::user()->anchor_id);
+             //$result->where('anchor_user.anchor_id', \Auth::user()->anchor_id);
+             $result->where('anchor_user.created_by', \Auth::user()->user_id);
         }
         $result =  $result->orderByRaw('anchor_user_id DESC');
                 //->where('user_type', 1);

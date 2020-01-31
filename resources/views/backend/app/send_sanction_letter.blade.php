@@ -82,7 +82,12 @@
                                         </tr>
                                         <tr>
                                             <td>8.</td>
-                                            <td>Rental Rate – Per Thousand Per Quarter </td>
+                                            <td>Rental Rate – @switch ($offerData->rental_frequency)
+                                                @case(4) PTPM  @break
+                                                @case(3) PTPQ  @break
+                                                @case(2) PTPBi-Y  @break
+                                                @case(1) PTPY  @break
+                                            @endswitch </td>
                                             <td>
                                                 @if($ptpqrData->count())
                                                 <table class="table table-bordered">
@@ -120,7 +125,7 @@
                                         <tr>
                                             <td>10.</td>
                                             <td>Processing Fees</td>
-                                            <td>{!! $offerData->processing_fee ? \Helpers::formatCurreny($offerData->processing_fee) : '' !!}</td>
+                                            <td>{!! $offerData->processing_fee ? $offerData->processing_fee. ' %' : '' !!}</td>
                                         </tr>
                                         <tr>
                                             <td>11.</td>
