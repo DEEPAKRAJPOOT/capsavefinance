@@ -71,6 +71,12 @@ var iframe_ids = [
         'viewApprovers',
         'viewSharedDetails',
         'previewSanctionLetter',
+        'addGSTFrame',
+        'editGSTFrame',
+        'addSegmentFrame',
+        'editSegmentFrame',
+        'addConstiFrame',
+        'editConstiFrame',
     ];
 
 iframe_ids.forEach(function(id) {

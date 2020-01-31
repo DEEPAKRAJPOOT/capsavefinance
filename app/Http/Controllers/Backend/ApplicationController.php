@@ -76,10 +76,15 @@ class ApplicationController extends Controller
            
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
+            
             foreach($app_data->products as $product){
-              array_push($product_ids, $product->pivot->product_id);
-            }
+              //  array_push($product_ids, $product->pivot->product_id);
 
+                $product_ids[$product->pivot->product_id]= array( 
+                    "loan_amount" => $product->pivot->loan_amount,
+                    "tenor_days" => $product->pivot->tenor_days
+                );
+            }
             $states = State::getStateList()->get();
             $product_types = $this->masterRepo->getProductDataList();
             //dd($business_info->gst->pan_gst_hash);
@@ -202,18 +207,21 @@ class ApplicationController extends Controller
                 $prgmDocsWhere['stage_code'] = 'doc_upload';
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
             
+                $currentStage = \Helpers::getCurrentWfStage($appId);
+                if ($currentStage && $currentStage->stage_code == 'promo_detail') {
+                    $userData = $this->userRepo->getfullUserDetail($userId);
+                    if ($userData && !empty($userData->anchor_id)) {
+                        $toUserId = $this->userRepo->getLeadSalesManager($userId);
+                    } else {
+                        $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+                    }
+
+                    if ($toUserId) {
+                       Helpers::assignAppToUser($toUserId, $appId);
+                    }                    
+                }                
                 Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1); 
                 
-                $userData = $this->userRepo->getfullUserDetail($userId);
-                if ($userData && !empty($userData->anchor_id)) {
-                    $toUserId = $this->userRepo->getLeadSalesManager($userId);
-                } else {
-                    $toUserId = $this->userRepo->getAssignedSalesManager($userId);
-                }
-                
-                if ($toUserId) {
-                   Helpers::assignAppToUser($toUserId, $appId);
-                }
                 return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1]);
             }
             else {

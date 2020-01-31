@@ -7,6 +7,11 @@
         <a class=" {{( $active=='bank') ? 'active': null }} "  href="{{ route('lms_get_bank_account', [ 'user_id' => $userInfo->user_id ]) }}">Bank Account</a>
     </li>
     @endcan
+    @can('addr_get_customer_list')
+    <li>
+		<a class=" {{( $active=='address') ? 'active': null }} " href="{{route('addr_get_customer_list',[ 'user_id' => $userInfo->user_id ])}}">Address </a>
+    </li>
+    @endcan
     <li>
         <a class=" {{ ($active=='invoice') ? 'active': null }} "  href="{{ route('lms_get_application_invoice', [ 'user_id' => $userInfo->user_id ]) }}">View Invoices</a>
     </li>
