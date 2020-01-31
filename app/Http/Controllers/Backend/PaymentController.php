@@ -56,6 +56,75 @@ class PaymentController extends Controller {
                 'utr_no' => 'required',
             
           ]);
+        $user_id  = Auth::user()->user_id;
+        $mytime = Carbon::now(); 
+       $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
+       $enterAmount =  str_replace(',', '', $request->amount);
+       foreach($getAmount as $val)
+       {
+            $getAmount = $val->repayment_amount;
+           if($getAmount >= $enterAmount)
+           {
+              
+               $finalAmount = $getAmount - $enterAmount;
+               $this->invRepo->singleRepayment($val->disbursal_id,$finalAmount);
+               Session::flash('message', 'Bulk amount has been saved');
+               return back();
+           }
+           else
+           {
+                 $temp = 0;
+                 $finalAmount = $enterAmount - $getAmount;
+                 $temp  = $finalAmount;
+                 $finalAmount =    $temp - $getAmount;      
+                 $this->invRepo->singleRepayment($val->disbursal_id,$finalAmount);
+               
+           }
+          
+       }
+      
+            $utr  ="";
+            $check  ="";
+            $unr  ="";
+            if($request['payment_type']==1)
+            {
+                $utr =   $request['utr_no'];  
+            }
+            else  if($request['payment_type']==2)
+            {
+               $check = $request['utr_no'];
+            }
+              else  if($request['payment_type']==3)
+            {
+               $unr =  $request['utr_no'];
+            }
+         $tran  = [  'gl_flag' => 1,
+                        'soa_flag' => 1,
+                        'user_id' =>  $request['customer_id'],
+                        'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
+                        'trans_type'   => 17, 
+                        'pay_from'   => 0,
+                        'amount' =>  $request['amount'],
+                        'mode_of_pay' =>  $request['payment_type'],
+                        'comment' =>  $request['description'],
+                        'utr_no' =>  $utr,
+                        'cheque_no' =>  $check,
+                        'unr_no'    => $unr,
+                        'created_at' =>  $mytime,
+                        'created_by' =>  $user_id];
+            
+        $res = $this->invRepo->saveRepaymentTrans($tran);
+        if( $res)
+        {
+             Session::flash('message', 'Bulk amount has been saved');
+             return back(); 
+        }
+        else
+        {
+             Session::flash('message', 'Something went wrong, Please try again');
+             return back(); 
+        }
+       
     }
     
 }

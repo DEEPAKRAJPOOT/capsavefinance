@@ -172,7 +172,7 @@ public static function updateInvoice($invoiceId,$status)
              $whr = [];
         }
        
-                    return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['anchor','supplier','userFile','program'])->orderBy('invoice_id', 'asc')->get();
+                    return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['anchor','supplier','userFile','program','program_offer'])->orderBy('invoice_id', 'asc')->get();
      } 
      
     public static function  getSingleInvoice($invId)

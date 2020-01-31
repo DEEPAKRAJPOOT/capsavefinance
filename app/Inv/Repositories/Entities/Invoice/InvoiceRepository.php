@@ -298,6 +298,17 @@ use CommonRepositoryTraits;
         }
          
     }
+    
+     public function singleRepayment($id,$repayment)
+    {
+        try
+        {
+           return Disbursal::singleRepayment($id,$repayment);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+    }
+    
      public function getDisbursedAmount($invid)
     {
         try
@@ -308,6 +319,17 @@ use CommonRepositoryTraits;
         }
          
     }
+    
+     public function getRepaymentAmount($uid)
+     {
+          try
+        {
+           return Disbursal::getRepaymentAmount($uid);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+     }
+     
     public function saveBatchNo($path)
     {
         try

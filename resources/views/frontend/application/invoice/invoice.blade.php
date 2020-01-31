@@ -97,7 +97,7 @@
                    
             </div>
                 <div class="col-md-1">	          
-                <button type="button" id="bulkApprove" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Approve</button>
+                <button type="button" data-status="8" id="bulkApprove" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Approve</button>
              </div>
             </div>
             <div class="row">

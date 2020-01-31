@@ -23,6 +23,13 @@
 
     @yield('additional_css') 
     <style>
+   
+    .dateGrace
+    {
+        background-color: #ec9595 !important;
+    }
+    
+
         .error
         {
             color:red !important;

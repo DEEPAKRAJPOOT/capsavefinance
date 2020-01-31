@@ -2,6 +2,7 @@
 namespace App\Libraries\Ui;
 use DataTables;
 use Helpers;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
@@ -577,9 +578,9 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceList(Request $request,$invoice)
     { 
-        
         return DataTables::of($invoice)
-               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id'])
+               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+           
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
@@ -615,9 +616,10 @@ class DataRenderer implements DataProviderInterface
                 })  
                  ->addColumn(
                     'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
+                    function ($invoice) { 
+                     return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
+                      
+                      })
                ->addColumn(
                     'tenor',
                     function ($invoice) {                        
@@ -633,6 +635,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
+               
                 ->addColumn(
                     'view_upload_invoice',
                     function ($invoice) {
@@ -960,6 +963,23 @@ class DataRenderer implements DataProviderInterface
      
       return DataTables::of($invoice)
                ->rawColumns(['status','anchor_id','action'])
+                ->setRowClass(function ($invoice) {
+                    $finalDueDate =  date('d/m/Y', strtotime($invoice->invoice_due_date.' + '.$invoice->program_offer->grace_period.' days'));
+                       $date =  Carbon::now();
+                       $date =  Carbon::parse($date)->format('d/m/Y');
+                       $cdate =  strtotime(Carbon::createFromFormat('d/m/Y',$date));
+                       $gracePdate =  strtotime(Carbon::createFromFormat('d/m/Y',$finalDueDate));
+                       if($cdate > $gracePdate)
+                       {
+                          
+                           return "dateGrace";
+                      }
+                       else
+                       {
+                          
+                            return "";
+                       }
+               })
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) use ($request)  {     

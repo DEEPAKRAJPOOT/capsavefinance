@@ -7,9 +7,8 @@
 
 <div class="content-wrapper">
 
-
-
-
+ 
+ 
     <div class="col-md-12 ">
         <section class="content-header">
             <div class="header-icon">
@@ -108,7 +107,7 @@
 
                                             </div>
                                             <div class="col-md-1">	          
-                                                <button type="button" id="bulkApprove" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Approve</button>
+                                                <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Approve</button>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -275,6 +274,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 @section('jscript')
 <script>
@@ -294,6 +294,7 @@
 
 
     $(document).ready(function () {
+       
          document.getElementById('invoice_approve_amount').addEventListener('input', event =>
          event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
          $("#program_bulk_id").append("<option value=''>No data found</option>");
@@ -480,8 +481,6 @@
             }
         });
     });
-
-
 
 //////////////////////////// for bulk approve invoice////////////////////
 

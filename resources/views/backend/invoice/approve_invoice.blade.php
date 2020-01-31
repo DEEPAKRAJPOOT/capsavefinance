@@ -99,7 +99,7 @@
                      </div>    
                      
                 <div class="col-md-2">	          
-                <button type="button" id="bulkApprove" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Send to Disbursement</button>
+                <button type="button" id="bulkApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Send to Disbursement</button>
              </div>
             </div>
             <div class="row">

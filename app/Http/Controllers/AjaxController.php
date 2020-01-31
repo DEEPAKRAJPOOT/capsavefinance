@@ -2864,8 +2864,9 @@ if ($err) {
      */
     public function getCustomerId(Request $request) 
     {
-        $result  =  $this->invRepo->getCustomerId();
-        return \Response::json(['status' => $request->status,'result' => $result]); 
+        $result  =  $this->invRepo->getCustomerId($request->user_id);
+     
+        return \Response::json(['status' => $request->user_id,'result' => $result]); 
     }
      
    /* @param DataProviderInterface $dataProvider

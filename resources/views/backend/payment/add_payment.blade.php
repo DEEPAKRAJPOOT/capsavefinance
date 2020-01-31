@@ -36,7 +36,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                     <label for="txtCreditPeriod">Customer id <span class="error_message_label">*</span> </label>
-                                         <select class="form-control" name="customer_id">
+                                         <select class="form-control getCustomer" name="customer_id">
                                                <option> Please Select</option>
                                                     @foreach($customer as $row)
                                                     <option value="{{$row->user_id}}">{{$row->user->f_name}}/{{$row->customer_id}}</option>
@@ -133,7 +133,7 @@
 @section('jscript')
 <script>
     var messages = {
-        get_customer_id: "{{ URL::route('get_customer_id') }}",
+      
         token: "{{ csrf_token() }}",
     };
 
@@ -141,46 +141,25 @@
         document.getElementById('amount').addEventListener('input', event =>
             event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
     });
+;
 
     $(document).on('change', '#payment_type', function () {
         $('#appendInput').empty();
         var status = $(this).val();
-        var postData = ({'status': status, '_token': messages.token});
-        th = this;
-        jQuery.ajax({
-            url: messages.get_customer_id,
-            method: 'post',
-            dataType: 'json',
-            data: postData,
-            error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
-            },
-            success: function (data) {
+      
+            if (status == 1)
+            {
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Customer Virtual Account No.</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
-                if (data.status == 1)
-                {
-                    $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Customer Virtual Account No.</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+            } else if (status == 2)
+            {
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
-                } else if (data.status == 2)
-                {
-                    $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+            } else if (status == 3)
+            {
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
-                } else if (data.status == 3)
-                {
-                    $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
-
-                }
-               /* else
-                {
-                    $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><select class="form-control amountRepay custId" id="utr_no" name="utr_no"><span class="customer_id"></span></select><span id="utr_no_msg" class="error"></span>');
-                    $(data.result).each(function (i, v) {
-                        console.log(v);
-                        $(".custId").append('<option value="' + v.user_id + '">' + v.user.f_name + '/' + v.customer_id + '</option>');
-                    });
-                }  */
             }
-        });
-
     });
 
 

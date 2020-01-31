@@ -1476,7 +1476,7 @@
                    }
                 },
                 error:function(error) {
-                      var html = '<i>Please enter currect OTP</i>';
+                      var html = '<i>Please enter correct OTP</i>';
                       $("#v6failurepanverify"+count).html(html);
                       },
                 complete: function() {
@@ -1494,7 +1494,7 @@
         var appId   =  $("#app_id").val();
         var  mobile_no  =  $("#mobile_no"+count).val();
         if (mobile_no=='') {
-            $("#v5failurepanverify"+count).html('<i>Please enter currect mobile no.</i>');
+            $("#v5failurepanverify"+count).html('<i>Please enter correct mobile no.</i>');
               return false;
         }
         else if(mobile_no.length < 10)
@@ -1521,12 +1521,12 @@
                 }
                 else
                 {
-                    $("#v5failurepanverify"+count).html('<i>Please enter currect mobile no.</i>');
+                    $("#v5failurepanverify"+count).html('<i>Please enter correct mobile no.</i>');
                     
                  }
                  },
                 error:function(error) {
-                    var html = '<i>Please enter currect mobile no</i>';
+                    var html = '<i>Please enter correct mobile no</i>';
                      $("#v6failurepanverify"+count).html(html);
               },
                 complete: function() {
@@ -1543,7 +1543,7 @@
         var  biz_owner_id    = $("#ownerid"+count).val();
         var  mobile_no  =  $("#mobile_no"+count).val();
          if (mobile_no=='') {
-            $("#v5failurepanverify"+count).html('<i>Please enter currect mobile no.</i>');
+            $("#v5failurepanverify"+count).html('<i>Please enter correct mobile no.</i>');
               return false;
         }
         else if(mobile_no.length < 10)
@@ -1580,13 +1580,13 @@
                     else
                     {
                         $("#v5failurepanverify"+count).show();
-                        var html = '<i>Please enter currect mobile no.</i>';
+                        var html = '<i>Please enter correct mobile no.</i>';
                         $("#v5failurepanverify"+count).html(html);
                     }
                 },
                 error:function(error) {
                     $("#v5failurepanverify"+count).show();
-                     var html = '<i>Please enter currect mobile no.</i>';
+                     var html = '<i>Please enter correct mobile no.</i>';
                      $("#v5failurepanverify"+count).html(html);
               },
                 complete: function() {
