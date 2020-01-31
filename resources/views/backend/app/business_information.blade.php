@@ -154,50 +154,7 @@
 								            @enderror
 										</div>
 									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-4">
-										<div class="form-group INR">
-											<label for="txtCreditPeriod">Applied Loan Amount
-												<span class="mandatory">*</span>
-											</label>
-											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="loan_amount" value="{{old('loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19" >
-											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
-											@error('loan_amount')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-									<div class="col-md-4">
-										<div class="form-group">
-											<label for="txtSupplierName">Tranche Tenor (Days)
-											</label>
-											<input type="text" name="tenor_days" value="{{old('tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
-											@error('tenor_days')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-									<div class="col-md-4">
-										<div class="form-group">
-											<label for="txtSupplierName">Product Type
-												<span class="mandatory">*</span>
-											</label><br/>
-											<div id="check_block">
-											@foreach($product_types as $key=>$product_type)
-												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="{{$key}}" name="product_id[]"> {{$product_type}}</label>
-											@endforeach
-											
-											</div>
-											@error('product_id')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</div>
-									</div>
-								</div>
-
-								<div class="row">
+								
 									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Share Holding % as on
@@ -205,15 +162,110 @@
 											</label>
 											<input type="text" name="share_holding_date" value="{{old('share_holding_date')}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Share Holding Date" autocomplete="off" readonly >
 											@error('share_holding_date')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
 										</div>
 									</div>
+
+
 								</div>
-
-
+						</div>
+					</div>
+					<div class="form-sections">
+						<div class="row">
+							<div class="col-md-12">
+									<h5 class="form-head">Product Type</h5>
+									<div class="row">
+										<div class="col-md-4" >
+											<div class="form-group">
+												<label for="txtSupplierName">Product Type <span class="mandatory">*</span>
+												</label><br/>
+												<div id="check_block">
+												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input  {{ (old('product_id.1.checkbox') == '1')? 'checked': ''}} class="product-type" type="checkbox" value="1" name="product_id[1][checkbox]"> Supply Chain</label>
+												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.2.checkbox') == '2')? 'checked': ''}} class="product-type" type="checkbox" value="2" name="product_id[2][checkbox]"> Term Loan</label>
+												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.3.checkbox') == '3')? 'checked': ''}} class="product-type" type="checkbox" value="3" name="product_id[3][checkbox]"> Leasing</label>
+												</div>
+												@error('product_id')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+										<div  class="col-md-4 product-type-1 {{ (old('product_id.3.checkbox') == '1')? '': 'hide'}}">
+											<div class="form-group INR">
+												<label for="txtCreditPeriod">Supply Chain Loan Amount 
+													<span class="mandatory">*</span>
+												</label>
+												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+												<input type="text" name="product_id[1][loan_amount]" value="{{old('product_id.1.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Supply Chain Loan Amount" maxlength="19">
+												<div id="product_type_1_loan"></div>
+												@error('product_id.1.loan_amount')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+										<div class="col-md-4 product-type-1 {{ (old('product_id.3.checkbox') == '1')? '': 'hide'}}">
+											<div class="form-group">
+												<label for="txtSupplierName">Supply Chain Tenor (Days)
+												</label>
+												<input type="text" name="product_id[1][tenor_days]" value="{{old('product_id.1.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Supply Chain Tenor (Days)" maxlength="3">
+												<div id="product_type_1_tenor"></div>
+												@error('product_id.1.tenor_days')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+										<div class="col-md-4 product-type-2 {{ (old('product_id.3.checkbox') == '2')? '': 'hide'}}">
+											<div class="form-group INR">
+												<label for="txtCreditPeriod">Term Loan Amount
+													<span class="mandatory">*</span>
+												</label>
+												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+												<input type="text" name="product_id[2][loan_amount]" value="{{old('product_id.2.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Term Loan Amount" maxlength="19">
+												<div id="product_type_2_loan" ></div>
+												@error('product_id.2.loan_amount')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+										<div class="col-md-4 product-type-2 {{ (old('product_id.3.checkbox') == '2')? '': 'hide'}}">
+											<div class="form-group">
+												<label for="txtSupplierName">Term Tenor (Months)
+												</label>
+												<input type="text" name="product_id[2][tenor_days]" value="{{old('product_id.2.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Term Tenor (Months)" maxlength="3">
+												<div id="product_type_2_tenor"></div>
+												@error('product_id.2.tenor_days')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+										<div class="col-md-4 product-type-3 {{ (old('product_id.3.checkbox') == '3')? '': 'hide'}}">
+											<div class="form-group INR">
+												<label for="txtCreditPeriod">Leasing Loan Amount
+													<span class="mandatory">*</span>
+												</label>
+												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+												<input type="text" name="product_id[3][loan_amount]" value="{{old('product_id.3.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Leasing Loan Amount" maxlength="19">
+												<div id="product_type_3_loan"></div>
+												@error('product_id.3.loan_amount')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+										<div class="col-md-4 product-type-3 {{ (old('product_id.3.checkbox') == '3')? '': 'hide'}}">
+											<div class="form-group">
+												<label for="txtSupplierName">Leasing Tenor (Months)
+												</label>
+												<input type="text" name="product_id[3][tenor_days]" value="{{old('product_id.3.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Leasing Tenor (Months)" maxlength="3">
+												<div id="product_type_3_tenor"></div>
+												@error('product_id.3.tenor_days')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+									</div>
 							</div>
 						</div>
+					</div>
 
 						<div class="form-sections">
 							<div class="row">
@@ -524,6 +576,24 @@ var messages = {
 	please_select: "{{ trans('backend.please_select') }}",
 	token: "{{ csrf_token() }}"
 };
+
+$(document).ready(function () {
+	$(".product-type"). click(function(){
+		var productType = $(this).val();
+		var isChecked  = $(this).prop("checked");
+
+		if(isChecked){
+			$(".product-type-"+productType).removeClass('hide');
+		}else{
+			$(".product-type-"+productType).addClass('hide');
+			$("input[name='product_id["+productType+"][loan_amount]']").val('');
+			$("input[name='product_id["+productType+"][tenor_days]']").val('');
+		}
+	});
+});
+
+
+
 </script>
 <!-- <script src="{{url('common/js/business_information.js?v=1')}}"></script> -->
 <script src="{{url('common/js/business_info.js?v=1.1')}}"></script>

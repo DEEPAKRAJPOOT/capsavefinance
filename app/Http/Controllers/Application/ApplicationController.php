@@ -62,8 +62,11 @@ class ApplicationController extends Controller
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
             foreach($app_data->products as $product){
-              array_push($product_ids, $product->pivot->product_id);
-            }
+              $product_ids[$product->pivot->product_id]= array( 
+                  "loan_amount" => $product->pivot->loan_amount,
+                  "tenor_days" => $product->pivot->tenor_days
+              );
+          }
             return view('frontend.application.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_types'=>$product_types, 'product_ids'=> $product_ids])
                         ->with('user_id',$request->get('user_id'))
