@@ -86,6 +86,25 @@
 							</div>
 						</div>
 						<div class="row">
+
+							<div class="col-md-4">
+								<div class="form-group password-input">
+									<label for="txtPassword">Segment
+										<span class="mandatory">*</span>
+									</label>
+									<select class="form-control" name="segment" tabindex="8" id="segmentId">
+										<option value=""> Select Segment</option>
+										<option value="1" {{(old('segment', $business_info->biz_segment) == 1)? 'selected':''}}> Segment 1 </option>
+										<option value="2" {{(old('segment', $business_info->biz_segment) == 2)? 'selected':''}}> Segment 2 </option>
+										<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
+									</select>
+									@error('segment')
+						                <span class="text-danger error">{{ $message }}</span>
+						            @enderror
+								</div>
+							</div>
+
+
 							<div class="col-md-4">
 								<div class="form-group password-input">
 									<label for="txtPassword">Industry
@@ -110,17 +129,10 @@
 								</div>
 							</div>
 								
-							<div class="col-md-4">
-								<div class="form-group password-input">
-									<label for="txtPassword">Date of Incorporation
-										<span class="mandatory">*</span>
-									</label>
-									<input type="text" name="incorporation_date" value="{{old('incorporation_date', \Carbon\Carbon::parse($business_info->date_of_in_corp)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Entity Name" autocomplete="off" readonly >
-									@error('incorporation_date')
-						                <span class="text-danger error">{{ $message }}</span>
-						            @enderror
-								</div>
-							</div>						
+							
+
+
+
 						</div>
 						<div class="row">		
 							<div class="col-md-4">
@@ -135,22 +147,24 @@
 								</div>
 							</div>
 							
+
+
 							<div class="col-md-4">
 								<div class="form-group password-input">
-									<label for="txtPassword">Segment
+									<label for="txtPassword">Date of Incorporation
 										<span class="mandatory">*</span>
 									</label>
-									<select class="form-control" name="segment" tabindex="8" >
-										<option value=""> Select Segment</option>
-										<option value="1" {{(old('segment', $business_info->biz_segment) == 1)? 'selected':''}}> Segment 1 </option>
-										<option value="2" {{(old('segment', $business_info->biz_segment) == 2)? 'selected':''}}> Segment 2 </option>
-										<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
-									</select>
-									@error('segment')
+									<input type="text" name="incorporation_date" value="{{old('incorporation_date', \Carbon\Carbon::parse($business_info->date_of_in_corp)->format('d/m/Y'))}}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Entity Name" autocomplete="off" readonly >
+									@error('incorporation_date')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
 								</div>
-							</div>
+							</div>	
+
+
+
+
+							
 
 							<div class="col-md-4">
 								<div class="form-group password-input INR">
@@ -528,6 +542,7 @@ var messages = {
 <script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
 <script>
 var subind={{$business_info->entity_type_id}};
-handleIndustryChange($("#biz_type_id").val(),subind);
+var segmentId={{$business_info->biz_segment}};
+handleIndustryChange($("#biz_type_id").val(),subind, segmentId);
 </script>
 @endsection
