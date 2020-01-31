@@ -183,6 +183,8 @@
 									<div class="row">
 										<div class="col-md-4">
 											<div class="form-group">
+												<label for="txtSupplierName">Product Type <span class="mandatory">*</span>
+												</label><br/>
 												<div id="check_block">
 													<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="1" name="product_id[1][checkbox]" {{ (array_key_exists(1, $product_ids) || (old('product_id.1.checkbox') == '1'))? 'checked': ''}} > Supply Chain</label>
 													<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="2" name="product_id[2][checkbox]" {{ (array_key_exists(2, $product_ids) || (old('product_id.2.checkbox') == '2'))? 'checked': ''}} > Term Loan</label>

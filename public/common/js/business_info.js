@@ -245,35 +245,35 @@ function checkValidation(){
 	}
 
 	if(product_id_supply && (loan_amount_supply == 0 || Number.isNaN(loan_amount_supply) == true )){
-		setError('#product_type_1_loan', 'Applied Loan Amount is required');
+		setError('#product_type_1_loan', ' Supply Chain Loan amount is required');
 		flag = false;
 	}
 	if(product_id_term && (loan_amount_term == 0 || Number.isNaN(loan_amount_term) == true )){
-		setError('#product_type_2_loan', 'Applied Loan Amount is required');
+		setError('#product_type_2_loan', 'Term Loan Amount is required');
 		flag = false;
 	}
 	if(product_id_leasing && (loan_amount_leasing == 0 || Number.isNaN(loan_amount_leasing) == true )){
-		setError('#product_type_3_loan', 'Applied Loan Amount is required');
+		setError('#product_type_3_loan', 'Leasing Loan Amount is required');
 		flag = false;
 	}
 
 	if(tenor_days_supply == 0){
 		// OK
 	}else if(tenor_days_supply.length != 0 && parseInt(tenor_days_supply) == 0){
-		setError('#product_type_1_tenor', 'Enter valid Tranche Tenor');
+		setError('#product_type_1_tenor', 'Enter valid Supply Chain Tenor (Days)');
 		flag = false;
 	}
 
 	if(tenor_days_term == 0){
 		// OK
 	}else if(tenor_days_term.length != 0 && parseInt(tenor_days_term) == 0){
-		setError('#product_type_2_tenor', 'Enter valid Tranche Tenor');
+		setError('#product_type_2_tenor', 'Enter valid Term Tenor (Months)');
 		flag = false;
 	}
 	if(tenor_days_leasing == 0){
 		// OK
 	}else if(tenor_days_leasing.length != 0 && parseInt(tenor_days_leasing) == 0){
-		setError('#product_type_3_tenor', 'Enter valid Tranche Tenor');
+		setError('#product_type_3_tenor', 'Enter valid Leasing Tenor (Months)');
 		flag = false;
 	}
 
