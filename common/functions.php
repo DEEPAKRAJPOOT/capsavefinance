@@ -110,6 +110,17 @@ function getGrowth($curr_year, $prev_year) {
 	);
 }
 
+function arrayValuesToInt(&$array){
+  if(is_array($array)){
+    foreach($array as &$arrayPiece){
+      arrayValuesToInt($arrayPiece);
+    }
+  }else{
+    $array = !is_numeric($array) ? floatval($array) : $array;
+  }
+  return $array;
+}
+
 #================================================================================================#
 
 function CalculateIntangibleAssetSubtotal($year_array)
