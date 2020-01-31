@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\Master\Status;
 use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\Master\Constitution;
 /**
  * 
  */
@@ -535,5 +536,36 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         $status = Segment::updateSegment($arrSegmentData, $segment_id);
         return $status ?: false;
+    }
+
+    /**
+     * master Constitution list
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+    public function findConstitutionById($consti_id)
+    {
+        if (empty($consti_id) || !ctype_digit($consti_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = Constitution::find($consti_id);
+        return $result ?: false;
+    }
+    public function getAllConstitution()
+    {
+        $result = Constitution::getAllConstitution();
+        return $result;
+    }
+
+    public function saveConstitution($arrConstiData) 
+    {
+        return Constitution::saveConstitution($arrConstiData);
+    }
+
+    public function updateConstitution($arrConstiData, $consti_id)
+    {
+        $status = Constitution::updateConstitution($arrConstiData, $consti_id);
+        return $status ? $status : false;
     }
 }

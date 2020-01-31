@@ -520,6 +520,15 @@ Route::group(
         ]
     );
 
+    /* Constitution Route */
+    Route::post(
+        'get-ajax-constitution-list',
+        [
+        'as' => 'get_ajax_constitution_list',
+        'uses' => 'AjaxController@getConstitutionLists'
+        ]
+    );
+
     Route::post(
         'get-agency-user-list',
         [
