@@ -20,5 +20,9 @@ return [
     'state_edit_success' => 'State updated successfully',
     'gst_add_success' => 'TAX added successfully',
     'gst_edit_success' => 'TAX updated successfully',
+    'consti_add_success' => 'Constitution added successfully',
+    'consti_edit_success' => 'Constitution updated successfully',
+    'segment_add_success' => 'Segment Added successfully',
+    'segment_edit_success' => 'Segment updated successfully',
 ];
 

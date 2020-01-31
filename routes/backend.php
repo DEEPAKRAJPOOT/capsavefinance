@@ -864,6 +864,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_segment',
                 'uses' => 'Master\SegmentController@saveSegment'
             ]);
+    
+            // constitutions
+            Route::get('/constitutions', [
+                'as' => 'get_constitutions_list',
+                'uses' => 'Master\ConstiController@index'
+            ]);
+            Route::get('/add_constitution', [
+                'as' => 'add_constitution',
+                'uses' => 'Master\ConstiController@addConstitution'
+            ]);
+            Route::get('/edit_constitution', [
+                'as' => 'edit_constitution',
+                'uses' => 'Master\ConstiController@editConstitution'
+            ]);
+            Route::post('/save_constitution', [
+                'as' => 'save_constitution',
+                'uses' => 'Master\ConstiController@saveConstitution'
+            ]);
             
             
             

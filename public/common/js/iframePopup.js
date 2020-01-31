@@ -75,6 +75,8 @@ var iframe_ids = [
         'editGSTFrame',
         'addSegmentFrame',
         'editSegmentFrame',
+        'addConstiFrame',
+        'editConstiFrame',
     ];
 
 iframe_ids.forEach(function(id) {
