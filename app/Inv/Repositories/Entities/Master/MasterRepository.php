@@ -24,6 +24,7 @@ use App\Inv\Repositories\Models\Master\Bank;
 use App\Inv\Repositories\Models\DeoLevelStates;
 use App\Inv\Repositories\Models\Master\Status;
 use App\Inv\Repositories\Models\Master\Company;
+use App\Inv\Repositories\Models\Master\GstTax;
 /**
  * 
  */
@@ -472,4 +473,34 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return $status ?: false;
     }
 
+    /**
+     * master GST list
+     * 
+     * @param array $attributes
+     * @return mixed
+    */
+    public function findGstById($gst_id)
+    {
+        if (empty($gst_id) || !ctype_digit($gst_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = GstTax::find($gst_id);
+        return $result ?: false;
+    }
+    public function getAllGST()
+    {
+        $result = GstTax::getAllGST();
+        return $result;
+    }
+
+    public function saveGst($attributes, $tax_id=null)
+    {
+        return GstTax::saveGst($attributes, $tax_id);
+    }
+
+    public function updateGST($attributes, $tax_id)
+    {
+        $status = GstTax::updateGST($attributes, $tax_id);
+        return $status ?: false;
+    }
 }

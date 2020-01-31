@@ -284,6 +284,11 @@
                  <li class="nav-item">
                     <a class="nav-link" href="#">Industry Master</a>
                  </li>
+                 @can('get_gst_list')
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_gst_list') }}">Manage GST</a>
+                 </li>
+                 @endcan
                  <li class="nav-item">
                     <a class="nav-link" href="#">FI agency Master</a>
                  </li>

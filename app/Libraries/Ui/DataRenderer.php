@@ -2768,4 +2768,41 @@ class DataRenderer implements DataProviderInterface
                         ->make(true);
     }
 
+    // GST TAX
+    public function getAllGST(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'tax_id',
+                    function ($data) {
+                        return $data->tax_id;
+                })
+                ->addColumn(
+                    'tax_val',
+                    function ($data) {
+                    return $data->tax_value."%";
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editGSTFrame" title="Edit States Detail" data-url ="'.route('edit_Gst', ['tax_id' => $data->tax_id]).'" data-height="310px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('tax_name', 'like',"%$search_keyword%")
+                            ->orWhere('code', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
 }

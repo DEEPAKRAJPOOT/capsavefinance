@@ -3412,5 +3412,12 @@ if ($err) {
        return response()->json($data);
     }
 
+    // GST List
+    public function getGstLists(DataProviderInterface $dataProvider) 
+    {
+        $products = $this->masterRepo->getAllGST();
+        $data = $dataProvider->getAllGST($this->request, $products);
+        return $data;
+    }
 
 }

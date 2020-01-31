@@ -18,5 +18,7 @@ return [
     'required' => 'This field is required',
     'state_add_success' => 'State added successfully',
     'state_edit_success' => 'State updated successfully',
+    'gst_add_success' => 'TAX added successfully',
+    'gst_edit_success' => 'TAX updated successfully',
 ];
 

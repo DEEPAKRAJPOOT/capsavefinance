@@ -502,6 +502,15 @@ Route::group(
         ]
     );
 
+    /* GST Route */
+    Route::post(
+        'get-ajax-ajax-list',
+        [
+        'as' => 'get_ajax_gst_list',
+        'uses' => 'AjaxController@getGstLists'
+        ]
+    );
+
     Route::post(
         'get-agency-user-list',
         [

@@ -829,7 +829,23 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\CompanyController@saveCompanyBankAccount'
             ]);
             
-            
+             // GST
+             Route::get('/gst', [
+                'as' => 'get_gst_list',
+                'uses' => 'Master\GstController@index'
+            ]);
+            Route::get('/add_Gst', [
+                'as' => 'add_Gst',
+                'uses' => 'Master\GstController@addGst'
+            ]);
+            Route::post('/save_Gst', [
+                'as' => 'save_Gst',
+                'uses' => 'Master\GstController@saveGst'
+            ]);
+            Route::get('/edit_Gst', [
+                'as' => 'edit_Gst',
+                'uses' => 'Master\GstController@editGst'
+            ]);
             
             
             
