@@ -177,17 +177,16 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                         $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
+                        $app_id = $app->app_id;
                         if(Helpers::checkPermission('company_details')){
-                            if($user_role == 8)
-                                $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                            else
-                                $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                            return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
+                           if($user_role == 8)
+                                $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           else
+                                $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           return "<a id='app-id-$app_id' href='$link' rel='tooltip'> CAPS" . sprintf('%06d',$app_id) . "</a>";
                         }else{
-                            return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
-                        }
-                    
-                        
+                            return "<a id='app-id-$app_id' rel='tooltip'> CAPS" . sprintf('%06d',$app_id) . "</a>";
+                        } 
                     }
                 )
                 ->addColumn(
@@ -2875,6 +2874,62 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->make(true);
+    }
+
+    // LMS Customer Address
+    public function addressGetCustomers(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action', 'rcu_status'])
+            ->addColumn(
+                'biz_addr_id',
+                function ($data) {
+                    return $data->biz_addr_id;
+                }
+            )
+
+            ->addColumn(
+                'action',
+                function ($data) use ($request) {
+
+                    $checked = ($data->is_default == 1) ? 'checked' : null;
+                    $act = '';
+
+                    if ($data->rcu_status) {
+                        $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($data->biz_addr_id, $request->get('user_id')) . '"  class="make_default" name="add"><label for="add">Default</label> ';
+                    }
+
+                    if (Helpers::checkPermission('edit_addr')) {
+                        $act .= '<a data-toggle="modal"  data-height="310px" 
+                            data-width="100%" 
+                            data-target="#editAddressFrame"
+                            data-url="' . route('edit_addr', ['biz_addr_id' => $data->biz_addr_id, 'user_id' => $request->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Address Detail"><i class="fa fa-edit"></i></a>';
+                    }
+                    return $act;
+                }
+            )
+
+            ->editColumn(
+                'rcu_status',
+                function ($data) {
+                    if ($data->rcu_status) {
+                        return '<span class="badge badge-success">Active</span>';
+                    } else {
+                        return '<span class="badge badge-warning current-status">InActive</span>';
+                    }
+                }
+            )
+            
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') {
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('chrg_desc', 'like', "%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                    });
+                }
+            })
+            ->make(true);
     }
 
 }

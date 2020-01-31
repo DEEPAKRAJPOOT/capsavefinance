@@ -178,7 +178,7 @@
         <div class="col-md-6">
           <div class="form-group">
             <label for="txtPassword"><b>Processing Fee (%)</b></label>
-            <input type="text" name="processing_fee" class="form-control number_format" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
+            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>
     
@@ -281,7 +281,7 @@
         setError('input[name=security_deposit]', 'Please fill security deposit');
         flag = false;
     }else if(security_deposit_type == 2 && parseFloat(security_deposit) > 100){
-        setError('input[name=security_deposit]', 'Please fill correct security deposit percent');
+        setError('input[name=security_deposit]', 'Security deposit can not be greater than 100 percent');
         flag = false;
     }else if((security_deposit_type == 1) && (parseInt(security_deposit) != security_deposit)){
         setError('input[name=security_deposit]', 'Please fill correct security deposit amount');
@@ -322,7 +322,7 @@
         setError('input[name=ruby_sheet_xirr]', 'Please fill Ruby Sheet XIRR');
         flag = false;
     }else if(parseFloat(ruby_sheet_xirr) > 100){
-        setError('input[name=ruby_sheet_xirr]', 'Please fill correct Ruby Sheet XIRR');
+        setError('input[name=ruby_sheet_xirr]', 'Ruby Sheet XIRR can not be greater than 100 percent');
         flag = false;
     }
 
@@ -330,12 +330,15 @@
         setError('input[name=cash_flow_xirr]', 'Please fill Cash Flow XIRR');
         flag = false;
     }else if(parseFloat(cash_flow_xirr) > 100){
-        setError('input[name=cash_flow_xirr]', 'Please fill correct Cash Flow XIRR');
+        setError('input[name=cash_flow_xirr]', 'Cash Flow XIRR can not be greater than 100 percent');
         flag = false;
     }
 
     if(processing_fee == ''){
         setError('input[name=processing_fee]', 'Please fill processing fee');
+        flag = false;
+    }else if(parseFloat(processing_fee) > 100){
+        setError('input[name=processing_fee]', 'Processing fee can not be greater than 100 percent');
         flag = false;
     }
 

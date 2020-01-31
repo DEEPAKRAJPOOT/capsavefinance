@@ -542,5 +542,57 @@ class Application extends BaseModel
     public function products(){
         return $this->belongsToMany('App\Inv\Repositories\Models\Master\Product', 'app_product', 'app_id')->withPivot('loan_amount', 'tenor_days');;
     }
+
+    /**
+     * Get Updated application BusinessAddress
+     * 
+     * @param integer $user_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getUpdatedApp($user_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($user_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($user_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+               
+        
+        $appData = self::select('app.*')
+                ->where('app.user_id', $user_id)                
+                ->orderBy('app.app_id', 'DESC')
+                ->first();
+        return ($appData ? $appData : null);        
+    } 
+
+    public static function getAppDataByOrder($where , $orderBy = 'DESC')
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $result = self::where($where)->orderBy('app_id', $orderBy)->get();
+        return $result ?: false;
+    }
         
 }
