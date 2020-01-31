@@ -652,7 +652,16 @@ Route::group(
     ]);
     
     
-    
+    // lms address
+    Route::post('get-ajax-address-list', [
+        'as' => 'get_ajax_address_list',
+        'uses' => 'AjaxController@addressGetCustomer'
+    ]);
+
+    Route::post('set-default-address', [
+        'as' => 'set_default_address',
+        'uses' => 'AjaxController@setDefaultAddress'
+    ]);
 
     /*lms route*/
 

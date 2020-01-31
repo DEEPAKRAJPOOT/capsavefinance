@@ -2876,4 +2876,60 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
 
+    // LMS Customer Address
+    public function addressGetCustomers(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action', 'rcu_status'])
+            ->addColumn(
+                'biz_addr_id',
+                function ($data) {
+                    return $data->biz_addr_id;
+                }
+            )
+
+            ->addColumn(
+                'action',
+                function ($data) use ($request) {
+
+                    $checked = ($data->is_default == 1) ? 'checked' : null;
+                    $act = '';
+
+                    if ($data->rcu_status) {
+                        $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($data->biz_addr_id, $request->get('user_id')) . '"  class="make_default" name="add"><label for="add">Default</label> ';
+                    }
+
+                    if (Helpers::checkPermission('edit_addr')) {
+                        $act .= '<a data-toggle="modal"  data-height="310px" 
+                            data-width="100%" 
+                            data-target="#editAddressFrame"
+                            data-url="' . route('edit_addr', ['biz_addr_id' => $data->biz_addr_id, 'user_id' => $request->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Address Detail"><i class="fa fa-edit"></i></a>';
+                    }
+                    return $act;
+                }
+            )
+
+            ->editColumn(
+                'rcu_status',
+                function ($data) {
+                    if ($data->rcu_status) {
+                        return '<span class="badge badge-success">Active</span>';
+                    } else {
+                        return '<span class="badge badge-warning current-status">InActive</span>';
+                    }
+                }
+            )
+            
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') {
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('chrg_desc', 'like', "%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                    });
+                }
+            })
+            ->make(true);
+    }
+
 }

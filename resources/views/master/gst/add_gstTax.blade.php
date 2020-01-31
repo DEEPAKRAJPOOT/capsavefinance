@@ -167,6 +167,7 @@
     document.getElementById('tax_value').addEventListener('input', event =>{
             let values = document.getElementById('tax_value').value;
             let s = values.toString();
+            console.log(s)
             if(isNaN(document.getElementById('tax_value').value || event.keyCode(190))) {
                 document.getElementById('tax_value').value = ""
 

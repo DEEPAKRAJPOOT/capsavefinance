@@ -568,4 +568,15 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         $status = Constitution::updateConstitution($arrConstiData, $consti_id);
         return $status ? $status : false;
     }
+
+    /*
+     * Business Address
+     * 
+     * return type boolean
+     */
+    public function getAddStateList()
+    {
+        return StateModel::getAllStateList();
+    }
+
 }
