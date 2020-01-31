@@ -19,11 +19,11 @@
                <div class="col-md-12">
                     
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
-                   <label class='error'>Please fill limit assessment data before move to next stage</label><br>
+                   <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
                    @endif
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_approved')
-                   <label class='error'>Application is not approved by all approval authority to move the next stage.</label><br>                   
+                   <label class='error'>You cannot move this application to next stage as the limit is not approved by all approval authority.</label><br>                   
                    @endif
                                      
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_accepted')
@@ -35,11 +35,11 @@
                    @endif
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_pre_docs_uploaded')
-                   <label class='error'>No any pre sanctions documents are uploaded.</label><br>                   
+                   <label class='error'>You cannot move this application to next stage as no pre-sanction documents are uploaded.</label><br>                   
                    @endif
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_post_docs_uploaded')
-                   <label class='error'>No any post sanctions documents are uploaded.</label><br>                   
+                   <label class='error'>You cannot move this application to next stage as no post-sanction documents are uploaded.</label><br>                   
                    @endif
                    
                    
