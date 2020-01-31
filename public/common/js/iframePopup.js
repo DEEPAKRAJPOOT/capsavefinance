@@ -73,6 +73,10 @@ var iframe_ids = [
         'previewSanctionLetter',
         'addGSTFrame',
         'editGSTFrame',
+        'addSegmentFrame',
+        'editSegmentFrame',
+        'addConstiFrame',
+        'editConstiFrame',
     ];
 
 iframe_ids.forEach(function(id) {

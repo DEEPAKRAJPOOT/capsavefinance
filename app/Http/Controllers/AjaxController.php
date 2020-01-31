@@ -3420,4 +3420,20 @@ if ($err) {
         return $data;
     }
 
+    // Segments List
+    public function getSegmentLists(DataProviderInterface $dataProvider) 
+    {
+        $segments = $this->masterRepo->getSegmentLists();
+        $data = $dataProvider->getSegmentLists($this->request, $segments);
+        return $data;
+    }
+
+    // Constitution List
+    public function getConstitutionLists(DataProviderInterface $dataProvider) 
+    {
+        $products = $this->masterRepo->getAllConstitution();
+        $data = $dataProvider->getAllConstitution($this->request, $products);
+        return $data;
+    }
+
 }

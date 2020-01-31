@@ -6,14 +6,14 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
-class Constitution extends BaseModel
+class Segment extends BaseModel
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'mst_biz_constitution';
+    protected $table = 'mst_biz_segment';
 
     /**
      * Custom primary key is set for the table
@@ -27,14 +27,14 @@ class Constitution extends BaseModel
      *
      * @var boolean
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = true;
+    public $userstamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -50,40 +50,41 @@ class Constitution extends BaseModel
     ];
 
 
-    public static function getConstitutionDropDown()
-    {
-        $res = self::where('is_active', 1)->pluck('name', 'id');
-        return $res ?: [];
-    }
-
+    
+    /**
+     * Get all State
+     *
+     * @return type array
+     */
+    
     /**
      * Get all Constitution
      *
      * @return type array
     */
-    public static function getAllConstitution() 
+    public static function getSegmentLists() 
     {
-        $result = self::select('mst_biz_constitution.id', 'mst_biz_constitution.name', 'mst_biz_constitution.created_at', 'mst_biz_constitution.is_active')
-        ->orderBy('mst_biz_constitution.id', 'DESC');
+        $result = self::select('mst_biz_segment.id', 'mst_biz_segment.name', 'mst_biz_segment.created_at', 'mst_biz_segment.is_active')
+        ->orderBy('mst_biz_segment.id', 'DESC');
     return $result;
     }
 
-    public static function saveConstitution($arrConstiData)
+    public static function saveSegment($arrSegmentData)
     {
-        if (!is_array($arrConstiData)) {
+        if (!is_array($arrSegmentData)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-        $res = self::create($arrConstiData);
+        $res = self::create($arrSegmentData);
         return $res ?: false;
     }
 
-    public static function updateConstitution($arrConstiData, $id)
+    public static function updateSegment($arrSegmentData, $id)
     {
-        if (!is_array($arrConstiData)) {
+        if (!is_array($arrSegmentData)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        return self::where('id', $id)->first()->update($arrConstiData);
+        return self::where('id', $id)->first()->update($arrSegmentData);
     }
     
 }

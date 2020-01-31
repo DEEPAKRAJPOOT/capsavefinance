@@ -25,6 +25,8 @@ use App\Inv\Repositories\Models\DeoLevelStates;
 use App\Inv\Repositories\Models\Master\Status;
 use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\Master\GstTax;
+use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\Master\Constitution;
 /**
  * 
  */
@@ -502,5 +504,68 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         $status = GstTax::updateGST($attributes, $tax_id);
         return $status ?: false;
+    }
+
+    /**
+     * master Segments list
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+
+    public function findSegmentById($segment_id)
+    {
+        if (empty($segment_id) || !ctype_digit($segment_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = Segment::find($segment_id);
+        return $result ?: false;
+    }
+    public function getSegmentLists()
+    {
+        $result = Segment::getSegmentLists();
+        return $result;
+    }
+
+    public function saveSegment($arrSegmentData)
+    {
+        return Segment::saveSegment($arrSegmentData);
+    }
+
+    public function updateSegment($arrSegmentData, $segment_id)
+    {
+        $status = Segment::updateSegment($arrSegmentData, $segment_id);
+        return $status ?: false;
+    }
+
+    /**
+     * master Constitution list
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+    public function findConstitutionById($consti_id)
+    {
+        if (empty($consti_id) || !ctype_digit($consti_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = Constitution::find($consti_id);
+        return $result ?: false;
+    }
+    public function getAllConstitution()
+    {
+        $result = Constitution::getAllConstitution();
+        return $result;
+    }
+
+    public function saveConstitution($arrConstiData) 
+    {
+        return Constitution::saveConstitution($arrConstiData);
+    }
+
+    public function updateConstitution($arrConstiData, $consti_id)
+    {
+        $status = Constitution::updateConstitution($arrConstiData, $consti_id);
+        return $status ? $status : false;
     }
 }
