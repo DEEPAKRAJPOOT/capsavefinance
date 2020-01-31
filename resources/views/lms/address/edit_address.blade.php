@@ -46,7 +46,7 @@
         </div>
         <div class="row">
             <div class="form-group col-md-12 mb-0">
-                <input type="submit" class="btn btn-success btn-sm" name="add_address" id="add_address" value="Submit" />
+                <input type="submit" class="btn btn-success btn-sm pull-right" name="add_address" id="add_address" value="Submit" />
             </div>
         </div>
     </form>

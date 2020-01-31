@@ -28,7 +28,7 @@
                 </div>
                 <div class="col-md-7 text-right">
                     <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addSegmentFrame" data-url ="{{route('add_segment')}}" data-height="150px" data-width="100%" data-placement="top" >
-                            <i class="fa fa-plus"></i> Add Segments
+                            <i class="fa fa-plus"></i> Add Segment
                     </a>
                 </div>
            </div>
@@ -39,9 +39,9 @@
                         <table id="SegmentiList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>Segments ID</th>
-                                    <th>Segments Name</th>
-                                    <th>Create Date</th>
+                                    <th>Segment ID</th>
+                                    <th>Segment Name</th>
+                                    <th>Created at</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
