@@ -259,7 +259,7 @@
                                 <form method="POST" action="{{route('approve_offer')}}">
                                 @csrf
                                 <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
-                                <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve">
+                                <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve Limit">
                                 </form>
                             @endif
                         </div>
