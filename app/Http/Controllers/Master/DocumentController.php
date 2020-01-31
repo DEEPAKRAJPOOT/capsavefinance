@@ -20,6 +20,7 @@ class DocumentController extends Controller {
      public function index(Request $request){
         $filter['filter_product_type'] = $request->filter_product_type;
         $filter['filter_doc_type_id'] = $request->filter_doc_type_id;
+        $filter['filter_search_keyword'] = $request->filter_search_keyword;
         // dd($filter);
         return view('master.documents.index', ['filter' => $filter]);
     }
@@ -51,6 +52,7 @@ class DocumentController extends Controller {
             $arrDocumentsData = $request->all();
             $filter['filter_product_type'] = $request->filter_product_type;
             $filter['filter_doc_type_id'] = $request->filter_doc_type_id;
+            $filter['filter_search_keyword'] = $request->filter_search_keyword;
             // dd($filter);
             $status = false;
             $document_id = false;
@@ -70,7 +72,7 @@ class DocumentController extends Controller {
             if($result){
                 Session::flash('message', $document_id ? trans('master_messages.documents_edit_success') :trans('master_messages.documents_add_success'));
 
-                return redirect()->route('get_documents_list', ['filter_product_type' => $filter['filter_product_type'], 'filter_doc_type_id' => $filter['filter_doc_type_id']]);
+                return redirect()->route('get_documents_list', ['filter_product_type' => $filter['filter_product_type'], 'filter_doc_type_id' => $filter['filter_doc_type_id'], 'filter_search_keyword' => $filter['filter_search_keyword']]);
             }else{
                 Session::flash('error', trans('master_messages.something_went_wrong'));
                 return redirect()->route('get_documents_list', ['filter' => $filter]);
