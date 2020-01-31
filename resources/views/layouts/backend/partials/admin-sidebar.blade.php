@@ -269,9 +269,11 @@
                  <li class="nav-item">
                     <a class="nav-link" href="#">Risk Category </a>
                  </li>
+                 @can('get_segment_list')
                  <li class="nav-item">
-                    <a class="nav-link" href="#">Business Segment</a>
+                    <a class="nav-link" href="{{ route('get_segment_list') }}">Business Segment</a>
                  </li>
+                 @endcan
                   <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_entity_list') }}">Business Entity</a>
                  </li>

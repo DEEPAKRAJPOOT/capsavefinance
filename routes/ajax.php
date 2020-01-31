@@ -511,6 +511,15 @@ Route::group(
         ]
     );
 
+    /* Segment Route */
+    Route::post(
+        'get-ajax-segment-list',
+        [
+        'as' => 'get_ajax_segment_list',
+        'uses' => 'AjaxController@getSegmentLists'
+        ]
+    );
+
     Route::post(
         'get-agency-user-list',
         [

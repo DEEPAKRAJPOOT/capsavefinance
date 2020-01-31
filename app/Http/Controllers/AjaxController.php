@@ -3420,4 +3420,12 @@ if ($err) {
         return $data;
     }
 
+    // Segments List
+    public function getSegmentLists(DataProviderInterface $dataProvider) 
+    {
+        $segments = $this->masterRepo->getSegmentLists();
+        $data = $dataProvider->getSegmentLists($this->request, $segments);
+        return $data;
+    }
+
 }
