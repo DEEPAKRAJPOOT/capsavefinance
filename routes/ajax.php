@@ -517,6 +517,33 @@ Route::group(
         ]
     );
 
+    /* GST Route */
+    Route::post(
+        'get-ajax-ajax-list',
+        [
+        'as' => 'get_ajax_gst_list',
+        'uses' => 'AjaxController@getGstLists'
+        ]
+    );
+
+    /* Segment Route */
+    Route::post(
+        'get-ajax-segment-list',
+        [
+        'as' => 'get_ajax_segment_list',
+        'uses' => 'AjaxController@getSegmentLists'
+        ]
+    );
+
+    /* Constitution Route */
+    Route::post(
+        'get-ajax-constitution-list',
+        [
+        'as' => 'get_ajax_constitution_list',
+        'uses' => 'AjaxController@getConstitutionLists'
+        ]
+    );
+
     Route::post(
         'get-agency-user-list',
         [
@@ -640,7 +667,16 @@ Route::group(
     ]);
     
     
-    
+    // lms address
+    Route::post('get-ajax-address-list', [
+        'as' => 'get_ajax_address_list',
+        'uses' => 'AjaxController@addressGetCustomer'
+    ]);
+
+    Route::post('set-default-address', [
+        'as' => 'set_default_address',
+        'uses' => 'AjaxController@setDefaultAddress'
+    ]);
 
     /*lms route*/
 

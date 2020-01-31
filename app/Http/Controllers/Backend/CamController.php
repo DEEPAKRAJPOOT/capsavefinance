@@ -160,6 +160,28 @@ class CamController extends Controller
 
 
     public function saveFinanceDetail(Request $request) {
+      $appId = $request->get('app_id');
+      $json_files = $this->getLatestFileName($appId,'finance', 'json');
+      $active_json_filename = $json_files['curr_file'];
+       if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
+            $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
+        }
+        $fy = $contents['FinancialStatement']['FY'] ?? array();
+        $financeData = [];
+        if (!empty($fy)) {
+          foreach ($fy as $k => $v) {
+            $vyear = $v['year'];
+            $request_year = $request->get('year');
+            $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
+          }
+        }
+        $financeData = arrayValuesToInt($financeData);
+        $json_files = $this->getLatestFileName($appId,'finance', 'json');
+        $contents['FinancialStatement']['FY'] = $financeData;
+        
+        $new_file_name = $json_files['new_file'];
+        \File::put($this->getToUploadPath($appId, 'finance') .'/'.$new_file_name, base64_encode(json_encode($contents)));
+
       try {
             $userId = Auth::user()->user_id;
             $arrData = $request->all();            
@@ -419,6 +441,7 @@ class CamController extends Controller
             $financeData[$v['year']] = $v;
           }
         }
+        $financeData =  arrayValuesToInt($financeData);
         $growth_data = [];
         foreach ($audited_years as $Kolkata => $year) {
           if (!empty($financeData[$year-2])) {
@@ -1755,7 +1778,13 @@ class CamController extends Controller
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
 
-               // dd($arrBankDetails);
+                /*start code for approve button */
+                $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
+                $currStage = Helpers::getCurrentWfStage($appId);                
+                $currStageCode = $currStage->stage_code; 
+                /*end code for approve button */
+
+                // dd($arrBankDetails);
                 return view('backend.cam.downloadCamReport')
                         ->with([
                                  'arrCamData' =>$arrCamData ,
@@ -1773,6 +1802,8 @@ class CamController extends Controller
                                  'arrApproverData' => $arrApproverData,
                                  'arrCM' => $arrCM,
                                  'arrStaticData' => $arrStaticData,
+                                 'approveStatus' => $approveStatus,
+                                 'currStageCode' => $currStageCode,
                    
                                ]);
         } catch (Exception $ex) {

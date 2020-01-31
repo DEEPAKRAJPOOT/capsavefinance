@@ -9,7 +9,7 @@
         <div class="card mt-3">
             <div class="card-body pt-3 pb-3">
                 <ul class="float-left mb-0 pl-0">
-                    <li><b class="bold">Application ID:{{isset($arrRequest['app_id'])?'CAPS000'.$arrRequest['app_id']:''}}</b> </li>
+                    <li><b class="bold">Application ID: {{isset($arrRequest['app_id'])?'CAPS000'.$arrRequest['app_id']:''}}</b> </li>
                    <!--  <li><b class="bold">Credit Head Status :</b> Reject</li> -->
 
                 </ul>
@@ -325,7 +325,6 @@
         },
         minLength: '3'
     });
-    
     $('input.calTotalExposure').on('change keyup blur', function(){
         var existing =  parseInt($("input[name='existing_exposure']").val().replace(/,/g, '')); 
         var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, ''));
