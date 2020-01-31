@@ -103,4 +103,66 @@ class BusinessAddress extends BaseModel
     public function activeFiAddress(){
         return $this->hasOne('App\Inv\Repositories\Models\FiAddress','biz_addr_id','biz_addr_id')->where(['is_active'=>1, 'agency_id'=>\Auth::user()->agency_id]);
     }
+
+    /**
+     * Business address
+     * 
+     * @param integer $user_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function addressGetCustomer($user_id, $biz_id)
+    {
+
+
+        $result =  self::select(
+            'biz_addr.addr_1 as Address',
+            'c.user_id as Customer_id',
+            'biz_addr.city_name as City',
+            'biz_addr.rcu_status',
+            'biz_addr.biz_addr_id',
+            'b.name as State',
+            'biz_addr.pin_code as Pincode',
+            'biz_addr.is_default'
+        )
+            ->leftjoin('mst_state as b', 'biz_addr.state_id', '=', 'b.id')
+            ->leftjoin('biz as c', 'biz_addr.biz_id', '=', 'c.biz_id')
+            //->where('c.user_id', '=', $user_id)
+            ->where('biz_addr.biz_id', $biz_id)
+            ->whereNotNull('addr_1')
+            ->whereNotNull('city_name')
+            ->whereNotNull('pin_code')
+            ->groupBy('user_id', 'Address', 'City', 'State', 'Pincode')
+            ->orderBy('biz_addr_id', 'DESC');
+        return $result;
+    }
+
+    public static function saveBusinessAddress($data, $limit_id)
+    {
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        return self::updateOrCreate(['biz_addr_id' => $limit_id], $data);
+    }
+
+    public static function setDefaultAddress($attributes, $where = [])
+    {
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        if (empty($attributes)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+
+        $result = \DB::table('biz_addr');
+        if (!empty($where)) {
+            $result = $result->where($where);
+        }
+        $result = $result->update($attributes);
+        return $result ?: false;
+    }
 }

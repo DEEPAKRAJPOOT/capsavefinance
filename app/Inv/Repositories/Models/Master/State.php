@@ -153,4 +153,18 @@ class State extends BaseModel
         return ($result ?? null);
     }
 
+    /**
+     * get State list for BusinessAddress
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getAllStateList()
+    {
+        $res = self::where('is_active', '1')->pluck('id', 'name');
+        return $res ?: false;
+    }
+
 }

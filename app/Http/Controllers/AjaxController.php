@@ -3436,4 +3436,27 @@ if ($err) {
         return $data;
     }
 
+    /**
+     * Get all customer Address
+     *
+     * @return json customer Address data
+     */
+    public function addressGetCustomer(DataProviderInterface $dataProvider)
+    {
+        $user_id =   (int) $this->request->get('user_id');
+        $latestApp = $this->application->getUpdatedApp($user_id);
+        $bizId = $latestApp->biz_id ? $latestApp->biz_id : null;
+        $customersList = $this->application->addressGetCustomers($user_id, $bizId);
+        $users = $dataProvider->addressGetCustomers($this->request, $customersList);
+        return $users;
+    }
+
+    public function setDefaultAddress(Request $request)
+    {
+        $acc_id = ($request->get('biz_addr_id')) ? \Crypt::decrypt($request->get('biz_addr_id')) : null;
+        $this->application->setDefaultAddress(['is_default' => 0]);
+        $res = $this->application->setDefaultAddress(['is_default' => 1], ['biz_addr_id' => $acc_id]);
+        return \response()->json(['success' => $res]);
+    }
+
 }

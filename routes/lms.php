@@ -74,7 +74,28 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@disbursedList'
             ]);
         });//end of application
-        
+
+        // Business address
+        Route::get('/address', [
+            'as' => 'addr_get_customer_list',
+            'uses' => 'Lms\AddressController@list'
+        ]);
+
+        Route::get('/add_addr', [
+            'as' => 'add_addr',
+            'uses' => 'Lms\AddressController@addAddress'
+        ]);
+
+        Route::post('/save_addr', [
+            'as' => 'save_addr',
+            'uses' => 'Lms\AddressController@saveAddress'
+        ]);
+
+        Route::get('/edit_addr', [
+            'as' => 'edit_addr',
+            'uses' => 'Lms\AddressController@editAddress'
+        ]);
+        // end address
 	});
 
 });
