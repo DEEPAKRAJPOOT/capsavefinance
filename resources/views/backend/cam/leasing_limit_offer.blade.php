@@ -314,6 +314,8 @@
         };
         data.push(obj);
         debugger;
+        tenor
+        rental_frequency
 
         if(ptpq_from == '' || isNaN(ptpq_from)){
             setError('input[name*=ptpq_from]:eq('+i+')', 'Please fill from PTP');
@@ -331,6 +333,8 @@
         if(ptpq_to == '' || isNaN(ptpq_to)){
             setError('input[name*=ptpq_to]:eq('+i+')', 'Please fill to PTP');
             flag = false;
+        }else if(ptpq_to < tenor && ){
+            zzz
         }
 
         if(ptpq_rate == '' || isNaN(ptpq_rate)){
