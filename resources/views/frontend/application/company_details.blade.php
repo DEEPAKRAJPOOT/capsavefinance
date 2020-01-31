@@ -77,23 +77,6 @@
 									</div>
 								</div>
 							</div>
-							<div class="row">
-								<div class="col-md-4">
-									<div class="form-group password-input">
-										<label for="txtPassword">Industry
-											<span class="mandatory">*</span>
-										</label>
-										<select class="form-control" name="biz_type_id" tabindex="4" >
-											<option value=""> Select Industry</option>
-											<option value="1" {{(old('biz_type_id', $business_info->nature_of_biz) == 1)? 'selected':''}}> Industry 1 </option>
-											<option value="2" {{(old('biz_type_id', $business_info->nature_of_biz) == 2)? 'selected':''}}> Industry 2 </option>
-											<option value="3" {{(old('biz_type_id', $business_info->nature_of_biz) == 3)? 'selected':''}}> Industry 3 </option>
-										</select>
-										@error('biz_type_id')
-											<span class="text-danger error">{{ $message }}</span>
-										@enderror
-									</div>
-								</div>
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input">
@@ -131,7 +114,7 @@
 										</div>
 									</div>								
 								</div>
-								<div class="row">
+								<div class="row">		
 									<div class="col-md-4">
 										<div class="form-group">
 											<label for="txtEmail">Business Constitution
@@ -139,8 +122,8 @@
 											</label>
 												{!! Form::select('biz_constitution', [''=>trans('backend.please_select')] + $constitutionList, $business_info->biz_constitution, ['class'=>'form-control constitution_id', 'tabindex'=>'7']) !!}
 												@error('biz_constitution')
-									                <span class="text-danger error">{{ $message }}</span>
-									            @enderror
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
 										</div>
 									</div>
 									
@@ -156,8 +139,19 @@
 												<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
 											</select>
 											@error('segment')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
+										</div>
+									</div>
+		
+									<div class="col-md-4">
+										<div class="form-group password-input INR">
+											<label for="txtPassword">Business Turnover
+											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											<input type="text" name="biz_turnover" value="{{old('biz_turnover', number_format($business_info->turnover_amt))}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
+											@error('biz_turnover')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
 										</div>
 									</div>
 								</div>

@@ -31,6 +31,7 @@
 					<div class=" form-fields">
 						<div class="form-sections row">
 							<div class="col-md-12">
+
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group">
@@ -74,6 +75,7 @@
 										</div>
 									</div>
 								</div>
+
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input">
@@ -110,6 +112,7 @@
 										</div>
 									</div>									
 								</div>
+
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group">
@@ -120,24 +123,6 @@
 												@error('biz_constitution')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-4">
-										<div class="form-group password-input">
-											<label for="txtPassword">Nature of Business
-												<span class="mandatory">*</span>
-											</label>
-											<select class="form-control" name="entity_type_id" tabindex="7" >
-												<option value=""> Select Nature of Business</option>
-												<option value="1" {{(old('entity_type_id') == 1)? 'selected':''}}> Nature of Business 1 </option>
-												<option value="2" {{(old('entity_type_id') == 2)? 'selected':''}}> Nature of Business 2 </option>
-												<option value="3" {{(old('entity_type_id') == 3)? 'selected':''}}> Nature of Business 3 </option>
-											</select>
-											@error('entity_type_id')
-												<span class="text-danger error">{{ $message }}</span>
-											@enderror
 										</div>
 									</div>
 
