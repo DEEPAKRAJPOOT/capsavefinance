@@ -7,8 +7,17 @@
 <div class="inner-container">
     <div class="card mt-3">
         <div class="card-body pt-3 pb-3">
-        <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
-            <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm " > Download Report</button>
+          <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
+            @if((request()->get('view_only') || $currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
+            <div class="float-right">
+              <form method="POST" action="{{route('approve_offer')}}">
+              @csrf
+              <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
+              <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve">
+              </form>
+            </div>
+            @endif
+            <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm mt-3"> Download Report</button>
         </div>
     </div>
 

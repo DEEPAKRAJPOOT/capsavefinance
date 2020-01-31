@@ -80,5 +80,5 @@ return [
         '4' => 'Others'
     ],
     'review_summ_mails' => ['gaurav.agarwal@zuron.in','varun.dudani@zuron.in','updesh.sharma@prolitus.com'],
-    'review_summ_mail_docs_id' => [55,56]    
+    'review_summ_mail_docs_id' => [3,9]    
 ];

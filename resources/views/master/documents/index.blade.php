@@ -28,7 +28,20 @@
 	<div class="card">
 		<div class="card-body">
 			<div class="row" style="margin-bottom: 25px;">
-				<div class="col-md-4">
+				<div class="col-md-3">
+
+				{!!
+	                Form::text('search_keyword',
+					(isset($filter['filter_search_keyword'])) ? $filter['filter_search_keyword'] : null,
+	                [
+	                'class' => 'form-control',
+	                'placeholder' => 'Search by Name',
+	                'id'=>'search_keyword'
+	                ])
+                !!}
+				</div>
+
+				<div class="col-md-3">
 				{!!
 				Form::select('product_type',
 				[ 	''=>'Product Type', 
@@ -41,7 +54,7 @@
 				'class'=>'form-control'))
 				!!}
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-3">
 
 				{!!
 				Form::select('doc_type_id',
@@ -58,9 +71,9 @@
 				<div class="col-md-1">
 					<button type="submit" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
 				</div>
-				<div class="col-md-3 text-right">
+				<div class="col-md-2 text-right">
 					<a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addDocumentsFrame" data-url ="{{route('add_documents')}}" data-height="320px" data-width="100%" data-placement="top" >
-							<i class="fa fa-plus"></i>Add Documents
+							<i class="fa fa-plus"></i> Add Documents
 					</a>
 				</div>
 		   </div>

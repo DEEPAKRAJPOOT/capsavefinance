@@ -10,6 +10,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
+                    @if (count($offerData))
                     <div class=" form-fields">
                         <div class="col-md-12">
                             <h5 class="card-title form-head-h5">Sanction Letter
@@ -39,7 +40,7 @@
                                                 <td with="25%" colspan="3">
                                                     <div class="row">
                                                         <div class="col">
-                                                            <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($validity_date)->format('d/m/Y'))}}" class="form-control datepicker-dis-pdate" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" readonly >
+                                                            <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($validity_date)->format('d/m/Y'))}}" class="form-control" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" readonly >
                                                         </div>
                                                         <div class="col">
                                                         <input type="text" class="form-control" placeholder="Enter Comment" name="sanction_validity_comment" value="{{ $validity_comment }}">
@@ -63,12 +64,12 @@
                                                         @endif
                                                     @endif
                                                 </td>
-                                                <td with="25%"><b>Rental Rate – Per Thousand Per 
-                                                @switch ($offerData->rental_frequency) 
-                                                    @case(4) Monthly  @break
-                                                    @case(3) Quaterly  @break
-                                                    @case(2) Bi-Yearly  @break
-                                                    @case(1) Yearly  @break
+                                                <td with="25%"><b>Rental Rate – 
+                                                @switch ($offerData->rental_frequency)
+                                                    @case(4) PTPM  @break
+                                                    @case(3) PTPQ  @break
+                                                    @case(2) PTPBi-Y  @break
+                                                    @case(1) PTPY  @break
                                                 @endswitch </b></td>
                                                 <td with="25%">
                                                     @if($ptpqrData)
@@ -103,7 +104,7 @@
                                                     @endif
                                                 </td>
                                                 <td with="25%"><b>Processing Fees</b></td>
-                                                <td with="25%">{!! $offerData->processing_fee ? \Helpers::formatCurreny($offerData->processing_fee) : '' !!}</td>
+                                                <td with="25%">{!! $offerData->processing_fee ? $offerData->processing_fee . ' %' : '' !!}</td>
                                             </tr>
                                             <tr>
                                                 <td with="25%"><b>Security</b></td>
@@ -137,12 +138,12 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td with="25%"><b>Payment Mechanism</b></td>
+                                                <td with="25%"><b>Payment Mechanism</b> <span class="mandatory">*</span></td>
                                                 <td colspan="3">
                                                     <div class="row">
                                                         <div class="col">
                                                             <select class="form-control" id="payment_type" name="payment_type">
-                                                                <option value="">Choose...</option>
+                                                                <option value="">Please Select...</option>
                                                                 <option @if($payment_type == '1')selected @endif value="1">NACH</option>
                                                                 <option @if($payment_type == '2')selected @endif value="2">RTGS</option>
                                                                 <option @if($payment_type == '3')selected @endif value="3">NEFT</option>
@@ -219,8 +220,15 @@
                                     <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
                                 </form>
                             </div>
-                        </div>	
+                        </div>
                     </div>	 
+                    @else 
+                    <div class="card card-color mb-0">
+                        <div class="card-header">
+                            <a class="card-title ">Sanction letter cannot be generated for this application as limit offer has not be added.</a>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -239,67 +247,86 @@
 
     };
     $(document).ready(function(){ 
-
-        CKEDITOR.replace('delay_pymt_chrg',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        });
-        CKEDITOR.replace('insurance',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        });
-        CKEDITOR.replace('bank_chrg',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        });
-        CKEDITOR.replace('legal_cost',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        });
-        CKEDITOR.replace('po',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        });
-        CKEDITOR.replace('pdp',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        });
-        CKEDITOR.replace('disburs_guide',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        });
-        CKEDITOR.replace('other_cond',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        });
-        CKEDITOR.replace('covenants',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        } );
-        CKEDITOR.replace('rating_rational',{
-            fullPage: true,
-            extraPlugins: 'docprops',
-            allowedContent: true,
-            height:220
-        });
+        if($('textarea[name="delay_pymt_chrg"]').length){
+            CKEDITOR.replace('delay_pymt_chrg',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
+        if($('textarea[name="insurance"]').length){
+            CKEDITOR.replace('insurance',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
+        if($('textarea[name="bank_chrg"]').length){
+            CKEDITOR.replace('bank_chrg',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
+        if($('textarea[name="legal_cost"]').length){
+            CKEDITOR.replace('legal_cost',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
+        if($('textarea[name="po"]').length){
+            CKEDITOR.replace('po',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
+        if($('textarea[name="pdp"]').length){
+            CKEDITOR.replace('pdp',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
+        if($('textarea[name="disburs_guide"]').length){
+            CKEDITOR.replace('disburs_guide',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
+        if($('textarea[name="other_cond"]').length){
+            CKEDITOR.replace('other_cond',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
+        if($('textarea[name="covenants"]').length){
+            CKEDITOR.replace('covenants',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
+        if($('textarea[name="rating_rational"]').length){
+            CKEDITOR.replace('rating_rational',{
+                fullPage: true,
+                extraPlugins: 'docprops',
+                allowedContent: true,
+                height:220
+            });
+        }
        
         $('#payment_type').on('change', function(){
             $('#payment_type_comment').val('');
@@ -309,6 +336,13 @@
                 $('#payment_type_comment').addClass('hide');
             }
         })
+
+        $("input[name='sanction_validity_date']").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+                startDate: '+1m'
+            });
     });
 
 </script>
