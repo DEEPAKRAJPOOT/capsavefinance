@@ -2855,10 +2855,11 @@ if ($err) {
     public function getSubIndustry(Request $request)
     {
         $id = $request->get('id');
+        $segment_id = $request->get('segmentId');
         if (is_null($id)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-        $result = $this->application->getSubIndustryByWhere(['industry_id' => $id]);
+        $result = $this->application->getSubIndustryByWhere(['industry_id' => $id, 'segment_id' => $segment_id]);
         return response()->json($result);
     }
     
