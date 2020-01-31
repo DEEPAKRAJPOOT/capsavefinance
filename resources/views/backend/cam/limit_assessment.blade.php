@@ -27,7 +27,7 @@
                                     <label>Available Exposure</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control form-control-sm number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure" disabled>
-                                </div>totOfferedLimit
+                                </div>
                             </div>
                         </div>
                         <div class="row">
