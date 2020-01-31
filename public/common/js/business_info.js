@@ -228,7 +228,7 @@ function checkValidation(){
 	}
 
 	if(entity_type_id == ''){
-		setError('select[name=entity_type_id]', 'Nature of Business is required');
+		setError('select[name=entity_type_id]', 'Plese select Sub Industry');
 		flag = false;
 	}
 
