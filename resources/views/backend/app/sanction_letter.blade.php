@@ -10,7 +10,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
-                    @if (count($offerData))
+                    @if( is_array($offerData)?count($offerData):$offerData->count())
                     <div class=" form-fields">
                         <div class="col-md-12">
                             <h5 class="card-title form-head-h5">Sanction Letter
