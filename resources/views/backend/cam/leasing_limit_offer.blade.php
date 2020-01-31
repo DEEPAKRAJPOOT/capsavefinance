@@ -115,19 +115,19 @@
                         @if($loop->first)
                             <label for="txtPassword"><b>From Period</b></label>
                         @endif
-                        <input type="text" name="ptpq_from[]" class="form-control" value="{{$ptpq->ptpq_from}}" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        <input type="text" name="ptpq_from[]" class="form-control" value="{{(int)$ptpq->ptpq_from}}" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-3">
                         @if($loop->first)
                             <label for="txtPassword"><b>To Period</b></label>
                         @endif
-                        <input type="text" name="ptpq_to[]" class="form-control" value="{{$ptpq->ptpq_to}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        <input type="text" name="ptpq_to[]" class="form-control" value="{{(int)$ptpq->ptpq_to}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-4">
                         @if($loop->first)
                             <label for="txtPassword"><b>Rate</b></label>
                         @endif
-                        <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="5">
+                        <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="6">
                     </div>
                     <div class="col-md-2 center">
                      @if($loop->first)
@@ -142,11 +142,11 @@
                 <div class="row">
                     <div class="col-md-3">
                     <label for="txtPassword"><b>From Period</b></label>
-                        <input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        <input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-3">
                     <label for="txtPassword"><b>To Period</b></label>
-                        <input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        <input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-4">
                     <label for="txtPassword"><b>Rate</b></label>
@@ -227,9 +227,9 @@
     unsetError('select[name=rental_frequency]');
     unsetError('select[name=rental_frequency_type]');
     unsetError('select[name=security_deposit_of]');
-    //unsetError('input[name=ptpq_from]');
-    //unsetError('input[name=ptpq_to]');
-    //unsetError('input[name=ptpq_rate]');
+    unsetError('input[name*=ptpq_from]');
+    unsetError('input[name*=ptpq_to]');
+    unsetError('input[name*=ptpq_rate]');
     unsetError('input[name=ruby_sheet_xirr]');
     unsetError('input[name=cash_flow_xirr]');
     unsetError('input[name=processing_fee]');
@@ -302,21 +302,43 @@
         setError('select[name=rental_frequency_type]', 'Please select frequency type');
         flag = false;
     }
+    let data = [];
+    $('input[name*=ptpq_from]').each(function(i,val){
+        let ptpq_from = $('input[name*=ptpq_from]').eq(i).val().trim();
+        let ptpq_to = $('input[name*=ptpq_to]').eq(i).val().trim();
+        let ptpq_rate = $('input[name*=ptpq_rate]').eq(i).val().trim();
+        let obj = {
+            'from':ptpq_from,
+            'to':ptpq_to,
+            'rate':ptpq_rate
+        };
+        data.push(obj);
+        debugger;
 
-    /*if(ptpq_from == '' || isNaN(ptpq_from)){
-        setError('input[name=ptpq_from]', 'Please fill from PTPQ');
-        flag = false;
-    }*/
+        if(ptpq_from == '' || isNaN(ptpq_from)){
+            setError('input[name*=ptpq_from]:eq('+i+')', 'Please fill from PTP');
+            flag = false;
+        }else if(i == 0){
+            if(ptpq_from != 1){
+                setError('input[name*=ptpq_from]:eq('+i+')', 'From PTP should starts from 1');
+                flag = false;
+            }
+        }else if(ptpq_from -1 != data[i-1]['to']){
+            setError('input[name*=ptpq_from]:eq('+i+')', 'Please fill correct from PTP');
+            flag = false;
+        }
 
-    /*if(ptpq_to == '' || isNaN(ptpq_to)){
-        setError('input[name=ptpq_to]', 'Please fill to PTPQ');
-        flag = false;
-    }*/
+        if(ptpq_to == '' || isNaN(ptpq_to)){
+            setError('input[name*=ptpq_to]:eq('+i+')', 'Please fill to PTP');
+            flag = false;
+        }
 
-    /*if(ptpq_rate == '' || isNaN(ptpq_rate)){
-        setError('input[name=ptpq_rate]', 'Please fill PTPQ rate');
-        flag = false;
-    }*/
+        if(ptpq_rate == '' || isNaN(ptpq_rate)){
+            setError('input[name*=ptpq_rate]:eq('+i+')', 'Please fill PTP rate');
+            flag = false;
+        }
+    });
+
 
     if(ruby_sheet_xirr == '' || isNaN(ruby_sheet_xirr)){
         setError('input[name=ruby_sheet_xirr]', 'Please fill Ruby Sheet XIRR');
@@ -390,13 +412,13 @@
   $(document).on('click', '.add-ptpq-block', function(){
     let ptpq_block = '<div class="row mt10">'+
             '<div class="col-md-3">'+
-                '<input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="5">'+
+                '<input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\\d]/,\'\')">'+
             '</div>'+
             '<div class="col-md-3">'+
-                '<input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="5">'+
+                '<input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\\d]/,\'\')">'+
             '</div>'+
             '<div class="col-md-4">'+
-                '<input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="PTPQ Rate" maxlength="5">'+
+                '<input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="PTPQ Rate" maxlength="6">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+
