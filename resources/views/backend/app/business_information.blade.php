@@ -196,7 +196,7 @@
 													<span class="mandatory">*</span>
 												</label>
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-												<input type="text" name="product_id[1][loan_amount]" value="{{old('product_id.1.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19">
+												<input type="text" name="product_id[1][loan_amount]" value="{{old('product_id.1.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Supply Chain Loan Amount" maxlength="19">
 												<div id="product_type_1_loan"></div>
 												@error('product_id.1.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
@@ -205,9 +205,9 @@
 										</div>
 										<div class="col-md-4 product-type-1 {{ (old('product_id.3.checkbox') == '1')? '': 'hide'}}">
 											<div class="form-group">
-												<label for="txtSupplierName">Supply Chain Tenor (Days))
+												<label for="txtSupplierName">Supply Chain Tenor (Days)
 												</label>
-												<input type="text" name="product_id[1][tenor_days]" value="{{old('product_id.1.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
+												<input type="text" name="product_id[1][tenor_days]" value="{{old('product_id.1.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Supply Chain Tenor (Days)" maxlength="3">
 												<div id="product_type_1_tenor"></div>
 												@error('product_id.1.tenor_days')
 													<span class="text-danger error">{{ $message }}</span>
@@ -220,7 +220,7 @@
 													<span class="mandatory">*</span>
 												</label>
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-												<input type="text" name="product_id[2][loan_amount]" value="{{old('product_id.2.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19">
+												<input type="text" name="product_id[2][loan_amount]" value="{{old('product_id.2.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Term Loan Amount" maxlength="19">
 												<div id="product_type_2_loan" ></div>
 												@error('product_id.2.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
@@ -231,7 +231,7 @@
 											<div class="form-group">
 												<label for="txtSupplierName">Term Tenor (Months)
 												</label>
-												<input type="text" name="product_id.2.tenor_days" value="{{old('product_id.2.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
+												<input type="text" name="product_id[2][tenor_days]" value="{{old('product_id.2.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Term Tenor (Months)" maxlength="3">
 												<div id="product_type_2_tenor"></div>
 												@error('product_id.2.tenor_days')
 													<span class="text-danger error">{{ $message }}</span>
@@ -244,7 +244,7 @@
 													<span class="mandatory">*</span>
 												</label>
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-												<input type="text" name="product_id[3][loan_amount]" value="{{old('product_id.3.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Applied Loan Amount" maxlength="19">
+												<input type="text" name="product_id[3][loan_amount]" value="{{old('product_id.3.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Leasing Loan Amount" maxlength="19">
 												<div id="product_type_3_loan"></div>
 												@error('product_id.3.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
@@ -255,7 +255,7 @@
 											<div class="form-group">
 												<label for="txtSupplierName">Leasing Tenor (Months)
 												</label>
-												<input type="text" name="product_id[3][tenor_days]" value="{{old('product_id.3.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tranche Tenor" maxlength="3">
+												<input type="text" name="product_id[3][tenor_days]" value="{{old('product_id.3.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Leasing Tenor (Months)" maxlength="3">
 												<div id="product_type_3_tenor"></div>
 												@error('product_id.3.tenor_days')
 													<span class="text-danger error">{{ $message }}</span>
