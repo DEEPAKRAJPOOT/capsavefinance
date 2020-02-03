@@ -41,6 +41,7 @@ use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Constitution;
+use App\Inv\Repositories\Models\AppStatusLog;
 /**
  * Application repository class
  */
@@ -1298,4 +1299,24 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return BusinessAddress::setDefaultAddress($attributes, $where);
     }
+
+    /** 
+ * @Author: Rent Alpha 
+ * @Date: 2020-01-31 10:21:30 
+ * @Desc: function for save app status log 
+ */
+public function saveAppStatusLog($attributes)
+{
+    $result=AppStatusLog::saveAppStatusLog($attributes);
+    return  ($result)?$result:false;
+}
+/**
+ * Get Applications for Application list data tables
+ */
+public function getAppData($app_id) 
+{
+    $app_id=(int)$app_id;
+    $result= Application::getAppData($app_id);
+    return ($result)?$result:false;
+}
 }

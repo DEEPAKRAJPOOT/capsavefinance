@@ -1484,7 +1484,54 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    /**
+     * function for change the app status
+     * 
+     * @param Request $request
+     * @return View
+     */
+    public function showAppStatusForm(Request $request) {
+        try {
+              $app_id = $request->get('app_id');
+              $biz_id = $request->get('biz_id');
+        return view('backend.app.change_app_disbursed_status')
+                ->with('app_id', $app_id)
+                ->with('biz_id', $biz_id);
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+    }
 
-    
+    /** 
+     * @Author: Rent Alpha
+     * @Date: 2020-01-30 18:22:07 
+     * @Desc:  function for save disburse app status 
+     */    
+    public function saveShowAppStatusForm(Request $request){
+        try {
+            $app_id = (int)$request->post('app_id');
+            $biz_id = (int)$request->post('biz_id');
+           // dd($app_id,$biz_id , config('common.mst_status_id')['DISBURSED']);
+            $arrUpdateApp=[
+                'curr_status_id'=>config('common.mst_status_id')['DISBURSED'] 
+            ];
+            $appStatus = $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);           
+            if($appStatus){
+                $getAppDetails = $this->appRepo->getAppData($app_id);
+                $arrAppStatusLog=[
+                    'user_id'=>$getAppDetails['user_id'],
+                    'app_id'=>$app_id,
+                    'status_id'=>config('common.mst_status_id')['DISBURSED'],
+                    'created_by'=>Auth::user()->user_id,
+                    'created_at'=>\Carbon\Carbon::now(),   
+                ];
+                  $this->appRepo->saveAppStatusLog($arrAppStatusLog);
+                Session::flash('message',trans('backend_messages.change_app_status'));
+                return redirect()->route('cam_overview', ['app_id' => $app_id,'biz_id'=>$biz_id]);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 
 }

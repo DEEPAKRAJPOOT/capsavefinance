@@ -60,6 +60,7 @@ class Application extends BaseModel
         'loan_amt',
         'status_id',
         'is_assigned',
+        'curr_status_id',
         'created_by',
         'created_at',
         'updated_at',
