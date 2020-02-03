@@ -178,7 +178,7 @@
         <div class="col-md-6">
           <div class="form-group">
             <label for="txtPassword"><b>Processing Fee (%)</b></label>
-            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
+            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>
     
@@ -366,7 +366,7 @@
         flag = false;
     }
 
-    if(processing_fee == ''){
+    if(processing_fee == '' || isNaN(processing_fee)){
         setError('input[name=processing_fee]', 'Please fill processing fee');
         flag = false;
     }else if(parseFloat(processing_fee) > 100){

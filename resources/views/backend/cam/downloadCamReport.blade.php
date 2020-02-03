@@ -21,6 +21,8 @@
             <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve Limit">
             </form>
           </div>
+          @elseif(($approveStatus && $approveStatus->status == 1))
+            <p class="float-right mt-3 ml-3"><b style="color: green; font-size: 17px;">Limit Approved</b></p>
           @endif
           <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm mt-3 " > Download Report</button>
         </div>
