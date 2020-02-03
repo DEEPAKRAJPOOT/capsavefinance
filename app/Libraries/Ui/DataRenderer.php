@@ -295,7 +295,7 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                     //$app_status = config('inv_common.app_status');                    
                     if($app->curr_status_id==config('common.mst_status_id')['DISBURSED']){
-                        return  '<label class="badge badge-success current-status">Disbursed</label>';
+                        return  '<label class="badge badge-success current-status"><i class="fa fa-check-circle" aria-hidden="true"></i> Disbursed</label>';
                     }else{
                         return $app->status == 1 ? 'Completed' : 'Incomplete';
                     }
