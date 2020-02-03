@@ -23,6 +23,7 @@ try {
                 }
             },
             columns: [
+                {data: 'customer_id'},
                 {data: 'customer_code'},
                 {data: 'ben_name'},
                 {data: 'ben_bank_name'},
@@ -34,7 +35,7 @@ try {
                 {data: 'total_invoice'},
                 {data: 'action'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 6, 7, 8]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6, 7, 8, 9, 10]}]
         });
 
         //Search

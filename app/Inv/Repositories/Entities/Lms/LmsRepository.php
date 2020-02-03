@@ -156,6 +156,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return BizInvoice::getAllUserInvoice($userId);
     }
+    
+    public static function getAllUserInvoiceIds($userId)
+    {
+        return BizInvoice::getAllUserInvoiceIds($userId);
+    }
 
     /**
      * Get Accrued Interest Data

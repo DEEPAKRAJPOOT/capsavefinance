@@ -26,10 +26,10 @@
 		</div>
 		@else 
 		 <thead class="thead-primary">
-	        <tr>
-	            <th class="text-left" colspan="4" width="10%">No invoice found.</th>
-	        </tr>
-	    </thead>
+			<tr>
+				<th class="text-left" colspan="4" width="10%">No invoice found.</th>
+			</tr>
+		</thead>
 		@endif   
  
 @endsection
@@ -42,9 +42,9 @@ $(document).ready(function(){
 		let current_id = $(this).val();
 		if($(this).is(':checked')){
 			parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
-        }else{
-        	parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(current_id, 'g'), ''));
-        }
+		}else{
+			parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(current_id, 'g'), ''));
+		}
 	})
 	
 });

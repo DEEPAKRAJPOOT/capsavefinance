@@ -172,7 +172,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name','status'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -294,12 +294,7 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     //$app_status = config('inv_common.app_status');                    
-                    if($app->curr_status_id==config('common.mst_status_id')['DISBURSED']){
-                        return  '<label class="badge badge-success current-status"><i class="fa fa-check-circle" aria-hidden="true"></i> Disbursed</label>';
-                    }else{
-                        return $app->status == 1 ? 'Completed' : 'Incomplete';
-                    }
-                   
+                    return $app->status == 1 ? 'Completed' : 'Incomplete';
 
                 })
                 ->addColumn(
@@ -2395,7 +2390,13 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetDisbursalCustomers(Request $request, $customer)
     {
         return DataTables::of($customer)
-                ->rawColumns(['status', 'action'])
+                ->rawColumns(['customer_id','status', 'action'])
+                ->addColumn(
+                    'customer_id',
+                    function ($customer) {
+                        return "<input type='checkbox' class='user_id' value=".$customer->user_id.">";
+                    }
+                )
                 ->addColumn(
                     'customer_code',
                     function ($customer) {
