@@ -1582,7 +1582,7 @@
                     else
                     {
                          $("#v5failurepanverify"+count).show();
-                         var html = 'Some error occured.';
+                         var html = (html ? html : 'Some error occured.');
                          $("#v5failurepanverify"+count).html(html);
                     }
                 },
