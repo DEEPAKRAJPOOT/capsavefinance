@@ -105,9 +105,18 @@ class DisbursalController extends Controller
 				if($disburseType == 1) {
 					// $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
 					if($invoice['supplier_id'] = $userid) {
-						$fundedAmount += $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-						$interest += (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
-						$disburseAmount += round($fundedAmount - $interest);
+						$now = strtotime($invoice['invoice_due_date']); // or your date as well
+				        $your_date = strtotime($invoice['invoice_date']);
+				        $datediff = abs($now - $your_date);
+
+				        $tenor = round($datediff / (60 * 60 * 24));
+				        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
+				        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+        				$disburseAmount = round($fundedAmount - $interest, 2);
+
+						// $fundedAmount += $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
+						// $interest += (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
+						// $disburseAmount += round($fundedAmount - $interest);
 					}			
 					$requestData[$userid]['RefNo'] = $refId;
 					$requestData[$userid]['Amount'] = $disburseAmount;
