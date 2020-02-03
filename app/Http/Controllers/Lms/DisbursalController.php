@@ -150,9 +150,9 @@ class DisbursalController extends Controller
 				];
 
 			$header = [
-				'Maker_ID' => 10,
-				'Checker_ID' => 11,
-				'Approver_ID' => 12
+				'Maker_ID' => "CAPSAVE.M",
+				'Checker_ID' => "CAPSAVE.C1",
+				'Approver_ID' => "CAPSAVE.C2"
 				];
 
 			$params = [

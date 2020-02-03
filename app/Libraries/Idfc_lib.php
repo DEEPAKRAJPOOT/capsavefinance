@@ -53,6 +53,7 @@ class Idfc_lib{
 		$file_name = md5($txn_id).'.txt';
 		$this->_saveLogFile($payload, $file_name, 'Outgoing');
      	$response = $this->_curl_call($url, $payload, $http_header);
+     	dd($response);
      	$this->_saveLogFile($response, $file_name, 'Incoming');
 
 		if (!empty($response['error_no'])) {
