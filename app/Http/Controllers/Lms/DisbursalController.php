@@ -103,7 +103,7 @@ class DisbursalController extends Controller
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 				$refId ='CAP'.$userid;
 				if($disburseType == 1) {
-					$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
+					// $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
 					if($invoice['supplier_id'] = $userid) {
 						$fundedAmount += $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
 						$interest += (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
