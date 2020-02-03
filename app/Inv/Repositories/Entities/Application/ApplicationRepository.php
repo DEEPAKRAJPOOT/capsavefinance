@@ -41,6 +41,7 @@ use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Constitution;
+use App\Inv\Repositories\Models\Master\SubIndustry;
 /**
  * Application repository class
  */
@@ -686,7 +687,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getSubIndustryByWhere($where)
     {
-        return \App\Inv\Repositories\Models\Master\SubIndustry::getSubIndustryByWhere($where);
+        return SubIndustry::getSubIndustryByWhere($where);
     }
     
     
