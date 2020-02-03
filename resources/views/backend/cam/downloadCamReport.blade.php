@@ -21,6 +21,8 @@
             <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve Limit">
             </form>
           </div>
+          @elseif(($approveStatus && $approveStatus->status == 1))
+            <p class="float-right mt-3 ml-3"><b style="color: green; font-size: 17px;">Limit Approved</b></p>
           @endif
           <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm mt-3 " > Download Report</button>
         </div>
@@ -70,7 +72,7 @@
                      <td class="">Lease</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class=""><b>Limit (In Mn)</b></td>
+                     <td class=""><b>Limit</b></td>
                      <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
                            </td>
                      
@@ -837,7 +839,7 @@
 <script>
 
 function downloadCam(){
-    var pdf = new jsPDF('px', 'pt', [1400, 1155]);
+    var pdf = new jsPDF('px', 'pt', [1400, 1175]);
     var  res = pdf.html(document.getElementById('camReport'), {
         callback: function (pdf) {
             pdf.save('camReport');
