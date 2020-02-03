@@ -825,3 +825,6 @@ ul.listing.listing1 li{float:left; width:33.33%;}
     float: right;
     margin-top: 9px;
 }
+.table tr td i {
+    color: #138864;
+}
