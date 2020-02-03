@@ -1516,6 +1516,18 @@ class ApplicationController extends Controller
                 'curr_status_id'=>config('common.mst_status_id')['DISBURSED'] 
             ];
             $appStatus = $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);           
+
+             //Update workflow stage
+             $addl_data = [];
+             $currStage = Helpers::getCurrentWfStage($app_id);
+             $wf_order_no = $currStage->order_no;
+             $nextStage = Helpers::getNextWfStage($wf_order_no);
+             $roleArr = [$nextStage->role_id];
+             $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
+             $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;            
+             Helpers::updateWfStage('opps_checker', $app_id, $wf_status = 1, $assign_case=true, $addl_data);
+             Helpers::updateCurrentWfStage('disbursed', $app_id, $wf_status=1);
+
             if($appStatus){
                 $getAppDetails = $this->appRepo->getAppData($app_id);
                 $arrAppStatusLog=[

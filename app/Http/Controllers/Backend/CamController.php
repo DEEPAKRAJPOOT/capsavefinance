@@ -92,6 +92,18 @@ class CamController extends Controller
             if(isset($arrCamData['t_o_f_security_check'])){
                 $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
             }
+            $app_data = $this->appRepo->getAppDataByBizId($arrRequest['biz_id']);
+            $product_ids=[];
+            foreach($app_data->products as $product){
+              array_push($product_ids, $product->pivot->product_id);
+            }
+            $checkLeaseProduct = in_array(3, $product_ids); // check lease product only
+            if( $checkLeaseProduct){
+              $checkDisburseBtn='showDisburseBtn';
+            }else{
+              $checkDisburseBtn='';
+            }
+            //dd($product_ids,$checkDisburseBtn);
             $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
             return view('backend.cam.overview')->with([
@@ -100,7 +112,8 @@ class CamController extends Controller
                 'arrBizData' => $arrBizData, 
                 'arrOwner' =>$arrOwner,
                 'limitData' =>$limitData,
-                'current_status_id'=>$current_status
+                'current_status_id'=>$current_status,
+                'checkDisburseBtn'=>$checkDisburseBtn
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
