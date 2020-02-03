@@ -1010,4 +1010,33 @@ class Helper extends PaypalHelper
         return ucwords($user->f_name.' '. $user->l_name);                    
     }
 
+    /**
+     * Update current workflow app stage
+     * 
+     * @param string $wf_stage_code
+     * @param integer $app_id
+     * @param integer $wf_status
+     * @return boolean
+     */
+    public static function updateCurrentWfStage($wf_stage_code, $app_id, $wf_status)
+    {
+        $wfData = WfStage::getWfDetailById($wf_stage_code);
+        if ($wfData) {
+            $wf_stage_id = $wfData->wf_stage_id;
+            $wf_order_no = $wfData->order_no;
+            $updateData = [                
+                'app_wf_status' => $wf_status,
+                'is_complete' => $wf_status
+            ];
+            $appData = Application::getAppData((int)$app_id);
+            $user_id = $appData->user_id;
+            if ($wf_stage_code == 'new_case') {
+                $updateData['biz_app_id'] = $app_id;
+                $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
+            } else {
+                $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
+            }
+        }
+        return $wfData;
+    }
 }
