@@ -10,6 +10,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
@@ -224,5 +225,27 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public static function sumAccruedInterest($disbursal_id)
     { 
         return InterestAccrual::sumAccruedInterest($disbursal_id);
-    }    
+    }
+
+
+    /**
+     * create Disburse Api Log
+     */
+    public static function createDisburseApi($data)
+    {
+        return DisburseApiLog::create($data);
+    }
+
+     /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function updateDisburse($data, $disbursalId)
+    {
+        return Disbursal::where('disbursal_id', $disbursalId)
+                ->update($data);
+    }           
 }
