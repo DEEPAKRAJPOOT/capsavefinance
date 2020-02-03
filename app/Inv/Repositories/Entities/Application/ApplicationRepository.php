@@ -43,6 +43,7 @@ use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\SubIndustry;
+use App\Inv\Repositories\Models\Master\Segment;
 /**
  * Application repository class
  */
@@ -1253,6 +1254,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Constitution::getConstitutionDropDown();
     }
+
+
+    /**
+     * Get Constitution 
+     * 
+     * @return type mixed
+     */
+    public function getSegmentDropDown()
+    {
+        return Segment::getSegmentDropDown();
+    }
+
+
 
     /**
      * Get Updated application

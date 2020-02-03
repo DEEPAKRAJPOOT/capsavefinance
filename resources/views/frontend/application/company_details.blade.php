@@ -83,12 +83,16 @@
 											<label for="txtPassword">Segment
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="segment" tabindex="8" id="segmentId" >
+											<!-- <select class="form-control" name="segment" tabindex="8" id="segmentId" >
 												<option value=""> Select Segment</option>
 												<option value="1" {{(old('segment', $business_info->biz_segment) == 1)? 'selected':''}}> Segment 1 </option>
 												<option value="2" {{(old('segment', $business_info->biz_segment) == 2)? 'selected':''}}> Segment 2 </option>
 												<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
-											</select>
+											</select> -->
+
+											{!! Form::select('segment', [''=>trans('backend.please_select')] + $segmentList, $business_info->biz_segment, ['id'=>'segmentId','class'=>'form-control', 'tabindex'=>'8']) !!}
+
+											
 											@error('segment')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
