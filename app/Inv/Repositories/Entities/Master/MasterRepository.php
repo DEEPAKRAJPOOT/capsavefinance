@@ -24,6 +24,9 @@ use App\Inv\Repositories\Models\Master\Bank;
 use App\Inv\Repositories\Models\DeoLevelStates;
 use App\Inv\Repositories\Models\Master\Status;
 use App\Inv\Repositories\Models\Master\Company;
+use App\Inv\Repositories\Models\Master\GstTax;
+use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\Master\Constitution;
 /**
  * 
  */
@@ -470,6 +473,110 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         $status = Company::updateCompanies($attributes, $companyId);
         
         return $status ?: false;
+    }
+
+    /**
+     * master GST list
+     * 
+     * @param array $attributes
+     * @return mixed
+    */
+    public function findGstById($gst_id)
+    {
+        if (empty($gst_id) || !ctype_digit($gst_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = GstTax::find($gst_id);
+        return $result ?: false;
+    }
+    public function getAllGST()
+    {
+        $result = GstTax::getAllGST();
+        return $result;
+    }
+
+    public function saveGst($attributes, $tax_id=null)
+    {
+        return GstTax::saveGst($attributes, $tax_id);
+    }
+
+    public function updateGST($attributes, $tax_id)
+    {
+        $status = GstTax::updateGST($attributes, $tax_id);
+        return $status ?: false;
+    }
+
+    /**
+     * master Segments list
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+
+    public function findSegmentById($segment_id)
+    {
+        if (empty($segment_id) || !ctype_digit($segment_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = Segment::find($segment_id);
+        return $result ?: false;
+    }
+    public function getSegmentLists()
+    {
+        $result = Segment::getSegmentLists();
+        return $result;
+    }
+
+    public function saveSegment($arrSegmentData)
+    {
+        return Segment::saveSegment($arrSegmentData);
+    }
+
+    public function updateSegment($arrSegmentData, $segment_id)
+    {
+        $status = Segment::updateSegment($arrSegmentData, $segment_id);
+        return $status ?: false;
+    }
+
+    /**
+     * master Constitution list
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+    public function findConstitutionById($consti_id)
+    {
+        if (empty($consti_id) || !ctype_digit($consti_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = Constitution::find($consti_id);
+        return $result ?: false;
+    }
+    public function getAllConstitution()
+    {
+        $result = Constitution::getAllConstitution();
+        return $result;
+    }
+
+    public function saveConstitution($arrConstiData) 
+    {
+        return Constitution::saveConstitution($arrConstiData);
+    }
+
+    public function updateConstitution($arrConstiData, $consti_id)
+    {
+        $status = Constitution::updateConstitution($arrConstiData, $consti_id);
+        return $status ? $status : false;
+    }
+
+    /*
+     * Business Address
+     * 
+     * return type boolean
+     */
+    public function getAddStateList()
+    {
+        return StateModel::getAllStateList();
     }
 
 }

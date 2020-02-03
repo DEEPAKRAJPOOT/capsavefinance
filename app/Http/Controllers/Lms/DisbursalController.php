@@ -85,6 +85,9 @@ class DisbursalController extends Controller
 	{
 		$invoiceIds = $request->invoiceids;
 		$disburseType = $request->disburse_type;
+		$transId = $request->trans_id;
+		// $utrNo = $request->utr_no;
+		$remarks = $request->remarks;
 		$record = array_filter(explode(",",$invoiceIds));
 		
 		$allinvoices = $this->lmsRepo->getInvoices($record)->toArray();
@@ -98,7 +101,7 @@ class DisbursalController extends Controller
 			foreach ($allinvoices as $invoice) {
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
-				
+				$refId ='CAP'.$userid;
 				if($disburseType == 1) {
 					$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
 					if($invoice['supplier_id'] = $userid) {
@@ -106,7 +109,7 @@ class DisbursalController extends Controller
 						$interest += (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
 						$disburseAmount += round($fundedAmount - $interest);
 					}			
-					$requestData[$userid]['RefNo'] = 'CAP'.$userid;
+					$requestData[$userid]['RefNo'] = $refId;
 					$requestData[$userid]['Amount'] = $disburseAmount;
 					$requestData[$userid]['Debit_Acct_No'] = '123344455';
 					$requestData[$userid]['Debit_Acct_Name'] = 'testing name';
@@ -123,7 +126,19 @@ class DisbursalController extends Controller
 					$requestData[$userid]['Value_Date'] = date('Y-m-d');
 				}
 				else {
-					$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
+
+					$apiLogData['refer_id'] = $refId;
+					$apiLogData['tran_id'] = $transId;
+					// $apiLogData['utr_no'] = $utrNo;
+					$apiLogData['remark'] = $remarks;
+					$disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
+					$updateDisbursal = $this->lmsRepo->updateDisburse([
+							'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
+						], $createDisbursal->disbursal_id);
+					
+					if ($updateDisbursal) {
+						$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
+					}
 				}
 			}
 		}

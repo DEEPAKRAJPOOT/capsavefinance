@@ -41,6 +41,7 @@ use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Constitution;
+use App\Inv\Repositories\Models\Master\SubIndustry;
 /**
  * Application repository class
  */
@@ -112,7 +113,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
 		if(is_null($userId)){
 			throw new BlankDataExceptions('No Data Found');
-		}
+        }
+        //dd($attributes);
 		return Business::creates($attributes, $userId);
 	}
 
@@ -685,7 +687,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getSubIndustryByWhere($where)
     {
-        return \App\Inv\Repositories\Models\Master\SubIndustry::getSubIndustryByWhere($where);
+        return SubIndustry::getSubIndustryByWhere($where);
     }
     
     
@@ -1250,5 +1252,51 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Constitution::getConstitutionDropDown();
     }
+
+    /**
+     * Get Updated application
+     * 
+     * @param integer $user_id
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function findUserAddressyById($userAddress_id)
+    {
+        if (empty($userAddress_id) || !ctype_digit($userAddress_id)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        $result = BusinessAddress::find($userAddress_id);
+        return $result ?: false;
+    }
+
+    public static function getUpdatedApp($user_id)
+    {
+        return Application::getUpdatedApp($user_id);
+    }  
+
+    public function addressGetCustomers($user_id, $biz_id)
+    {
+        return BusinessAddress::addressGetCustomer($user_id, $biz_id);
+    }
+
+    public function getAppDataByOrder($where , $orderBy = 'DESC')
+    {
+        return Application::getAppDataByOrder($where , $orderBy);
+    }
     
+    public function saveAddress($arr, $limit_id=null){
+        return BusinessAddress::saveBusinessAddress($arr, $limit_id);
+    }
+
+    public function updateUserAddress($attributes, $userAddressId)
+    {
+      $status = BusinessAddress::where('biz_addr_id', $userAddressId)->first()->update($attributes);
+      return $status ?: false;
+    }
+
+    public function setDefaultAddress($attributes, $where = [])
+    {
+        return BusinessAddress::setDefaultAddress($attributes, $where);
+    }
 }

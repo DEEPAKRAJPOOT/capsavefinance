@@ -2855,10 +2855,11 @@ if ($err) {
     public function getSubIndustry(Request $request)
     {
         $id = $request->get('id');
+        $segment_id = $request->get('segmentId');
         if (is_null($id)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-        $result = $this->application->getSubIndustryByWhere(['industry_id' => $id]);
+        $result = $this->application->getSubIndustryByWhere(['industry_id' => $id, 'segment_id' => $segment_id]);
         return response()->json($result);
     }
     
@@ -3412,5 +3413,51 @@ if ($err) {
        return response()->json($data);
     }
 
+    // GST List
+    public function getGstLists(DataProviderInterface $dataProvider) 
+    {
+        $products = $this->masterRepo->getAllGST();
+        $data = $dataProvider->getAllGST($this->request, $products);
+        return $data;
+    }
+
+    // Segments List
+    public function getSegmentLists(DataProviderInterface $dataProvider) 
+    {
+        $segments = $this->masterRepo->getSegmentLists();
+        $data = $dataProvider->getSegmentLists($this->request, $segments);
+        return $data;
+    }
+
+    // Constitution List
+    public function getConstitutionLists(DataProviderInterface $dataProvider) 
+    {
+        $products = $this->masterRepo->getAllConstitution();
+        $data = $dataProvider->getAllConstitution($this->request, $products);
+        return $data;
+    }
+
+    /**
+     * Get all customer Address
+     *
+     * @return json customer Address data
+     */
+    public function addressGetCustomer(DataProviderInterface $dataProvider)
+    {
+        $user_id =   (int) $this->request->get('user_id');
+        $latestApp = $this->application->getUpdatedApp($user_id);
+        $bizId = $latestApp->biz_id ? $latestApp->biz_id : null;
+        $customersList = $this->application->addressGetCustomers($user_id, $bizId);
+        $users = $dataProvider->addressGetCustomers($this->request, $customersList);
+        return $users;
+    }
+
+    public function setDefaultAddress(Request $request)
+    {
+        $acc_id = ($request->get('biz_addr_id')) ? \Crypt::decrypt($request->get('biz_addr_id')) : null;
+        $this->application->setDefaultAddress(['is_default' => 0]);
+        $res = $this->application->setDefaultAddress(['is_default' => 1], ['biz_addr_id' => $acc_id]);
+        return \response()->json(['success' => $res]);
+    }
 
 }

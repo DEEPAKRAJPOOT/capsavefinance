@@ -127,14 +127,24 @@ function checkValidation(){
 	unsetError('select[name=entity_type_id]');
 	unsetError('select[name=segment]');
 	unsetError('input[name=biz_turnover]');
+
 	unsetError('input[name=loan_amount]');
 	unsetError('input[name=tenor_days]');
+	
 	unsetError('input[name=biz_address]');
 	unsetError('select[name=biz_state]');
 	unsetError('input[name=biz_city]');
 	unsetError('input[name=biz_pin]');
 	unsetError('#check_block');
 	unsetError('input[name=share_holding_date]');
+	
+	unsetError('#product_type_1_loan');
+	unsetError('#product_type_2_loan');
+	unsetError('#product_type_3_loan');
+	unsetError('#product_type_1_tenor');
+	unsetError('#product_type_2_tenor');
+	unsetError('#product_type_3_tenor');
+
 	
 	let flag = true;
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
@@ -146,13 +156,30 @@ function checkValidation(){
 	let entity_type_id = $('select[name=entity_type_id]').val();
 	let segment = $('select[name=segment]').val();
 	let biz_turnover = $('input[name=biz_turnover]').val().trim();
-	let loan_amount = $('input[name=loan_amount]').val().trim();
-	let tenor_days = $('input[name=tenor_days]').val().trim();
+	
+	let product_id_supply  = $('input[name*="product_id[1][checkbox]"').prop("checked");
+	let product_id_term    = $('input[name*="product_id[2][checkbox]"').prop("checked");
+	let product_id_leasing = $('input[name*="product_id[3][checkbox]"').prop("checked");
+
+	let loan_amount_1 = $('input[name*="product_id[1][loan_amount]"');
+	let loan_amount_2 = $('input[name*="product_id[2][loan_amount]"');
+	let loan_amount_3 = $('input[name*="product_id[3][loan_amount]"');
+	let tenor_days_1 = $('input[name*="product_id[1][tenor_days]"');
+	let tenor_days_2 = $('input[name*="product_id[2][tenor_days]"');
+	let tenor_days_3 = $('input[name*="product_id[3][tenor_days]"');
+
+	let loan_amount_supply =   (loan_amount_1.length)?parseInt(loan_amount_1.val().trim().replace(/,/g, '')):'';
+	let loan_amount_term =  (loan_amount_2.length)?parseInt(loan_amount_2.val().trim().replace(/,/g, '')):'';
+	let loan_amount_leasing =  (loan_amount_3.length)?parseInt(loan_amount_3.val().trim().replace(/,/g, '')):'';
+	let tenor_days_supply =  (tenor_days_1.length)?tenor_days_1.val().trim():'';
+	let tenor_days_term =  (tenor_days_2.length)?tenor_days_2.val().trim():'';
+	let tenor_days_leasing =  (tenor_days_3.length)?tenor_days_3.val().trim():'';
+	
 	let biz_address = $('input[name=biz_address]').val().trim();
 	let biz_state = $('select[name=biz_state]').val();
 	let biz_city = $('input[name=biz_city]').val().trim();
 	let biz_pin = $('input[name=biz_pin]').val().trim();
-	let product_id = $('input[name*=product_id]:checked');
+	
 	let share_holding_date = $('input[name=share_holding_date]').val();
 
 	if(biz_pan_number.length != 10){
@@ -191,7 +218,7 @@ function checkValidation(){
 	}
 
 	if(share_holding_date == ''){
-		setError('input[name=share_holding_date]', 'Share Holding is required');
+		setError('input[name=share_holding_date]', 'Share holding % is required.');
 		flag = false;
 	}
 
@@ -201,7 +228,7 @@ function checkValidation(){
 	}
 
 	if(entity_type_id == ''){
-		setError('select[name=entity_type_id]', 'Nature of Business is required');
+		setError('select[name=entity_type_id]', 'Plese select Sub Industry');
 		flag = false;
 	}
 
@@ -217,19 +244,41 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if(loan_amount.length == 0 || parseInt(loan_amount.replace(/,/g, '')) == 0){
-		setError('input[name=loan_amount]', 'Applied Loan Amount is required');
+	if(product_id_supply && (loan_amount_supply == 0 || Number.isNaN(loan_amount_supply) == true )){
+		setError('#product_type_1_loan', ' Supply Chain Loan amount is required');
+		flag = false;
+	}
+	if(product_id_term && (loan_amount_term == 0 || Number.isNaN(loan_amount_term) == true )){
+		setError('#product_type_2_loan', 'Term Loan Amount is required');
+		flag = false;
+	}
+	if(product_id_leasing && (loan_amount_leasing == 0 || Number.isNaN(loan_amount_leasing) == true )){
+		setError('#product_type_3_loan', 'Leasing Loan Amount is required');
 		flag = false;
 	}
 
-	if(tenor_days == 0){
+	if(tenor_days_supply == 0){
 		// OK
-	}else if(tenor_days.length != 0 && parseInt(tenor_days) == 0){
-		setError('input[name=tenor_days]', 'Enter valid Tranche Tenor');
+	}else if(tenor_days_supply.length != 0 && parseInt(tenor_days_supply) == 0){
+		setError('#product_type_1_tenor', 'Enter valid Supply Chain Tenor (Days)');
 		flag = false;
 	}
 
-	if(product_id.length <= 0){
+	if(tenor_days_term == 0){
+		// OK
+	}else if(tenor_days_term.length != 0 && parseInt(tenor_days_term) == 0){
+		setError('#product_type_2_tenor', 'Enter valid Term Tenor (Months)');
+		flag = false;
+	}
+	if(tenor_days_leasing == 0){
+		// OK
+	}else if(tenor_days_leasing.length != 0 && parseInt(tenor_days_leasing) == 0){
+		setError('#product_type_3_tenor', 'Enter valid Leasing Tenor (Months)');
+		flag = false;
+	}
+
+	if( !(product_id_supply || product_id_term || product_id_leasing)){
+		
 		setError('#check_block', 'Product type is required');
 		flag = false;
 	}
@@ -328,13 +377,22 @@ $(document).ready(function(){
 	 */
 	$(document).on('change', '.industry_change', function () {
 		var industryVal=$("#biz_type_id").val();
-		handleIndustryChange(industryVal,null);
+		var segmentId =$("#segmentId").val();
+		handleIndustryChange(industryVal,null,segmentId);
 	});
   //handleIndustryChange($("#biz_type_id").val(),$(".sub_industry").val());
 });
 
-function handleIndustryChange(intdustval,subIndId){
+function handleIndustryChange(intdustval,subIndId, segmentId){
 	//let selector = $(this);
+	if(segmentId == ''){
+		unsetError('select[name=segment]');
+		setError('select[name=segment]', 'Segment is required');
+		$("#segmentId").focus();
+		return false;
+	}else{
+		unsetError('select[name=segment]');
+	}
 	let currentValue = intdustval;
 	let subIndus = $('.sub_industry');
 
@@ -345,6 +403,7 @@ function handleIndustryChange(intdustval,subIndId){
 		dataType: 'json',
 		data: {
 			id: currentValue,
+			segmentId: segmentId,
 			_token: messages.token
 		},
 		success: function (data) {
