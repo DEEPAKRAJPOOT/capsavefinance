@@ -65,7 +65,7 @@
                      <td class="">Lease</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class=""><b>Limit (In Mn)</b></td>
+                     <td class=""><b>Limit</b></td>
                      <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
                            </td>
                      
