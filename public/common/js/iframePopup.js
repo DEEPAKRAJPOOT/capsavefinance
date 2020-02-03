@@ -77,6 +77,7 @@ var iframe_ids = [
         'editSegmentFrame',
         'addConstiFrame',
         'editConstiFrame',
+        'changeAppDisbursStatus',
     ];
 
 iframe_ids.forEach(function(id) {

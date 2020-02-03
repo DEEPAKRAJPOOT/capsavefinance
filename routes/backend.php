@@ -321,6 +321,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'mobile_otp_view',
                 'uses' => 'Backend\ApplicationController@mobileOtpModel'
             ]);
+            Route::get('app-status-disbursed', [
+                         'as' => 'app_status_disbursed',
+                  'uses' => 'Backend\ApplicationController@showAppStatusForm'
+                ]);
+                Route::post('app-status-disbursed', [
+                   'as' => 'app_status_disbursed',
+                 'uses' => 'Backend\ApplicationController@saveShowAppStatusForm'
+                ]);
             //////////////for cibil Iframe//////////////////////// 
              Route::get('pull-cibil-commercial', [
                 'as' => 'pull_cibil_commercial',
@@ -523,6 +531,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::get('cam-report', [
                     'as' => 'cam_report',
                     'uses' => 'Backend\CamController@downloadCamReport'
+                ]);
+
+                Route::get('generate-cam-report', [
+                    'as' => 'generate_cam_report',
+                    'uses' => 'Backend\CamController@generateCamReport'
                 ]);
 
                 Route::post('save-bank-detail', [

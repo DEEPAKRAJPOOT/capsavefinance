@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\UserAppDoc;
 
 class ReviewerSummary extends Mailable
 {
@@ -61,6 +62,17 @@ class ReviewerSummary extends Mailable
             }
         }
 
+        //Cam report files
+        $camFile = UserAppDoc::getLatestDoc($appId, config('common.PRODUCT.LEASE_LOAN'), '2');
+        if($camFile) {
+            if(file_exists(storage_path('app/public/'.$camFile['file_path']))) {
+                $email->attach(storage_path('app/public/'.$camFile['file_path']),
+                [
+                    'as' => $camFile['file_name']
+                ]);
+            }
+        }
+        
         return $email;
     }
 }

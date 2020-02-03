@@ -6,6 +6,11 @@
  
 <div class="inner-container">
     <div class="card mt-3">
+         <div class="card-body pt-3 pb-3">
+            <a href="{{route('generate_cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}">
+               <button type="button" class="btn btn-primary float-right btn-sm" > Generate Cam Report</button>
+            </a>
+         </div>
         <div class="card-body pt-3 pb-3">
           <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
           @if(($currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
@@ -65,7 +70,7 @@
                      <td class="">Lease</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class=""><b>Limit (In Mn)</b></td>
+                     <td class=""><b>Limit</b></td>
                      <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
                            </td>
                      
@@ -832,7 +837,7 @@
 <script>
 
 function downloadCam(){
-    var pdf = new jsPDF('px', 'pt', [1400, 1155]);
+    var pdf = new jsPDF('px', 'pt', [1400, 1175]);
     var  res = pdf.html(document.getElementById('camReport'), {
         callback: function (pdf) {
             pdf.save('camReport');
