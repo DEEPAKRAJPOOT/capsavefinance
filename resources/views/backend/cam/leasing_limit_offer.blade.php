@@ -303,45 +303,51 @@
         flag = false;
     }
     let data = [];
-    $('input[name*=ptpq_from]').each(function(i,val){
-        let ptpq_from = $('input[name*=ptpq_from]').eq(i).val().trim();
-        let ptpq_to = $('input[name*=ptpq_to]').eq(i).val().trim();
-        let ptpq_rate = $('input[name*=ptpq_rate]').eq(i).val().trim();
-        let obj = {
-            'from':ptpq_from,
-            'to':ptpq_to,
-            'rate':ptpq_rate
-        };
-        data.push(obj);
-        debugger;
-        tenor
-        rental_frequency
 
-        if(ptpq_from == '' || isNaN(ptpq_from)){
-            setError('input[name*=ptpq_from]:eq('+i+')', 'Please fill from PTP');
-            flag = false;
-        }else if(i == 0){
-            if(ptpq_from != 1){
-                setError('input[name*=ptpq_from]:eq('+i+')', 'From PTP should starts from 1');
+    if(tenor != '' && rental_frequency != ''){
+        $('input[name*=ptpq_from]').each(function(i,val){
+            let ttlcount = $('input[name*=ptpq_from]').length;
+            let rf = {1:12, 2:6, 3:3, 4:1};
+            let ptpq_from = $('input[name*=ptpq_from]').eq(i).val().trim();
+            let ptpq_to = $('input[name*=ptpq_to]').eq(i).val().trim();
+            let ptpq_rate = $('input[name*=ptpq_rate]').eq(i).val().trim();
+            let obj = {
+                'from':ptpq_from,
+                'to':ptpq_to,
+                'rate':ptpq_rate
+            };
+            data.push(obj);
+
+            if(ptpq_from == '' || isNaN(ptpq_from)){
+                setError('input[name*=ptpq_from]:eq('+i+')', 'Please fill FROM PTP');
+                flag = false;
+            }else if(i == 0){
+                if(ptpq_from != 1){
+                    setError('input[name*=ptpq_from]:eq('+i+')', 'From PTP should starts from 1');
+                    flag = false;
+                }
+            }else if(ptpq_from -1 != data[i-1]['to']){
+                setError('input[name*=ptpq_from]:eq('+i+')', 'Please fill correct FROM PTP');
                 flag = false;
             }
-        }else if(ptpq_from -1 != data[i-1]['to']){
-            setError('input[name*=ptpq_from]:eq('+i+')', 'Please fill correct from PTP');
-            flag = false;
-        }
 
-        if(ptpq_to == '' || isNaN(ptpq_to)){
-            setError('input[name*=ptpq_to]:eq('+i+')', 'Please fill to PTP');
-            flag = false;
-        }else if(ptpq_to < tenor && ){
-            zzz
-        }
+            if(ptpq_to == '' || isNaN(ptpq_to)){
+                setError('input[name*=ptpq_to]:eq('+i+')', 'Please fill TO PTP');
+                flag = false;
+            }else if((i == ttlcount-1) && (parseInt(ptpq_to) < parseInt(ptpq_from) || parseInt(ptpq_to) != Math.ceil(tenor/rf[rental_frequency])  )){
+                setError('input[name*=ptpq_to]:eq('+i+')', 'To PTP should equal to Tenor/Rental Frequncy');
+                flag = false;
+            }else if(parseInt(ptpq_to) < parseInt(ptpq_from) || parseInt(ptpq_to) > Math.ceil(tenor/rf[rental_frequency])){
+                setError('input[name*=ptpq_to]:eq('+i+')', 'To PTP should not greater than Tenor/TO PTP');
+                flag = false;
+            }
 
-        if(ptpq_rate == '' || isNaN(ptpq_rate)){
-            setError('input[name*=ptpq_rate]:eq('+i+')', 'Please fill PTP rate');
-            flag = false;
-        }
-    });
+            if(ptpq_rate == '' || isNaN(ptpq_rate)){
+                setError('input[name*=ptpq_rate]:eq('+i+')', 'Please fill PTP rate');
+                flag = false;
+            }
+        });
+    }
 
 
     if(ruby_sheet_xirr == '' || isNaN(ruby_sheet_xirr)){
