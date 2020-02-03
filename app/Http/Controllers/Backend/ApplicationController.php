@@ -1125,7 +1125,7 @@ class ApplicationController extends Controller
         
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      if($response['result'])
+      if(!empty($response['result']))
       {     $status = 1;
             $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
               'created_by' => Auth::user()->user_id]);
