@@ -86,6 +86,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@uploadBankXLSX'
             ]);
             
+            Route::get('upload_xlsx_document_finance', [
+                'as' => 'upload_xlsx_document_finance',
+                'uses' => 'Backend\CamController@uploadFinanceXLSX'
+            ]);
+            
             Route::post('save_xlsx_document', [
                 'as' => 'save_xlsx_document',
                 'uses' => 'Backend\CamController@saveBankXLSX'

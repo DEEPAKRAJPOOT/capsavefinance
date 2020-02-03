@@ -271,6 +271,13 @@ class CamController extends Controller
       //return new \App\Mail\ReviewerSummary();        
     }
 
+     public function uploadFinanceXLSX(Request $request){
+      $app_id = $request->get('app_id');
+      $file_type = $request->get('file_type');
+      $request_data = _encrypt("$app_id|$file_type");
+      return view('backend.cam.upload_xlsx', ['request_data' => $request_data]);
+    }
+
     public function uploadBankXLSX(Request $request){
       $app_id = $request->get('app_id');
       $file_type = $request->get('file_type');
