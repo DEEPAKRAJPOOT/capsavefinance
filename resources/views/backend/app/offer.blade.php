@@ -1,13 +1,27 @@
 @extends('layouts.backend.admin-layout')
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
+
+@section('additional_css')
+<style>
+.card-title {
+    font-size: 0.9rem;
+    line-height: 1.375rem;
+}
+</style>
+@endsection
+
 <div class="content-wrapper">
     <div class="row grid-margin mt-3 mb-2">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
                     @if($supplyOfferData->count() == 0 && $termOfferData->count() == 0 && $leaseOfferData->count() == 0 )
-                    <div class="row"><h3>No offer found .</h3></div>
+                    <div class="card card-color mb-0">
+                        <div class="card-header">
+                            <a class="card-title ">No offer found.</a>
+                        </div>
+                    </div>
                     @else
                     <div class="row">
                         <div class="col-sm-12">
@@ -16,65 +30,65 @@
                                 @foreach($supplyOfferData as $key=>$supplyOffer)
                                 @if($loop->first)
                                 <div class="card card-color mb-0">
-                                    <div class="card-header" data-toggle="collapse" href="#collapseOne" aria-expanded="false" style="background: #138864;color: #fff;"><h5 class="mb-0">Supply Chain Offer Details</h5>     
+                                    <div class="card-header collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false" style="background: #138864;color: #fff;"><h5 class="mb-0">Supply Chain Offer Details</h5>     
                                     </div>
-                                    <div id="collapseOne" class="card-body bdr p-0 show" data-parent="#accordion" style="">
+                                    <div id="collapseOne" class="card-body bdr p-0 collapse" data-parent="#accordion" style="">
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
-                                                   <th width="5%">Sr. No.</th>
-                                                   <th width="75%">Offer Details</th>
-                                                   <th width="10%">Created By</th>
-                                                   <th width="10%">Status</th>
+                                                   <th width="10%">Sr. No.</th>
+                                                   <th width="70%" colspan="4">Offer Details</th>
+                                                   <th width="20%">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             @endif
-                                                <tr role="row" class="odd">
-                                                    <td width="10%">{{$key+1}}</td>
-                                                    <td width="75%">
-                                                        <table class="table table-bordered table-striped" width="100%">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td><b>Apply Loan Amount : </b></td>
-                                                                    <td>{{$supplyOffer->prgm_limit_amt}}</td>
-                                                                    <td><b>Check Bounce Fee: </b></td>
-                                                                    <td>{{$supplyOffer->check_bounce_fee}}</td>
-                                                                </tr>
-                                                                
-                                                                <tr>
-                                                                   <td><b>Interest Rate(%) : </b></td>
-                                                                   <td>{{$supplyOffer->interest_rate}}</td>
-                                                                   <td><b>Tenor (Days) : </b></td>
-                                                                   <td>{{$supplyOffer->tenor}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                   <td><b>Tenor for old invoice (Days): </b></td>
-                                                                   <td>{{$supplyOffer->tenor_old_invoice}}</td>
-                                                                   <td><b>Margin (%): </b></td>
-                                                                   <td>{{$supplyOffer->margin}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Overdue Interest Rate (%): </b></td>
-                                                                    <td>{{$supplyOffer->overdue_interest_rate}}</td>
-                                                                    <td><b>Adhoc Interest Rate (%): </b></td>
-                                                                    <td>{{$supplyOffer->adhoc_interest_rate}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Grace Period (Days): </b></td>
-                                                                    <td>{{$supplyOffer->grace_period}}</td>
-                                                                    <td><b>Processing Fee: </b></td>
-                                                                    <td>{{$supplyOffer->processing_fee}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="2"><b>Comment: </b></td>
-                                                                    <td colspan="2">{{$supplyOffer->comment}}</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                    <td width="10%">{{\Helpers::getUserName($supplyOffer->created_by)}}</td>
-                                                    <td width="10%"><label class="badge badge-success current-status">{{($supplyOffer->is_approve == 1)? 'Approved': 'Not Approve'}}</label></td>
+                                                <tr>
+                                                    <td>{{$key+1}}</td>
+                                                    <td><b>Apply Loan Amount: </b> </td>
+                                                    <td>{{$supplyOffer->prgm_limit_amt}}</td>
+                                                    <td><b>Check Bounce Fee: </b></td>
+                                                    <td>{{$supplyOffer->check_bounce_fee}}</td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($supplyOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($supplyOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td></td>
+                                                   <td><b>Interest Rate(%): </b></td>
+                                                   <td>{{$supplyOffer->interest_rate}}</td>
+                                                   <td><b>Tenor (Days) : </b></td>
+                                                   <td>{{$supplyOffer->tenor}}</td>
+                                                   <td><b>Created By: &nbsp;&nbsp;&nbsp;</b>{{\Helpers::getUserName($supplyOffer->created_by)}}</td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                   <td><b>Tenor for old invoice (Days): </b></td>
+                                                   <td>{{$supplyOffer->tenor_old_invoice}}</td>
+                                                   <td><b>Margin (%): </b></td>
+                                                   <td>{{$supplyOffer->margin}}</td>
+                                                   <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($supplyOffer->created_at)->format('d-m-Y')}}</td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>Overdue Interest Rate (%): </b></td>
+                                                    <td>{{$supplyOffer->overdue_interest_rate}}</td>
+                                                    <td><b>Adhoc Interest Rate (%): </b></td>
+                                                    <td>{{$supplyOffer->adhoc_interest_rate}}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>Grace Period (Days): </b></td>
+                                                    <td>{{$supplyOffer->grace_period}}</td>
+                                                    <td><b>Processing Fee: </b></td>
+                                                    <td>{{$supplyOffer->processing_fee}}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>Comment: </b></td>
+                                                    <td colspan="3">{{$supplyOffer->comment}}</td>
+                                                    <td></td>
                                                 </tr>
                                                 @if($loop->last)
                                             </tbody>
@@ -94,59 +108,76 @@
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
-                                                   <th width="5%">Sr. No.</th>
-                                                   <th width="75%">Offer Details</th>
-                                                   <th width="10%">Created By</th>
-                                                   <th width="10%">Status</th>
+                                                   <th width="10%">Sr. No.</th>
+                                                   <th width="70%" colspan="4">Offer Details</th>
+                                                   <th width="20%">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             @endif
-                                                <tr role="row" class="odd">
-                                                    <td width="10%">{{$key+1}}</td>
-                                                    <td width="75%">
-                                                        <table class="table table-bordered table-striped" width="100%">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td><b>Apply Loan Amount : </b></td>
-                                                                    <td>{{$termOffer->prgm_limit_amt}}</td>
-                                                                    <td><b>Check Bounce Fee: </b></td>
-                                                                    <td>{{$termOffer->check_bounce_fee}}</td>
-                                                                </tr>
-                                                                
-                                                                <tr>
-                                                                   <td><b>Interest Rate(%) : </b></td>
-                                                                   <td>{{$termOffer->interest_rate}}</td>
-                                                                   <td><b>Tenor (Days) : </b></td>
-                                                                   <td>{{$termOffer->tenor}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                   <td><b>Tenor for old invoice (Days): </b></td>
-                                                                   <td>{{$termOffer->tenor_old_invoice}}</td>
-                                                                   <td><b>Margin (%): </b></td>
-                                                                   <td>{{$termOffer->margin}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Overdue Interest Rate (%): </b></td>
-                                                                    <td>{{$termOffer->overdue_interest_rate}}</td>
-                                                                    <td><b>Adhoc Interest Rate (%): </b></td>
-                                                                    <td>{{$termOffer->adhoc_interest_rate}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Grace Period (Days): </b></td>
-                                                                    <td>{{$termOffer->grace_period}}</td>
-                                                                    <td><b>Processing Fee: </b></td>
-                                                                    <td>{{$termOffer->processing_fee}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="2"><b>Comment: </b></td>
-                                                                    <td colspan="2">{{$termOffer->comment}}</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
+                                                <tr>
+                                                    <td>{{$key+1}}</td>
+                                                    <td><b>Facility Type: </b></td>
+                                                    <td>Lease Loan</td>
+                                                    <td><b>Apply Loan Amount: </b> </td>
+                                                    <td>{{$termOffer->prgm_limit_amt}}</td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($termOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($termOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>Tenor (Months): </b></td>
+                                                    <td>{{$termOffer->tenor}}</td>
+                                                    <td><b>Equipment Type: </b></td>
+                                                    <td>{{\Helpers::getEquipmentTypeById($termOffer->equipment_type_id)->equipment_name}}</td>
+                                                    <td><b>Created By: &nbsp;&nbsp;&nbsp;</b>{{\Helpers::getUserName($termOffer->created_by)}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>Security Deposit: </b></td>
+                                                    <td>{{$termOffer->security_deposit}}</td>
+                                                    <td><b>Rental Frequency: </b></td>
+                                                    <td>{{(($termOffer->rental_frequency == 1)?'Yearly':(($termOffer->rental_frequency == 2)? 'Bi-Yearly':(($termOffer->rental_frequency == 3)? 'Quaterly': 'Monthly')))}}</td>
+                                                    <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($termOffer->created_at)->format('d-m-Y')}}</td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>PTP Frequency: </b></td>
+                                                    <td>
+                                                        @if(isset($termOffer->offerPTPQ))   
+                                                            @foreach ($termOffer->offerPTPQ as $ok => $ov)
+                                                               {!!isset($ov->ptpq_from) ? '<b>From Period:</b> '.$ov->ptpq_from : ''!!}
+                                                               {!!isset($ov->ptpq_to) ? '<b>&nbsp;&nbsp;&nbsp;To Period:</b> '.$ov->ptpq_to : ''!!}
+                                                               {!!isset($ov->ptpq_rate) ? '<b>&nbsp;&nbsp;&nbsp;Rate:</b> '.$ov->ptpq_rate : ''!!}
+                                                               <br/>
+                                                            @endforeach 
+                                                         @endif
                                                     </td>
-                                                    <td width="10%">{{\Helpers::getUserName($termOffer->created_by)}}</td>
-                                                    <td width="10%"><label class="badge badge-success current-status">{{($termOffer->is_approve == 1)? 'Approved': 'Not Approve'}}</label></td>
+                                                    <td><b>XIRR (%): </b></td>
+                                                    <td>Ruby Sheet : {{$termOffer->ruby_sheet_xirr}}<br/>Cash Flow :{{$termOffer->cash_flow_xirr}}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>Additional Security: </b></td>
+                                                    <td>
+                                                        @php
+                                                        $add_sec_arr = '';
+                                                        $addl_sec_arr = explode(',', $termOffer->addl_security);
+                                                        foreach($addl_sec_arr as $k=>$v){
+                                                            if($v == 4){
+                                                                $add_sec_arr .= ', '.config('common.addl_security')[$v];
+                                                                $add_sec_arr .= ' - <b>Comment</b>:  '.$termOffer->comment;
+                                                            }else{
+                                                                $add_sec_arr .= ', '.config('common.addl_security')[$v];
+                                                            }
+                                                        }
+                                                        @endphp 
+                                                        {!! trim($add_sec_arr, ', ') !!}
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
                                                 </tr>
                                                 @if($loop->last)
                                             </tbody>
@@ -166,59 +197,76 @@
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
-                                                   <th width="5%">Sr. No.</th>
-                                                   <th width="75%">Offer Details</th>
-                                                   <th width="10%">Created By</th>
-                                                   <th width="10%">Status</th>
+                                                   <th width="10%">Sr. No.</th>
+                                                   <th width="70%" colspan="4">Offer Details</th>
+                                                   <th width="20%">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             @endif
-                                                <tr role="row" class="odd">
-                                                    <td width="10%">{{$key+1}}</td>
-                                                    <td width="75%">
-                                                        <table class="table table-bordered table-striped" width="100%">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td><b>Apply Loan Amount : </b></td>
-                                                                    <td>{{$leaseOffer->prgm_limit_amt}}</td>
-                                                                    <td><b>Check Bounce Fee: </b></td>
-                                                                    <td>{{$leaseOffer->check_bounce_fee}}</td>
-                                                                </tr>
-                                                                
-                                                                <tr>
-                                                                   <td><b>Interest Rate(%) : </b></td>
-                                                                   <td>{{$leaseOffer->interest_rate}}</td>
-                                                                   <td><b>Tenor (Days) : </b></td>
-                                                                   <td>{{$leaseOffer->tenor}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                   <td><b>Tenor for old invoice (Days): </b></td>
-                                                                   <td>{{$leaseOffer->tenor_old_invoice}}</td>
-                                                                   <td><b>Margin (%): </b></td>
-                                                                   <td>{{$leaseOffer->margin}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Overdue Interest Rate (%): </b></td>
-                                                                    <td>{{$leaseOffer->overdue_interest_rate}}</td>
-                                                                    <td><b>Adhoc Interest Rate (%): </b></td>
-                                                                    <td>{{$leaseOffer->adhoc_interest_rate}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><b>Grace Period (Days): </b></td>
-                                                                    <td>{{$leaseOffer->grace_period}}</td>
-                                                                    <td><b>Processing Fee: </b></td>
-                                                                    <td>{{$leaseOffer->processing_fee}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="2"><b>Comment: </b></td>
-                                                                    <td colspan="2">{{$leaseOffer->comment}}</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
+                                                <tr>
+                                                    <td>{{$key+1}}</td>
+                                                    <td><b>Facility Type: </b></td>
+                                                    <td>Lease Loan</td>
+                                                    <td><b>Apply Loan Amount: </b> </td>
+                                                    <td>{{$leaseOffer->prgm_limit_amt}}</td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($leaseOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($leaseOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>Tenor (Months): </b></td>
+                                                    <td>{{$leaseOffer->tenor}}</td>
+                                                    <td><b>Equipment Type: </b></td>
+                                                    <td>{{\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)->equipment_name}}</td>
+                                                    <td><b>Created By: &nbsp;&nbsp;&nbsp;</b>{{\Helpers::getUserName($leaseOffer->created_by)}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>Security Deposit: </b></td>
+                                                    <td>{{$leaseOffer->security_deposit}}</td>
+                                                    <td><b>Rental Frequency: </b></td>
+                                                    <td>{{(($leaseOffer->rental_frequency == 1)?'Yearly':(($leaseOffer->rental_frequency == 2)? 'Bi-Yearly':(($leaseOffer->rental_frequency == 3)? 'Quaterly': 'Monthly')))}}</td>
+                                                    <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($leaseOffer->created_at)->format('d-m-Y')}}</td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>PTP Frequency: </b></td>
+                                                    <td>
+                                                        @if(isset($leaseOffer->offerPTPQ))   
+                                                            @foreach ($leaseOffer->offerPTPQ as $ok => $ov)
+                                                               {!!isset($ov->ptpq_from) ? '<b>From Period:</b> '.$ov->ptpq_from : ''!!}
+                                                               {!!isset($ov->ptpq_to) ? '<b>&nbsp;&nbsp;&nbsp;To Period:</b> '.$ov->ptpq_to : ''!!}
+                                                               {!!isset($ov->ptpq_rate) ? '<b>&nbsp;&nbsp;&nbsp;Rate:</b> '.$ov->ptpq_rate : ''!!}
+                                                               <br/>
+                                                            @endforeach 
+                                                         @endif
                                                     </td>
-                                                    <td width="10%">{{\Helpers::getUserName($leaseOffer->created_by)}}</td>
-                                                    <td width="10%"><label class="badge badge-success current-status">{{($leaseOffer->is_approve == 1)? 'Approved': 'Not Approve'}}</label></td>
+                                                    <td><b>XIRR (%): </b></td>
+                                                    <td>Ruby Sheet : {{$leaseOffer->ruby_sheet_xirr}}<br/>Cash Flow :{{$leaseOffer->cash_flow_xirr}}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>Additional Security: </b></td>
+                                                    <td>
+                                                        @php
+                                                        $add_sec_arr = '';
+                                                        $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                                                        foreach($addl_sec_arr as $k=>$v){
+                                                            if($v == 4){
+                                                                $add_sec_arr .= ', '.config('common.addl_security')[$v];
+                                                                $add_sec_arr .= ' - <b>Comment</b>:  '.$leaseOffer->comment;
+                                                            }else{
+                                                                $add_sec_arr .= ', '.config('common.addl_security')[$v];
+                                                            }
+                                                        }
+                                                        @endphp 
+                                                        {!! trim($add_sec_arr, ', ') !!}
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
                                                 </tr>
                                                 @if($loop->last)
                                             </tbody>
@@ -240,7 +288,7 @@
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         <div class="col-md-12">
                             <!-- <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button> -->
-                            <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept</button>
+                            <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept Offer</button>
                         </div>
                         </div>  
                     </form>
@@ -252,4 +300,11 @@
 </div>
 
 @endsection
-
+@section('jscript')
+<script>
+$(document).ready(function(){
+    $('.card-header').eq(0).removeClass('collapsed');
+    $('.card-body').eq(1).addClass('show');
+})
+</script>
+@endsection

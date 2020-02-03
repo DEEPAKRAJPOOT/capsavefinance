@@ -9,7 +9,7 @@
         <div class="card mt-3">
             <div class="card-body pt-3 pb-3">
                 <ul class="float-left mb-0 pl-0">
-                    <li><b class="bold">Application ID: {{ $arrRequest['app_id']}}</b> </li>
+                    <li><b class="bold">Application ID: {{isset($arrRequest['app_id'])?'CAPS000'.$arrRequest['app_id']:''}}</b> </li>
                    <!--  <li><b class="bold">Credit Head Status :</b> Reject</li> -->
 
                 </ul>
@@ -93,7 +93,7 @@
                             <td>{{$arrBizData->prgm_name}}</td>
                             <td><b>External Rating ( If any )</b></td>
                             <td style="text-align: center;">
-                                <fieldset class="rating" id="goof" name="goof">
+                                {{-- <fieldset class="rating" id="goof" name="goof">
                                     <input type="radio" id="star5" name="rating_no" value="5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 5 ? 'checked' : ''}}>
                                     <label class="full" for="star5" title="Awesome - 5 stars"></label>
                                     <input type="radio" id="star4half" name="rating_no" value="4.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 4.5 ? 'checked' : ''}}>
@@ -114,7 +114,7 @@
                                     <label class="full" for="star1" title="Sucks big time - 1 star"></label>
                                     <input type="radio" id="starhalf" name="rating_no" value=".5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == .5 ? 'checked' : ''}}>
                                     <label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
-                                </fieldset>
+                                </fieldset> --}}
                                 <textarea class="form-control" id="external_rating_comments" rows="2" name="rating_comment"> {{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</textarea>
                             </td>
                         </tr>
@@ -126,13 +126,13 @@
                                 </div> 
                             </td>
                             <td width="25%"><b>Existing Group Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format calTotalExposure" maxlength="20" name="existing_exposure"  value="{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}"></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format calTotalExposure" maxlength="20" name="existing_exposure"  value="{{isset($arrCamData->existing_exposure) ? number_format($arrCamData->existing_exposure) : ''}}"></td>
                         </tr>
                         <tr>
                             <td width="25%"><b>Proposed Group Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" ></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? number_format($arrCamData->proposed_exposure) : (isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '')}}" ></td>
                             <td width="25%"><b>Total Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" ></td>
+                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? number_format($arrCamData->total_exposure) : ''}}" ></td>
                         </tr>
                     </tbody>
                 </table>
@@ -325,15 +325,13 @@
         },
         minLength: '3'
     });
-
-    $('input.calTotalExposure').on('change', function(){
+    $('input.calTotalExposure').on('change keyup blur', function(){
         var existing =  parseInt($("input[name='existing_exposure']").val().replace(/,/g, '')); 
-        var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, '')); 
+        var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, ''));
 
         existing = (!isNaN(existing))?existing:0;
         proposed = (!isNaN(proposed))?proposed:0;
         $("input[name='total_exposure']").val(proposed+existing);
-        $("input[name='total_exposure']").addClass('number_format');
     })
     
 </script>

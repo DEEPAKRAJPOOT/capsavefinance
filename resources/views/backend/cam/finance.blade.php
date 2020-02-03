@@ -3,7 +3,10 @@
    $year_count = 3;
    $start_year = date('Y')-$year_count + 1;
    $class_enable = 'getAnalysis';
-   extract(getColumns());
+   extract(getFinancialDetailSummaryColumns());
+   extract(getProfitandLossColumns());
+   extract(getBalanceSheetLiabilitiesColumns());
+   extract(getBalanceSheetAssetsColumns());
 ?>
 @extends('layouts.backend.admin-layout')
 @section('content')
@@ -48,303 +51,851 @@
                          @endif
                          </div>
                          <div class="clearfix"></div>
-                         <br/>
-                         <hr>
-                         <div id="paginate">
-                            <?php 
-                               echo $xlsx_pagination;
-                            ?>
-                         </div>
-                         <div id="gridView">
-                            <?php 
-                               echo $xlsx_html;
-                            ?>
-                         </div>
-                          <div class="clearfix"></div>
-                    <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
-                       <div class="card">
-                          <div class="card-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" role="tab" id="headingOne">
-                             <a class="">
-                             Financial Detail Summary
-                             </a>
-                          </div>
-                          <div id="collapseOne" class="collapse show colsp" role="tabpanel" aria-labelledby="headingOne">
-                             <div class="card-body pt-3 pl-0 pr-0 pb-0">
-                                <div class="card">
-                                   <table class="table table-bordered overview-table" cellspacing="0">
-                                      <tbody>
-                                         <tr>
-                                            <td><b>Name of the Borrower</b></td>
-                                            <td colspan="4">{{$borrower_name}}</td>
-                                         </tr>
-                                         <tr>
-                                            <td width="25%"><b>Latest Audited Financial Year</b></td>
-                                            <td width="15%">{{$latest_finance_year}}</td>
-                                            <td width="20%"><b>Projections Available for</b> </td>
-                                            <td width="20%">
-                                               <select class="form-control form-control-sm">
-                                                  <option>0</option>
-                                                  <option>1</option>
-                                                  <option>2</option>
-                                               </select>
-                                            </td>
-                                            <td width="20%">(Amount in INR Lacs)</td>
-                                         </tr>
-                                      </tbody>
-                                   </table>
-                                   <table class="table table-bordered overview-table mt-3 " cellspacing="0">
-                                      <tbody>
-                                         <tr>
-                                            <td rowspan="2" valign="middle" bgcolor="#efefef" width="40%">Financial Spread Sheet for the period ended</td>
-                                            @foreach($audited_years as $aud_year)
-                                            <td bgcolor="#efefef" align="left">31-March-{{$aud_year}}</td>
-                                            @endforeach
-                                         </tr>
-                                         <tr>
-                                            <td bgcolor="#efefef" align="right">
-                                               <select class="form-control form-control-sm">
-                                                  <option>Audited</option>
-                                                  <option>Unaudited</option>
-                                               </select>
-                                            </td>
-                                            <td bgcolor="#efefef" align="right">
-                                               <select class="form-control form-control-sm">
-                                                  <option>Audited</option>
-                                                  <option>Unaudited</option>
-                                               </select>
-                                            </td>
-                                            <td bgcolor="#efefef" align="right">
-                                               <select class="form-control form-control-sm">
-                                                  <option>Audited</option>
-                                                  <option>Unaudited</option>
-                                               </select>
-                                            </td>
-                                         </tr>
-                                      </tbody>
-                                      <tbody>
-                                         <tr>
-                                            <td colspan="4" bgcolor="#e6e4e4"><b class="bold">SUMMARY OF FINANCIAL CONDITION</b></td>
-                                         </tr>
-                                         <tr>
-                                            <td colspan="4"><b>(A)  PERFORMANCE ANALYSIS</b></td>
-                                         </tr>
-                                         <tr>
-                                            <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @foreach($performance_analysis_cols as $cols)
-                                                     <tr>
-                                                        <td height="46">{{$cols}}</td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @foreach($finance_data as $year => $fin_data)
-                                            <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
-                                                    @foreach($performance_analysis_cols as $key => $cols)
+                         <br />
+                          <form method="post" action="{{ route('save_finance_detail') }}">
+                            <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
+                               <div class="card">
+                                  <div class="card-header" data-toggle="collapse" data-parent="#accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero" role="tab" id="headingZero">
+                                     <a class="">
+                                     View XLSX
+                                     </a>
+                                  </div>
+                                  <div id="collapseZero" class="collapse show colsp" role="tabpanel" aria-labelledby="headingZero">
+                                    <div class="card-body pt-3 pl-0 pr-0 pb-0">
+                                      <div class="card">
+                                        @if(!empty($xlsx_pagination))
+                                          <div id="paginate">
+                                            <?php 
+                                               echo $xlsx_pagination;
+                                            ?>
+                                         </div>
+                                         @endif
+                                         <div id="gridView">
+                                            <?php 
+                                               echo $xlsx_html;
+                                            ?>
+                                         </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                               </div>
+                               <div class="card">
+                                  <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" role="tab" id="headingOne">
+                                     <a class="">
+                                     Financial Detail Summary
+                                     </a>
+                                  </div>
+                                  <div id="collapseOne" class="collapse colsp" role="tabpanel" aria-labelledby="headingOne">
+                                     <div class="card-body pt-3 pl-0 pr-0 pb-0">
+                                        <div class="card">
+                                           <table class="table table-bordered overview-table" cellspacing="0">
+                                              <tbody>
+                                                 <tr>
+                                                    <td><b>Name of the Borrower</b></td>
+                                                    <td colspan="4">{{$borrower_name}}</td>
+                                                 </tr>
+                                                 <tr>
+                                                    <td width="25%"><b>Latest Audited Financial Year</b></td>
+                                                    <td width="15%">{{$latest_finance_year}}</td>
+                                                    <td width="20%"><b>Projections Available for</b> </td>
+                                                    <td width="20%">
+                                                       <select class="form-control form-control-sm">
+                                                          <option>0</option>
+                                                          <option>1</option>
+                                                          <option>2</option>
+                                                       </select>
+                                                    </td>
+                                                    <td width="20%">(Amount in INR Lacs)</td>
+                                                 </tr>
+                                              </tbody>
+                                           </table>
+                                           <table class="table table-bordered overview-table mt-3 " cellspacing="0">
+                                              <tbody>
+                                                 <tr>
+                                                    <td rowspan="2" valign="middle" bgcolor="#efefef" width="40%">Financial Spread Sheet for the period ended</td>
+                                                    @foreach($audited_years as $aud_year)
+                                                    <td bgcolor="#efefef" align="left">31-March-{{$aud_year}}</td>
+                                                    @endforeach
+                                                 </tr>
+                                                 <tr>
+                                                    <td bgcolor="#efefef" align="right">
+                                                       <select class="form-control form-control-sm">
+                                                          <option>Audited</option>
+                                                          <option>Unaudited</option>
+                                                       </select>
+                                                    </td>
+                                                    <td bgcolor="#efefef" align="right">
+                                                       <select class="form-control form-control-sm">
+                                                          <option>Audited</option>
+                                                          <option>Unaudited</option>
+                                                       </select>
+                                                    </td>
+                                                    <td bgcolor="#efefef" align="right">
+                                                       <select class="form-control form-control-sm">
+                                                          <option>Audited</option>
+                                                          <option>Unaudited</option>
+                                                       </select>
+                                                    </td>
+                                                 </tr>
+                                              </tbody>
+                                              <tbody>
+                                                 <tr>
+                                                    <td colspan="4" bgcolor="#e6e4e4"><b class="bold">SUMMARY OF FINANCIAL CONDITION</b></td>
+                                                 </tr>
+                                                 <tr>
+                                                    <td colspan="4"><b>(A)  PERFORMANCE ANALYSIS</b></td>
+                                                 </tr>
+                                                 <tr>
+                                                    <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @foreach($performance_analysis_cols as $cols)
+                                                             <tr>
+                                                                <td height="46">{{$cols}}</td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @foreach($finance_data as $year => $fin_data)
+                                                    <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
+                                                            @foreach($performance_analysis_cols as $key => $cols)
+                                                              <tr>
+                                                                <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @endforeach
+                                                 </tr>
+                                                 <tr>
+                                                    <td colspan="4"><b>(B) PROFITABILITY ANALYSIS</b></td>
+                                                 </tr>
+                                                 <tr>
+                                                    <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @foreach($profitability_analysis_cols as $cols)
+                                                             <tr>
+                                                                <td height="46">{{$cols}}</td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @foreach($finance_data as $year => $fin_data)
+                                                    <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
+                                                            @foreach($profitability_analysis_cols as $key => $cols)
+                                                              <tr>
+                                                                <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @endforeach
+                                                 </tr>
+                                                 <tr>
+                                                    <td colspan="4"><b>(C) GROWTH ANALYSIS</b></td>
+                                                 </tr>
+                                                 <tr>
+                                                    <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @foreach($growth_analysis_cols as $cols)
+                                                             <tr>
+                                                                <td height="46">{{$cols}}</td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @foreach($finance_data as $year => $fin_data)
+                                                    <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @php $yearly_growth_data = $growth_data[$year] @endphp
+                                                            @foreach($growth_analysis_cols as $key => $cols)
+                                                              <tr>
+                                                                <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_growth_data[$key])}}" atttr="{{$key}}"></td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @endforeach
+                                                 </tr>
+                                                 <tr>
+                                                    <td colspan="4"><b>(D) FINANCIAL POSITION ANALYSIS</b></td>
+                                                 </tr>
+                                                 <tr>
+                                                    <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @foreach($financial_position_analysis_cols as $cols)
+                                                             <tr>
+                                                                <td height="46">{{$cols}}</td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @foreach($finance_data as $year => $fin_data)
+                                                    <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
+                                                            @foreach($financial_position_analysis_cols as $key => $cols)
+                                                              <tr>
+                                                                <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @endforeach
+                                                 </tr>
+                                                 <tr>
+                                                    <td colspan="4"><b>(E) LEVERAGE ANALYSIS</b></td>
+                                                 </tr>
+                                                  <tr>
+                                                    <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @foreach($leverage_analysis_cols as $cols)
+                                                             <tr>
+                                                                <td height="46">{{$cols}}</td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @foreach($finance_data as $year => $fin_data)
+                                                    <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
+                                                            @foreach($leverage_analysis_cols as $key => $cols)
+                                                              <tr>
+                                                                <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @endforeach
+                                                 </tr>
+                                                 <tr>
+                                                    <td colspan="4"><b>(F) ACTIVITY EFFICIENCY ANALYSIS</b></td>
+                                                 </tr>
+                                                 <tr>
+                                                    <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @foreach($activity_efficiency_analysis_cols as $cols)
+                                                             <tr>
+                                                                <td height="46">{{$cols}}</td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @foreach($finance_data as $year => $fin_data)
+                                                    <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
+                                                            @foreach($activity_efficiency_analysis_cols as $key => $cols)
+                                                              <tr>
+                                                                <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @endforeach
+                                                 </tr>
+                                                 <tr>
+                                                    <td colspan="4"><b>(G) FUNDS FLOW ANALYSIS</b></td>
+                                                 </tr>
+                                                 <tr>
+                                                    <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @foreach($fundsFlowAnalysis_cols as $cols)
+                                                             <tr>
+                                                                <td height="46">{{$cols}}</td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @foreach($finance_data as $year => $fin_data)
+                                                    <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                       <table class="table-border-none" width="100%">
+                                                          <tbody>
+                                                            @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
+                                                            @foreach($fundsFlowAnalysis_cols as $key => $cols)
+                                                              <tr>
+                                                                <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
+                                                             </tr>
+                                                             @endforeach
+                                                          </tbody>
+                                                       </table>
+                                                    </td>
+                                                    @endforeach
+                                                 </tr>
+                                              </tbody>
+                                           </table>
+                                        </div>
+                                     </div>
+                                  </div>
+                               </div>
+                               <div class="card">
+                                 <div class="card-header collapsed" role="tab" id="headingTwo" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <a class="collapsed" >
+                                    Profit and Loss
+                                    </a>
+                                 </div>
+                                 <div id="collapseTwo" class="collapse colsp" role="tabpanel" aria-labelledby="headingTwo" style="">
+                                    <div class="card-body pt-3 pl-0 pr-0 pb-0">
+                                       <table class="table table-bordered overview-table " cellspacing="0">
+                                          <tbody>
+                                             <tr>
+                                                <td colspan="4" bgcolor="#e6e4e4"><b>INCOME</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($income_cols as $income_col)
                                                       <tr>
-                                                        <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @endforeach
-                                         </tr>
-                                         <tr>
-                                            <td colspan="4"><b>(B) PROFITABILITY ANALYSIS</b></td>
-                                         </tr>
-                                         <tr>
-                                            <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @foreach($profitability_analysis_cols as $cols)
-                                                     <tr>
-                                                        <td height="46">{{$cols}}</td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @foreach($finance_data as $year => $fin_data)
-                                            <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
-                                                    @foreach($profitability_analysis_cols as $key => $cols)
+                                                         <td height="46">{{$income_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @php $yearly_growth_data = $growth_data[$year] @endphp
+                                                          @foreach($income_cols as $key => $income_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss'], $yearly_growth_data) : $key)}}"></td>
+                                                           </tr>
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+
+                                             <tr>
+                                                <td colspan="4" bgcolor="#e6e4e4"><b>COST OF SALES</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($costofsales_cols as $col_key => $costofsales_col)
+                                                      @if(is_array($costofsales_col))
                                                       <tr>
-                                                        <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @endforeach
-                                         </tr>
-                                         <tr>
-                                            <td colspan="4"><b>(C) GROWTH ANALYSIS</b></td>
-                                         </tr>
-                                         <tr>
-                                            <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @foreach($growth_analysis_cols as $cols)
-                                                     <tr>
-                                                        <td height="46">{{$cols}}</td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @foreach($finance_data as $year => $fin_data)
-                                            <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @php $yearly_growth_data = $growth_data[$year] @endphp
-                                                    @foreach($growth_analysis_cols as $key => $cols)
+                                                         <td height="46" colspan="4"><b>{{implode(' ',preg_split('/(?=[A-Z])/',$col_key))}}</b></td>
+                                                      </tr>
+                                                      @foreach($costofsales_col as $arr_key => $arr_val)
                                                       <tr>
-                                                        <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_growth_data[$key])}}" atttr="{{$key}}"></td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @endforeach
-                                         </tr>
-                                         <tr>
-                                            <td colspan="4"><b>(D) FINANCIAL POSITION ANALYSIS</b></td>
-                                         </tr>
-                                         <tr>
-                                            <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @foreach($financial_position_analysis_cols as $cols)
-                                                     <tr>
-                                                        <td height="46">{{$cols}}</td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @foreach($finance_data as $year => $fin_data)
-                                            <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
-                                                    @foreach($financial_position_analysis_cols as $key => $cols)
+                                                         <td height="46">{{$arr_key}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                      @else
                                                       <tr>
-                                                        <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @endforeach
-                                         </tr>
-                                         <tr>
-                                            <td colspan="4"><b>(E) LEVERAGE ANALYSIS</b></td>
-                                         </tr>
-                                          <tr>
-                                            <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @foreach($leverage_analysis_cols as $cols)
-                                                     <tr>
-                                                        <td height="46">{{$cols}}</td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @foreach($finance_data as $year => $fin_data)
-                                            <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
-                                                    @foreach($leverage_analysis_cols as $key => $cols)
+                                                         <td height="46">{{$costofsales_col}}</td>
+                                                      </tr>
+                                                      @endif
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($costofsales_cols as $key => $costofsales_col)
+                                                          @if(is_array($costofsales_col))
+                                                            <tr>
+                                                               <td height="46" style="border-left:none;">&nbsp;</td>
+                                                            </tr>
+                                                            @foreach($costofsales_col as $arr_key => $arr_val)
+                                                            <tr>
+                                                              <td height="46" align="right"><input type="text" <?php echo function_exists($arr_key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']['.$arr_key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key][$arr_key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key][$arr_key]) : (function_exists($arr_key) ? $arr_key($fin_data['ProfitAndLoss']) : $arr_key)}}"></td>
+                                                           </tr>
+                                                            @endforeach
+                                                            @else
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
+                                                           </tr>
+                                                            @endif
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4" bgcolor="#e6e4e4"><b class="bold">OTHER NON OPERATIVE INCOME</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($othernonoperativeincome_cols as $col_key => $operativeincome_col)
                                                       <tr>
-                                                        <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @endforeach
-                                         </tr>
-                                         <tr>
-                                            <td colspan="4"><b>(F) ACTIVITY EFFICIENCY ANALYSIS</b></td>
-                                         </tr>
-                                         <tr>
-                                            <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @foreach($activity_efficiency_analysis_cols as $cols)
-                                                     <tr>
-                                                        <td height="46">{{$cols}}</td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @foreach($finance_data as $year => $fin_data)
-                                            <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
-                                                    @foreach($activity_efficiency_analysis_cols as $key => $cols)
+                                                         <td height="46">{{$operativeincome_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($othernonoperativeincome_cols as $key => $operativeincome_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+
+
+                                             <tr>
+                                                <td colspan="4" bgcolor="#e6e4e4"><b class="bold">OTHER NON OPERATING EXP.</b></td>
+                                             </tr>
+                                            <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($othernonoperatingexp_cols as $col_key => $operativeExpenses_col)
                                                       <tr>
-                                                        <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @endforeach
-                                         </tr>
-                                         <tr>
-                                            <td colspan="4"><b>(G) FUNDS FLOW ANALYSIS</b></td>
-                                         </tr>
-                                         <tr>
-                                            <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @foreach($fundsFlowAnalysis_cols as $cols)
-                                                     <tr>
-                                                        <td height="46">{{$cols}}</td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @foreach($finance_data as $year => $fin_data)
-                                            <td style="vertical-align:top; padding:0px !important; border-right:none;">
-                                               <table class="table-border-none" width="100%">
-                                                  <tbody>
-                                                    @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
-                                                    @foreach($fundsFlowAnalysis_cols as $key => $cols)
+                                                         <td height="46">{{$operativeExpenses_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($othernonoperatingexp_cols as $key => $operativeExpenses_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4" bgcolor="#e6e4e4"><b class="bold">Extraordinary Items adjustments:</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($extraordinaryitemadjustments_cols as $col_key => $extraadjusted_col)
                                                       <tr>
-                                                        <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
-                                                     </tr>
-                                                     @endforeach
-                                                  </tbody>
-                                               </table>
-                                            </td>
-                                            @endforeach
-                                         </tr>
-                                      </tbody>
-                                   </table>
-                                </div>
-                             </div>
-                          </div>
-                       </div>
-                       <!-- <div class="card">Need to check</div> -->
-                    </div>
-                          <div class="table-responsive ps ps--theme_default">
-                            <form method="post" action="{{ route('save_finance_detail') }}">
+                                                         <td height="46">{{$extraadjusted_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($extraordinaryitemadjustments_cols as $key => $extraadjusted_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>EQUITY DIVIDEND PAID</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($equityDividendPaid_cols as $col_key => $equityDividend_col)
+                                                      <tr>
+                                                         <td height="46">{{$equityDividend_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($equityDividendPaid_cols as $key => $equityDividend_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                          </tbody>
+                                       </table>
+                                    </div>
+                                 </div>
+                               </div>
+                               <div class="card">
+                                 <div class="card-header collapsed" role="tab" id="headingThree" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    <a class="collapsed" >
+                                    Balance Sheet
+                                    </a>
+                                 </div>
+                                 <div id="collapseThree" class="collapse colsp" role="tabpanel" aria-labelledby="headingThree" style="">
+                                    <div class="card-body pt-3 pl-0 pr-0 pb-0">
+                                       <table class="table table-bordered overview-table" cellspacing="0">
+                                          <tbody>
+                                             <tr>
+                                                <td colspan="4" bgcolor="#e6e4e4"><b>LIABILITIES</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>CURRENT LIABILITIES:</b><br>Short Term borrowings from banks (including bill purchased/discounted)</td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($currentLiabilities_cols as $col_key => $currentLiabilities_col)
+                                                      <tr>
+                                                         <td height="46">{{$currentLiabilities_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($currentLiabilities_cols as $key => $currentLiabilities_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>TERM LIABILITIES</b></td>
+                                             </tr>
+                                              <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($termLiabilities_cols as $col_key => $termLiabilities_col)
+                                                      <tr>
+                                                         <td height="46">{{$termLiabilities_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($termLiabilities_cols as $key => $termLiabilities_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>NET WORTH</b></td>
+                                             </tr>
+                                              <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($networthLiabilities_cols as $col_key => $networthLiabilities_col)
+                                                      <tr>
+                                                         <td height="46">{{$networthLiabilities_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($networthLiabilities_cols as $key => $networthLiabilities_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>RESERVES</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($reserveLiabilities_cols as $col_key => $reserveLiabilities_col)
+                                                      <tr>
+                                                         <td height="46">{{$reserveLiabilities_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($reserveLiabilities_cols as $key => $reserveLiabilities_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>CONTINGENT LIABILITIES</b></td>
+                                             </tr>
+                                              <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($contingentLiabilities_cols as $col_key => $contingentLiabilities_col)
+                                                      <tr>
+                                                         <td height="46">{{$contingentLiabilities_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($contingentLiabilities_cols as $key => $contingentLiabilities_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4" bgcolor="#e6e4e4"><b class="bold">ASSETS</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>CURRENT ASSETS</b></td>
+                                             </tr>
+                                              <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($assetsCurrent_cols as $col_key => $assetsCurrent_col)
+                                                      <tr>
+                                                         <td height="46">{{$assetsCurrent_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($assetsCurrent_cols as $key => $assetsCurrent_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>INVESTMENTS (Other than Long Term)</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($aasetsInvestments_cols as $col_key => $aasetsInvestments_col)
+                                                      <tr>
+                                                         <td height="46">{{$aasetsInvestments_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($aasetsInvestments_cols as $key => $aasetsInvestments_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>FIXED ASSETS</b></td>
+                                             </tr>
+                                              <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($aasetsFixed_cols as $col_key => $aasetsFixed_col)
+                                                      <tr>
+                                                         <td height="46">{{$aasetsFixed_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($aasetsFixed_cols as $key => $aasetsFixed_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>OTHER NON CURRENT ASSETS</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($otherNonCurrentAssets as $col_key => $otherNonCurrentAsset)
+                                                      <tr>
+                                                         <td height="46">{{$otherNonCurrentAsset}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($otherNonCurrentAssets as $key => $otherNonCurrentAsset)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                                <td colspan="4"><b>INTANGIBLE ASSETS (Patents, goodwill, prelim. expenses, bad/doubtful expenses not provided for)</b></td>
+                                             </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($inTangibleAssets_cols as $col_key => $inTangibleAssets_col)
+                                                      <tr>
+                                                         <td height="46">{{$inTangibleAssets_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($inTangibleAssets_cols as $key => $inTangibleAssets_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                              <td colspan="4" bgcolor="#e6e4e4"><b class="bold">Build Up of Current Assets</b></td>
+                                            </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($buildUpofCurrentAssets_cols as $col_key => $buildUpofCurrentAssets_col)
+                                                      <tr>
+                                                         <td height="46">{{$buildUpofCurrentAssets_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($buildUpofCurrentAssets_cols as $key => $buildUpofCurrentAssets_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                          </tbody>
+                                       </table>
+                                    </div>
+                                 </div>
+                               </div>
+                            </div>
+                            <div class="table-responsive ps ps--theme_default">
                               @csrf
                               <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}"> 
                               <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}"> 
@@ -421,8 +972,8 @@
                                 </div>
                              </div>
                              <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
-                           </form>
-                          </div>
+                            </div>
+                          </form>
                        </div>
                     </div>
                  </div>

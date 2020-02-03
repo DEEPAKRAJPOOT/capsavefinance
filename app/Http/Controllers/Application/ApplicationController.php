@@ -55,19 +55,27 @@ class ApplicationController extends Controller
         if ($userId > 0) {
             $userArr = $this->userRepo->find($userId);
         }
+        $industryList = $this->appRepo->getIndustryDropDown()->toArray();
+        $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
+        
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
             foreach($app_data->products as $product){
-              array_push($product_ids, $product->pivot->product_id);
-            }
+              $product_ids[$product->pivot->product_id]= array( 
+                  "loan_amount" => $product->pivot->loan_amount,
+                  "tenor_days" => $product->pivot->tenor_days
+              );
+          }
             return view('frontend.application.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_types'=>$product_types, 'product_ids'=> $product_ids])
                         ->with('user_id',$request->get('user_id'))
                         ->with('app_id',$request->get('app_id'))
-                        ->with('biz_id',$request->get('biz_id'));
+                        ->with('biz_id',$request->get('biz_id'))
+                        ->with('industryList',$industryList)
+                        ->with('constitutionList',$constitutionList);
         }else{
-            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types']));
+            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList']));
         }
     }
 
@@ -194,18 +202,22 @@ class ApplicationController extends Controller
                 $prgmDocsWhere = [];
                 $prgmDocsWhere['stage_code'] = 'doc_upload';
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-            
-                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);                                                
-                $userData = $this->userRepo->getfullUserDetail($userId);
-                if ($userData && !empty($userData->anchor_id)) {
-                    $toUserId = $this->userRepo->getLeadSalesManager($userId);
-                } else {
-                    $toUserId = $this->userRepo->getAssignedSalesManager($userId);
-                }                
-                
-                if ($toUserId) {
-                   Helpers::assignAppToUser($toUserId, $appId);
+                            
+                $currentStage = \Helpers::getCurrentWfStage($appId);
+                if ($currentStage && $currentStage->stage_code == 'promo_detail') {
+                    $userData = $this->userRepo->getfullUserDetail($userId);
+                    if ($userData && !empty($userData->anchor_id)) {
+                        $toUserId = $this->userRepo->getLeadSalesManager($userId);
+                    } else {
+                        $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+                    }                
+
+                    if ($toUserId) {
+                       Helpers::assignAppToUser($toUserId, $appId);
+                    }
                 }
+                Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1);
+
                 return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1]);
             }
             else {
@@ -380,25 +392,28 @@ class ApplicationController extends Controller
                 
             }
             
+            $wf_status = 1;                
+            Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+            
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
-                $appId = $arrFileData['appId'];       
-                $response = $this->docRepo->isUploadedCheck($userId, $appId);            
-                $wf_status = $response->count() < 1 ? 1 : 2;
-                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+                //$appId = $arrFileData['appId'];       
+                //$response = $this->docRepo->isUploadedCheck($userId, $appId);            
+                //$wf_status = $response->count() < 1 ? 1 : 2;
+                //Helpers::updateWfStage('doc_upload', $appId, $wf_status);
                 
                 Session::flash('message',trans('success_messages.uploaded'));
 
                 return redirect()->route('document', ['app_id' => $appId, 'biz_id' => $bizId]);
             } else {
                 //Add application workflow stages
-                Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+                //Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
 
                 return redirect()->route('document', ['app_id' => $appId, 'biz_id' => $bizId]);
             }
         } catch (Exception $ex) {
             //Add application workflow stages
-            Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
+            //Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
         
             return redirect()->route('document', ['app_id' => $appId, 'biz_id' => $bizId])->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -440,21 +455,23 @@ class ApplicationController extends Controller
         try {
             $appId  = $request->get('app_id');
             $userId = Auth::user()->user_id;
-            $response = $this->docRepo->isUploadedCheck($userId, $appId);
-            if ($response->count() < 1) {
+            // $response = $this->docRepo->isUploadedCheck($userId, $appId);
+            // if ($response->count() < 1) {
                 
                 $this->appRepo->updateAppData($appId, ['status' => 1]);
                 
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
+             
                 //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);                
                 
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
-            } else {
-                //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+            // } else {
+            //     //Add application workflow stages                
+            //     Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
                 
-                return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
-            }
+            //     return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
+            // }
         } catch (Exception $ex) {
             //Add application workflow stages                
             Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);

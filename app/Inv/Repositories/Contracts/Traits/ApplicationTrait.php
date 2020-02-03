@@ -13,8 +13,11 @@ trait ApplicationTrait
      * @param array $prgmDocsWhere
      * @return mixed
      */
-    protected function getProgramDocs($prgmDocsWhere, $appProductIds)
+    protected function getProgramDocs($prgmDocsWhere, $appProductIds=[])
     {
+        if (count($appProductIds) == 0) {
+            $appProductIds = $this->getAppProductIds($prgmDocsWhere['app_id']);
+        }
         $array =[];
         $finalDocs =[];
         if ($prgmDocsWhere['stage_code'] == 'doc_upload') {
@@ -50,6 +53,16 @@ trait ApplicationTrait
         return $finalDocs ;
     }
     
+    protected function getAppProductIds($app_id)
+    {
+        $appProductIds = [];
+        $appProducts = $this->appRepo->getAppProducts($app_id);
+        foreach($appProducts->products as $product){
+            array_push($appProductIds, $product->pivot->product_id);
+        }
+        return $appProductIds;       
+    }
+    
     /**
      * Create Application Required Docs
      * 
@@ -60,15 +73,17 @@ trait ApplicationTrait
      */
     protected function createAppRequiredDocs($prgmDocsWhere, $user_id, $app_id)
     {   
-        $appProductIds = [];
+        //$appProductIds = [];
         $appDocProduct = [];
         $appDocs = [];
         $prgmDocsWhere['app_id'] = $app_id;
 
-        $appProducts = $this->appRepo->getAppProducts($app_id);
-        foreach($appProducts->products as $product){
-            array_push($appProductIds, $product->pivot->product_id);
-        }
+        //$appProducts = $this->appRepo->getAppProducts($app_id);
+        //foreach($appProducts->products as $product){
+        //    array_push($appProductIds, $product->pivot->product_id);
+        //}
+        
+        $appProductIds = $this->getAppProductIds($app_id);
 
         $reqDocs = $this->getProgramDocs($prgmDocsWhere, $appProductIds);
         if($reqDocs && count($reqDocs) == 0) {
@@ -121,55 +136,55 @@ trait ApplicationTrait
         }
        
         $offerData = $this->appRepo->getOfferData($offerWhereCond);
-        $sanctionData = $this->appRepo->getOfferSanction($offerData->prgm_offer_id);
-        $businessData = $this->appRepo->getApplicationById($bizId); 
-        $businessAddress = $businessData->address->where('address_type','2')->first();
-        $cam =  Cam::select('contact_person')->where('biz_id',$bizId)->where('app_id',$appId)->first();
-        
-        $programLimitData = $this->appRepo->getLimit($offerData->app_prgm_limit_id);
-        $ptpqrData =  $this->appRepo->getOfferPTPQR($offerData->prgm_offer_id);
-        $equipmentData = null;
-        if($offerData->equipment_type_id){
-            $equipmentData = Equipment::find($offerData->equipment_type_id);
+
+        if(!empty($offerData)){
+            $sanctionData = $this->appRepo->getOfferSanction($offerData->prgm_offer_id);
+            $businessData = $this->appRepo->getApplicationById($bizId); 
+            $businessAddress = $businessData->address->where('address_type','2')->first();
+            $cam =  Cam::select('contact_person')->where('biz_id',$bizId)->where('app_id',$appId)->first();
+            
+            $programLimitData = $this->appRepo->getLimit($offerData->app_prgm_limit_id);
+            $ptpqrData =  $this->appRepo->getOfferPTPQR($offerData->prgm_offer_id);
+            $equipmentData = null;
+            if($offerData->equipment_type_id){
+                $equipmentData = Equipment::find($offerData->equipment_type_id);
+            }
+    
+            $security_deposit_of = ''; 
+            switch ($offerData->security_deposit_of) {
+                case(4): $security_deposit_of = 'Sanction'; break;
+                case(3): $security_deposit_of = 'Asset Base Value'; break;
+                case(2): $security_deposit_of = 'Asset value'; break;
+                case(1): $security_deposit_of = 'Loan Amount'; break;
+            }
+            $data['contact_person'] = ($cam)?$cam->contact_person:'';
+            $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
+            $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
+            $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
+            $data['payment_type'] = ($sanctionData)?$sanctionData->payment_type:'';
+            $data['payment_type_other'] = ($sanctionData)?$sanctionData->payment_type_other:'';
+            $data['delay_pymt_chrg'] = ($sanctionData)?$sanctionData->delay_pymt_chrg:'';
+            $data['insurance'] = ($sanctionData)?$sanctionData->insurance:'';
+            $data['bank_chrg'] = ($sanctionData)?$sanctionData->bank_chrg:'';
+            $data['legal_cost'] = ($sanctionData)?$sanctionData->legal_cost:'';
+            $data['po'] = ($sanctionData)?$sanctionData->po:'';
+            $data['pdp'] = ($sanctionData)?$sanctionData->pdp:'';
+            $data['disburs_guide'] = ($sanctionData)?$sanctionData->disburs_guide:'';
+            $data['other_cond'] = ($sanctionData)?$sanctionData->other_cond:'';
+            $data['covenants'] = ($sanctionData)?$sanctionData->covenants:'';
+            $data['sanctionData'] = ($sanctionData)?$sanctionData:'';
+            $data['product_id'] = $programLimitData->product_id;
+            $data['biz_entity_name'] = $businessData->biz_entity_name;
+            $data['security_deposit_of'] = $security_deposit_of;
+            $data['offerId'] = $offerData->prgm_offer_id;
+            $data['equipmentData'] = $equipmentData;
+            $data['ptpqrData'] = $ptpqrData;
+            $data['businessAddress'] = $businessAddress;
         }
 
-        $security_deposit_of = ''; 
-        switch ($offerData->security_deposit_of) {
-            case(4): $security_deposit_of = 'Sanction'; break;
-            case(3): $security_deposit_of = 'Asset Base Value'; break;
-            case(2): $security_deposit_of = 'Asset value'; break;
-            case(1): $security_deposit_of = 'Loan Amount'; break;
-        }
-
-        $data = [
-            'product_id' => $programLimitData->product_id,
-            'biz_entity_name' => $businessData->biz_entity_name,
-            'security_deposit_of' => $security_deposit_of,
-            'appId' => $appId,
-            'bizId' => $bizId,
-            'offerId' => $offerData->prgm_offer_id,
-            'offerData' => $offerData,
-            'equipmentData' =>$equipmentData,
-            'ptpqrData' => $ptpqrData,
-            'businessAddress' => $businessAddress
-        ];
-        
-        $data['contact_person'] = ($cam)?$cam->contact_person:'';
-        $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
-        $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
-        $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
-        $data['payment_type'] = ($sanctionData)?$sanctionData->payment_type:'';
-        $data['payment_type_other'] = ($sanctionData)?$sanctionData->payment_type_other:'';
-        $data['delay_pymt_chrg'] = ($sanctionData)?$sanctionData->delay_pymt_chrg:'';
-        $data['insurance'] = ($sanctionData)?$sanctionData->insurance:'';
-        $data['bank_chrg'] = ($sanctionData)?$sanctionData->bank_chrg:'';
-        $data['legal_cost'] = ($sanctionData)?$sanctionData->legal_cost:'';
-        $data['po'] = ($sanctionData)?$sanctionData->po:'';
-        $data['pdp'] = ($sanctionData)?$sanctionData->pdp:'';
-        $data['disburs_guide'] = ($sanctionData)?$sanctionData->disburs_guide:'';
-        $data['other_cond'] = ($sanctionData)?$sanctionData->other_cond:'';
-        $data['covenants'] = ($sanctionData)?$sanctionData->covenants:'';
-        $data['sanctionData'] = ($sanctionData)?$sanctionData:'';
+        $data['offerData'] = $offerData;
+        $data['appId'] = $appId;
+        $data['bizId'] = $bizId;
 
         return $data;
     }

@@ -13,7 +13,7 @@ Form::open(
 !!}
 
 {!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
-
+<input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
 <div class="modal-body text-left">
     <div class="row">
         <div class="col-md-6">

@@ -172,19 +172,21 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
-                    
-                    if(Helpers::checkPermission('company_details')){
-                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
-                    }else{
-                        return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
-                    }
-                    
-                        
+                        $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
+                        $app_id = $app->app_id;
+                        if(Helpers::checkPermission('company_details')){
+                           if($user_role == 8)
+                                $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           else
+                                $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           return "<a id='app-id-$app_id' href='$link' rel='tooltip'> CAPS" . sprintf('%06d',$app_id) . "</a>";
+                        }else{
+                            return "<a id='app-id-$app_id' rel='tooltip'> CAPS" . sprintf('%06d',$app_id) . "</a>";
+                        } 
                     }
                 )
                 ->addColumn(
@@ -195,18 +197,34 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'name',
                     function ($app) {                        
-                        return $app->name ? $app->name : '';
+                        if($app->user_type && $app->user_type==1){
+                            $anchorUserType='<small>( Supplier )</small>'; 
+                        }else if($app->user_type && $app->user_type==2){
+                            $anchorUserType='<small>( Buyer )</small>';
+                        }else{
+                            $anchorUserType='';
+                        }
+                        return $app->name ? $app->name .'<br>'. $anchorUserType : $anchorUserType;
                 })
                 ->addColumn(
-                    'email',
-                    function ($app) {                        
-                        return $app->email ? $app->email : '';
-                })
-                ->addColumn(
-                    'mobile_no',
-                    function ($app) {                        
-                        return $app->mobile_no ? $app->mobile_no : '';
-                })                
+                    'contact',
+                    function ($app) {
+                        $contact = '';
+                        $contact .= $app->email ? '<span><b>Email:&nbsp;</b>'.$app->email.'</span>' : '';
+                        $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
+                        return $contact;
+                    }
+                )
+                // ->addColumn(
+                //     'email',
+                //     function ($app) {                        
+                //         return $app->email ? $app->email : '';
+                // })
+                // ->addColumn(
+                //     'mobile_no',
+                //     function ($app) {                        
+                //         return $app->mobile_no ? $app->mobile_no : '';
+                // })                
                 ->addColumn(
                     'assoc_anchor',
                     function ($app) {
@@ -222,18 +240,18 @@ class DataRenderer implements DataProviderInterface
                     return $achorName;
                     
                 })
-                ->addColumn(
-                    'user_type',
-                    function ($app) {
-                    if($app->user_type && $app->user_type==1){
-                       $anchorUserType='Supplier'; 
-                    }else if($app->user_type && $app->user_type==2){
-                        $anchorUserType='Buyer';
-                    }else{
-                        $anchorUserType='';
-                    }
-                       return $anchorUserType;
-                })                
+                // ->addColumn(
+                //     'user_type',
+                //     function ($app) {
+                //     if($app->user_type && $app->user_type==1){
+                //        $anchorUserType='Supplier'; 
+                //     }else if($app->user_type && $app->user_type==2){
+                //         $anchorUserType='Buyer';
+                //     }else{
+                //         $anchorUserType='';
+                //     }
+                //        return $anchorUserType;
+                // })                
                 ->addColumn(
                     'assignee',
                     function ($app) {  
@@ -333,7 +351,7 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                         $link = route('backend_fi', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
                     }
                 )
                 ->addColumn(
@@ -1996,7 +2014,7 @@ class DataRenderer implements DataProviderInterface
                                 $productTypes .= $value->product->product_name.', ';
                             }
                         }
-                    return $productTypes;
+                    return rtrim($productTypes, ', ');
                 })
                 ->addColumn(
                     'is_rcu',
@@ -2023,6 +2041,12 @@ class DataRenderer implements DataProviderInterface
                     }
                 )
                 ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = $request->get('search_keyword');
+                            $query->where('doc_name', 'like', "%$search_keyword%");
+                        });
+                    }
                     if ($request->get('doc_type_id') != '') {
                         $query->where(function ($query) use ($request) {
                             $doc_type_id = $request->get('doc_type_id');
@@ -2741,6 +2765,171 @@ class DataRenderer implements DataProviderInterface
                             }
                         })
                         ->make(true);
+    }
+
+    // GST TAX
+    public function getAllGST(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'tax_id',
+                    function ($data) {
+                        return $data->tax_id;
+                })
+                ->addColumn(
+                    'tax_val',
+                    function ($data) {
+                    return $data->tax_value."%";
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editGSTFrame" title="Edit States Detail" data-url ="'.route('edit_Gst', ['tax_id' => $data->tax_id]).'" data-height="310px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('tax_name', 'like',"%$search_keyword%")
+                            ->orWhere('code', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+    // Segment
+    public function getSegmentLists(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'id',
+                    function ($data) {
+                        return $data->id;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editSegmentFrame" title="Edit States Detail" data-url ="'.route('edit_segment', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+    // Constitution
+    public function getAllConstitution(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'id',
+                    function ($data) {
+                        return $data->id;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editConstiFrame" title="Edit States Detail" data-url ="'.route('edit_constitution', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+    // LMS Customer Address
+    public function addressGetCustomers(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action', 'rcu_status'])
+            ->addColumn(
+                'biz_addr_id',
+                function ($data) {
+                    return $data->biz_addr_id;
+                }
+            )
+
+            ->addColumn(
+                'action',
+                function ($data) use ($request) {
+
+                    $checked = ($data->is_default == 1) ? 'checked' : null;
+                    $act = '';
+
+                    if ($data->rcu_status) {
+                        $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($data->biz_addr_id, $request->get('user_id')) . '"  class="make_default" name="add"><label for="add">Default</label> ';
+                    }
+
+                    if (Helpers::checkPermission('edit_addr')) {
+                        $act .= '<a data-toggle="modal"  data-height="310px" 
+                            data-width="100%" 
+                            data-target="#editAddressFrame"
+                            data-url="' . route('edit_addr', ['biz_addr_id' => $data->biz_addr_id, 'user_id' => $request->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Address Detail"><i class="fa fa-edit"></i></a>';
+                    }
+                    return $act;
+                }
+            )
+
+            ->editColumn(
+                'rcu_status',
+                function ($data) {
+                    if ($data->rcu_status) {
+                        return '<span class="badge badge-success">Active</span>';
+                    } else {
+                        return '<span class="badge badge-warning current-status">InActive</span>';
+                    }
+                }
+            )
+            
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') {
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('chrg_desc', 'like', "%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                    });
+                }
+            })
+            ->make(true);
     }
 
 }
