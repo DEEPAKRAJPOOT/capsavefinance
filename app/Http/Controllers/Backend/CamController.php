@@ -76,9 +76,10 @@ class CamController extends Controller
             if(isset($arrEntityData['name'])){      
                   $arrBizData['legalConstitution'] = $arrEntityData['name'];
             }
-
+            $userData = $this->userRepo->getUserDetail($arrBizData['user_id']);
+            //dd($userData);
             $whereCondition = [];
-            //$whereCondition['anchor_id'] = $anchorId;
+            $whereCondition['anchor_id'] = $userData['anchor_id'];
             $prgmData = $this->appRepo->getProgramData($whereCondition);
             $limitData = $this->appRepo->getAppLimit($arrRequest['app_id']);
             if(!empty($prgmData))

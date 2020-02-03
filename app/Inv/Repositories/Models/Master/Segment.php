@@ -86,5 +86,12 @@ class Segment extends BaseModel
 
         return self::where('id', $id)->first()->update($arrSegmentData);
     }
+
+    public static function getSegmentDropDown()
+    {
+        $res = self::where('is_active', 1)->pluck('name', 'id');
+        return $res ?: [];
+    }
+
     
 }

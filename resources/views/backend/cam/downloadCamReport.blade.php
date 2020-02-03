@@ -92,7 +92,7 @@
                      <td class="">{{isset($leaseOfferData->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOfferData->rental_frequency] : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class=""><b>PTPQ</b></td>
+                     <td class=""><b>PTPF</b></td>
                      <td class="">
                         @php 
                            $i = 1;
@@ -661,21 +661,21 @@
                <thead>
                   <tr>
                      <tr>
-                          <th valign="middle" bgcolor="#efefef">Particular</th>
+                          <th valign="middle" bgcolor="#efefef" @if(empty($audited_years)) colspan="4" @endif> Particular</th>
                           @foreach($audited_years as $year_aud)
                           <th valign="middle" bgcolor="#efefef">{{$year_aud}}</th>
                           @endforeach
                      </tr>
                </thead>
                <tbody>
-                  <tr>
+                  <tr @if (empty($audited_years)) class='hide' @endif>
                      <td></td>
                      <td class="text-center"><strong>Aud.</strong></td>
                      <td class="text-center"><strong>Aud.</strong></td>
                      <td class="text-center"><strong>Aud.</strong></td>
                   </tr>
                   <tr>
-                     <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                     <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;" @if (empty($financeData)) colspan="4" @endif>
                         <table class="table-border-none" width="100%">
                           <tbody>
                              @foreach($FinanceColumns as $finance_col)

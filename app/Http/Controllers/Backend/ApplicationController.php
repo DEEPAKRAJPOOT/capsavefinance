@@ -90,6 +90,7 @@ class ApplicationController extends Controller
             //dd($business_info->gst->pan_gst_hash);
             $industryList = $this->appRepo->getIndustryDropDown()->toArray();
             $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
+            $segmentList = $this->appRepo->getSegmentDropDown()->toArray();
             if ($business_info) {
                 return view('backend.app.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
@@ -98,7 +99,8 @@ class ApplicationController extends Controller
                         ->with('app_id',$appId)
                         ->with('biz_id',$bizId)
                         ->with('industryList',$industryList)
-                        ->with('constitutionList',$constitutionList);
+                        ->with('constitutionList',$constitutionList)
+                        ->with('segmentList',$segmentList);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -849,7 +851,9 @@ class ApplicationController extends Controller
         $product_types = $this->masterRepo->getProductDataList();
         $industryList = $this->appRepo->getIndustryDropDown()->toArray();
         $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
-        return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList']));
+        $segmentList = $this->appRepo->getSegmentDropDown()->toArray();
+
+        return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList']));
     }
 
     /**
