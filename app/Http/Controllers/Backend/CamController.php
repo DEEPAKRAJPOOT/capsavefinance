@@ -92,12 +92,15 @@ class CamController extends Controller
             if(isset($arrCamData['t_o_f_security_check'])){
                 $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
             }
+            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
+           $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
             return view('backend.cam.overview')->with([
                 'arrCamData' =>$arrCamData ,
                 'arrRequest' =>$arrRequest, 
                 'arrBizData' => $arrBizData, 
                 'arrOwner' =>$arrOwner,
-                'limitData' =>$limitData
+                'limitData' =>$limitData,
+                'current_status_id'=>$current_status
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -1444,7 +1447,7 @@ class CamController extends Controller
         /*End add offer PTPQ block*/
 
         if($offerData){
-          Session::flash('message',trans('backend_messages.limit_assessment_success'));
+          Session::flash('message',trans('backend_messages.limit_offer_success'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }else{
           Session::flash('message',trans('backend_messages.limit_assessment_fail'));
