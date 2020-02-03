@@ -356,6 +356,9 @@ class CamController extends Controller
        return ['', ''];
      }
      $inputFileName = $this->getToUploadPath($appId, $fileType).'/'.$file_name;
+     if (!file_exists($inputFileName)) {
+       return ['', ''];
+     }
      $objPHPExcel = PHPExcel_IOFactory::load($inputFileName);
      $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'HTML');
      $allsheets = $objPHPExcel->getSheetNames();
