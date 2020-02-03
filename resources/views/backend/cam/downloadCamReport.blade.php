@@ -837,7 +837,7 @@
 <script>
 
 function downloadCam(){
-    var pdf = new jsPDF('px', 'pt', [1400, 1155]);
+    var pdf = new jsPDF('px', 'pt', [1400, 1175]);
     var  res = pdf.html(document.getElementById('camReport'), {
         callback: function (pdf) {
             pdf.save('camReport');
