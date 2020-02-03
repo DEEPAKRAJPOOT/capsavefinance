@@ -12,7 +12,7 @@
             </a>
          </div>
         <div class="card-body pt-3 pb-3">
-          <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
+          <!-- <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p> -->
           @if(($currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
           <div class="float-right">
             <form method="POST" action="{{route('approve_offer')}}">
@@ -31,6 +31,9 @@
 <!-- Start PDF Section -->
 
 <div class="card mt-3" id="camReport">
+   <div class="card-body pt-3 pb-3">
+   <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
+   </div>
    <div class="card-body pt-3 pb-3">
       <div class="row">
          <div class="col-md-12">
