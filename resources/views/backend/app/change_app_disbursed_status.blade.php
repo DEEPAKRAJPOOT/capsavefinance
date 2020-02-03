@@ -14,7 +14,7 @@
             )   !!}
  
                 <div class="text-center">
-               <label for="email">Are You Sure You Want To Change The Status?</label>
+               <label for="email">Are you sure you want to disburse this application?</label>
                {!!Form::hidden ("app_id",isset($app_id)?$app_id:'', array('id'=>'app_id'))!!}
                {!!Form::hidden ("biz_id",isset($biz_id)?$biz_id:'', array('id'=>'biz_id'))!!}
             </div>   

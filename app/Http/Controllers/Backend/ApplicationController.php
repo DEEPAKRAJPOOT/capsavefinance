@@ -1526,7 +1526,7 @@ class ApplicationController extends Controller
                     'created_at'=>\Carbon\Carbon::now(),   
                 ];
                   $this->appRepo->saveAppStatusLog($arrAppStatusLog);
-                Session::flash('message',trans('backend_messages.change_app_status'));
+                Session::flash('message',trans('backend_messages.change_app_disbursed_status'));
                 return redirect()->route('cam_overview', ['app_id' => $app_id,'biz_id'=>$biz_id]);
             }
         } catch (Exception $ex) {
