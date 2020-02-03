@@ -7,7 +7,9 @@
    <div class="inner-container mt-4">
       <div class="row">
          <div class="col-md-12">
+         @can('mail_reviewer_summary')
             <a href="{{route('mail_reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}"><button type="" class="btn btn-success btn-sm float-right">Send Mail</button></a>                 
+         @endcan
          </div>
       </div>
       <!--Start-->
@@ -422,7 +424,9 @@
                      </table>
                </div>
                <div class="col-md-12 mt-2">
-                     <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
+               @can('save_reviewer_summary')
+                  <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
+               @endcan
                </div>
             </div>
          </div>

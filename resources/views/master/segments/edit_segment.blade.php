@@ -8,8 +8,8 @@
       <div class="row">
         <input type="hidden" class="form-control" id="id" name="id" value="{{$segment_data->id}}">
         <div class="form-group col-6">
-          <label for="name">Segments Name</label>
-          <input type="text" class="form-control" id="name" name="name" value="{{$segment_data->name}}" placeholder="Enter Segments Name" maxlength="50">
+          <label for="name">Segment Name</label>
+          <input type="text" class="form-control" id="name" name="name" value="{{$segment_data->name}}" placeholder="Enter Segment Name" maxlength="50">
         </div>
         <div class="form-group col-6">
              <label for="state_type">Status</label><br />
@@ -22,7 +22,7 @@
       </div>
       <div class="row">
          <div class="form-group col-md-12 mb-0">
-             <input type="submit" class="btn btn-success btn-sm" name="add_segment" id="add_segment" value="Submit"/>
+             <input type="submit" class="btn btn-success btn-sm pull-right" name="add_segment" id="add_segment" value="Submit"/>
         </div>
       </div>
    </form>

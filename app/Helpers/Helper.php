@@ -23,6 +23,7 @@ use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Models\UserBankAccount;
+use Illuminate\Http\File;
 
 class Helper extends PaypalHelper
 {
@@ -304,6 +305,40 @@ class Helper extends PaypalHelper
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
         $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+        
+        return $inputArr;
+    }
+
+    /**
+     * Save cam pdf document
+     *
+     * @param Exception $exception
+     * @param string    $exMessage
+     * @param boolean   $handler
+     */
+    public static function generateCamPdf($appId, $bizId, $pdfContent)
+    {
+        $inputArr = [];
+        if($pdfContent) {
+            if(!Storage::exists('/public/cam/' .$appId)) {
+                Storage::makeDirectory('/public/cam/' .$appId, 0777, true);
+            }
+            if(!Storage::exists('/public/cam/'.$appId."/".config('common.PRODUCT.LEASE_LOAN'))) {
+                Storage::makeDirectory('/public/cam/'.$appId."/".config('common.PRODUCT.LEASE_LOAN'), 0777, true);
+            }
+            $fileName = 'CamReport_'.$appId."_".time().".pdf";
+            $path = "/cam/" .$appId."/".config('common.PRODUCT.LEASE_LOAN')."/".$fileName;            
+            $tempPath = Storage::disk('public')->put($path, $pdfContent);
+            $dbpath = "cam/" .$appId."/".config('common.PRODUCT.LEASE_LOAN')."/".$fileName;
+            $inputArr['file_path'] = $dbpath;
+        }
+             
+        $inputArr['file_type'] = Storage::disk('public')->mimeType($path);
+        $inputArr['file_name'] = $fileName;
+        $inputArr['file_size'] = Storage::disk('public')->size($path);
+        $inputArr['file_encp_key'] =  md5(time());
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
         

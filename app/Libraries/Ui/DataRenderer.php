@@ -172,7 +172,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name','status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -294,7 +294,12 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     //$app_status = config('inv_common.app_status');                    
-                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    if($app->curr_status_id==config('common.mst_status_id')['DISBURSED']){
+                        return  '<label class="badge badge-success current-status"><i class="fa fa-check-circle" aria-hidden="true"></i> Disbursed</label>';
+                    }else{
+                        return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    }
+                   
 
                 })
                 ->addColumn(
