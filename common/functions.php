@@ -246,130 +246,140 @@ function CalculateRetainedProfit($ProfitAndLoss) {
 }
 
 #====================================================================================#
-function CalculateCurrentLiabilitiesSubTotal($year_array){
+function CalculateCurrentLiabilitiesSubTotal($Liabilities){
+	$SubTotal = $Liabilities['FromApplicantBankCcWcdl'] + $Liabilities['FromOtherBanks'] + $Liabilities['OfIAndIiInWhichBillPurchasedDisc'];
+	return sprintf('%.2f', $SubTotal);
+}
+function CalculateTotalRepaymentDueWithin1Year($Liabilities){
+	$TotalRepaymentDueWithin1Year = $Liabilities['InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year'] + $Liabilities['DepositsDueForRepaymentDueWithin1Year'] + $Liabilities['PreferenceSharesRedeemableWithin1Year'];
+	return sprintf('%.2f', $TotalRepaymentDueWithin1Year);
+}
+function CalculateTotalTermLiabilities($Liabilities){
+	$TotalTermLiabilities = $Liabilities['Wctl'] + $Liabilities['PrefSharesPortionRedeemableAfter1Yr'] + $Liabilities['TermLoansExcludingInstallmentsPayableWithinOneYear']+ $Liabilities['TermLoansFromFis'] + $Liabilities['Debentures'] + $Liabilities['TermDeposits'] + $Liabilities['UnsecuredLoans'] + $Liabilities['BorrowingsFromSubsidiariesAffiliatesQuasiEquity']+ $Liabilities['DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm']+ $Liabilities['OtherTermLiabilities']+ $Liabilities['DeferredTaxLiability']+ $Liabilities['OtherLoanAdvances'];
+	return sprintf('%.2f', $TotalTermLiabilities);
+}
+function CalculateTotalOutsideLiabilities($Liabilities){
+	$TotalOutsideLiabilities = $Liabilities['FromApplicantBankCcWcdl'] + $Liabilities['FromOtherBanks'] + $Liabilities['OfIAndIiInWhichBillPurchasedDisc'] + $Liabilities['SundryCreditorsTrade'] + $Liabilities['ShortTermBorrowingsFromAssociatesGroupConcerns'] + $Liabilities['ShortTermBorrowingsCommercialPaper'] + $Liabilities['ShortTermBorrowingsFromOthers'] + $Liabilities['AdvancesPaymentsFromCustomersDepositsFromDealers'] + $Liabilities['ProvisionForTaxation'] + $Liabilities['ProposedDividend'] + $Liabilities['OtherStatutoryLiabilitiesDueWithinOneYear'] + $Liabilities['InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year'] + $Liabilities['DepositsDueForRepaymentDueWithin1Year'] + $Liabilities['PreferenceSharesRedeemableWithin1Year'] + $Liabilities['OtherCurrentLiabilitiesProvisionsDueWithin1Year'] + $Liabilities['InterestAccButNotDue'] + $Liabilities['ProvisionForNpa'] + $Liabilities['ProvisionForLeaveEncashmentGratuity'] + $Liabilities['UnclaimedDividend'] + $Liabilities['OtherLiabilities'] + $Liabilities['DueToSubsidiaryCompaniesAffiliates'] + $Liabilities['TaxOnInterimDividendPayable'] + $Liabilities['Wctl'] + $Liabilities['PrefSharesPortionRedeemableAfter1Yr'] + $Liabilities['TermLoansExcludingInstallmentsPayableWithinOneYear'] + $Liabilities['TermLoansFromFis'] + $Liabilities['Debentures'] + $Liabilities['TermDeposits'] + $Liabilities['UnsecuredLoans'] + $Liabilities['BorrowingsFromSubsidiariesAffiliatesQuasiEquity'] + $Liabilities['DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm'] + $Liabilities['OtherTermLiabilities'] + $Liabilities['DeferredTaxLiability'] + $Liabilities['OtherLoanAdvances'];
+	return sprintf('%.2f', $TotalOutsideLiabilities);
+}
+function CalculateTotalShareCapital($Liabilities){
+	$TotalShareCapital = $Liabilities['PartnersCapitalProprietorSCapital'] + $Liabilities['ShareCapitalPaidUp'] + $Liabilities['ShareApplicationFinalizedForAllotment'];
+	return sprintf('%.2f', $TotalShareCapital);
+}
+function CalculateReserveSubTotal($Liabilities){
+	$ReserveSubTotal = ($Liabilities['StatutoryAndCapitalReserves'] + $Liabilities['GeneralReserve'] + $Liabilities['RevaluationReserve']);
+	return sprintf('%.2f', $ReserveSubTotal);
+}
+function CalculateTotalNetWorth($Liabilities){
+	$TotalNetWorth = $Liabilities['PartnersCapitalProprietorSCapital'] + $Liabilities['ShareCapitalPaidUp'] + $Liabilities['ShareApplicationFinalizedForAllotment'] + $Liabilities['StatutoryAndCapitalReserves'] + $Liabilities['GeneralReserve'] +$Liabilities['RevaluationReserve'] + $Liabilities['OtherReservesExcludingProvisions'] + $Liabilities['SurplusOrDeficitInPLAccount'] + $Liabilities['SharePremiumAC'] + $Liabilities['CapitalSubsidy'] + $Liabilities['InvestmentAllowanceUtilizationReserve'] - $Liabilities['RevaluationReserve'];
+	return sprintf('%.2f', $TotalNetWorth);
+}
+function CalculateTotalLiabilities($Liabilities){
+	$TotalLiabilities = CalculateTotalOutsideLiabilities($Liabilities) + $Liabilities['PartnersCapitalProprietorSCapital'] + $Liabilities['ShareCapitalPaidUp'] + $Liabilities['ShareApplicationFinalizedForAllotment'] + $Liabilities['StatutoryAndCapitalReserves'] + $Liabilities['GeneralReserve'] + $Liabilities['RevaluationReserve'] + 
+$Liabilities['OtherReservesExcludingProvisions'] + $Liabilities['SurplusOrDeficitInPLAccount'] + $Liabilities['SharePremiumAC'] + $Liabilities['CapitalSubsidy'] + $Liabilities['InvestmentAllowanceUtilizationReserve'] - $Liabilities['RevaluationReserve'];
+	return sprintf('%.2f', $TotalLiabilities);
+}
+function CalculateArrearsOfCumulativeDividends($Liabilities){
 	return "Need To Calculate";
 }
-function CalculateTotalRepaymentDueWithin1Year($year_array){
+function CalculateDisputedExciseCustomIncomeTaxSalesTaxLiabilities($Liabilities){
 	return "Need To Calculate";
 }
-function CalculateTotalTermLiabilities($year_array){
+function CalculateGratuityLiabilityNotProvidedFor($Liabilities){
 	return "Need To Calculate";
 }
-function CalculateTotalOutsideLiabilities($year_array){
+function CalculateGuaranteesIssuedRelatingToBusiness($Liabilities){
 	return "Need To Calculate";
 }
-function CalculateTotalShareCapital($year_array){
+function CalculateGuaranteesIssuedRelatingToCompanies($Liabilities){
 	return "Need To Calculate";
 }
-function CalculateReserveSubTotal($year_array){
+function CalculateLCs($Liabilities){
 	return "Need To Calculate";
 }
-function CalculateTotalNetWorth($year_array){
-	return "Need To Calculate";
-}
-function CalculateTotalLiabilities($year_array){
-	return "Need To Calculate";
-}
-function CalculateArrearsOfCumulativeDividends($year_array){
-	return "Need To Calculate";
-}
-function CalculateDisputedExciseCustomIncomeTaxSalesTaxLiabilities($year_array){
-	return "Need To Calculate";
-}
-function CalculateGratuityLiabilityNotProvidedFor($year_array){
-	return "Need To Calculate";
-}
-function CalculateGuaranteesIssuedRelatingToBusiness($year_array){
-	return "Need To Calculate";
-}
-function CalculateGuaranteesIssuedRelatingToCompanies($year_array){
-	return "Need To Calculate";
-}
-function CalculateLCs($year_array){
-	return "Need To Calculate";
-}
-function CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC($year_array){
+function CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC($Liabilities){
 	return "Need To Calculate";
 }
 
 #====================================================================================#
 
-function CalculateAssetsReceivables($year_array){
+function CalculateAssetsReceivables($Assets){
 	return "Need To Calculate";
 }
-function CalculateAssetsInventory($year_array){
+function CalculateAssetsInventory($Assets){
 	return "Need To Calculate";
 }
-function CalculateAssetsStockInProcess($year_array){
+function CalculateAssetsStockInProcess($Assets){
 	return "Need To Calculate";
 }
-function CalculateAssetsFinishedGoods($year_array){
+function CalculateAssetsFinishedGoods($Assets){
 	return "Need To Calculate";
 }
-function CalculateAssetsSubTotalOtherComsumableSpares($year_array){
+function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
+	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
+	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
+}
+function CalculateAssetsSubTotalInventory($Assets){
 	return "Need To Calculate";
 }
-function CalculateAssetsSubTotalInventory($year_array){
+function CalculateAssetsAdvancesToSuplierofRawMaterial($Assets){
 	return "Need To Calculate";
 }
-function CalculateAssetsAdvancesToSuplierofRawMaterial($year_array){
+function CalculateAssetsAdvanceReceivableInOrKind($Assets){
 	return "Need To Calculate";
 }
-function CalculateAssetsAdvanceReceivableInOrKind($year_array){
+function CalculateTotalCurrentAssets($Assets){
 	return "Need To Calculate";
 }
-function CalculateTotalCurrentAssets($year_array){
+function CalculateAssetsGrossBlock($Assets){
 	return "Need To Calculate";
 }
-function CalculateAssetsGrossBlock($year_array){
+function CalculateAssetsNetBlock($Assets){
 	return "Need To Calculate";
 }
-function CalculateAssetsNetBlock($year_array){
+function CalculateTotalOtherNonCurrentAssets($Assets){
 	return "Need To Calculate";
 }
-function CalculateTotalOtherNonCurrentAssets($year_array){
+function CalculateIntangibleAssetSubtotal($Assets){
 	return "Need To Calculate";
 }
-function CalculateIntangibleAssetSubtotal($year_array){
+function CalculateIntangibleAssetTotal($Assets){
 	return "Need To Calculate";
 }
-function CalculateIntangibleAssetTotal($year_array){
+function CalculateTangibleAssetNetworth($Assets){
 	return "Need To Calculate";
 }
-function CalculateTangibleAssetNetworth($year_array){
+function CalculateTotalLiabilitiesMinusTotalAssets($Assets){
 	return "Need To Calculate";
 }
-function CalculateTotalLiabilitiesMinusTotalAssets($year_array){
-	return "Need To Calculate";
-}
-function CalculateMonthsConsumption0($year_array){
+function CalculateMonthsConsumption0($Assets){
 	return 'Need To Calculate';
 }
-function CalculateMonthsConsumption1($year_array){
+function CalculateMonthsConsumption1($Assets){
 	return 'Need To Calculate';
 }
-function CalculateMonthsConsumption2($year_array){
+function CalculateMonthsConsumption2($Assets){
 	return 'Need To Calculate';
 }
-function CalculateMonthsConsumption3($year_array){
+function CalculateMonthsConsumption3($Assets){
 	return 'Need To Calculate';
 }
-function CalculateStockInProcessMinusAmount($year_array){
+function CalculateStockInProcessMinusAmount($Assets){
 	return 'Need To Calculate';
 }
-function CalculateMonthsCostOfProduction($year_array){
+function CalculateMonthsCostOfProduction($Assets){
 	return 'Need To Calculate';
 }
-function CalculateFinishedGoodsMinusAmount($year_array){
+function CalculateFinishedGoodsMinusAmount($Assets){
 	return 'Need To Calculate';
 }
-function CalculateMonthsCostOfSales($year_array){
+function CalculateMonthsCostOfSales($Assets){
 	return 'Need To Calculate';
 }
-function CalculateMonthsDomesticIncome($year_array){
+function CalculateMonthsDomesticIncome($Assets){
 	return 'Need To Calculate';
 }
-function CalculateMonthsExportIncome($year_array){
+function CalculateMonthsExportIncome($Assets){
 	return 'Need To Calculate';
 }
 
