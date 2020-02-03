@@ -218,7 +218,7 @@ function checkValidation(){
 	}
 
 	if(share_holding_date == ''){
-		setError('input[name=share_holding_date]', 'Share holding % is required.');
+		setError('input[name=share_holding_date]', 'Share holding date is required.');
 		flag = false;
 	}
 
