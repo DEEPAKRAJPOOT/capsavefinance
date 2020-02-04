@@ -301,14 +301,19 @@
                               @php 
                                  $i=0;
                               @endphp
-                              @while(!empty($arrApproverData[$i])) 
-                                 <tr>
-                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
-                                     @php $i++; @endphp
-                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
-                                      @php $i++; @endphp
-                                </tr>
-                            @endwhile
+                              
+                              @if(!empty($arrApproverData))
+                                  @while(!empty($arrApproverData[$i])) 
+                                     <tr>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
+                                            @php $i++; @endphp
+                                         @if (!empty($arrApproverData[$i]))
+                                             <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
+                                             @php $i++; @endphp
+                                          @endif
+                                    </tr>
+                                @endwhile
+                             @endif
                         </table>
                      </td>
                   </tr>
@@ -319,11 +324,8 @@
             </table>
               </div>
               </div>
+     
            
-
-           
-
-
            <div class="data mt-4">
              <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
@@ -352,7 +354,7 @@
                         </p>
                      </td>
                      <td>No</td>
-                     <td>{{$arrEntityData->name}}</td>
+                     <td>{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
                   </tr>
                   <tr>
                      <td>Vintage</td>
@@ -364,7 +366,7 @@
                         </p>
                      </td>
                      <td>No</td>
-                     <td>{{\Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y')                          }}</td>
+                     <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
                   </tr>
                   <tr>
                      <td colspan="4" bgcolor="#cccccc">&nbsp;</td>
@@ -607,12 +609,14 @@
                   </tr>
                </thead>
                <tbody>
+                @if(!empty($arrOwnerData))
                   @foreach($arrOwnerData as $key => $arrData)
                   <tr>
                      <td>{{$arrData->first_name}}</td>
                      <td>{{$arrData->designation}}</td>
                   </tr>
                   @endforeach
+                @endif  
                   
                </tbody>
             </table>
@@ -625,14 +629,17 @@
                   </tr>
                </thead>
                <tbody>
-                  @foreach($arrOwnerData as $key => $arrData)
-                     @if ($arrData->is_promoter)
-                        <tr>
-                           <td>{{$arrData->first_name}}</td>
-                           <td>{{$arrData->share_per}}</td>
-                        </tr>
-                     @endif
-                  @endforeach
+                @if(!empty($arrOwnerData))
+                    @foreach($arrOwnerData as $key => $arrData)
+                       @if ($arrData->is_promoter)
+                          <tr>
+                             <td>{{$arrData->first_name}}</td>
+                             <td>{{$arrData->share_per}}</td>
+                          </tr>
+                       @endif
+                    @endforeach
+                @endif
+
                   
                </tbody>
             </table>
@@ -665,9 +672,11 @@
                   <tr>
                      <tr>
                           <th valign="middle" bgcolor="#efefef" @if(empty($audited_years)) colspan="4" @endif> Particular</th>
-                          @foreach($audited_years as $year_aud)
-                          <th valign="middle" bgcolor="#efefef">{{$year_aud}}</th>
-                          @endforeach
+                          @if(!empty($audited_years))
+                              @foreach($audited_years as $year_aud)
+                              <th valign="middle" bgcolor="#efefef">{{$year_aud}}</th>
+                              @endforeach
+                          @endif    
                      </tr>
                </thead>
                <tbody>

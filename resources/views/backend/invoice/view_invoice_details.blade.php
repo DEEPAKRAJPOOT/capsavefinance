@@ -619,14 +619,14 @@
                                  <label for="txtCreditPeriod">Invoice Amount
                                  <span class="mandatory">*</span>
                                  </label>
-                                  <input type="text" class="form-control" id="invoice_amount" value="{{($invoice->invoice_amount) ? $invoice->invoice_amount : '' }}" disabled="">
+                                  <input type="text" class="form-control" id="invoice_amount" value="{{($invoice->invoice_amount) ? number_format($invoice->invoice_amount) : '' }}" disabled="">
                                   <input type="hidden" name="invoice_id" value="{{($invoice->invoice_id) ? $invoice->invoice_id : '' }}">
                               </div>
 							   <div class="form-group">
                                  <label for="txtCreditPeriod">Invoice Approved Amount
                                  <span class="mandatory">*</span>
                                  </label>
-			      <input type="text" class="form-control" id="invoice_approve_amount" name="approve_invoice_amount" value="{{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }}">
+			      <input type="text" class="form-control" id="invoice_approve_amount" name="approve_invoice_amount" value="{{($invoice->invoice_approve_amount) ? number_format($invoice->invoice_approve_amount) : '' }}">
                                  
                               </div>
                                
@@ -658,23 +658,28 @@
             token: "{{ csrf_token() }}",
  };
  
+$(document).ready(function(){
+ ///////////// use for amount comma seprate//////////////////////////   
+document.getElementById('invoice_approve_amount').addEventListener('input', event =>
+event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
 
+});
     
 ///////////////////////////////////////// change invoice amount////////////////
 $(document).on('click','#UpdateInvoiceAmount',function(){
     
-    var amount  = parseFloat($("#invoice_amount").val());
-    var approveAmount  = parseFloat($("#invoice_approve_amount").val());
-    if(approveAmount > amount)
-    {
-        $(".model7msg").show();
-        $(".model7msg").html('Invoice Approve Amount should not greater amount');
-        return false;
-     }
-     else
-     {   $(".model7msg").hide();
-         return true;
-     }
+    var amount = parseFloat($("#invoice_amount").val().replace(/,/g, ''));
+        var approveAmount = parseFloat($("#invoice_approve_amount").val().replace(/,/g, ''));
+        if (approveAmount > amount)
+        {
+            $(".model7msg").show();
+            $(".model7msg").html('Invoice Approve Amount should not greater amount');
+            return false;
+        } else
+        {
+            $(".model7msg").hide();
+            return true;
+        }
  });
 </script>
 <script src="{{ asset('backend/js/ajax-js/view_invoice_detail.js') }}"></script>
