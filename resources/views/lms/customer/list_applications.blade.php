@@ -31,7 +31,7 @@
 									<td class="text-left" width="30%"><b>Utilize Limit</b></td>
 									<td>{{ $userInfo->consume_limit }} </td> 
 									<td class="text-left" width="30%"><b>Sales Manager</b></td>
-									<td>{{ $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name }} </td>
+									<td>{{ (isset($userInfo->anchor->salesUser)) ? $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name : '' }} </td>
 								</tr>
 							</tbody>
 						</table>

@@ -36,8 +36,9 @@
                   <div style="text-align: right;">                  
                   @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/banking/".$active_xlsx_filename)))
                      <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/banking/'.$active_xlsx_filename) }}" download>Download</a>
-
+                     @can('upload_xlsx_document')
                      <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document', ['app_id' => request()->get('app_id'), 'file_type' => 'banking']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
+                     @endcan
                   @endif 
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
                      @php $class_enable="disabled"; @endphp
@@ -45,7 +46,9 @@
                   @endif
                   <a href="javascript:void(0)" class="btn btn-success btn-sm hide" biz_perfios_id="" id="getReport">Get Report</a>
                   @if(request()->get('view_only') && $bankdocs->count() > 0)
+                    @can('getAnalysis')
                      <a href="javascript:void(0)" class="btn btn-success btn-sm <?php echo $class_enable ?>">Get Analysis</a>
+                     @endcan
                   @endif   
                   </div> 
                   <div class="clearfix"></div>

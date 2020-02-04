@@ -77,6 +77,28 @@
 								</div>
 
 								<div class="row">
+
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Segment
+												<span class="mandatory">*</span>
+											</label>
+											<!-- <select class="form-control" name="segment" tabindex="8" id="segmentId">
+												<option value=""> Select Segment</option>
+												<option value="1" {{(old('segment') == 1)? 'selected':''}}> Segment 1 </option>
+												<option value="2" {{(old('segment') == 2)? 'selected':''}}> Segment 2 </option>
+												<option value="3" {{(old('segment') == 3)? 'selected':''}}> Segment 3 </option>
+											</select>
+ -->
+											{!! Form::select('segment', [''=>trans('backend.please_select')] + $segmentList, old('segment'), ['id'=>'segmentId','class'=>'form-control', 'tabindex'=>'8']) !!}
+
+											@error('segment')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
+										</div>
+									</div>
+
+
 									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Industry
@@ -84,10 +106,12 @@
 											</label>
 											{!! Form::select('biz_type_id', [''=>trans('backend.please_select')] + $industryList, old('biz_type_id'), ['id'=>'biz_type_id','class'=>'form-control industry_change', 'tabindex'=>'4']) !!}
 											@error('biz_type_id')
-												<span class="text-danger error">{{ $message }}</span>
-											@enderror
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
 									</div>
+
+
 									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Sub Industry
@@ -100,17 +124,7 @@
 										</div>
 									</div>
 									
-									<div class="col-md-4">
-										<div class="form-group password-input">
-											<label for="txtPassword">Date of Incorporation
-												<span class="mandatory">*</span>
-											</label>
-											<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="5" autocomplete="off" readonly>
-											@error('incorporation_date')
-												<span class="text-danger error">{{ $message }}</span>
-											@enderror
-										</div>
-									</div>									
+																	
 								</div>
 
 								<div class="row">
@@ -128,20 +142,15 @@
 
 									<div class="col-md-4">
 										<div class="form-group password-input">
-											<label for="txtPassword">Segment
+											<label for="txtPassword">Date of Incorporation
 												<span class="mandatory">*</span>
 											</label>
-											<select class="form-control" name="segment" tabindex="8" >
-												<option value=""> Select Segment</option>
-												<option value="1" {{(old('segment') == 1)? 'selected':''}}> Segment 1 </option>
-												<option value="2" {{(old('segment') == 2)? 'selected':''}}> Segment 2 </option>
-												<option value="3" {{(old('segment') == 3)? 'selected':''}}> Segment 3 </option>
-											</select>
-											@error('segment')
-												<span class="text-danger error">{{ $message }}</span>
-											@enderror
+											<input type="text" name="incorporation_date" value="{{old('incorporation_date')}}" class="form-control datepicker-dis-fdate" tabindex="5" autocomplete="off" readonly>
+											@error('incorporation_date')
+								                <span class="text-danger error">{{ $message }}</span>
+								            @enderror
 										</div>
-									</div>
+									</div>	
 
 									<div class="col-md-4">
 										<div class="form-group password-input INR">

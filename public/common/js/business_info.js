@@ -124,7 +124,7 @@ function checkValidation(){
 	unsetError('select[name=biz_type_id]');
 	unsetError('input[name=incorporation_date]');
 	unsetError('select[name=biz_constitution]');
-	unsetError('select[name=entity_type_id]');
+	//unsetError('select[name=entity_type_id]');
 	unsetError('select[name=segment]');
 	unsetError('input[name=biz_turnover]');
 
@@ -153,7 +153,7 @@ function checkValidation(){
 	let biz_type_id = $('select[name=biz_type_id]').val();
 	let incorporation_date = $('input[name=incorporation_date]').val();
 	let biz_constitution = $('select[name=biz_constitution]').val();
-	let entity_type_id = $('select[name=entity_type_id]').val();
+	//let entity_type_id = $('select[name=entity_type_id]').val();
 	let segment = $('select[name=segment]').val();
 	let biz_turnover = $('input[name=biz_turnover]').val().trim();
 	
@@ -218,7 +218,7 @@ function checkValidation(){
 	}
 
 	if(share_holding_date == ''){
-		setError('input[name=share_holding_date]', 'Share holding % is required.');
+		setError('input[name=share_holding_date]', 'Share holding date is required.');
 		flag = false;
 	}
 
@@ -227,10 +227,10 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if(entity_type_id == ''){
-		setError('select[name=entity_type_id]', 'Plese select Sub Industry');
-		flag = false;
-	}
+	// if(entity_type_id == ''){
+	// 	setError('select[name=entity_type_id]', 'Plese select Sub Industry');
+	// 	flag = false;
+	// }
 
 	if(segment== ''){
 		setError('select[name=segment]', 'Segment is required');
@@ -377,13 +377,22 @@ $(document).ready(function(){
 	 */
 	$(document).on('change', '.industry_change', function () {
 		var industryVal=$("#biz_type_id").val();
-		handleIndustryChange(industryVal,null);
+		var segmentId =$("#segmentId").val();
+		handleIndustryChange(industryVal,null,segmentId);
 	});
   //handleIndustryChange($("#biz_type_id").val(),$(".sub_industry").val());
 });
 
-function handleIndustryChange(intdustval,subIndId){
+function handleIndustryChange(intdustval,subIndId, segmentId){
 	//let selector = $(this);
+	if(segmentId == ''){
+		unsetError('select[name=segment]');
+		setError('select[name=segment]', 'Segment is required');
+		$("#segmentId").focus();
+		return false;
+	}else{
+		unsetError('select[name=segment]');
+	}
 	let currentValue = intdustval;
 	let subIndus = $('.sub_industry');
 
@@ -394,6 +403,7 @@ function handleIndustryChange(intdustval,subIndId){
 		dataType: 'json',
 		data: {
 			id: currentValue,
+			segmentId: segmentId,
 			_token: messages.token
 		},
 		success: function (data) {

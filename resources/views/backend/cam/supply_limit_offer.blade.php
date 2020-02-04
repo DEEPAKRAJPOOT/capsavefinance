@@ -84,7 +84,7 @@
       <div class="form-group INR">
         <label for="txtPassword"><b>Processing Fee:</b></label> 
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
+        <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
       </div>
     </div>
     
@@ -217,7 +217,7 @@
         flag = false;
     }
 
-    if(processing_fee == ''){
+    if(processing_fee == '' || isNaN(processing_fee)){
         setError('input[name=processing_fee]', 'Please fill processing fee');
         flag = false;
     }else if(parseFloat(processing_fee) > 100){

@@ -13,8 +13,23 @@
                    <!--  <li><b class="bold">Credit Head Status :</b> Reject</li> -->
 
                 </ul>
-              <!--  <button onclick="downloadCam(49)" class="btn btn-primary float-right btn-sm "> Download</button>
-                <ul class="float-right mr-5 mb-0">
+                @php 
+                $role_id=Helpers::getUserRole(Auth::user()->user_id);
+                @endphp
+                
+                <!-- <a  data-toggle="modal" data-target="#changeAppDisbursStatus" data-url ="{{ route('app_status_disbursed', ['app_id' => $arrRequest['app_id'],'biz_id' => $arrRequest['biz_id']]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success pull-right  btn-sm" title="Update App Status">Disbursed</a> -->
+                    @php 
+                    $role_id=Helpers::getUserRole(Auth::user()->user_id);
+                    @endphp
+                    @if ($arrRequest['app_id'] && $role_id[0]->pivot->role_id== config('common.user_role')['OPPS_CHECKER'] && $current_status_id!=config('common.mst_status_id')['DISBURSED'] && $checkDisburseBtn=='showDisburseBtn')
+                    <a  data-toggle="modal" data-target="#changeAppDisbursStatus" data-url ="{{ route('app_status_disbursed', ['app_id' => $arrRequest['app_id'],'biz_id' => $arrRequest['biz_id']]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success pull-right  btn-sm" title="Update App Status">Disbursed</a>
+                    @else 
+                    @if($current_status_id && $current_status_id==config('common.mst_status_id')['DISBURSED'])
+                    <span class="pull-right"><span class="badge badge-success current-status"><i class="fa fa-check-circle" aria-hidden="true"></i>   Disbursed</span></span>
+                    @endif
+                    @endif
+             
+               <!-- <ul class="float-right mr-5 mb-0">
 
                      <li><b class="bold">Requested Loan Amount :</b> 5Lac</li>
                     <li><b class="bold">Assigned Underwriter :</b> abc</li>
@@ -262,6 +277,7 @@
     </div>
 </div>
 @endsection
+{!!Helpers::makeIframePopup('changeAppDisbursStatus','Change App Status', 'modal-md')!!}
 @section('jscript')
 <script src="{{url('common/js/typehead.js')}}"></script>
 

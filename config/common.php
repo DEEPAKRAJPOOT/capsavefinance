@@ -80,5 +80,22 @@ return [
         '4' => 'Others'
     ],
     'review_summ_mails' => ['gaurav.agarwal@zuron.in','varun.dudani@zuron.in','updesh.sharma@prolitus.com'],
-    'review_summ_mail_docs_id' => [3,9]    
+    'review_summ_mail_docs_id' => [3,9],
+    'user_role' => [
+        'APPROVER'=>8,
+         'OPPS_CHECKER'=>10,
+         'ANCHOR'=>11,
+    ],
+    'mst_status_id' => [
+        'NEW'=>19,
+        'COMPLETED'=>20,
+        'OFFER_LIMIT_APPROVED'=>21,
+        'OFFER_ACCEPTED'=>22,
+        'OFFER_REJECTED'=>23,
+        'PRE_SANCTION_DOC_UPLOADED'=>24,
+        'SANCTION_LETTER_GENERATED'=>25,
+        'POST_SANCTION_DOC_UPLOADED'=>26,
+        'OFFER_GENERATED'=>28,
+        'DISBURSED'=>27,
+   ]
 ];

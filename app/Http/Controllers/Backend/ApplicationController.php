@@ -90,6 +90,7 @@ class ApplicationController extends Controller
             //dd($business_info->gst->pan_gst_hash);
             $industryList = $this->appRepo->getIndustryDropDown()->toArray();
             $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
+            $segmentList = $this->appRepo->getSegmentDropDown()->toArray();
             if ($business_info) {
                 return view('backend.app.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
@@ -98,7 +99,8 @@ class ApplicationController extends Controller
                         ->with('app_id',$appId)
                         ->with('biz_id',$bizId)
                         ->with('industryList',$industryList)
-                        ->with('constitutionList',$constitutionList);
+                        ->with('constitutionList',$constitutionList)
+                        ->with('segmentList',$segmentList);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -849,7 +851,9 @@ class ApplicationController extends Controller
         $product_types = $this->masterRepo->getProductDataList();
         $industryList = $this->appRepo->getIndustryDropDown()->toArray();
         $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
-        return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList']));
+        $segmentList = $this->appRepo->getSegmentDropDown()->toArray();
+
+        return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList']));
     }
 
     /**
@@ -1125,7 +1129,7 @@ class ApplicationController extends Controller
         
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      if($response['result'])
+      if(!empty($response['result']))
       {     $status = 1;
             $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
               'created_by' => Auth::user()->user_id]);
@@ -1143,7 +1147,7 @@ class ApplicationController extends Controller
       }
       else
       {
-             $status = 0;
+            $status = 0;
             $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
               'created_by' => Auth::user()->user_id]);
             $resp['createApiLog'] = $createApiLog;
@@ -1156,7 +1160,7 @@ class ApplicationController extends Controller
         return response()->json(['message' =>"OTP Sent to $mobile_no.",'status' => 1,
           'value' => $response['result'], 'request_id'=> $response['request_id']]);
       }else{
-        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
+        return response()->json(['message' =>$response['message'] ?? 'Something went wrong. Please try again','status' => 0]);
       }
     }
     
@@ -1484,7 +1488,66 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    /**
+     * function for change the app status
+     * 
+     * @param Request $request
+     * @return View
+     */
+    public function showAppStatusForm(Request $request) {
+        try {
+              $app_id = $request->get('app_id');
+              $biz_id = $request->get('biz_id');
+        return view('backend.app.change_app_disbursed_status')
+                ->with('app_id', $app_id)
+                ->with('biz_id', $biz_id);
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+    }
 
-    
+    /** 
+     * @Author: Rent Alpha
+     * @Date: 2020-01-30 18:22:07 
+     * @Desc:  function for save disburse app status 
+     */    
+    public function saveShowAppStatusForm(Request $request){
+        try {
+            $app_id = (int)$request->post('app_id');
+            $biz_id = (int)$request->post('biz_id');
+           // dd($app_id,$biz_id , config('common.mst_status_id')['DISBURSED']);
+            $arrUpdateApp=[
+                'curr_status_id'=>config('common.mst_status_id')['DISBURSED'] 
+            ];
+            $appStatus = $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);           
+
+             //Update workflow stage
+             $addl_data = [];
+             $currStage = Helpers::getCurrentWfStage($app_id);
+             $wf_order_no = $currStage->order_no;
+             $nextStage = Helpers::getNextWfStage($wf_order_no);
+             $roleArr = [$nextStage->role_id];
+             $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
+             $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;            
+             Helpers::updateWfStage('opps_checker', $app_id, $wf_status = 1, $assign_case=true, $addl_data);
+             Helpers::updateCurrentWfStage('disbursed', $app_id, $wf_status=1);
+
+            if($appStatus){
+                $getAppDetails = $this->appRepo->getAppData($app_id);
+                $arrAppStatusLog=[
+                    'user_id'=>$getAppDetails['user_id'],
+                    'app_id'=>$app_id,
+                    'status_id'=>config('common.mst_status_id')['DISBURSED'],
+                    'created_by'=>Auth::user()->user_id,
+                    'created_at'=>\Carbon\Carbon::now(),   
+                ];
+                  $this->appRepo->saveAppStatusLog($arrAppStatusLog);
+                Session::flash('message',trans('backend_messages.change_app_disbursed_status'));
+                return redirect()->route('cam_overview', ['app_id' => $app_id,'biz_id'=>$biz_id]);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 
 }
