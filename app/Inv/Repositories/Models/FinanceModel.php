@@ -243,6 +243,8 @@ class FinanceModel extends BaseModel
         $loggerData = [
             'mail_from' => $emailData['email_from'],
             'mail_to' => $emailData['email_to'],
+            'mail_cc' => $emailData['email_cc'] ?? NULL,
+            'mail_bcc' => $emailData['email_bcc'] ?? NULL,
             'mail_type' => $emailData['email_type'] ?? __FUNCTION__,
             'subject' => $emailData['subject'],
             'body' => base64_encode($emailData['body']),
