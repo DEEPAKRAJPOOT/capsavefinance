@@ -179,7 +179,7 @@ class DataRenderer implements DataProviderInterface
                         $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
                         $app_id = $app->app_id;
                         if(Helpers::checkPermission('company_details')){
-                           if($user_role == 8)
+                           if($user_role == config('common.user_role.APPROVER'))
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
                                 $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
@@ -1550,7 +1550,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($role) {
-                    return  "<a title=\"Edit Role\" data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a title=\"Manage Permission\" id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
+                    return  "<a title=\"Edit Role\" data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"300px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a title=\"Manage Permission\" id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
                     })
                     ->filter(function ($query) use ($request) {
                         if ($request->get('by_email') != '') {

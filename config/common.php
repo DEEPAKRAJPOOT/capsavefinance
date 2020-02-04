@@ -10,9 +10,9 @@ return [
     'DOCUMENT_LIMIT' => '5',
     'RESEARCH_FORM_LIMIT' => '5',
     'AWARD_FORM_LIMIT' => '5',
-    'FRONTEND_FROM_EMAIL' => 'admin@dexter.com',
+    'FRONTEND_FROM_EMAIL' => 'scfit@capsavefinance.com',
     'FRONTEND_FROM_EMAIL_NAME' => 'Rent Alpha',
-    'BACKEND_FROM_EMAIL' => 'admin@dexter.com',
+    'BACKEND_FROM_EMAIL' => 'scfit@capsavefinance.com',
     'BACKEND_FROM_EMAIL_NAME' => 'Rent Alpha',
     'APISecret' => env('APISecret', ''),
     'apiKey' => env('apiKey', ''),
@@ -97,5 +97,7 @@ return [
         'POST_SANCTION_DOC_UPLOADED'=>26,
         'OFFER_GENERATED'=>28,
         'DISBURSED'=>27,
-   ]
+    ],
+    'SEND_MAIL_ACTIVE'=>1,
+   'SEND_MAIL'=>["gaurav.agarwal@prolitus.com", "varun.dudani@zuron.in", "binay.kumar@prolitus.com"],
 ];
