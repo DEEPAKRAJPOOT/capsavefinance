@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use DB;
+use Storage;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class FinanceModel extends BaseModel
@@ -240,11 +241,8 @@ class FinanceModel extends BaseModel
      * @param Array/Mixed $attributes
      */
     public static function logEmail($emailData) {
-        $loggerData = [
+     $loggerData = [
             'mail_from' => $emailData['email_from'],
-            'mail_to' => implode('|', $emailData['email_to']) ?? NULL,
-            'mail_cc' => implode('|', $emailData['email_cc']) ?? NULL,
-            'mail_bcc' => implode('|', $emailData['email_bcc']) ?? NULL,
             'mail_type' => $emailData['email_type'] ?? __FUNCTION__,
             'subject' => $emailData['subject'],
             'body' => base64_encode($emailData['body']),
@@ -252,6 +250,19 @@ class FinanceModel extends BaseModel
             'fileid' => $emailData['fileid'] ?? NULL,
             'sent_by' => \Auth::user()->user_id,
         ];
+
+        if (!empty($emailData['email_cc'])) {
+            $emailData['email_cc'] = is_string($emailData['email_cc']) ? explode(',', $emailData['email_cc']) : $emailData['email_cc'];
+            $loggerData['mail_cc'] = implode('|', $emailData['email_cc']);
+        }
+        if (!empty($emailData['email_bcc'])) {
+            $emailData['email_bcc'] = is_string($emailData['email_bcc']) ? explode(',', $emailData['email_bcc']) : $emailData['email_bcc'];
+            $loggerData['mail_bcc'] = implode('|', $emailData['email_bcc']);
+        }
+        if (!empty($emailData['email_to'])) {
+            $emailData['email_to'] = is_string($emailData['email_to']) ? explode(',', $emailData['email_to']) : $emailData['email_to'];
+            $loggerData['mail_to'] = implode('|', $emailData['email_to']);
+        }
         if (!empty($emailData['attachment'])) {
           $attachment = $emailData['attachment'];
           $filename = $emailData['att_name'] ?? 'attachment.pdf';
@@ -266,7 +277,7 @@ class FinanceModel extends BaseModel
           \File::put(storage_path('app/public/user/docs/attachments/'.$saveFileName), $attachment);
           $loggerData['file_path'] = 'user/docs/attachments/'.$saveFileName;
         }
-        return $this->dataLogger($loggerData, 'email_logger');
+        return SELF::dataLogger($loggerData, 'email_logger');
     }
 
 
