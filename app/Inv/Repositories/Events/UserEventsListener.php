@@ -342,6 +342,40 @@ class UserEventsListener extends BaseEvent
     }
 
 
+     /**
+     * Email Logger
+     * 
+     * @param Array/Mixed $attributes
+     */
+    public function logEmail($attributes) {
+        $emailData = unserialize($attributes); 
+        $loggerData = [
+            'from' => $emailData['from'],
+            'to' => $emailData['to'],
+            'subject' => $emailData['subject'],
+            'body' => $emailData['body'],
+            'name' => $emailData['name'] ?? NULL,
+            'fileid' => $emailData['fileid'] ?? NULL,
+        ];
+
+        if (!empty($emailData['attachments'])) {
+              $loggerData['attachment'] = $emailData['attachment'];
+              $loggerData['filename'] = $emailData['att_name'] ?? 'attachment.pdf';
+              $fileparts = pathinfo($loggerData['filename']);
+              $filename = $fileparts['filename'];
+              $ext = $fileparts['extension'];
+              if(!Storage::exists('public/user/docs/attachments')) {
+                    Storage::makeDirectory('public/user/docs/attachments', 0777, true);
+              }
+              $saveFileName = $filename . ".$ext";
+              $touploadpath = storage_path('public/user/docs/attachments');
+              $myfile = fopen($touploadpath .'/'.$saveFileName, "w");
+              \File::put($touploadpath .'/'.$saveFileName, $loggerData['attachment']);
+        }
+        //logEmailToDB($loggerData);
+    }
+
+
     /**
      * Sanction Letter
      * 
@@ -349,7 +383,6 @@ class UserEventsListener extends BaseEvent
      */
     public function sactionLetterMail($attributes)
     {
-        $data = unserialize($attributes); 
         Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $data['body']],
             function ($message) use ($data) {
             $message->from(config('common.FRONTEND_FROM_EMAIL'),
