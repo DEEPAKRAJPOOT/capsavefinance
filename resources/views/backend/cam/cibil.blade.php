@@ -579,10 +579,7 @@
       </div>
    </div>
 </div>
-<div class="isloader" style="display:none;">  
-        <img src="{{asset('backend/assets/images/loader.gif')}}">
-   
-</div>
+
 @endsection
 @section('jscript')
 <script>
