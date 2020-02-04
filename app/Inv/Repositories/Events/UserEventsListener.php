@@ -82,12 +82,16 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                    config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                    if( config('common.SEND_MAIL_ACTIVE') == 1){
+                        $email = config('common.SEND_MAIL');
+                    }else{
+                        $email = $user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
@@ -112,12 +116,16 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                    config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                 if(config('common.SEND_MAIL_ACTIVE') == 1){
+                    $email = config('common.SEND_MAIL');
+                 } else{
+                    $email = $user["email"];
+                 }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
@@ -147,12 +155,16 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from('admin@dexter.com',
-                    'Rent Alpha');
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                 if(config('common.SEND_MAIL_ACTIVE') == 1){
+                    $email = config('common.SEND_MAIL');
+                 } else {
+                    $email = $user["email"];
+                 }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
@@ -179,15 +191,19 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['otp']],
                 $email_content->message
             );
-
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from('admin@dexter.com','Rent Alpha');
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                if(config('common.SEND_MAIL_ACTIVE') == 1){
+                    $email = config('common.SEND_MAIL');
+                 } else{
+                    $email = $user["email"];
+                 }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
@@ -214,12 +230,16 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+                    if( config('common.SEND_MAIL_ACTIVE') == 1){
+                        $email = config('common.SEND_MAIL');
+                    }else {
+                        $email = $user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($user["email"], $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
@@ -244,12 +264,16 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                    config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email = config('common.SEND_MAIL');
+                    }else{
+                        $email = $user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
@@ -270,16 +294,19 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'],$user['password']],
                 $email_content->message
             );
-
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                    config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                    if( config('common.SEND_MAIL_ACTIVE') == 1){
+                        $email = config('common.SEND_MAIL');
+                    }else{
+                        $email = $user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
@@ -304,9 +331,13 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                    config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                    if( config('common.SEND_MAIL_ACTIVE') == 1){
+                        $email = config('common.SEND_MAIL');
+                    }else{
+                        $email = $user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $user["email"],
@@ -335,9 +366,13 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                    config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                    if( config('common.SEND_MAIL_ACTIVE') == 1){
+                        $email = config('common.SEND_MAIL');
+                    }else{
+                        $email = $user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to( $email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $user["email"],
@@ -364,9 +399,13 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                    config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                    if( config('common.SEND_MAIL_ACTIVE') == 1){
+                        $email = config('common.SEND_MAIL');
+                    }else{
+                        $email = $user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to( $email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $user["email"],
@@ -401,12 +440,16 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($data, $email_content) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                    config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($data["email"], $data["name"])->subject($email_content->subject);
+                if(config('common.SEND_MAIL_ACTIVE') == 1 ){
+                    $email = config('common.SEND_MAIL');
+                }else{
+                    $email = $data["email"];
+                }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to( $email, $data["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $data["email"],
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $data['name'],
                     'subject' => $email_content->subject,
@@ -415,8 +458,6 @@ class UserEventsListener extends BaseEvent
                FinanceModel::logEmail($mailContent);
             });
         }
-       
-       
     }
 
     /**
@@ -427,19 +468,23 @@ class UserEventsListener extends BaseEvent
     public function sactionLetterMail($attributes) {
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
-        Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $data['body']],
+        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
             function ($message) use ($data) {
-            $message->from(config('common.FRONTEND_FROM_EMAIL'),
-                config('common.FRONTEND_FROM_EMAIL_NAME'));
-            if(isset($data['attachment'])){
+                if(config('common.SEND_MAIL_ACTIVE') == 1 ){
+                    $email = config('common.SEND_MAIL');
+                }else{
+                    $email = $data["email"];
+                }
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            if(!empty($data['attachment'])){
                 $att_name = 'sanction.pdf';
                 $message->attachData($data['attachment'], $att_name);
             }
             $message->bcc('sudesh.kumar@prolitus.com', 'Sudesh kumar');
-            $message->to($data["email"], $data["name"])->subject($data['subject']);
+            $message->to($email, $data["name"])->subject($data['subject']);
             $mailContent = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["email"],
+                'email_to' => $email,
                 'email_type' => $this->func_name,
                 'name' => $data['name'],
                 'subject' => $data['subject'],
