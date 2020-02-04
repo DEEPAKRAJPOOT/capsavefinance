@@ -90,6 +90,7 @@ class ApplicationController extends Controller
             //dd($business_info->gst->pan_gst_hash);
             $industryList = $this->appRepo->getIndustryDropDown()->toArray();
             $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
+            $segmentList = $this->appRepo->getSegmentDropDown()->toArray();
             if ($business_info) {
                 return view('backend.app.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
@@ -98,7 +99,8 @@ class ApplicationController extends Controller
                         ->with('app_id',$appId)
                         ->with('biz_id',$bizId)
                         ->with('industryList',$industryList)
-                        ->with('constitutionList',$constitutionList);
+                        ->with('constitutionList',$constitutionList)
+                        ->with('segmentList',$segmentList);
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -849,7 +851,9 @@ class ApplicationController extends Controller
         $product_types = $this->masterRepo->getProductDataList();
         $industryList = $this->appRepo->getIndustryDropDown()->toArray();
         $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
-        return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList']));
+        $segmentList = $this->appRepo->getSegmentDropDown()->toArray();
+
+        return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList']));
     }
 
     /**
@@ -1125,7 +1129,7 @@ class ApplicationController extends Controller
         
       $userData = State::getUserByAPP($appId);
       $response = $mob->api_call(MobileAuth_lib::MOB_VLD, $req_arr);
-      if($response['result'])
+      if(!empty($response['result']))
       {     $status = 1;
             $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
               'created_by' => Auth::user()->user_id]);
@@ -1143,7 +1147,7 @@ class ApplicationController extends Controller
       }
       else
       {
-             $status = 0;
+            $status = 0;
             $createApiLog = @BizApiLog::create(['req_file' =>$response['payload'], 'res_file' => (is_array($response['result']) || is_object($response['result']) ? json_encode($response['result']) : $response['result']),'status' => $status,
               'created_by' => Auth::user()->user_id]);
             $resp['createApiLog'] = $createApiLog;
@@ -1156,7 +1160,7 @@ class ApplicationController extends Controller
         return response()->json(['message' =>"OTP Sent to $mobile_no.",'status' => 1,
           'value' => $response['result'], 'request_id'=> $response['request_id']]);
       }else{
-        return response()->json(['message' =>'Something went wrong. Please try again','status' => 0]);
+        return response()->json(['message' =>$response['message'] ?? 'Something went wrong. Please try again','status' => 0]);
       }
     }
     
