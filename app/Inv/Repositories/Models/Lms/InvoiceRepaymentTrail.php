@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Inv\Repositories\Models\Lms;
-
+use Auth;
 use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -46,7 +46,8 @@ class InvoiceRepaymentTrail extends BaseModel {
         'invoice_id',
         'repaid_amount',
         'repaid_date',
-        'trans_type',        
+        'trans_type',  
+        'file_id',
         'created_at',
         'created_by',
         'updated_at',
@@ -96,4 +97,14 @@ class InvoiceRepaymentTrail extends BaseModel {
         $result = $query->get();
         return $result;
     }
+    
+    /* save repayment amount//////////////////
+     * saveRepayment  */
+    
+    public static function saveRepay($attr)
+    {
+        return self::create($attr);
+    }
+    
+    
 }

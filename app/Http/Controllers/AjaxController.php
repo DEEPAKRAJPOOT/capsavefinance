@@ -2784,10 +2784,92 @@ if ($err) {
         $invoice_activity_data = $this->invRepo->getAllActivityInvoiceLog($this->request->inv_name);
         $invoice_activity_data = $dataProvider->getBackendInvoiceActivityList($this->request, $invoice_activity_data);
         return $invoice_activity_data;
-    } 
-    /**
-      * 
-      * @param DataProviderInterface $dataProvider
+    }
+    ///////////////////////use fro rePayment///////////////////////////////
+    function saveRepayment(Request $request)
+    {
+        $arrFileData = $request->all();
+        $uploadData = Helpers::uploadAppFile($arrFileData, $arrFileData['app_id']);
+        $userFile = $this->docRepo->saveFile($uploadData);
+        $user_id  = Auth::user()->user_id;
+        $mytime = Carbon::now();
+        $invTrnas  = ['user_id' =>  $arrFileData['user_id'],
+                        'invoice_id' => $arrFileData['invoice_id'],
+                        'repaid_amount' =>  $arrFileData['repaid_amount'],
+                        'repaid_date' => ($arrFileData['repaid_date']) ? Carbon::createFromFormat('d/m/Y', $arrFileData['repaid_date'])->format('Y-m-d') : '',
+                        'trans_type'   => 17,            
+                        'file_id' => $userFile->file_id,
+                        'created_at' => $mytime,
+                        'created_by' => $user_id ];
+           $result = $this->invRepo->saveRepayment($invTrnas);
+            if( $arrFileData['repaid_amount'] > $arrFileData['final_amount'])
+            {
+                $amount = 0;
+            }
+            else
+            {
+               $amount =  $arrFileData['final_amount'] - $arrFileData['repaid_amount'];
+            }
+        if($result)
+        {   ///////////// update repayment here////////////////////////
+            $data['invoice_id']        = $arrFileData['invoice_id'];
+            $data['repaid_amount']  = $arrFileData['repaid_amount'];
+            $result = $this->invRepo->updateRepayment($data);
+            $utr  ="";
+            $check  ="";
+            $unr  ="";
+            if($arrFileData['payment_type']==1)
+            {
+                $utr =   $arrFileData['utr_no'];  
+            }
+            else  if($arrFileData['payment_type']==2)
+            {
+               $check = $arrFileData['utr_no'];
+            }
+              else  if($arrFileData['payment_type']==3)
+            {
+               $unr =  $arrFileData['utr_no'];
+            }
+            $tran  = [  'gl_flag' => 1,
+                        'soa_flag' => 1,
+                        'user_id' =>  $arrFileData['user_id'],
+                        'trans_date' => ($arrFileData['repaid_date']) ? Carbon::createFromFormat('d/m/Y', $arrFileData['repaid_date'])->format('Y-m-d') : '',
+                        'trans_type'   => 17, 
+                        'pay_from'   => 0,
+                        'amount' =>  $arrFileData['repaid_amount'],
+                        'mode_of_pay' =>  $arrFileData['payment_type'],
+                        'comment' =>  $arrFileData['comment'],
+                        'utr_no' =>  $utr,
+                        'cheque_no' =>  $check,
+                        'unr_no'    => $unr,
+                        'created_at' =>  $mytime,
+                        'created_by' =>  $user_id];
+            
+            $res = $this->invRepo->saveRepaymentTrans($tran);
+           if($res)
+            {
+               return \Response::json(['status' => 1,'amount' =>  $amount]);
+            }
+           else 
+           {
+              return \Response::json(['status' => 0,'amount' =>0]);
+           }
+        }
+        else {
+           return \Response::json(['status' => 0,'amount' =>0]);
+        }
+    }
+    
+    /* get customer id    /**
+     */
+    public function getCustomerId(Request $request) 
+    {
+        $result  =  $this->invRepo->getCustomerId($request->user_id);
+     
+        return \Response::json(['status' => $request->user_id,'result' => $result]); 
+    }
+     
+   /* @param DataProviderInterface $dataProvider
       * @param Request $request
       * @return type
       * 
