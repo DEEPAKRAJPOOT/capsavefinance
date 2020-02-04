@@ -10,9 +10,13 @@ use App\Inv\Repositories\Models\AppAssignment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+
 
 class DataRenderer implements DataProviderInterface
 {
+    use LmsTrait;
+
     /**
      * Helper object for DataRenderer.
      *
@@ -2433,23 +2437,60 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'total_invoice_amt',
                     function ($customer) {
-                        return 12;
+                        $invoiceTotal = 0;
+                        $apps = $customer->app->toArray();
+                        foreach ($apps as $app) {
+                            $invoiceTotal += array_sum(array_column($app['invoices'], 'invoice_approve_amount'));
+                        }
+                        return $invoiceTotal;
 
-                })
-                ->editColumn(
-                    'total_fund_amt',
-                    function ($customer) {
-                        return 12;
                 })
                 ->editColumn(
                     'total_disburse_amt',
                     function ($customer) {
-                        return 12;
+                        $fundedAmount = 0;
+                        $apps = $customer->app;
+                        foreach ($apps as $app) {
+                            foreach ($app->invoices as $inv) {
+                                $invoice = $inv->toArray();
+                                $margin = $invoice['program_offer']['margin'];
+                                $fundedAmount += $this->calculateFundedAmount($invoice, $margin);
+                            }
+                        }
+
+                        return $fundedAmount;
+                })
+                ->editColumn(
+                    'total_actual_funded_amt',
+                    function ($customer) {
+                        $disburseAmount = 0;
+                        $apps = $customer->app;
+                        foreach ($apps as $app) {
+                            foreach ($app->invoices as $inv) {
+                                $invoice = $inv->toArray();
+                                $margin = $invoice['program_offer']['margin'];
+                                $fundedAmount = $this->calculateFundedAmount($invoice, $margin);
+                                
+                                $tenorDays = $this->calculateTenorDays($invoice);
+                                $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
+                                
+                                $disburseAmount += round($fundedAmount - $interest, 2);
+                            }
+                        }
+
+                        return $disburseAmount;
                 })
                 ->editColumn(
                     'total_invoice',
-                    function ($customer) {                    
-                        return 12;
+                    function ($customer) {   
+                        $invCount = 0;
+                        $apps = $customer->app;
+                        foreach ($apps as $app) {
+                            foreach ($app->invoices as $inv) {
+                                $invCount++;
+                            }
+                        }                 
+                        return $invCount;
                 })                       
                 ->addColumn(
                     'action',
@@ -2460,24 +2501,10 @@ class DataRenderer implements DataProviderInterface
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('by_email') != '') {
-                        if ($request->has('by_email')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('email', 'like', "%$by_nameOrEmail%");
-                            });
-                        }
-                    }
-                    if ($request->get('is_assign') != '') {
-                        if ($request->has('is_assign')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_status = (int) trim($request->get('is_assign'));
-                                
-                                $query->where('is_assigned', 'like',
-                                        "%$by_status%");
-                            });
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('customer_id', 'like',"%$search_keyword%");
                         }
                     }
                 })

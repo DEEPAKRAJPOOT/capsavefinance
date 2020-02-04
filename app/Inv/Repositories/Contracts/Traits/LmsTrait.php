@@ -18,6 +18,21 @@ trait LmsTrait
         return $interest;        
     }   
     
+    protected function calculateTenorDays($invoice = [])
+    {
+        $now = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : ''); // or your date as well
+        $your_date = strtotime((isset($invoice['invoice_date'])) ? $invoice['invoice_date'] : '');
+        $datediff = abs($now - $your_date);
+
+        $tenor = round($datediff / (60 * 60 * 24));
+        return $tenor;        
+    } 
+
+    protected function calculateFundedAmount($invoice = [], $margin)
+    {
+        return $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
+    }   
+        
 
     /**
      * Process Interest Accrual

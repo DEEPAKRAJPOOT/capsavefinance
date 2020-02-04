@@ -12,11 +12,21 @@
 					<li>Invoice Due Date <br> <b>{{ $invoice->invoice_due_date }}</b></li>
 					<li>Invoice Amt. <br> <i class="fa fa-inr"></i><b>{{ $invoice->invoice_approve_amount }}</b></li>
 					<li>Margin(%). <br> <i class="fa fa-inr"></i><b>{{ $invoice->app->acceptedOffer->margin }}</b></li>
-					<li>Funded Amt. <br> <i class="fa fa-inr"></i><b>
+					<li>Disburse Amt. <br> <i class="fa fa-inr"></i><b>
 					{{ $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->app->acceptedOffer->margin)/100) }}
 					</b></li>
-					<li>Disburse Amt. <br> <i class="fa fa-inr"></i><b>
-					{{ $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->app->acceptedOffer->margin)/100) - (($invoice->invoice_approve_amount*$invoice->app->acceptedOffer->interest_rate)/100) }}
+					<li>Actual Funded Amt. <br> <i class="fa fa-inr"></i><b>
+					@php
+						$now = strtotime($invoice->invoice_due_date); // or your date as well
+						$your_date = strtotime($invoice->invoice_date);
+						$datediff = abs($now - $your_date);
+						$tenor = round($datediff / (60 * 60 * 24));
+						$fundedAmount = $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->program_offer->margin)/100);
+		    			$interest = $fundedAmount * $tenor * (($invoice->program_offer->interest_rate/100) / 360) ;                
+						$disburseAmount = round($fundedAmount - $interest, 2);
+					@endphp
+
+					{{ $disburseAmount }}
 					</b></li>
 					<li>Status  <br> <span class="badge badge-warning">{{ $invoice->mstStatus->status_name }}</span></li>
 				</ul>

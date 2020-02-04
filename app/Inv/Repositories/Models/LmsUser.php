@@ -74,8 +74,8 @@ class LmsUser extends Authenticatable
 
     public static function lmsGetDisbursalCustomer()
     {
-        return self::with(['bank_details.bank', 'app.invoices'])
-                ->whereHas('app.invoices');
+        return self::with(['bank_details.bank', 'app.invoices.program_offer'])
+                ->whereHas('app');
     }
 
     public function bank_details()
@@ -85,6 +85,6 @@ class LmsUser extends Authenticatable
 
     public function app()
     {
-        return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id');
+        return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->whereHas('invoices');
     }
 }

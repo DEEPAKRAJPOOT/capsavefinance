@@ -23,26 +23,16 @@
             <div class="row">
                 <div class="col-md-4">
                     {!!
-                    Form::text('by_email',
+                    Form::text('search_keyword',
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by First name, Last name and Email',
-                    'id'=>'by_email'
+                    'placeholder' => 'Search by Customer Code',
+                    'id'=>'search_keyword'
                     ])
                     !!}
                 </div>
-                <div class="col-md-4">
-
-                    {!!
-                    Form::select('is_assign',
-                    [''=>'Status', '1'=>'Assigned','0'=> 'Pending'],
-                    null,
-                    array('id' => 'is_active',
-                    'class'=>'form-control'))
-                    !!}
-                </div>
-                <button id="searchB" type="button" class="btn  btn-success btn-sm float-right">Search</button>
+                <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
                 
                 <div class="col-md-3 ml-auto text-right">
 

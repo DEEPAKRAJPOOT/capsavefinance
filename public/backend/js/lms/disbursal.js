@@ -13,7 +13,6 @@ try {
                 "method": 'POST',
                 data: function (d) {
                     d.search_keyword = $('input[name=search_keyword]').val();
-                    d.is_status = $('select[name=is_status]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -30,8 +29,8 @@ try {
                 {data: 'ben_ifsc'},
                 {data: 'ben_account_no'},
                 {data: 'total_invoice_amt'},
-                {data: 'total_fund_amt'},
                 {data: 'total_disburse_amt'},
+                {data: 'total_actual_funded_amt'},
                 {data: 'total_invoice'},
                 {data: 'action'}
             ],
