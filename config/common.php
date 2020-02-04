@@ -97,5 +97,6 @@ return [
         'POST_SANCTION_DOC_UPLOADED'=>26,
         'OFFER_GENERATED'=>28,
         'DISBURSED'=>27,
-   ]
+    ],
+   'SEND_MAIL'=>["gaurav.agarwal@prolitus.com", "varun.dudani@zuron.in", "binay.kumar@prolitus.com"],
 ];

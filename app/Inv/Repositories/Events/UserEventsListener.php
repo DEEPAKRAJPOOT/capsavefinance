@@ -284,7 +284,8 @@ class UserEventsListener extends BaseEvent
                 function ($message) use ($user, $email_content) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to(config('common.SEND_MAIL'), $user["name"])->subject($email_content->subject);
             });
         }
     }  
