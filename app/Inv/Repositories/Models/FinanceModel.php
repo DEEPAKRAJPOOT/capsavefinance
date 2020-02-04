@@ -233,6 +233,48 @@ class FinanceModel extends BaseModel
       return $inserted_id;
     }
 
+
+     /**
+     * Email Logger
+     * 
+     * @param Array/Mixed $attributes
+     */
+    public static function logEmail($emailData) {
+        $loggerData = [
+            'mail_from' => $emailData['email_from'],
+            'mail_to' => implode('|', $emailData['email_to']) ?? NULL,
+            'mail_cc' => implode('|', $emailData['email_cc']) ?? NULL,
+            'mail_bcc' => implode('|', $emailData['email_bcc']) ?? NULL,
+            'mail_type' => $emailData['email_type'] ?? __FUNCTION__,
+            'subject' => $emailData['subject'],
+            'body' => base64_encode($emailData['body']),
+            'name' => $emailData['name'] ?? NULL,
+            'fileid' => $emailData['fileid'] ?? NULL,
+            'sent_by' => \Auth::user()->user_id,
+        ];
+        if (!empty($emailData['attachment'])) {
+          $attachment = $emailData['attachment'];
+          $filename = $emailData['att_name'] ?? 'attachment.pdf';
+          $fileparts = pathinfo($filename);
+          $filename = $fileparts['filename'];
+          $ext = $fileparts['extension'];
+          if(!Storage::exists('public/user/docs/attachments')) {
+                Storage::makeDirectory('public/user/docs/attachments', 0777, true);
+          }
+          $saveFileName = _uuid_rand(40) . ".$ext";
+          $myfile = fopen(storage_path('app/public/user/docs/attachments/'.$saveFileName), "w");
+          \File::put(storage_path('app/public/user/docs/attachments/'.$saveFileName), $attachment);
+          $loggerData['file_path'] = 'user/docs/attachments/'.$saveFileName;
+        }
+        return $this->dataLogger($loggerData, 'email_logger');
+    }
+
+
+    public static function dataLogger($data, $table = 'email_logger'){
+      $inserted_id = DB::table($table)->insertGetId($data);
+      return $inserted_id;
+    }
+
     public static function updatePerfios($data, $table = 'biz_perfios_log', $value = '1', $column = 'id'){
       $inserted_id = DB::table($table)->where($column, $value)->update($data);
       return $inserted_id;
