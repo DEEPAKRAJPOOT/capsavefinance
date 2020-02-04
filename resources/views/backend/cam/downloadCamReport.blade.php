@@ -354,7 +354,7 @@
                         </p>
                      </td>
                      <td>No</td>
-                     <td>{{$arrEntityData->name}}</td>
+                     <td>{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
                   </tr>
                   <tr>
                      <td>Vintage</td>
@@ -366,7 +366,7 @@
                         </p>
                      </td>
                      <td>No</td>
-                     <td>{{\Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y')                          }}</td>
+                     <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
                   </tr>
                   <tr>
                      <td colspan="4" bgcolor="#cccccc">&nbsp;</td>
