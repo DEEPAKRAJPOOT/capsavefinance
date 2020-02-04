@@ -82,9 +82,14 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
@@ -109,9 +114,15 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content1) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content1->subject);
+                //$message->to($user["email"], $user["name"])->subject($email_content1->subject);
+                $message->to($email, $user["name"])->subject($email_content1->subject);
             });
           // dd($email_content1, $mail_body);
 
@@ -142,9 +153,14 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from('admin@dexter.com',
-                    'Rent Alpha');
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
@@ -170,8 +186,15 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                $message->from('admin@dexter.com','Rent Alpha');
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                config('common.FRONTEND_FROM_EMAIL_NAME'));
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
@@ -193,9 +216,15 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
@@ -215,9 +244,15 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
@@ -237,9 +272,15 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                //$message->to($user["email"], $user["name"])->subject($email_content->subject);
+                $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
@@ -259,9 +300,15 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
@@ -282,9 +329,15 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to( $email, $user["name"])->subject($email_content->subject);
             });
         }
     }  
@@ -304,9 +357,15 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                //$message->to($user["email"], $user["name"])->subject($email_content->subject);
+                $message->to( $email, $user["name"])->subject($email_content->subject);
             });
         }
     } 
@@ -332,9 +391,15 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($data, $email_content) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$data["email"];
+                    }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),
                     config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($data["email"], $data["name"])->subject($email_content->subject);
+                //$message->to($data["email"], $data["name"])->subject($email_content->subject);
+                $message->to( $email, $data["name"])->subject($email_content->subject);
             });
         }
        
@@ -349,16 +414,22 @@ class UserEventsListener extends BaseEvent
      */
     public function sactionLetterMail($attributes)
     {
-        $data = unserialize($attributes); 
+        $data = unserialize($attributes);         
         Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $data['body']],
             function ($message) use ($data) {
+                if( config('common.SEND_MAIL_ACTIVE')==1){
+                    $email=config('common.SEND_MAIL');
+                }else{
+                    $email=$data["email"];
+                }
             $message->from(config('common.FRONTEND_FROM_EMAIL'),
                 config('common.FRONTEND_FROM_EMAIL_NAME'));
             if(isset($data['attachment'])){
                 $message->attachData($data['attachment'], 'sanction.pdf');
             }
             $message->bcc('sudesh.kumar@prolitus.com', 'Sudesh kumar');
-            $message->to($data["email"], $data["name"])->subject($data['subject']);
+            //$message->to($data["email"], $data["name"])->subject($data['subject']);
+            $message->to($email, $data["name"])->subject($data['subject']);
         }); 
     }
     

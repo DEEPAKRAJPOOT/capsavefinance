@@ -24,7 +24,7 @@
                 <div class="col-sm-12">
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
-                    <a  data-toggle="modal" data-target="#addmanageUserRole" data-url ="{{route('add_user_role')}}" data-height="420px" data-width="100%" data-placement="top" >
+                    <a  data-toggle="modal" data-target="#addmanageUserRole" data-url ="{{route('add_user_role')}}" data-height="450px" data-width="100%" data-placement="top" >
                         <button class="btn  btn-success btn-sm" type="button">
                             <span class="btn-label">
                                 <i class="fa fa-plus"></i>
@@ -97,8 +97,8 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('manageUserRole','Edit User', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('addmanageUserRole','Add User', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('manageUserRole','Edit User', 'modal-md')!!}
+{!!Helpers::makeIframePopup('addmanageUserRole','Add User', 'modal-md')!!}
 @endsection
 
 @section('jscript')
