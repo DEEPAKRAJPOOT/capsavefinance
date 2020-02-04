@@ -190,8 +190,15 @@ Route::group(
         'uses' => 'AjaxController@getUsersDetailAPIDummy'
         ]
     );
+   Route::post(
+        'save_repayment',
+        [
+        'as' => 'save_repayment',
+        'uses' => 'AjaxController@saveRepayment'
+        ]
+    );
 
-
+  
    //
     Route::post(
         'shareholder-save-ajax',
@@ -309,6 +316,14 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListReject'
         ]
     );  
+           
+           Route::post(
+        'get_customer_id',
+        [
+        'as' => 'get_customer_id',
+        'uses' => 'AjaxController@getCustomerId'
+        ]
+    );       
              Route::post(
         'backend_activity_invoice_list',
         [

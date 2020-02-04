@@ -16,7 +16,7 @@
     )
     !!}
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod">First Name
                     <span class="mandatory">*</span>
@@ -24,52 +24,52 @@
                 <input type="text" name="f_name" id="f_name" value="" class="form-control" tabindex="1" placeholder="First Name" required="">
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtAnchorName">Last Name
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="l_name" id="l_name" value="" class="form-control" tabindex="3" placeholder="Last Name" required="">
+                <input type="text" name="l_name" id="l_name" value="" class="form-control" tabindex="2" placeholder="Last Name" required="">
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod">Mobile
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="mobile_no" id="mobile_no" value="" class="form-control" tabindex="1" placeholder="Mobile no" required="">
+                <input type="text" name="mobile_no" id="mobile_no" value="" class="form-control" tabindex="3" placeholder="Mobile no" required="">
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtAnchorName">E-mail
                     <span class="mandatory">*</span>
                 </label>
-                <input type="email" name="email" id="email" value="" class="form-control" tabindex="3" placeholder="Enter E-mail" required="">
+                <input type="email" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Enter E-mail" required="">
             </div>
         </div>
     </div>
     <div class="row">
 
 
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Password
                     <span class="mandatory">*</span>
                 </label>
-                <input type="password" class="form-control numbercls" id="password" name="password"   placeholder="Enter Password" required="">
+                <input type="password" class="form-control numbercls" id="password" name="password"  tabindex="5"  placeholder="Enter Password" required="">
             </div>                      
         </div>
 
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Confirm Password
                     <span class="mandatory">*</span>
                 </label>
 
-                <input type="password" class="form-control numbercls" name="conf_password"   placeholder="Enter Confirm Password" required="">
+                <input type="password" class="form-control numbercls" name="conf_password"  tabindex="6"  placeholder="Enter Confirm Password" required="">
                 <div class="failed">
 
                 </div>
@@ -77,7 +77,7 @@
         </div>	
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Is Active
                     <span class="mandatory">*</span>
@@ -87,11 +87,11 @@
                 [''=>'Please select','0'=> 'In Active','1'=>'Active'],
                 null,
                 array('id' => 'is_active',
-                'class'=>'form-control'))
+                'class'=>'form-control', 'tabindex'=>'7'))
                 !!}
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Role
                     <span class="mandatory">*</span>
@@ -101,13 +101,13 @@
                 [''=>'Select Role']+$rolesList,
                 null,
                 array('id' => 'role',
-                'class'=>'form-control'))
+                'class'=>'form-control', 'tabindex'=>'8' ))
                 !!}
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Reporting Manager                    
                 </label>
@@ -116,7 +116,7 @@
                 [''=>'Select Reporting Manager'],
                 null,
                 array('id' => 'parent_user_id',
-                'class'=>'form-control'))
+                'class'=>'form-control', 'tabindex'=>'9'))
                 !!}
             </div>
         </div>
@@ -137,7 +137,7 @@
             </div>
         </div> 
         --> 
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod"> State
                     <span class="mandatory">*</span>
@@ -148,7 +148,8 @@
                     '',
                     [
                     'class' => 'form-control',                
-                    'id' => 'state_id'
+                    'id' => 'state_id',
+                     'tabindex'=>'10'
                     ])
                 !!}                        
             </div>
@@ -157,7 +158,7 @@
 
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod"> City
                     <span class="mandatory">*</span>
@@ -168,7 +169,8 @@
                     '',
                     [
                     'class' => 'form-control',                
-                    'id' => 'city_id'
+                    'id' => 'city_id', 
+                    'tabindex'=>'11'
                     ])
                 !!}                        
             </div>

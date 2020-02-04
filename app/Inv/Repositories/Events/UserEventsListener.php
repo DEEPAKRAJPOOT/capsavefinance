@@ -6,8 +6,6 @@ use Mail;
 use Illuminate\Queue\SerializesModels;
 use App\Inv\Repositories\Factory\Events\BaseEvent;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
-use App\Inv\Repositories\Models\FinanceModel;
-use Storage;
 
 class UserEventsListener extends BaseEvent
 {
@@ -69,9 +67,11 @@ class UserEventsListener extends BaseEvent
      *
      * @param object $user user data
      */
-    public function onVerifyUser_old($user) {
-        $this->func_name = __FUNCTION__;
+    public function onVerifyUser_old($user)
+    {
         $user = unserialize($user);
+
+        //Send mail to Case Manager
         $email_content = EmailTemplate::getEmailTemplate("VERIFYUSEREMAIL");
         if ($email_content) {
             $mail_body = str_replace(
@@ -82,57 +82,50 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                    if( config('common.SEND_MAIL_ACTIVE') == 1){
-                        $email = config('common.SEND_MAIL');
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
                     }else{
-                        $email = $user["email"];
+                        $email=$user["email"];
                     }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
             });
         }
     }
 
-    public function onVerifyUser($user) {
-        $this->func_name = __FUNCTION__;
+    public function onVerifyUser($user)
+    {
         $user = unserialize($user);
-        $email_content = EmailTemplate::getEmailTemplate("VERIFYUSEREMAIL");
-        if ($email_content) {
+        //Send mail to Case Manager
+        $email_content1 = EmailTemplate::getEmailTemplate("VERIFYUSEREMAIL");
+        
+//echo $email_content;
+
+        if ($email_content1) {
             $mail_body = str_replace(
                 ['%name', '%link'],
                 [ucwords($user['name']),
                 link_to($user['vlink'], 'here')],
-                $email_content->message
+                $email_content1->message
             );
+            
+
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
-                 if(config('common.SEND_MAIL_ACTIVE') == 1){
-                    $email = config('common.SEND_MAIL');
-                 } else{
-                    $email = $user["email"];
-                 }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
+                function ($message) use ($user, $email_content1) {
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+                //$message->to($user["email"], $user["name"])->subject($email_content1->subject);
+                $message->to($email, $user["name"])->subject($email_content1->subject);
             });
+          // dd($email_content1, $mail_body);
+
         }
 
     }
@@ -142,9 +135,13 @@ class UserEventsListener extends BaseEvent
      *
      * @param object $user user data
      */
-    public function onUserRegistration($user) {
-        $this->func_name = __FUNCTION__;
+    public function onUserRegistration($user)
+    {
         $user = unserialize($user);
+
+       
+
+        //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("USER_REGISTERED");
         if ($email_content) {
             $mail_body = str_replace(
@@ -152,25 +149,18 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'],$user['password']],
                 $email_content->message
             );
+
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                 if(config('common.SEND_MAIL_ACTIVE') == 1){
-                    $email = config('common.SEND_MAIL');
-                 } else {
-                    $email = $user["email"];
-                 }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
             });
         }
     }
@@ -181,9 +171,10 @@ class UserEventsListener extends BaseEvent
      * @param object $user user data
      */
 
-    public function onSendOtp($user) {
-        $this->func_name = __FUNCTION__; 
+    public function onSendOtp($user)
+    {
         $user = unserialize($user);
+        //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("OTP_SEND");
         if ($email_content) {
             $mail_body = str_replace(
@@ -191,25 +182,19 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['otp']],
                 $email_content->message
             );
+
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                if(config('common.SEND_MAIL_ACTIVE') == 1){
-                    $email = config('common.SEND_MAIL');
-                 } else{
-                    $email = $user["email"];
-                 }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                config('common.FRONTEND_FROM_EMAIL_NAME'));
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
@@ -217,8 +202,9 @@ class UserEventsListener extends BaseEvent
     
     
     public function onForgotPassword($user) {
-        $this->func_name = __FUNCTION__;
         $user = unserialize($user);
+
+        //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD");
         if ($email_content) {
             $mail_body = str_replace(
@@ -230,29 +216,23 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                    if( config('common.SEND_MAIL_ACTIVE') == 1){
-                        $email = config('common.SEND_MAIL');
-                    }else {
-                        $email = $user["email"];
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$user["email"];
                     }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
     
     public function onResetPasswordSuccess($user) {
-        $this->func_name = __FUNCTION__;
         $user = unserialize($user);
+
+        //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("RESET_PASSWORD_SUCCESSS");
         if ($email_content) {
             $mail_body = str_replace(
@@ -265,28 +245,22 @@ class UserEventsListener extends BaseEvent
                 ],
                 function ($message) use ($user, $email_content) {
                     if( config('common.SEND_MAIL_ACTIVE')==1){
-                        $email = config('common.SEND_MAIL');
+                        $email=config('common.SEND_MAIL');
                     }else{
-                        $email = $user["email"];
+                        $email=$user["email"];
                     }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
 
     public function onAnchorRegistUserSuccess($userData) {
-        $this->func_name = __FUNCTION__;
         $user = unserialize($userData);
+
+        //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("ANCHOR_REGISTER_USER_MAIL");
         if ($email_content) {
             $mail_body = str_replace(
@@ -294,32 +268,27 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'],$user['password']],
                 $email_content->message
             );
+
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                    if( config('common.SEND_MAIL_ACTIVE') == 1){
-                        $email = config('common.SEND_MAIL');
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
                     }else{
-                        $email = $user["email"];
+                        $email=$user["email"];
                     }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+                //$message->to($user["email"], $user["name"])->subject($email_content->subject);
                 $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
             });
         }
     }
 
     public function onAgencyUserRegisterSuccess($userData) {
-        $this->func_name = __FUNCTION__;
         $user = unserialize($userData);
+
+        //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("AGENCY_USER_REGISTER_MAIL");
         if ($email_content) {
             $mail_body = str_replace(
@@ -331,30 +300,24 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                    if( config('common.SEND_MAIL_ACTIVE') == 1){
-                        $email = config('common.SEND_MAIL');
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
                     }else{
-                        $email = $user["email"];
+                        $email=$user["email"];
                     }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to($email, $user["name"])->subject($email_content->subject);
             });
         }
     }
 
     
      public function onAnchorLeadUpload($userData) {
-        $this->func_name = __FUNCTION__;
         $user = unserialize($userData);
+
+        //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("ANCHOR_CSV_LEAD_UPLOAD");
         if ($email_content) {
             $mail_body = str_replace(
@@ -366,29 +329,23 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                    if( config('common.SEND_MAIL_ACTIVE') == 1){
-                        $email = config('common.SEND_MAIL');
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
                     }else{
-                        $email = $user["email"];
+                        $email=$user["email"];
                     }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to( $email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+               // $message->to($user["email"], $user["name"])->subject($email_content->subject);
+               $message->to( $email, $user["name"])->subject($email_content->subject);
             });
         }
     }  
 
     public function onCreateUserRoleSuccess($userData) {
-        $this->func_name = __FUNCTION__;
         $user = unserialize($userData);
+
+        //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("CREATE_BACKEND_USER_MAIL");
         if ($email_content) {
             $mail_body = str_replace(
@@ -396,25 +353,19 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'],$user['password']],
                 $email_content->message
             );
+
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content) {
-                    if( config('common.SEND_MAIL_ACTIVE') == 1){
-                        $email = config('common.SEND_MAIL');
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
                     }else{
-                        $email = $user["email"];
+                        $email=$user["email"];
                     }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+                //$message->to($user["email"], $user["name"])->subject($email_content->subject);
                 $message->to( $email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
             });
         }
     } 
@@ -426,9 +377,9 @@ class UserEventsListener extends BaseEvent
      * 
      * @param Array $attributes
      */
-    public function coLenderUserRegMail($attributes) {
-        $this->func_name = __FUNCTION__;
-        $data = unserialize($attributes); 
+    public function coLenderUserRegMail($attributes)
+    {
+       $data = unserialize($attributes); 
         $email_content = EmailTemplate::getEmailTemplate("CO_Lender_REGISTER_USER_MAIL");
         if ($email_content) {
             $mail_body = str_replace(
@@ -440,59 +391,45 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($data, $email_content) {
-                if(config('common.SEND_MAIL_ACTIVE') == 1 ){
-                    $email = config('common.SEND_MAIL');
-                }else{
-                    $email = $data["email"];
-                }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                    if( config('common.SEND_MAIL_ACTIVE')==1){
+                        $email=config('common.SEND_MAIL');
+                    }else{
+                        $email=$data["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                    config('common.FRONTEND_FROM_EMAIL_NAME'));
+                //$message->to($data["email"], $data["name"])->subject($email_content->subject);
                 $message->to( $email, $data["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $data['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-               ];
-               FinanceModel::logEmail($mailContent);
             });
         }
+       
+       
     }
+
 
     /**
      * Sanction Letter
      * 
      * @param Array $attributes
      */
-    public function sactionLetterMail($attributes) {
-        $data = unserialize($attributes); 
-        $this->func_name = __FUNCTION__;
-        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
+    public function sactionLetterMail($attributes)
+    {
+        $data = unserialize($attributes);         
+        Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $data['body']],
             function ($message) use ($data) {
-                if(config('common.SEND_MAIL_ACTIVE') == 1 ){
-                    $email = config('common.SEND_MAIL');
+                if( config('common.SEND_MAIL_ACTIVE')==1){
+                    $email=config('common.SEND_MAIL');
                 }else{
-                    $email = $data["email"];
+                    $email=$data["email"];
                 }
-            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-            if(!empty($data['attachment'])){
-                $att_name = 'sanction.pdf';
-                $message->attachData($data['attachment'], $att_name);
+            $message->from(config('common.FRONTEND_FROM_EMAIL'),
+                config('common.FRONTEND_FROM_EMAIL_NAME'));
+            if(isset($data['attachment'])){
+                $message->attachData($data['attachment'], 'sanction.pdf');
             }
             $message->bcc('sudesh.kumar@prolitus.com', 'Sudesh kumar');
+            //$message->to($data["email"], $data["name"])->subject($data['subject']);
             $message->to($email, $data["name"])->subject($data['subject']);
-            $mailContent = [
-                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $email,
-                'email_type' => $this->func_name,
-                'name' => $data['name'],
-                'subject' => $data['subject'],
-                'body' => $data['body'],
-                'att_name' => $att_name ?? NULL,
-                'attachment' => $data['attachment'] ?? NULL,
-            ];
-            FinanceModel::logEmail($mailContent);
         }); 
     }
     
@@ -502,7 +439,8 @@ class UserEventsListener extends BaseEvent
      *
      * @param mixed $events
      */
-    public function subscribe($events) {
+    public function subscribe($events)
+    {
 
         $events->listen(
             'user.login.success',
