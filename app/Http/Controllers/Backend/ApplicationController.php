@@ -695,7 +695,7 @@ class ApplicationController extends Controller
      */    
     public function AcceptNextStage(Request $request) {
         try{
-            
+           // dd($request);
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
             $sel_assign_role = $request->get('sel_assign_role');

@@ -241,6 +241,7 @@ class LeadController extends Controller {
              $dataArr['assigned_user_id'] = $user_id;
              $dataArr['app_id'] = $app_id;
              $dataArr['assign_status'] = '0';
+             $dataArr['assign_type'] = '1';
              $dataArr['sharing_comment'] = "";
              $dataArr['is_owner'] = 1;
             $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
