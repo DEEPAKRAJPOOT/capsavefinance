@@ -53,6 +53,7 @@ class CibilController extends Controller
        
         $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
         $responce =  $CibilApi->getPromoterCibilRequest($arrOwnerData);
+        //dd($responce);
         $p = xml_parser_create('utf-8');
         xml_parse_into_struct($p, $responce, $resp);
         xml_parser_free($p);
@@ -65,7 +66,7 @@ class CibilController extends Controller
        
         if(isset($result['content'])){
             $result['content'] = base64_encode($result['content']);
-            $cibilScore =  $result['scores'];
+            $cibilScore =  $result['scores'] ?? '';
             $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => $result['content'],'status' => 0,'created_by' => Auth::user()->user_id]);
             if ($createApiLog) {
                     $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
@@ -129,6 +130,7 @@ class CibilController extends Controller
             $arrOwnerData->owner_addr = '';
         }
         $responce =  $CibilApi->getCommercialCibilAcknowledgement($arrOwnerData);
+       // dd($responce);
         $p = xml_parser_create('utf-8');
         xml_parse_into_struct($p, $responce, $resp);
         xml_parser_free($p);
@@ -139,11 +141,12 @@ class CibilController extends Controller
             }
         }
         if($acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
-            sleep(20);
+            sleep(10);
             $arrOwnerData['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrOwnerData['report_id'] = $acknowledgementResult['report-id'];
+            //dd($arrOwnerData);
             $responseData =  $CibilApi->getCommercialCibilData($arrOwnerData);
-
+             // dd($responseData);
             $q = xml_parser_create('utf-8');
             xml_parse_into_struct($q, $responseData, $cibilRes);
             xml_parser_free($q);
