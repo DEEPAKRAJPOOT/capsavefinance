@@ -579,9 +579,7 @@
       </div>
    </div>
 </div>
-<div class="isloader" style="display:none;">  
-   <img src="http://rent.local/backend/assets/images/loader.gif">
-</div>
+
 @endsection
 @section('jscript')
 <script>

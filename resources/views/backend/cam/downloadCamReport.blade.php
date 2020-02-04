@@ -6,13 +6,7 @@
  
 <div class="inner-container">
     <div class="card mt-3">
-         <div class="card-body pt-3 pb-3">
-            <a href="{{route('generate_cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}">
-               <button type="button" class="btn btn-primary float-right btn-sm" > Generate Cam Report</button>
-            </a>
-         </div>
         <div class="card-body pt-3 pb-3">
-          <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
           @if(($currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
           <div class="float-right">
             <form method="POST" action="{{route('approve_offer')}}">
@@ -21,14 +15,23 @@
             <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve Limit">
             </form>
           </div>
+          @elseif(($approveStatus && $approveStatus->status == 1))
+            <p class="float-right ml-3 mb-0"><b style="color: green; font-size: 17px;">Limit Approved</b></p>
           @endif
-          <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm mt-3 " > Download Report</button>
+          
+            <a href="{{route('generate_cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}">
+                 <button type="button" class="btn btn-primary float-right btn-sm ml-3" > Generate CAM Report</button>
+              </a>
+            <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm  " > Download Report</button>
         </div>
     </div>
 
 <!-- Start PDF Section -->
 
 <div class="card mt-3" id="camReport">
+   <div class="card-body pt-3 pb-3">
+      <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
+   </div>
    <div class="card-body pt-3 pb-3">
       <div class="row">
          <div class="col-md-12">
@@ -81,7 +84,7 @@
                   </tr>
                   <tr role="row" class="odd">
                      <td class=""><b>Equipment Type</b></td>
-                     <td class="">{{isset($leaseOfferData->security_deposit_type) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->security_deposit_type)['equipment_name']) : ''}}</td>
+                     <td class="">{{isset($leaseOfferData->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->equipment_type_id)['equipment_name']) : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class=""><b>Security Deposit</b></td>
@@ -92,7 +95,7 @@
                      <td class="">{{isset($leaseOfferData->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOfferData->rental_frequency] : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class=""><b>PTPQ</b></td>
+                     <td class=""><b>PTPF</b></td>
                      <td class="">
                         @php 
                            $i = 1;
@@ -661,21 +664,21 @@
                <thead>
                   <tr>
                      <tr>
-                          <th valign="middle" bgcolor="#efefef">Particular</th>
+                          <th valign="middle" bgcolor="#efefef" @if(empty($audited_years)) colspan="4" @endif> Particular</th>
                           @foreach($audited_years as $year_aud)
                           <th valign="middle" bgcolor="#efefef">{{$year_aud}}</th>
                           @endforeach
                      </tr>
                </thead>
                <tbody>
-                  <tr>
+                  <tr @if (empty($audited_years)) class='hide' @endif>
                      <td></td>
                      <td class="text-center"><strong>Aud.</strong></td>
                      <td class="text-center"><strong>Aud.</strong></td>
                      <td class="text-center"><strong>Aud.</strong></td>
                   </tr>
                   <tr>
-                     <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                     <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;" @if (empty($financeData)) colspan="4" @endif>
                         <table class="table-border-none" width="100%">
                           <tbody>
                              @foreach($FinanceColumns as $finance_col)
@@ -826,14 +829,11 @@
  
  </div>
 </div>
-<div class="isloader" style="display:none;">  
-        <img src="http://admin.rent.local/backend/assets/images/loader.gif">
-    </div>
+
 @endsection
 @section('jscript')
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" ></script>
-
 <script>
 
 function downloadCam(){
@@ -845,11 +845,6 @@ function downloadCam(){
     });
     
 }
-
-
-
-
-
 </script>
 
 

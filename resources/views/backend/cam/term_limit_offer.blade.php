@@ -178,20 +178,22 @@
         <div class="col-md-6">
           <div class="form-group">
             <label for="txtPassword"><b>Processing Fee (%)</b></label>
-            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
+            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>
     
         <div class="col-md-12">
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12"><b>Additional Security</b></label> 
-            <div class="col-md-12">
-                <div id="check_block">
+            <div id="check_block" style="width: 100%;">
+                <div class="col-md-6" style="display: inline;">
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="1" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '1') !== false)? 'checked': ''): '')}}> BG</label>
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '2') !== false)? 'checked': ''): '')}}> FD</label>
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '3') !== false)? 'checked': ''): '')}}> MF</label>
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="4" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'checked': ''): '')}}> Others</label>
-                    <input type="text" name="comment" class="col-md-6 form-control" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'inline': 'none'): 'none')}}" value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Other Security" maxlength="200">
+                </div>
+                <div class="col-md-6" style="float: right;">
+                    <input type="text" name="comment" class="form-control" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'inline': 'none'): 'none')}}" value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Other Security" maxlength="200">
                 </div>
             </div>
           </div>
@@ -366,7 +368,7 @@
         flag = false;
     }
 
-    if(processing_fee == ''){
+    if(processing_fee == '' || isNaN(processing_fee)){
         setError('input[name=processing_fee]', 'Please fill processing fee');
         flag = false;
     }else if(parseFloat(processing_fee) > 100){
@@ -374,12 +376,13 @@
         flag = false;
     }
 
-    if(addl_security == ''){
+    /*if(addl_security == ''){
         setError('#check_block', 'Please check atleast one security');
         flag = false;
-    }else if($('#other_sec').is(':checked')){
+    }*/
+    if($('#other_sec').is(':checked')){
         if(comment == ''){
-            setError('#check_block', 'Please fill other security');
+            setError('input[name=comment]', 'Please fill other security');
             flag = false;
         }else{
             // TAKE REST
@@ -396,6 +399,7 @@
 
   $(document).ready(function(){
     $('#other_sec').on('change', function(){
+        unsetError('input[name=comment]');
         if($('#other_sec').is(':checked')){
             $('input[name=comment]').css('display', 'inline');
         }else{

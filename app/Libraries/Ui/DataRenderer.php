@@ -2,6 +2,7 @@
 namespace App\Libraries\Ui;
 use DataTables;
 use Helpers;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
@@ -183,7 +184,7 @@ class DataRenderer implements DataProviderInterface
                         $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
                         $app_id = $app->app_id;
                         if(Helpers::checkPermission('company_details')){
-                           if($user_role == 8)
+                           if($user_role == config('common.user_role.APPROVER'))
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
                                 $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
@@ -311,9 +312,12 @@ class DataRenderer implements DataProviderInterface
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                             }
                             if(Helpers::checkPermission('send_case_confirmBox')){
-                                $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
-                                $roleData = Helpers::getUserRole();
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
+                                $roleData = Helpers::getUserRole();                                
+                                if ($currentStage && $currentStage->order_no <= 15 ) {
+                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                }
+                                
                                 if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
                                     $act = $act . '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                                 }
@@ -583,9 +587,9 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceList(Request $request,$invoice)
     { 
-        
         return DataTables::of($invoice)
-               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id'])
+               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+           
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
@@ -621,9 +625,10 @@ class DataRenderer implements DataProviderInterface
                 })  
                  ->addColumn(
                     'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
+                    function ($invoice) { 
+                     return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
+                      
+                      })
                ->addColumn(
                     'tenor',
                     function ($invoice) {                        
@@ -632,13 +637,14 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
+               
                 ->addColumn(
                     'view_upload_invoice',
                     function ($invoice) {
@@ -721,14 +727,13 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -790,17 +795,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -859,17 +863,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -928,17 +931,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -967,9 +969,26 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceListDisbursed(Request $request,$invoice)
     { 
-    
+     
       return DataTables::of($invoice)
                ->rawColumns(['status','anchor_id','action'])
+                ->setRowClass(function ($invoice) {
+                    $finalDueDate =  date('d/m/Y', strtotime($invoice->invoice_due_date.' + '.$invoice->program_offer->grace_period.' days'));
+                       $date =  Carbon::now();
+                       $date =  Carbon::parse($date)->format('d/m/Y');
+                       $cdate =  strtotime(Carbon::createFromFormat('d/m/Y',$date));
+                       $gracePdate =  strtotime(Carbon::createFromFormat('d/m/Y',$finalDueDate));
+                       if($cdate > $gracePdate)
+                       {
+                          
+                           return "dateGrace";
+                      }
+                       else
+                       {
+                          
+                            return "";
+                       }
+               })
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) use ($request)  {     
@@ -1008,17 +1027,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -1030,11 +1048,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                      if ($request->front) {         
-                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="450px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="670px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      }
                      else
                      {
-                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="450px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="670px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      
                      }
                 })
@@ -1088,17 +1106,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -1157,17 +1174,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -1546,7 +1562,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($role) {
-                    return  "<a title=\"Edit Role\" data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a title=\"Manage Permission\" id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
+                    return  "<a title=\"Edit Role\" data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"300px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a title=\"Manage Permission\" id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
                     })
                     ->filter(function ($query) use ($request) {
                         if ($request->get('by_email') != '') {

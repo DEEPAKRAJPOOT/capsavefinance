@@ -39,6 +39,7 @@ use App\Inv\Repositories\Models\AppApprover;
 use App\Libraries\Pdf;
 use App\Inv\Repositories\Models\UserAppDoc;
 
+
 class CamController extends Controller
 {
     protected $download_xlsx = TRUE;
@@ -76,9 +77,10 @@ class CamController extends Controller
             if(isset($arrEntityData['name'])){      
                   $arrBizData['legalConstitution'] = $arrEntityData['name'];
             }
-
+            $userData = $this->userRepo->getUserDetail($arrBizData['user_id']);
+            //dd($userData);
             $whereCondition = [];
-            //$whereCondition['anchor_id'] = $anchorId;
+            $whereCondition['anchor_id'] = $userData['anchor_id'];
             $prgmData = $this->appRepo->getProgramData($whereCondition);
             $limitData = $this->appRepo->getAppLimit($arrRequest['app_id']);
             if(!empty($prgmData))
@@ -92,6 +94,18 @@ class CamController extends Controller
             if(isset($arrCamData['t_o_f_security_check'])){
                 $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
             }
+            $app_data = $this->appRepo->getAppDataByBizId($arrRequest['biz_id']);
+            $product_ids=[];
+            foreach($app_data->products as $product){
+              array_push($product_ids, $product->pivot->product_id);
+            }
+            $checkLeaseProduct = in_array(3, $product_ids); // check lease product only
+            if( $checkLeaseProduct){
+              $checkDisburseBtn='showDisburseBtn';
+            }else{
+              $checkDisburseBtn='';
+            }
+            //dd($product_ids,$checkDisburseBtn);
             $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
             return view('backend.cam.overview')->with([
@@ -100,7 +114,8 @@ class CamController extends Controller
                 'arrBizData' => $arrBizData, 
                 'arrOwner' =>$arrOwner,
                 'limitData' =>$limitData,
-                'current_status_id'=>$current_status
+                'current_status_id'=>$current_status,
+                'checkDisburseBtn'=>$checkDisburseBtn
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -271,6 +286,13 @@ class CamController extends Controller
       //return new \App\Mail\ReviewerSummary();        
     }
 
+     public function uploadFinanceXLSX(Request $request){
+      $app_id = $request->get('app_id');
+      $file_type = $request->get('file_type');
+      $request_data = _encrypt("$app_id|$file_type");
+      return view('backend.cam.upload_xlsx', ['request_data' => $request_data]);
+    }
+
     public function uploadBankXLSX(Request $request){
       $app_id = $request->get('app_id');
       $file_type = $request->get('file_type');
@@ -349,6 +371,9 @@ class CamController extends Controller
        return ['', ''];
      }
      $inputFileName = $this->getToUploadPath($appId, $fileType).'/'.$file_name;
+     if (!file_exists($inputFileName)) {
+       return ['', ''];
+     }
      $objPHPExcel = PHPExcel_IOFactory::load($inputFileName);
      $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'HTML');
      $allsheets = $objPHPExcel->getSheetNames();

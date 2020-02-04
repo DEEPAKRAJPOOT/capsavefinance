@@ -8,7 +8,7 @@ try {
             serverSide: true,
             pageLength: 10,
             searching: false,
-            bSort: true,
+            bSort: false,
                 "scrollY": 400,
                 "scrollX": true,
                 scrollCollapse: true,            

@@ -60,6 +60,7 @@ class Transactions extends BaseModel {
         'comment',
         'utr_no',
         'cheque_no',
+        'unr_no',
         'txn_id',        
         'created_at',
         'created_by',
@@ -114,4 +115,13 @@ class Transactions extends BaseModel {
         $result = $query->get();
         return $result;
     }
+    
+    
+    /*** save repayment transaction details for invoice  **/
+    public static function saveRepaymentTrans($attr)
+    {
+          return self::create($attr);
+    }
+    
+    
 }

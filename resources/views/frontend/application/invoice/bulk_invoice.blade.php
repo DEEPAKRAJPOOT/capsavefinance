@@ -162,11 +162,9 @@
  
  
   $(document).ready(function () {
-      
-       $(".finalButton").hide();
-       $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');
-                      
-       $("#program_bulk_id").append("<option value=''>No data found</option>");  
+        $(".finalButton").hide();
+        $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');
+        $("#program_bulk_id").append("<option value=''>No data found</option>");  
         $("#program_bulk_id").append("<option value=''>No data found</option>");                         
    
   }); 
@@ -272,18 +270,11 @@
                            
                                    $("#program_bulk_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
                             });
-                           
-                        
-                       
                     }
                     else
                     {
-                       
-                               $("#program_bulk_id").append("<option value=''>No data found</option>");  
-                           
-                      
+                       $("#program_bulk_id").append("<option value=''>No data found</option>");  
                     }
-                  
                 }
         }); }); 
   
@@ -292,10 +283,6 @@
     
        $("#program_bulk_id_msg" ).hide  ();
       var program_id =  $(this).val(); 
-      if(program_id=='')
-      {
-          return false;
-      }
       $("#supplier_bulk_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
@@ -329,11 +316,7 @@
                        
                     }
                     else
-                    {
-                       
-                               $("#supplier_bulk_id").append("<option value=''>No data found</option>");  
-                           
-                      
+                    {      $("#supplier_bulk_id").append("<option value=''>No data found</option>");  
                     }
                   
                 }
@@ -371,7 +354,7 @@
         return  Math.floor(days);
     } 
     /////////////// validation the time of final submit/////////////// 
-       $(document).on('click','#final_submit',function(e){
+      $(document).on('click','#final_submit',function(e){
         $("#final_submit_msg").hide();
         var p_limit =  $("#pro_limit_hide").val();  
         var sum = 0;
@@ -405,7 +388,7 @@
                 
         //////// check total amount /////////////
         $(".subOfAmount").each(function() {
-        sum += parseInt($(this).val());
+        sum += parseInt($(this).val().replace(/,/g, ''));
         });
         if(sum >  p_limit)
         {
@@ -451,6 +434,10 @@
   if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
     event.preventDefault();
   }
+     var  invoice_approve_amount  =  $(this).attr("id");
+     document.getElementById(invoice_approve_amount).addEventListener('input', event =>
+     event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+  
 });
 
     $(document).on('click','#submit',function(e){  
@@ -481,9 +468,8 @@
         }
         else
         {
-        if (confirm("Are you sure? You want to upload CSV")) {     
-       $(".invoiceAppendData").empty();
-      
+      if (confirm("Are you sure? You want to upload CSV")) {     
+        $(".invoiceAppendData").empty();
         var file  = $("#customFile")[0].files[0];
         var datafile = new FormData();
         var anchor_bulk_id  = $("#anchor_bulk_id").val();
@@ -507,7 +493,7 @@
             cache: false, // To unable request pages to be cached
             enctype: 'multipart/form-data',
 
-              success: function(r){
+            success: function(r){
                
                 $(".isloader").hide();
 
@@ -547,11 +533,14 @@
                     {
                       var getClass = "background-color: #ea9292;";  
                     }
-                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'" class="appendExcel'+j+'" style="'+getClass+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+v.invoice_id+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
+                     var invoice_approve_amount =  invoice_approve_amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    
+                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'" class="appendExcel'+j+'" style="'+getClass+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+j+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
+                      
                     });
                       datepickerDisFdate();
                       datepickerDisPdate();
-                    return false;
+                      return false; 
                 }
                  else if(r.status==2)
                 {
