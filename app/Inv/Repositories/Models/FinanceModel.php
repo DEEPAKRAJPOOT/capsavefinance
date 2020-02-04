@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use DB;
+use Storage;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class FinanceModel extends BaseModel

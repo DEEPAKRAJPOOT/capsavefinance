@@ -81,7 +81,7 @@ class UserEventsListener extends BaseEvent
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                     if( config('common.SEND_MAIL_ACTIVE') == 1){
                         $email = config('common.SEND_MAIL');
                     }else{
@@ -115,7 +115,7 @@ class UserEventsListener extends BaseEvent
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                  if(config('common.SEND_MAIL_ACTIVE') == 1){
                     $email = config('common.SEND_MAIL');
                  } else{
@@ -154,7 +154,7 @@ class UserEventsListener extends BaseEvent
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                  if(config('common.SEND_MAIL_ACTIVE') == 1){
                     $email = config('common.SEND_MAIL');
                  } else {
@@ -193,7 +193,7 @@ class UserEventsListener extends BaseEvent
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                 if(config('common.SEND_MAIL_ACTIVE') == 1){
                     $email = config('common.SEND_MAIL');
                  } else{
@@ -229,14 +229,14 @@ class UserEventsListener extends BaseEvent
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                     if( config('common.SEND_MAIL_ACTIVE') == 1){
                         $email = config('common.SEND_MAIL');
                     }else {
                         $email = $user["email"];
                     }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"], $user["name"])->subject($email_content->subject);
+                $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $email,
@@ -263,7 +263,7 @@ class UserEventsListener extends BaseEvent
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                     if( config('common.SEND_MAIL_ACTIVE')==1){
                         $email = config('common.SEND_MAIL');
                     }else{
@@ -296,7 +296,7 @@ class UserEventsListener extends BaseEvent
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                     if( config('common.SEND_MAIL_ACTIVE') == 1){
                         $email = config('common.SEND_MAIL');
                     }else{
@@ -330,7 +330,7 @@ class UserEventsListener extends BaseEvent
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                     if( config('common.SEND_MAIL_ACTIVE') == 1){
                         $email = config('common.SEND_MAIL');
                     }else{
@@ -365,7 +365,7 @@ class UserEventsListener extends BaseEvent
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                     if( config('common.SEND_MAIL_ACTIVE') == 1){
                         $email = config('common.SEND_MAIL');
                     }else{
@@ -398,7 +398,7 @@ class UserEventsListener extends BaseEvent
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                     if( config('common.SEND_MAIL_ACTIVE') == 1){
                         $email = config('common.SEND_MAIL');
                     }else{
@@ -408,7 +408,7 @@ class UserEventsListener extends BaseEvent
                 $message->to( $email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $user["email"],
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
@@ -439,7 +439,7 @@ class UserEventsListener extends BaseEvent
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($data, $email_content) {
+                function ($message) use ($data, $email_content, $mail_body) {
                 if(config('common.SEND_MAIL_ACTIVE') == 1 ){
                     $email = config('common.SEND_MAIL');
                 }else{
@@ -495,7 +495,6 @@ class UserEventsListener extends BaseEvent
             FinanceModel::logEmail($mailContent);
         }); 
     }
-    
 
     /**
      * Event subscribers
