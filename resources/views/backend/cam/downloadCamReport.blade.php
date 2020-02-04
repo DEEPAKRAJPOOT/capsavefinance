@@ -829,14 +829,11 @@
  
  </div>
 </div>
-<div class="isloader" style="display:none;">  
-        <img src="http://admin.rent.local/backend/assets/images/loader.gif">
-    </div>
+
 @endsection
 @section('jscript')
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" ></script>
-
 <script>
 
 function downloadCam(){
@@ -848,11 +845,6 @@ function downloadCam(){
     });
     
 }
-
-
-
-
-
 </script>
 
 
