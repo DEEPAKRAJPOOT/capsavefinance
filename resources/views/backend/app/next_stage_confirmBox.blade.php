@@ -6,15 +6,7 @@
 <div class="content-wrapper">
     <div class="card">
         <div class="card-body">
-                   {!!
-                    Form::open(
-                    array(
-                    'method' => 'post',
-                    'route' => 'accept_next_stage',
-                    'id' => 'frmMoveStage',
-                    )
-                    ) 
-                    !!}            
+                   {!! Form::open( array( 'method' => 'post', 'route' => 'accept_next_stage', 'id' => 'frmMoveStage', ) ) !!}            
             <div class="row">                
                <div class="col-md-12">
                     
@@ -48,20 +40,11 @@
                    @endif                   
                    
                    @if ($assign_case)
-                    <label for="txtCreditPeriod">Please select Assignee
-                      <span class="mandatory">*</span>
-                    </label>
-                   <br>
-                    @if ($roles)
-                    {!!
-                    Form::select('sel_assign_role',
-                    [
-                    ''=>'Assignee']+$roles,
-                    null,
-                    array('id' => 'is_active',
-                    'class'=>'form-control'))
-                    !!}
-                    @endif 
+                        <label for="txtCreditPeriod">Please select Assignee <span class="mandatory">*</span> </label>
+                        <br>
+                        @if ($roles)
+                            {!! Form::select('sel_assign_role', [ ''=>'Assignee']+$roles, null, array('id' => 'is_active', 'class'=>'form-control')) !!}
+                        @endif 
                     @php 
                     $confirmBtn = 'Assign';
                     $closeBtn = 'Cancel';

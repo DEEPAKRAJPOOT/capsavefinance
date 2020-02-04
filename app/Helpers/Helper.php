@@ -204,6 +204,7 @@ class Helper extends PaypalHelper
                     $dataArr['assigned_user_id'] = $user_id;
                     $dataArr['app_id'] = $app_id;
                     $dataArr['assign_status'] = '0';
+                    $dataArr['assign_type'] = '2';
                     $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';
                     $dataArr['is_owner'] = 1;
 
@@ -480,6 +481,7 @@ class Helper extends PaypalHelper
                 $dataArr['assigned_user_id'] = $user_id;
                 $dataArr['app_id'] = $app_id;
                 $dataArr['assign_status'] = '0';
+                $dataArr['assign_type'] = '3';
                 $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';;
                 $dataArr['is_owner'] = 1;
 
