@@ -52,14 +52,12 @@ class PaymentController extends Controller {
                 'date_of_payment' => 'required', 
                 'amount' => 'required', 
                 'refrence_no' => 'required', 
-                'description' => 'required',
-                'utr_no' => 'required',
-            
+                'description' => 'required'
           ]);
         $user_id  = Auth::user()->user_id;
         $mytime = Carbon::now(); 
-       $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
-       $enterAmount =  str_replace(',', '', $request->amount);
+        $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
+        $enterAmount =  str_replace(',', '', $request->amount);
        foreach($getAmount as $val)
        {
             $getAmount = $val->repayment_amount;
@@ -73,11 +71,8 @@ class PaymentController extends Controller {
            }
            else
            {
-                 $temp = 0;
-                 $finalAmount = $enterAmount - $getAmount;
-                 $temp  = $finalAmount;
-                 $finalAmount =    $temp - $getAmount;      
-                 $this->invRepo->singleRepayment($val->disbursal_id,$finalAmount);
+                    
+                 $this->invRepo->singleRepayment($val->disbursal_id,0);
                
            }
           
@@ -103,6 +98,7 @@ class PaymentController extends Controller {
                         'user_id' =>  $request['customer_id'],
                         'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
                         'trans_type'   => 17, 
+                        'trans_by'   => 1,
                         'pay_from'   => 0,
                         'amount' =>  $request['amount'],
                         'mode_of_pay' =>  $request['payment_type'],
@@ -125,6 +121,13 @@ class PaymentController extends Controller {
              return back(); 
         }
        
+    }
+    
+    public function excelBulkPayment(Request $request)
+    {
+          $bank = DB::table('mst_bank')->where(['is_active' => 1])->get();  
+          $result  =  $this->invRepo->getCustomerId();
+          return view('backend.payment.excel_bulk_payment')->with(['customer' => $result]);
     }
     
 }

@@ -2785,6 +2785,15 @@ if ($err) {
         $invoice_activity_data = $dataProvider->getBackendInvoiceActivityList($this->request, $invoice_activity_data);
         return $invoice_activity_data;
     }
+    
+      //////////////////// Use For Bulk Transaction /////////////////
+     public function getBackendBulkTransaction(DataProviderInterface $dataProvider) 
+    {
+       $trans_data = $this->invRepo->getAllManualTransaction();
+       $trans_data = $dataProvider->getAllManualTransaction($this->request, $trans_data);
+       return   $trans_data;
+   } 
+    
     ///////////////////////use fro rePayment///////////////////////////////
     function saveRepayment(Request $request)
     {

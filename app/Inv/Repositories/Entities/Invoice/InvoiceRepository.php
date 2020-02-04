@@ -266,8 +266,22 @@ use CommonRepositoryTraits;
         }
 
        return Disbursal::updateRepayment($attributes);  
-    }   
+    }  
     
+    /* get all bulk transaction      */
+    /* created by gajendra chauhan  */
+    function  getAllManualTransaction()
+    {
+       try
+       {
+           return Transactions::getAllManualTransaction();  
+       } catch (Exception $ex) {
+          return $ex;
+       }
+    }
+    
+     /* get all save bulk transaction      */
+    /* created by gajendra chauhan  */
         public function saveRepaymentTrans($attributes = [])
     {
        

@@ -301,6 +301,14 @@ Route::group(
         ]
     );  
        
+        Route::post(
+        'backend_get_bulk_transaction',
+        [
+        'as' => 'backend_get_bulk_transaction',
+        'uses' => 'AjaxController@getBackendBulkTransaction'
+        ]
+    );  
+       
          Route::post(
         'backend_get_invoice_list_repaid',
         [
