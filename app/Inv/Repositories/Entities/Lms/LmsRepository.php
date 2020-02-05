@@ -222,16 +222,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-<<<<<<< HEAD
     public function sumAccruedInterest($whereCond) 
     {        
         return InterestAccrual::sumAccruedInterest($whereCond);
     }    
-=======
-    public static function sumAccruedInterest($disbursal_id)
-    { 
-        return InterestAccrual::sumAccruedInterest($disbursal_id);
-    }
 
 
     /**
@@ -254,5 +248,4 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return Disbursal::where('disbursal_id', $disbursalId)
                 ->update($data);
     }           
->>>>>>> 1d79314b86e70919b357922ad1d91c8f6a22c37c
 }
