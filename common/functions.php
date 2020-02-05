@@ -218,7 +218,7 @@ function CalculateProfitBeforeTaxLoss($ProfitAndLoss) {
 	return sprintf('%.2f', $ProfitBeforeTaxLoss);
 }
 function CalculateDefferedTaxes($ProfitAndLoss) {
-	return "0";
+	return '0';
 }
 function CalculateProvisionForTaxesTotal($ProfitAndLoss) {
 	$ProvisionForTaxesTotal = $ProfitAndLoss['ProvisionForTaxesCurrentPeriod'] + $ProfitAndLoss['ProvisionForTaxesDefferedTaxes'];
@@ -280,77 +280,77 @@ $Liabilities['OtherReservesExcludingProvisions'] + $Liabilities['SurplusOrDefici
 	return sprintf('%.2f', $TotalLiabilities);
 }
 function CalculateArrearsOfCumulativeDividends($Liabilities){
-	return "0";
+	return '0';
 }
 function CalculateDisputedExciseCustomIncomeTaxSalesTaxLiabilities($Liabilities){
-	return "0";
+	return '0';
 }
 function CalculateGratuityLiabilityNotProvidedFor($Liabilities){
-	return "0";
+	return '0';
 }
 function CalculateGuaranteesIssuedRelatingToBusiness($Liabilities){
-	return "0";
+	return '0';
 }
 function CalculateGuaranteesIssuedRelatingToCompanies($Liabilities){
-	return "0";
+	return '0';
 }
 function CalculateLCs($Liabilities){
-	return "0";
+	return '0';
 }
 function CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC($Liabilities){
-	return "0";
+	return '0';
 }
 
 #====================================================================================#
 
 function CalculateAssetsReceivables($Assets){
-	return "0";
+	return '0';
 }
 function CalculateAssetsInventory($Assets){
-	return "0";
+	return '0';
 }
 function CalculateAssetsStockInProcess($Assets){
-	return "0";
+	return '0';
 }
 function CalculateAssetsFinishedGoods($Assets){
-	return "0";
+	return '0';
 }
 function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
 	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
 	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
 }
 function CalculateAssetsSubTotalInventory($Assets){
-	return "0";
+	return '0';
 }
 function CalculateAssetsAdvancesToSuplierofRawMaterial($Assets){
-	return "0";
+	return '0';
 }
 function CalculateAssetsAdvanceReceivableInOrKind($Assets){
-	return "0";
+	return '0';
 }
 function CalculateTotalCurrentAssets($Assets){
-	return "0";
+	return '0';
 }
 function CalculateAssetsGrossBlock($Assets){
-	return "0";
+	return '0';
 }
 function CalculateAssetsNetBlock($Assets){
-	return "0";
+	return '0';
 }
 function CalculateTotalOtherNonCurrentAssets($Assets){
-	return "0";
+	return '0';
 }
 function CalculateIntangibleAssetSubtotal($Assets){
-	return "0";
+	return '0';
 }
 function CalculateIntangibleAssetTotal($Assets){
-	return "0";
+	return '0';
 }
 function CalculateTangibleAssetNetworth($Assets){
-	return "0";
+	return '0';
 }
 function CalculateTotalLiabilitiesMinusTotalAssets($Assets){
-	return "0";
+	return '0';
 }
 function CalculateMonthsConsumption0($Assets){
 	return '0';
