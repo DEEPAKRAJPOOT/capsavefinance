@@ -90,7 +90,7 @@
 												<option value="3" {{(old('segment') == 3)? 'selected':''}}> Segment 3 </option>
 											</select>
  -->
-											{!! Form::select('segment', [''=>trans('backend.please_select')] + $segmentList, old('segment'), ['id'=>'segmentId','class'=>'form-control', 'tabindex'=>'8']) !!}
+											{!! Form::select('segment', [''=>trans('backend.please_select')] + $segmentList, old('segment'), ['id'=>'segmentId','class'=>'form-control industry_change', 'tabindex'=>'8']) !!}
 
 											@error('segment')
 								                <span class="text-danger error">{{ $message }}</span>
