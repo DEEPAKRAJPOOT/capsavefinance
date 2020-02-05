@@ -732,7 +732,7 @@
             <div class="data mt-4">
              <h2 class="sub-title bg">Financial Comment</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
-                 <p>{!! isset($finacialDetails->debt_cmnt) ? $finacialDetails->debt_cmnt : '' !!}</p>
+                 <p>{!! isset($finacialDetails->financial_risk_comments) ? $finacialDetails->financial_risk_comments : '' !!}</p>
               </div>
               </div>
 
