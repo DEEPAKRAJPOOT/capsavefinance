@@ -63,18 +63,27 @@ class ProcessMails implements ShouldQueue
                     break;
                 }
 
-                $from_user = $userRepo->getfullUserDetail($assignmentData->from_id);
+                if($assignmentData->assign_type == '1'){
+                    $from_user = $userRepo->getfullUserDetail($assignmentData->to_id);
+                }else{
+                    $from_user = $userRepo->getfullUserDetail($assignmentData->from_id);
+                }
+                
                 $application = $appRepo->getAppDataByAppId($assignmentData->app_id);
-               
+                $emailData['lead_id'] = '000'.$application->user_id;
+                $emailData['entity_name'] = (isset($application->business->biz_entity_name))?$application->business->biz_entity_name:'';
+                $emailData['app_id'] = 'CAPS000'.$assignmentData->app_id;
+                $emailData['comment'] = $assignmentData->sharing_comment;
                 $emailData['sender_user_name'] = $from_user->f_name .' '. $from_user->m_name .' '. $from_user->l_name ;
                 $emailData['sender_role_name'] = '';//$from_user->roles[0]->name;
-                $emailData['lead_id'] = '000'.$application->user_id;
-                $emailData['app_id'] = 'CAPS000'.$assignmentData->app_id;
-                $emailData['entity_name'] = (isset($application->business->biz_entity_name))?$application->business->biz_entity_name:'';
-                $emailData['comment'] = $assignmentData->sharing_comment;
                 
                 if($to_all){
-                    $to_users = $userRepo->getBackendUsersByRoleId($assignmentData->role_id);
+                    if(is_null($assignmentData->role_id)){
+                        $to_user = $userRepo->getfullUserDetail($assignmentData->to_id);
+                        $to_users = $userRepo->getBackendUsersByRoleId($to_user->roles[0]->id);
+                    }else{
+                        $to_users = $userRepo->getBackendUsersByRoleId($assignmentData->role_id);
+                    }
                     foreach($to_users as $user) {
                         $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                         $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
