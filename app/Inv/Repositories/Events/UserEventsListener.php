@@ -398,7 +398,7 @@ class UserEventsListener extends BaseEvent
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content) {
+                function ($message) use ($user, $email_content, $mail_body) {
                     if( config('common.SEND_MAIL_ACTIVE') == 1){
                         $email = config('common.SEND_MAIL');
                     }else{
@@ -499,7 +499,7 @@ class UserEventsListener extends BaseEvent
 
     public function onApplicationPickup($userData) {
         $user = unserialize($userData);
-
+        $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_PICKUP");
 
@@ -512,16 +512,25 @@ class UserEventsListener extends BaseEvent
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
 
             Mail::send( 'email', [ 'baseUrl'=>env('REDIRECT_URL',''), 'varContent' => $mail_body, ], 
-                function ($message) use ($user, $mail_subject) {
+                function ($message) use ($user, $mail_subject, $mail_body) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => array($user["receiver_email"]),
+                    'email_type' => $this->func_name,
+                    'name' => $user['receiver_user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
             });
         }
     } 
 
     public function onApplicationMoveNextUser($userData) {
         $user = unserialize($userData);
-
+        $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_MOVE_NEXT_USER");
         if ($email_content) {
@@ -533,16 +542,25 @@ class UserEventsListener extends BaseEvent
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject) {
+                function ($message) use ($user, $mail_subject, $mail_body) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => array($user["receiver_email"]),
+                    'email_type' => $this->func_name,
+                    'name' => $user['receiver_user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
             });
         }
     } 
 
     public function onApplicationMoveNextPool($userData) {
         $user = unserialize($userData);
-
+        $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_MOVE_NEXT_POOL");
         if ($email_content) {
@@ -554,16 +572,25 @@ class UserEventsListener extends BaseEvent
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject) {
+                function ($message) use ($user, $mail_subject, $mail_body) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => array($user["receiver_email"]),
+                    'email_type' => $this->func_name,
+                    'name' => $user['receiver_user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
             });
         }
     }
 
     public function onApplicationMoveBack($userData) {
         $user = unserialize($userData);
-
+        $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_MOVE_BACK");
         if ($email_content) {
@@ -575,9 +602,18 @@ class UserEventsListener extends BaseEvent
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject) {
+                function ($message) use ($user, $mail_subject, $mail_body) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => array($user["receiver_email"]),
+                    'email_type' => $this->func_name,
+                    'name' => $user['receiver_user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
             });
         }
     } 
