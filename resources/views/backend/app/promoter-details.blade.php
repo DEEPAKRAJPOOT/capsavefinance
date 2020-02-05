@@ -335,7 +335,7 @@
 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     @if(request()->get('view_only'))
-                                                                    <button class="btn">Upload</button>
+                                                                    <button type='button' class="btn">Upload</button>
                                                                     @endif
                                                                     <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 2)">
                                                                     <span class="fileUpload"></span>
@@ -372,7 +372,7 @@
 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     @if(request()->get('view_only'))
-                                                                    <button class="btn">Upload</button>
+                                                                    <button type='button' class="btn">Upload</button>
                                                                     @endif
                                                                     <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 31)">
                                                                 </div>
@@ -404,7 +404,7 @@
                                                             <td width="14%">
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     @if(request()->get('view_only'))
-                                                                    <button class="btn">Upload</button>
+                                                                    <button type='button' class="btn">Upload</button>
                                                                     @endif
                                                                     <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 30)">
                                                                 </div>
@@ -440,7 +440,7 @@
                                                             <td width="14%">
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     @if(request()->get('view_only'))
-                                                                    <button class="btn">Upload</button>
+                                                                    <button type='button' class="btn">Upload</button>
                                                                     @endif
                                                                     <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 32)">
                                                                 </div>
@@ -464,7 +464,7 @@
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     @if(request()->get('view_only'))
-                                                                    <button class="btn">Upload</button>
+                                                                    <button type='button' class="btn">Upload</button>
                                                                     @endif
                                                                     <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="photofile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
                                                                 </div>
@@ -489,7 +489,7 @@
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     @if(request()->get('view_only'))
-                                                                    <button class="btn">Upload</button>
+                                                                    <button type='button' class="btn">Upload</button>
                                                                     @endif
                                                                     <input type="file" class="aadharfile"  name="aadharfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="aadharfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 34)">
                                                                 </div>
@@ -512,7 +512,7 @@
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     @if(request()->get('view_only'))
-                                                                    <button class="btn">Upload</button>
+                                                                    <button type='button' class="btn">Upload</button>
                                                                     @endif
                                                                     <input type="file" class="electricityfile"  name="electricityfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="electricityfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 37)">
                                                                 </div>
@@ -536,7 +536,7 @@
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     @if(request()->get('view_only'))
-                                                                    <button class="btn">Upload</button>
+                                                                    <button type='button' class="btn">Upload</button>
                                                                     @endif
                                                                     <input type="file" class="telephonefile"  name="telephonefile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="telephonefile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 38)">
                                                                 </div>
