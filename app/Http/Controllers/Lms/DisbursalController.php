@@ -59,11 +59,13 @@ class DisbursalController extends Controller
 	public function viewInvoice(Request $request)
 	{
 		$userId = $request->get('user_id');
+		$status = $request->get('status');
 		$userIvoices = $this->lmsRepo->getAllUserInvoice($userId);
 		
 		return view('lms.disbursal.view_invoice')
 				->with([
 					'userIvoices'=>$userIvoices, 
+					'status'=>$status, 
 				]);              
 	}
 

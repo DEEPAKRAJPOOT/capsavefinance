@@ -6,7 +6,11 @@
 			<div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse show" data-parent="#accordion" style="">
 				@foreach($userIvoices as $invoice)
 				<ul class=" p-0 m-0 d-flex justify-content-between">
-					<li><input type="checkbox" class="invoice_id" value="{{ $invoice->invoice_id }}"></li>
+					<li>
+					@if($status == 0)
+					<input type="checkbox" class="invoice_id" value="{{ $invoice->invoice_id }}">
+					@endif
+					</li>
 					<li>Invoice No. <br>  <b>{{ $invoice->invoice_no }}</b></li>
 					<li>Invoice Date <br> <b>{{ $invoice->invoice_date }}</b></li>
 					<li>Invoice Due Date <br> <b>{{ $invoice->invoice_due_date }}</b></li>

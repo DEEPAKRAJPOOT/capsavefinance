@@ -2414,7 +2414,25 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'customer_id',
                     function ($customer) {
-                        return "<input type='checkbox' class='user_id' value=".$customer->user_id.">";
+                        $this->overDueFlag = 0;
+                        $disburseAmount = 0;
+                        $apps = $customer->app;
+                        if ($this->overDueFlag == 0) {
+	                        foreach ($apps as $app) {
+	                            foreach ($app->invoices as $inv) {
+	                                $invoice = $inv->toArray();
+	                                $dueDate = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : ''); // or your date as well
+	                                $now = strtotime(date('Y-m-d'));
+	                                $datediff = ($dueDate - $now);
+	                                $days = round($datediff / (60 * 60 * 24));
+	                                if ($this->overDueFlag ==0 && $days < 0) {
+	                        			$this->overDueFlag = 1;
+	                                }
+	                            }
+	                        }
+	                    }
+
+                        return ($this->overDueFlag == 0) ? "<input type='checkbox' class='user_id' value=".$customer->user_id.">" : '';
                     }
                 )
                 ->addColumn(
@@ -2509,10 +2527,15 @@ class DataRenderer implements DataProviderInterface
                         return $invCount;
                 })                       
                 ->addColumn(
+                    'status',
+                    function ($customer) {
+                        return ($this->overDueFlag == 1) ? '<label class="badge badge-warning current-status">pending</label>' : '<label class="badge badge-success current-status">success</label>';
+                })                       
+                ->addColumn(
                     'action',
                     function ($customer) {
                         $act = '';
-                        $act = '<a  data-toggle="modal" data-target="#viewDisbursalCustomerInvoice" data-url ="' . route('lms_disbursal_invoice_view', ['user_id' => $customer->user_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
+                        $act = '<a  data-toggle="modal" data-target="#viewDisbursalCustomerInvoice" data-url ="' . route('lms_disbursal_invoice_view', ['user_id' => $customer->user_id, 'status' => $this->overDueFlag]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
                         
                         return $act;
                 })

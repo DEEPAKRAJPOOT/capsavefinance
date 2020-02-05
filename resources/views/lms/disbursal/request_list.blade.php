@@ -61,6 +61,7 @@
 													<th>Total Disburse Amt.</th>
 													<th>Total Actual Funded Amt.</th>
 													<th>Total Invoice </th>
+                                                    <th>Status</th>
 													<th>Action</th>
 												</tr>
 	                                        </thead>
