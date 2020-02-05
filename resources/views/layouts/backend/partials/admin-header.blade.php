@@ -1,8 +1,8 @@
 <!-- partial:partials/_navbar.html -->
 <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-left navbar-brand-wrapper">
-        <a class="navbar-brand brand-logo" href="#"><img src="{{url('backend/assets/images/logo.svg')}}"/></a>
-        <a class="navbar-brand brand-logo-mini" href="#"><img src="{{url('backend/assets/images/logo_mini.svg')}}"/></a>
+        <a class="navbar-brand brand-logo" href="{{ route('backend_dashboard') }}"><img src="{{url('backend/assets/images/logo.svg')}}"/></a>
+        <a class="navbar-brand brand-logo-mini" href="{{ route('backend_dashboard') }}"><img src="{{url('backend/assets/images/logo_mini.svg')}}"/></a>
     </div>
     <div class="navbar-menu-wrapper d-flex align-self-stretch align-items-center">
         <button class="navbar-toggler navbar-toggler align-self-center mr-2" type="button" data-toggle="minimize">
