@@ -218,7 +218,7 @@ function CalculateProfitBeforeTaxLoss($ProfitAndLoss) {
 	return sprintf('%.2f', $ProfitBeforeTaxLoss);
 }
 function CalculateDefferedTaxes($ProfitAndLoss) {
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateProvisionForTaxesTotal($ProfitAndLoss) {
 	$ProvisionForTaxesTotal = $ProfitAndLoss['ProvisionForTaxesCurrentPeriod'] + $ProfitAndLoss['ProvisionForTaxesDefferedTaxes'];
@@ -280,107 +280,107 @@ $Liabilities['OtherReservesExcludingProvisions'] + $Liabilities['SurplusOrDefici
 	return sprintf('%.2f', $TotalLiabilities);
 }
 function CalculateArrearsOfCumulativeDividends($Liabilities){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateDisputedExciseCustomIncomeTaxSalesTaxLiabilities($Liabilities){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateGratuityLiabilityNotProvidedFor($Liabilities){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateGuaranteesIssuedRelatingToBusiness($Liabilities){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateGuaranteesIssuedRelatingToCompanies($Liabilities){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateLCs($Liabilities){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC($Liabilities){
-	return "Need To Calculate";
+	return "0";
 }
 
 #====================================================================================#
 
 function CalculateAssetsReceivables($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateAssetsInventory($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateAssetsStockInProcess($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateAssetsFinishedGoods($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
 	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
 	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
 }
 function CalculateAssetsSubTotalInventory($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateAssetsAdvancesToSuplierofRawMaterial($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateAssetsAdvanceReceivableInOrKind($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateTotalCurrentAssets($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateAssetsGrossBlock($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateAssetsNetBlock($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateTotalOtherNonCurrentAssets($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateIntangibleAssetSubtotal($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateIntangibleAssetTotal($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateTangibleAssetNetworth($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateTotalLiabilitiesMinusTotalAssets($Assets){
-	return "Need To Calculate";
+	return "0";
 }
 function CalculateMonthsConsumption0($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsConsumption1($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsConsumption2($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsConsumption3($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateStockInProcessMinusAmount($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsCostOfProduction($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateFinishedGoodsMinusAmount($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsCostOfSales($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsDomesticIncome($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsExportIncome($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 
 
