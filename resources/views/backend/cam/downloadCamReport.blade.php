@@ -715,12 +715,12 @@
                   </tr>
                </tbody>
             </table>
-             <h5 class="mt-4">Notes:</h5>
-            <ul class="pl-3">
-               <li>&#x2714; Cash profit = PAT + Depreciation + Non-operating non-cash outflow items – Provisions</li>
-               <li>&#x2714; Total Outside liabilities = Current Liabilities + Term Liabilities</li>
-               <li>&#x2714; Net Worth = Share Capital + Reserves – Revaluation reserve</li>
-            </ul>
+                   <!-- <h5 class="mt-4">Notes:</h5>
+                  <ul class="pl-3">
+                     <li>&#x2714; Cash profit = PAT + Depreciation + Non-operating non-cash outflow items – Provisions</li>
+                     <li>&#x2714; Total Outside liabilities = Current Liabilities + Term Liabilities</li>
+                     <li>&#x2714; Net Worth = Share Capital + Reserves – Revaluation reserve</li>
+                  </ul> -->
               </div>
               </div>
 
