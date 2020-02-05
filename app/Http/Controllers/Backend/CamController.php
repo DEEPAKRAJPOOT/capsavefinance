@@ -503,6 +503,7 @@ class CamController extends Controller
 
     public function banking(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
         $xlsx_arr = $this->_getXLSXTable($appId,'banking');
         $xlsx_html = $xlsx_arr[0];
         $xlsx_pagination = $xlsx_arr[1];
@@ -536,6 +537,7 @@ class CamController extends Controller
         return view('backend.cam.bank', [
           'bankdocs' => $bankdocs,
           'appId'=> $appId,
+          'biz_id'=> $biz_id,
           'pending_rec'=> $pending_rec,
           'bank_data'=> $contents,
           'customers_info'=> $customers_info,
