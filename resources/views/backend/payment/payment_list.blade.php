@@ -31,8 +31,8 @@
 						<div class="col-md-6 text-right">
 						<label>&nbsp;</label><br>
 						<a href="{{route('add_payment')}}" class="btn btn-primary btn-sm">Add Manual</a>
-                                                <a  data-toggle="modal" data-target="#modalUploadPayment" data-url ="{{route('excel_bulk_payment', [])}}" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Anchor Detail">Excel</a>
-                    
+                                                <!--<a  data-toggle="modal" data-target="#modalUploadPayment" data-url ="{{route('excel_bulk_payment', [])}}" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Anchor Detail">Excel</a> -->
+                                                <a href="{{route('excel_payment_list')}}" class="btn btn-primary btn-sm">Excel</a>
 						</div>
 						</div>
 						       <div class="row">

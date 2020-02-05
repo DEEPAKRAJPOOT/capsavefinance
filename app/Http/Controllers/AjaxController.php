@@ -3246,7 +3246,7 @@ if ($err) {
        }
        $date = Carbon::now();
        $data = array();
-        $userId =  Auth::user()->user_id;
+        $userId =  $request['supplier_bulk_id'];
         $id = Auth::user()->user_id;
         if ($request['doc_file']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice')) {
