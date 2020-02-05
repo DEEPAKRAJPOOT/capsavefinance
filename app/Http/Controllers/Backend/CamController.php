@@ -887,8 +887,8 @@ class CamController extends Controller
     }
 
     private function _callBankApi($filespath, $appId){
-        $user = FinanceModel::getUserByAPP($appId);
-        $loanAmount = (int)$user['loan_amt'];
+        $userLoan = FinanceModel::getLoanByAPP($appId);
+        $loanAmount = (int)$userLoan['loan_amount'];
         $dates = array_pop($filespath);
         $ranges = $this->getRangeFromdates($dates);
         $bsa = new Bsa_lib();
@@ -1028,8 +1028,8 @@ class CamController extends Controller
     }
 
     public function _callFinanceApi($filespath, $appId) {
-        $user = FinanceModel::getUserByAPP($appId);
-        $loanAmount = (int)$user['loan_amt'];
+        $userLoan = FinanceModel::getLoanByAPP($appId);
+        $loanAmount = (int)$userLoan['loan_amount'];
         $dates = array_pop($filespath);
         $perfios = new Perfios_lib();
         $reportType = 'json';

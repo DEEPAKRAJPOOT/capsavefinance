@@ -204,6 +204,14 @@ class FinanceModel extends BaseModel
         return ($result ?? null);
     }
 
+    public static function getLoanByAPP($app_id){
+        $result = self::select('*')
+                ->from('app_product')
+                ->where('app_id', $app_id)
+                ->first();
+        return ($result ?? null);
+    }
+
     public static function getBankData(){
         $result = self::select('*')
                 ->from('mst_bank')
