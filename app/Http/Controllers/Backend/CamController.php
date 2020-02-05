@@ -1815,7 +1815,7 @@ class CamController extends Controller
                 $currStageCode = $currStage->stage_code; 
                 /*end code for approve button */
 
-                // dd($arrBankDetails);
+                // dd($finacialDetails);
                 return view('backend.cam.downloadCamReport')
                         ->with([
                                  'arrCamData' =>$arrCamData ,
