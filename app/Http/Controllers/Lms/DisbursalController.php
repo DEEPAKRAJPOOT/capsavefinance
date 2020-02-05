@@ -92,76 +92,76 @@ class DisbursalController extends Controller
 
 		// --- UAT code 
 
-		$allrecords = [1,2];
-		$requestData = $this->_apiData();
+		// $allrecords = [1,2];
+		// $requestData = $this->_apiData();
 		// --- UAT code end 
 
 		// --- production code 
 
-		// $record = array_filter(explode(",",$invoiceIds));
-		// $userIds = array_filter(explode(",",$customerRecords));
+		$record = array_filter(explode(",",$invoiceIds));
+		$userIds = array_filter(explode(",",$customerRecords));
 
-		// $userIvoices = $this->lmsRepo->getAllUserInvoiceIds($userIds)->toArray();
-		// $allrecords = array_unique(array_merge($record, $userIvoices));
-		// $allrecords = array_map('intval', $allrecords);
+		$userIvoices = $this->lmsRepo->getAllUserInvoiceIds($userIds)->toArray();
+		$allrecords = array_unique(array_merge($record, $userIvoices));
+		$allrecords = array_map('intval', $allrecords);
 
-		// $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
-		// $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
-		// $params = array('http_header' => '', 'header' => '', 'request' => []);
-		// $fundedAmount = 0;
-		// $interest = 0;
-		// $disburseAmount = 0;
-		// foreach ($supplierIds as $userid) {
-		// 	foreach ($allinvoices as $invoice) {
-		// 		$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
-		// 		$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
-		// 		$refId ='CAP'.$userid;
-		// 		if($disburseType == 1) {
-		// 			// $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
-		// 			if($invoice['supplier_id'] = $userid) {
-		// 				$now = strtotime($invoice['invoice_due_date']); // or your date as well
-		// 		        $your_date = strtotime($invoice['invoice_date']);
-		// 		        $datediff = abs($now - $your_date);
+		$allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
+		$params = array('http_header' => '', 'header' => '', 'request' => []);
+		$fundedAmount = 0;
+		$interest = 0;
+		$disburseAmount = 0;
+		foreach ($supplierIds as $userid) {
+			foreach ($allinvoices as $invoice) {
+				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
+				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
+				$refId ='CAP'.$userid;
+				if($disburseType == 1) {
+					// $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
+					if($invoice['supplier_id'] = $userid) {
+						$now = strtotime($invoice['invoice_due_date']); // or your date as well
+				        $your_date = strtotime($invoice['invoice_date']);
+				        $datediff = abs($now - $your_date);
 
-		// 		        $tenor = round($datediff / (60 * 60 * 24));
-		// 		        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-		// 		        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
-  //       				$disburseAmount = round($fundedAmount - $interest, 2);
+				        $tenor = round($datediff / (60 * 60 * 24));
+				        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
+				        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+        				$disburseAmount = round($fundedAmount - $interest, 2);
 
-		// 			}			
-		// 			$requestData[$userid]['RefNo'] = $refId;
-		// 			$requestData[$userid]['Amount'] = $disburseAmount;
-		// 			$requestData[$userid]['Debit_Acct_No'] = '123344455';
-		// 			$requestData[$userid]['Debit_Acct_Name'] = 'testing name';
-		// 			$requestData[$userid]['Debit_Mobile'] = '9876543210';
-		// 			$requestData[$userid]['Ben_IFSC'] = $invoice['supplier_bank_detail']['ifsc_code'];
-		// 			$requestData[$userid]['Ben_Acct_No'] = $invoice['supplier_bank_detail']['acc_no'];
-		// 			$requestData[$userid]['Ben_Name'] = $invoice['supplier_bank_detail']['acc_name'];
-		// 			$requestData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];
-		// 			$requestData[$userid]['Ben_Email'] = $invoice['supplier']['email'];
-		// 			$requestData[$userid]['Ben_Mobile'] = $invoice['supplier']['mobile_no'];
-		// 			$requestData[$userid]['Mode_of_Pay'] = 'IFT';
-		// 			$requestData[$userid]['Nature_of_Pay'] = 'MPYMT';
-		// 			$requestData[$userid]['Remarks'] = 'test remarks';
-		// 			$requestData[$userid]['Value_Date'] = date('Y-m-d');
-		// 		}
-		// 		else {
+					}			
+					$requestData[$userid]['RefNo'] = $refId;
+					$requestData[$userid]['Amount'] = $disburseAmount;
+					$requestData[$userid]['Debit_Acct_No'] = '123344455';
+					$requestData[$userid]['Debit_Acct_Name'] = 'testing name';
+					$requestData[$userid]['Debit_Mobile'] = '9876543210';
+					$requestData[$userid]['Ben_IFSC'] = $invoice['supplier_bank_detail']['ifsc_code'];
+					$requestData[$userid]['Ben_Acct_No'] = $invoice['supplier_bank_detail']['acc_no'];
+					$requestData[$userid]['Ben_Name'] = $invoice['supplier_bank_detail']['acc_name'];
+					$requestData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];
+					$requestData[$userid]['Ben_Email'] = $invoice['supplier']['email'];
+					$requestData[$userid]['Ben_Mobile'] = $invoice['supplier']['mobile_no'];
+					$requestData[$userid]['Mode_of_Pay'] = 'IFT';
+					$requestData[$userid]['Nature_of_Pay'] = 'MPYMT';
+					$requestData[$userid]['Remarks'] = 'test remarks';
+					$requestData[$userid]['Value_Date'] = date('Y-m-d');
+				}
+				else {
 
-		// 			$apiLogData['refer_id'] = $refId;
-		// 			$apiLogData['tran_id'] = $transId;
-		// 			// $apiLogData['utr_no'] = $utrNo;
-		// 			$apiLogData['remark'] = $remarks;
-		// 			$disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
-		// 			$updateDisbursal = $this->lmsRepo->updateDisburse([
-		// 					'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
-		// 				], $createDisbursal->disbursal_id);
+					$apiLogData['refer_id'] = $refId;
+					$apiLogData['tran_id'] = $transId;
+					// $apiLogData['utr_no'] = $utrNo;
+					$apiLogData['remark'] = $remarks;
+					$disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
+					$updateDisbursal = $this->lmsRepo->updateDisburse([
+							'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
+						], $createDisbursal->disbursal_id);
 					
-		// 			if ($updateDisbursal) {
-		// 				$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
-		// 			}
-		// 		}
-		// 	}
-		// }
+					if ($updateDisbursal) {
+						$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
+					}
+				}
+			}
+		}
 
 		// --- production code end 
 
