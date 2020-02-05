@@ -50,7 +50,6 @@ class ReviewerSummary extends Mailable
             'reviewerSummaryData'=> $reviewerSummaryData,
             'offerPTPQ' => $offerPTPQ
         ]);
-
         $loggerData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                 'email_to' => config('common.review_summ_mails'),
