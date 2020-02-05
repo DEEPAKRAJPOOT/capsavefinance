@@ -47,6 +47,7 @@ class ProcessMails implements ShouldQueue
                         break;
                     case '1': //Pickup
                         $event = "APPLICATION_PICKUP";
+                        $to_all = true;
                     break;
                     case '2': //Next 
                         if(is_null($assignmentData->to_id) && $assignmentData->role_id){
