@@ -240,9 +240,9 @@
                                         <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                                             @php $i=0; @endphp @while(!empty($arrApproverData[$i]))
                                             <tr>
-                                                <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
+                                                <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%"> {{ isset($arrApproverData[$i])?$arrApproverData[$i]->approver:'' }}</th>
                                                 @php $i++; @endphp
-                                                <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
+                                                <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{ isset($arrApproverData[$i])?$arrApproverData[$i]->approver:'' }}</th>
                                                 @php $i++; @endphp
                                             </tr>
                                             @endwhile

@@ -53,7 +53,7 @@ class ReviewerSummary extends Mailable
 
         $email->subject('Reviewer Summary Detail');
 
-        $mailContent = [
+        $loggerData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                 'email_to' => config('common.review_summ_mails'),
                 'email_type' => $this->func_name,
@@ -83,12 +83,12 @@ class ReviewerSummary extends Mailable
                 [
                     'as' => $camFile['file_name']
                 ]);
-                $loggerData['file_path'][] = 'app/public/'.$val['file_path'];
+                $loggerData['file_path'][] = 'app/public/'.$camFile['file_path'];
             }
         }
         $filepath = implode('||', $loggerData['file_path']);
         $loggerData['file_path'] = $filepath;
-        FinanceModel::logEmail($loggerData);
+        //FinanceModel::logEmail($loggerData);
         return $email;
     }
 }
