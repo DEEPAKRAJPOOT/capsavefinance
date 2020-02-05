@@ -40,14 +40,18 @@
                          <div style="text-align: right;">
                          @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$active_xlsx_filename)))
                                <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/finance/'.$active_xlsx_filename) }}" download>Download</a>
-                               <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
+                               @can('upload_xlsx_document')
+                               <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document_finance', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
+                               @endcan
                          @endif 
                          @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
                          @php $class_enable="disabled"; @endphp
                                <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
                          @endif 
                          @if(request()->get('view_only') && $financedocs->count() > 0)
-                            <a href="javascript:void(0)" class="btn btn-success btn-sm <?php echo $class_enable ?>">Get Analysis</a>
+                           @can('financeAnalysis')
+                              <a href="javascript:void(0)" class="btn btn-success btn-sm <?php echo $class_enable ?>">Get Analysis</a>
+                           @endcan
                          @endif
                          </div>
                          <div class="clearfix"></div>
@@ -385,9 +389,10 @@
                                                   <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                      <table class="table-border-none" width="100%">
                                                         <tbody>
+                                                          @php $yearly_growth_data = $growth_data[$year] @endphp
                                                           @foreach($income_cols as $key => $income_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss'], $yearly_growth_data) : $key)}}"></td>
                                                            </tr>
                                                            @endforeach
                                                         </tbody>
@@ -431,12 +436,12 @@
                                                             </tr>
                                                             @foreach($costofsales_col as $arr_key => $arr_val)
                                                             <tr>
-                                                              <td height="46" align="right"><input type="text" <?php echo function_exists($arr_key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']['.$arr_key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key][$arr_key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key][$arr_key]) : (function_exists($arr_key) ? $arr_key($fin_data) : $arr_key)}}"></td>
+                                                              <td height="46" align="right"><input type="text" <?php echo function_exists($arr_key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']['.$arr_key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key][$arr_key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key][$arr_key]) : (function_exists($arr_key) ? $arr_key($fin_data['ProfitAndLoss']) : $arr_key)}}"></td>
                                                            </tr>
                                                             @endforeach
                                                             @else
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
                                                            </tr>
                                                             @endif
                                                            @endforeach
@@ -464,7 +469,7 @@
                                                         <tbody>
                                                           @foreach($othernonoperativeincome_cols as $key => $operativeincome_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -494,7 +499,7 @@
                                                         <tbody>
                                                           @foreach($othernonoperatingexp_cols as $key => $operativeExpenses_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -522,7 +527,7 @@
                                                         <tbody>
                                                           @foreach($extraordinaryitemadjustments_cols as $key => $extraadjusted_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -550,7 +555,7 @@
                                                         <tbody>
                                                           @foreach($equityDividendPaid_cols as $key => $equityDividend_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -596,7 +601,7 @@
                                                         <tbody>
                                                           @foreach($currentLiabilities_cols as $key => $currentLiabilities_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Liabilities']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -624,7 +629,7 @@
                                                         <tbody>
                                                           @foreach($termLiabilities_cols as $key => $termLiabilities_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Liabilities']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -652,7 +657,7 @@
                                                         <tbody>
                                                           @foreach($networthLiabilities_cols as $key => $networthLiabilities_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Liabilities']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -680,7 +685,7 @@
                                                         <tbody>
                                                           @foreach($reserveLiabilities_cols as $key => $reserveLiabilities_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Liabilities']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -708,7 +713,7 @@
                                                         <tbody>
                                                           @foreach($contingentLiabilities_cols as $key => $contingentLiabilities_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Liabilities]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Liabilities'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Liabilities'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Liabilities']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -739,7 +744,7 @@
                                                         <tbody>
                                                           @foreach($assetsCurrent_cols as $key => $assetsCurrent_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -767,7 +772,7 @@
                                                         <tbody>
                                                           @foreach($aasetsInvestments_cols as $key => $aasetsInvestments_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -795,7 +800,7 @@
                                                         <tbody>
                                                           @foreach($aasetsFixed_cols as $key => $aasetsFixed_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -823,7 +828,7 @@
                                                         <tbody>
                                                           @foreach($otherNonCurrentAssets as $key => $otherNonCurrentAsset)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -851,7 +856,35 @@
                                                         <tbody>
                                                           @foreach($inTangibleAssets_cols as $key => $inTangibleAssets_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets']) : $key)}}"></td>
+                                                           </tr>
+      
+                                                           @endforeach
+                                                        </tbody>
+                                                     </table>
+                                                  </td>
+                                                  @endforeach
+                                             </tr>
+                                             <tr>
+                                              <td colspan="4" bgcolor="#e6e4e4"><b class="bold">Build Up of Current Assets</b></td>
+                                            </tr>
+                                             <tr>
+                                                <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                   <table class="table-border-none" width="100%">
+                                                      @foreach($buildUpofCurrentAssets_cols as $col_key => $buildUpofCurrentAssets_col)
+                                                      <tr>
+                                                         <td height="46">{{$buildUpofCurrentAssets_col}}</td>
+                                                      </tr>
+                                                      @endforeach
+                                                   </table>
+                                                </td>
+                                                @foreach($finance_data as $year => $fin_data)
+                                                  <td style="vertical-align:top; padding:0px !important; border-right:none;">
+                                                     <table class="table-border-none" width="100%">
+                                                        <tbody>
+                                                          @foreach($buildUpofCurrentAssets_cols as $key => $buildUpofCurrentAssets_col)
+                                                            <tr>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach

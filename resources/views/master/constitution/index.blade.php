@@ -39,10 +39,10 @@
                         <table id="ConstiList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>Consti ID</th>
-                                    <th>Consti Name</th>
-                                    <th>Create Date</th>
-                                    <th>Status</th>
+                                    <th style="width: 10%">ID No.</th>
+                                    <th style="width: 50%">Constitution Name</th>
+                                    <th style="width: 20%">Created at</th>
+                                    <th style="width: 20%">Status</th>
                                 </tr>
                             </thead>
                             <tbody>

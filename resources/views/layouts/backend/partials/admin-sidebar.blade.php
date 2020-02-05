@@ -6,9 +6,9 @@
             <span class="nav-link">Main</span>
         </li> -->    
     <li class="nav-item active">
-            <a class="nav-link"  href="#">
+            <a class="nav-link"  href="{{ route('backend_dashboard') }}">
                 <i class="fa fa fa-home"></i>
-                <span class="menu-title">Home</span>
+                <span class="menu-title">Dashboard</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
 
@@ -282,13 +282,13 @@
                     <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                  </li>
                  
-          
+          <!-- 
                  <li class="nav-item">
                     <a class="nav-link" href="#">Manage State</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Risk Category </a>
-                 </li>
+                 </li> -->
                  @can('get_segment_list')
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_segment_list') }}">Business Segment</a>
@@ -302,18 +302,18 @@
                     <a class="nav-link" href="{{ route('get_constitutions_list') }}">Business Constitution</a>
                  </li>
                  @endcan
-                 <li class="nav-item">
+                <!--  <li class="nav-item">
                     <a class="nav-link" href="#">Bank Master</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Industry Master</a>
-                 </li>
+                 </li> -->
                  @can('get_gst_list')
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_gst_list') }}">Manage GST</a>
                  </li>
                  @endcan
-                 <li class="nav-item">
+                 <!-- <li class="nav-item">
                     <a class="nav-link" href="#">FI agency Master</a>
                  </li>
                  <li class="nav-item">
@@ -327,7 +327,7 @@
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Base Rate Master</a>
-                 </li>
+                 </li> -->
               </ul>
            </div>
         </li>

@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use DB;
+use Storage;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class FinanceModel extends BaseModel
@@ -203,6 +204,14 @@ class FinanceModel extends BaseModel
         return ($result ?? null);
     }
 
+    public static function getLoanByAPP($app_id){
+        $result = self::select('*')
+                ->from('app_product')
+                ->where('app_id', $app_id)
+                ->first();
+        return ($result ?? null);
+    }
+
     public static function getBankData(){
         $result = self::select('*')
                 ->from('mst_bank')
@@ -229,6 +238,58 @@ class FinanceModel extends BaseModel
     }
 
     public static function insertPerfios($data, $table = 'biz_perfios'){
+      $inserted_id = DB::table($table)->insertGetId($data);
+      return $inserted_id;
+    }
+
+
+     /**
+     * Email Logger
+     * 
+     * @param Array/Mixed $attributes
+     */
+    public static function logEmail($emailData) {
+     $loggerData = [
+            'mail_from' => $emailData['email_from'],
+            'mail_type' => $emailData['email_type'] ?? __FUNCTION__,
+            'subject' => $emailData['subject'],
+            'body' => base64_encode($emailData['body']),
+            'name' => $emailData['name'] ?? NULL,
+            'fileid' => $emailData['fileid'] ?? NULL,
+            'sent_by' => \Auth::user()->user_id,
+        ];
+
+        if (!empty($emailData['email_cc'])) {
+            $emailData['email_cc'] = is_string($emailData['email_cc']) ? explode(',', $emailData['email_cc']) : $emailData['email_cc'];
+            $loggerData['mail_cc'] = implode('|', $emailData['email_cc']);
+        }
+        if (!empty($emailData['email_bcc'])) {
+            $emailData['email_bcc'] = is_string($emailData['email_bcc']) ? explode(',', $emailData['email_bcc']) : $emailData['email_bcc'];
+            $loggerData['mail_bcc'] = implode('|', $emailData['email_bcc']);
+        }
+        if (!empty($emailData['email_to'])) {
+            $emailData['email_to'] = is_string($emailData['email_to']) ? explode(',', $emailData['email_to']) : $emailData['email_to'];
+            $loggerData['mail_to'] = implode('|', $emailData['email_to']);
+        }
+        if (!empty($emailData['attachment'])) {
+          $attachment = $emailData['attachment'];
+          $filename = $emailData['att_name'] ?? 'attachment.pdf';
+          $fileparts = pathinfo($filename);
+          $filename = $fileparts['filename'];
+          $ext = $fileparts['extension'];
+          if(!Storage::exists('public/user/docs/attachments')) {
+                Storage::makeDirectory('public/user/docs/attachments', 0777, true);
+          }
+          $saveFileName = _uuid_rand(40) . ".$ext";
+          $myfile = fopen(storage_path('app/public/user/docs/attachments/'.$saveFileName), "w");
+          \File::put(storage_path('app/public/user/docs/attachments/'.$saveFileName), $attachment);
+          $loggerData['file_path'] = 'user/docs/attachments/'.$saveFileName;
+        }
+        return SELF::dataLogger($loggerData, 'email_logger');
+    }
+
+
+    public static function dataLogger($data, $table = 'email_logger'){
       $inserted_id = DB::table($table)->insertGetId($data);
       return $inserted_id;
     }

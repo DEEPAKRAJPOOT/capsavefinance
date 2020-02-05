@@ -11,6 +11,8 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\UserAppDoc;
+use App\Inv\Repositories\Models\FinanceModel;
 
 class ReviewerSummary extends Mailable
 {
@@ -33,6 +35,7 @@ class ReviewerSummary extends Mailable
      */
     public function build(Request $request)
     {
+        $this->func_name = __FUNCTION__;
         $offerPTPQ = '';
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
@@ -47,20 +50,44 @@ class ReviewerSummary extends Mailable
             'reviewerSummaryData'=> $reviewerSummaryData,
             'offerPTPQ' => $offerPTPQ
         ]);
+        $loggerData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => config('common.review_summ_mails'),
+                'email_type' => $this->func_name,
+                'name' => NULL,
+                'subject' => 'Reviewer Summary Detail',
+                'body' => $email,
+        ];
 
         $email->subject('Reviewer Summary Detail');
 
         if($fileArray) {
             foreach($fileArray as $key=>$val) {
                 if(file_exists(storage_path('app/public/'.$val['file_path']))) {
+
                     $email->attach(storage_path('app/public/'.$val['file_path']),
                     [
                         'as' => $val['file_name']
                     ]);
+                    $loggerData['file_path'][] = 'app/public/'.$val['file_path'];
                 }
             }
         }
 
+        //Cam report files
+        $camFile = UserAppDoc::getLatestDoc($appId, config('common.PRODUCT.LEASE_LOAN'), '2');
+        if($camFile) {
+            if(file_exists(storage_path('app/public/'.$camFile['file_path']))) {
+                $email->attach(storage_path('app/public/'.$camFile['file_path']),
+                [
+                    'as' => $camFile['file_name']
+                ]);
+                $loggerData['file_path'][] = 'app/public/'.$camFile['file_path'];
+            }
+        }
+        $filepath = implode('||', $loggerData['file_path']);
+        $loggerData['file_path'] = $filepath;
+        //FinanceModel::logEmail($loggerData);
         return $email;
     }
 }

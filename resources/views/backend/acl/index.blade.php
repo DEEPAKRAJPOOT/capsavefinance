@@ -37,7 +37,7 @@
             </div>-->
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
-                    <a  data-toggle="modal" data-target="#addRoleFrm" data-url ="{{route('add_role')}}" data-height="420px" data-width="100%" data-placement="top" >
+                    <a  data-toggle="modal" data-target="#addRoleFrm" data-url ="{{route('add_role')}}" data-height="300px" data-width="100%" data-placement="top" >
                         <button class="btn  btn-success btn-sm" type="button">
                             <span class="btn-label">
                                 <i class="fa fa-plus"></i>
@@ -107,7 +107,7 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('addRoleFrm','Manage Role', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('addRoleFrm','Manage Role', 'modal-md')!!}
 @endsection
 
 @section('jscript')

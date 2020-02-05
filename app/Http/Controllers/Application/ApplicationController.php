@@ -57,7 +57,8 @@ class ApplicationController extends Controller
         }
         $industryList = $this->appRepo->getIndustryDropDown()->toArray();
         $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
-        
+        $segmentList = $this->appRepo->getSegmentDropDown()->toArray();
+
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
@@ -73,9 +74,10 @@ class ApplicationController extends Controller
                         ->with('app_id',$request->get('app_id'))
                         ->with('biz_id',$request->get('biz_id'))
                         ->with('industryList',$industryList)
-                        ->with('constitutionList',$constitutionList);
+                        ->with('constitutionList',$constitutionList)
+                        ->with('segmentList',$segmentList);
         }else{
-            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList']));
+            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList', 'segmentList']));
         }
     }
 

@@ -42,10 +42,6 @@ try {
             oTable.draw();
         });
 
-
-
-
-
         var disbursalList = $('#disbursalList').DataTable({
             processing: true,
             serverSide: true,
@@ -89,9 +85,6 @@ try {
             disbursalList.draw();
         });
 
-
-
-
         $('#from_date').datetimepicker({
             format: 'dd/mm/yyyy',
             //  startDate: new Date(),
@@ -102,7 +95,6 @@ try {
             //  startDate: new Date(),
             autoclose: true,
             minView: 2, });
-        
         
         
         $(document).on('click', '#reset', function () {

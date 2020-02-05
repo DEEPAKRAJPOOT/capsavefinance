@@ -4,7 +4,7 @@
 
 <!-- partial dasboard content -->
 <div class="content-wrapper">
-    <h3 class="page-title">CapSave - Frontend Dashboard</h3>
+    <h3 class="page-title">Dashboard</h3>
     <div class="row  grid-margin">
         <div class="col-12 col-lg-6">
             <div class="row">
@@ -18,22 +18,24 @@
                                     </div>
                                     <div class="suppliers-box highlight-text">
                                         <p class="card-text">Total # of Invoice</p>
-                                        <p class="statistics-number">5</p>
+                                        <p class="statistics-number"></p>
                                     </div>
+                                    <!--
                                     <div class="approved-box">
                                         <div class="invoice-right">
                                             <p class="card-text">Pending Invoice</p>
-                                            <p class="statistics-number">3</p>
+                                            <p class="statistics-number"></p>
                                         </div>
                                         <div class="invoice-left">
                                             <p class="card-text">Funded Invoice</p>
-                                            <p class="statistics-number">2</p>
+                                            <p class="statistics-number"></p>
                                         </div>
                                         <div class="invoice-right">
                                             <p class="card-text">Repaid Invoice</p>
-                                            <p class="statistics-number">0</p>
+                                            <p class="statistics-number"></p>
                                         </div>
                                     </div>
+                                    -->
                                 </div>
                             </div>
                         </div>
@@ -54,18 +56,20 @@
                                     </div>
                                     <div class="suppliers-box highlight-text">
                                         <p class="card-text">Total Amount Funded (₹)</p>
-                                        <p class="statistics-number">320,000.00</p>
+                                        <p class="statistics-number"></p>
                                     </div>
+                                    <!--
                                     <div class="approved-box">
                                         <div class="fundAmtinvoice-right">
                                             <p class="card-text">Total Repaid Amount (₹)</p>
-                                            <p class="statistics-number">60,000.00</p>
+                                            <p class="statistics-number"></p>
                                         </div>
                                         <div class="fundAmtinvoice-left">
                                             <p class="card-text">Total Remaining Amount (₹)</p>
-                                            <p class="statistics-number">260,000.00</p>
+                                            <p class="statistics-number"></p>
                                         </div>
                                     </div>
+                                    -->
                                 </div>
                             </div>
                         </div>

@@ -20,7 +20,7 @@
             @endforeach
             <div class="form-heading pb-3 d-flex pr-0">
                 <h2>Document
-                    <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX )</small>
+                    <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX,XLS,XLSX )</small>
                 </h2>
             </div>
 

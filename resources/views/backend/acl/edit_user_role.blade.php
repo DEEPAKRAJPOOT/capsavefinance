@@ -16,7 +16,7 @@
     )
     !!}
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod">First Name
                     <span class="mandatory">*</span>
@@ -24,30 +24,30 @@
                 <input type="text" name="f_name" id="f_name" value="{{$userData->f_name}}" class="form-control" tabindex="1" placeholder="First Name" required="">
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtAnchorName">Last Name
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="l_name" id="l_name" value="{{$userData->l_name}}" class="form-control" tabindex="3" placeholder="Last Name" required="">
+                <input type="text" name="l_name" id="l_name" value="{{$userData->l_name}}" class="form-control" tabindex="2" placeholder="Last Name" required="">
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod">Mobile
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="mobile_no" maxlength="10" id="mobile_no" value="{{$userData->mobile_no}}" class="form-control" tabindex="1" placeholder="Mobile no" required="">
+                <input type="text" name="mobile_no" maxlength="10" id="mobile_no" value="{{$userData->mobile_no}}" class="form-control" tabindex="3" placeholder="Mobile no" required="">
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtAnchorName">E-mail
                     <span class="mandatory">*</span>
                 </label>
-                <input type="email" name="email" id="email" value="{{$userData->email}}" class="form-control" tabindex="3" placeholder="Enter E-mail" required="">
+                <input type="email" name="email" id="email" value="{{$userData->email}}" class="form-control" tabindex="4" placeholder="Enter E-mail" required="">
             </div>
         </div>
     </div>
@@ -77,7 +77,7 @@
         </div>	-->
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Is Active
                     <span class="mandatory">*</span>
@@ -87,11 +87,11 @@
                 [''=>'Please select','0'=> 'In Active','1'=>'Active'],
                 $userData->is_active,
                 array('id' => 'is_active',
-                'class'=>'form-control'))
+                'class'=>'form-control', 'tabindex'=>'5'))
                 !!}
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Role
                     <span class="mandatory">*</span>
@@ -101,13 +101,13 @@
                 [''=>'Select Role']+$rolesList,
                 $roleData->role_id,
                 array('id' => 'role',
-                'class'=>'form-control'))
+                'class'=>'form-control', 'tabindex'=>'6'))
                 !!}
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Reporting Manager                    
                 </label>
@@ -116,7 +116,7 @@
                 [''=>'Select Reporting Manager']+$parentUserData,
                 $userData->parent_id,
                 array('id' => 'parent_user_id',
-                'class'=>'form-control'))
+                'class'=>'form-control', 'tabindex'=>'7'))
                 !!}
             </div>
         </div>
@@ -147,7 +147,7 @@
         </div>
         -->
         
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod"> State
                     <span class="mandatory">*</span>
@@ -158,7 +158,8 @@
                     $userData->state_id,
                     [
                     'class' => 'form-control',                
-                    'id' => 'state_id'
+                    'id' => 'state_id',
+                     'tabindex'=>'8'
                     ])
                 !!}                        
             </div>
@@ -166,7 +167,7 @@
     </div>
     
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod"> City
                     <span class="mandatory">*</span>
@@ -177,7 +178,8 @@
                     $userData->city_id,
                     [
                     'class' => 'form-control',                
-                    'id' => 'city_id'
+                    'id' => 'city_id', 
+                    'tabindex'=>'9'
                     ])
                 !!}                        
             </div>
