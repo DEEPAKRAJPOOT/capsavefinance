@@ -88,7 +88,7 @@ function fillEntity(gstinId){
 			    	getCIN(res.result.lgnm);
 			    	fillRegisteredAddress(res.result.pradr.adr);
 			    }else{
-			    	alert('Something went wrong, Try again later');
+			    	alert('No Entity associated with the entered GST.');
 			    }
 			    $('.isloader').hide();
 			}
@@ -111,7 +111,7 @@ function getCIN(entityName){
 			}else if(res['status-code'] == 101){
 		    	$('input[name=biz_cin]').val(res.result[0].cin);
 		    }else{
-		    	alert('Something went wrong, Try again later');
+		    	console.error('CIN number not fetched successfully');
 		    }
 		}
 	});
