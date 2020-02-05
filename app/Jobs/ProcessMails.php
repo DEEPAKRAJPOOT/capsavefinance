@@ -38,7 +38,6 @@ class ProcessMails implements ShouldQueue
         try {
             $assignmentData = $this->assignmentData;    
             $event = '';
-            $from_user = '';
             $to_users = [];
             $to_all = false;
             
@@ -56,36 +55,36 @@ class ProcessMails implements ShouldQueue
                         }else{
                             $event = "APPLICATION_MOVE_NEXT_USER";
                         }
-                        break;
+                    break;
                     case '3': //Back
                         $event = "APPLICATION_MOVE_BACK";
                         
                     break;
                 }
 
-                $from_users = $userRepo->getfullUserDetail($assignmentData->from_id);
+                $from_user = $userRepo->getfullUserDetail($assignmentData->from_id);
                 $application = $appRepo->getAppDataByAppId($assignmentData->app_id);
-
-                $emailData['sender_user_name'] = $from_users->f_name .' '. $from_users->m_name .' '. $from_users->l_name ;
-                $emailData['sender_role_name'] = '';//$from_users->roles[0]->name;
-                $emailData['lead_id'] = (isset($application->user_id))?'000'.$application->user_id:'';
+               
+                $emailData['sender_user_name'] = $from_user->f_name .' '. $from_user->m_name .' '. $from_user->l_name ;
+                $emailData['sender_role_name'] = '';//$from_user->roles[0]->name;
+                $emailData['lead_id'] = '000'.$application->user_id;
                 $emailData['app_id'] = 'CAPS000'.$assignmentData->app_id;
                 $emailData['entity_name'] = (isset($application->business->biz_entity_name))?$application->business->biz_entity_name:'';
                 $emailData['comment'] = $assignmentData->sharing_comment;
-
+                
                 if($to_all){
                     $to_users = $userRepo->getBackendUsersByRoleId($assignmentData->role_id);
                     foreach($to_users as $user) {
                         $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                         $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
-                        $emailData['receiver_email'] = 'sudesh.kumar@prolitus.com';//$user->email;
+                        $emailData['receiver_email'] = $user->email;
                         \Event::dispatch($event, serialize($emailData));
                     }
                 }else{
                     $user = $userRepo->getfullUserDetail($assignmentData->to_id);
                     $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                     $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
-                    $emailData['receiver_email'] =  'sudesh.kumar@prolitus.com';//$user->email;
+                    $emailData['receiver_email'] = $user->email;
                     \Event::dispatch($event, serialize($emailData));
                 }
             }
@@ -97,6 +96,6 @@ class ProcessMails implements ShouldQueue
 
     public function failed($exception)
     {
-        dump($exception->getMessage());
+        $exception->getMessage();
     }
 }

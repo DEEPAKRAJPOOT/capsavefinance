@@ -6,6 +6,14 @@
 </style>
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
+@if(Session::has('message'))
+<div class="content-wrapper-msg">
+<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+    {{ Session::get('message') }}
+</div>
+</div>
+@endif
 <div class="content-wrapper">
     <div class="row grid-margin mt-3 mb-2">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">

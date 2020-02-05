@@ -33,7 +33,7 @@ return [
     'update_bank_account_successfully'=>'Bank Account details updated successfuly! ',
     'save_sanction_letter_successfully' => 'Sanction letter save successfuly!',
     'update_sanction_letter_successfully' => 'Sanction letter updated successfuly!',
-    'send_sanction_letter_successfully' => 'Send Sanction letter save successfuly!',
+    'send_sanction_letter_successfully' => 'Sanction letter send successfuly!',
     'userAdress_add_success' => 'Address added successfully',
     'userAdress_edit_success' => 'Address updated successfully',
 ];

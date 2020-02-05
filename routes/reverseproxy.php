@@ -1,7 +1,7 @@
 <?php
 
 if(config('app.env') == "production"){
-    $proxy_url    = 'https://admin.capsavefinance.com';
+    $proxy_url    = 'https://'.request()->server('HTTP_HOST');
     $proxy_schema = 'https';
 
     // dd(config('app.env'));
