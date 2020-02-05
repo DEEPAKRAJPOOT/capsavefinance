@@ -6,9 +6,9 @@
             <span class="nav-link">Main</span>
         </li> -->  
         <li class="nav-item active">
-            <a class="nav-link"  href="#">
+            <a class="nav-link"  href="{{ route('front_dashboard') }}">
                 <i class="fa fa fa-home"></i>
-                <span class="menu-title">Home</span>
+                <span class="menu-title">Dashboard</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
       </li>             
