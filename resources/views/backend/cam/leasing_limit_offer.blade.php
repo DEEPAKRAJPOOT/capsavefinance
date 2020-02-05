@@ -115,19 +115,19 @@
                         @if($loop->first)
                             <label for="txtPassword"><b>From Period</b></label>
                         @endif
-                        <input type="text" name="ptpq_from[]" class="form-control" value="{{$ptpq->ptpq_from}}" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        <input type="text" name="ptpq_from[]" class="form-control" value="{{(int)$ptpq->ptpq_from}}" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-3">
                         @if($loop->first)
                             <label for="txtPassword"><b>To Period</b></label>
                         @endif
-                        <input type="text" name="ptpq_to[]" class="form-control" value="{{$ptpq->ptpq_to}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        <input type="text" name="ptpq_to[]" class="form-control" value="{{(int)$ptpq->ptpq_to}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-4">
                         @if($loop->first)
                             <label for="txtPassword"><b>Rate</b></label>
                         @endif
-                        <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="5">
+                        <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="6">
                     </div>
                     <div class="col-md-2 center">
                      @if($loop->first)
@@ -142,11 +142,11 @@
                 <div class="row">
                     <div class="col-md-3">
                     <label for="txtPassword"><b>From Period</b></label>
-                        <input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        <input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-3">
                     <label for="txtPassword"><b>To Period</b></label>
-                        <input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                        <input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-4">
                     <label for="txtPassword"><b>Rate</b></label>
@@ -178,20 +178,22 @@
         <div class="col-md-6">
           <div class="form-group">
             <label for="txtPassword"><b>Processing Fee (%)</b></label>
-            <input type="text" name="processing_fee" class="form-control number_format" value="{{isset($offerData->processing_fee)? number_format($offerData->processing_fee): ''}}" placeholder="Processing Fee" maxlength="6">
+            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>
     
         <div class="col-md-12">
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12"><b>Additional Security</b></label> 
-            <div class="col-md-12">
-                <div id="check_block">
+            <div id="check_block" style="width: 100%;">
+                <div class="col-md-6" style="display: inline;">
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="1" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '1') !== false)? 'checked': ''): '')}}> BG</label>
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '2') !== false)? 'checked': ''): '')}}> FD</label>
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '3') !== false)? 'checked': ''): '')}}> MF</label>
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="4" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'checked': ''): '')}}> Others</label>
-                    <input type="text" name="comment" class="col-md-6 form-control" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'inline': 'none'): 'none')}}" value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Other Security" maxlength="200">
+                </div>
+                <div class="col-md-6" style="float: right;">
+                    <input type="text" name="comment" class="form-control" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'inline': 'none'): 'none')}}" value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Other Security" maxlength="200">
                 </div>
             </div>
           </div>
@@ -227,9 +229,9 @@
     unsetError('select[name=rental_frequency]');
     unsetError('select[name=rental_frequency_type]');
     unsetError('select[name=security_deposit_of]');
-    //unsetError('input[name=ptpq_from]');
-    //unsetError('input[name=ptpq_to]');
-    //unsetError('input[name=ptpq_rate]');
+    unsetError('input[name*=ptpq_from]');
+    unsetError('input[name*=ptpq_to]');
+    unsetError('input[name*=ptpq_rate]');
     unsetError('input[name=ruby_sheet_xirr]');
     unsetError('input[name=cash_flow_xirr]');
     unsetError('input[name=processing_fee]');
@@ -281,7 +283,7 @@
         setError('input[name=security_deposit]', 'Please fill security deposit');
         flag = false;
     }else if(security_deposit_type == 2 && parseFloat(security_deposit) > 100){
-        setError('input[name=security_deposit]', 'Please fill correct security deposit percent');
+        setError('input[name=security_deposit]', 'Security deposit can not be greater than 100 percent');
         flag = false;
     }else if((security_deposit_type == 1) && (parseInt(security_deposit) != security_deposit)){
         setError('input[name=security_deposit]', 'Please fill correct security deposit amount');
@@ -302,27 +304,59 @@
         setError('select[name=rental_frequency_type]', 'Please select frequency type');
         flag = false;
     }
+    let data = [];
 
-    /*if(ptpq_from == '' || isNaN(ptpq_from)){
-        setError('input[name=ptpq_from]', 'Please fill from PTPQ');
-        flag = false;
-    }*/
+    if(tenor != '' && rental_frequency != ''){
+        $('input[name*=ptpq_from]').each(function(i,val){
+            let ttlcount = $('input[name*=ptpq_from]').length;
+            let rf = {1:12, 2:6, 3:3, 4:1};
+            let ptpq_from = $('input[name*=ptpq_from]').eq(i).val().trim();
+            let ptpq_to = $('input[name*=ptpq_to]').eq(i).val().trim();
+            let ptpq_rate = $('input[name*=ptpq_rate]').eq(i).val().trim();
+            let obj = {
+                'from':ptpq_from,
+                'to':ptpq_to,
+                'rate':ptpq_rate
+            };
+            data.push(obj);
 
-    /*if(ptpq_to == '' || isNaN(ptpq_to)){
-        setError('input[name=ptpq_to]', 'Please fill to PTPQ');
-        flag = false;
-    }*/
+            if(ptpq_from == '' || isNaN(ptpq_from)){
+                setError('input[name*=ptpq_from]:eq('+i+')', 'Please fill FROM PTP');
+                flag = false;
+            }else if(i == 0){
+                if(ptpq_from != 1){
+                    setError('input[name*=ptpq_from]:eq('+i+')', 'From PTP should starts from 1');
+                    flag = false;
+                }
+            }else if(ptpq_from -1 != data[i-1]['to']){
+                setError('input[name*=ptpq_from]:eq('+i+')', 'Please fill correct FROM PTP');
+                flag = false;
+            }
 
-    /*if(ptpq_rate == '' || isNaN(ptpq_rate)){
-        setError('input[name=ptpq_rate]', 'Please fill PTPQ rate');
-        flag = false;
-    }*/
+            if(ptpq_to == '' || isNaN(ptpq_to)){
+                setError('input[name*=ptpq_to]:eq('+i+')', 'Please fill TO PTP');
+                flag = false;
+            }else if((i == ttlcount-1) && (parseInt(ptpq_to) < parseInt(ptpq_from) || parseInt(ptpq_to) != Math.ceil(tenor/rf[rental_frequency])  )){
+                setError('input[name*=ptpq_to]:eq('+i+')', 'To PTP should equal to Tenor/Rental Frequncy');
+                flag = false;
+            }else if(parseInt(ptpq_to) < parseInt(ptpq_from) || parseInt(ptpq_to) > Math.ceil(tenor/rf[rental_frequency])){
+                setError('input[name*=ptpq_to]:eq('+i+')', 'To PTP should not greater than Tenor/TO PTP');
+                flag = false;
+            }
+
+            if(ptpq_rate == '' || isNaN(ptpq_rate)){
+                setError('input[name*=ptpq_rate]:eq('+i+')', 'Please fill PTP rate');
+                flag = false;
+            }
+        });
+    }
+
 
     if(ruby_sheet_xirr == '' || isNaN(ruby_sheet_xirr)){
         setError('input[name=ruby_sheet_xirr]', 'Please fill Ruby Sheet XIRR');
         flag = false;
     }else if(parseFloat(ruby_sheet_xirr) > 100){
-        setError('input[name=ruby_sheet_xirr]', 'Please fill correct Ruby Sheet XIRR');
+        setError('input[name=ruby_sheet_xirr]', 'Ruby Sheet XIRR can not be greater than 100 percent');
         flag = false;
     }
 
@@ -330,21 +364,25 @@
         setError('input[name=cash_flow_xirr]', 'Please fill Cash Flow XIRR');
         flag = false;
     }else if(parseFloat(cash_flow_xirr) > 100){
-        setError('input[name=cash_flow_xirr]', 'Please fill correct Cash Flow XIRR');
+        setError('input[name=cash_flow_xirr]', 'Cash Flow XIRR can not be greater than 100 percent');
         flag = false;
     }
 
-    if(processing_fee == ''){
+    if(processing_fee == '' || isNaN(processing_fee)){
         setError('input[name=processing_fee]', 'Please fill processing fee');
         flag = false;
+    }else if(parseFloat(processing_fee) > 100){
+        setError('input[name=processing_fee]', 'Processing fee can not be greater than 100 percent');
+        flag = false;
     }
 
-    if(addl_security == ''){
+    /*if(addl_security == ''){
         setError('#check_block', 'Please check atleast one security');
         flag = false;
-    }else if($('#other_sec').is(':checked')){
+    }*/
+    if($('#other_sec').is(':checked')){
         if(comment == ''){
-            setError('#check_block', 'Please fill other security');
+            setError('input[name=comment]', 'Please fill other security');
             flag = false;
         }else{
             // TAKE REST
@@ -361,6 +399,7 @@
 
   $(document).ready(function(){
     $('#other_sec').on('change', function(){
+        unsetError('input[name=comment]');
         if($('#other_sec').is(':checked')){
             $('input[name=comment]').css('display', 'inline');
         }else{
@@ -387,13 +426,13 @@
   $(document).on('click', '.add-ptpq-block', function(){
     let ptpq_block = '<div class="row mt10">'+
             '<div class="col-md-3">'+
-                '<input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="5">'+
+                '<input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\\d]/,\'\')">'+
             '</div>'+
             '<div class="col-md-3">'+
-                '<input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="5">'+
+                '<input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\\d]/,\'\')">'+
             '</div>'+
             '<div class="col-md-4">'+
-                '<input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="PTPQ Rate" maxlength="5">'+
+                '<input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="PTPQ Rate" maxlength="6">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+

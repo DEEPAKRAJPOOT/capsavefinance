@@ -101,14 +101,457 @@ function getGrowth($curr_year, $prev_year) {
 	$curr_year_data = getTotalFinanceData($curr_year);
 	$prev_year_data = getTotalFinanceData($prev_year);
 	$netSalesGrowth = (($curr_year_data['TotalOperatingIncome'] - $prev_year_data['TotalOperatingIncome']) /$prev_year_data['TotalOperatingIncome'])*100;
+	$netIncomeGrowth = (($curr_year_data['TotalOperatingIncome'] - $prev_year_data['TotalOperatingIncome']) /$prev_year_data['TotalOperatingIncome'])*100;
 	$netProfitGrowth = (($curr_year_data['NetProfit'] - $prev_year_data['NetProfit']) /$prev_year_data['NetProfit'])*100;
 	$tangibleNetWorthGrowth = (($curr_year_data['TangibleNetWorth'] - $prev_year_data['TangibleNetWorth']) /$prev_year_data['TangibleNetWorth'])*100;
 	return array(
 		'netSalesGrowth' => $netSalesGrowth,
+		'netIncomeGrowth' => $netIncomeGrowth,
 		'netProfitGrowth' => $netProfitGrowth,
 		'tangibleNetWorthGrowth' => $tangibleNetWorthGrowth,
 	);
 }
+
+function arrayValuesToInt(&$array){
+  if(is_array($array)){
+    foreach($array as &$arrayPiece){
+      arrayValuesToInt($arrayPiece);
+    }
+  }else{
+    $array = !is_numeric($array) ? floatval($array) : $array;
+  }
+  return $array;
+}
+
+#================================================================================================#
+function CalculateGrossSale($ProfitAndLoss, $growth = array()) {
+	return ($ProfitAndLoss['GrossDomesticSales'] + $ProfitAndLoss['ExportSales']);
+}
+function CalculateNetSales($ProfitAndLoss, $growth = array()) {	
+	return (CalculateGrossSale($ProfitAndLoss) - $ProfitAndLoss['LessExciseDuty']);
+}
+function CalculateIncreaseInNetSales($ProfitAndLoss, $growth = array()) {
+	return sprintf('%.2f', $growth['netSalesGrowth']);
+}
+function CalculateTotalOperatingIncome($ProfitAndLoss, $growth = array()) {
+	$TotalOperatingIncome = $ProfitAndLoss['GrossDomesticSales'] + $ProfitAndLoss['ExportSales'] - $ProfitAndLoss['LessExciseDuty']+ $ProfitAndLoss['AddTradingOtherOperatingIncome']+ $ProfitAndLoss['ExportIncentives']+ $ProfitAndLoss['DutyDrawback']+ $ProfitAndLoss['Others'];
+	return sprintf('%.2f', $TotalOperatingIncome);
+}
+function CalculateIncreaseInNetIncome($ProfitAndLoss, $growth = array()){
+	return sprintf('%.2f', $growth['netIncomeGrowth']);
+	
+}
+function CalculateSubTotal($ProfitAndLoss) {
+	$RawMaterials = array_sum($ProfitAndLoss['RawMaterials']);
+	$OtherSpares = array_sum($ProfitAndLoss['OtherSpares']);
+	$subtotal = $RawMaterials +  $OtherSpares + $ProfitAndLoss['PowerFuel'] + $ProfitAndLoss['DirectLabour'] + $ProfitAndLoss['OtherManufacturingExpenses'] + $ProfitAndLoss['Depreciation'] + $ProfitAndLoss['RepairsMaintenance'] + $ProfitAndLoss['CostOfTradingGoods'];
+	return sprintf('%.2f', $subtotal);
+}
+function CalculateCostofProduction($ProfitAndLoss) {
+	$RawMaterials = array_sum($ProfitAndLoss['RawMaterials']);
+	$OtherSpares = array_sum($ProfitAndLoss['OtherSpares']);
+	$CostofProduction = $RawMaterials + $OtherSpares + $ProfitAndLoss['PowerFuel'] + $ProfitAndLoss['DirectLabour'] + $ProfitAndLoss['OtherManufacturingExpenses'] + $ProfitAndLoss['Depreciation'] + $ProfitAndLoss['RepairsMaintenance'] + $ProfitAndLoss['CostOfTradingGoods'] + $ProfitAndLoss['AddOpeningStockInProcess'] - $ProfitAndLoss['DeductClosingStockInProcess'];
+	return sprintf('%.2f', $CostofProduction);
+}
+function CalculateCOPSofGrossIncome($ProfitAndLoss) {
+	$COPSofGrossIncome =  CalculateCostofProduction($ProfitAndLoss)/ CalculateGrossSale($ProfitAndLoss);
+	return sprintf('%.2f', $COPSofGrossIncome);
+}
+function CalculateCostofSales($ProfitAndLoss) {
+	$CostofSales = CalculateCostofProduction($ProfitAndLoss) + $ProfitAndLoss['AddOpeningStockOfFinishedGoods'] - 
+	$ProfitAndLoss['DeductClosingStockOfFinishedGoods'];
+	return sprintf('%.2f', $CostofSales);
+}
+function CalculateCostofSalesasPerGrossIncome($ProfitAndLoss) {
+	$CostofSalesasPerGrossIncome = CalculateCostofSales($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss);
+	return sprintf('%.2f', $CostofSalesasPerGrossIncome);
+
+}
+function CalculateCostofSalesPlusSGA($ProfitAndLoss) {
+	$CostofSalesPlusSGA = CalculateCostofSales($ProfitAndLoss) + $ProfitAndLoss['SellingGeneralAdmExpenses'];
+	return sprintf('%.2f', $CostofSalesPlusSGA);
+}
+function CalculateProfitBeforeInterestTax($ProfitAndLoss) {
+	 $ProfitBeforeInterestTax = CalculateTotalOperatingIncome($ProfitAndLoss) - CalculateCostofSalesPlusSGA($ProfitAndLoss);
+	 return sprintf('%.2f', $ProfitBeforeInterestTax);
+}
+function CalculatePBITasPerGrossSale($ProfitAndLoss) {
+	$PBITasPerGrossSale = CalculateProfitBeforeInterestTax($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss);
+	return sprintf('%.2f', $PBITasPerGrossSale);
+}
+function CalculateInterestOtherFinanceCharge($ProfitAndLoss) {
+	$InterestPaymentToBanks = array_sum($ProfitAndLoss['InterestPaymentToBanks']);
+	$InterestPaymentToFIs = array_sum($ProfitAndLoss['InterestPaymentToFIs']);
+	$InterestOtherFinanceCharge = $InterestPaymentToBanks + $InterestPaymentToFIs + $ProfitAndLoss['BankCharges'];
+	return sprintf('%.2f', $InterestOtherFinanceCharge);
+}
+function CalculateInttFinChargeasPerGrossSale($ProfitAndLoss) {
+	$InttFinChargeasPerGrossSale = CalculateInterestOtherFinanceCharge($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss);
+	return sprintf('%.2f', $InttFinChargeasPerGrossSale);
+}
+function CalculateOperatingProfitBeforeTax($ProfitAndLoss) {
+	$OperatingProfitBeforeTax = CalculateProfitBeforeInterestTax($ProfitAndLoss)-CalculateInterestOtherFinanceCharge($ProfitAndLoss);
+	return sprintf('%.2f', $OperatingProfitBeforeTax);
+}
+function CalculateOPBTasPerGrossIncome($ProfitAndLoss) {
+	$OPBTasPerGrossIncome = CalculateOperatingProfitBeforeTax($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss);
+	return sprintf('%.2f', $OPBTasPerGrossIncome);
+}
+function CalculateTotalNonOperatingIncome($ProfitAndLoss) {
+	$TotalNonOperatingIncome = $ProfitAndLoss['InterestOnDepositsDividendReceived']+$ProfitAndLoss['ForexGains']+$ProfitAndLoss['NonOperatingIncomeFromSubsidiaries']+$ProfitAndLoss['TaxRefund']+$ProfitAndLoss['MiscIncome']+$ProfitAndLoss['ProfitOnSaleOfAssetsInvestments']+$ProfitAndLoss['OtherIncome']+$ProfitAndLoss['ProvisionsExpensesWrittenBack'];
+	return sprintf('%.2f', $TotalNonOperatingIncome);
+}
+function CalculateTotalNonOperatingExpenses($ProfitAndLoss) {
+	$TotalNonOperatingExpenses = $ProfitAndLoss['LossOnSaleOfInvestments'] + $ProfitAndLoss['LossOnSaleOfFa'] + $ProfitAndLoss['DerivativeLossesBooked'] + $ProfitAndLoss['NetLossOnForeignCurrencyTranslationAndTransactionsLossDueToFire'] + $ProfitAndLoss['PreliExpOneTimeExpensesWrittenOff'] + $ProfitAndLoss['MiscExpWrittenOff'] + $ProfitAndLoss['ProvForDoubDebtsDimInTheValOfInv'] + $ProfitAndLoss['WealthTax'];
+	return sprintf('%.2f', $TotalNonOperatingExpenses);
+}
+function CalculateNetofNonOperatingIncomeExpenses($ProfitAndLoss) {
+	$NetofNonOperatingIncomeExpenses = CalculateTotalNonOperatingExpenses($ProfitAndLoss)-CalculateTotalNonOperatingIncome($ProfitAndLoss);
+	return sprintf('%.2f', $NetofNonOperatingIncomeExpenses);
+}
+function CalculateProfitBeforeInterestDepreciationTax($ProfitAndLoss) {
+	$ProfitBeforeInterestDepreciationTax = $ProfitAndLoss['Depreciation'] + CalculateInterestOtherFinanceCharge($ProfitAndLoss) + CalculateOperatingProfitBeforeTax($ProfitAndLoss) + CalculateNetofNonOperatingIncomeExpenses($ProfitAndLoss);
+	return sprintf('%.2f', $ProfitBeforeInterestDepreciationTax);
+}
+function CalculateProfitBeforeTaxLoss($ProfitAndLoss) {
+	$ProfitBeforeTaxLoss = CalculateOperatingProfitBeforeTax($ProfitAndLoss)+ CalculateNetofNonOperatingIncomeExpenses($ProfitAndLoss);
+	return sprintf('%.2f', $ProfitBeforeTaxLoss);
+}
+function CalculateDefferedTaxes($ProfitAndLoss) {
+	return "Need To Calculate";
+}
+function CalculateProvisionForTaxesTotal($ProfitAndLoss) {
+	$ProvisionForTaxesTotal = $ProfitAndLoss['ProvisionForTaxesCurrentPeriod'] + $ProfitAndLoss['ProvisionForTaxesDefferedTaxes'];
+	return sprintf('%.2f', $ProvisionForTaxesTotal);
+}
+function CalculateNetProfitLoss($ProfitAndLoss) {
+	$NetProfitLoss = CalculateProfitBeforeTaxLoss($ProfitAndLoss)- $ProfitAndLoss['TaxPaid'] - $ProfitAndLoss['ProvisionForTaxesCurrentPeriod'] + $ProfitAndLoss['ProvisionForTaxesDefferedTaxes'];
+	return sprintf('%.2f', $NetProfitLoss);
+}
+function CalculatePATasPerGrossIncome($ProfitAndLoss) {
+	$PATasPerGrossIncome = CalculateNetProfitLoss($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss);
+	return sprintf('%.2f', $PATasPerGrossIncome);
+}
+function CalculateTotalExtraordinaryItems($ProfitAndLoss) {
+	$TotalExtraordinaryItems = $ProfitAndLoss['ExtraordinaryIncomeAdjustments']-$ProfitAndLoss['ExtraordinaryExpensesAdjustments'];
+	return sprintf('%.2f', $TotalExtraordinaryItems);
+}
+function CalculateAdjustedPAT($ProfitAndLoss) {
+	$AdjustedPAT = CalculateNetProfitLoss($ProfitAndLoss) + $ProfitAndLoss['ExtraordinaryIncomeAdjustments']-$ProfitAndLoss['ExtraordinaryExpensesAdjustments'];
+	return sprintf('%.2f', $AdjustedPAT);
+}
+function CalculateRetainedProfit($ProfitAndLoss) {
+	$RetainedProfit = CalculateAdjustedPAT($ProfitAndLoss)- $ProfitAndLoss['EquityDividendPaidAmount'] - $ProfitAndLoss['DividendTax'] - $ProfitAndLoss['PartnersWithdrawal'] - $ProfitAndLoss['DividendPreference'];
+	return sprintf('%.2f', $RetainedProfit);
+}
+
+#====================================================================================#
+function CalculateCurrentLiabilitiesSubTotal($Liabilities){
+	$SubTotal = $Liabilities['FromApplicantBankCcWcdl'] + $Liabilities['FromOtherBanks'] + $Liabilities['OfIAndIiInWhichBillPurchasedDisc'];
+	return sprintf('%.2f', $SubTotal);
+}
+function CalculateTotalRepaymentDueWithin1Year($Liabilities){
+	$TotalRepaymentDueWithin1Year = $Liabilities['InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year'] + $Liabilities['DepositsDueForRepaymentDueWithin1Year'] + $Liabilities['PreferenceSharesRedeemableWithin1Year'];
+	return sprintf('%.2f', $TotalRepaymentDueWithin1Year);
+}
+function CalculateTotalTermLiabilities($Liabilities){
+	$TotalTermLiabilities = $Liabilities['Wctl'] + $Liabilities['PrefSharesPortionRedeemableAfter1Yr'] + $Liabilities['TermLoansExcludingInstallmentsPayableWithinOneYear']+ $Liabilities['TermLoansFromFis'] + $Liabilities['Debentures'] + $Liabilities['TermDeposits'] + $Liabilities['UnsecuredLoans'] + $Liabilities['BorrowingsFromSubsidiariesAffiliatesQuasiEquity']+ $Liabilities['DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm']+ $Liabilities['OtherTermLiabilities']+ $Liabilities['DeferredTaxLiability']+ $Liabilities['OtherLoanAdvances'];
+	return sprintf('%.2f', $TotalTermLiabilities);
+}
+function CalculateTotalOutsideLiabilities($Liabilities){
+	$TotalOutsideLiabilities = $Liabilities['FromApplicantBankCcWcdl'] + $Liabilities['FromOtherBanks'] + $Liabilities['OfIAndIiInWhichBillPurchasedDisc'] + $Liabilities['SundryCreditorsTrade'] + $Liabilities['ShortTermBorrowingsFromAssociatesGroupConcerns'] + $Liabilities['ShortTermBorrowingsCommercialPaper'] + $Liabilities['ShortTermBorrowingsFromOthers'] + $Liabilities['AdvancesPaymentsFromCustomersDepositsFromDealers'] + $Liabilities['ProvisionForTaxation'] + $Liabilities['ProposedDividend'] + $Liabilities['OtherStatutoryLiabilitiesDueWithinOneYear'] + $Liabilities['InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year'] + $Liabilities['DepositsDueForRepaymentDueWithin1Year'] + $Liabilities['PreferenceSharesRedeemableWithin1Year'] + $Liabilities['OtherCurrentLiabilitiesProvisionsDueWithin1Year'] + $Liabilities['InterestAccButNotDue'] + $Liabilities['ProvisionForNpa'] + $Liabilities['ProvisionForLeaveEncashmentGratuity'] + $Liabilities['UnclaimedDividend'] + $Liabilities['OtherLiabilities'] + $Liabilities['DueToSubsidiaryCompaniesAffiliates'] + $Liabilities['TaxOnInterimDividendPayable'] + $Liabilities['Wctl'] + $Liabilities['PrefSharesPortionRedeemableAfter1Yr'] + $Liabilities['TermLoansExcludingInstallmentsPayableWithinOneYear'] + $Liabilities['TermLoansFromFis'] + $Liabilities['Debentures'] + $Liabilities['TermDeposits'] + $Liabilities['UnsecuredLoans'] + $Liabilities['BorrowingsFromSubsidiariesAffiliatesQuasiEquity'] + $Liabilities['DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm'] + $Liabilities['OtherTermLiabilities'] + $Liabilities['DeferredTaxLiability'] + $Liabilities['OtherLoanAdvances'];
+	return sprintf('%.2f', $TotalOutsideLiabilities);
+}
+function CalculateTotalShareCapital($Liabilities){
+	$TotalShareCapital = $Liabilities['PartnersCapitalProprietorSCapital'] + $Liabilities['ShareCapitalPaidUp'] + $Liabilities['ShareApplicationFinalizedForAllotment'];
+	return sprintf('%.2f', $TotalShareCapital);
+}
+function CalculateReserveSubTotal($Liabilities){
+	$ReserveSubTotal = ($Liabilities['StatutoryAndCapitalReserves'] + $Liabilities['GeneralReserve'] + $Liabilities['RevaluationReserve']);
+	return sprintf('%.2f', $ReserveSubTotal);
+}
+function CalculateTotalNetWorth($Liabilities){
+	$TotalNetWorth = $Liabilities['PartnersCapitalProprietorSCapital'] + $Liabilities['ShareCapitalPaidUp'] + $Liabilities['ShareApplicationFinalizedForAllotment'] + $Liabilities['StatutoryAndCapitalReserves'] + $Liabilities['GeneralReserve'] +$Liabilities['RevaluationReserve'] + $Liabilities['OtherReservesExcludingProvisions'] + $Liabilities['SurplusOrDeficitInPLAccount'] + $Liabilities['SharePremiumAC'] + $Liabilities['CapitalSubsidy'] + $Liabilities['InvestmentAllowanceUtilizationReserve'] - $Liabilities['RevaluationReserve'];
+	return sprintf('%.2f', $TotalNetWorth);
+}
+function CalculateTotalLiabilities($Liabilities){
+	$TotalLiabilities = CalculateTotalOutsideLiabilities($Liabilities) + $Liabilities['PartnersCapitalProprietorSCapital'] + $Liabilities['ShareCapitalPaidUp'] + $Liabilities['ShareApplicationFinalizedForAllotment'] + $Liabilities['StatutoryAndCapitalReserves'] + $Liabilities['GeneralReserve'] + $Liabilities['RevaluationReserve'] + 
+$Liabilities['OtherReservesExcludingProvisions'] + $Liabilities['SurplusOrDeficitInPLAccount'] + $Liabilities['SharePremiumAC'] + $Liabilities['CapitalSubsidy'] + $Liabilities['InvestmentAllowanceUtilizationReserve'] - $Liabilities['RevaluationReserve'];
+	return sprintf('%.2f', $TotalLiabilities);
+}
+function CalculateArrearsOfCumulativeDividends($Liabilities){
+	return "Need To Calculate";
+}
+function CalculateDisputedExciseCustomIncomeTaxSalesTaxLiabilities($Liabilities){
+	return "Need To Calculate";
+}
+function CalculateGratuityLiabilityNotProvidedFor($Liabilities){
+	return "Need To Calculate";
+}
+function CalculateGuaranteesIssuedRelatingToBusiness($Liabilities){
+	return "Need To Calculate";
+}
+function CalculateGuaranteesIssuedRelatingToCompanies($Liabilities){
+	return "Need To Calculate";
+}
+function CalculateLCs($Liabilities){
+	return "Need To Calculate";
+}
+function CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC($Liabilities){
+	return "Need To Calculate";
+}
+
+#====================================================================================#
+
+function CalculateAssetsReceivables($Assets){
+	return "Need To Calculate";
+}
+function CalculateAssetsInventory($Assets){
+	return "Need To Calculate";
+}
+function CalculateAssetsStockInProcess($Assets){
+	return "Need To Calculate";
+}
+function CalculateAssetsFinishedGoods($Assets){
+	return "Need To Calculate";
+}
+function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
+	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
+	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
+}
+function CalculateAssetsSubTotalInventory($Assets){
+	return "Need To Calculate";
+}
+function CalculateAssetsAdvancesToSuplierofRawMaterial($Assets){
+	return "Need To Calculate";
+}
+function CalculateAssetsAdvanceReceivableInOrKind($Assets){
+	return "Need To Calculate";
+}
+function CalculateTotalCurrentAssets($Assets){
+	return "Need To Calculate";
+}
+function CalculateAssetsGrossBlock($Assets){
+	return "Need To Calculate";
+}
+function CalculateAssetsNetBlock($Assets){
+	return "Need To Calculate";
+}
+function CalculateTotalOtherNonCurrentAssets($Assets){
+	return "Need To Calculate";
+}
+function CalculateIntangibleAssetSubtotal($Assets){
+	return "Need To Calculate";
+}
+function CalculateIntangibleAssetTotal($Assets){
+	return "Need To Calculate";
+}
+function CalculateTangibleAssetNetworth($Assets){
+	return "Need To Calculate";
+}
+function CalculateTotalLiabilitiesMinusTotalAssets($Assets){
+	return "Need To Calculate";
+}
+function CalculateMonthsConsumption0($Assets){
+	return 'Need To Calculate';
+}
+function CalculateMonthsConsumption1($Assets){
+	return 'Need To Calculate';
+}
+function CalculateMonthsConsumption2($Assets){
+	return 'Need To Calculate';
+}
+function CalculateMonthsConsumption3($Assets){
+	return 'Need To Calculate';
+}
+function CalculateStockInProcessMinusAmount($Assets){
+	return 'Need To Calculate';
+}
+function CalculateMonthsCostOfProduction($Assets){
+	return 'Need To Calculate';
+}
+function CalculateFinishedGoodsMinusAmount($Assets){
+	return 'Need To Calculate';
+}
+function CalculateMonthsCostOfSales($Assets){
+	return 'Need To Calculate';
+}
+function CalculateMonthsDomesticIncome($Assets){
+	return 'Need To Calculate';
+}
+function CalculateMonthsExportIncome($Assets){
+	return 'Need To Calculate';
+}
+
+
+
+
+
+#================================================================================================#
+
+function getBalanceSheetAssetsColumns() {
+	$fields = array(
+		'assetsCurrent_cols' => array(
+		   'CashAndBankBalances' =>  'Cash and Bank Balances',
+		),
+		'aasetsInvestments_cols' => array(
+			'GovtOtherSecurities' =>  '(i) Govt. & other securities',
+			'FixedDepositsWithBanks' =>  '(ii) Fixed deposits with banks',
+			'Others' =>  '(iii) Others',
+			'CalculateAssetsReceivables' =>  'RECEIVABLES',
+			'ReceivablesOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanks' =>  'RECEIVABLES other than deferred & exports (Incl. bills purchased & discounted by banks)',
+			'ExportReceivablesIncludingBillPurchasedAndDiscounted' =>  'Export Receivables (including bill purchased and discounted)',
+			'RetentionMoneySecurityDeposit' =>  'Retention Money / Security Deposit',
+			'CalculateAssetsInventory' =>  'INVENTORY',
+			'RawMaterialIndigenous' =>  'Raw Material - Indigenous',
+			'RawMaterialImported' =>  'Raw Material - Imported',
+			'CalculateAssetsStockInProcess' =>  'Stock in process',
+			'CalculateAssetsFinishedGoods' =>  'Finished Goods',
+			'OtherConsumableSparesIndigenous' =>  'Other Consumable spares - Indigenous',
+			'OtherConsumableSparesImported' =>  'Other Consumable spares - Imported',
+			'CalculateAssetsSubTotalOtherComsumableSpares' =>  'Sub Total: Other Consumable spares',
+			'OtherStocks' =>  'Other stocks',
+			'CalculateAssetsSubTotalInventory' =>  'Sub Total: Inventory',
+			'CalculateAssetsAdvancesToSuplierofRawMaterial' =>  'Advances to suppliers of raw material',
+			'AdvancePaymentOfTax' =>  'Advance payment of tax',
+			'OtherCurrentAssets' =>  'Other Current Assets:',
+			'InterestAccrued' =>  'Interest Accrued',
+			'CalculateAssetsAdvanceReceivableInOrKind' =>  'Advance receivable in cash or kind',
+			'SundryDeposit' =>  'Sundry Deposit',
+			'ModvatCreditReceivable' =>  'Modvat Credit Receivable',
+			'OtherCurrentAssets' =>  'Other current assets',
+			'CalculateTotalCurrentAssets' =>  'TOTAL CURRENT ASSETS',
+		),
+		'aasetsFixed_cols' => array(
+			'Land' => '(I) Land',
+			'Building' => '(ii) Building',
+			'Vehicles' => '(iii) Vehicles',
+			'PlantMachinery' => '(IV) Plant & Machinery',
+			'FurnitureFixtures' => '(v) Furniture & Fixtures',
+			'OtherFixedAssets' => '(vi) Other Fixed Assets',
+			'CapitalWip' => '(vii) Capital WIP',
+			'CalculateAssetsGrossBlock' => 'GROSS BLOCK',
+			'LessAccumulatedDepreciation' => 'Less: Accumulated Depreciation',
+			'CalculateAssetsNetBlock' => 'NET BLOCK',
+		),
+		'otherNonCurrentAssets' => array(
+			'InvestmentsInSubsidiaryCompaniesAffiliates' => '(I) Investments in Subsidiary companies/ affiliates',
+			'OtherInvestmentsInvestmentForAcquisition' => '(ii) Other Investments & Investment for acquisition',
+			'DueFromSubsidiaries' => '(iii) Due from subsidiaries',
+			'DeferredReceivablesMaturityExceeding1Year' => '(iv) Deferred receivables (maturity exceeding 1 year)',
+			'MarginMoneyKeptWithBanks' => '(v) Margin money kept with banks.',
+			'DebtorsMoreThan6Months' => '(vi)Debtors more than 6 months',
+			'AdvanceAgainstMortgageOfHouseProperty' => '(vii) Advance against mortgage of house property',
+			'DeferredRevenueExpenditure' => '(viii) Deferred Revenue Expenditure',
+			'OtherNonCurrentAssetsSurplusForFutureExpansionLoansAdvancesNonCurrentInNatureIcdSDuesFromDirectors' => '(ix) Other Non current assets (surplus for Future expansion, Loans & Advances non current in nature, ICD\'s, Dues from Directors)',
+			'CalculateTotalOtherNonCurrentAssets' => 'TOTAL OTHER NON CURRENT ASSETS',
+		),
+		'inTangibleAssets_cols' => array(
+			'AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses' => '(i) Accumulated Losses, Preliminary expenses, Miscellaneous expenditure not w/off, Other deferred revenue expenses',
+			'DeferredTaxAsset' => '(ii) Deferred Tax Asset',
+			'CalculateIntangibleAssetSubtotal' => 'Sub Total',
+			'CalculateIntangibleAssetTotal' => 'TOTAL ASSETS',
+			'CalculateTangibleAssetNetworth' => 'TANGIBLE NETWORTH',
+			'CalculateTotalLiabilitiesMinusTotalAssets' => 'Total Liabilities - Total Assets',
+		),
+		'buildUpofCurrentAssets_cols' => array(
+			'RawMaterialIndigenous' => 'Raw Material - Indigenous AMOUNT',
+			'CalculateMonthsConsumption0' => 'MONTH\'S CONSUMPTION',
+			'RawMaterialImported' => 'Raw Material - Imported AMOUNT',
+			'CalculateMonthsConsumption1' => 'MONTH\'S CONSUMPTION',
+			'OtherConsumableSparesIndigenous' => 'Consumable spares indigenous AMOUNT',
+			'CalculateMonthsConsumption2' => 'MONTH\'S CONSUMPTION',
+			'OtherConsumableSparesImported' => 'Consumable spares- Imported AMOUNT',
+			'CalculateMonthsConsumption3' => 'MONTH\'S CONSUMPTION',
+			'CalculateStockInProcessMinusAmount' => 'Stock in process - AMOUNT',
+			'CalculateMonthsCostOfProduction' => 'MONTH\'S COST OF PRODUCTION',
+			'CalculateFinishedGoodsMinusAmount' => 'Finished Goods - AMOUNT',
+			'CalculateMonthsCostOfSales' => 'MONTH\'S COST OF SALES',
+			'ReceivablesOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanks' => 'RECEIVABLES (DOMESTIC) other than deferred & exports (Incl. bills purchased & discounted by banks) AMOUNT',
+			'CalculateMonthsDomesticIncome' => 'MONTH\'S DOMESTIC Income',
+			'ExportReceivablesIncludingBillPurchasedAndDiscounted' => 'EXPORT RECV.(Incl. bills purchased & discounted by banks) AMOUNT',
+			'CalculateMonthsExportIncome' => 'MONTH\'S EXPORT Income',
+		),
+	);
+	return $fields;
+}
+
+function getBalanceSheetLiabilitiesColumns() {
+	$fields = array(
+		'currentLiabilities_cols' => array(
+			'FromApplicantBankCcWcdl' => '(i) from applicant bank (CC / WCDL)',
+			'FromOtherBanks' => '(ii) from other banks',
+			'OfIAndIiInWhichBillPurchasedDisc' => '(of (i) and (ii) in which Bill purchased & disc.)',
+			'CalculateCurrentLiabilitiesSubTotal' => 'SUB TOTAL',
+			'SundryCreditorsTrade' => 'Sundry Creditors (Trade)',
+			'ShortTermBorrowingsFromAssociatesGroupConcerns' => 'Short term borrowings from Associates & Group Concerns',
+			'ShortTermBorrowingsCommercialPaper' => 'Short Term borrowings / Commercial Paper',
+			'ShortTermBorrowingsFromOthers' => 'Short term borrowings from Others',
+			'AdvancesPaymentsFromCustomersDepositsFromDealers' => 'Advances/ payments from customers/deposits from dealers.',
+			'ProvisionForTaxation' => 'Provision for taxation',
+			'ProposedDividend' => 'Proposed dividend',
+			'OtherStatutoryLiabilitiesDueWithinOneYear' => 'Other Statutory Liabilities( Due within One Year)',
+			'InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year' => 'Installments of Term loans / Debentures / DPGs etc. (due within 1 year)',
+			'DepositsDueForRepaymentDueWithin1Year' => 'Deposits due for repayment (due within 1 year)',
+			'PreferenceSharesRedeemableWithin1Year' => 'Preference Shares redeemable (within 1 year)',
+			'CalculateTotalRepaymentDueWithin1Year' => 'TOTAL REPAYMENTS DUE WITHIN 1 YEAR',
+			'OtherCurrentLiabilitiesProvisionsDueWithin1Year' => 'Other Current liabilities & provisions (due within 1 year)',
+			'InterestAccButNotDue' => 'Interest acc but not due',
+			'ProvisionForNpa' => 'Provision for NPA',
+			'ProvisionForLeaveEncashmentGratuity' => 'Provision for leave encashment & gratuity',
+			'UnclaimedDividend' => 'Unclaimed dividend',
+			'OtherLiabilities' => 'Other Liabilities',
+			'DueToSubsidiaryCompaniesAffiliates' => 'Due to Subsidiary companies/ affiliates',
+			'TaxOnInterimDividendPayable' => 'Tax on Interim Dividend Payable',
+		),
+		'termLiabilities_cols' => array(
+			'Wctl' => 'WCTL',
+			'PrefSharesPortionRedeemableAfter1Yr' => 'Pref. Shares (portion redeemable after 1 Yr)',
+			'TermLoansExcludingInstallmentsPayableWithinOneYear' => 'Term Loans (Excluding installments payable within one year)',
+			'TermLoansFromFis' => 'Term Loans - From Fis',
+			'Debentures' => 'Debentures',
+			'TermDeposits' => 'Term deposits',
+			'UnsecuredLoans' => 'Unsecured loans',
+			'BorrowingsFromSubsidiariesAffiliatesQuasiEquity' => 'Borrowings from subsidiaries / affiliates (Quasi Equity)',
+			'DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm' => 'Deposit from Dealers (only if considered as available for long term)',
+			'OtherTermLiabilities' => 'Other term liabilities',
+			'DeferredTaxLiability' => 'Deferred Tax Liability',
+			'OtherLoanAdvances' => 'Other Loan & Advances',
+			'CalculateTotalTermLiabilities' => 'TOTAL TERM LIABILITIES',
+			'CalculateTotalOutsideLiabilities' => 'TOTAL OUTSIDE LIABILITIES (TOL)',
+		),
+		'networthLiabilities_cols' => array(
+			'PartnersCapitalProprietorSCapital' => 'Partners capital / Proprietor\'s capital',
+			'ShareCapitalPaidUp' => 'Share Capital (Paid-up)',
+			'ShareApplicationFinalizedForAllotment' => 'Share Application (finalized for allotment)',
+			'CalculateTotalShareCapital' => 'Total Share Capital',
+		),
+		'reserveLiabilities_cols' => array(
+			'StatutoryAndCapitalReserves' => 'Statutory and Capital Reserves',
+			'GeneralReserve' => 'General Reserve',
+			'RevaluationReserve' => 'Revaluation Reserve',
+			'CalculateReserveSubTotal' => 'Sub Total',
+			'OtherReservesExcludingProvisions' => 'Other Reserves ( Excluding provisions)',
+			'SurplusOrDeficitInPLAccount' => 'Surplus (+) or deficit (-) in P & L Account',
+			'SharePremiumAC' => 'Share Premium A/c',
+			'CapitalSubsidy' => 'Capital Subsidy',
+			'InvestmentAllowanceUtilizationReserve' => 'Investment Allowance Utilization Reserve',
+			'CalculateTotalNetWorth' => 'TOTAL NET WORTH',
+			'CalculateTotalLiabilities' => 'TOTAL LIABILITIES',
+		),
+		'contingentLiabilities_cols' => array(
+			'CalculateArrearsOfCumulativeDividends' =>  'Arrears of cumulative dividends',
+			'CalculateDisputedExciseCustomIncomeTaxSalesTaxLiabilities' =>  'Disputed excise / customs / Income tax / Sales tax Liabilities',
+			'CalculateGratuityLiabilityNotProvidedFor' =>  'Gratuity Liability not provided for',
+			'CalculateGuaranteesIssuedRelatingToBusiness' =>  'Guarantees issued (relating to business)',
+			'CalculateGuaranteesIssuedRelatingToCompanies' =>  'Guarantees issued (for group companies)',
+			'CalculateLCs' =>  'LCs',
+			'CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC' =>  'All other contingent liabilities -(incldg. Bills purchased - Under LC)',
+		),
+	);
+	return $fields;
+}
+
 
 function getFinancialDetailSummaryColumns() {
 	$fields = array(
@@ -153,124 +596,6 @@ function getFinancialDetailSummaryColumns() {
 		),
 	);
 	return $fields;
-}
-
-
-function CalculateGrossSale($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateNetSales($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateIncreaseInNetSales($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateTotalOperatingIncome($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateIncreaseInNetIncome($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateCostofProduction($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateCOPSofGrossIncome($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateCostofSales($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateCostofSalesasPerGrossIncome($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateCostofSalesPlusSGA($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateProfitBeforeInterestTax($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateTotalNonOperatingIncome($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateTotalNonOperatingExpenses($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateNetofNonOperatingIncomeExpenses($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateProfitBeforeInterestDepreciationTax($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateProfitBeforeTaxLoss($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateDefferedTaxes($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateProvisionForTaxesTotal($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculatePATasPerGrossIncome($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateTotalExtraordinaryItems($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateAdjustedPAT($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateRetainedProfit($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateSubTotal($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateInterestOtherFinanceCharge($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateInttFinChargeasPerGrossSale($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateOperatingProfitBeforeTax($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateOPBTasPerGrossIncome($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculatePBITasPerGrossSale($year_array)
-{
-	return "Need To Calculate";
-}
-function CalculateNetProfitLoss($year_array)
-{
-	return "Need To Calculate";
 }
 
 function getProfitandLossColumns(){

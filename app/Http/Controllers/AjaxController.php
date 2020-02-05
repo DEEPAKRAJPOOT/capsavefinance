@@ -2784,10 +2784,92 @@ if ($err) {
         $invoice_activity_data = $this->invRepo->getAllActivityInvoiceLog($this->request->inv_name);
         $invoice_activity_data = $dataProvider->getBackendInvoiceActivityList($this->request, $invoice_activity_data);
         return $invoice_activity_data;
-    } 
-    /**
-      * 
-      * @param DataProviderInterface $dataProvider
+    }
+    ///////////////////////use fro rePayment///////////////////////////////
+    function saveRepayment(Request $request)
+    {
+        $arrFileData = $request->all();
+        $uploadData = Helpers::uploadAppFile($arrFileData, $arrFileData['app_id']);
+        $userFile = $this->docRepo->saveFile($uploadData);
+        $user_id  = Auth::user()->user_id;
+        $mytime = Carbon::now();
+        $invTrnas  = ['user_id' =>  $arrFileData['user_id'],
+                        'invoice_id' => $arrFileData['invoice_id'],
+                        'repaid_amount' =>  $arrFileData['repaid_amount'],
+                        'repaid_date' => ($arrFileData['repaid_date']) ? Carbon::createFromFormat('d/m/Y', $arrFileData['repaid_date'])->format('Y-m-d') : '',
+                        'trans_type'   => 17,            
+                        'file_id' => $userFile->file_id,
+                        'created_at' => $mytime,
+                        'created_by' => $user_id ];
+           $result = $this->invRepo->saveRepayment($invTrnas);
+            if( $arrFileData['repaid_amount'] > $arrFileData['final_amount'])
+            {
+                $amount = 0;
+            }
+            else
+            {
+               $amount =  $arrFileData['final_amount'] - $arrFileData['repaid_amount'];
+            }
+        if($result)
+        {   ///////////// update repayment here////////////////////////
+            $data['invoice_id']        = $arrFileData['invoice_id'];
+            $data['repaid_amount']  = $arrFileData['repaid_amount'];
+            $result = $this->invRepo->updateRepayment($data);
+            $utr  ="";
+            $check  ="";
+            $unr  ="";
+            if($arrFileData['payment_type']==1)
+            {
+                $utr =   $arrFileData['utr_no'];  
+            }
+            else  if($arrFileData['payment_type']==2)
+            {
+               $check = $arrFileData['utr_no'];
+            }
+              else  if($arrFileData['payment_type']==3)
+            {
+               $unr =  $arrFileData['utr_no'];
+            }
+            $tran  = [  'gl_flag' => 1,
+                        'soa_flag' => 1,
+                        'user_id' =>  $arrFileData['user_id'],
+                        'trans_date' => ($arrFileData['repaid_date']) ? Carbon::createFromFormat('d/m/Y', $arrFileData['repaid_date'])->format('Y-m-d') : '',
+                        'trans_type'   => 17, 
+                        'pay_from'   => 0,
+                        'amount' =>  $arrFileData['repaid_amount'],
+                        'mode_of_pay' =>  $arrFileData['payment_type'],
+                        'comment' =>  $arrFileData['comment'],
+                        'utr_no' =>  $utr,
+                        'cheque_no' =>  $check,
+                        'unr_no'    => $unr,
+                        'created_at' =>  $mytime,
+                        'created_by' =>  $user_id];
+            
+            $res = $this->invRepo->saveRepaymentTrans($tran);
+           if($res)
+            {
+               return \Response::json(['status' => 1,'amount' =>  $amount]);
+            }
+           else 
+           {
+              return \Response::json(['status' => 0,'amount' =>0]);
+           }
+        }
+        else {
+           return \Response::json(['status' => 0,'amount' =>0]);
+        }
+    }
+    
+    /* get customer id    /**
+     */
+    public function getCustomerId(Request $request) 
+    {
+        $result  =  $this->invRepo->getCustomerId($request->user_id);
+     
+        return \Response::json(['status' => $request->user_id,'result' => $result]); 
+    }
+     
+   /* @param DataProviderInterface $dataProvider
       * @param Request $request
       * @return type
       * 
@@ -2855,10 +2937,11 @@ if ($err) {
     public function getSubIndustry(Request $request)
     {
         $id = $request->get('id');
+        $segment_id = $request->get('segmentId');
         if (is_null($id)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-        $result = $this->application->getSubIndustryByWhere(['industry_id' => $id]);
+        $result = $this->application->getSubIndustryByWhere(['industry_id' => $id, 'segment_id' => $segment_id]);
         return response()->json($result);
     }
     
@@ -3412,5 +3495,51 @@ if ($err) {
        return response()->json($data);
     }
 
+    // GST List
+    public function getGstLists(DataProviderInterface $dataProvider) 
+    {
+        $products = $this->masterRepo->getAllGST();
+        $data = $dataProvider->getAllGST($this->request, $products);
+        return $data;
+    }
+
+    // Segments List
+    public function getSegmentLists(DataProviderInterface $dataProvider) 
+    {
+        $segments = $this->masterRepo->getSegmentLists();
+        $data = $dataProvider->getSegmentLists($this->request, $segments);
+        return $data;
+    }
+
+    // Constitution List
+    public function getConstitutionLists(DataProviderInterface $dataProvider) 
+    {
+        $products = $this->masterRepo->getAllConstitution();
+        $data = $dataProvider->getAllConstitution($this->request, $products);
+        return $data;
+    }
+
+    /**
+     * Get all customer Address
+     *
+     * @return json customer Address data
+     */
+    public function addressGetCustomer(DataProviderInterface $dataProvider)
+    {
+        $user_id =   (int) $this->request->get('user_id');
+        $latestApp = $this->application->getUpdatedApp($user_id);
+        $bizId = $latestApp->biz_id ? $latestApp->biz_id : null;
+        $customersList = $this->application->addressGetCustomers($user_id, $bizId);
+        $users = $dataProvider->addressGetCustomers($this->request, $customersList);
+        return $users;
+    }
+
+    public function setDefaultAddress(Request $request)
+    {
+        $acc_id = ($request->get('biz_addr_id')) ? \Crypt::decrypt($request->get('biz_addr_id')) : null;
+        $this->application->setDefaultAddress(['is_default' => 0]);
+        $res = $this->application->setDefaultAddress(['is_default' => 1], ['biz_addr_id' => $acc_id]);
+        return \response()->json(['success' => $res]);
+    }
 
 }

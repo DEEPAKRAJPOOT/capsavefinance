@@ -16,23 +16,15 @@
     )
     !!}
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="form-group">
                 <label for="role">Role Name
                     <span class="mandatory">*</span>
                 </label>
                 <input type="text" name="role" id="role" value="@if($roleInfo){{$roleInfo->name}}@endif" class="form-control employee" tabindex="1" placeholder="Role Name" >
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="role_description" class="">Description<span class="error_message_label">*</span></label>
-                <textarea type="text" class="form-control" name="description" placeholder="Enter Role Description">@if($roleInfo){{$roleInfo->description}}@endif</textarea>
-            </div>
-        </div>
-    </div>    
-    <div class="row">
-        <div class="col-md-6">
+        </div>     
+        <div class="col-6">
             <div class="form-group">
                 <label for="" class="">Status<span class="error_message_label">*</span></label>	
                 <select class="form-control" name="is_active" id="is_active" >
@@ -42,10 +34,18 @@
                 </select>
             </div>
         </div>
+    </div>    
+    <div class="row">
+    <div class="col-12">
+            <div class="form-group">
+                <label for="role_description" class="">Description<span class="error_message_label">*</span></label>
+                <textarea type="text" class="form-control" name="description" placeholder="Enter Role Description">@if($roleInfo){{$roleInfo->description}}@endif</textarea>
+            </div>
+        </div>
     </div>
 
     {!! Form::hidden('role_id',$role_id) !!}
-    <button type="submit" class="btn btn-primary float-right" id="saveAnch">Submit</button>  
+    <button type="submit" class="btn btn-primary float-right btn-sm" id="saveAnch">Submit</button>  
     {!!
     Form::close()
     !!}

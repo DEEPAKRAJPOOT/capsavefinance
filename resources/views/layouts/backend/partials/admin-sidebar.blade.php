@@ -184,6 +184,26 @@
         </li>
     @endcan
     
+    
+     @canany(['payment_list','payment_list'])
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-credit-card" aria-hidden="true"></i>
+                <span class="menu-title">Manage Payment</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu8">
+                <ul class="nav flex-column sub-menu">
+                    @can('payment_list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('payment_list')}}">Manage Payment</a>
+                    </li>                     
+                    @endcan
+                </ul>
+            </div>
+        </li>
+    @endcan
+    
     @canany(['get_agency_list','get_agency_user_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu9" aria-expanded="false" aria-controls="collapseExample">
@@ -262,29 +282,38 @@
                     <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                  </li>
                  
-          
+          <!-- 
                  <li class="nav-item">
                     <a class="nav-link" href="#">Manage State</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Risk Category </a>
-                 </li>
+                 </li> -->
+                 @can('get_segment_list')
                  <li class="nav-item">
-                    <a class="nav-link" href="#">Business Segment</a>
+                    <a class="nav-link" href="{{ route('get_segment_list') }}">Business Segment</a>
                  </li>
+                 @endcan
                   <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_entity_list') }}">Business Entity</a>
                  </li>
+                 @can('get_constitutions_list')
                  <li class="nav-item">
-                    <a class="nav-link" href="#">Business Constitution</a>
+                    <a class="nav-link" href="{{ route('get_constitutions_list') }}">Business Constitution</a>
                  </li>
-                 <li class="nav-item">
+                 @endcan
+                <!--  <li class="nav-item">
                     <a class="nav-link" href="#">Bank Master</a>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Industry Master</a>
-                 </li>
+                 </li> -->
+                 @can('get_gst_list')
                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_gst_list') }}">Manage GST</a>
+                 </li>
+                 @endcan
+                 <!-- <li class="nav-item">
                     <a class="nav-link" href="#">FI agency Master</a>
                  </li>
                  <li class="nav-item">
@@ -298,7 +327,7 @@
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">Base Rate Master</a>
-                 </li>
+                 </li> -->
               </ul>
            </div>
         </li>

@@ -33,9 +33,9 @@ class CibilApi {
             $options = [
                             'headers' => [
                                         'requestXML' => $this->prepareRequestXml($arrOwnerData),
-                                        'userId ' => 'crif1_cpu_uat@capsavefinance.com',
-                                        'password' => '55DE689372D33C9876D1E09CFFF8BBBFF74B9445',
-                                        'mbrid' => 'NBF0002966',
+                                        'userId ' => 'crif1_cpu_prd@capsavefinance.com',
+                                        'password' => 'D261F46CFA7E1C0DB5A80FB02269668E1A3F05B9',
+                                        'mbrid' => 'NBF0000834',
                                         'productType' => 'INDV',
                                         'productVersion' => '1.0',
                                         'reqVolType' => 'INDV',
@@ -58,7 +58,7 @@ class CibilApi {
         $requestXml = '<?xml version="1.0" encoding="UTF-8"?>
                         <REQUEST-REQUEST-FILE>
                            <HEADER-SEGMENT>
-                                  <SUB-MBR-ID>CAPSAVE FINANCE PRIVATE LIMITED </SUB-MBR-ID>
+                                  <SUB-MBR-ID>CAPSAVE FINANCE PRIVATE LTD</SUB-MBR-ID>
                                   <REQ-ACTN-TYP>SUBMIT</REQ-ACTN-TYP>
                                   <TEST-FLG>N</TEST-FLG>
                                   <AUTH-FLG>Y</AUTH-FLG>
@@ -122,10 +122,11 @@ class CibilApi {
             $options = [
                             'headers' => [
                                         'inquiryXML' => $this->prepareRequestXmlForAcknowledgement($arrOwnerData),
-                                        'userId ' => 'crif1_cpu_uat@capsavefinance.com',
-                                        'password' => '55DE689372D33C9876D1E09CFFF8BBBFF74B9445',
+                                        'userId ' => 'crif1_cpu_prd@capsavefinance.com',
+                                        'password' => 'D261F46CFA7E1C0DB5A80FB02269668E1A3F05B9',
                             ]
                        ];
+               //dd($options);       
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
             return $response;
@@ -138,20 +139,18 @@ class CibilApi {
 
 
      public function prepareRequestXmlForAcknowledgement($arrOwnerData) {
-    
-
         $requestXml = '<?xml version="1.0" encoding="UTF-8"?>
                           <REQUEST-REQUEST-FILE>
                              <HEADER-SEGMENT>
                                 <PRODUCT-TYP>COMM_ACE_PLUS_REPORT</PRODUCT-TYP>
                                 <PRODUCT-VER>4.0</PRODUCT-VER>
-                                <REQ-MBR>NBF0002966</REQ-MBR>
-                                <SUB-MBR-ID>CAPSAVE FINANCE PRIVATE LIMITED</SUB-MBR-ID>
+                                <REQ-MBR>NBF0000834</REQ-MBR>
+                                <SUB-MBR-ID>CAPSAVE FINANCE PRIVATE LTD</SUB-MBR-ID>
                                 <REQ-VOL-TYP>INDV</REQ-VOL-TYP>
                                 <REQ-ACTN-TYP>SUBMIT</REQ-ACTN-TYP>
                                 <TEST-FLG>Y</TEST-FLG>
-                                <USER-ID>crif1_cpu_uat@capsavefinance.com</USER-ID>
-                                <PWD>55DE689372D33C9876D1E09CFFF8BBBFF74B9445</PWD>
+                                <USER-ID>crif1_cpu_prd@capsavefinance.com</USER-ID>
+                                <PWD>D261F46CFA7E1C0DB5A80FB02269668E1A3F05B9</PWD>
                                 <AUTH-FLG>N</AUTH-FLG>
                                 <AUTH-TITLE>USER</AUTH-TITLE>
                                 <RES-FRMT>XML/HTML</RES-FRMT>
@@ -229,8 +228,8 @@ return $requestXml;
             $options = [
                             'headers' => [
                                         'inquiryXML' => $this->prepareRequestXmlForIssue($arrOwnerData),
-                                        'userId ' => 'crif1_cpu_uat@capsavefinance.com',
-                                        'password' => '55DE689372D33C9876D1E09CFFF8BBBFF74B9445',
+                                        'userId ' => 'crif1_cpu_prd@capsavefinance.com',
+                                        'password' => 'D261F46CFA7E1C0DB5A80FB02269668E1A3F05B9',
                             ]
                        ];
             $response = $this->client->post($api_url, $options);
@@ -250,14 +249,14 @@ return $requestXml;
                              <HEADER-SEGMENT>
                                 <PRODUCT-TYP>COMM_ACE_PLUS_REPORT</PRODUCT-TYP>
                                 <PRODUCT-VER>4.0</PRODUCT-VER>
-                                <REQ-MBR>NBF0002966</REQ-MBR>
-                                <SUB-MBR-ID>CAPSAVE FINANCE PRIVATE LIMITED</SUB-MBR-ID>
+                                <REQ-MBR>NBF0000834</REQ-MBR>
+                                <SUB-MBR-ID>CAPSAVE FINANCE PRIVATE LTD</SUB-MBR-ID>
                                 <INQ-DT-TM>24-08-2017</INQ-DT-TM>
                                 <REQ-VOL-TYP>INDV</REQ-VOL-TYP>
                                 <REQ-ACTN-TYP>AT02</REQ-ACTN-TYP>
                                 <TEST-FLG>Y</TEST-FLG>
-                                <USER-ID>crif1_cpu_uat@capsavefinance.com</USER-ID>
-                                <PWD>55DE689372D33C9876D1E09CFFF8BBBFF74B9445</PWD>
+                                <USER-ID>crif1_cpu_prd@capsavefinance.com</USER-ID>
+                                <PWD>D261F46CFA7E1C0DB5A80FB02269668E1A3F05B9</PWD>
                                 <AUTH-FLG>N</AUTH-FLG>
                                 <AUTH-TITLE>USER</AUTH-TITLE>
                                 <MEMBER-PRE-OVERRIDE>N</MEMBER-PRE-OVERRIDE>

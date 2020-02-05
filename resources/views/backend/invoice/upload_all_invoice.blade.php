@@ -368,9 +368,14 @@ var messages = {
         var    days = millisBetween / millisecondsPerDay;
         return  Math.floor(days);
     }
-   
+  
+
  $(document).ready(function () {
-       $("#program_id").append("<option value=''>No data found</option>");  
+      //////////// comma seprate value in amount   //////////////////////// 
+      
+        document.getElementById('invoice_approve_amount').addEventListener('input', event =>
+        event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+        $("#program_id").append("<option value=''>No data found</option>");  
         $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {

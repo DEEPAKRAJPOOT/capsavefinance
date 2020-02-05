@@ -7,16 +7,31 @@
 <div class="inner-container">
     <div class="card mt-3">
         <div class="card-body pt-3 pb-3">
-            <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm " > Download Report</button>
+          @if(($currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
+          <div class="float-right">
+            <form method="POST" action="{{route('approve_offer')}}">
+            @csrf
+            <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
+            <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve Limit">
+            </form>
+          </div>
+          @elseif(($approveStatus && $approveStatus->status == 1))
+            <p class="float-right ml-3 mb-0"><b style="color: green; font-size: 17px;">Limit Approved</b></p>
+          @endif
+          
+            <a href="{{route('generate_cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}">
+                 <button type="button" class="btn btn-primary float-right btn-sm ml-3" > Generate CAM Report</button>
+              </a>
+            <button onclick="downloadCam()" class="btn btn-primary float-right btn-sm  " > Download Report</button>
         </div>
     </div>
-
-
-
 
 <!-- Start PDF Section -->
 
 <div class="card mt-3" id="camReport">
+   <div class="card-body pt-3 pb-3">
+      <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
+   </div>
    <div class="card-body pt-3 pb-3">
       <div class="row">
          <div class="col-md-12">
@@ -58,7 +73,7 @@
                      <td class="">Lease</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class=""><b>Limit (In Mn)</b></td>
+                     <td class=""><b>Limit</b></td>
                      <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
                            </td>
                      
@@ -69,7 +84,7 @@
                   </tr>
                   <tr role="row" class="odd">
                      <td class=""><b>Equipment Type</b></td>
-                     <td class="">{{isset($leaseOfferData->security_deposit_type) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->security_deposit_type)['equipment_name']) : ''}}</td>
+                     <td class="">{{isset($leaseOfferData->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->equipment_type_id)['equipment_name']) : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
                      <td class=""><b>Security Deposit</b></td>
@@ -80,7 +95,7 @@
                      <td class="">{{isset($leaseOfferData->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOfferData->rental_frequency] : ''}}</td>
                   </tr>
                   <tr role="row" class="odd">
-                     <td class=""><b>PTPQ</b></td>
+                     <td class=""><b>PTPF</b></td>
                      <td class="">
                         @php 
                            $i = 1;
@@ -216,7 +231,7 @@
                   </tr>
                   <tr role="row" class="odd">
                       <td class="">
-                         <p> {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}}" </p>
+                         <p> {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}} </p>
                      </td>
                      <td class="">
                          <p> {{isset($reviewerSummaryData->time_dscr) ? $reviewerSummaryData->time_dscr : ''}} </p>
@@ -286,14 +301,19 @@
                               @php 
                                  $i=0;
                               @endphp
-                              @while(!empty($arrApproverData[$i])) 
-                                 <tr>
-                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
-                                     @php $i++; @endphp
-                                     <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
-                                      @php $i++; @endphp
-                                </tr>
-                            @endwhile
+                              
+                              @if(!empty($arrApproverData))
+                                  @while(!empty($arrApproverData[$i])) 
+                                     <tr>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
+                                            @php $i++; @endphp
+                                         @if (!empty($arrApproverData[$i]))
+                                             <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="25%">{{$arrApproverData[$i]->approver}}</th>
+                                             @php $i++; @endphp
+                                          @endif
+                                    </tr>
+                                @endwhile
+                             @endif
                         </table>
                      </td>
                   </tr>
@@ -304,11 +324,8 @@
             </table>
               </div>
               </div>
+     
            
-
-           
-
-
            <div class="data mt-4">
              <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
@@ -337,7 +354,7 @@
                         </p>
                      </td>
                      <td>No</td>
-                     <td>{{$arrEntityData->name}}</td>
+                     <td>{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
                   </tr>
                   <tr>
                      <td>Vintage</td>
@@ -349,7 +366,7 @@
                         </p>
                      </td>
                      <td>No</td>
-                     <td>{{\Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y')                          }}</td>
+                     <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
                   </tr>
                   <tr>
                      <td colspan="4" bgcolor="#cccccc">&nbsp;</td>
@@ -592,12 +609,14 @@
                   </tr>
                </thead>
                <tbody>
+                @if(!empty($arrOwnerData))
                   @foreach($arrOwnerData as $key => $arrData)
                   <tr>
                      <td>{{$arrData->first_name}}</td>
                      <td>{{$arrData->designation}}</td>
                   </tr>
                   @endforeach
+                @endif  
                   
                </tbody>
             </table>
@@ -610,14 +629,17 @@
                   </tr>
                </thead>
                <tbody>
-                  @foreach($arrOwnerData as $key => $arrData)
-                     @if ($arrData->is_promoter)
-                        <tr>
-                           <td>{{$arrData->first_name}}</td>
-                           <td>{{$arrData->share_per}}</td>
-                        </tr>
-                     @endif
-                  @endforeach
+                @if(!empty($arrOwnerData))
+                    @foreach($arrOwnerData as $key => $arrData)
+                       @if ($arrData->is_promoter)
+                          <tr>
+                             <td>{{$arrData->first_name}}</td>
+                             <td>{{$arrData->share_per}}</td>
+                          </tr>
+                       @endif
+                    @endforeach
+                @endif
+
                   
                </tbody>
             </table>
@@ -649,21 +671,23 @@
                <thead>
                   <tr>
                      <tr>
-                          <th valign="middle" bgcolor="#efefef">Particular</th>
-                          @foreach($audited_years as $year_aud)
-                          <th valign="middle" bgcolor="#efefef">{{$year_aud}}</th>
-                          @endforeach
+                          <th valign="middle" bgcolor="#efefef" @if(empty($audited_years)) colspan="4" @endif> Particular</th>
+                          @if(!empty($audited_years))
+                              @foreach($audited_years as $year_aud)
+                              <th valign="middle" bgcolor="#efefef">{{$year_aud}}</th>
+                              @endforeach
+                          @endif    
                      </tr>
                </thead>
                <tbody>
-                  <tr>
+                  <tr @if (empty($audited_years)) class='hide' @endif>
                      <td></td>
                      <td class="text-center"><strong>Aud.</strong></td>
                      <td class="text-center"><strong>Aud.</strong></td>
                      <td class="text-center"><strong>Aud.</strong></td>
                   </tr>
                   <tr>
-                     <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;">
+                     <td valign="top" style="vertical-align:top; padding:0px !important; border-right:none;" @if (empty($financeData)) colspan="4" @endif>
                         <table class="table-border-none" width="100%">
                           <tbody>
                              @foreach($FinanceColumns as $finance_col)
@@ -814,18 +838,15 @@
  
  </div>
 </div>
-<div class="isloader" style="display:none;">  
-        <img src="http://admin.rent.local/backend/assets/images/loader.gif">
-    </div>
+
 @endsection
 @section('jscript')
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" ></script>
-
 <script>
 
 function downloadCam(){
-    var pdf = new jsPDF('px', 'pt', [1400, 1155]);
+    var pdf = new jsPDF('px', 'pt', [1400, 1175]);
     var  res = pdf.html(document.getElementById('camReport'), {
         callback: function (pdf) {
             pdf.save('camReport');
@@ -833,11 +854,6 @@ function downloadCam(){
     });
     
 }
-
-
-
-
-
 </script>
 
 

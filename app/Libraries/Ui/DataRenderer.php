@@ -2,6 +2,7 @@
 namespace App\Libraries\Ui;
 use DataTables;
 use Helpers;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
@@ -172,19 +173,21 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name','status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
-                    
+                        $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
+                        $app_id = $app->app_id;
                         if(Helpers::checkPermission('company_details')){
-                            $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                            return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
+                           if($user_role == config('common.user_role.APPROVER'))
+                                $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           else
+                                $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           return "<a id='app-id-$app_id' href='$link' rel='tooltip'> CAPS" . sprintf('%06d',$app_id) . "</a>";
                         }else{
-                            return "<a id=\"app-id-" . $app->app_id . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
-                        }
-                    
-                        
+                            return "<a id='app-id-$app_id' rel='tooltip'> CAPS" . sprintf('%06d',$app_id) . "</a>";
+                        } 
                     }
                 )
                 ->addColumn(
@@ -292,7 +295,12 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     //$app_status = config('inv_common.app_status');                    
-                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    if($app->curr_status_id==config('common.mst_status_id')['DISBURSED']){
+                        return  '<label class="badge badge-success current-status"><i class="fa fa-check-circle" aria-hidden="true"></i> Disbursed</label>';
+                    }else{
+                        return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    }
+                   
 
                 })
                 ->addColumn(
@@ -305,9 +313,12 @@ class DataRenderer implements DataProviderInterface
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                             }
                             if(Helpers::checkPermission('send_case_confirmBox')){
-                                $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
-                                $roleData = Helpers::getUserRole();
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
+                                $roleData = Helpers::getUserRole();                                
+                                if ($currentStage && $currentStage->order_no <= 15 ) {
+                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                }
+                                
                                 if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
                                     $act = $act . '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                                 }
@@ -577,9 +588,9 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceList(Request $request,$invoice)
     { 
-        
         return DataTables::of($invoice)
-               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id'])
+               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+           
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
@@ -615,9 +626,10 @@ class DataRenderer implements DataProviderInterface
                 })  
                  ->addColumn(
                     'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
+                    function ($invoice) { 
+                     return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
+                      
+                      })
                ->addColumn(
                     'tenor',
                     function ($invoice) {                        
@@ -626,13 +638,14 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
+               
                 ->addColumn(
                     'view_upload_invoice',
                     function ($invoice) {
@@ -715,14 +728,13 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -784,17 +796,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -853,17 +864,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -922,17 +932,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -961,9 +970,26 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceListDisbursed(Request $request,$invoice)
     { 
-    
+     
       return DataTables::of($invoice)
                ->rawColumns(['status','anchor_id','action'])
+                ->setRowClass(function ($invoice) {
+                    $finalDueDate =  date('d/m/Y', strtotime($invoice->invoice_due_date.' + '.$invoice->program_offer->grace_period.' days'));
+                       $date =  Carbon::now();
+                       $date =  Carbon::parse($date)->format('d/m/Y');
+                       $cdate =  strtotime(Carbon::createFromFormat('d/m/Y',$date));
+                       $gracePdate =  strtotime(Carbon::createFromFormat('d/m/Y',$finalDueDate));
+                       if($cdate > $gracePdate)
+                       {
+                          
+                           return "dateGrace";
+                      }
+                       else
+                       {
+                          
+                            return "";
+                       }
+               })
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) use ($request)  {     
@@ -1002,17 +1028,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -1024,11 +1049,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                      if ($request->front) {         
-                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="450px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="670px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      }
                      else
                      {
-                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="450px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="670px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      
                      }
                 })
@@ -1082,17 +1107,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -1151,17 +1175,16 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? $invoice->invoice_amount : '';
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
                 })
                  ->addColumn(            
                     'invoice_approve_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
                 })
-               
                ->addColumn(
                     'status',
                     function ($invoice) {
@@ -1540,7 +1563,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($role) {
-                    return  "<a title=\"Edit Role\" data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a title=\"Manage Permission\" id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
+                    return  "<a title=\"Edit Role\" data-toggle=\"modal\" data-target=\"#addRoleFrm\" data-url =\"" . route('add_role', ['role_id' => $role->id]) . "\" data-height=\"300px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> &nbsp; <a title=\"Manage Permission\" id=\"" . $role->id . "\" href =\"" . route('manage_role_permission', ['role_id' => $role->id, 'name' =>$role->name ]) . "\" rel=\"tooltip\"   > <i class='fa fa-2x fa-cog'></i></a>";
                     })
                     ->filter(function ($query) use ($request) {
                         if ($request->get('by_email') != '') {
@@ -2039,6 +2062,12 @@ class DataRenderer implements DataProviderInterface
                     }
                 )
                 ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = $request->get('search_keyword');
+                            $query->where('doc_name', 'like', "%$search_keyword%");
+                        });
+                    }
                     if ($request->get('doc_type_id') != '') {
                         $query->where(function ($query) use ($request) {
                             $doc_type_id = $request->get('doc_type_id');
@@ -2757,6 +2786,171 @@ class DataRenderer implements DataProviderInterface
                             }
                         })
                         ->make(true);
+    }
+
+    // GST TAX
+    public function getAllGST(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'tax_id',
+                    function ($data) {
+                        return $data->tax_id;
+                })
+                ->addColumn(
+                    'tax_val',
+                    function ($data) {
+                    return $data->tax_value."%";
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editGSTFrame" title="Edit States Detail" data-url ="'.route('edit_Gst', ['tax_id' => $data->tax_id]).'" data-height="310px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('tax_name', 'like',"%$search_keyword%")
+                            ->orWhere('code', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+    // Segment
+    public function getSegmentLists(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'id',
+                    function ($data) {
+                        return $data->id;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editSegmentFrame" title="Edit States Detail" data-url ="'.route('edit_segment', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+    // Constitution
+    public function getAllConstitution(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'id',
+                    function ($data) {
+                        return $data->id;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editConstiFrame" title="Edit States Detail" data-url ="'.route('edit_constitution', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
+    // LMS Customer Address
+    public function addressGetCustomers(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action', 'rcu_status'])
+            ->addColumn(
+                'biz_addr_id',
+                function ($data) {
+                    return $data->biz_addr_id;
+                }
+            )
+
+            ->addColumn(
+                'action',
+                function ($data) use ($request) {
+
+                    $checked = ($data->is_default == 1) ? 'checked' : null;
+                    $act = '';
+
+                    if ($data->rcu_status) {
+                        $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($data->biz_addr_id, $request->get('user_id')) . '"  class="make_default" name="add"><label for="add">Default</label> ';
+                    }
+
+                    if (Helpers::checkPermission('edit_addr')) {
+                        $act .= '<a data-toggle="modal"  data-height="310px" 
+                            data-width="100%" 
+                            data-target="#editAddressFrame"
+                            data-url="' . route('edit_addr', ['biz_addr_id' => $data->biz_addr_id, 'user_id' => $request->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Address Detail"><i class="fa fa-edit"></i></a>';
+                    }
+                    return $act;
+                }
+            )
+
+            ->editColumn(
+                'rcu_status',
+                function ($data) {
+                    if ($data->rcu_status) {
+                        return '<span class="badge badge-success">Active</span>';
+                    } else {
+                        return '<span class="badge badge-warning current-status">InActive</span>';
+                    }
+                }
+            )
+            
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') {
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('chrg_desc', 'like', "%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                    });
+                }
+            })
+            ->make(true);
     }
 
 }

@@ -86,6 +86,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@uploadBankXLSX'
             ]);
             
+            Route::get('upload_xlsx_document_finance', [
+                'as' => 'upload_xlsx_document_finance',
+                'uses' => 'Backend\CamController@uploadFinanceXLSX'
+            ]);
+            
             Route::post('save_xlsx_document', [
                 'as' => 'save_xlsx_document',
                 'uses' => 'Backend\CamController@saveBankXLSX'
@@ -321,6 +326,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'mobile_otp_view',
                 'uses' => 'Backend\ApplicationController@mobileOtpModel'
             ]);
+            Route::get('app-status-disbursed', [
+                         'as' => 'app_status_disbursed',
+                  'uses' => 'Backend\ApplicationController@showAppStatusForm'
+                ]);
+                Route::post('app-status-disbursed', [
+                   'as' => 'app_status_disbursed',
+                 'uses' => 'Backend\ApplicationController@saveShowAppStatusForm'
+                ]);
             //////////////for cibil Iframe//////////////////////// 
              Route::get('pull-cibil-commercial', [
                 'as' => 'pull_cibil_commercial',
@@ -523,6 +536,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::get('cam-report', [
                     'as' => 'cam_report',
                     'uses' => 'Backend\CamController@downloadCamReport'
+                ]);
+
+                Route::get('generate-cam-report', [
+                    'as' => 'generate_cam_report',
+                    'uses' => 'Backend\CamController@generateCamReport'
                 ]);
 
                 Route::post('save-bank-detail', [
@@ -829,7 +847,59 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\CompanyController@saveCompanyBankAccount'
             ]);
             
-            
+             // GST
+             Route::get('/gst', [
+                'as' => 'get_gst_list',
+                'uses' => 'Master\GstController@index'
+            ]);
+            Route::get('/add_Gst', [
+                'as' => 'add_Gst',
+                'uses' => 'Master\GstController@addGst'
+            ]);
+            Route::post('/save_Gst', [
+                'as' => 'save_Gst',
+                'uses' => 'Master\GstController@saveGst'
+            ]);
+            Route::get('/edit_Gst', [
+                'as' => 'edit_Gst',
+                'uses' => 'Master\GstController@editGst'
+            ]);
+
+            // Segment
+            Route::get('/segment', [
+                'as' => 'get_segment_list',
+                'uses' => 'Master\SegmentController@index'
+            ]);
+            Route::get('/add_segment', [
+                'as' => 'add_segment',
+                'uses' => 'Master\SegmentController@addSegment'
+            ]);
+            Route::get('/edit_segment', [
+                'as' => 'edit_segment',
+                'uses' => 'Master\SegmentController@editSegment'
+            ]);
+            Route::post('/save_segment', [
+                'as' => 'save_segment',
+                'uses' => 'Master\SegmentController@saveSegment'
+            ]);
+    
+            // constitutions
+            Route::get('/constitutions', [
+                'as' => 'get_constitutions_list',
+                'uses' => 'Master\ConstiController@index'
+            ]);
+            Route::get('/add_constitution', [
+                'as' => 'add_constitution',
+                'uses' => 'Master\ConstiController@addConstitution'
+            ]);
+            Route::get('/edit_constitution', [
+                'as' => 'edit_constitution',
+                'uses' => 'Master\ConstiController@editConstitution'
+            ]);
+            Route::post('/save_constitution', [
+                'as' => 'save_constitution',
+                'uses' => 'Master\ConstiController@saveConstitution'
+            ]);
             
             
             
@@ -1002,7 +1072,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@saveDocument'
             ]);
             
-        });         
+        });   
+        
+          Route::group(['prefix' => 'payment'], function () {
+               Route::get('payment_list', [
+                 'as' => 'payment_list',
+                'uses' => 'Backend\PaymentController@paymentList'
+            ]); 
+               
+            Route::get('add_payment', [
+                 'as' => 'add_payment',
+                'uses' => 'Backend\PaymentController@addPayment'
+            ]);      
+            
+             Route::post('save_payment', [
+                 'as' => 'save_payment',
+                'uses' => 'Backend\PaymentController@savePayment'
+            ]);  
+               
+         }); 
     });
 
   });

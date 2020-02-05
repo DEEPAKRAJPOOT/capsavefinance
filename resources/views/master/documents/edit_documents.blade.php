@@ -6,6 +6,7 @@
 		@csrf
 		<input type="hidden" name="filter_product_type" id="filter_product_type" value="">
 		<input type="hidden" name="filter_doc_type_id" id ="filter_doc_type_id" value="">
+		<input type="hidden" name="filter_search_keyword" id ="filter_search_keyword" value="">
 		<div class="row">
 			<div class="form-group col-12">
 				<label for="chrg_name">Document Name</label>
@@ -77,6 +78,8 @@
 		$(document).ready(function(){
 				$('#filter_product_type').val(parent.$('#product_type').val());
 				$('#filter_doc_type_id').val(parent.$('#doc_type_id').val());
+				$('#filter_search_keyword').val(parent.$('#search_keyword').val());
+				console.log(parent.$('#search_keyword').val());
 		});
 
 		$('.multi-select-checkbox').multiselect({
