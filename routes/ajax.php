@@ -24,7 +24,14 @@ Route::group(
         'uses' => 'Karza\KarzaController@checkPanStatusVerification'
         ]
     );
-    
+     //////////////////Get Promoter By Cin//////////////////////////
+    Route::post(
+        'get_promoter_details_by_cin',
+        [
+        'as' => 'get_promoter_details_by_cin',
+        'uses' => 'Karza\KarzaController@getPromoterDetailsByCin'
+        ]
+    ); 
     //////////////////Pan card authontication//////////////////////////
     Route::post(
         'chk_user_pan_karza_add_more',

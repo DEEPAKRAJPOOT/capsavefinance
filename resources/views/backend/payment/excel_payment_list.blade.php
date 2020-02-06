@@ -158,7 +158,6 @@
             success: function(r){
                console.log(r);
                 $(".isloader").hide();
-                console.log(r.data); return false;
                 if(r.status==1)
                 {
                     $('.isloader').hide(); 
@@ -166,7 +165,11 @@
                    
                      j =0;
                     $(r.data).each(function(i,v){ j++;
-                    var invoice_approve_amount =  v.invoice_approve_amount;  
+                    var payment_temp_id = v.payment_temp_id;  
+                    var amount = v.amount; 
+                    var virtual_account_no = v.virtual_account_no; 
+                    var payment_ref_no = v.payment_ref_no; 
+                    var remark = v.remark;
                     var date1 = v.payment_date;
                     var dateAr = date1.split('-');
                     var payment_date = '';
@@ -176,26 +179,14 @@
                        var payment_date = dateAr[2] + '/' + dateAr[1] + '/' + dateAr[0];
                     }
                    
-                    if(parseInt(v.invoice_approve_amount)=='0.00')
+                    if(parseInt(v.amount)=='0.00')
                     {
-                       var invoice_approve_amount = "";
+                       var amount = "";
                     }
-                   
-                    var getDays  = parseInt(findDaysWithDate(invoice_due_date,invoice_date));
-                    var tenor  = parseInt($('#tenor').val());
-                    var getClass ="";
-                    if(getDays < tenor)
-                    {
-                      var getClass = "background-color: #ea9292;";  
-                    }
-                     var invoice_approve_amount =  invoice_approve_amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    
-                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'" class="appendExcel'+j+'" style="'+getClass+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+j+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
-                      
+                       $(".invoiceAppendData").append('here input');  
                     });
                       datepickerDisFdate();
-                      datepickerDisPdate();
-                      return false; 
+                     return false; 
                 }
                  else if(r.status==2)
                 {

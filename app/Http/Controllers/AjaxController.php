@@ -2964,7 +2964,7 @@ if ($err) {
                 if($res)
                 {
                     $getTempInvoice =  $this->invRepo->getExcelTrans($whr);
-                    return response()->json(['status' => 0,'data' => $getTempInvoice]); 
+                    return response()->json(['status' => 1,'data' => $getTempInvoice]); 
                 }
                 else
                 {
