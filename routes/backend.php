@@ -631,7 +631,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_anchor_reg',
                 'uses' => 'Backend\LeadController@editAnchorReg'
             ]);
-            Route::post('update-anchor', [
+                Route::post('update-anchor', [
                 'as' => 'update_anchor_reg',
                 'uses' => 'Backend\LeadController@updateAnchorReg'
             ]); 
@@ -1079,7 +1079,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'payment_list',
                 'uses' => 'Backend\PaymentController@paymentList'
             ]); 
-               
+             Route::get('excel_payment_list', [
+                 'as' => 'excel_payment_list',
+                'uses' => 'Backend\PaymentController@excelPaymentList'
+            ]);   
             Route::get('add_payment', [
                  'as' => 'add_payment',
                 'uses' => 'Backend\PaymentController@addPayment'
@@ -1089,7 +1092,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'save_payment',
                 'uses' => 'Backend\PaymentController@savePayment'
             ]);  
-               
+             Route::get('excel_bulk_payment', [
+                'as' => 'excel_bulk_payment',
+                'uses' => 'Backend\PaymentController@excelBulkPayment'
+            ]);
+             
          }); 
     });
 
