@@ -140,6 +140,7 @@ class CamController extends Controller
             }else{
                      $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
             }
+            $arrCamData['proposed_exposure'] = str_replace(',','', $arrCamData['proposed_exposure']);
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
