@@ -242,8 +242,6 @@ return $requestXml;
 
 
   public function prepareRequestXmlForIssue($arrOwnerData) {
-    
-
         $requestXml = '<?xml version="1.0" encoding="UTF-8"?>
                           <REQUEST-REQUEST-FILE>
                              <HEADER-SEGMENT>
@@ -260,7 +258,7 @@ return $requestXml;
                                 <AUTH-FLG>N</AUTH-FLG>
                                 <AUTH-TITLE>USER</AUTH-TITLE>
                                 <MEMBER-PRE-OVERRIDE>N</MEMBER-PRE-OVERRIDE>
-                                <RES-FRMT>XML/HTML</RES-FRMT>
+                                <RES-FRMT>'.$arrOwnerData->resFormat.'</RES-FRMT>
                                 <RES-FRMT-EMBD>N</RES-FRMT-EMBD>
                                 <LOS-NAME>TEST</LOS-NAME>
                                 <LOS-VENDER>TEST</LOS-VENDER>

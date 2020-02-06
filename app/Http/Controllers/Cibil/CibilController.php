@@ -144,7 +144,8 @@ class CibilController extends Controller
             sleep(10);
             $arrOwnerData['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrOwnerData['report_id'] = $acknowledgementResult['report-id'];
-            //dd($arrOwnerData);
+            $arrOwnerData['resFormat'] = 'XML';
+              //dd($arrOwnerData);
             $responseData =  $CibilApi->getCommercialCibilData($arrOwnerData);
              // dd($responseData);
             $q = xml_parser_create('utf-8');
@@ -157,12 +158,15 @@ class CibilController extends Controller
                 }
             }
             if(isset($resultData['status'])){
+                    $arrOwnerData['resFormat'] = 'HTML';
+                    $resInHTMLFormate =  $CibilApi->getCommercialCibilData($arrOwnerData);
+                    $cibilData = base64_encode($resInHTMLFormate);
                     if($resultData['score'] > 0){
                         $cibilScore =  $resultData['score'];
                     }else{
                         $cibilScore = '';
                     }
-                    $cibilData = json_encode($resultData);
+                    //$cibilData = json_encode($resultData);
                     $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => $cibilData,'status' => 0,'created_by' => Auth::user()->user_id]);
                             if ($createApiLog) {
                                     $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
@@ -197,6 +201,9 @@ class CibilController extends Controller
     }
 
 
+
+
+
     function downloadCommercialCibil(Request $request)
     {
         $biz_id = $request->get('biz_id');
@@ -204,7 +211,7 @@ class CibilController extends Controller
         if(empty($arrData)){
                 return response()->json(['message' =>'Error','status' => 0, 'cibilScoreData' => 'Please Pull the CIBIL Score to view the report.']);
         }else{
-                $arrCibilScoreData = json_decode($arrData['res_file']);
+                $arrCibilScoreData = $arrData['res_file'];
                 return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'cibilScoreData' => $arrCibilScoreData]);
        }
     }
