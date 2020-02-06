@@ -114,9 +114,7 @@
 
 									<div class="col-md-4">
 										<div class="form-group password-input">
-											<label for="txtPassword">Sub Industry
-												<span class="mandatory">*</span>
-											</label>
+											<label for="txtPassword">Sub Industry</label>
 											{!! Form::select('entity_type_id', [''=>trans('backend.please_select')], old('entity_type_id'), ['class'=>'form-control sub_industry' , 'tabindex'=>'5']) !!}
 											@error('entity_type_id')
 								                <span class="text-danger error">{{ $message }}</span>
