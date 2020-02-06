@@ -480,7 +480,7 @@ class UserEventsListener extends BaseEvent
                 $att_name = 'sanction.pdf';
                 $message->attachData($data['attachment'], $att_name);
             }
-            $message->bcc('sudesh.kumar@prolitus.com', 'Sudesh kumar');
+           
             $message->to($email, $data["name"])->subject($data['subject']);
             $mailContent = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
