@@ -82,8 +82,7 @@ class Handler extends ExceptionHandler
                 //return redirect('/');
                 return Response::view('errors.400', [], 400);
             } elseif ($exception instanceof HttpException && $exception->getStatusCode() === 401) {
-                 //return redirect('/');
-                return Response::view('errors.400', [], 400);
+                 return redirect('/');                
             }elseif ($exception instanceof MethodNotAllowedHttpException) {
                 (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 //return redirect('/');
