@@ -69,7 +69,7 @@ class Handler extends ExceptionHandler
         }
     
 
-        if (config('app.debug')) {
+        if (config('app.debug') && (config('app.env') == "stage" || config('app.env') == "production")) {
             if ($maintenanceMode) {
                 return Response::view('errors.503', [], 503);
             } elseif ($exception instanceof TooManyRequestsHttpException) {
