@@ -451,8 +451,6 @@ class CamController extends Controller
         $xlsx_pagination = $xlsx_arr[1];
         $json_files = $this->getLatestFileName($appId,'finance', 'json');
         $active_json_filename = $json_files['curr_file'];
-        echo $active_json_filename  ?? 'NO file';
-        
         $xlsx_files = $this->getLatestFileName($appId,'finance', 'xlsx');
         $active_xlsx_filename = $xlsx_files['curr_file'];
         $bizId = $request->get('biz_id');
