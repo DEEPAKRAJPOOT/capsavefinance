@@ -5,7 +5,8 @@ use App\Http\Controllers\Controller;
 use Event;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\FinanceModel;
-
+use App\Libraries\Bsa_lib;
+use App\Libraries\Perfios_lib;
 /**
  * 
  */
@@ -211,8 +212,8 @@ class ApiController
         $req_arr['reportType'] = 'json';
         $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
        	$final_res['api_type'] = Perfios_lib::GET_STMT;
-	    $final_res['prolitusTransactionId'] = $prolitus_txn;
-	    $final_res['perfiosTransactionId'] = $perfiostransactionid;
+	      $final_res['prolitusTransactionId'] = $prolitus_txn;
+	      $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
 	        $final_res['result'] = base64_encode($final_res['result']);
 	        $log_data = array(
