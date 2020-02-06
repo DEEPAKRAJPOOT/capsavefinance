@@ -118,6 +118,7 @@ class CibilController extends Controller
     {   
         $biz_id = $request->get('biz_id');
         $arrBizData = Business::getCompanyDataByBizId($biz_id);
+       
         $arrData = BizOwner::where('biz_id','=',$biz_id)->first();
         $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($arrData['biz_owner_id']);
         $arrOwnerData->pan_gst_hash = $arrBizData['0']['pan_gst_hash'];
@@ -140,7 +141,8 @@ class CibilController extends Controller
                 $acknowledgementResult[strtolower($value['tag'])] = $value['value'] ?? '';
             }
         }
-        if($acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
+        
+        if(isset($acknowledgementResult['response-type']) && $acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
             sleep(10);
             $arrOwnerData['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrOwnerData['report_id'] = $acknowledgementResult['report-id'];
@@ -195,7 +197,9 @@ class CibilController extends Controller
             }               
         }
         else{
-            
+            if(!isset($acknowledgementResult['description'])){
+                $acknowledgementResult['description'] = 'Something went wrong';
+            }
             return response()->json(['message' =>$acknowledgementResult['description'],'status' => 0]);
         }
     }
