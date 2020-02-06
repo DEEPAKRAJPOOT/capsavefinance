@@ -24,7 +24,14 @@ Route::group(
         'uses' => 'Karza\KarzaController@checkPanStatusVerification'
         ]
     );
-    
+     //////////////////Get Promoter By Cin//////////////////////////
+    Route::post(
+        'get_promoter_details_by_cin',
+        [
+        'as' => 'get_promoter_details_by_cin',
+        'uses' => 'Karza\KarzaController@getPromoterDetailsByCin'
+        ]
+    ); 
     //////////////////Pan card authontication//////////////////////////
     Route::post(
         'chk_user_pan_karza_add_more',
@@ -301,6 +308,14 @@ Route::group(
         ]
     );  
        
+        Route::post(
+        'backend_get_bulk_transaction',
+        [
+        'as' => 'backend_get_bulk_transaction',
+        'uses' => 'AjaxController@getBackendBulkTransaction'
+        ]
+    );  
+       
          Route::post(
         'backend_get_invoice_list_repaid',
         [
@@ -308,7 +323,12 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListRepaid'
         ]
     );   
-         
+          Route::post('save_excel_payment', [
+                 'as' => 'save_excel_payment',
+                'uses' => 'AjaxController@saveExcelPayment'
+            ]);  
+          
+          
            Route::post(
         'backend_get_invoice_list_reject',
         [
