@@ -106,7 +106,7 @@ class Bsa_lib{
 	     	'req_file' => is_array($payload) || is_object($payload) ? base64_encode(json_encode($payload)) : base64_encode($payload),
 	     	'url' => base64_encode($url),
 	     	'status' => 'pending',
-	     	'created_by' => Auth::user()->user_id,
+	     	'created_by' => Auth::user()->user_id ?? '999999',
 	     );
 	     $inserted_id = FinanceModel::insertPerfios($log_req, 'biz_perfios_log');
 	     $response = $this->_curl_call($url, $payload, $headers);
