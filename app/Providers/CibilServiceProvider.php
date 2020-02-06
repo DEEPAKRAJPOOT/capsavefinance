@@ -14,9 +14,9 @@ class CibilServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //$baseUrl = env('KARZA_AUTHENTICATION_API_URL');
+        $baseUrl = env('CIBIL_AUTHENTICATION_API_URL');
         //$baseUrl = 'https://test.crifhighmark.com';
-        $baseUrl = 'https://hub.crifhighmark.com';
+        //$baseUrl = 'https://hub.crifhighmark.com';
         $this->app->singleton('GuzzleHttp\Client', function($api) use ($baseUrl) { 
             return new Client([
                 'base_uri' => $baseUrl,
