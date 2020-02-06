@@ -715,12 +715,12 @@
                   </tr>
                </tbody>
             </table>
-             <h5 class="mt-4">Notes:</h5>
-            <ul class="pl-3">
-               <li>&#x2714; Cash profit = PAT + Depreciation + Non-operating non-cash outflow items – Provisions</li>
-               <li>&#x2714; Total Outside liabilities = Current Liabilities + Term Liabilities</li>
-               <li>&#x2714; Net Worth = Share Capital + Reserves – Revaluation reserve</li>
-            </ul>
+                   <!-- <h5 class="mt-4">Notes:</h5>
+                  <ul class="pl-3">
+                     <li>&#x2714; Cash profit = PAT + Depreciation + Non-operating non-cash outflow items – Provisions</li>
+                     <li>&#x2714; Total Outside liabilities = Current Liabilities + Term Liabilities</li>
+                     <li>&#x2714; Net Worth = Share Capital + Reserves – Revaluation reserve</li>
+                  </ul> -->
               </div>
               </div>
 
@@ -732,7 +732,7 @@
             <div class="data mt-4">
              <h2 class="sub-title bg">Financial Comment</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
-                 <p>{!! isset($finacialDetails->debt_cmnt) ? $finacialDetails->debt_cmnt : '' !!}</p>
+                 <p>{!! isset($finacialDetails->financial_risk_comments) ? $finacialDetails->financial_risk_comments : '' !!}</p>
               </div>
               </div>
 

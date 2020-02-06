@@ -140,6 +140,7 @@ class CamController extends Controller
             }else{
                      $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
             }
+            $arrCamData['proposed_exposure'] = str_replace(',','', $arrCamData['proposed_exposure']);
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
@@ -503,6 +504,7 @@ class CamController extends Controller
 
     public function banking(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
         $xlsx_arr = $this->_getXLSXTable($appId,'banking');
         $xlsx_html = $xlsx_arr[0];
         $xlsx_pagination = $xlsx_arr[1];
@@ -536,6 +538,7 @@ class CamController extends Controller
         return view('backend.cam.bank', [
           'bankdocs' => $bankdocs,
           'appId'=> $appId,
+          'biz_id'=> $biz_id,
           'pending_rec'=> $pending_rec,
           'bank_data'=> $contents,
           'customers_info'=> $customers_info,
@@ -1815,7 +1818,7 @@ class CamController extends Controller
                 $currStageCode = $currStage->stage_code; 
                 /*end code for approve button */
 
-                // dd($arrBankDetails);
+                // dd($finacialDetails);
                 return view('backend.cam.downloadCamReport')
                         ->with([
                                  'arrCamData' =>$arrCamData ,
