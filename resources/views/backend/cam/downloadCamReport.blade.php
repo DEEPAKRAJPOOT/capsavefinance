@@ -29,6 +29,7 @@
 <!-- Start PDF Section -->
 
 <div class="card mt-3" id="camReport">
+<div style="page-break-before:always">&nbsp;</div> 
    <div class="card-body pt-3 pb-3">
       <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
    </div>
@@ -851,8 +852,7 @@ function downloadCam(){
         callback: function (pdf) {
             pdf.save('camReport');
         }
-    });
-    
+    }); 
 }
 </script>
 
