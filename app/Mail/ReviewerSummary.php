@@ -50,9 +50,6 @@ class ReviewerSummary extends Mailable
             'reviewerSummaryData'=> $reviewerSummaryData,
             'offerPTPQ' => $offerPTPQ
         ]);
-
-        $email->subject('Reviewer Summary Detail');
-
         $loggerData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                 'email_to' => config('common.review_summ_mails'),
@@ -61,6 +58,8 @@ class ReviewerSummary extends Mailable
                 'subject' => 'Reviewer Summary Detail',
                 'body' => $email,
         ];
+
+        $email->subject('Reviewer Summary Detail');
 
         if($fileArray) {
             foreach($fileArray as $key=>$val) {
