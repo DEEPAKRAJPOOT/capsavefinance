@@ -25,22 +25,20 @@
          <div class="card-body">
               <div class="modal-content">
          <!-- Modal Header -->
-         <form method="post" action="{{route('save_excel_payment')}}" enctype="multipart/form-data">
-         <!-- Modal body -->
-         @csrf
+       
          <div class="modal-body ">
 	     <div class="row">
                  
              <div class="col-md-6">
             <div class="form-group">
             <label for="txtCreditPeriod">Customer <span class="error_message_label">*</span></label>
-           <select readonly="readonly" name="customer" class="form-control" id="supplier_bulk_id">
+           <select readonly="readonly" name="customer" class="form-control" id="customer">
                <option value="">Please Select</option>
                @foreach($customer as $row)
                <option value="{{$row->user_id}}">{{$row->user->f_name}}  / {{$row->customer_id}}</option>
                @endforeach
            </select>
-            <span id="supplier_bulk_id_msg" class="error" style="display: none;"></span>
+            <span id="customer_msg" class="error" style="display: none;"></span>
            </div>
             </div>
 										
@@ -48,9 +46,9 @@
             <label for="txtCreditPeriod">Upload <span class="error_message_label">*</span></label>
             <div class="custom-file  ">
 
-               <input type="file" accept=".csv" class="custom-file-input fileUpload" id="customFile" name="upload">
+               <input type="file" accept=".csv" class="custom-file-input fileUpload" id="upload" name="upload">
             <label class="custom-file-label" for="customFile">Choose file</label>
-            <span id="customFile_msg" class="error" style="display: none;"></span>
+            <span id="upload_msg" class="error" style="display: none;"></span>
               <a href="http://admin.rent.local/backend/assets/invoice/invoice-template.csv" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
            
             </div>
@@ -59,7 +57,7 @@
                <div class="col-md-2">
             <label for="txtCreditPeriod"> <span class="error_message_label"></span></label>
             <div class="custom-file  ">
-                <input id="submit" type="submit" class="btn btn-success float-right btn-sm mt-3 ml-2" value="Upload">
+                <button id="submit" id="submit"  class="btn btn-success float-right btn-sm mt-3 ml-2"> Upload </button>
             </div>
 
             </div>							
@@ -68,7 +66,7 @@
             </div>
             </div>	
          </div>
-         </form>     
+         
          <form id="signupForm" action="http://admin.rent.local/invoice/backend_save_bulk_invoice" method="post"> 
              <input type="hidden" name="_token" value="aQhbyHIEgDmON9SLjv3FSDyjn5eYwAfs5uY2ARO8">          <div class="row">
              
@@ -90,16 +88,7 @@
                                         
                                         
                                         <tbody class="invoiceAppendData">
-                                            <tr id="deleteRow37" class="appendExcel1">
-                                                <td>1</td>
-                                                <td><input type="text" id="invoice_date" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate" value="Payment Date"></td>
-                                                <td> <input type="text"  id="invoice_no" name="invoice_no[]" class="form-control batchInvoice" value="" placeholder="Virtual Acc. No."></td>
-                                                <td><input type="text" id="invoice_due_date"  name="invoice_due_date[]" class="form-control date_of_birth" placeholder="Amount" value=""></td>
-                                                <td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount1" name="invoice_approve_amount[]" placeholder="Payment Refrence No." value=""></td>
-                                                <td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount1" name="invoice_approve_amount[]" placeholder="Remarks" value=""></td>
-                                                <td><i class="fa fa-trash deleteTempInv" data-id="37" aria-hidden="true"></i></td>
-                                            </tr>
-                                   
+                                          
                                     </table>
                                 </div>
               <div class="col-md-12">
@@ -120,21 +109,114 @@
    </div>
 </div></div>
 </div>
-  {!!Helpers::makeIframePopup('modalUploadPayment','Upload Payment', 'modal-lg')!!}
     @endsection
     @section('jscript')
 <script>
 
     var messages = {
             backend_get_bulk_transaction: "{{ URL::route('backend_get_bulk_transaction') }}",
-             data_not_found: "{{ trans('error_messages.data_not_found') }}",
+            save_excel_payment: "{{ URL::route('save_excel_payment') }}", 
+            data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
  };
  
  
-  $(document).ready(function () {
-      ////here code ////////////////
-}); 
+ $(document).on('click','#submit',function(e){  
+       if($("#customer").val()=='')
+        {
+              $("#customer_msg" ).show();
+              $("#customer_msg" ).text('Please Select Customer');
+              return false;
+        }
+        if($("#upload").val()=='')
+        {
+              $("#upload_msg" ).show();
+              $("#upload_msg" ).text("Please Upload File");
+              return false;
+        }
+        
+        else
+        {
+      if (confirm("Are you sure? You want to upload CSV")) {     
+        $(".invoiceAppendData").empty();
+        var file  = $("#upload")[0].files[0];
+        var datafile = new FormData();
+        var customer  = $("#customer").val();
+        datafile.append('_token', messages.token );
+        datafile.append('upload', file);
+        datafile.append('customer', customer);
+        $('.isloader').show();
+        $.ajax({
+            headers: {'X-CSRF-TOKEN':  messages.token  },
+            url : messages.save_excel_payment,
+            type: "POST",
+            data: datafile,
+            processData: false,
+            contentType: false,
+            cache: false, // To unable request pages to be cached
+            enctype: 'multipart/form-data',
+            success: function(r){
+               console.log(r);
+                $(".isloader").hide();
+                console.log(r.data); return false;
+                if(r.status==1)
+                {
+                    $('.isloader').hide(); 
+                    $(".finalButton").show();
+                   
+                     j =0;
+                    $(r.data).each(function(i,v){ j++;
+                    var invoice_approve_amount =  v.invoice_approve_amount;  
+                    var date1 = v.payment_date;
+                    var dateAr = date1.split('-');
+                    var payment_date = '';
+                 
+                    if (dateAr != '')
+                    {
+                       var payment_date = dateAr[2] + '/' + dateAr[1] + '/' + dateAr[0];
+                    }
+                   
+                    if(parseInt(v.invoice_approve_amount)=='0.00')
+                    {
+                       var invoice_approve_amount = "";
+                    }
+                   
+                    var getDays  = parseInt(findDaysWithDate(invoice_due_date,invoice_date));
+                    var tenor  = parseInt($('#tenor').val());
+                    var getClass ="";
+                    if(getDays < tenor)
+                    {
+                      var getClass = "background-color: #ea9292;";  
+                    }
+                     var invoice_approve_amount =  invoice_approve_amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    
+                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'" class="appendExcel'+j+'" style="'+getClass+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+j+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
+                      
+                    });
+                      datepickerDisFdate();
+                      datepickerDisPdate();
+                      return false; 
+                }
+                 else if(r.status==2)
+                {
+                           $("#customFile_msg").show();  
+                }
+                else
+                {
+                     ///$("#submitInvoiceMsg").show();
+                     $(".invoiceAppendData").append('<tr><td colspan="5" class="error">'+r.message+'</td></tr>'); 
+                   
+                      return false;
+                 } 
+              }  
+          });
+          }
+           else
+           {
+             return false;
+           }
+          }
+    });
   
   
 </script>

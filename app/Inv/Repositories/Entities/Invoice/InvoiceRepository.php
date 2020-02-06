@@ -289,6 +289,26 @@ use CommonRepositoryTraits;
 
        return ExcelPaymentTemp::insertExcelTrans($attributes);  
     }  
+    ////////////* get excel temp data *********/
+      public function getExcelTrans($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return ExcelPaymentTemp::getExcelTrans($attributes);  
+    }  
     ///////////////* delete excel trans  ************/
    
      public function deleteExcelTrans($attributes = [])

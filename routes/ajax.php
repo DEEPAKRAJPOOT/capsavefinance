@@ -316,7 +316,12 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListRepaid'
         ]
     );   
-         
+          Route::post('save_excel_payment', [
+                 'as' => 'save_excel_payment',
+                'uses' => 'AjaxController@saveExcelPayment'
+            ]);  
+          
+          
            Route::post(
         'backend_get_invoice_list_reject',
         [

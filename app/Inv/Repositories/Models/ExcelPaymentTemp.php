@@ -89,6 +89,9 @@ class ExcelPaymentTemp extends BaseModel
         return self::where($arr)->delete();
     } 
     
-   
+     public static function getExcelTrans($arr)
+    {
+        return self::where($arr)->get();
+    }  
      
 }
