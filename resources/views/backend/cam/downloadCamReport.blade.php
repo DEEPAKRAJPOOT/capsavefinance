@@ -29,8 +29,8 @@
 <!-- Start PDF Section -->
 
 <div class="card mt-3" id="camReport">
-   <div class="card-body pt-3 pb-3">
-      <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
+    <div class="data mt-4">
+             <h2 class="sub-title bg">CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</h2>
    </div>
    <div class="card-body pt-3 pb-3">
       <div class="row">
@@ -317,15 +317,12 @@
                         </table>
                      </td>
                   </tr>
-
-
-
                </tbody>
             </table>
               </div>
               </div>
      
-           
+<div style="page-break-before:always">&nbsp;</div>
            <div class="data mt-4">
              <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
@@ -645,18 +642,15 @@
             </table>
               </div>
               </div>
-
             
-           
-            
-               <div class="data mt-4">
+            <div class="data mt-4">
              <h2 class="sub-title bg">External Rating</h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
                <p>{{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</p>
               </div>
               </div>
 
-               <div class="data mt-4">
+            <div class="data mt-4">
              <h2 class="sub-title bg">Rating Rationale of {{$arrBizData->biz_entity_name}} </h2>
               <div class="pl-4 pr-4 pb-4 pt-2">
                <p> {!! isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : '' !!} </p>
@@ -846,13 +840,14 @@
 <script>
 
 function downloadCam(){
+    $('.isloader').show();
     var pdf = new jsPDF('px', 'pt', [1400, 1175]);
     var  res = pdf.html(document.getElementById('camReport'), {
         callback: function (pdf) {
             pdf.save('camReport');
+            $('.isloader').hide();
         }
-    });
-    
+    }); 
 }
 </script>
 

@@ -1096,7 +1096,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'excel_bulk_payment',
                 'uses' => 'Backend\PaymentController@excelBulkPayment'
             ]);
-             
+
          }); 
     });
 

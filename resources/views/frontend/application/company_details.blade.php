@@ -586,8 +586,6 @@ $(document).ready(function () {
 			$(".product-type-"+productType).removeClass('hide');
 		}else{
 			$(".product-type-"+productType).addClass('hide');
-			$("input[name='product_id["+productType+"][loan_amount]']").val('');
-			$("input[name='product_id["+productType+"][tenor_days]']").val('');
 		}
 	});
 });
