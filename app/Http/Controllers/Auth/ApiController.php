@@ -272,7 +272,7 @@ class ApiController
           \File::put($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
-            'updated_by' => '999999',
+            'updated_by' => NULL,
           );
           FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
         }
@@ -318,7 +318,7 @@ class ApiController
           \File::put($this->getToUploadPath($appId, 'banking') .'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
-            'updated_by' => '999999',
+            'updated_by' => NULL,
           );
           FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
         }

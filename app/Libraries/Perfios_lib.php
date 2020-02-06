@@ -103,7 +103,7 @@ class Perfios_lib{
 	     	'perfios_log_id' => $params['perfiosTransactionId'] ?? NULL,
 	     	'req_file' => is_array($postdata) || is_object($postdata) ? base64_encode(json_encode($postdata)) : base64_encode($postdata),
 	     	'status' => 'pending',
-	     	'created_by' => Auth::user()->user_id ?? '999999',
+	     	'created_by' => Auth::user()->user_id ?? NULL,
 	     	'url' => base64_encode($url),
 	     );
 	     $inserted_id = FinanceModel::insertPerfios($log_req, 'biz_perfios_log');
