@@ -80,7 +80,7 @@ class LmsUser extends Authenticatable
 
     public function bank_details()
     {
-        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_active' => 1]);
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_active' => 1, 'is_default' => 1]);
     }
 
     public function app()
