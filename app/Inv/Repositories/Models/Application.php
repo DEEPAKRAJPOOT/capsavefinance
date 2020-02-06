@@ -163,7 +163,8 @@ class Application extends BaseModel
         }
                
         
-        $appData = self::select('app.*')
+        $appData = self::select('app.*','biz.biz_entity_name')
+                ->leftjoin('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->where('app.user_id', $user_id)->get();
                        
         return ($appData?$appData:null);
@@ -186,7 +187,7 @@ class Application extends BaseModel
                 'users.mobile_no',                   
                 'app_assign.sharing_comment')                 
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
-                    ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 //->leftJoin('anchor_user', 'app.user_id', '=', 'anchor_user.user_id')
                 
                 ->leftJoin('app_assign', function ($join) {
