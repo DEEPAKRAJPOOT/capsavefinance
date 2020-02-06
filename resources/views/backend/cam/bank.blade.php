@@ -95,6 +95,7 @@
                <br/>
                <form method="POST" action="{{route('save_bank_detail')}}">
                   <input type="hidden" name="app_id" value="{{$appId}}">  
+                  <input type="hidden" name="biz_id" value="{{$biz_id}}">  
                   <input type="hidden" name="bank_detail_id" value="{{$debtPosition->bank_detail_id ?? ''}}">  
                   @csrf
                   <div class="mt-4">
