@@ -187,22 +187,23 @@ class CamController extends Controller
       $active_json_filename = $json_files['curr_file'];
        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
             $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
+            $fy = $contents['FinancialStatement']['FY'] ?? array();
+            $financeData = [];
+            if (!empty($fy)) {
+              foreach ($fy as $k => $v) {
+                $vyear = $v['year'];
+                $request_year = $request->get('year');
+                $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
+              }
+            }
+            $financeData = arrayValuesToInt($financeData);
+            $json_files = $this->getLatestFileName($appId,'finance', 'json');
+            $contents['FinancialStatement']['FY'] = $financeData;
+
+            $new_file_name = $json_files['new_file'];
+            \File::put($this->getToUploadPath($appId, 'finance') .'/'.$new_file_name, base64_encode(json_encode($contents)));            
         }
-        $fy = $contents['FinancialStatement']['FY'] ?? array();
-        $financeData = [];
-        if (!empty($fy)) {
-          foreach ($fy as $k => $v) {
-            $vyear = $v['year'];
-            $request_year = $request->get('year');
-            $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
-          }
-        }
-        $financeData = arrayValuesToInt($financeData);
-        $json_files = $this->getLatestFileName($appId,'finance', 'json');
-        $contents['FinancialStatement']['FY'] = $financeData;
         
-        $new_file_name = $json_files['new_file'];
-        \File::put($this->getToUploadPath($appId, 'finance') .'/'.$new_file_name, base64_encode(json_encode($contents)));
 
       try {
             $userId = Auth::user()->user_id;
