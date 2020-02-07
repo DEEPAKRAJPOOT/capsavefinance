@@ -1461,7 +1461,10 @@ class CamController extends Controller
         if($request->has('addl_security')){
           $request['addl_security'] = implode(',', $request->addl_security);
         }
-
+        if ($request->has('equipment_type_id')) {
+            $equipment_type_id = $request->equipment_type_id;
+        }
+        
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
         /*Start add offer PTPQ block*/
         $ptpqArr =[];
