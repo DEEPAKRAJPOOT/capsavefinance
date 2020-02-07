@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-md-6">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Facility Type</b></label> 
+            <label for="txtPassword" ><b>Product</b></label> 
             <input type="text" class="form-control" value="Leasing" placeholder="Facility Type" maxlength="15" disabled>
           </div>
         </div>
@@ -26,18 +26,23 @@
             <label for="txtPassword" ><b>Limit</b></label> 
             <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
             <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
-            <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Limit" maxlength="15">
+            <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Limit" maxlength="15" disabled>
           </div>
         </div>
-    
-        <div class="col-md-6">
+        
+        <div class="col-md-12">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Tenor (Months)</b></label> 
-            <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+            <label for="txtPassword" ><b>Facility Type</b></label> 
+            <select class="form-control" name="facility_type">
+                <option value="">Select Facility Type</option>
+                @foreach($equips as $key => $equip)
+                <option value="{{$key}}" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == $key)? 'selected': ''}}>{{$equip}}</option>
+                @endforeach
+            </select>
           </div>
-        </div>
-
-        <div class="col-md-6">
+        </div>        
+    
+        <div class="col-md-12">
           <div class="form-group ">
             <label for="txtPassword" ><b>Equipment Type</b></label> 
             <select class="form-control" name="equipment_type_id">
@@ -48,8 +53,22 @@
             </select>
           </div>
         </div>
-    
+        
         <div class="col-md-12">
+          <div class="form-group ">
+            <label for="txtPassword" ><b>Sub Limit</b></label> 
+            <input type="text" name="sub_limit" class="form-control" value="" placeholder="Sub Limit" maxlength="15" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="form-group ">
+            <label for="txtPassword" ><b>Tenor (Months)</b></label> 
+            <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+          </div>
+        </div>        
+    
+        <div class="col-md-6">
             <div class="form-group ">
                 <label for="txtPassword" ><b>Security Deposit</b></label> 
                 <br/>
