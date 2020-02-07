@@ -252,5 +252,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return Disbursal::where('disbursal_id', $disbursalId)
                 ->update($data);
+    }          
+     /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getVirtualAccIdByUserId($userId)
+    {
+        return LmsUser::where('user_id', $userId)
+                ->pluck('virtual_acc_id')->first();
     }           
 }

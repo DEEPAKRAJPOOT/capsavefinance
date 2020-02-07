@@ -297,7 +297,53 @@ trait LmsTrait
         $disbursalData['interest_refund'] = null;
         $disbursalData['funded_date'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
         $disbursalData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
+        $disbursalData['processing_fee'] = $invoice['program_offer']['processing_fee'] ?? null;
+        $disbursalData['grace_period'] = $invoice['program_offer']['grace_period'] ?? null;
+        $disbursalData['overdue_interest_rate'] = $invoice['program_offer']['overdue_interest_rate'] ?? null;
+        $disbursalData['repayment_amount'] = null;
+        $disbursalData['penalty_amount'] = 0;
         
         return $disbursalData;
+    }
+
+    /**
+     * Prepare Disbursal Data
+     * 
+     * @param array $data
+     * @return mixed
+     */
+    protected function createTransactionData($disburseData = [])
+    {
+        /**
+        * disburseType = 1 for online and 2 for manually
+        */
+        $transactionData = [];
+        // dd($disburseAmount);
+        $transactionData['gl_flag'] = 1;
+        $transactionData['soa_flag'] = 1;
+        $transactionData['user_id'] = $disburseData['user_id'] ?? null;
+        $transactionData['virtual_acc_id'] = $disburseData['user_id'] ? $this->lmsRepo->getVirtualAccIdByUserId($disburseData['user_id']) : null;
+        dd($transactionData);
+        $transactionData['trans_date'] = $disburseData['prgm_offer_id'] ?? null;
+        $transactionData['trans_type'] = $disburseData['supplier_bank_detail']['bank_account_id'] ?? 0;
+        $transactionData['pay_from'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $transactionData['amount'] = $disburseData['supplier_bank_detail']['bank']['bank_name'] ?? null;
+        $transactionData['gst'] = $disburseData['supplier_bank_detail']['ifsc_code'] ?? null;
+        $transactionData['cgst'] = $disburseData['supplier_bank_detail']['acc_no'] ?? null;            
+        $transactionData['sgst'] = $disburseData['lms_user']['virtual_acc_id'] ?? null;
+        $transactionData['igst'] = $disburseData['lms_user']['customer_id'] ?? null;
+        $transactionData['entry_type'] = $fundedAmount ?? null;
+        $transactionData['tds_per'] = $disburseData['disburseData_due_date'] ?? null;
+        $transactionData['mode_of_pay'] =  $disburseData['program_offer']['tenor'] ?? null;
+        $transactionData['comment'] = $disburseData['program_offer']['interest_rate'] ?? null;
+        $transactionData['utr_no'] = $interest;
+        $transactionData['cheque_no'] =$disburseData['program_offer']['margin'] ?? null;
+        $transactionData['unr_no'] = $disburseAmount ?? null;
+        $transactionData['txn_id'] = 0;
+
+        $transactionData['created_by'] = Auth::user()->user_id ?? null;
+        $transactionData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
+        
+        return $transactionData;
     }    
 }
