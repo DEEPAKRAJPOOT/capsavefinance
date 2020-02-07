@@ -53,7 +53,7 @@
                         <tr>
                             <td width="25%"><b>Name of Borrower</b></td>
                             <td width="25%">{{$arrBizData->biz_entity_name}}</td>
-                            <td><b>Contact Person of Key Personal</b></td>
+                            <td><b>Key Management Person</b></td>
                             <td> 
                                 <select class="form-control" name="contact_person">
                                 <option  value="">Select</option>
