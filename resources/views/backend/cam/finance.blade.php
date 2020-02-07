@@ -1026,11 +1026,11 @@
              return $min_blanktd-1;
           }
           minblank = findminBlank('gridView');
-          setTimeout(function(){
-             $("#gridView tr").each(function() {
-                  $(this).find('td').slice(-minblank).remove();
-             });   
-          }, 2000);
+//          setTimeout(function(){
+//             $("#gridView tr").each(function() {
+//                  $(this).find('td').slice(-minblank).remove();
+//             });   
+//          }, 2000);
 </script>
 <script type="text/javascript">
    $(document).on('click', '.getAnalysis', function() {
