@@ -1202,9 +1202,78 @@ class DataRenderer implements DataProviderInterface
               ->make(true);
     }  
     
+    /*
+     * Get bulk transaction  
+     */
+     
+     public function getAllManualTransaction(Request $request,$trans)
+     {
+        /// dd($trans->disburse);
     
-      /*      
-     * Get Invoice list for backend
+         return DataTables::of($trans)
+               ->rawColumns(['trans_by'])
+                ->addIndexColumn()
+                
+                ->addColumn(
+                    'customer_id',
+                    function ($trans) {                        
+                       return $trans->disburse ? $trans->disburse->customer_id : '';
+                })
+                ->addColumn(
+                    'virtual_account_no',
+                    function ($trans) { 
+                         return $trans->virtual_acc_id 	 ? $trans->virtual_acc_id : '';
+                })
+                   ->addColumn(
+                    'amount',
+                    function ($trans) {                        
+                         return $trans->amount ? $trans->amount : '';
+                })  
+                 ->addColumn(
+                    'trans_by',
+                    function ($trans) {  
+                       if($trans->trans_by==1)
+                       {
+                         return 'Manual';
+                       }
+                       else if($trans->trans_by==2)
+                       {
+                         return 'Excel';
+                       }
+                       else
+                       {
+                           return 'N/A';
+                       }
+                })
+                ->addColumn(
+                    'created_by',
+                    function ($trans) {                        
+                         return $trans->created_at ? $trans->created_at : '';
+                })
+                 ->filter(function ($query) use ($request) {
+                    if ($request->get('type') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('type'));
+                            $query->where('trans_by',$search_keyword);
+                           
+                        });                        
+                    }
+                    else if ($request->get('date') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                             $search_keyword = Carbon::createFromFormat('d/m/Y', $request->get('date'))->format('Y-m-d');
+                             $query->where('trans_date',$search_keyword);
+                        });                        
+                    }
+                    else {
+                        $query->where('trans_by','!=',NULL);
+                    }
+               })
+              
+              ->make(true);
+         
+     }
+     
+     /* Get Invoice list for backend
      */
     public function getBackendInvoiceActivityList(Request $request,$invoice)
     { 

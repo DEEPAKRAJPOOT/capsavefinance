@@ -598,6 +598,7 @@
                 token: "{{ csrf_token() }}",
                 data_not_found: "{{ trans('error_messages.data_not_found') }}",
                 chk_user_voterid_karza: "{{ URL::route('chk_user_voterid_karza') }}",
+                get_promoter_details_by_cin: "{{ URL::route('get_promoter_details_by_cin') }}",
                 chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
                 chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
                 chk_user_pan_status_karza: "{{ URL::route('chk_user_pan_status_karza') }}",
@@ -980,7 +981,7 @@
         
          //////////CIN webservice for get promoter details start here//////////////////////////////////////        
         
-        jQuery(document).ready(function () {
+          jQuery(document).ready(function () {
         var countOwnerRow = $("#rowcount").val();
         if (countOwnerRow > 0)
         {
@@ -990,18 +991,13 @@
         $('.isloader').show();
         var CIN = '{{ (isset($cin_no)) ? $cin_no : "" }}';
         var consent = "Y";
-        var key = "NX1nBICr7TNEisJ";
-        var dataStore = ({'consent': consent, 'entityId': CIN});
-        var jsonData = JSON.stringify(dataStore);
+        var dataStore = ({'consent': consent, 'entityId': CIN,'_token': messages.token});
+        var postData = dataStore;
         jQuery.ajax({
-        url: "https://api.kscan.in/v1/corp/profile",
-                headers: {
-                'Content-Type': "application/json",
-                        'x-karza-key': key
-                },
+        url: messages.get_promoter_details_by_cin,
                 method: 'post',
                 dataType: 'json',
-                data: jsonData,
+                data: postData,
                 error: function (xhr, status, errorThrown) {
                 console.log(xhr);
                 $('.isloader').hide();
@@ -1010,7 +1006,7 @@
                 success: function (result) {
 
                 $(".isloader").hide();
-                obj = result.result.directors;
+                obj = result.value;
                 var count = 0;
                 var arr = new Array();
                 var x = 0;

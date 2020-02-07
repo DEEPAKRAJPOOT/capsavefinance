@@ -176,7 +176,13 @@ class Disbursal extends BaseModel {
      /////////////* get customer id   */////////////////
     public static function  getRepaymentAmount($uid)
     {
-        return self::where(['disburse_type' => 2,'user_id' => $uid])->get();
+        return self::with('invoice')->where(['disburse_type' => 2,'user_id' => $uid])->get();
+    }
+    
+    function invoice()
+    {
+              return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id')->orderBy('invoice_due_date','asc');
+   
     }
     
     public function  user()

@@ -130,6 +130,13 @@
                 }
             }
         });
+
+        $("#agencyUserForm button[type=submit]").click(function(){
+            if($('#agencyUserForm').valid()){
+                $('#agencyUserForm').submit();
+                $("#agencyUserForm button[type=submit]").attr("disabled","disabled");
+            }  
+        });
     });
 </script>
 @endsection

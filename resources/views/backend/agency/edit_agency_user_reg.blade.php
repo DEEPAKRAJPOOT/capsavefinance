@@ -131,6 +131,13 @@
                 }
             }
         });
+
+        $("#editAgencyUserForm button[type=submit]").click(function(){
+            if($('#editAgencyUserForm').valid()){
+                $('#editAgencyUserForm').submit();
+                $("#editAgencyUserForm button[type=submit]").attr("disabled","disabled");
+            }  
+        });
     });
 </script>
 @endsection

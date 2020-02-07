@@ -36,6 +36,8 @@ return [
     
     'karza_auth_api_url' => env('KARZA_AUTHENTICATION_API_URL', ''),
     'karza_auth_api_key' => env('KARZA_AUTHENTICATION_API_KEY', ''),
+    'get_promoter_url' => env('GET_PROMOTER_URL', ''),
+    'get_promoter_key' => env('GET_PROMOTER_KEY', ''),
     
     'BSA_LIB_URL' => env('BSA_LIB_URL', ''),
     'KARZA_TXN_LIB_URL' => env('KARZA_TXN_LIB_URL', ''),

@@ -124,4 +124,16 @@ class Transactions extends BaseModel {
     }
     
     
+    /*** get all transaction  **/
+    public static function getAllManualTransaction()
+    {
+          return self::with('disburse')->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
+    }
+    
+    function disburse()
+    {
+       return $this->belongsTo('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
+    }      
+   
+     
 }
