@@ -38,6 +38,7 @@ use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Libraries\Pdf;
 use App\Inv\Repositories\Models\UserAppDoc;
+use PDF as DPDF;
 
 
 class CamController extends Controller
@@ -1821,8 +1822,29 @@ class CamController extends Controller
               /*end code for approve button */
 
               // dd($finacialDetails);
-              $htmlContent = \View::make('backend.cam.downloadCamReportPdfNew')
-                ->with([
+              // return $htmlContent = \View::make('backend.cam.downloadCamReportPdfNew')
+              //   ->with([
+              //     'arrCamData' =>$arrCamData ,
+              //     'arrBizData' => $arrBizData, 
+              //     'reviewerSummaryData' => $reviewerSummaryData,
+              //     'arrHygieneData' => $arrHygieneData,
+              //     'finacialDetails' => $finacialDetails,
+              //     'arrOwnerData' => $arrOwnerData,
+              //     'arrEntityData' => $arrEntityData,
+              //     'financeData' => $financeData,
+              //     'FinanceColumns' => $FinanceColumns,
+              //     'audited_years' => $audited_years,
+              //     'leaseOfferData' => $leaseOfferData,
+              //     'arrBankDetails' => $arrBankDetails,
+              //     'arrApproverData' => $arrApproverData,
+              //     'arrCM' => $arrCM,
+              //     'arrStaticData' => $arrStaticData,
+              //     'approveStatus' => $approveStatus,
+              //     'currStageCode' => $currStageCode,
+              //   ])->render();
+        
+              DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+                $pdf = DPDF::loadView('backend.cam.downloadCamReportPdfNew', [
                   'arrCamData' =>$arrCamData ,
                   'arrBizData' => $arrBizData, 
                   'reviewerSummaryData' => $reviewerSummaryData,
@@ -1840,13 +1862,10 @@ class CamController extends Controller
                   'arrStaticData' => $arrStaticData,
                   'approveStatus' => $approveStatus,
                   'currStageCode' => $currStageCode,
-                ])->render();
-        
-              $fileName = 'CamReport'. time() . '.pdf';
-              return response($this->pdf->render($htmlContent), 200)->withHeaders([
-                  'Content-Type' => 'application/pdf',
-                  'Content-Disposition' =>"filename=" . $fileName,
-              ]);
+                ]);
+
+                return $pdf->download('invoice.pdf');
+
                             
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
