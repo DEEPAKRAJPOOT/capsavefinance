@@ -38,7 +38,7 @@ use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Libraries\Pdf;
 use App\Inv\Repositories\Models\UserAppDoc;
-
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 
 class CamController extends Controller
 {
@@ -47,11 +47,12 @@ class CamController extends Controller
     protected $userRepo;
     protected $docRepo;
     protected $pdf;
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
         $this->pdf = $pdf;
+        $this->mstRepo = $mstRepo;
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
     }
@@ -1427,6 +1428,7 @@ class CamController extends Controller
       $prgmOfferedAmount; //total offered amount related to program from offer table
       $currentOfferAmount; //current offered amount corresponding to app_prgm_limit_id
 
+      $facilityTypeList= $this->mstRepo->getFacilityTypeList();
       $limitData= $this->appRepo->getLimit($aplid);
       $offerData= $this->appRepo->getProgramOffer($aplid);
       $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
@@ -1442,7 +1444,7 @@ class CamController extends Controller
         $prgmLimit = 0;
       }
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList]);
     }
 
     /*function for updating offer data*/

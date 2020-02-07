@@ -27,6 +27,8 @@ use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\Master\Segment;
 use App\Inv\Repositories\Models\Master\Constitution;
+use App\Inv\Repositories\Models\Master\FacilityType;
+
 /**
  * 
  */
@@ -579,4 +581,13 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return StateModel::getAllStateList();
     }
 
+    /*
+     * Get Facility Type List
+     * 
+     * return array
+     */
+    public function getFacilityTypeList()
+    {
+        return FacilityType::getFacilityTypeList();
+    }    
 }

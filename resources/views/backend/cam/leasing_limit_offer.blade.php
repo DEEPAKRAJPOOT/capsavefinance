@@ -33,10 +33,10 @@
         <div class="col-md-12">
           <div class="form-group ">
             <label for="txtPassword" ><b>Facility Type</b></label> 
-            <select class="form-control" name="facility_type">
+            <select class="form-control" name="facility_type_id">
                 <option value="">Select Facility Type</option>
-                @foreach($equips as $key => $equip)
-                <option value="{{$key}}" {{(isset($offerData->equipment_type_id) && $offerData->equipment_type_id == $key)? 'selected': ''}}>{{$equip}}</option>
+                @foreach($facilityTypeList as $key => $facilityType)
+                <option value="{{$key}}" {{ $facilityType == $key ? 'selected' : ''}}>{{$facilityType}}</option>
                 @endforeach
             </select>
           </div>
@@ -243,6 +243,7 @@
     unsetError('input[name=prgm_limit_amt]');
     unsetError('input[name=tenor]');
     unsetError('select[name=equipment_type_id]');
+    unsetError('select[name=facility_type_id]')
     unsetError('input[name=security_deposit]');
     unsetError('input[name=security_deposit_type]');
     unsetError('select[name=rental_frequency]');
@@ -274,6 +275,7 @@
     let addl_security = $('input[name*=addl_security]').is(':checked');
     let comment = $('input[name=comment]').val().trim();
     let security_deposit_type = $('input[name=security_deposit_type]:checked').val();
+    let facility_type_id = $('select[name=facility_type_id]').val();
 
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
@@ -288,6 +290,11 @@
         flag = false;
     }
 
+    if(facility_type_id == ''){
+        setError('select[name=facility_type_id]', 'Please select facility type');
+        flag = false;
+    }
+    
     if(equipment_type_id == ''){
         setError('select[name=equipment_type_id]', 'Please select equipment type');
         flag = false;
