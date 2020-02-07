@@ -78,6 +78,8 @@ var iframe_ids = [
         'addConstiFrame',
         'editConstiFrame',
         'changeAppDisbursStatus',
+        'addEquipmentFrame',
+        'editEquipmentFrame',
     ];
 
 iframe_ids.forEach(function(id) {

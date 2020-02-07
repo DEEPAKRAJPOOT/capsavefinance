@@ -544,6 +544,15 @@ Route::group(
         ]
     );
 
+    /* Equipment Route */
+    Route::post(
+        'get-ajax-equipment-list',
+        [
+        'as' => 'get_ajax_equipment_list',
+        'uses' => 'AjaxController@getEquipmentLists'
+        ]
+    );
+
     Route::post(
         'get-agency-user-list',
         [
