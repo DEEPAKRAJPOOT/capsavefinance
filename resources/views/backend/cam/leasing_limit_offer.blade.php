@@ -257,7 +257,8 @@
     unsetError('input[name=processing_fee]');
     unsetError('#check_block');
     unsetError('#radio_block');
-
+    unsetError('input[name=sub_limit]');        
+    
     let flag = true;
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
     let tenor = $('input[name=tenor]').val();
@@ -276,7 +277,8 @@
     let comment = $('input[name=comment]').val().trim();
     let security_deposit_type = $('input[name=security_deposit_type]:checked').val();
     let facility_type_id = $('select[name=facility_type_id]').val();
-
+    let sub_limit = $('input[name=sub_limit]').val();
+    
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
@@ -285,6 +287,14 @@
         flag = false;
     }
 
+    if(sub_limit.length == 0 || parseInt(sub_limit.replace(/,/g, '')) == 0){
+        setError('input[name=sub_limit]', 'Please fill sub limit amount');
+        flag = false;
+    }else if((parseInt(sub_limit.replace(/,/g, '')) > balance_limit)){
+        setError('input[name=sub_limit]', 'Sub limit amount can not exceed from balance amount');
+        flag = false;
+    }
+    
     if(tenor == ''){
         setError('input[name=tenor]', 'Please flll tenor');
         flag = false;
