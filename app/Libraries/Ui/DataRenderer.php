@@ -2807,9 +2807,7 @@ class DataRenderer implements DataProviderInterface
                            
                         })
                         ->make(true);
-    }
-    
-    
+    }    
     
     /**
      * get disbursal list
@@ -3058,6 +3056,77 @@ class DataRenderer implements DataProviderInterface
                     } else {
                         return '<span class="badge badge-warning current-status">InActive</span>';
                     }
+                }
+            )
+            
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') {
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('chrg_desc', 'like', "%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                    });
+                }
+            })
+            ->make(true);
+    }
+
+    /**
+     * get soa list
+     * 
+     * @param object $request
+     * @param object $data
+     * @return mixed
+     */
+    public function lmsGetTransactions(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->addColumn(
+                'virtual_acc_id',
+                function ($transaction) {
+                    return $transaction->virtual_acc_id;
+                }
+            )
+            ->addColumn(
+                'trans_date',
+                function ($transaction) {
+                    return date('d-M-Y',strtotime($transaction->trans_date));
+                }
+            )
+            ->editColumn(
+                'value_date',
+                function ($transaction) {
+                    return date('d-M-Y',strtotime($transaction->trans_date));
+                }
+            )
+            ->editColumn(
+                'trans_type',
+                function ($transaction) {
+                    return 'Disburse';
+                }
+            )
+            ->editColumn(
+                'currency',
+                function ($transaction) {
+                    return 'INR';
+                }
+            )
+            ->editColumn(
+                'debit',
+                function ($transaction) {
+                    return $transaction->amount;
+                }
+            )
+            ->editColumn(
+                'credit',
+                function ($transaction) {
+                    return '0.00';
+                }
+            )
+            ->editColumn(
+                'balance',
+                function ($transaction) {
+                    return '0.00';
                 }
             )
             

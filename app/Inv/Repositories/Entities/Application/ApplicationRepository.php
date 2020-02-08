@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\SubIndustry;
 use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\Lms\Transactions;
 /**
  * Application repository class
  */
@@ -1334,4 +1335,15 @@ public function getAppData($app_id)
     $result= Application::getAppData($app_id);
     return ($result)?$result:false;
 }
+    /**
+    * bank account list 
+    * 
+    * @return type mixed
+    */
+
+    public function lmsGetTransactions()
+    {
+    return Transactions::where('soa_flag', 1);
+    }
+
 }

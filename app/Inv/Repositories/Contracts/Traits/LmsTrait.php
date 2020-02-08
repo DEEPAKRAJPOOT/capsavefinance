@@ -1,6 +1,8 @@
 <?php
 namespace App\Inv\Repositories\Contracts\Traits;
 
+use Auth;
+
 trait LmsTrait
 {
     /**
@@ -312,7 +314,7 @@ trait LmsTrait
      * @param array $data
      * @return mixed
      */
-    protected function createTransactionData($disburseData = [])
+    protected function createTransactionData($disburseData = [], $disburseAmount= 0, $transId = null)
     {
         /**
         * disburseType = 1 for online and 2 for manually
@@ -323,26 +325,24 @@ trait LmsTrait
         $transactionData['soa_flag'] = 1;
         $transactionData['user_id'] = $disburseData['user_id'] ?? null;
         $transactionData['virtual_acc_id'] = $disburseData['user_id'] ? $this->lmsRepo->getVirtualAccIdByUserId($disburseData['user_id']) : null;
-        dd($transactionData);
-        $transactionData['trans_date'] = $disburseData['prgm_offer_id'] ?? null;
-        $transactionData['trans_type'] = $disburseData['supplier_bank_detail']['bank_account_id'] ?? 0;
-        $transactionData['pay_from'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-        $transactionData['amount'] = $disburseData['supplier_bank_detail']['bank']['bank_name'] ?? null;
-        $transactionData['gst'] = $disburseData['supplier_bank_detail']['ifsc_code'] ?? null;
-        $transactionData['cgst'] = $disburseData['supplier_bank_detail']['acc_no'] ?? null;            
-        $transactionData['sgst'] = $disburseData['lms_user']['virtual_acc_id'] ?? null;
-        $transactionData['igst'] = $disburseData['lms_user']['customer_id'] ?? null;
-        $transactionData['entry_type'] = $fundedAmount ?? null;
-        $transactionData['tds_per'] = $disburseData['disburseData_due_date'] ?? null;
-        $transactionData['mode_of_pay'] =  $disburseData['program_offer']['tenor'] ?? null;
-        $transactionData['comment'] = $disburseData['program_offer']['interest_rate'] ?? null;
-        $transactionData['utr_no'] = $interest;
-        $transactionData['cheque_no'] =$disburseData['program_offer']['margin'] ?? null;
-        $transactionData['unr_no'] = $disburseAmount ?? null;
-        $transactionData['txn_id'] = 0;
+        $transactionData['trans_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $transactionData['trans_type'] = 0;
+        $transactionData['pay_from'] = null;
+        $transactionData['amount'] = $disburseAmount ?? 0;
+        $transactionData['gst'] = 0;
+        $transactionData['cgst'] = 0;            
+        $transactionData['sgst'] = 0;
+        $transactionData['igst'] = 0;
+        $transactionData['entry_type'] = 0;
+        $transactionData['tds_per'] = null;
+        $transactionData['mode_of_pay'] =  1;
+        $transactionData['comment'] = null;
+        $transactionData['utr_no'] =null;
+        $transactionData['cheque_no'] = null;
+        $transactionData['unr_no'] = null;
+        $transactionData['txn_id'] = $transId;
 
         $transactionData['created_by'] = Auth::user()->user_id ?? null;
-        $transactionData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
         
         return $transactionData;
     }    

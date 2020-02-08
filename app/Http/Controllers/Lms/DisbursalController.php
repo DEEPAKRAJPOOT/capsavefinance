@@ -37,7 +37,7 @@ class DisbursalController extends Controller
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->lmsRepo = $lms_repo;
-                $this->masterRepo = $master;
+        $this->masterRepo = $master;
 		$this->middleware('checkBackendLeadAccess');
 	}
 	
@@ -117,7 +117,7 @@ class DisbursalController extends Controller
 			foreach ($allinvoices as $invoice) {
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
 				// dd($disburseRequestData);
-				// $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
+				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 				$refId ='CAP'.$userid;
 				if($invoice['supplier_id'] = $userid) {
 					$now = strtotime($invoice['invoice_due_date']); // or your date as well
@@ -131,7 +131,7 @@ class DisbursalController extends Controller
 
 				}			
 				if($disburseType == 1) {
-					// $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
+					$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
 					$requestData[$userid]['RefNo'] = $refId;
 					$requestData[$userid]['Amount'] = $disburseAmount;
 					$requestData[$userid]['Debit_Acct_No'] = '123344455';
@@ -154,22 +154,26 @@ class DisbursalController extends Controller
 					$apiLogData['tran_id'] = $transId;
 					// $apiLogData['utr_no'] = $utrNo;
 					$apiLogData['remark'] = $remarks;
-					// $disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
-					// $updateDisbursal = $this->lmsRepo->updateDisburse([
-					// 		'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
-					// 	], $createDisbursal->disbursal_id);
+					$disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
+					$updateDisbursal = $this->lmsRepo->updateDisburse([
+							'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
+						], $createDisbursal->disbursal_id);
 					
-					// if ($updateDisbursal) {
-					// 	$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
-					// }
-				}
-				if ($disburseAmount) {
-					$createTransactionData = $this->createTransactionData($disburseRequestData, $disburseAmount);
+					if ($updateDisbursal) {
+						$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
+					}
 				}
 
+
+			}
+			if ($disburseAmount) {
+				if($disburseType == 2) {
+					$transactionData = $this->createTransactionData($disburseRequestData, $disburseAmount, $transId);
+					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
+				}
 			}
 		}
-		dd($allrecords);
+		// dd($allrecords);
 		// --- production code end 
 
 		if($disburseType == 1 && !empty($allrecords)) {
@@ -193,6 +197,10 @@ class DisbursalController extends Controller
 
 			$idfcObj= new Idfc_lib();
 			$result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+			if ($result) {
+				//save transaction here
+				// for disburse type online idfc bank i.e $disburseType == 1
+			}
 			return redirect()->route('lms_disbursal_request_list')->withErrors($result);      
 		} elseif (empty($allrecords)) {
 			return redirect()->route('lms_disbursal_request_list')->withErrors(trans('backend_messages.noSelectedInvoice'));

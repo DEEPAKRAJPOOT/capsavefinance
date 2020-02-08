@@ -253,6 +253,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return Disbursal::where('disbursal_id', $disbursalId)
                 ->update($data);
     }          
+     
      /**
      * Get Repayments
      *      
@@ -264,5 +265,5 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return LmsUser::where('user_id', $userId)
                 ->pluck('virtual_acc_id')->first();
-    }           
+    } 
 }

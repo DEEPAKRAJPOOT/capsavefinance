@@ -73,6 +73,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_disbursed_list',
                 'uses' => 'Lms\DisbursalController@disbursedList'
             ]);
+
+            Route::get('/soa/list', [
+                'as' => 'lms_get_transaction',
+                'uses' => 'Lms\SoaController@list'
+            ]);
         });//end of application
 
         // Business address

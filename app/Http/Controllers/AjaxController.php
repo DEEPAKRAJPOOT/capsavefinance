@@ -3650,4 +3650,14 @@ if ($err) {
         return \response()->json(['success' => $res]);
     }
 
+    /**
+   * Get all transactions for soa
+   *
+   * @return json transaction data
+   */
+  public function lmsGetSoaList(DataProviderInterface $dataProvider) {
+    $transactionList = $this->application->lmsGetTransactions();
+    $users = $dataProvider->lmsGetTransactions($this->request, $transactionList);
+    return $users;
+  }
 }

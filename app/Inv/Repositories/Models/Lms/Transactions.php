@@ -60,7 +60,6 @@ class Transactions extends BaseModel {
         'comment',
         'utr_no',
         'cheque_no',
-        'unr_no',
         'txn_id',        
         'created_at',
         'created_by',

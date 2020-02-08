@@ -81,7 +81,7 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('viewDisbursalCustomerInvoice','View Disbursal Customer Invoice', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('disbueseInvoices','Disbuse Invoices', 'modal-md')!!}
+{!!Helpers::makeIframePopup('disbueseInvoices','Disburse Invoices', 'modal-md')!!}
 
 @endsection
 
