@@ -3132,6 +3132,13 @@ if ($err) {
      return $charges;
     }
 
+     public function getLmsChargeLists(DataProviderInterface $dataProvider) { 
+     $chargesList = $this->masterRepo->getAllCharges();
+     $charges = $dataProvider->getLmsChargeLists($this->request, $chargesList);
+     return $charges;
+    }
+    
+    
 
     public function getDocLists(DataProviderInterface $dataProvider) { 
      $documentsList = $this->masterRepo->getAllDocuments();

@@ -974,7 +974,7 @@ class DataRenderer implements DataProviderInterface
       return DataTables::of($invoice)
                ->rawColumns(['status','anchor_id','action'])
                 ->setRowClass(function ($invoice) {
-                    $finalDueDate =  date('d/m/Y', strtotime($invoice->invoice_due_date.' + '.$invoice->program_offer->grace_period.' days'));
+                      $finalDueDate =  date('d/m/Y', strtotime($invoice->invoice_due_date.' + '.$invoice->program_offer->grace_period.' days'));
                        $date =  Carbon::now();
                        $date =  Carbon::parse($date)->format('d/m/Y');
                        $cdate =  strtotime(Carbon::createFromFormat('d/m/Y',$date));
@@ -2076,6 +2076,84 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+    
+       public function getLmsChargeLists(Request $request, $charges){
+        $this->chrg_applicable_ids = array(
+            '1' => 'Limit Amount',
+            '2' => 'Outstanding Amount',
+            '3' => 'Outstanding Principal',
+            '4' => 'Outstanding Interest',
+            '5' => 'Overdue Amount'
+        );
+        return DataTables::of($charges)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'chrg_name',
+                    function ($charges) {
+                    return $charges->chrg_name;
+                })
+                ->addColumn(
+                    'chrg_type',
+                    function ($charges) {
+                    return ($charges->chrg_type == '1') ? 'Auto' : 'Manual';
+                })
+                ->addColumn(
+                    'chrg_calculation_type',
+                    function ($charges) {
+                    return $charges->chrg_calculation_type == 1 ? 'Fixed' : 'Percent';
+                })  
+                ->addColumn(
+                    'chrg_calculation_amt',
+                    function ($charges) {
+                    return $charges->chrg_calculation_amt;
+                })              
+                ->addColumn(
+                    'is_gst_applicable',
+                    function ($charges) {
+                    return ($charges->is_gst_applicable == 1) ? 'Yes' : 'No'; 
+                })
+                ->addColumn(
+                    'chrg_applicable_id',
+                    function ($charges) {
+                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
+                }) 
+                ->addColumn(
+                    'chrg_desc',
+                    function ($charges) {
+                     return $charges->chrg_desc;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($charges) {
+                    return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
+                })
+                ->addColumn(
+                    'created_by',
+                    function ($charges) {
+                    return $charges->userDetail->f_name.' '.$charges->userDetail->l_name;
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($charges) {
+                       $act = $charges->is_active;
+                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editChargesLmsFrame" title="Edit Charge Detail" data-url ="'.route('edit_lms_charges',['id' => $charges->id]).'" data-height="400px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('chrg_desc', 'like',"%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+    
+      
 
      public function getDocumentsList(Request $request, $documents){
          $this->doc_type_ids = array(

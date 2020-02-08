@@ -6,7 +6,20 @@
 
 
 <div class="content-wrapper">
-
+  <section class="content-header">
+   <div class="header-icon">
+      <i class="fa fa-clipboard" aria-hidden="true"></i>
+   </div>
+   <div class="header-title">
+      <h3 class="mt-2">Add Repayment</h3>
+     
+      <ol class="breadcrumb">
+         <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
+         <li class="active">Add Repayment</li>
+      </ol>
+   </div>
+   <div class="clearfix"></div>
+</section>
     <div class="row grid-margin mt-3">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
@@ -14,12 +27,12 @@
                     <div class="form-fields">
                         <div class="active" id="details">
                             <div class="form-sections">
-                                <form action="{{route('save_payment')}}" method="post">
+                                <form action="{{route('save_payment')}}" method="post" id="signupForm">
                                     <div class="row">
                                     @csrf
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
+                                                <label for="txtCreditPeriod">Repayment Method <span class="error_message_label">*</span></label>
                                               @php 
                                                $get = Config::get('payment.type');
                                               @endphp
@@ -36,8 +49,8 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                     <label for="txtCreditPeriod">Customer id <span class="error_message_label">*</span> </label>
-                                         <select class="form-control getCustomer" name="customer_id">
-                                               <option> Please Select</option>
+                                         <select class="form-control getCustomer" name="customer_id" id="customer_id">
+                                             <option value=""> Please Select</option>
                                                     @foreach($customer as $row)
                                                     <option value="{{$row->user_id}}">{{$row->user->f_name}}/{{$row->customer_id}}</option>
                                                  @endforeach   
@@ -49,8 +62,8 @@
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Bank Name <span class="error_message_label">*</span> </label>
                                                 
-                                                <select class="form-control" name="bank_name">
-                                               <option> Select</option>
+                                                <select class="form-control" name="bank_name" id="bank">
+                                                    <option value=""> Select</option>
                                                     @foreach($bank as $row)
                                                     <option value="{{$row->id}}">{{$row->bank_name}}</option>
                                                  @endforeach   
@@ -59,9 +72,9 @@
                                         </div> 
                                         <div class="col-md-4">
                                             <div class="form-group ">
-                                                <label for="txtCreditPeriod">Date of Payment <span class="error_message_label">*</span> </label>
+                                                <label for="txtCreditPeriod">Date of Repayment <span class="error_message_label">*</span> </label>
 
-                                                <input type="text" name="date_of_payment" readonly="readonly" class="form-control datepicker-dis-fdate">
+                                                <input type="text" name="date_of_payment" id="date_of_payment" readonly="readonly" class="form-control datepicker-dis-fdate">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -74,9 +87,9 @@
 
                                         <div class="col-md-4">
                                             <div class="form-group ">
-                                                <label for="txtCreditPeriod">Payment Refrence No. <span class="error_message_label">*</span> </label>
+                                                <label for="txtCreditPeriod">Payment Reference No. <span class="error_message_label">*</span> </label>
 
-                                                <input type="text" name="refrence_no" class="form-control">
+                                                <input type="text" name="refrence_no" id="refrence_no" class="form-control">
                                             </div>
                                         </div>
 
@@ -85,7 +98,7 @@
                                             <div class="form-group ">
                                                 <label for="txtCreditPeriod">Description <span class="error_message_label">*</span> </label>
 
-                                                <textarea name="description" class="form-control" rows="3" cols="3"></textarea>
+                                                <textarea name="description" id="description" class="form-control" rows="3" cols="3"></textarea>
                                             </div>
                                         </div>
                                          <div class="col-md-4">
@@ -96,7 +109,7 @@
                                         <div class="col-md-12">
                                             <div class="text-right ">
                                                 <input  type="reset" id="pre3" class="btn btn-secondary btn-sm" value="Cancel">
-                                                <input type="submit" class="btn btn-primary ml-2 btn-sm"  value="Submit">
+                                                <input type="submit" id="submit" class="btn btn-primary ml-2 btn-sm"  value="Submit">
                                             </div>
                                         </div>
 
@@ -149,19 +162,86 @@
       
             if (status == 1)
             {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Customer Virtual Account No.</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Customer Virtual Account No.</span></label><input type="text" class="form-control amountRepay" data-message="" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
             } else if (status == 2)
             {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" data-message="" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
             } else if (status == 3)
             {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" data-message="" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
             }
     });
 
-
+ /////////////// validation the time of final submit/////////////// 
+      $(document).on('click','#submit',function(e){
+      
+       if ($('form#signupForm').validate().form()) {     
+        $("#payment_type" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter repayment date",
+        }
+        });
+          $("#customer_id" ).rules( "add", {
+        required: true,
+    
+        messages: {
+        required: "Please select customer",
+        }
+        });
+          $("#bank" ).rules( "add", {
+        required: true,
+     
+        messages: {
+        required: "Please select bank name",
+        }
+        });
+          $("#date_of_payment" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter date of repayment",
+        }
+        });
+        $("#amount" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter amount",
+        }
+        });      
+       $("#refrence_no" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter refrence no",
+        }
+        });  
+          $("#refrence_no" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter refrence no",
+        }
+        });  
+          $("#description" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter description",
+        }
+        });  
+        if($("#payment_type").val()!=4)
+        {
+            $("#utr_no" ).rules( "add", {
+            required: true,
+            messages: {
+            required: "This field is required",
+            }
+            });   
+        }
+       } else {
+        /// alert();
+        }  
+     
+    });   
 </script>
 @endsection

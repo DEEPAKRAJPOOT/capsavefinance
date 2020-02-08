@@ -19,7 +19,7 @@
         <a class=" {{ ($active=='repayement') ? 'active': null }} " href="#">Repayment History</a>
     </li>
     <li>
-        <a class=" {{($active=='charges') ? 'active': null }} " href="#">Charges</a>
+        <a class=" {{($active=='charges') ? 'active': null }} " href="{{route('manage_charge')}}">Charges</a>
     </li>
     <li>
         <a class=" {{ ($active=='soa') ? 'active': null }} "  href="#">SOA</a>

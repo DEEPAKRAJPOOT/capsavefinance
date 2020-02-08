@@ -10,6 +10,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
@@ -247,5 +248,35 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return Disbursal::where('disbursal_id', $disbursalId)
                 ->update($data);
-    }           
+    }      
+    
+    /****
+     * get trans  type
+     */
+      public static function getTrnasType($whr)
+    {
+        try{
+            return Charges::getTransData($whr);
+        } catch (Exception $ex) {
+           return $ex;
+        }
+        
+               
+    }  
+    /****
+     * get trans  type
+     */
+      public static function getProgram()
+    {
+       try
+       {
+          return Charges::getProgram(); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }  
+    
+    
 }

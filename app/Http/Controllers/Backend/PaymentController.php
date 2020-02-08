@@ -77,7 +77,7 @@ class PaymentController extends Controller {
           ]);
         $user_id  = Auth::user()->user_id;
         $mytime = Carbon::now(); 
-        $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
+      /*  $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
         $enterAmount =  str_replace(',', '', $request->amount);
        foreach($getAmount as $val)
        {
@@ -97,7 +97,7 @@ class PaymentController extends Controller {
                
            }
           
-       }
+       }  */
       
             $utr  ="";
             $check  ="";
@@ -114,6 +114,7 @@ class PaymentController extends Controller {
             {
                $unr =  $request['utr_no'];
             }
+         
          $tran  = [  'gl_flag' => 1,
                         'soa_flag' => 1,
                         'user_id' =>  $request['customer_id'],
@@ -121,7 +122,7 @@ class PaymentController extends Controller {
                         'trans_type'   => 17, 
                         'trans_by'   => 1,
                         'pay_from'   => 0,
-                        'amount' =>  $request['amount'],
+                        'amount' =>  str_replace(',', '', $request->amount),
                         'mode_of_pay' =>  $request['payment_type'],
                         'comment' =>  $request['description'],
                         'utr_no' =>  $utr,
@@ -133,7 +134,7 @@ class PaymentController extends Controller {
         $res = $this->invRepo->saveRepaymentTrans($tran);
         if( $res)
         {
-             Session::flash('message', 'Bulk amount has been saved');
+             Session::flash('message', 'Data has been saved');
              return back(); 
         }
         else
@@ -143,7 +144,39 @@ class PaymentController extends Controller {
         }
        
     }
-   
+   /////////* save bulk payment by excel ///////////////////////
+   public function  saveExcelPayment(Request $request)
+   {
+            $data = array();
+            $id  = Auth::user()->user_id;
+            $mytime = Carbon::now(); 
+            $count =  count($request['payment_date']);
+               for($i=0; $i < $count ;$i++)
+               {
+                   $arr = [ 'user_id' => $request['user_id'],
+                            'trans_by' => 2, 
+                            'trans_type'   =>  17,
+                            'trans_date' => ($request['payment_date'][$i]) ? Carbon::createFromFormat('d/m/Y', $request['payment_date'][$i])->format('Y-m-d') : '',
+                            'virtual_acc_id' => $request['virtual_acc_no'][$i],
+                            'amount' => $request['amount'][$i],
+                            'comment' => $request['remarks'][$i],  
+                            'created_by' =>  $id,
+                            'created_at' =>  $mytime ];
+                   $res = $this->invRepo->saveRepaymentTrans($arr);
+               }
+         
+       
+        if( $res)
+        {
+             Session::flash('message', 'Data has been saved');
+             return back(); 
+        }
+        else
+        {
+             Session::flash('message', 'Something went wrong, Please try again');
+             return back(); 
+        }
+   }
   
 }
 

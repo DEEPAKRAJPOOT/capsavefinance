@@ -9,11 +9,11 @@
       <i class="fa fa-clipboard" aria-hidden="true"></i>
    </div>
    <div class="header-title">
-      <h3 class="mt-2">Manage Payment</h3>
+      <h3 class="mt-2">Manage Repayment</h3>
      
       <ol class="breadcrumb">
          <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-         <li class="active">Manage Payment</li>
+         <li class="active">Manage Repayment</li>
       </ol>
    </div>
    <div class="clearfix"></div>
@@ -32,7 +32,7 @@
              <div class="col-md-6">
             <div class="form-group">
             <label for="txtCreditPeriod">Customer <span class="error_message_label">*</span></label>
-           <select readonly="readonly" name="customer" class="form-control" id="customer">
+           <select readonly="readonly" name="customer" class="form-control " id="customer" >
                <option value="">Please Select</option>
                @foreach($customer as $row)
                <option value="{{$row->user_id}}">{{$row->user->f_name}}  / {{$row->customer_id}}</option>
@@ -67,21 +67,19 @@
             </div>	
          </div>
          
-         <form id="signupForm" action="http://admin.rent.local/invoice/backend_save_bulk_invoice" method="post"> 
-             <input type="hidden" name="_token" value="aQhbyHIEgDmON9SLjv3FSDyjn5eYwAfs5uY2ARO8">          <div class="row">
-             
-                                <div class="col-sm-12">
+         <form id="signupForm" action="{{route('backend_save_excel_payment')}}" method="post"> 
+            @csrf
+             <div class="col-sm-12">
                                     <table class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;" width="100%" cellspacing="0">
                                         <thead>
                                             <tr role="row">
-                                               
-                                                <th>Sr. No.</th>
-                                                <th>Payment Date</th>
-                                                   <th>Virtual Acc. No.</th>
-                                                   <th>Amount</th>
-                                                    <th>Payment Refrence No.</th>
-                                                <th>Remarks</th>
-                                                 <th>Action</th>
+                                             <th>Sr. No.</th>
+                                            <th>Payment Date</th>
+                                            <th>Virtual Acc. No.</th>
+                                            <th>Amount</th>
+                                            <th>Payment Refrence No.</th>
+                                            <th>Remarks</th>
+                                             <th>Action</th>
                                             </tr>
                                         </thead>
  
@@ -96,8 +94,7 @@
                            <label class="error" id="tenorMsg"></label>
                    </div>
                   <span id="final_submit_msg" class="error" style="display:none;">Total Amount  should not greater Program Limit</span>
-                  <input type="hidden" value="90" id="tenor" name="tenor">
-                  <input type="hidden" value="18" id="prgm_offer_id" name="prgm_offer_id">
+                  <input type="hidden" id="user_id" name="user_id">
                   <input type="submit" id="final_submit" class="btn btn-secondary btn-sm mt-3 float-right finalButton" value="Final Submit" style=""> 	
             </div> 
             
@@ -120,14 +117,20 @@
             token: "{{ csrf_token() }}",
  };
  
- 
- $(document).on('click','#submit',function(e){  
+ $(document).ready(function(){
+        $("#final_submit").hide(); 
+        $(".invoiceAppendData").append('<tr><td colspan="5" class="error">No data found...</td></tr>'); 
+ })
+ $(document).on('click','#submit',function(e){ 
+       $("#customer_msg" ).empty();
+       $("#upload_msg" ).empty();
        if($("#customer").val()=='')
         {
               $("#customer_msg" ).show();
               $("#customer_msg" ).text('Please Select Customer');
               return false;
         }
+        
         if($("#upload").val()=='')
         {
               $("#upload_msg" ).show();
@@ -156,7 +159,7 @@
             cache: false, // To unable request pages to be cached
             enctype: 'multipart/form-data',
             success: function(r){
-               console.log(r);
+              
                 $(".isloader").hide();
                 if(r.status==1)
                 {
@@ -183,10 +186,13 @@
                     {
                        var amount = "";
                     }
-                       $(".invoiceAppendData").append('here input');  
-                    });
+                       var user_id  =  $("#customer").val();
+                       $(".invoiceAppendData").append('<tr role="row" id="deleteRow'+j+'"><td>'+j+'</td><td><input type="text" class="form-control datepicker-dis-fdate payment_date" placeholder="Payment Date" value="'+payment_date+'" name="payment_date[]" id="payment_date" readonly="readonly"></td><td><input type="text" class="form-control virtual_acc_no" value="'+virtual_account_no+'" placeholder="Virtual Acc. No." name="virtual_acc_no[]" id="virtual_acc_no" ></td><td><input type="text" class="form-control amount" value="'+amount+'" placeholder="Amount" name="amount[]" id="amount" ></td><td><input type="text" class="form-control payment_refrence_no"  value="'+payment_ref_no+'" placeholder="Payment Refrence No." name="payment_refrence_no[]" id="payment_refrence_no"></td><td><input type="text" class="form-control remarks" value="'+remark+'" placeholder="Remarks" name="remarks[]" id="remarks" ></td><td><i class="fa fa-trash deleteTempInv" data-id="'+j+'" aria-hidden="true"></i></td></tr>');
+                       $("#user_id").val(user_id);
+               });
+                      $("#final_submit").show(); 
                       datepickerDisFdate();
-                     return false; 
+                       return false; 
                 }
                  else if(r.status==2)
                 {
@@ -209,9 +215,57 @@
           }
     });
   
-  
+   $(document).on('click','.deleteTempInv',function(){
+       if (confirm("Are you sure? You want to delete it.")) 
+      {
+          var id =  $(this).attr('data-id'); 
+          $("#deleteRow"+id).remove();
+       }
+       else
+      {
+        return false;
+      }
+    }); 
+    
+      /////////////// validation the time of final submit/////////////// 
+      $(document).on('click','#final_submit',function(e){
+      
+       if ($('form#signupForm').validate().form()) {     
+        $(".payment_date" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter  payment date",
+        }
+        });
+          $(".virtual_acc_no" ).rules( "add", {
+        required: true,
+    
+        messages: {
+        required: "Please enter virtual account no",
+        }
+        });
+          $(".amount" ).rules( "add", {
+        required: true,
+     
+        messages: {
+        required: "Please enter amount",
+        }
+        });
+          $(".payment_refrence_no" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter payment refrence no",
+        }
+        });
+                
+       
+       } else {
+        /// alert();
+        }  
+     
+    });   
 </script>
-<script src="{{ asset('backend/js/ajax-js/bulk_transaction.js') }}"></script>
+
 
 @endsection
  
