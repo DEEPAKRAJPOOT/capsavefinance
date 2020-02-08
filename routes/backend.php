@@ -535,17 +535,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
                 Route::get('cam-report', [
                     'as' => 'cam_report',
-                    'uses' => 'Backend\CamController@downloadCamReport'
+                    'uses' => 'Backend\CamController@viewCamReport'
                 ]);
 
                 Route::get('generate-cam-report', [
                     'as' => 'generate_cam_report',
                     'uses' => 'Backend\CamController@generateCamReport'
-                ]);
-
-                Route::get('download-cam-report', [
-                    'as' => 'download_cam_report',
-                    'uses' => 'Backend\CamController@downloadCamReportPdf'
                 ]);
 
                 Route::post('save-bank-detail', [
