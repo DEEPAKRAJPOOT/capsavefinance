@@ -603,7 +603,7 @@
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                   <tr>
-                     <th valign="middle" bgcolor="#efefef" @if(empty($audited_years)) colspan="4" @endif> Particular</th>
+                     <th valign="middle" bgcolor="#efefef"> Particular</th>
                      @if(!empty($audited_years))
                         @foreach($audited_years as $year_aud)
                         <th valign="middle" bgcolor="#efefef">{{$year_aud}}</th>
