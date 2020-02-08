@@ -979,42 +979,20 @@
    _token = "{{ csrf_token() }}";
 </script>
 <script type="text/javascript">
-        function findminBlank(tableId='gridView') {
-            $min_blanktd = 0;
-            $totaltd = 0;
-             $("#" + tableId +" tr").each(function(){
-                  target_tr = $(this);
-                  var deleteTd = true;
-                  $totaltd = target_tr.children('td').length;
-                  if ($min_blanktd == 0) $min_blanktd = $totaltd;
-                  for (var i = 1; i <= $totaltd; i++) {
-                        var $html = target_tr.find(" td:nth-last-child(" + i + ")" ).html();
-                        if ($html !== "") {
-                              if ($min_blanktd > i){
-                                    $min_blanktd = i;  
-                              }
-                              break;
-                        }
-                  }
-                  target_tr.find('td').each(function() {
-                    var thishtml = $(this).html();
-                    if(thishtml !== "") {
-                       deleteTd = false;
-                    }
-                  })
-                  if (deleteTd) {
-                    target_tr.remove();
-                  }
-             })
-             return $min_blanktd-1;
-          }
-          minblank = findminBlank('gridView');
-          // setTimeout(function(){
-          //    $("#gridView tr").each(function() {
-          //         $(this).find('td').slice(-minblank).remove();
-          //    });   
-          // }, 2000);
-</script>
+    $("tr").each(function(){
+      var deleteTd = true;
+      target_tr = $(this);
+      target_tr.find('td').each(function() {
+        var thishtml = $(this).html();
+        if(thishtml !== "") {
+           deleteTd = false;
+        }
+      })
+      if (deleteTd) {
+        target_tr.remove();
+      }
+    })
+ </script>
 <script type="text/javascript">
    $(document).on('click', '.getAnalysis', function() {
       data = {appId, _token};
