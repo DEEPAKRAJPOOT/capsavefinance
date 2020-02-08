@@ -9,6 +9,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
@@ -270,7 +271,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
        try
        {
-          return Charges::getProgram(); 
+          return ProgramCharges::getProgram(); 
        } catch (Exception $ex) {
           return $ex;
        }
@@ -278,5 +279,29 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
                
     }  
     
+      public static function getSingleChargeAmount($attr)
+    {
+       try
+       {
+          return Charges::getSingleChargeAmount($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }   
+    
+      public static function saveCharge($attr)
+    {
+       try
+       {
+          return Transactions::saveCharge($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }   
+     
     
 }

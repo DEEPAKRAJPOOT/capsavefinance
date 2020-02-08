@@ -46,7 +46,10 @@ class ProgramCharges extends BaseModel {
     ];
     
     
-    
+    public static function getProgram()
+    {
+        return self::with('program')->where(['is_active' => 1])->get();
+    }
     
     public function program()
     {
@@ -67,6 +70,8 @@ class ProgramCharges extends BaseModel {
         $res = self::where('is_active', '1')->pluck('chrg_name', 'id');
         return $res ?: false;
     }
+    
+    
 
     /**
      * get charge Data

@@ -76,7 +76,17 @@ Route::domain(config('proin.backend_uri'))->group(function () {
            Route::get('/charges/manage_charge', [
                 'as' => 'manage_charge',
                 'uses' => 'Lms\ChargeController@manageCharge'
+            ]);
+           Route::post('get_chrg_amount', [
+                'as' => 'get_chrg_amount',
+                'uses' => 'Lms\ChargeController@getChrgAmount'
+            ]);
+           
+            Route::post('save_manual_charges', [
+                'as' => 'save_manual_charges',
+                'uses' => 'Lms\ChargeController@saveManualCharges'
             ]); 
+           
             Route::get('/edit-lms-charges', [
                 'as' => 'edit_lms_charges',
                 'uses' => 'Lms\ChargeController@editLmsCharges'

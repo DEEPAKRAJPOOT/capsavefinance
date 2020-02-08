@@ -169,7 +169,7 @@ class PaymentController extends Controller {
         if( $res)
         {
              Session::flash('message', 'Data has been saved');
-             return back(); 
+            Redirect::
         }
         else
         {

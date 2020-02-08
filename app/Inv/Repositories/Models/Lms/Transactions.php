@@ -125,6 +125,13 @@ class Transactions extends BaseModel {
     }
     
     
+    /*** save repayment transaction details for invoice  **/
+    public static function saveCharge($attr)
+    {
+        return self::insert($attr);
+          
+    } 
+    
     /*** get all transaction  **/
     public static function getAllManualTransaction()
     {

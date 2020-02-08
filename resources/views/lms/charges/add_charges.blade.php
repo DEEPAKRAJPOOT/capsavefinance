@@ -2,7 +2,7 @@
 @section('content')
 
  <div class="modal-body text-left">
-     <form id="chargesForm" name="chargesForm" method="POST" action="{{route('save_charges')}}" target="_top">
+     <form id="chargesForm" name="chargesForm" method="POST" action="{{route('save_manual_charges')}}" target="_top">
      @csrf
      
        <div class="row">
@@ -18,14 +18,14 @@
           <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
         </div>
       </div>
-       {{$program->program}}
+      
        <div class="row">
         <div class="form-group col-md-12">
           <label for="chrg_name">Program</label>
           <select class="form-control" id="program_id" name="program_id">
           <option value="">Please Select</option>
-          @foreach($customer as $key)    
-          <option value="{{$key->id}}">{{$key->chrg_name}}</option>
+          @foreach($program as $key => $value)    
+          <option value="{{$value->prgm_id}}">{{$value->program->prgm_name}}</option>
           @endforeach
          </select>
         </div>
@@ -61,7 +61,8 @@
       </div>
       <div class="row">
          <div class="form-group col-md-12 text-right">
-             <input type="submit" class="btn btn-success btn-sm" name="add_charge" id="add_charge" value="Submit"/>
+              <input type="hidden"   id="id" name="id" >
+              <input type="submit" class="btn btn-success btn-sm" name="add_charge" id="add_charge" value="Submit"/>
         </div>
       </div>
    </form>
@@ -70,6 +71,47 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
+        var messages = {
+            get_chrg_amount: "{{ URL::route('get_chrg_amount') }}",
+            token: "{{ csrf_token() }}",
+ };
+ 
+    
+      //////////////////// onchange anchor  id get data /////////////////
+  $(document).on('change','#chrg_name',function(){
+      
+      var chrg_name =  $(this).val(); 
+      if(chrg_name=='')
+      {
+           
+             $("#amount").empty();
+      }
+      var postData =  ({'id':chrg_name,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.get_chrg_amount,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                },
+                success: function (res) {
+                      if(res.status=1)
+                      {
+                          $("#amount").val(res.amount);
+                          $("#id").val(res.id);
+                      }
+                      else
+                      {
+                          alert('Something went wrong, Please try again');
+                      }
+                }
+        }); 
+    }); 
+        
+        
+        
+        
     $(document).ready(function () {
        $(document).on('click', 'input[name="chrg_calculation_type"]', function (e) {
           if ($(this).val() == '2') $('#approved_limit_div').show();

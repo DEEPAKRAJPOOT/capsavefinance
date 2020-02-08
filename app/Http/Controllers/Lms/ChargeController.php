@@ -11,6 +11,8 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use Session;
+use Carbon\Carbon;
+use DB;
 use Helpers;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
@@ -61,7 +63,61 @@ class ChargeController extends Controller
           $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1]);
           $result  =  $this->invRepo->getCustomerId();
           $program  =  $this->lmsRepo->getProgram();
-          dd( $program );
           return view('lms.charges.add_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program]);
       }
+      
+      public function  getChrgAmount(Request $request)
+      {
+          $res =  $request->all();
+          $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
+          if($getamount)
+          {
+          
+              return response()->json(['status' => 1,'amount' => number_format($getamount->chrg_calculation_amt),'id' => $getamount->id]); 
+          }
+          else
+          {
+              return response()->json(['status' => 0]); 
+          }
+          
+      }
+      
+       public function saveManualCharges(Request $request)
+       {
+            $getTransType  =  DB::table('mst_trans_type')->where(['is_charge' => $request['id']])->first();
+           if($getTransType)
+           {
+                    $id  = Auth::user()->user_id;
+                    $mytime = Carbon::now(); 
+                    $amount = str_replace(',', '.', $request->amount);
+                    $arr  = ["user_id" =>  $request->user_id,
+                    "prgm_id" => $request->program_id,
+                    "charge_id" => $request->chrg_name,
+                    "amount" =>   $amount,
+                    "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
+                    "trans_type" => $getTransType->id,
+                    'created_by' =>  $id,
+                    'created_at' =>  $mytime ];
+                    
+                  $res =   $this->lmsRepo->saveCharge($arr);
+                  if($res)
+                  {
+                          Session::flash('message', 'Data has been saved');
+                           return redirect('lms/charges/manage_charge'); 
+                  }
+                  else
+                  {
+                          Session::flash('message', 'Something went wrong, Please try again');
+                          return redirect('lms/charges/manage_charge'); 
+                  }
+                   
+           }
+                else {
+                         Session::flash('message', 'Something went wrong, Please try again');
+                         return redirect('lms/charges/manage_charge'); 
+                }
+        
+       }
+      
+      
 }

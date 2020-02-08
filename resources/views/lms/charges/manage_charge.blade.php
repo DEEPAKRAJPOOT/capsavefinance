@@ -8,12 +8,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Charges</h3>
-            <small>Charges List</small>
+            <h3>Manage Manual Charges</h3>
+            <small>Manual Charges List</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li style="color:#374767;">Manage Charges</li>
-                <li class="active">Charges List</li>
+                <li style="color:#374767;">Manage Manual Charges</li>
+                <li class="active">Manual Charges List</li>
             </ol>
         </div>
     </section>
@@ -74,8 +74,9 @@ var messages = {
     token: "{{ csrf_token() }}",
     };
 </script>
-
+<!--
 <script src="{{ asset('backend/js/ajax-js/lms/charges_list.js') }}"></script>
+-->
 @endsection
 
 

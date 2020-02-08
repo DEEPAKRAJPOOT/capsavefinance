@@ -120,17 +120,11 @@ class Charges extends BaseModel
         return $this->belongsTo(User::class, 'created_by');
     }
     
-    public static function getProgram()
+  
+     public static function getSingleChargeAmount($attr)
     {
-        return ProgramCharges::with('program')->where(['is_active' => 1])->get();
+        $res = self::where('id', $attr['id'])->first();
+        return $res ?: false;
     }
-    
-    function program()
-    {
-          function program()
-     {
-          return $this->hasOne('App\Inv\Repositories\Models\prgm_id', 'prgm_id');  
-     
-     }
-    }
+   
 }
