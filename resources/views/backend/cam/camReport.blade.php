@@ -225,7 +225,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">The proposed deal is approved/declined/deferred subject to above conditions and any other conditions mentioned below.</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+         <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
                   <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Recommended By</th>
@@ -234,8 +234,8 @@
             </thead>
             <tbody>
                <tr role="row" >
-                  <td align="center" rowspan="">
-                  <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
+                  <td align="center">
+                     <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
                            @php 
                               $i=0;
                            @endphp
@@ -243,7 +243,7 @@
                               <tr>
                                  <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrCM[$i]->assignee}}</th>
                                  @php $i++; @endphp
-                           </tr>
+                              </tr>
                         @endwhile
                      </table> 
                   </td>
@@ -275,19 +275,19 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table width="100%" id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+         <table width="100%" id="invoice_history" class="table  no-footer overview-table" role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Parameter</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Criteria</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Deviation</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Remarks</th>
+                  <th>Parameter</th>
+                  <th>Criteria</th>
+                  <th>Deviation</th>
+                  <th>Remarks</th>
                </tr>
                <tr>
-                  <th class="sorting_asc bg-second" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%" >Borrower Vintage &amp; Constitution</th>
-                  <th class="sorting_asc text-center bg-second" tabindex="0" aria-controls="invoice_history" rowspan="1"  aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%"></th>
-                  <th class="sorting_asc text-center bg-second" tabindex="0" aria-controls="invoice_history" rowspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%"></th>					  
-                  <th class="sorting_asc text-center bg-second" tabindex="0" aria-controls="invoice_history" rowspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%"></th>
+                  <th>Borrower Vintage &amp; Constitution</th>
+                  <th></th>
+                  <th></th>					  
+                  <th></th>
                </tr>
             </thead>
             <tbody>
