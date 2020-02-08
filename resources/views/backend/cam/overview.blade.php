@@ -281,8 +281,8 @@
 @section('jscript')
 <script src="{{url('common/js/typehead.js')}}"></script>
 
+<!-- <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script> -->
 <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
-
 <script type="text/javascript">
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
@@ -292,35 +292,81 @@
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
+
+
     CKEDITOR.replace('contigent_observations', {
-        fullPage: true,
+        /*fullPage: true,
         extraPlugins: 'docprops',
         allowedContent: true,
-        height: 220
+        height: 220,*/
+        extraPlugins: 'easyimage',
+        height: 220,
+        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
+        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
+        easyimage_toolbar: [
+            'EasyImageFull',
+            'EasyImageSide',
+            'EasyImageAlignLeft',
+            'EasyImageAlignRight',
+            'EasyImageAlignCenter',
+            'EasyImageAlt',
+        ]
     });
     CKEDITOR.replace('risk_comments', {
-        fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220
+        extraPlugins: 'easyimage',
+        height: 220,
+        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
+        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
+        easyimage_toolbar: [
+            'EasyImageFull',
+            'EasyImageSide',
+            'EasyImageAlignLeft',
+            'EasyImageAlignRight',
+            'EasyImageAlignCenter',
+            'EasyImageAlt',
+        ]
     });
     CKEDITOR.replace('anchor_risk_comments', {
-        fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220
+        extraPlugins: 'easyimage',
+        height: 220,
+        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
+        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
+        easyimage_toolbar: [
+            'EasyImageFull',
+            'EasyImageSide',
+            'EasyImageAlignLeft',
+            'EasyImageAlignRight',
+            'EasyImageAlignCenter',
+            'EasyImageAlt',
+        ]
     });
     CKEDITOR.replace('profile_of_company', {
-        fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220
+        extraPlugins: 'easyimage',
+        height: 220,
+        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
+        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
+        easyimage_toolbar: [
+            'EasyImageFull',
+            'EasyImageSide',
+            'EasyImageAlignLeft',
+            'EasyImageAlignRight',
+            'EasyImageAlignCenter',
+            'EasyImageAlt',
+        ]
     });
     CKEDITOR.replace('rating_rational', {
-        fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220
+        extraPlugins: 'easyimage',
+        height: 220,
+        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
+        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
+        easyimage_toolbar: [
+            'EasyImageFull',
+            'EasyImageSide',
+            'EasyImageAlignLeft',
+            'EasyImageAlignRight',
+            'EasyImageAlignCenter',
+            'EasyImageAlt',
+        ]
     });
 
     function showSecurityComment(val){
