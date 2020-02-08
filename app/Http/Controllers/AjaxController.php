@@ -3660,4 +3660,16 @@ if ($err) {
     $users = $dataProvider->lmsGetTransactions($this->request, $transactionList);
     return $users;
   }
+        /**
+     * Get all Equipment
+     *
+     * @return json customer Address data
+     */
+    public function getEquipmentLists(DataProviderInterface $dataProvider)
+    {
+        $equipment = $this->masterRepo->getEquipments();
+        $data = $dataProvider->getEquipments($this->request, $equipment);
+        return $data;
+    }
+
 }

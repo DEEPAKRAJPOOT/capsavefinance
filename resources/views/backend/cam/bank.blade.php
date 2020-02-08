@@ -128,6 +128,21 @@
    process_url = '{{URL::route("process_banking_statement") }}';
    _token = "{{ csrf_token() }}";
 </script>
+<script type="text/javascript">
+    $("tr").each(function(){
+      var deleteTd = true;
+      target_tr = $(this);
+      target_tr.find('td').each(function() {
+        var thishtml = $(this).html();
+        if(thishtml !== "") {
+           deleteTd = false;
+        }
+      })
+      if (deleteTd) {
+        target_tr.remove();
+      }
+    })
+ </script>
 
 <script type="text/javascript">
    $(document).on('click', '.getAnalysis', function() {
@@ -230,21 +245,6 @@
          })
       }
 </script>
-<script type="text/javascript">
-    $("tr").each(function(){
-      var deleteTd = true;
-      target_tr = $(this);
-      target_tr.find('td').each(function() {
-        var thishtml = $(this).html();
-        if(thishtml !== "") {
-           deleteTd = false;
-        }
-      })
-      if (deleteTd) {
-        target_tr.remove();
-      }
-    })
- </script>
 <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
 <script>
    $('#debt_on').datetimepicker({
@@ -256,10 +256,18 @@
        $(this).datetimepicker('hide');
    });
 CKEDITOR.replace('debt_position_comments', {
-    fullPage: true,
-    extraPlugins: 'docprops',
-    allowedContent: true,
-    height: 320
+        extraPlugins: 'easyimage',
+        height: 220,
+        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
+        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
+        easyimage_toolbar: [
+            'EasyImageFull',
+            'EasyImageSide',
+            'EasyImageAlignLeft',
+            'EasyImageAlignRight',
+            'EasyImageAlignCenter',
+            'EasyImageAlt',
+        ]
   });
 </script>
 @endsection

@@ -535,17 +535,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
                 Route::get('cam-report', [
                     'as' => 'cam_report',
-                    'uses' => 'Backend\CamController@downloadCamReport'
+                    'uses' => 'Backend\CamController@viewCamReport'
                 ]);
 
                 Route::get('generate-cam-report', [
                     'as' => 'generate_cam_report',
                     'uses' => 'Backend\CamController@generateCamReport'
-                ]);
-
-                Route::get('download-cam-report', [
-                    'as' => 'download_cam_report',
-                    'uses' => 'Backend\CamController@downloadCamReportPdf'
                 ]);
 
                 Route::post('save-bank-detail', [
@@ -906,7 +901,23 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\ConstiController@saveConstitution'
             ]);
             
-            
+            // equipment
+            Route::get('/equipment', [
+                'as' => 'get_equipment_list',
+                'uses' => 'Master\EquipmentController@index'
+            ]);
+            Route::get('/add_equipment', [
+                'as' => 'add_equipment',
+                'uses' => 'Master\EquipmentController@addEquipment'
+            ]);
+            Route::get('/edit_equipment', [
+                'as' => 'edit_equipment',
+                'uses' => 'Master\EquipmentController@editEquipment'
+            ]);
+            Route::post('/save_equipment', [
+                'as' => 'save_equipment',
+                'uses' => 'Master\EquipmentController@saveEquipment'
+            ]);
             
         });
 
