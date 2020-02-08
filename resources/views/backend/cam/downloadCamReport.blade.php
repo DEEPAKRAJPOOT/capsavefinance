@@ -77,7 +77,6 @@
          @endphp
          <p align="right"><b>{{ $date->isoFormat('MMMM D, Y')}}</b></p>
      </header>
-
      <main>
       <div  align="center">
          <p><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>

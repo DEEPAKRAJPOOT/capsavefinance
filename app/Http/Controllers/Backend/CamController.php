@@ -202,10 +202,9 @@ class CamController extends Controller
             }
             $financeData = arrayValuesToInt($financeData);
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
-            $contents['FinancialStatement']['FY'] = $financeData;
-
+            $contents['FinancialStatement']['FY'] = $financeData;            
             $new_file_name = $json_files['new_file'];
-            \File::put($this->getToUploadPath($appId, 'finance') .'/'.$new_file_name, base64_encode(json_encode($contents)));            
+            \File::put($this->getToUploadPath($appId, 'finance') .'/'.$new_file_name, base64_encode(json_encode($contents)));
         }
         
 

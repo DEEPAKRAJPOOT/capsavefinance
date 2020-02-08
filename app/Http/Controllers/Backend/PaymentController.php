@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
+use Datetime;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
@@ -41,6 +42,26 @@ class PaymentController extends Controller {
       return view('backend.payment.add_payment')->with(['bank' => $bank,'customer' => $result]);
    
     }
+      /*     Excel  Payment list page   */
+    public function  excelPaymentList()
+    {
+      $result  =  $this->invRepo->getCustomerId();
+      return view('backend.payment.excel_payment_list')->with(['customer' => $result]);
+   
+    }
+    
+      public function excelBulkPayment(Request $request)
+    {
+          $result  =  $this->invRepo->getCustomerId();
+          return view('backend.payment.excel_bulk_payment')->with(['customer' => $result]);
+    }
+       ///////////* change date format ********////////////////   
+     function validateDate($date, $format = 'd/m/Y')
+     { 
+     
+       return  $d = \DateTime::createFromFormat($format, $date);
+     }
+     
     
     /* save payment details   */
     public function  savePayment(Request $request)
@@ -52,14 +73,12 @@ class PaymentController extends Controller {
                 'date_of_payment' => 'required', 
                 'amount' => 'required', 
                 'refrence_no' => 'required', 
-                'description' => 'required',
-                'utr_no' => 'required',
-            
+                'description' => 'required'
           ]);
         $user_id  = Auth::user()->user_id;
         $mytime = Carbon::now(); 
-       $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
-       $enterAmount =  str_replace(',', '', $request->amount);
+        $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
+        $enterAmount =  str_replace(',', '', $request->amount);
        foreach($getAmount as $val)
        {
             $getAmount = $val->repayment_amount;
@@ -73,11 +92,8 @@ class PaymentController extends Controller {
            }
            else
            {
-                 $temp = 0;
-                 $finalAmount = $enterAmount - $getAmount;
-                 $temp  = $finalAmount;
-                 $finalAmount =    $temp - $getAmount;      
-                 $this->invRepo->singleRepayment($val->disbursal_id,$finalAmount);
+                    
+                 $this->invRepo->singleRepayment($val->disbursal_id,0);
                
            }
           
@@ -103,6 +119,7 @@ class PaymentController extends Controller {
                         'user_id' =>  $request['customer_id'],
                         'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
                         'trans_type'   => 17, 
+                        'trans_by'   => 1,
                         'pay_from'   => 0,
                         'amount' =>  $request['amount'],
                         'mode_of_pay' =>  $request['payment_type'],
@@ -126,7 +143,8 @@ class PaymentController extends Controller {
         }
        
     }
-    
+   
+  
 }
 
 

@@ -307,6 +307,8 @@ $(document).ready(function(){
         }else if(product_id != 1){
             $('#program_id').attr('disabled', true);
             $('#anchor_id').attr('disabled', true);
+            $('#anchor_id').html('<option value="">Select Anchor</option>');
+            $('#program_id').html('<option value="">Select Program</option>');
             return;
         }else{
             $('#program_id').attr('disabled', false);

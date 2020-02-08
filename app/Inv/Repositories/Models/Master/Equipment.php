@@ -42,6 +42,7 @@ class Equipment extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'id',
         'equipment_name',
         'is_active',
         'created_at',
@@ -71,5 +72,30 @@ class Equipment extends BaseModel
                     ->where('is_active',1)
                     ->first();
       return $res ?: false;
+    }
+
+    public static function getAllEquipmentList() 
+    {
+        $result = self::select('mst_equipment.id', 'mst_equipment.equipment_name', 'mst_equipment.created_at', 'mst_equipment.is_active')
+        ->orderBy('mst_equipment.id', 'DESC');
+    return $result;
+    }
+
+    public static function saveEquipment($arrEquipmentData)
+    {
+        if (!is_array($arrEquipmentData)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        $res = self::create($arrEquipmentData);
+        return $res ?: false;
+    }
+
+    public static function updateEquipment($arrEquipmentData, $equipment_id)
+    {
+        if (!is_array($arrEquipmentData)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        return self::where('id', $equipment_id)->first()->update($arrEquipmentData);
     }
 }

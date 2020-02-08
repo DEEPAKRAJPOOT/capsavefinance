@@ -544,17 +544,17 @@
 </div
    >
 <div class="modal fade" id="download_cibil_promoterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-   <div class="modal-dialog modal-lg" role="document">
+   <div class=" viewCiblReportModal" role="document">
       <div class="modal-content">
          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="location.reload();">
             <span aria-hidden="true">&times;</span>
             </button>
          </div>
          <div class="modal-body table-responsive" id="download_user_cibil" style="max-height: 500px;">
          </div>
          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="location.reload();">Close</button>
          </div>
       </div>
    </div>
@@ -593,8 +593,8 @@
    
    function pull_cibil_promoter(){
          var biz_owner_id = $("#biz_owner_id").val();
-       $("#pull_cibil_promoterModal").modal("hide");
-            $(".isloader").show();
+         $("#pull_cibil_promoterModal").modal("hide");
+         $(".isloader").show();
          var messages = {
               chk_user_cibil: "{{ URL::route('chk_user_cibil') }}",
               data_not_found: "{{ trans('error_messages.data_not_found') }}",
@@ -649,11 +649,14 @@
              success: function (data) {
                 var status =  data['status'];
                   $("#download_cibil_promoterModal").modal("show");
+                 
                   $("#download_user_cibil").html('');
                   if(status==1)
                     {  
+                            $(".viewCiblReportModal").addClass(".modal-lg");
                            $("#download_user_cibil").html(window.atob(data['cibilScoreData']));
                     }else{
+                            $(".viewCiblReportModal").addClass(" modal-dialog modal-lg");
                            $("#download_user_cibil").text(data['cibilScoreData']);
                    }                          
                     
@@ -710,6 +713,8 @@
        });
    }   
    
+
+
    function downloadCommercialCibil(biz_id){
    var messages = {
               download_commerial_cibil: "{{ URL::route('download_commerial_cibil') }}",
@@ -732,12 +737,10 @@
                   $("#download_user_cibil").html('');
                   if(status==1)
                     {  
-                        var scoreDetails = data['cibilScoreData'];
-                           
-                        var html = '<table class="table  table-striped table-hover overview-table"><thead class="thead-primary"><tr><th width="10%" class="text-left" colspan="2">CRIF Score Report</th></tr></thead><tbody><tr><th>Report Id</th><td>'+scoreDetails['report-id']+'</td></tr><tr><th>Application-id</th><td>'+scoreDetails['application-id']+'</td></tr><tr><th>Status</th><td>'+scoreDetails['status']+'</td></tr><tr><th>Name</th><td>'+scoreDetails['name']+'</td></tr><tr><th>Legal Constitution</th><td>'+scoreDetails['legal-constitution']+'</td></tr><tr><th>Loan Purpose</th><td>'+scoreDetails['loan-purpose']+'</td></tr><tr><th>Pan No</th><td>'+scoreDetails['pan-no']+'</td></tr><tr><th>cin</th><td>'+scoreDetails['cin']+'</td></tr><tr><th>Score</th><td>'+scoreDetails['score']+'</td></tr><tr><th>Purpose</th><td>'+scoreDetails['purpose']+'</td></tr><tr><th>Ownership Type</th><td>'+scoreDetails['ownership-type']+'</td></tr><tr><th>Own Ioi Indicator</th><td>'+scoreDetails['own-ioi-indicator']+'</td></tr><tr><th>Credit Facility Group</th><td>'+scoreDetails['credit-facility-group']+'</td></tr><tr><th>Standard Acc Cnt</th><td>'+scoreDetails['standard-acc-cnt']+'</td></tr><tr><th>Standard Outstanding Amount Percentage</th><td>'+scoreDetails['standard-outstanding-amount-percentage']+'</td></tr><tr><th>Sub Standard Acc Cnt</th><td>'+scoreDetails['sub-standard-acc-cnt']+'</td></tr><tr><th>Sub Standard Outstanding Amount Percentage</th><td>'+scoreDetails['sub-standard-outstanding-amount-percentage']+'</td></tr><tr><th>Special Mention Acc Cnt</th><td>'+scoreDetails['special-mention-acc-cnt']+'</td></tr><tr><th>Special Mention Outstanding Amount Percentage</th><td>'+scoreDetails['special-mention-outstanding-amount-percentage']+'</td></tr><tr><th>Doubtful Acc Cnt</th><td>'+scoreDetails['doubtful-acc-cnt']+'</td></tr><tr><th>Doubtful Outstanding Amount Percentage</th><td>'+scoreDetails['doubtful-outstanding-amount-percentage']+'</td></tr><tr><th>Loss Acc Cnt</th><td>'+scoreDetails['loss-acc-cnt']+'</td></tr><tr><th>Loss Outstanding Amount Percentage</th><td>'+scoreDetails['loss-outstanding-amount-percentage']+'</td></tr><tr><th>Enquiry Cnt Last Three Months</th><td>'+scoreDetails['enquiry-cnt-last-three-mnths']+'</td></tr><tr><th>Enquiry Cnt Between Three To Six Months</th><td>'+scoreDetails['enquiry-cnt-between-three-to-six-mnths']+'</td></tr><tr><th>enquiry-cnt-between-six-to-nine Months</th><td>'+scoreDetails['enquiry-cnt-between-six-to-nine-mnths']+'</td></tr><tr><th>enquiry-cnt-between-nine-to-twelve-mnths</th><td>'+scoreDetails['enquiry-cnt-between-nine-to-twelve-mnths']+'</td></tr><tr><th>enquiry-cnt-more-than-twelve-mnths</th><td>'+scoreDetails['enquiry-cnt-more-than-twelve-mnths']+'</td></tr><tr><th>own-active-acc-cnt</th><td>'+scoreDetails['own-active-acc-cnt']+'</td></tr><tr><th>own-closed-acc-cnt</th><td>'+scoreDetails['own-closed-acc-cnt']+'</td></tr><tr><th>own-delinquent-acc-cnt</th><td>'+scoreDetails['own-delinquent-acc-cnt']+'</td></tr><tr><th>totalaccts</th><td>'+scoreDetails['totalaccts']+'</td></tr><tr><th>lender</th><td>'+scoreDetails['lender']+'</td></tr><tr><th>other-active-acc-cnt</th><td>'+scoreDetails['other-active-acc-cnt']+'</td></tr><tr><th>other-closed-acc-cnt</th><td>'+scoreDetails['other-closed-acc-cnt']+'</td></tr><tr><th>other-delinquent-acc-cnt</th><td>'+scoreDetails['other-delinquent-acc-cnt']+'</td></tr><tr><th>new-accounts-in-last-twelve-months</th><td>'+scoreDetails['new-accounts-in-last-twelve-months']+'</td></tr><tr><th>closed-accounts-in-last-twelve-months</th><td>'+scoreDetails['closed-accounts-in-last-twelve-months']+'</td></tr><tr><th>new-delinq-account-in-last-twelve-months</th><td>'+scoreDetails['new-delinq-account-in-last-twelve-months']+'</td></tr><tr><th>length-of-credit-history-year</th><td>'+scoreDetails['length-of-credit-history-year']+'</td></tr><tr><th>length-of-credit-history-month</th><td>'+scoreDetails['length-of-credit-history-month']+'</td></tr><tr><th>recency-in-months</th><td>'+scoreDetails['recency-in-months']+'</td></tr><tr><th>suitfiled-acc-cnt</th><td>'+scoreDetails['suitfiled-acc-cnt']+'</td></tr><tr><th>written-off-acc-cnt</th><td>'+scoreDetails['written-off-acc-cnt']+'</td></tr><tr><th>wilful-defaulter-acc-cnt</th><td>'+scoreDetails['wilful-defaulter-acc-cnt']+'</td></tr><tr><th>restructred-acc-cnt</th><td>'+scoreDetails['restructred-acc-cnt']+'</td></tr><tr><th>invoked-acc-cnt</th><td>'+scoreDetails['invoked-acc-cnt']+'</td></tr><tr><th>devolved-acc-cnt</th><td>'+scoreDetails['devolved-acc-cnt']+'</td></tr><tr><th>sanctioned-amount-range</th><td>'+scoreDetails['sanctioned-amount-range']+'</td></tr><tr><th>delinquent-acc-cnt</th><td>'+scoreDetails['delinquent-acc-cnt']+'</td></tr><tr><th>top-five-delinquent-tradelines-list</th><td>'+scoreDetails['top-five-delinquent-tradelines-list']+'</td></tr></tbody></table>';
-                           $("#download_user_cibil").html(html);
+                            $(".viewCiblReportModal").addClass(".modal-lg");
+                           $("#download_user_cibil").html(window.atob(data['cibilScoreData']));
                     }else{
-                          
+                            $(".viewCiblReportModal").addClass(" modal-dialog modal-lg");
                            $("#download_user_cibil").text(data['cibilScoreData']);
                    }                          
                     
