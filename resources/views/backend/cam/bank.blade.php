@@ -281,6 +281,7 @@
       }
     })
  </script>
+<!-- <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script> -->
 <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
 <script>
    $('#debt_on').datetimepicker({
