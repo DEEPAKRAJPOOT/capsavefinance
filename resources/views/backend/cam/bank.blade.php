@@ -292,7 +292,7 @@
        $(this).datetimepicker('hide');
    });
 CKEDITOR.replace('debt_position_comments', {
-    extraPlugins: 'easyimage',
+        extraPlugins: 'easyimage',
         height: 220,
         cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
         cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
