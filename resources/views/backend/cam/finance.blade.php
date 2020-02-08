@@ -914,6 +914,7 @@
                                    </tr>
                                 </thead>
                                 <tbody>
+                                  <?php $extraData = extraData($finance_data); ?>
                                    <tr role="row" class="odd">
                                        <td>Adjusted Tangible Net Worth</td>
                                        <td>Positive for last 2 financial years</td>
@@ -927,7 +928,7 @@
                                           <label for="adj_net_worth_check_no">No</label>
                                           </span>
                                        </td>
-                                       <td><input type="text" class="form-control from-inline" id="adj_net_worth_cmnt" name="adj_net_worth_cmnt" value="{{isset($finDetailData->adj_net_worth_cmnt) ? $finDetailData->adj_net_worth_cmnt : ''}}"></td>                    
+                                       <td><input type="text" class="form-control from-inline" id="adj_net_worth_cmnt" name="adj_net_worth_cmnt" value="{{!empty($finDetailData->adj_net_worth_cmnt) ? $finDetailData->adj_net_worth_cmnt : $extraData['AdjustedTangibleNetWorth']}}"></td>                    
                                     </tr>                 
                                     <tr role="row" class="odd">
                                        <td>Cash Profit</td>
@@ -940,7 +941,7 @@
                                           <input type="radio" class="" name="cash_profit_check" id="cash_profit_check_no" value="No" {{!isset($finDetailData->cash_profit_check) || $finDetailData->cash_profit_check == 'No' ? 'checked' : ''}}>
                                           <label for="cash_profit_check_no">No</label></span>
                                        </td>
-                                       <td><input type="text" class="form-control from-inline" id="cash_profit_cmnt" name="cash_profit_cmnt" value="{{isset($finDetailData->cash_profit_cmnt) ? $finDetailData->cash_profit_cmnt : ''}}"></td>                    
+                                       <td><input type="text" class="form-control from-inline" id="cash_profit_cmnt" name="cash_profit_cmnt" value="{{!empty($finDetailData->cash_profit_cmnt) ? $finDetailData->cash_profit_cmnt : $extraData['CashProfit']}}"></td>                    
                                     </tr>
                                     <tr role="row" class="odd">
                                        <td>DSCR</td>
@@ -952,7 +953,7 @@
                                           <span><input type="radio" class="" name="dscr_check" id="dscr_check_no" value="No" {{!isset($finDetailData->dscr_check) || $finDetailData->dscr_check == 'No' ? 'checked' : ''}}>
                                           <label for="dscr_check_no">No</label></span>
                                        </td>
-                                       <td><input type="text" class="form-control from-inline" id="dscr_cmnt" name="dscr_cmnt" value="{{isset($finDetailData->dscr_cmnt) ? $finDetailData->dscr_cmnt : ''}}"></td>                    
+                                       <td><input type="text" class="form-control from-inline" id="dscr_cmnt" name="dscr_cmnt" value="{{!empty($finDetailData->dscr_cmnt) ? $finDetailData->dscr_cmnt : $extraData['DSCR']}}"></td>                    
                                     </tr>
                                     <tr role="row" class="odd">
                                        <td>Debt/EBIDTA</td>
@@ -964,7 +965,7 @@
                                           <span><input type="radio" class="" name="debt_check" id="debt_check_no" value="No" {{!isset($finDetailData->debt_check) || $finDetailData->debt_check == 'No' ? 'checked' : ''}}>
                                           <label for="debt_check_no">No</label></span>
                                        </td>
-                                       <td><input type="text" class="form-control from-inline" id="debt_cmnt" name="debt_cmnt" value="{{isset($finDetailData->debt_cmnt) ? $finDetailData->debt_cmnt : ''}}"></td>                    
+                                       <td><input type="text" class="form-control from-inline" id="debt_cmnt" name="debt_cmnt" value="{{!empty($finDetailData->debt_cmnt) ? $finDetailData->debt_cmnt : $extraData['DebtEBIDTA']}}"></td>                    
                                     </tr>
                                 </tbody>
                              </table>
@@ -1026,11 +1027,11 @@
              return $min_blanktd-1;
           }
           minblank = findminBlank('gridView');
-//          setTimeout(function(){
-//             $("#gridView tr").each(function() {
-//                  $(this).find('td').slice(-minblank).remove();
-//             });   
-//          }, 2000);
+          // setTimeout(function(){
+          //    $("#gridView tr").each(function() {
+          //         $(this).find('td').slice(-minblank).remove();
+          //    });   
+          // }, 2000);
 </script>
 <script type="text/javascript">
    $(document).on('click', '.getAnalysis', function() {
