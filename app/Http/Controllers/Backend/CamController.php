@@ -112,6 +112,7 @@ class CamController extends Controller
             //dd($product_ids,$checkDisburseBtn);
             $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
+            $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
             return view('backend.cam.overview')->with([
                 'arrCamData' =>$arrCamData ,
                 'arrRequest' =>$arrRequest, 
@@ -119,7 +120,8 @@ class CamController extends Controller
                 'arrOwner' =>$arrOwner,
                 'limitData' =>$limitData,
                 'current_status_id'=>$current_status,
-                'checkDisburseBtn'=>$checkDisburseBtn
+                'checkDisburseBtn'=>$checkDisburseBtn,
+                'leaseOfferData' => $leaseOfferData
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

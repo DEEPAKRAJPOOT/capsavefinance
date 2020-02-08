@@ -6,9 +6,9 @@
             <tr role="row">
                <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Group</th>
                <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Borrower</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit(Mn)</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure(Mn)</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure(Mn)</th>
             </tr>
          </thead>
          <tbody>
@@ -223,7 +223,7 @@
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">The proposed deal is approved/declined/deferred subject to above conditions and any other conditions mentioned below.</h2>
+      <h2 class="sub-title bg">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
@@ -251,14 +251,16 @@
                      <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
                            @php 
                               $i=0;
+                              $j= 0;
+                              $arrApproverDataCount = count($arrApproverData);
                            @endphp
                            @if(!empty($arrApproverData))
                               @while(!empty($arrApproverData[$i])) 
                                  <tr>
-                                       <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}}</th>
+                                       <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}} @if ($arrApproverData[$i]->status == 1) <span style="color:green;">&#10004;</span> @php $j++; @endphp @endif</th>
                                        @php $i++; @endphp
                                        @if (!empty($arrApproverData[$i]))
-                                          <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}}</th>
+                                          <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}} @if ($arrApproverData[$i]->status == 1) <span style="color:green;">&#10004;</span> @php $j++; @endphp @endif</th>
                                           @php $i++; @endphp
                                        @endif
                                  </tr>
@@ -733,4 +735,10 @@
       </div>
    </div>
          
+
+<script>
+if('{{$arrApproverDataCount}}' ==  '{{$j}}' && '{{$arrApproverDataCount}}' != 0){
+   document.getElementById("isApproved").textContent += "approved";
+}
+</script>         
  <!-- End PDF Section -->

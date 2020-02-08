@@ -153,7 +153,7 @@
                 </table>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Rating Rational</h2>
+                    <h2 class="sub-title bg">Rating Rationale</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
                         <textarea class="form-control" id="rating_rational" name="rating_rational" rows="3" spellcheck="false" >{{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}}</textarea>
                     </div>
@@ -181,11 +181,11 @@
                                 <tr>
                                     <td><b>Takeout</b></td>
                                     <td>
-                                        <input type="text" name="t_o_f_takeout" id="takeout" class="form-control" value="{{isset($arrCamData->t_o_f_takeout) ? $arrCamData->t_o_f_takeout : ''}}">
+                                        <input type="text" name="t_o_f_takeout" id="takeout" class="form-control" value="{{isset($arrCamData->t_o_f_takeout) ? $arrCamData->t_o_f_takeout : ''}}" @if (!empty($leaseOfferData)) readonly="readonly" @endif>
                                     </td>
                                     <td><b>Recourse</b></td>
                                     <td>
-                                        <input type="text" name="t_o_f_recourse" id="recourse" class="form-control" value="{{isset($arrCamData->t_o_f_recourse) ? $arrCamData->t_o_f_recourse : ''}}">
+                                        <input type="text" name="t_o_f_recourse" id="recourse" class="form-control" value="{{isset($arrCamData->t_o_f_recourse) ? $arrCamData->t_o_f_recourse : ''}}" @if (!empty($leaseOfferData)) readonly="readonly" @endif>
                                     </td>
                                 </tr>
                                 <tr>
