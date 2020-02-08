@@ -614,17 +614,19 @@
             <tbody>
                   <tr @if (empty($audited_years)) class='hide' @endif>
                      <td width="40%"></td>
+                     @foreach($financeData as $year => $fin_data)
                      <td width="20%" ><strong>Aud.</strong></td>
-                     <td width="20%" ><strong>Aud.</strong></td>
-                     <td width="20%" ><strong>Aud.</strong></td>
+                     @endforeach
                   </tr>
                   @foreach($FinanceColumns as $key => $finance_col)
                   <tr>
                      <td>{{$finance_col}}</td>
                      @foreach($financeData as $year => $fin_data)
-                     @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
-                     <td align="right">{{sprintf('%.2f', $yearly_fin_data[$key ] ?? '')}}</td>
-                     @endforeach
+                     <td align="right">
+                        @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
+                        {{sprintf('%.2f', $yearly_fin_data[$key ] ?? '')}}
+                        @endforeach
+                     </td>
                   </tr>
                   @endforeach
             </tbody>
