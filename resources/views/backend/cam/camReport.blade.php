@@ -278,10 +278,10 @@
          <table width="100%" id="invoice_history" class="table  no-footer overview-table" role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
-                  <th>Parameter</th>
-                  <th>Criteria</th>
-                  <th>Deviation</th>
-                  <th>Remarks</th>
+                  <th width="30%">Parameter</th>
+                  <th width="30%">Criteria</th>
+                  <th width="10%">Deviation</th>
+                  <th width="30%">Remarks</th>
                </tr>
                <tr>
                   <th>Borrower Vintage &amp; Constitution</th>
