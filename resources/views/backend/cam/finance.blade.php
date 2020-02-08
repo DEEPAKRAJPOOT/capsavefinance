@@ -1009,11 +1009,11 @@
              return $min_blanktd-1;
           }
           minblank = findminBlank('gridView');
-          // setTimeout(function(){
-          //    $("#gridView tr").each(function() {
-          //         $(this).find('td').slice(-minblank).remove();
-          //    });   
-          // }, 2000);
+          setTimeout(function(){
+             $("#gridView tr").each(function() {
+                  $(this).find('td').slice(-minblank).remove();
+             });   
+          }, 2000);
 </script>
 <script type="text/javascript">
    $(document).on('click', '.getAnalysis', function() {
@@ -1075,21 +1075,6 @@
       })
    })
 </script>
-<script type="text/javascript">
-    $("tr").each(function(){
-      var deleteTd = true;
-      target_tr = $(this);
-      target_tr.find('td').each(function() {
-        var thishtml = $(this).html();
-        if(thishtml !== "") {
-           deleteTd = false;
-        }
-      })
-      if (deleteTd) {
-        target_tr.remove();
-      }
-    })
- </script>
 <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
 <script>
   CKEDITOR.replace('financial_risk_comments', {
