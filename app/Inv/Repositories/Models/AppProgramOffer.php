@@ -75,6 +75,7 @@ class AppProgramOffer extends BaseModel {
         'is_approve',
         'status',
         'is_active',
+        'facility_type_id',
         'created_at',
         'created_by',
         'updated_at',        
@@ -257,10 +258,12 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
             $prgmOffer = AppProgramOffer::where('app_prgm_limit_id', $app_prgm_limit_id)->where('is_active', 1)->first();
+            if (empty($data['equipment_type_id'])) {
             if($prgmOffer){
                 $prgmOffer->update(['is_active'=>0]);
-            }
+            }            
             AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
+            }
             return AppProgramOffer::create($data);
         }
     }

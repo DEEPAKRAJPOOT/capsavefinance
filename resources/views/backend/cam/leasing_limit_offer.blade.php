@@ -6,7 +6,7 @@
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
     <input type="hidden" value="{{request()->get('app_prgm_limit_id')}}" name="app_prgm_limit_id">
-    
+    <input type="hidden" value="{{ $limitData->limit_amt }}" name="prgm_limit_amt">
     <div class="row">
         <div class="col-md-6">
           <div class="form-group ">
@@ -36,7 +36,7 @@
             <select class="form-control" name="facility_type_id">
                 <option value="">Select Facility Type</option>
                 @foreach($facilityTypeList as $key => $facilityType)
-                <option value="{{$key}}" {{ $facilityType == $key ? 'selected' : ''}}>{{$facilityType}}</option>
+                <option value="{{$key}}" {{ (isset($offerData->facility_type_id) && $offerData->facility_type_id == $key) ? 'selected' : ''}}>{{$facilityType}}</option>
                 @endforeach
             </select>
           </div>
@@ -57,7 +57,7 @@
         <div class="col-md-12">
           <div class="form-group ">
             <label for="txtPassword" ><b>Sub Limit</b></label> 
-            <input type="text" name="sub_limit" class="form-control" value="" placeholder="Sub Limit" maxlength="15" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+            <input type="text" name="sub_limit" class="form-control" value="{{isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: ''}}" placeholder="Sub Limit" maxlength="15" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
           </div>
         </div>
         
@@ -212,7 +212,7 @@
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="4" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'checked': ''): '')}}> Others</label>
                 </div>
                 <div class="col-md-6" style="float: right;">
-                    <input type="text" name="comment" class="form-control" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'inline': 'none'): 'none')}}" value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Other Security" maxlength="200">
+                    <input type="text" name="comment" class="form-control"  value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Security" maxlength="200">
                 </div>
             </div>
           </div>
@@ -416,6 +416,7 @@
         setError('#check_block', 'Please check atleast one security');
         flag = false;
     }*/
+    /*    
     if($('#other_sec').is(':checked')){
         if(comment == ''){
             setError('input[name=comment]', 'Please fill other security');
@@ -424,7 +425,7 @@
             // TAKE REST
         }
     }
-
+    */
 
     if(flag){
         return true;

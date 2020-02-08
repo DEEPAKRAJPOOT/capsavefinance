@@ -233,16 +233,18 @@
                                         <div id="lcollapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
                                             <ul class="row p-0 m-0">
                                             @if($prgmLimit->offer)
-                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
-                                                <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmLimit->offer->security_deposit}}</b></li>
-                                                <li class="col-md-2">Tenor(Months) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
-                                                <li class="col-md-2">PTPQ <br> <b>{{(int)$prgmLimit->offer->ptpq_from.' - '.(int)$prgmLimit->offer->ptpq_to}}</b></li>
-                                                <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmLimit->offer->ruby_sheet_xirr.' - '.$prgmLimit->offer->cash_flow_xirr}}</b></li>
-                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
+                                            @foreach($prgmLimit->offer as $k=>$prgmOffer)
+                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmOffer->prgm_limit_amt)}}</b></li>
+                                                <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmOffer->security_deposit}}</b></li>
+                                                <li class="col-md-2">Tenor(Months) <br> <b>{{$prgmOffer->tenor}}</b></li>
+                                                <li class="col-md-2">PTPQ <br> <b>{{(int)$prgmOffer->ptpq_from.' - '.(int)$prgmOffer->ptpq_to}}</b></li>
+                                                <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmOffer->ruby_sheet_xirr.' - '.$prgmOffer->cash_flow_xirr}}</b></li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}">Update</button></li>
+                                            @endforeach
                                             @else
-                                                <li class="col-md-10" style="text-align: center;">No offer found</li>
-                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
+                                                <li class="col-md-10" style="text-align: center;">No offer found</li>                                                
                                             @endif
+                                            <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
                                             </ul>
                                         </div>
                                     </div>

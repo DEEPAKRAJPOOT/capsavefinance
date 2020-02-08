@@ -1430,7 +1430,16 @@ class CamController extends Controller
 
       $facilityTypeList= $this->mstRepo->getFacilityTypeList();
       $limitData= $this->appRepo->getLimit($aplid);
-      $offerData= $this->appRepo->getProgramOffer($aplid);
+      if ($limitData->product_id == 3) {
+          $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
+          if (!empty($prgmOfferId)) {
+            $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+          } else {
+              $offerData = null;
+          }
+      } else {
+        $offerData= $this->appRepo->getProgramOffer($aplid);
+      }
       $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
       $totalOfferedAmount = $this->appRepo->getTotalOfferedLimit($appId);
       $totalLimit = $this->appRepo->getAppLimit($appId);
@@ -1460,11 +1469,10 @@ class CamController extends Controller
         $request['created_by'] = Auth::user()->user_id;
         if($request->has('addl_security')){
           $request['addl_security'] = implode(',', $request->addl_security);
-        }
+        }       
         if ($request->has('equipment_type_id')) {
-            $equipment_type_id = $request->equipment_type_id;
-        }
-        
+            $request['prgm_limit_amt'] = str_replace(',', '', $request->sub_limit);
+        }        
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
         /*Start add offer PTPQ block*/
         $ptpqArr =[];

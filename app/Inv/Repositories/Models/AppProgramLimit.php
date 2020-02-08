@@ -112,7 +112,7 @@ class AppProgramLimit extends BaseModel {
     }
 
     public function offer(){
-        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
     }     
 
 
