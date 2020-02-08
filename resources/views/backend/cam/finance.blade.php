@@ -1090,6 +1090,7 @@
       }
     })
  </script>
+<!-- <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script> -->
 <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
 <script>
   CKEDITOR.replace('financial_risk_comments', {
