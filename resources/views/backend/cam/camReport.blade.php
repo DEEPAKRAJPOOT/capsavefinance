@@ -290,10 +290,10 @@
                   <th></th>
                </tr>
             </thead>
-            <tbody>
+            <tbody width="100%">
                <tr>
-                  <td>Constitution</td>
-                  <td>
+                  <td width="30%">Constitution</td>
+                  <td width="30%">
                      <p class="m-0">
                         - Registered Partnership Firm<br>
                         - Private Limited Company<br>
@@ -301,8 +301,8 @@
                         - Limited Liability Partnership
                      </p>
                   </td>
-                  <td>No</td>
-                  <td>{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
+                  <td width="10%">No</td>
+                  <td width="30%">{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
                </tr>
                <tr>
                   <td>Vintage</td>
