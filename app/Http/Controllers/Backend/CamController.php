@@ -1445,6 +1445,9 @@ class CamController extends Controller
       } else {
         $offerData= $this->appRepo->getProgramOffer($aplid);
       }
+      // get Total Sub Limit amount by app_prgm_limit_id
+      $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
+
       $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
       $totalOfferedAmount = $this->appRepo->getTotalOfferedLimit($appId);
       $totalLimit = $this->appRepo->getAppLimit($appId);
@@ -1457,8 +1460,9 @@ class CamController extends Controller
         $prgmOfferedAmount = 0;
         $prgmLimit = 0;
       }
+
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt]);
     }
 
     /*function for updating offer data*/
@@ -1466,7 +1470,7 @@ class CamController extends Controller
       try{
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-        $prgmOfferId = $request->get('prgm_offer_id');
+        $prgmOfferId = $request->get('offer_id');
         $aplid = (int)$request->get('app_prgm_limit_id');
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
@@ -1479,7 +1483,8 @@ class CamController extends Controller
         if ($request->has('sub_limit')) {
             $request['prgm_limit_amt'] = str_replace(',', '', $request->sub_limit);
         }        
-        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
+        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
+
         /*Start add offer PTPQ block*/
         $ptpqArr =[];
         foreach($request->ptpq_from as $key=>$val){

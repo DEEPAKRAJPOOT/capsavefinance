@@ -26,7 +26,7 @@
           <div class="form-group INR">
             <label for="txtPassword" ><b>Limit</b></label> 
             <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
-            <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
+            <span class="float-right text-success">Total Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
             <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
           </div>
         </div>
@@ -233,15 +233,19 @@
 @section('jscript')
 <script>
   function checkLeasingValidations(){
+    let limit_amt = "{{$limitData->limit_amt}}"; //limit from app_prgm_limit table
     let total_limit = "{{$totalLimit}}"; //total exposure limit amount
     let program_limit = "{{$programLimit}}"; //program limit
     let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
     let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
     let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
 
+    let sub_total_amount = "{{$subTotalAmount}}"; //Sub total amount by app_prgm_limit_id
+
     let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
     let balance_limit = total_limit - total_offered_amount + current_offer_amount;
     let actual_balance = (program_balance_limit < balance_limit)? program_balance_limit: balance_limit;
+    let sub_total_balance = limit_amt - (sub_total_amount - current_offer_amount);
 
     unsetError('input[name=prgm_limit_amt]');
     unsetError('input[name=sub_limit]'); 
@@ -292,13 +296,15 @@
     }
 
     if(sub_limit.length == 0 || parseInt(sub_limit.replace(/,/g, '')) == 0){
-        setError('input[name=prgm_limit_amt]', 'Please fill sub limit amount');
+        setError('input[name=sub_limit]', 'Please fill sub limit amount');
+        flag = false;
+    }else if((parseInt(sub_limit.replace(/,/g, '')) > sub_total_balance) && sub_total_balance == 0){
+        setError('input[name=sub_limit]', 'Your limit has been expired');
+        flag = false;
+    }else if((parseInt(sub_limit.replace(/,/g, '')) > sub_total_balance)){
+        setError('input[name=sub_limit]', 'Sub Limit can\'t exceed from ('+sub_total_balance+') balance limit amount');
         flag = false;
     }
-    /*else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > balance_limit)){
-        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
-        flag = false;
-    }*/
 
     if(tenor == ''){
         setError('input[name=tenor]', 'Please flll tenor');

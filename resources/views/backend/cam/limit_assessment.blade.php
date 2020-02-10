@@ -238,8 +238,8 @@
                                             <ul class="row p-0 m-0">
                                             @if($prgmLimit->offer->count() != 0)
                                             @foreach($prgmLimit->offer as $k=>$prgmOffer)
-                                                <li class="col-md-2">Sub Limit<br> <i class="fa fa-inr"></i> <b>{{number_format($prgmOffer->sub_limit)}}</b></li>
-                                                <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmOffer->security_deposit}}</b></li>
+                                                <li class="col-md-2">Sub Limit<br> <i class="fa fa-inr"></i> <b>{{number_format($prgmOffer->prgm_limit_amt)}}</b></li>
+                                                <li class="col-md-2">Security deposit({{($prgmOffer->security_deposit_type == 1)? 'Rs': '%'}})<br> <b>{{$prgmOffer->security_deposit}}</b></li>
                                                 <li class="col-md-2">Tenor(Months) <br> <b>{{$prgmOffer->tenor}}</b></li>
                                                 <li class="col-md-2">Processing Fee(%)<br> <b>{{$prgmOffer->processing_fee}}</b></li>
                                                 <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmOffer->ruby_sheet_xirr.' - '.$prgmOffer->cash_flow_xirr}}</b></li>
@@ -247,8 +247,8 @@
                                             @endforeach
                                             @else
                                                 <li class="col-md-10" style="text-align: center;">No offer found</li>
-                                                <li class="col-md-12" style="text-align: center;"><button class="btn btn-success btn-sm add-offer" style="margin-top: 20px;" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
                                             @endif
+                                                <li class="col-md-12" style="text-align: center;"><button class="btn btn-success btn-sm add-offer" style="margin-top: 20px;" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
                                             </ul>
                                         </div>
                                     </div>
