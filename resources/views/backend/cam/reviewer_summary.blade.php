@@ -119,42 +119,35 @@
                                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
                                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
                            </tr>
-                        </thead>
-                        <tbody>
-                           <tr role="row" class="odd">
-                                 <td class="">
-                                    <input type="text" name="cond_nach" value="{{isset($reviewerSummaryData->cond_nach) ? $reviewerSummaryData->cond_nach : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <input type="text" name="time_nach" value="{{isset($reviewerSummaryData->time_nach) ? $reviewerSummaryData->time_nach : ''}}" class="form-control form-control-sm">
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">
-                                    <input type="text" name="cond_insp_asset" value="{{isset($reviewerSummaryData->cond_insp_asset) ? $reviewerSummaryData->cond_insp_asset : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <input type="text" name="time_insp_asset" value="{{isset($reviewerSummaryData->time_insp_asset) ? $reviewerSummaryData->time_insp_asset : ''}}" class="form-control form-control-sm">
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">
-                                    <input type="text" name="cond_insu_pol_cfpl" value="{{isset($reviewerSummaryData->cond_insu_pol_cfpl) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <input type="text" name="time_insu_pol_cfpl" value="{{isset($reviewerSummaryData->time_insu_pol_cfpl) ? $reviewerSummaryData->time_insu_pol_cfpl : ''}}" class="form-control form-control-sm">
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">
-                                    <input type="text"  name="cond_personal_guarantee" value="{{isset($reviewerSummaryData->cond_personal_guarantee) ? $reviewerSummaryData->cond_personal_guarantee : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <input type="text"  name="time_personal_guarantee" value="{{isset($reviewerSummaryData->time_personal_guarantee) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}" class="form-control form-control-sm">
-                                 </td>
-                           </tr>                 
-                        </tbody>
+                        </thead>                   
                      </table>
+                     
+                     <div class="input-group control-group after-add-more">
+                        <div class="input-group-btn"> 
+                           <input type="text" name="pre_cond[]" value="" class="form-control form-control-sm">
+                        </div>
+                        <div class="input-group-btn"> 
+                           <input type="text" name="pre_timeline[]" value="" class="form-control form-control-sm">
+                        </div>
+                        <div class="input-group-btn"> 
+                           <button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                        </div>
+                     </div>
+
+                     <!-- Copy Fields -->
+                     <div class="copy hide">
+                        <div class="control-group input-group" style="margin-top:10px">
+                           <div class="input-group-btn"> 
+                              <input type="text" name="pre_cond[]" value="" class="form-control form-control-sm">
+                           </div>
+                           <div class="input-group-btn"> 
+                              <input type="text" name="pre_timeline[]" value="" class="form-control form-control-sm">
+                           </div>
+                           <div class="input-group-btn"> 
+                              <button class="btn btn-danger remove" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+                           </div>
+                        </div>
+                     </div>
                </div>
                <div class="col-md-12 mt-4">
                      <h4><small>Post Disbursement Conditions:</small></h4>
@@ -507,5 +500,19 @@
          },
       })
    })
+
+$(document).ready(function() {
+
+   $(".add-more").click(function(){ 
+      var html = $(".copy").html();
+      $(".after-add-more").after(html);
+   });
+
+
+   $("body").on("click",".remove",function(){ 
+      $(this).parents(".control-group").remove();
+   });
+
+});
 </script>
 @endsection

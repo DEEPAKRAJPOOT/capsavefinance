@@ -260,6 +260,7 @@ class CamController extends Controller
         if(isset($arrData['cam_reviewer_summary_id']) && $arrData['cam_reviewer_summary_id']){
               $result = CamReviewerSummary::updateData($arrData, $userId);
               if($result){
+                    $this->savePrePostConditions($request, $arrData['cam_reviewer_summary_id']);
                     Session::flash('message',trans('Reviewer Summary updated successfully'));
               }else{
                     Session::flash('message',trans('Reviewer Summary not updated'));
@@ -267,6 +268,7 @@ class CamController extends Controller
         }else{
             $result = CamReviewerSummary::createData($arrData, $userId);
             if($result){
+                    $this->savePrePostConditions($request, $result->cam_reviewer_summary_id);
                     Session::flash('message',trans('Reviewer Summary saved successfully'));
               }else{
                     Session::flash('message',trans('Reviewer Summary not saved'));

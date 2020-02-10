@@ -16,7 +16,7 @@ use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\CamReviewerSummary;
-
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
 
 trait CamTrait
 {
@@ -99,5 +99,31 @@ trait CamTrait
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
+    }
+
+    protected function savePrePostConditions($request, $cam_reviewer_summary_id)
+    {
+        $updateData = [];
+        $updateData['is_active'] = 0;
+        $updateData['updated_by'] = Auth::user()->user_id;
+        $updPrePost = CamReviewSummPrePost::where('cam_reviewer_summary_id', $cam_reviewer_summary_id)
+                        ->where('cond_type', 1);
+        $updPrePost->update($updateData);
+        $arrData =[];
+        if(isset($request->pre_cond) && $request->pre_cond[0]!=null) {
+            foreach($request->pre_cond as $key=>$val){
+                if($request->pre_cond[$key] != null) {
+                    $arrData[$key]['cam_reviewer_summary_id'] = $cam_reviewer_summary_id;
+                    $arrData[$key]['cond'] = $request->pre_cond[$key];
+                    $arrData[$key]['timeline'] = $request->pre_timeline[$key];
+                    $arrData[$key]['cond_type'] = 1;
+                    $arrData[$key]['is_active'] = 1;
+                    $arrData[$key]['created_at'] = \Carbon\Carbon::now();
+                    $arrData[$key]['created_by'] = Auth::user()->user_id;
+                }
+            }
+            CamReviewSummPrePost::insert($arrData);
+        }
+        
     }
 }
