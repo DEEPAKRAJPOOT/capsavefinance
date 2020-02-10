@@ -225,7 +225,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table id="invoice_history" class="table no-footer overview-table" cellpadding="0" cellspacing="0">
+         <table id="invoice_history1" class="table no-footer overview-table" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
                   <th class="sorting_asc text-center" width="30%">Parameter <br> Borrower Vintage &amp; Constitution</th>
@@ -237,24 +237,13 @@
             <tbody>
                <tr>
                   <td>Constitution</td>
-                  <td>
-                        - Registered Partnership Firm<br>
-                        - Private Limited Company<br>
-                        - Public Limited Company<br>
-                        - Limited Liability Partnership
-                   
-                  </td>
+                  <td>- Registered Partnership Firm<br/> - Private Limited Company<br/> - Public Limited Company<br/> - Limited Liability Partnership </td>
                   <td>No</td>
                   <td>{{isset($arrEntityData->name) ? trim($arrEntityData->name) : ''}}</td>
                </tr>
                <tr>
                   <td>Vintage</td>
-                  <td>
-                        - Minimum 3 years of vintage in relevant business<br>
-                        - Parent or group company with requisite vintage<br>
-                        - Key promoter with 5 years of relevant vintage
-                   
-                  </td>
+                  <td> - Minimum 3 years of vintage in relevant business<br/> - Parent or group company with requisite vintage<br/> - Key promoter with 5 years of relevant vintage </td>
                   <td>No</td>
                   <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
                </tr>
