@@ -28,6 +28,7 @@
           <option value="{{$value->prgm_id}}">{{$value->program->prgm_name}}</option>
           @endforeach
          </select>
+          <span id="msgprogram" class="error"></span>
         </div>
       </div>
 
@@ -43,13 +44,28 @@
           <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
         </div>
       </div>
-
+      <div class="form-group col-md-6">             
+          <label for="chrg_type">Charge Type</label><br>            
+          <div class="form-check-inline ">              
+          <label class="form-check-label fnt">               
+          <input type="radio" class="form-check-input" id="chrg_calculation_type1" name="chrg_calculation_type" value="1"> &nbsp;&nbsp;Fixed </label>            
+          </div>
+          <div class="form-check-inline">               
+              <label class="form-check-label fnt">               
+                  <input type="radio" class="form-check-input" id="chrg_calculation_type2"  name="chrg_calculation_type" value="2">&nbsp;&nbsp;Percentage</label>
+          </div> </div>
        <div class="row">
         <div class="form-group col-md-12">
-          <label for="chrg_name">Amount</label>
-            <input type="text"  class="form-control" id="amount" name="amount" placeholder="Enter Amount" maxlength="50">
+          <label for="chrg_name">Amount/Percent</label>
+            <input type="text"  class="form-control" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50">
         
         </div>
+           <div class="form-group col-md-6" id="approved_limit_div">
+             <label for="chrg_type">Charge Applicable On</label>
+              <select class="form-control" name="chrg_applicable_id" id="chrg_applicable_id">
+                 
+              </select>
+         </div>
       </div>
         <div class="row">
         <div class="form-group col-md-12">
@@ -76,14 +92,26 @@
             token: "{{ csrf_token() }}",
  };
  
-    
-      //////////////////// onchange anchor  id get data /////////////////
+    $(document).on('change','#program_id',function(){
+        $("#msgprogram").html('');
+    });
+  //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','#chrg_name',function(){
-      
+      $("#chrg_applicable_id").empty();
+      $("#chrg_calculation_type1").attr('disabled',false);
+      $("#chrg_calculation_type2").attr('disabled',false);
       var chrg_name =  $(this).val(); 
+      if($("#program_id").val()=='') 
+      {    
+            
+             $(this).val('');
+             $("#msgprogram").html('Please select program');
+             return false;
+      }
       if(chrg_name=='')
       {
-           
+             $("#chrg_calculation_type1").attr('checked',false);
+             $("#chrg_calculation_type2").attr('checked',false);
              $("#amount").empty();
       }
       var postData =  ({'id':chrg_name,'_token':messages.token});
@@ -98,6 +126,22 @@
                 success: function (res) {
                       if(res.status=1)
                       {
+                      
+                        var  applicable  = res.applicable;  
+                        if(res.type==1)
+                         {
+                            
+                             $("#approved_limit_div").hide();
+                             $("#chrg_calculation_type1").attr('checked',true);
+                             $("#chrg_calculation_type2").attr('disabled',true);
+                         }
+                         else if(res.type==2)
+                         {
+                             $("#approved_limit_div").show(); 
+                             $("#chrg_calculation_type2").attr('checked',true);
+                             $("#chrg_calculation_type1").attr('disabled',true);
+                         } 
+                          $("#chrg_applicable_id").html(applicable);
                           $("#amount").val(res.amount);
                           $("#id").val(res.id);
                       }
@@ -113,19 +157,7 @@
         
         
     $(document).ready(function () {
-       $(document).on('click', 'input[name="chrg_calculation_type"]', function (e) {
-          if ($(this).val() == '2') $('#approved_limit_div').show();
-          else $('#approved_limit_div').hide();
-        })
-
-        $(document).on('click', 'input[name="is_gst_applicable"]', function (e) {
-          if ($(this).val() == '1') $('#gst_div').show();
-          else $('#gst_div').hide();
-        })
-        
-        
-
-
+      
        /////////////// validation the time of final submit/////////////// 
       $(document).on('click','#add_charge',function(e){
       
@@ -142,7 +174,7 @@
         required: true,
      
         messages: {
-        required: "Please select bank name",
+        required: "Please select program name",
         }
         });
           $("#chrg_name" ).rules( "add", {

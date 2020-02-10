@@ -60,7 +60,7 @@ class ChargeController extends Controller
       }
     
      public function listLmsCharges(){
-          $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1]);
+          $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1,'chrg_type' => 2]);
           $result  =  $this->invRepo->getCustomerId();
           $program  =  $this->lmsRepo->getProgram();
           return view('lms.charges.add_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program]);
@@ -72,8 +72,36 @@ class ChargeController extends Controller
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
-          
-              return response()->json(['status' => 1,'amount' => number_format($getamount->chrg_calculation_amt),'id' => $getamount->id]); 
+               $app = "";
+               $sel ="";
+                $res =   [  1 => "Limit Amount",
+                            2 => "Outstanding Amount",
+                            3 => "Outstanding Principal",
+                            4 => "Outstanding Interest",
+                            5 => "Overdue Amount"];
+             if($getamount->chrg_applicable_id > 0)
+             {
+                
+                 foreach($res as $key=>$val)
+                 {
+                     if($getamount->chrg_applicable_id==$key)
+                     {
+                         $sel = "selected";
+                     }
+                     $app.= "<option value=".$key." $sel>".$val."</option>";
+                 }
+             }
+             
+             if($getamount->chrg_calculation_type==1)
+             {
+                $amount =  number_format($getamount->chrg_calculation_amt);
+             }
+             else
+             {
+                $amount =  $getamount->chrg_calculation_amt; 
+             }
+             
+             return response()->json(['status' => 1,'amount' => $amount,'id' => $getamount->id,'type' => $getamount->chrg_calculation_type,'applicable' =>$app]); 
           }
           else
           {
