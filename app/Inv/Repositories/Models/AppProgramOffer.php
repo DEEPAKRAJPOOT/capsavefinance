@@ -50,6 +50,7 @@ class AppProgramOffer extends BaseModel {
         'prgm_limit_amt',
         'loan_amount',
         'loan_offer',        
+        'sub_limit',        
         'interest_rate',        
         'tenor',        
         'tenor_old_invoice',        
@@ -60,6 +61,7 @@ class AppProgramOffer extends BaseModel {
         'processing_fee',
         'check_bounce_fee',
         'equipment_type_id',
+        'facility_type_id',
         'security_deposit_type',
         'security_deposit',
         'security_deposit_of',
@@ -257,10 +259,12 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
             $prgmOffer = AppProgramOffer::where('app_prgm_limit_id', $app_prgm_limit_id)->where('is_active', 1)->first();
+            if (empty($data['equipment_type_id'])) {
             if($prgmOffer){
                 $prgmOffer->update(['is_active'=>0]);
+            }            
+            //AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
             }
-            AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
             return AppProgramOffer::create($data);
         }
     }
