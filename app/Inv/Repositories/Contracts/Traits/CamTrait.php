@@ -121,8 +121,11 @@ trait CamTrait
                     $arrData[$key]['created_at'] = \Carbon\Carbon::now();
                     $arrData[$key]['created_by'] = Auth::user()->user_id;
                 }
-            }
-            CamReviewSummPrePost::insert($arrData);
+            }            
+        }
+
+        if(isset($arrData) && !empty($arrData)) {
+          CamReviewSummPrePost::insert($arrData);
         }
         
     }

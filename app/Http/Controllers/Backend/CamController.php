@@ -232,18 +232,20 @@ class CamController extends Controller
         }
     }
 
-    public function filterPrePostCond($item) 
+    public function filterPreCond($item) 
     { 
-      dd($array);
-        // returns if the input integer is even 
-        if($item['cond_type']==1) 
-           return TRUE; 
-        else 
-           return FALSE;  
+      return $item['cond_type']==1;
+    }
+
+    public function filterPostCond($item) 
+    { 
+      return $item['cond_type']==2;
     }
 
     public function reviewerSummary(Request $request){
       $offerPTPQ = '';
+      $preCondArr = [];
+      $postCondArr = [];
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
       $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
@@ -256,17 +258,20 @@ class CamController extends Controller
                         ->where('is_active', 1)->get();
         $dataPrePostCond = $dataPrePostCond ? $dataPrePostCond->toArray() : [];
         if(!empty($dataPrePostCond)) {
-          //$preCondArr = array_filter($dataPrePostCond, array($this, "filterPrePostCond"));
+          $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCond"));
+          $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
         }
       } 
 
-      //dd($dataPrePostCond);
+      //dd($postCondArr);
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
         'appId'=> $appId,
         'limitOfferData'=> $limitOfferData,
         'reviewerSummaryData'=> $reviewerSummaryData,
-        'offerPTPQ' => $offerPTPQ
+        'offerPTPQ' => $offerPTPQ,
+        'preCondArr' => $preCondArr,
+        'postCondArr' => $postCondArr
       ]);
     }
 

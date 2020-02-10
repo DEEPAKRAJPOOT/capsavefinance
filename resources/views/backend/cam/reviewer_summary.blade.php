@@ -121,7 +121,22 @@
                            </tr>
                         </thead>                   
                      </table>
-                     
+                     @if(isset($preCondArr) && count($preCondArr)>0)
+                        @foreach($preCondArr as $prekey =>$preval)
+                        <div class="input-group control-group after-add-more">
+                           <div class="input-group-btn"> 
+                              <input type="text" name="pre_cond[]" value="{{$preval['cond']}}" class="form-control form-control-sm">
+                           </div>
+                           <div class="input-group-btn"> 
+                              <input type="text" name="pre_timeline[]" value="{{$preval['timeline']}}" class="form-control form-control-sm">
+                           </div>
+                           <div class="input-group-btn"> 
+                           <button class="btn btn-danger remove" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+                           </div>
+                        </div>
+                        @endforeach
+                     @endif
+
                      <div class="input-group control-group after-add-more">
                         <div class="input-group-btn"> 
                            <input type="text" name="pre_cond[]" value="" class="form-control form-control-sm">
@@ -158,49 +173,49 @@
                                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
                            </tr>
                         </thead>
-                        <tbody>           
-                           <tr role="row" class="odd">
-                                 <td class="">
-                                    <input type="text"  name="cond_pbdit" value="{{isset($reviewerSummaryData->cond_pbdit) ? $reviewerSummaryData->cond_pbdit : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <input type="text"  name="time_pbdit" value="{{isset($reviewerSummaryData->time_pbdit) ? $reviewerSummaryData->time_pbdit : ''}}" class="form-control form-control-sm">
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">
-                                    <input type="text" name="cond_dscr" value="{{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}}"  class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <input type="text"  name="time_dscr" value="{{isset($reviewerSummaryData->time_dscr) ? $reviewerSummaryData->time_dscr : ''}}" class="form-control form-control-sm">
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">
-                                    <input type="text" name="cond_lender_cfpl" value="{{isset($reviewerSummaryData->cond_lender_cfpl) ? $reviewerSummaryData->cond_lender_cfpl : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <input type="text"  name="time_lender_cfpl" value="{{isset($reviewerSummaryData->time_lender_cfpl) ? $reviewerSummaryData->time_lender_cfpl : ''}}" class="form-control form-control-sm">
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="" valign="top">
-                                    <input type="text" name="cond_ebidta" value="{{isset($reviewerSummaryData->cond_ebidta) ? $reviewerSummaryData->cond_ebidta : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <input type="text"  name="time_ebidta" value="{{isset($reviewerSummaryData->time_ebidta) ? $reviewerSummaryData->time_ebidta : ''}}" class="form-control form-control-sm">
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">
-                                    <input type="text" name="cond_credit_rating" value="{{isset($reviewerSummaryData->cond_credit_rating) ? $reviewerSummaryData->cond_credit_rating : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <input type="text" name="time_credit_rating" value="{{isset($reviewerSummaryData->time_credit_rating) ? $reviewerSummaryData->time_credit_rating : ''}}" class="form-control form-control-sm">
-                                 </td>
-                           </tr>
-                        </tbody>
                      </table>
+                     @if(isset($postCondArr) && count($postCondArr)>0)
+                        @foreach($postCondArr as $postkey =>$postval)
+                        <div class="input-group control-group after-add-more-post">
+                           <div class="input-group-btn"> 
+                              <input type="text" name="post_cond[]" value="{{$postval['cond']}}" class="form-control form-control-sm">
+                           </div>
+                           <div class="input-group-btn"> 
+                              <input type="text" name="post_timeline[]" value="{{$postval['timeline']}}" class="form-control form-control-sm">
+                           </div>
+                           <div class="input-group-btn"> 
+                           <button class="btn btn-danger remove-post" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+                           </div>
+                        </div>
+                        @endforeach
+                     @endif
+                     
+                     <div class="input-group control-group after-add-more-post">
+                        <div class="input-group-btn"> 
+                           <input type="text" name="post_cond[]" value="" class="form-control form-control-sm">
+                        </div>
+                        <div class="input-group-btn"> 
+                           <input type="text" name="post_timeline[]" value="" class="form-control form-control-sm">
+                        </div>
+                        <div class="input-group-btn"> 
+                           <button class="btn btn-success add-more-post" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                        </div>
+                     </div>
+
+                     <!-- Copy Fields -->
+                     <div class="copy-post hide">
+                        <div class="control-group input-group" style="margin-top:10px">
+                           <div class="input-group-btn"> 
+                              <input type="text" name="post_cond[]" value="" class="form-control form-control-sm">
+                           </div>
+                           <div class="input-group-btn"> 
+                              <input type="text" name="post_timeline[]" value="" class="form-control form-control-sm">
+                           </div>
+                           <div class="input-group-btn"> 
+                              <button class="btn btn-danger remove-post" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+                           </div>
+                        </div>
+                     </div>
                </div>
                <div class="col-md-12 mt-4">
                      <h4><small>Approval criteria for IC:</small></h4>
@@ -510,6 +525,16 @@ $(document).ready(function() {
 
 
    $("body").on("click",".remove",function(){ 
+      $(this).parents(".control-group").remove();
+   });
+
+   $(".add-more-post").click(function(){ 
+      var html = $(".copy-post").html();
+      $(".after-add-more-post").after(html);
+   });
+
+
+   $("body").on("click",".remove-post",function(){ 
       $(this).parents(".control-group").remove();
    });
 
