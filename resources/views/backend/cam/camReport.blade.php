@@ -339,6 +339,30 @@
                      <h5>Other</h5>
                   </td>
                </tr>
+               <tr>
+                  <td>Negative Industry Segment</td>
+                  <td>No</td>
+                  <td>{{isset($arrHygieneData->neg_industry_check) && $arrHygieneData->neg_industry_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->neg_industry_cmnt) ? trim($arrHygieneData->neg_industry_cmnt) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>Exposure to sensitive sectors</td>
+                  <td>No</td>
+                  <td>{{isset($arrHygieneData->senstive_sector_check) && $arrHygieneData->senstive_sector_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->senstive_sector_cmnt) ? trim($arrHygieneData->senstive_sector_cmnt) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>Sensitive geography/region/area</td>
+                  <td>No</td>
+                  <td>{{isset($arrHygieneData->senstive_region_check) && $arrHygieneData->senstive_region_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->senstive_region_cmnt) ? trim($arrHygieneData->senstive_region_cmnt) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>Politically exposed person</td>
+                  <td>No</td>
+                  <td>{{isset($arrHygieneData->politically_check) && $arrHygieneData->politically_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->pol_exp_per_cmnt) ? trim($arrHygieneData->pol_exp_per_cmnt) : ''}}</td>
+               </tr>
             </tbody>
          </table>
       </div>
