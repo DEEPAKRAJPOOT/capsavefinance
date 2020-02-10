@@ -25,6 +25,7 @@
 
    <div class="data mt-4">
       <h2 class="sub-title bg">Deal Structure</h2>
+      @foreach($leaseOfferData as $key=>$leaseOffer)
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
@@ -40,43 +41,44 @@
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Limit</b></td>
-                  <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
+                  <td class=""> {{isset($leaseOffer->programLimit) ? $leaseOffer->programLimit->limit_amt : ''}}
                         </td>
                   
                </tr>
+            
                <tr role="row" class="odd">
                   <td class=""><b>Tenor (Months)</b></td>
-                  <td class="">{{isset($leaseOfferData->tenor) ? $leaseOfferData->tenor : ''}}</td>
+                  <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Equipment Type</b></td>
-                  <td class="">{{isset($leaseOfferData->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->equipment_type_id)['equipment_name']) : ''}}</td>
+                  <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Security Deposit</b></td>
-                  <td class="">{{isset($leaseOfferData->security_deposit) ? $leaseOfferData->security_deposit : ''}}</td>
+                  <td class="">{{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Rental Frequency</b></td>
-                  <td class="">{{isset($leaseOfferData->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOfferData->rental_frequency] : ''}}</td>
+                  <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>PTPF</b></td>
                   <td class="">
                      @php 
                         $i = 1;
-                        if(!empty($leaseOfferData->offerPtpq)){
-                        $total = count($leaseOfferData->offerPtpq);
+                        if(!empty($leaseOffer->offerPtpq)){
+                        $total = count($leaseOffer->offerPtpq);
                      @endphp   
 
-                        @foreach($leaseOfferData->offerPtpq as $key => $arr) 
+                        @foreach($leaseOffer->offerPtpq as $key => $arr) 
 
                               @if ($i > 1 && $i < $total)
                               ,
                               @elseif ($i > 1 && $i == $total)
                                  and
                               @endif
-                              Rs. {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOfferData->rental_frequency]}}
+                              Rs. {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
 
                               @php 
                                  $i++;
@@ -90,30 +92,34 @@
                </tr>
                <tr role="row" class="odd">
                   <td class="" valign="top"><b>XIRR</b></td>
-                  <td class="" valign="top">Ruby Sheet : {{isset($leaseOfferData->ruby_sheet_xirr) ? $leaseOfferData->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOfferData->cash_flow_xirr) ? $leaseOfferData->cash_flow_xirr : ''}}%
+                  <td class="" valign="top">Ruby Sheet : {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
                   </td>
                </tr>
                
                <tr role="row" class="odd">
                   <td class=""><b>Additional Security</b></td>
                   <td class="">
-                     @if(isset($leaseOfferData->addl_security))
-                     @switch($leaseOfferData->addl_security)
+                     @if(isset($leaseOffer->addl_security))
+                     @switch($leaseOffer->addl_security)
                         @case(1) BG
                            @break
                         @case(2) FD
                            @break
                         @case(3) MF
                            @break
-                        @case(4) Others {{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}
+                        @case(4) Others {{isset($leaseOffer->comment) ? $leaseOffer->comment : ''}}
                            @break
                      @endswitch
                      @endif
                   </td>
                </tr>
+
+              
             </tbody>
          </table>
       </div>
+   @endforeach
+
    </div>
 
    <div class="data mt-4">
