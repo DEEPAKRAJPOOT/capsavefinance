@@ -1343,7 +1343,7 @@ public function getAppData($app_id)
 
     public function lmsGetTransactions()
     {
-    return Transactions::where('soa_flag', 1);
+        return Transactions::with('trans_detail')->where('soa_flag', 1);
     }
 
 }

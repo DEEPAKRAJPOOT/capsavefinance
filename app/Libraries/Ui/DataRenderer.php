@@ -3102,7 +3102,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'trans_type',
                 function ($transaction) {
-                    return 'Disburse';
+                    return $transaction->trans_detail->trans_name;
                 }
             )
             ->editColumn(

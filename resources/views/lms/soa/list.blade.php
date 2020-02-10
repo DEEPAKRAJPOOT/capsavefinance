@@ -21,7 +21,29 @@
     <div class="card">
         <div class="card-body">       
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    {!!
+                    Form::text('from_date',
+                    null,
+                    [
+                    'class' => 'form-control',
+                    'placeholder' => 'From Date',
+                    'id'=>'from_date'
+                    ])
+                    !!} 
+                </div>
+                 <div class="col-md-3">
+                    {!!
+                    Form::text('to_date',
+                    null,
+                    [
+                    'class' => 'form-control',
+                    'placeholder' => 'To Date',
+                    'id'=>'to_date'
+                    ])
+                    !!} 
+                </div>
+                <div class="col-md-3">
                     {!!
                     Form::text('search_keyword',
                     null,
@@ -79,6 +101,17 @@
         token: "{{ csrf_token() }}",
 
     };
+    $('#from_date').datetimepicker({
+        format: 'dd/mm/yyyy',
+        //  startDate: new Date(),
+        autoclose: true,
+        minView: 2, });
+    $('#to_date').datetimepicker({
+        format: 'dd/mm/yyyy',
+        //  startDate: new Date(),
+        autoclose: true,
+        minView: 2, });
+
 </script>
 <script src="{{ asset('backend/js/lms/soa.js') }}" type="text/javascript"></script>
 @endsection
