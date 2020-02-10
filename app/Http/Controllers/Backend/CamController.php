@@ -40,7 +40,7 @@ use App\Libraries\Pdf;
 use App\Inv\Repositories\Models\UserAppDoc;
 use PDF as DPDF;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
-
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
 
 class CamController extends Controller
 {
@@ -232,7 +232,15 @@ class CamController extends Controller
         }
     }
 
-
+    public function filterPrePostCond($item) 
+    { 
+      dd($array);
+        // returns if the input integer is even 
+        if($item['cond_type']==1) 
+           return TRUE; 
+        else 
+           return FALSE;  
+    }
 
     public function reviewerSummary(Request $request){
       $offerPTPQ = '';
@@ -243,6 +251,16 @@ class CamController extends Controller
       if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
         $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
       }
+      if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+        $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                        ->where('is_active', 1)->get();
+        $dataPrePostCond = $dataPrePostCond ? $dataPrePostCond->toArray() : [];
+        if(!empty($dataPrePostCond)) {
+          //$preCondArr = array_filter($dataPrePostCond, array($this, "filterPrePostCond"));
+        }
+      } 
+
+      //dd($dataPrePostCond);
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
         'appId'=> $appId,
