@@ -225,7 +225,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+         <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
                   <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Recommended By</th>
@@ -234,8 +234,8 @@
             </thead>
             <tbody>
                <tr role="row" >
-                  <td align="center" rowspan="">
-                  <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
+                  <td align="center">
+                     <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
                            @php 
                               $i=0;
                            @endphp
@@ -243,7 +243,7 @@
                               <tr>
                                  <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrCM[$i]->assignee}}</th>
                                  @php $i++; @endphp
-                           </tr>
+                              </tr>
                         @endwhile
                      </table> 
                   </td>
@@ -277,25 +277,25 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+         <table width="100%" id="invoice_history" class="table  no-footer overview-table" role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Parameter</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Criteria</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Deviation</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Remarks</th>
+                  <th width="30%">Parameter</th>
+                  <th width="30%">Criteria</th>
+                  <th width="10%">Deviation</th>
+                  <th width="30%">Remarks</th>
                </tr>
                <tr>
-                  <th class="sorting_asc bg-second" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%" >Borrower Vintage &amp; Constitution</th>
-                  <th class="sorting_asc text-center bg-second" tabindex="0" aria-controls="invoice_history" rowspan="1"  aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%"></th>
-                  <th class="sorting_asc text-center bg-second" tabindex="0" aria-controls="invoice_history" rowspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%"></th>					  
-                  <th class="sorting_asc text-center bg-second" tabindex="0" aria-controls="invoice_history" rowspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%"></th>
+                  <th>Borrower Vintage &amp; Constitution</th>
+                  <th></th>
+                  <th></th>					  
+                  <th></th>
                </tr>
             </thead>
-            <tbody>
+            <tbody width="100%">
                <tr>
-                  <td>Constitution</td>
-                  <td>
+                  <td width="30%">Constitution</td>
+                  <td width="30%">
                      <p class="m-0">
                         - Registered Partnership Firm<br>
                         - Private Limited Company<br>
@@ -303,8 +303,8 @@
                         - Limited Liability Partnership
                      </p>
                   </td>
-                  <td>No</td>
-                  <td>{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
+                  <td width="10%">No</td>
+                  <td width="30%">{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
                </tr>
                <tr>
                   <td>Vintage</td>
@@ -602,7 +602,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Standalone Financials of {{$arrBizData->biz_entity_name}}</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+         <table width="100%" id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                   <tr>
                      <th valign="middle" bgcolor="#efefef"> Particular</th>
@@ -617,7 +617,7 @@
                   <tr @if (empty($audited_years)) class='hide' @endif>
                      <td width="40%"></td>
                      @foreach($financeData as $year => $fin_data)
-                     <td width="20%" ><strong>Aud.</strong></td>
+                     <td><strong>Aud.</strong></td>
                      @endforeach
                   </tr>
                   @foreach($FinanceColumns as $key => $finance_col)
