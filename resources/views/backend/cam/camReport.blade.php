@@ -247,6 +247,45 @@
                   <td>No</td>
                   <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
                </tr>
+               <tr>
+                  <td colspan="4" class="blank">&nbsp;</td>
+               </tr>
+               <tr>
+                  <td>CFPL Defaulter List</td>
+                  <td>No</td>
+                  <td>{{isset($arrHygieneData->cfpl_default_check) && $arrHygieneData->cfpl_default_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->cfpl_default_cmnt) ? trim($arrHygieneData->cfpl_default_cmnt) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>RBI Defaulter list</td>
+                  <td>No</td>
+                  <td>{{isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->rbi_willful_defaulters) ? trim($arrHygieneData->rbi_willful_defaulters) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>CDR/ BIFR/ OTS/ Restructuring</td>
+                  <td>No</td>
+                  <td>{{isset($arrHygieneData->cdr_check) && $arrHygieneData->cdr_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->cdr_cmnt) ? trim($arrHygieneData->cdr_cmnt) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>CIBIL</td>
+                  <td>No Adverse Remarks</td>
+                  <td>{{isset($arrHygieneData->cibil_defaulters_chk) && $arrHygieneData->cibil_defaulters_chk == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->comment) ?trim($arrHygieneData->comment) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>Watchout Investors</td>
+                  <td>No Adverse Remarks</td>
+                  <td>{{isset($arrHygieneData->watchout_investors_chk) && $arrHygieneData->watchout_investors_chk == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->watchout_investors) ? trim($arrHygieneData->watchout_investors) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>Google Search (Negative searches)</td>
+                  <td>No </td>
+                  <td>{{isset($arrHygieneData->neg_news_report_check) && $arrHygieneData->neg_news_report_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($arrHygieneData->neg_news_report_cmnt) ? trim($arrHygieneData->neg_news_report_cmnt) : ''}}</td>
+               </tr>
             </tbody>
          </table>
       </div>
