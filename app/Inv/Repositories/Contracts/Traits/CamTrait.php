@@ -107,7 +107,7 @@ trait CamTrait
         $updateData['is_active'] = 0;
         $updateData['updated_by'] = Auth::user()->user_id;
         $updPrePost = CamReviewSummPrePost::where('cam_reviewer_summary_id', $cam_reviewer_summary_id)
-                        ->where('cond_type', 1);
+                        ->whereIn('cond_type', [1,2]);
         $updPrePost->update($updateData);
         $arrData =[];
         if(isset($request->pre_cond) && $request->pre_cond[0]!=null) {
@@ -121,12 +121,29 @@ trait CamTrait
                     $arrData[$key]['created_at'] = \Carbon\Carbon::now();
                     $arrData[$key]['created_by'] = Auth::user()->user_id;
                 }
-            }            
+            }  
+            CamReviewSummPrePost::insert($arrData);          
         }
 
-        if(isset($arrData) && !empty($arrData)) {
-          CamReviewSummPrePost::insert($arrData);
+        $arrData =[];
+        if(isset($request->post_cond) && $request->post_cond[0]!=null) {
+          foreach($request->post_cond as $key=>$val){
+              if($request->post_cond[$key] != null) {
+                  $arrData[$key]['cam_reviewer_summary_id'] = $cam_reviewer_summary_id;
+                  $arrData[$key]['cond'] = $request->post_cond[$key];
+                  $arrData[$key]['timeline'] = $request->post_timeline[$key];
+                  $arrData[$key]['cond_type'] = 2;
+                  $arrData[$key]['is_active'] = 1;
+                  $arrData[$key]['created_at'] = \Carbon\Carbon::now();
+                  $arrData[$key]['created_by'] = Auth::user()->user_id;
+              }
+          }    
+          CamReviewSummPrePost::insert($arrData);        
         }
+
+        // if(isset($arrData) && !empty($arrData)) {
+        //   CamReviewSummPrePost::insert($arrData);
+        // }
         
     }
 }
