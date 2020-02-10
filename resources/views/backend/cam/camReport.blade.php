@@ -329,7 +329,7 @@
                </tr>
                <tr>
                   <td>Cash Profit</td>
-                  <td>Positive for 2 out of last 3 financial years(positive in last year)</td>
+                  <td>Positive for 2 out of last 3 financial years <br>(positive in last year)</td>
                   <td>{{isset($finacialDetails->cash_profit_check) && $finacialDetails->cash_profit_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($finacialDetails->cash_profit_cmnt) ? trim($finacialDetails->cash_profit_cmnt) : ''}}</td>
                </tr>
