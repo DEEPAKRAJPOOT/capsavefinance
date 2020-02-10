@@ -275,13 +275,13 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+         <table id="invoice_history" class="table no-footer overview-table" cellpadding="0" cellspacing="0" style="width: 100%;">
             <thead>
                <tr>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Parameter <br> Borrower Vintage &amp; Constitution</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Deviation</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Remarks</th>
+                  <th class="sorting_asc text-center" width="30%">Parameter <br> Borrower Vintage &amp; Constitution</th>
+                  <th class="sorting_asc text-center" width="30%">Criteria</th>
+                  <th class="sorting_asc text-center" width="10%">Deviation</th>
+                  <th class="sorting_asc text-center" width="30%">Remarks</th>
                </tr>
             </thead>
             <tbody>
