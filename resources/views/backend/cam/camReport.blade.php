@@ -283,25 +283,19 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table width="100%" id="invoice_history" class="table  no-footer overview-table" role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+         <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
-                  <th width="30%">Parameter</th>
-                  <th width="30%">Criteria</th>
-                  <th width="10%">Deviation</th>
-                  <th width="30%">Remarks</th>
-               </tr>
-               <tr>
-                  <th>Borrower Vintage &amp; Constitution</th>
-                  <th></th>
-                  <th></th>					  
-                  <th></th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Parameter <br> Borrower Vintage &amp; Constitution</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Deviation</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Remarks</th>
                </tr>
             </thead>
-            <tbody width="100%">
+            <tbody>
                <tr>
-                  <td width="30%">Constitution</td>
-                  <td width="30%">
+                  <td>Constitution</td>
+                  <td>
                      <p class="m-0">
                         - Registered Partnership Firm<br>
                         - Private Limited Company<br>
@@ -309,8 +303,8 @@
                         - Limited Liability Partnership
                      </p>
                   </td>
-                  <td width="10%">No</td>
-                  <td width="30%">{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
+                  <td>No</td>
+                  <td>{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
                </tr>
                <tr>
                   <td>Vintage</td>
