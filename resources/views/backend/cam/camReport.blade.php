@@ -310,6 +310,35 @@
                <tr>
                   <td colspan="4"  class="blank">&nbsp;</td>
                </tr>
+               <tr>
+                  <td>Adjusted Tangible Net Worth</td>
+                  <td>Positive for last 2 financial years </td>
+                  <td>{{isset($finacialDetails->adj_net_worth_check) && $finacialDetails->adj_net_worth_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($finacialDetails->adj_net_worth_cmnt) ? trim($finacialDetails->adj_net_worth_cmnt) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>Cash Profit</td>
+                  <td>Positive for 2 out of last 3 financial years <br>(positive in last year)</td>
+                  <td>{{isset($finacialDetails->cash_profit_check) && $finacialDetails->cash_profit_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($finacialDetails->cash_profit_cmnt) ? trim($finacialDetails->cash_profit_cmnt) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>DSCR</td>
+                  <td>&gt;1.2X</td>
+                  <td>{{isset($finacialDetails->dscr_check) && $finacialDetails->dscr_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($finacialDetails->dscr_cmnt) ? trim($finacialDetails->dscr_cmnt) : ''}}</td>
+               </tr>
+               <tr>
+                  <td>Debt/EBIDTA</td>
+                  <td>&lt;5X</td>
+                  <td>{{isset($finacialDetails->debt_check) && $finacialDetails->debt_check == 'Yes' ? 'Yes' : 'No'}}</td>
+                  <td>{{isset($finacialDetails->debt_cmnt) ? trim($finacialDetails->debt_cmnt) : ''}}</td>
+               </tr>
+               <tr>
+                  <td colspan="4" class="blank">
+                     <h5>Other</h5>
+                  </td>
+               </tr>
             </tbody>
          </table>
       </div>
