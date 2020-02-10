@@ -228,9 +228,9 @@
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Parameter <br/> Borrower Vintage &amp; Constitution</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Criteria</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="40%">Deviation</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Parameter <br/> Borrower Vintage &amp; Constitution</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Deviation</th>
                   <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Remarks</th>
                </tr>
             </thead>
@@ -365,18 +365,8 @@
                </tr>
                <tr>
                   <td>KYC risk profile</td>
-                  <td>  
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'High' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }}
-                  </td>
-                  <td>
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'Highf' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }}
-                  </td>
+                  <td>{{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'High' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }} </td>
+                  <td>{{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'Highf' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }} </td>
                   <td>{{isset($arrHygieneData->kyc_risk_cmnt) ? trim($arrHygieneData->kyc_risk_cmnt) : ''}}</td>
                </tr>
                <tr>
@@ -390,174 +380,6 @@
       </div>
    </div>
 
-   <div class="data mt-4">
-      <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
-         <table id="invoice_history1" class="table no-footer overview-table" cellpadding="0" cellspacing="0">
-            <thead>
-               <tr>
-                  <th class="sorting_asc text-center" width="30%">Parameter <br/> Borrower Vintage &amp; Constitution</th>
-                  <th class="sorting_asc text-center" width="30%">Criteria</th>
-                  <th class="sorting_asc text-center" width="10%">Deviation</th>
-                  <th class="sorting_asc text-center" width="30%">Remarks</th>
-               </tr>
-            </thead>
-            <tbody>
-               <tr>
-                  <td>Constitution</td>
-                  <td>- Registered Partnership Firm<br/> - Private Limited Company<br/> - Public Limited Company<br/> - Limited Liability Partnership </td>
-                  <td>No</td>
-                  <td>{{isset($arrEntityData->name) ? trim($arrEntityData->name) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Vintage</td>
-                  <td> - Minimum 3 years of vintage in relevant business<br/> - Parent or group company with requisite vintage<br/> - Key promoter with 5 years of relevant vintage </td>
-                  <td>No</td>
-                  <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
-               </tr>
-               <tr>
-                  <td colspan="4" class="blank">&nbsp;</td>
-               </tr>
-               <tr>
-                  <td>CFPL Defaulter List</td>
-                  <td>No</td>
-                  <td>{{isset($arrHygieneData->cfpl_default_check) && $arrHygieneData->cfpl_default_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->cfpl_default_cmnt) ? trim($arrHygieneData->cfpl_default_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>RBI Defaulter list</td>
-                  <td>No</td>
-                  <td>{{isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->rbi_willful_defaulters) ? trim($arrHygieneData->rbi_willful_defaulters) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>CDR/ BIFR/ OTS/ Restructuring</td>
-                  <td>No</td>
-                  <td>{{isset($arrHygieneData->cdr_check) && $arrHygieneData->cdr_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->cdr_cmnt) ? trim($arrHygieneData->cdr_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>CIBIL</td>
-                  <td>No Adverse Remarks</td>
-                  <td>{{isset($arrHygieneData->cibil_defaulters_chk) && $arrHygieneData->cibil_defaulters_chk == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->comment) ?trim($arrHygieneData->comment) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Watchout Investors</td>
-                  <td>No Adverse Remarks</td>
-                  <td>{{isset($arrHygieneData->watchout_investors_chk) && $arrHygieneData->watchout_investors_chk == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->watchout_investors) ? trim($arrHygieneData->watchout_investors) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Google Search (Negative searches)</td>
-                  <td>No </td>
-                  <td>{{isset($arrHygieneData->neg_news_report_check) && $arrHygieneData->neg_news_report_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->neg_news_report_cmnt) ? trim($arrHygieneData->neg_news_report_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td colspan="4" class="blank">&nbsp;</td>
-               </tr>
-               <tr>
-                  <td>Satisfactory contact point verification</td>
-                  <td>Yes </td>
-                  <td>{{isset($arrHygieneData->contact_point_check) && $arrHygieneData->contact_point_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->contact_point_cmnt) ? trim($arrHygieneData->contact_point_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Satisfactory banker reference</td>
-                  <td>Yes </td>
-                  <td>{{isset($arrHygieneData->bank_ref_check) && $arrHygieneData->bank_ref_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->bank_ref_cmnt) ? trim($arrHygieneData->bank_ref_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Satisfactory trade reference</td>
-                  <td>Yes </td>
-                  <td>{{isset($arrHygieneData->trade_ref_check) && $arrHygieneData->trade_ref_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->trade_ref_cmnt) ? trim($arrHygieneData->trade_ref_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td colspan="4"  class="blank">&nbsp;</td>
-               </tr>
-               <tr>
-                  <td>Adjusted Tangible Net Worth</td>
-                  <td>Positive for last 2 financial years </td>
-                  <td>{{isset($finacialDetails->adj_net_worth_check) && $finacialDetails->adj_net_worth_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($finacialDetails->adj_net_worth_cmnt) ? trim($finacialDetails->adj_net_worth_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Cash Profit</td>
-                  <td>Positive for 2 out of last 3 financial years <br>(positive in last year)</td>
-                  <td>{{isset($finacialDetails->cash_profit_check) && $finacialDetails->cash_profit_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($finacialDetails->cash_profit_cmnt) ? trim($finacialDetails->cash_profit_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>DSCR</td>
-                  <td>&gt;1.2X</td>
-                  <td>{{isset($finacialDetails->dscr_check) && $finacialDetails->dscr_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($finacialDetails->dscr_cmnt) ? trim($finacialDetails->dscr_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Debt/EBIDTA</td>
-                  <td>&lt;5X</td>
-                  <td>{{isset($finacialDetails->debt_check) && $finacialDetails->debt_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($finacialDetails->debt_cmnt) ? trim($finacialDetails->debt_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td colspan="4" class="blank">
-                     <h5>Other</h5>
-                  </td>
-               </tr>
-               <tr>
-                  <td>Negative Industry Segment</td>
-                  <td>No</td>
-                  <td>{{isset($arrHygieneData->neg_industry_check) && $arrHygieneData->neg_industry_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->neg_industry_cmnt) ? trim($arrHygieneData->neg_industry_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Exposure to sensitive sectors</td>
-                  <td>No</td>
-                  <td>{{isset($arrHygieneData->senstive_sector_check) && $arrHygieneData->senstive_sector_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->senstive_sector_cmnt) ? trim($arrHygieneData->senstive_sector_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Sensitive geography/region/area</td>
-                  <td>No</td>
-                  <td>{{isset($arrHygieneData->senstive_region_check) && $arrHygieneData->senstive_region_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->senstive_region_cmnt) ? trim($arrHygieneData->senstive_region_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>Politically exposed person</td>
-                  <td>No</td>
-                  <td>{{isset($arrHygieneData->politically_check) && $arrHygieneData->politically_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->pol_exp_per_cmnt) ? trim($arrHygieneData->pol_exp_per_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>KYC risk profile</td>
-                  <td>  
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'High' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }}
-                  </td>
-                  <td>
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'Highf' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }}
-                  </td>
-                  <td>{{isset($arrHygieneData->kyc_risk_cmnt) ? trim($arrHygieneData->kyc_risk_cmnt) : ''}}</td>
-               </tr>
-               <tr>
-                  <td>UNSC List</td>
-                  <td>No</td>
-                  <td>{{isset($arrHygieneData->unsc_check) && $arrHygieneData->unsc_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->unsc_cmnt) ? trim($arrHygieneData->unsc_cmnt) : ''}}</td>
-               </tr>
-            </tbody>
-         </table>
-      </div>
-   </div>
-      
    <div class="data mt-4">
       <h2 class="sub-title bg">Approval Criteria for IC</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
