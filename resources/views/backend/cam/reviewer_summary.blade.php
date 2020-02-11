@@ -25,6 +25,9 @@
                      <h4><small>Cover Note</small></h4>
                      <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{!! isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : '' !!}</textarea>
                </div>
+
+
+
                <div class="col-md-12 mt-4">
                      <h4><small>Deal Structure:</small></h4>
                      @if(!empty($leaseOfferData))

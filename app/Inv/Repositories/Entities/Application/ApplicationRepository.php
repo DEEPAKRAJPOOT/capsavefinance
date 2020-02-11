@@ -972,8 +972,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $prgmLimitOfferData ? $prgmLimitOfferData : [];
     }
 
-    public function addProgramOffer($data, $app_prgm_limit_id){
-        $prgmLimitOfferData = AppProgramOffer::addProgramOffer($data, $app_prgm_limit_id);
+    public function addProgramOffer($data, $app_prgm_limit_id, $prgm_offer_id=null){
+        $prgmLimitOfferData = AppProgramOffer::addProgramOffer($data, $app_prgm_limit_id, $prgm_offer_id);
         return $prgmLimitOfferData ? $prgmLimitOfferData : [];
     }
 
@@ -1316,22 +1316,26 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /** 
- * @Author: Rent Alpha 
- * @Date: 2020-01-31 10:21:30 
- * @Desc: function for save app status log 
- */
-public function saveAppStatusLog($attributes)
-{
-    $result=AppStatusLog::saveAppStatusLog($attributes);
-    return  ($result)?$result:false;
-}
-/**
- * Get Applications for Application list data tables
- */
-public function getAppData($app_id) 
-{
-    $app_id=(int)$app_id;
-    $result= Application::getAppData($app_id);
-    return ($result)?$result:false;
-}
+    * @Author: Rent Alpha 
+    * @Date: 2020-01-31 10:21:30 
+    * @Desc: function for save app status log 
+    */
+    public function saveAppStatusLog($attributes)
+    {
+        $result=AppStatusLog::saveAppStatusLog($attributes);
+        return  ($result)?$result:false;
+    }
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getAppData($app_id) 
+    {
+        $app_id=(int)$app_id;
+        $result= Application::getAppData($app_id);
+        return ($result)?$result:false;
+    }
+
+    public function getTotalByPrgmLimitId($appPrgmLimitId){
+        return AppProgramOffer::getTotalByPrgmLimitId($appPrgmLimitId);
+    }
 }

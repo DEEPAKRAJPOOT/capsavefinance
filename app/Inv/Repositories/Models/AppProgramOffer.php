@@ -60,6 +60,7 @@ class AppProgramOffer extends BaseModel {
         'processing_fee',
         'check_bounce_fee',
         'equipment_type_id',
+        'facility_type_id',
         'security_deposit_type',
         'security_deposit',
         'security_deposit_of',
@@ -114,7 +115,7 @@ class AppProgramOffer extends BaseModel {
     public static function getOfferForLimit($oid)
     {
        
-      return  self::where(['app_prgm_limit_id'=>$oid,'is_active' =>1, 'is_active'=>1,'status' =>1 ])->first();      
+      return  self::where(['app_prgm_limit_id'=>$oid, 'is_active'=>1,'status' =>1 ])->first();      
 
     }
 
@@ -248,7 +249,7 @@ class AppProgramOffer extends BaseModel {
         }
     }
 
-    public static function addProgramOffer($data, $app_prgm_limit_id){
+    public static function addProgramOffer($data, $app_prgm_limit_id, $prgm_offer_id=null){
         if(empty($app_prgm_limit_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }else if(!is_int($app_prgm_limit_id)){
@@ -256,11 +257,11 @@ class AppProgramOffer extends BaseModel {
         }else if(!is_array($data)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            $prgmOffer = AppProgramOffer::where('app_prgm_limit_id', $app_prgm_limit_id)->where('is_active', 1)->first();
+            $prgmOffer = AppProgramOffer::where('prgm_offer_id', $prgm_offer_id)->where('is_active', 1)->first();
             if($prgmOffer){
                 $prgmOffer->update(['is_active'=>0]);
             }
-            AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
+            //AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
             return AppProgramOffer::create($data);
         }
     }
@@ -312,6 +313,19 @@ class AppProgramOffer extends BaseModel {
 
     public function offerPtpq(){
         return $this->hasMany('App\Inv\Repositories\Models\OfferPTPQ', 'prgm_offer_id', 'prgm_offer_id');
+    }
+
+    public static function getTotalByPrgmLimitId($appPrgmLimitId){
+        if(empty($appPrgmLimitId)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+        if(!is_int($appPrgmLimitId)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $tot_offered_limit = AppProgramOffer::where(['app_prgm_limit_id' => $appPrgmLimitId, 'is_active'=>1])->sum('prgm_limit_amt');
+        
+        return $tot_offered_limit;
     }
     
 }

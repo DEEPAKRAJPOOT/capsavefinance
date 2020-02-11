@@ -6,11 +6,12 @@
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
     <input type="hidden" value="{{request()->get('app_prgm_limit_id')}}" name="app_prgm_limit_id">
+    <input type="hidden" value="{{request()->get('prgm_offer_id')}}" name="offer_id">
     
     <div class="row">
         <div class="col-md-6">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Facility Type</b></label> 
+            <label for="txtPassword" ><b>Product</b></label> 
             <input type="text" class="form-control" value="Leasing" placeholder="Facility Type" maxlength="15" disabled>
           </div>
         </div>
@@ -25,11 +26,30 @@
           <div class="form-group INR">
             <label for="txtPassword" ><b>Limit</b></label> 
             <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
-            <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
-            <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Limit" maxlength="15">
+            <span class="float-right text-success">Total Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
+            <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
           </div>
         </div>
-    
+
+        <div class="col-md-6">
+          <div class="form-group ">
+            <label for="txtPassword" ><b>Facility Type</b></label> 
+            <select class="form-control" name="facility_type_id">
+                <option value="">Select Facility Type</option>
+                @foreach($facilityTypeList as $key => $facilityType)
+                <option value="{{$key}}" {{ (isset($offerData->facility_type_id) && $offerData->facility_type_id == $key) ? 'selected' : ''}}>{{$facilityType}}</option>
+                @endforeach
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group ">
+            <label for="txtPassword" ><b>Sub Limit</b></label> 
+            <input type="text" name="sub_limit" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Sub Limit" maxlength="15">
+          </div>
+        </div>
+
         <div class="col-md-6">
           <div class="form-group ">
             <label for="txtPassword" ><b>Tenor (Months)</b></label> 
@@ -193,7 +213,7 @@
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="4" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'checked': ''): '')}}> Others</label>
                 </div>
                 <div class="col-md-6" style="float: right;">
-                    <input type="text" name="comment" class="form-control" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'inline': 'none'): 'none')}}" value="{{isset($offerData->comment)? $offerData->comment: ''}}" placeholder="Other Security" maxlength="200">
+                <textarea name="comment" class="form-control" maxlength="200" placeholder="Security comment">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
                 </div>
             </div>
           </div>
@@ -211,19 +231,25 @@
 @section('jscript')
 <script>
   function checkLeasingValidations(){
+    let limit_amt = "{{$limitData->limit_amt}}"; //limit from app_prgm_limit table
     let total_limit = "{{$totalLimit}}"; //total exposure limit amount
     let program_limit = "{{$programLimit}}"; //program limit
     let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
     let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
     let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
 
+    let sub_total_amount = "{{$subTotalAmount}}"; //Sub total amount by app_prgm_limit_id
+
     let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
     let balance_limit = total_limit - total_offered_amount + current_offer_amount;
     let actual_balance = (program_balance_limit < balance_limit)? program_balance_limit: balance_limit;
+    let sub_total_balance = limit_amt - (sub_total_amount - current_offer_amount);
 
     unsetError('input[name=prgm_limit_amt]');
+    unsetError('input[name=sub_limit]'); 
     unsetError('input[name=tenor]');
     unsetError('select[name=equipment_type_id]');
+    unsetError('input[name=facility_type_id]');
     unsetError('input[name=security_deposit]');
     unsetError('input[name=security_deposit_type]');
     unsetError('select[name=rental_frequency]');
@@ -238,10 +264,13 @@
     unsetError('#check_block');
     unsetError('#radio_block');
 
+
     let flag = true;
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
+    let sub_limit = $('input[name=sub_limit]').val();
     let tenor = $('input[name=tenor]').val();
     let equipment_type_id = $('select[name=equipment_type_id]').val();
+    let facility_type_id = $('select[name=facility_type_id]').val();
     let security_deposit = $('input[name=security_deposit]').val();
     let security_deposit_of = $('select[name=security_deposit_of]').val();
     let rental_frequency = $('select[name=rental_frequency]').val();
@@ -253,7 +282,7 @@
     let cash_flow_xirr = $('input[name=cash_flow_xirr]').val().trim();
     let processing_fee = $('input[name=processing_fee]').val().trim();
     let addl_security = $('input[name*=addl_security]').is(':checked');
-    let comment = $('input[name=comment]').val().trim();
+    let comment = $('textarea[name=comment]').val().trim();
     let security_deposit_type = $('input[name=security_deposit_type]:checked').val();
 
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
@@ -264,6 +293,17 @@
         flag = false;
     }
 
+    if(sub_limit.length == 0 || parseInt(sub_limit.replace(/,/g, '')) == 0){
+        setError('input[name=sub_limit]', 'Please fill sub limit amount');
+        flag = false;
+    }else if((parseInt(sub_limit.replace(/,/g, '')) > sub_total_balance) && sub_total_balance == 0){
+        setError('input[name=sub_limit]', 'Your limit has been expired');
+        flag = false;
+    }else if((parseInt(sub_limit.replace(/,/g, '')) > sub_total_balance)){
+        setError('input[name=sub_limit]', 'Sub Limit can\'t exceed from ('+sub_total_balance+') balance limit amount');
+        flag = false;
+    }
+
     if(tenor == ''){
         setError('input[name=tenor]', 'Please flll tenor');
         flag = false;
@@ -271,6 +311,11 @@
 
     if(equipment_type_id == ''){
         setError('select[name=equipment_type_id]', 'Please select equipment type');
+        flag = false;
+    }
+
+    if(facility_type_id == ''){
+        setError('select[name=facility_type_id]', 'Please select facility type');
         flag = false;
     }
 
@@ -380,9 +425,10 @@
         setError('#check_block', 'Please check atleast one security');
         flag = false;
     }*/
-    if($('#other_sec').is(':checked')){
+
+    if($('input[name*=addl_security]').is(':checked')){
         if(comment == ''){
-            setError('input[name=comment]', 'Please fill other security');
+            setError('textarea[name=comment]', 'Please fill security comment');
             flag = false;
         }else{
             // TAKE REST
@@ -398,15 +444,15 @@
   }
 
   $(document).ready(function(){
-    $('#other_sec').on('change', function(){
-        unsetError('input[name=comment]');
+    /*$('#other_sec').on('change', function(){
+        unsetError('textarea[name=comment]');
         if($('#other_sec').is(':checked')){
-            $('input[name=comment]').css('display', 'inline');
+            $('textarea[name=comment]').css('display', 'inline');
         }else{
-            $('input[name=comment]').css('display', 'none');
-            $('input[name=comment]').val('');
+            $('textarea[name=comment]').css('display', 'none');
+            $('textarea[name=comment]').val('');
         }
-    });
+    });*/
 
     $('input[name=security_deposit_type]').on('change', function(){
         let sdt = $('input[name=security_deposit_type]:checked').val();
