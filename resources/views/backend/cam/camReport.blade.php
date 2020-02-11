@@ -231,36 +231,25 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table id="invoice_history" class="table no-footer overview-table" cellpadding="0" cellspacing="0">
+         <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
-                  <th class="sorting_asc text-center" width="30%">Parameter <br> Borrower Vintage &amp; Constitution</th>
-                  <th class="sorting_asc text-center" width="30%">Criteria</th>
-                  <th class="sorting_asc text-center" width="10%">Deviation</th>
-                  <th class="sorting_asc text-center" width="30%">Remarks</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Parameter <br/> Borrower Vintage &amp; Constitution</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Deviation</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Remarks</th>
                </tr>
             </thead>
             <tbody>
                <tr>
                   <td>Constitution</td>
-                  <td>
-                        - Registered Partnership Firm<br>
-                        - Private Limited Company<br>
-                        - Public Limited Company<br>
-                        - Limited Liability Partnership
-                   
-                  </td>
+                  <td>- Registered Partnership Firm<br/> - Private Limited Company<br/> - Public Limited Company<br/> - Limited Liability Partnership </td>
                   <td>No</td>
                   <td>{{isset($arrEntityData->name) ? trim($arrEntityData->name) : ''}}</td>
                </tr>
                <tr>
                   <td>Vintage</td>
-                  <td>
-                        - Minimum 3 years of vintage in relevant business<br>
-                        - Parent or group company with requisite vintage<br>
-                        - Key promoter with 5 years of relevant vintage
-                   
-                  </td>
+                  <td> - Minimum 3 years of vintage in relevant business<br/> - Parent or group company with requisite vintage<br/> - Key promoter with 5 years of relevant vintage </td>
                   <td>No</td>
                   <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
                </tr>
@@ -335,7 +324,7 @@
                </tr>
                <tr>
                   <td>Cash Profit</td>
-                  <td>Positive for 2 out of last 3 financial years(positive in last year)</td>
+                  <td>Positive for 2 out of last 3 financial years <br>(positive in last year)</td>
                   <td>{{isset($finacialDetails->cash_profit_check) && $finacialDetails->cash_profit_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($finacialDetails->cash_profit_cmnt) ? trim($finacialDetails->cash_profit_cmnt) : ''}}</td>
                </tr>
@@ -382,18 +371,8 @@
                </tr>
                <tr>
                   <td>KYC risk profile</td>
-                  <td>  
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'High' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }}
-                  </td>
-                  <td>
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'Highf' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }}
-                  </td>
+                  <td>{{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'High' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }} </td>
+                  <td>{{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'Highf' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }} </td>
                   <td>{{isset($arrHygieneData->kyc_risk_cmnt) ? trim($arrHygieneData->kyc_risk_cmnt) : ''}}</td>
                </tr>
                <tr>
@@ -406,7 +385,7 @@
          </table>
       </div>
    </div>
-      
+
    <div class="data mt-4">
       <h2 class="sub-title bg">Approval Criteria for IC</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
@@ -497,10 +476,12 @@
             <tbody>
             @if(!empty($arrOwnerData))
                @foreach($arrOwnerData as $key => $arrData)
+               @if ($arrData->gender != '3')
                <tr>
                   <td>{{$arrData->first_name}}</td>
                   <td>{{$arrData->designation}}</td>
                </tr>
+               @endif
                @endforeach
             @endif  
                
@@ -518,12 +499,12 @@
             <tbody>
             @if(!empty($arrOwnerData))
                   @foreach($arrOwnerData as $key => $arrData)
-                     @if ($arrData->is_promoter)
+                  @if ($arrData->gender == '3' || $arrData->is_promoter)
                         <tr>
                            <td>{{$arrData->first_name}}</td>
                            <td>{{$arrData->share_per}}</td>
                         </tr>
-                     @endif
+                  @endif
                   @endforeach
             @endif
             </tbody>
