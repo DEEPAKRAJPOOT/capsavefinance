@@ -27,6 +27,7 @@
                </div>
                <div class="col-md-12 mt-4">
                      <h4><small>Deal Structure:</small></h4>
+                     @if(!empty($leaseOfferData))
                      @foreach($leaseOfferData as $key=>$leaseOffer)
                         <div class="pl-4 pr-4 pb-4 pt-2">
                            <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
@@ -121,7 +122,7 @@
                            </table>
                         </div>
                      @endforeach
-                     
+                     @endif
                </div>
 
 
