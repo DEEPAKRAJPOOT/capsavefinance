@@ -188,7 +188,7 @@
                               <b>
                                  Whether Appearing in any of the below
                                  <ul>
-                                    <li>CIBIL Defaulters List</li>
+                                    <li>Bureau Defaulters List</li>
                                  </ul>
                               </b>
                            </td>
@@ -532,7 +532,7 @@
          </div>
          <div class="modal-body">
             <input type="hidden"  id="biz_owner_id">
-            <p>Are you sure you want to pull the cibil score for this promoter?</p>
+            <p>Are you sure you want to pull the bureau score for this promoter?</p>
             <p id="pullMsg"></p>
          </div>
          <div class="modal-footer">
@@ -544,17 +544,17 @@
 </div
    >
 <div class="modal fade" id="download_cibil_promoterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-   <div class="modal-dialog modal-lg" role="document">
+   <div class=" viewCiblReportModal" role="document">
       <div class="modal-content">
          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="location.reload();">
             <span aria-hidden="true">&times;</span>
             </button>
          </div>
          <div class="modal-body table-responsive" id="download_user_cibil" style="max-height: 500px;">
          </div>
          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="location.reload();">Close</button>
          </div>
       </div>
    </div>
@@ -569,7 +569,7 @@
          </div>
          <div class="modal-body">
             <input type="hidden"  id="biz_id">
-            <p>Are you sure you want to pull the cibil score for this Company?</p>
+            <p>Are you sure you want to pull the bureau score for this Company?</p>
             <p id="pullMsg"></p>
          </div>
          <div class="modal-footer">
@@ -593,8 +593,8 @@
    
    function pull_cibil_promoter(){
          var biz_owner_id = $("#biz_owner_id").val();
-       $("#pull_cibil_promoterModal").modal("hide");
-            $(".isloader").show();
+         $("#pull_cibil_promoterModal").modal("hide");
+         $(".isloader").show();
          var messages = {
               chk_user_cibil: "{{ URL::route('chk_user_cibil') }}",
               data_not_found: "{{ trans('error_messages.data_not_found') }}",
@@ -649,11 +649,14 @@
              success: function (data) {
                 var status =  data['status'];
                   $("#download_cibil_promoterModal").modal("show");
+                 
                   $("#download_user_cibil").html('');
                   if(status==1)
                     {  
+                            $(".viewCiblReportModal").addClass(".modal-lg");
                            $("#download_user_cibil").html(window.atob(data['cibilScoreData']));
                     }else{
+                            $(".viewCiblReportModal").addClass(" modal-dialog modal-lg");
                            $("#download_user_cibil").text(data['cibilScoreData']);
                    }                          
                     
@@ -734,10 +737,10 @@
                   $("#download_user_cibil").html('');
                   if(status==1)
                     {  
-                        
+                            $(".viewCiblReportModal").addClass(".modal-lg");
                            $("#download_user_cibil").html(window.atob(data['cibilScoreData']));
                     }else{
-                          
+                            $(".viewCiblReportModal").addClass(" modal-dialog modal-lg");
                            $("#download_user_cibil").text(data['cibilScoreData']);
                    }                          
                     

@@ -3059,6 +3059,8 @@ if ($err) {
         if (is_null($id)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
+
+        
         $result = $this->application->getSubIndustryByWhere(['industry_id' => $id, 'segment_id' => $segment_id]);
         return response()->json($result);
     }
@@ -3665,6 +3667,18 @@ if ($err) {
         $this->application->setDefaultAddress(['is_default' => 0]);
         $res = $this->application->setDefaultAddress(['is_default' => 1], ['biz_addr_id' => $acc_id]);
         return \response()->json(['success' => $res]);
+    }
+
+        /**
+     * Get all Equipment
+     *
+     * @return json customer Address data
+     */
+    public function getEquipmentLists(DataProviderInterface $dataProvider)
+    {
+        $equipment = $this->masterRepo->getEquipments();
+        $data = $dataProvider->getEquipments($this->request, $equipment);
+        return $data;
     }
 
 }
