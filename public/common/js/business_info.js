@@ -378,21 +378,33 @@ $(document).ready(function(){
 	$(document).on('change', '.industry_change', function () {
 		var industryVal=$("#biz_type_id").val();
 		var segmentId =$("#segmentId").val();
-		handleIndustryChange(industryVal,null,segmentId);
+		unsetError('select[name=segment]');
+		unsetError('select[name=biz_type_id]');
+		if(segmentId == ''){
+			setError('select[name=segment]', 'Segment is required');
+			$("#segmentId").focus();
+			return false;
+		}else if(industryVal == ''){
+			setError('select[name=biz_type_id]', 'Industry is required');
+			$("#biz_type_id").focus();
+			return false;
+		}else{
+			handleIndustryChange(industryVal,null,segmentId);
+		}
 	});
   //handleIndustryChange($("#biz_type_id").val(),$(".sub_industry").val());
 });
 
 function handleIndustryChange(intdustval,subIndId, segmentId){
 	//let selector = $(this);
-	if(segmentId == ''){
-		unsetError('select[name=segment]');
-		setError('select[name=segment]', 'Segment is required');
-		$("#segmentId").focus();
-		return false;
-	}else{
-		unsetError('select[name=segment]');
-	}
+	// if(segmentId == ''){
+	// 	unsetError('select[name=segment]');
+	// 	setError('select[name=segment]', 'Segment is required');
+	// 	$("#segmentId").focus();
+	// 	return false;
+	// }else{
+	// 	unsetError('select[name=segment]');
+	// }
 	let currentValue = intdustval;
 	let subIndus = $('.sub_industry');
 

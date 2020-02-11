@@ -53,6 +53,41 @@ class KarzaApi {
             return [];
         }
     }
+    
+     /**
+     * Pan Card  status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getPromoterDetailsByCin($promoter) {
+       
+        try {
+             $api_url = '/v1/corp/profile';
+             $baseUrl = config('proin.get_promoter_url');
+             $apiKey = config('proin.get_promoter_key');
+             $options = [
+                'base_uri' => $baseUrl,
+                'json' => [
+                    'consent' => 'Y',
+                    'entityId' => $promoter['entityId']
+                   ],
+                'headers' => [
+                    'cache-control' => "no-cache",
+                    'Content-Type' => "application/json",
+                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                ]
+            ];
+               
+            $response = $this->client->post($api_url, $options);
+            $response = $response->getBody()->getContents();
+        
+            return $response;
+        } catch (\Exception $e) {
+            return $e;
+            return [];
+        }
+    }
+
 
     /**
      * Pan Card  status verification API

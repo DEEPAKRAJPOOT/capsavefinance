@@ -21,7 +21,7 @@
                                     @foreach($approvers as $approver)
                                     <tr>
                                         <td>{{ $approver['assignby'] }} @if($approver['assignby_role'])<small> ( {{ $approver['assignby_role'] }} )</small>@endif</td>
-                                        <td>@if($approver['assignto']) {{ $approver['assignto'] }} @else Pool @endif @if($approver['assignto_role'])<small> ( {{ $approver['assignto_role'] }} )</small>@endif</td>
+                                        <td>@if($approver['assignto']) {{ $approver['assignto'] }} @else Application Pool @endif @if($approver['assignto_role'])<small> ( {{ $approver['assignto_role'] }} )</small>@endif</td>
                                         <td>{{ $approver['sharing_comment'] }}</td>
                                         <td>{{ $approver['assigne_date'] }}</td>
                                     </tr>

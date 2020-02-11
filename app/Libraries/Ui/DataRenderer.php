@@ -1203,9 +1203,78 @@ class DataRenderer implements DataProviderInterface
               ->make(true);
     }  
     
+    /*
+     * Get bulk transaction  
+     */
+     
+     public function getAllManualTransaction(Request $request,$trans)
+     {
+        /// dd($trans->disburse);
     
-      /*      
-     * Get Invoice list for backend
+         return DataTables::of($trans)
+               ->rawColumns(['trans_by'])
+                ->addIndexColumn()
+                
+                ->addColumn(
+                    'customer_id',
+                    function ($trans) {                        
+                       return $trans->disburse ? $trans->disburse->customer_id : '';
+                })
+                ->addColumn(
+                    'virtual_account_no',
+                    function ($trans) { 
+                         return $trans->virtual_acc_id 	 ? $trans->virtual_acc_id : '';
+                })
+                   ->addColumn(
+                    'amount',
+                    function ($trans) {                        
+                         return $trans->amount ? $trans->amount : '';
+                })  
+                 ->addColumn(
+                    'trans_by',
+                    function ($trans) {  
+                       if($trans->trans_by==1)
+                       {
+                         return 'Manual';
+                       }
+                       else if($trans->trans_by==2)
+                       {
+                         return 'Excel';
+                       }
+                       else
+                       {
+                           return 'N/A';
+                       }
+                })
+                ->addColumn(
+                    'created_by',
+                    function ($trans) {                        
+                         return $trans->created_at ? $trans->created_at : '';
+                })
+                 ->filter(function ($query) use ($request) {
+                    if ($request->get('type') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('type'));
+                            $query->where('trans_by',$search_keyword);
+                           
+                        });                        
+                    }
+                    else if ($request->get('date') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                             $search_keyword = Carbon::createFromFormat('d/m/Y', $request->get('date'))->format('Y-m-d');
+                             $query->where('trans_date',$search_keyword);
+                        });                        
+                    }
+                    else {
+                        $query->where('trans_by','!=',NULL);
+                    }
+               })
+              
+              ->make(true);
+         
+     }
+     
+     /* Get Invoice list for backend
      */
     public function getBackendInvoiceActivityList(Request $request,$invoice)
     { 
@@ -2952,5 +3021,41 @@ class DataRenderer implements DataProviderInterface
             })
             ->make(true);
     }
+
+        // Equipment
+        public function getEquipments(Request $request, $data)
+        {
+            return DataTables::of($data)
+                    ->rawColumns(['is_active', 'action'])
+                    
+                    ->addColumn(
+                        'id',
+                        function ($data) {
+                            return $data->id;
+                    })
+                    ->addColumn(
+                        'created_at',
+                        function ($data) {
+                        return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                    })
+                    ->addColumn(
+                        'is_active',
+                        function ($data) {
+                        $act = $data->is_active;
+                        $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editEquipmentFrame" title="Edit Equipment Detail" data-url ="'.route('edit_equipment', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                        $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                        return $status;
+                        }
+                    )
+                    ->filter(function ($query) use ($request) {
+                        if ($request->get('search_keyword') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $search_keyword = trim($request->get('search_keyword'));
+                                $query->where('equipment_name', 'like',"%$search_keyword%");
+                            });
+                        }
+                    })
+                    ->make(true);
+        }
 
 }
