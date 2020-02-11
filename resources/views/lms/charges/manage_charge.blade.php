@@ -19,20 +19,36 @@
     </section>
     <div class="card">
         <div class="card-body">
-            <div class="row" style="margin-bottom: 25px;">
-                <div class="col-md-4">
-                    <input class="form-control" placeholder="Search by Charge Calculation or Description" id="by_name" name="search_keyword" type="text">
-                </div>
-                <div class="col-md-1">
-                    <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
-                </div>
-                <div class="col-md-7 text-right">
-                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesLmsFrame" data-url ="{{route('list_lms_charges')}}" data-height="500px" data-width="100%" data-placement="top" >
-                            <i class="fa fa-plus"></i>Add Manual Charge
-                    </a>
-                </div>
-           </div>
-
+             <div class="row">
+                   <div class="col-md-2">
+                        <label>Type</label>
+                        <select class="form-control form-control-sm" name="type">                        
+                            <option value="">Select Customer</option>
+                            @foreach($trans as $val)
+                             <option value="{{$val->user->user_id}}">{{$val->user->f_name}} {{$val->user->l_name}}</option>
+                            @endforeach
+                        </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="float-left">From Date
+                        </label> 
+                        <input type="text" name="from_date" readonly="readonly" class="form-control form-control-sm date_of_birth datepicker-dis-fdate" value="">
+                        </div>
+                           <div class="col-md-2">
+                            <label class="float-left">To Date
+                        </label> 
+                               <input type="text" name="to_date" readonly="readonly" class="form-control form-control-sm date_of_birth datepicker-dis-fdate" value="">
+                        </div>     
+                        <div class="col-md-1">
+                        <label>&nbsp;</label><br>
+                        <button type="button" class="btn btn-success btn-sm searchbtn" id="searchbtn">Search</button>
+                        </div>
+                        <div class="col-md-5 text-right">
+                       <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesLmsFrame" data-url ="{{route('list_lms_charges')}}" data-height="500px" data-width="100%" data-placement="top" >
+                           <i class="fa fa-plus"></i>Add Manual Charge</a>
+                      </div>
+            </div>
+           
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">

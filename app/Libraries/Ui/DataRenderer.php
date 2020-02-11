@@ -2139,11 +2139,10 @@ class DataRenderer implements DataProviderInterface
                 })
                
                  ->filter(function ($query) use ($request) {
-                    if ($request->get('search_keyword') != '') {
-                        $query->where(function ($query) use ($request) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('chrg_desc', 'like',"%$search_keyword%")
-                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                    if ($request->get('type') != '') {
+                            $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('type'));
+                            $query->where('transaction.user_id',$search_keyword);
                         });
                     }
                 })

@@ -51,7 +51,8 @@ class ChargeController extends Controller
 	 * @return \Illuminate\Http\Response
 	 */
 	 public function manageCharge(){
-             return view('lms.charges.manage_charge');
+             $transactionUser  = $this->lmsRepo->getAllUserChargeTransaction();
+             return view('lms.charges.manage_charge')->with(['trans' =>$transactionUser]);
         }
 
     
@@ -145,6 +146,7 @@ class ChargeController extends Controller
                         $arr  = [ "user_id" =>  $request->user_id,
                                   "charge_id" =>  $chrgTransId,
                                  "amount" =>   $amount,
+                                 'entry_type' =>0,
                                  "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                                   "trans_type" => $getTransType->id,
                                  'created_by' =>  $id, 

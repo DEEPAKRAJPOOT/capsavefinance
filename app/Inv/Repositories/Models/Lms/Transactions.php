@@ -139,10 +139,20 @@ class Transactions extends BaseModel {
           return self::with('disburse')->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
     }
     
+     /*** get all transaction  **/
+    public static function getAllUserChargeTransaction()
+    {
+          return self::with('user')->where('charge_id','!=',NULL)->groupBy('user_id')->get();
+    }
+    
     function disburse()
     {
        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
     }      
    
+     function user()
+    {
+       return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }    
      
 }

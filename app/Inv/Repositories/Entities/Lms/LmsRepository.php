@@ -326,5 +326,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
                
     }    
      
+      public static function getAllUserChargeTransaction()
+    {
+       try
+       {
+          return Transactions::getAllUserChargeTransaction(); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
+    
     
 }
