@@ -131,7 +131,7 @@
                               <input type="text" name="pre_timeline[]" value="{{$preval['timeline']}}" class="form-control form-control-sm">
                            </div>
                            <div class="input-group-btn"> 
-                           <button class="btn btn-danger remove" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+                              <button class="btn btn-danger remove" type="button"><i class="fa fa-2x fa-times-circle remove-ptpq-block"></i></button>
                            </div>
                         </div>
                         @endforeach
@@ -145,7 +145,7 @@
                            <input type="text" name="pre_timeline[]" value="" class="form-control form-control-sm">
                         </div>
                         <div class="input-group-btn"> 
-                           <button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                           <button class="btn btn-success add-more" type="button"><i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i></button>
                         </div>
                      </div>
 
@@ -159,7 +159,7 @@
                               <input type="text" name="pre_timeline[]" value="" class="form-control form-control-sm">
                            </div>
                            <div class="input-group-btn"> 
-                              <button class="btn btn-danger remove" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+                              <button class="btn btn-danger remove" type="button"><i class="fa fa-2x fa-times-circle remove-ptpq-block"></i></button>
                            </div>
                         </div>
                      </div>
@@ -184,7 +184,7 @@
                               <input type="text" name="post_timeline[]" value="{{$postval['timeline']}}" class="form-control form-control-sm">
                            </div>
                            <div class="input-group-btn"> 
-                           <button class="btn btn-danger remove-post" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+                           <button class="btn btn-danger remove-post" type="button"><i class="fa fa-2x fa-times-circle remove-ptpq-block"></i></button>
                            </div>
                         </div>
                         @endforeach
@@ -198,7 +198,7 @@
                            <input type="text" name="post_timeline[]" value="" class="form-control form-control-sm">
                         </div>
                         <div class="input-group-btn"> 
-                           <button class="btn btn-success add-more-post" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                           <button class="btn btn-success add-more-post" type="button"><i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i></button>
                         </div>
                      </div>
 
@@ -212,7 +212,7 @@
                               <input type="text" name="post_timeline[]" value="" class="form-control form-control-sm">
                            </div>
                            <div class="input-group-btn"> 
-                              <button class="btn btn-danger remove-post" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+                              <button class="btn btn-danger remove-post" type="button"><i class="fa fa-2x fa-times-circle remove-ptpq-block"></i></button>
                            </div>
                         </div>
                      </div>
