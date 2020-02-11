@@ -94,8 +94,9 @@
                <tr role="row" class="odd">
                   <td class=""><b>Additional Security</b></td>
                   <td class="">
-                     @php
+                       @php
                        $add_sec_arr = '';
+                       if(isset($leaseOffer->addl_security)){
                        $addl_sec_arr = explode(',', $leaseOffer->addl_security);
                        foreach($addl_sec_arr as $k=>$v){
                            if($v == 4){
@@ -104,6 +105,7 @@
                            }else{
                                $add_sec_arr .= ', '.config('common.addl_security')[$v];
                            }
+                       }
                        }
                        @endphp 
                        {!! trim($add_sec_arr, ', ') !!}

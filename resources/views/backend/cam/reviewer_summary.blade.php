@@ -26,10 +26,10 @@
                      <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{!! isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : '' !!}</textarea>
                </div>
 
-               <div class="col-md-12 mt-4">
-                     <h4><small>Deal Structure:</small></h4>
-                      @if(!empty($leaseOfferData))
-                        @foreach($leaseOfferData as $key=>$leaseOffer)
+               <div class="col-md-12 data mt-4 ">
+                     <h2 class="sub-title bg">Deal Structure:</h2>
+                     
+                        @forelse($leaseOfferData as $key=>$leaseOffer)
                               <div class="pl-4 pr-4 pb-4 pt-2">
                                  <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                                     <thead>
@@ -97,8 +97,9 @@
                                        <tr role="row" class="odd">
                                           <td class=""><b>Additional Security</b></td>
                                           <td class="">
-                                             @php
+                                              @php
                                                $add_sec_arr = '';
+                                               if(isset($leaseOffer->addl_security)){
                                                $addl_sec_arr = explode(',', $leaseOffer->addl_security);
                                                foreach($addl_sec_arr as $k=>$v){
                                                    if($v == 4){
@@ -108,6 +109,7 @@
                                                        $add_sec_arr .= ', '.config('common.addl_security')[$v];
                                                    }
                                                }
+                                               }
                                                @endphp 
                                                {!! trim($add_sec_arr, ', ') !!}
                                           </td>
@@ -115,8 +117,12 @@
                                     </tbody>
                                  </table>
                               </div>
-                           @endforeach
-                        @endif  
+                              @empty
+                                 <div class="pl-4 pr-4 pb-4 pt-2">
+                                    <p>No Offer Found </p>
+                                 </div>
+                           @endforelse
+                          
                </div>
 
                <div class="col-md-12 mt-4">

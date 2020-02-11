@@ -240,6 +240,7 @@ class CamController extends Controller
       $offerPTPQ = '';
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
+      $leaseOfferData = array();
       $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
       $arrStaticData = array();
       $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
