@@ -43,7 +43,7 @@ function _uuid_rand($strLen = 60){
 }
 
 function format_number($number) {
-    $num = sprintf('%.16f', $number);
+    $num = number_format($number,6, '.', '');
     return (strpos($num,'.')!==false ? preg_replace("/\.?0*$/",'',$num) : $num);
 }
 
