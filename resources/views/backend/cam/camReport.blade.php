@@ -25,7 +25,7 @@
 
    <div class="data mt-4">
       <h2 class="sub-title bg">Deal Structure</h2>
-      @foreach($leaseOfferData as $key=>$leaseOffer)
+      @forelse($leaseOfferData as $key=>$leaseOffer)
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
@@ -35,15 +35,20 @@
                </tr>
             </thead>
             <tbody>
+              
+               
                <tr role="row" class="odd">
-                  <td class=""><b>Facility Type</td>
-                  <td class="">Lease</td>
+                  <td class=""><b>Product Type</b></td>
+                  <td class="">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
                </tr>
                <tr role="row" class="odd">
-                  <td class=""><b>Limit</b></td>
-                  <td class=""> {{isset($leaseOffer->programLimit) ? $leaseOffer->programLimit->limit_amt : ''}}
+                  <td class=""><b>Equipment Type</b></td>
+                  <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
+               </tr>
+               <tr role="row" class="odd">
+                  <td class=""><b>Limit Of The Equipment</b></td>
+                  <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' &#8377; '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} 
                         </td>
-                  
                </tr>
             
                <tr role="row" class="odd">
@@ -51,26 +56,21 @@
                   <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                </tr>
                <tr role="row" class="odd">
-                  <td class=""><b>Equipment Type</b></td>
-                  <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
-               </tr>
-               <tr role="row" class="odd">
                   <td class=""><b>Security Deposit</b></td>
-                  <td class="">{{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}}</td>
+                  <td class=""> {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}} </td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Rental Frequency</b></td>
-                  <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}</td>
+                  <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}   </td>
                </tr>
                <tr role="row" class="odd">
-                  <td class=""><b>PTPF</b></td>
+                  <td class=""><b>Pricing Per Thousand</b></td>
                   <td class="">
                      @php 
                         $i = 1;
                         if(!empty($leaseOffer->offerPtpq)){
                         $total = count($leaseOffer->offerPtpq);
                      @endphp   
-
                         @foreach($leaseOffer->offerPtpq as $key => $arr) 
 
                               @if ($i > 1 && $i < $total)
@@ -78,7 +78,7 @@
                               @elseif ($i > 1 && $i == $total)
                                  and
                               @endif
-                              Rs. {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+                              {!!  '&#8377;' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
 
                               @php 
                                  $i++;
@@ -87,38 +87,39 @@
                         @php 
                            }
                         @endphp 
-
                   </td>
                </tr>
                <tr role="row" class="odd">
                   <td class="" valign="top"><b>XIRR</b></td>
-                  <td class="" valign="top">Ruby Sheet : {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
+                  <td class="" valign="top"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
                   </td>
                </tr>
                
                <tr role="row" class="odd">
                   <td class=""><b>Additional Security</b></td>
                   <td class="">
-                     @if(isset($leaseOffer->addl_security))
-                     @switch($leaseOffer->addl_security)
-                        @case(1) BG
-                           @break
-                        @case(2) FD
-                           @break
-                        @case(3) MF
-                           @break
-                        @case(4) Others {{isset($leaseOffer->comment) ? $leaseOffer->comment : ''}}
-                           @break
-                     @endswitch
-                     @endif
+                     @php
+                      $add_sec_arr = '';
+                      if(isset($leaseOffer->addl_security)){
+                          $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                          foreach($addl_sec_arr as $k=>$v){
+                              $add_sec_arr .= config('common.addl_security')[$v].', ';
+                          }
+                          $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
+                      }
+                      @endphp
+                      {!! $add_sec_arr !!}
                   </td>
                </tr>
-
-              
             </tbody>
          </table>
       </div>
-   @endforeach
+
+      @empty
+         <div class="pl-4 pr-4 pb-4 pt-2">
+             <p>No Offer Found</p>
+         </div>
+   @endforelse
 
    </div>
 
@@ -228,7 +229,9 @@
       </div>
    </div>
 
+ 
    <div class="data mt-4">
+
       <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
@@ -476,12 +479,10 @@
             <tbody>
             @if(!empty($arrOwnerData))
                @foreach($arrOwnerData as $key => $arrData)
-               @if ($arrData->gender != '3')
                <tr>
                   <td>{{$arrData->first_name}}</td>
                   <td>{{$arrData->designation}}</td>
                </tr>
-               @endif
                @endforeach
             @endif  
                
@@ -499,12 +500,12 @@
             <tbody>
             @if(!empty($arrOwnerData))
                   @foreach($arrOwnerData as $key => $arrData)
-                  @if ($arrData->gender == '3' || $arrData->is_promoter)
+                     @if ($arrData->is_promoter)
                         <tr>
                            <td>{{$arrData->first_name}}</td>
                            <td>{{$arrData->share_per}}</td>
                         </tr>
-                  @endif
+                     @endif
                   @endforeach
             @endif
             </tbody>
@@ -662,7 +663,7 @@
       </div>
    </div>
 
-   <div class="data mt-4">
+     <div class="data mt-4">
       <h2 class="sub-title bg">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
@@ -719,7 +720,8 @@
          </table>
       </div>
    </div>
-      
+
+         
 
 <script>
 if('{{$arrApproverDataCount}}' ==  '{{$j}}' && '{{$arrApproverDataCount}}' != 0){
