@@ -91,7 +91,7 @@
                </tr>
                <tr role="row" class="odd">
                   <td class="" valign="top"><b>XIRR</b></td>
-                  <td class="" valign="top"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
+                  <td class="" valign="top"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br/><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
                   </td>
                </tr>
                
@@ -329,7 +329,7 @@
                </tr>
                <tr>
                   <td>Cash Profit</td>
-                  <td>Positive for 2 out of last 3 financial years <br>(positive in last year)</td>
+                  <td>Positive for 2 out of last 3 financial years <br/>(positive in last year)</td>
                   <td>{{isset($finacialDetails->cash_profit_check) && $finacialDetails->cash_profit_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($finacialDetails->cash_profit_cmnt) ? trim($finacialDetails->cash_profit_cmnt) : ''}}</td>
                </tr>
@@ -413,8 +413,8 @@
                <tr>
                   <td>2</td>
                   <td>Asset concentration as % of the total portfolio</td>
-                  <td>- IT assets and telecommunications max 70%<br>- Plant and machinery max 50%<br>- Furniture and fit outs max 30%
-                     <br>- Any other asset type max 20%
+                  <td>- IT assets and telecommunications max 70%<br/>- Plant and machinery max 50%<br/>- Furniture and fit outs max 30%
+                     <br/>- Any other asset type max 20%
                   </td>
                   <td>{{isset($reviewerSummaryData->criteria_asset_portfolio_remark) ? $reviewerSummaryData->criteria_asset_portfolio_remark : ''}}</td>
                </tr>
