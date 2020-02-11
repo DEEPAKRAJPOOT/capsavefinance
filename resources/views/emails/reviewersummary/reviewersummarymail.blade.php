@@ -123,34 +123,14 @@
                     <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Timeline</th>
                 </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{isset($reviewerSummaryData->cond_nach) ? $reviewerSummaryData->cond_nach : ''}}</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($reviewerSummaryData->time_nach) ? $reviewerSummaryData->time_nach : ''}}</td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cond_insp_asset) ? $reviewerSummaryData->cond_insp_asset : ''}}
-                    </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->time_insp_asset) ? $reviewerSummaryData->time_insp_asset : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cond_insu_pol_cfpl) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}
-                    </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->time_insu_pol_cfpl) ? $reviewerSummaryData->time_insu_pol_cfpl : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cond_personal_guarantee) ? $reviewerSummaryData->cond_personal_guarantee : ''}}
-                    </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->time_personal_guarantee) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}
-                    </td>
-                </tr>          
+                @if(isset($preCondArr) && count($preCondArr)>0)
+                    @foreach($preCondArr as $prekey =>$preval)
+                    <tr>
+                        <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$preval['cond']}}</td>
+                        <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{$preval['timeline']}}</td>
+                    </tr>
+                    @endforeach
+                @endif        
             </table>
         </td>
     </tr>
@@ -168,47 +148,18 @@
                     <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Timeline</th>
                 </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cond_pbdit) ? $reviewerSummaryData->cond_pbdit : ''}}
-                    </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->time_pbdit) ? $reviewerSummaryData->time_pbdit : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}}
-                    </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->time_dscr) ? $reviewerSummaryData->time_dscr : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cond_lender_cfpl) ? $reviewerSummaryData->cond_lender_cfpl : ''}}
-                    </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->time_lender_cfpl) ? $reviewerSummaryData->time_lender_cfpl : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cond_ebidta) ? $reviewerSummaryData->cond_ebidta : ''}}
-                    </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->time_ebidta) ? $reviewerSummaryData->time_ebidta : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cond_credit_rating) ? $reviewerSummaryData->cond_credit_rating : ''}}
-                    </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->time_credit_rating) ? $reviewerSummaryData->time_credit_rating : ''}}
-                    </td>
-                </tr>
-
+                @if(isset($postCondArr) && count($postCondArr)>0)
+                    @foreach($postCondArr as $postkey =>$postval)
+                        <tr>
+                            <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                                {{$postval['cond']}}
+                            </td>
+                            <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                                {{$postval['timeline']}}
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
             </table>
         </td>
     </tr>

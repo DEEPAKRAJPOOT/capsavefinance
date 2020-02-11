@@ -41,11 +41,13 @@ use App\Inv\Repositories\Models\UserAppDoc;
 use PDF as DPDF;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
+use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 
 class CamController extends Controller
 {
     use CamTrait;
-    
+    use CommonTrait;
+
     protected $download_xlsx = TRUE;
     protected $appRepo;
     protected $userRepo;
@@ -232,15 +234,7 @@ class CamController extends Controller
         }
     }
 
-    public function filterPreCond($item) 
-    { 
-      return $item['cond_type']==1;
-    }
 
-    public function filterPostCond($item) 
-    { 
-      return $item['cond_type']==2;
-    }
 
     public function reviewerSummary(Request $request){
       $offerPTPQ = '';
