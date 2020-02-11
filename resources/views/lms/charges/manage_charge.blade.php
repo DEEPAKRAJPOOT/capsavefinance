@@ -39,16 +39,18 @@
                         <table id="chargesList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
+                                 
                                     <th>Charge Name</th>
                                     <th>Charge Type</th>
-                                    <th>Charge Calculation</th>
-                                    <th>Charge Amt/Per</th>
+                                    <th>Charge Calculation Amount</th>
                                     <th>GST Applicable</th>
+                                     <th>Charge(%)</th>
+                                    <th>Charge Applicable On</th>
+                                    <th>Effective Date</th>
                                     <th>Applicability</th>
                                     <th>Description</th>
-                                    <th>Created At</th>
-                                    <th>Created By</th>
-                                    <th>Status</th>
+                                    <th>Date Time</th>
+                                  
                                 </tr>
                             </thead>
                             <tbody>
@@ -74,9 +76,9 @@ var messages = {
     token: "{{ csrf_token() }}",
     };
 </script>
-<!--
+
 <script src="{{ asset('backend/js/ajax-js/lms/charges_list.js') }}"></script>
--->
+
 @endsection
 
 

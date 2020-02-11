@@ -24,16 +24,17 @@ try {
                 }
             },
            columns: [
-                    {data: 'chrg_name'},
                     {data: 'chrg_type'},
                     {data: 'chrg_calculation_type'},
                     {data: 'chrg_calculation_amt'},
                     {data: 'is_gst_applicable'},
+                    {data: 'charge_percent'},
                     {data: 'chrg_applicable_id'},
+                    {data: 'effective_date'},
+                    {data: 'applicability'}, 
                     {data: 'chrg_desc'},
                     {data: 'created_at'},
-                    {data: 'created_by'},
-                    {data: 'is_active'}
+                  
                 ],
             aoColumnDefs: [{'aTargets': [0,1,3,4,5,6], 'bSortable': true}]
         });

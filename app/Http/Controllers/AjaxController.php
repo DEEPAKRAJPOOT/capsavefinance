@@ -24,6 +24,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
@@ -45,9 +46,9 @@ class AjaxController extends Controller {
     protected $application;
    protected $invRepo;
    protected $docRepo;
-   
+   protected $lms_repo;
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
 
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
@@ -59,6 +60,7 @@ class AjaxController extends Controller {
         $this->masterRepo = $master;
         $this->invRepo   =    $invRepo;
         $this->docRepo          = $docRepo;
+        $this->lmsRepo = $lms_repo;
 
     }
 
@@ -3133,9 +3135,9 @@ if ($err) {
     }
 
      public function getLmsChargeLists(DataProviderInterface $dataProvider) { 
-     $chargesList = $this->masterRepo->getAllCharges();
-     $charges = $dataProvider->getLmsChargeLists($this->request, $chargesList);
-     return $charges;
+     $chargesTransList = $this->lmsRepo->getAllTransCharges();
+     $chargesTransList = $dataProvider->getLmsChargeLists($this->request, $chargesTransList);
+     return $chargesTransList;
     }
     
     

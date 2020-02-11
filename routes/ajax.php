@@ -509,7 +509,7 @@ Route::group(
         'uses' => 'AjaxController@getChargeLists'
         ]
     );
-/*agency route*/
+/*charges  route*/
     Route::post(
         'get-lms-charges-list',
         [

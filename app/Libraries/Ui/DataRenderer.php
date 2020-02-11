@@ -2078,7 +2078,7 @@ class DataRenderer implements DataProviderInterface
     }
     
        public function getLmsChargeLists(Request $request, $charges){
-        $this->chrg_applicable_ids = array(
+         $this->chrg_applicable_ids = array(
             '1' => 'Limit Amount',
             '2' => 'Outstanding Amount',
             '3' => 'Outstanding Principal',
@@ -2086,62 +2086,59 @@ class DataRenderer implements DataProviderInterface
             '5' => 'Overdue Amount'
         );
         return DataTables::of($charges)
-                ->rawColumns(['is_active'])
-                ->addColumn(
-                    'chrg_name',
-                    function ($charges) {
-                    return $charges->chrg_name;
-                })
+                ->rawColumns(['chrg_type'])
                 ->addColumn(
                     'chrg_type',
                     function ($charges) {
-                    return ($charges->chrg_type == '1') ? 'Auto' : 'Manual';
+                   return $charges->ChargeMaster->chrg_name;
                 })
                 ->addColumn(
                     'chrg_calculation_type',
                     function ($charges) {
-                    return $charges->chrg_calculation_type == 1 ? 'Fixed' : 'Percent';
-                })  
+                    return $charges->ChargeMaster->chrg_calculation_type == 1 ? 'Fixed' : 'Percent';
+                })
                 ->addColumn(
                     'chrg_calculation_amt',
                     function ($charges) {
-                    return $charges->chrg_calculation_amt;
-                })              
+                    return number_format($charges->amount);
+                })  
                 ->addColumn(
                     'is_gst_applicable',
                     function ($charges) {
-                    return ($charges->is_gst_applicable == 1) ? 'Yes' : 'No'; 
-                })
+                     return ($charges->ChargeMaster->is_gst_applicable == 1) ? 'Yes' : 'No'; 
+                })      
+                 ->addColumn(
+                    'charge_percent',
+                    function ($charges) {
+                     return ($charges->percent) ? $charges->percent : 'N/A'; 
+                })   
                 ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
+                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
+                })
+                ->addColumn(
+                    'effective_date',
+                    function ($charges) {
+                   return $charges->transaction->trans_date;
                 }) 
                 ->addColumn(
+                    'applicability',
+                    function ($charges) {
+                    return ($charges->ChargeMaster->chrg_type == 1) ? 'Auto' : 'Manual';
+                })
+                 ->addColumn(
                     'chrg_desc',
                     function ($charges) {
-                     return $charges->chrg_desc;
+                     return $charges->ChargeMaster->chrg_desc;
                 })
                 ->addColumn(
                     'created_at',
                     function ($charges) {
                     return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
                 })
-                ->addColumn(
-                    'created_by',
-                    function ($charges) {
-                    return $charges->userDetail->f_name.' '.$charges->userDetail->l_name;
-                })
-                ->addColumn(
-                    'is_active',
-                    function ($charges) {
-                       $act = $charges->is_active;
-                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editChargesLmsFrame" title="Edit Charge Detail" data-url ="'.route('edit_lms_charges',['id' => $charges->id]).'" data-height="400px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
-                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
-                     return $status;
-                    }
-                )
-                ->filter(function ($query) use ($request) {
+               
+                 ->filter(function ($query) use ($request) {
                     if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));

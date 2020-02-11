@@ -15,6 +15,7 @@ use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 
@@ -302,6 +303,28 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        
                
     }   
+    
+    public static function getAllTransCharges()
+    {
+        try
+       {
+          return ChargesTransactions::getAllTransCharges(); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+        
+    }
+      public static function saveChargeTrans($attr)
+    {
+       try
+       {
+          return ChargesTransactions::saveChargeTrans($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
      
     
 }

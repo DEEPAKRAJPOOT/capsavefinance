@@ -45,6 +45,7 @@ class Transactions extends BaseModel {
         'gl_flag',
         'soa_flag',
         'user_id',
+        'charge_id',
         'virtual_acc_id',
         'trans_date',
         'trans_type',

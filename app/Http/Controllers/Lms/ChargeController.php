@@ -112,38 +112,66 @@ class ChargeController extends Controller
       
        public function saveManualCharges(Request $request)
        {
-            $getTransType  =  DB::table('mst_trans_type')->where(['is_charge' => $request['id']])->first();
+           $getAmount =  str_replace(',', '', $request->amount);
+           $getTransType  =  DB::table('mst_trans_type')->where(['is_charge' => $request->id])->first();
            if($getTransType)
            {
+                 $static_amount =  200000;
+                 if($request->chrg_calculation_type==1)
+                 {
+                     $percent = NULL;
+                     $amount =  $getAmount;
+                     $chrg_applicable_id = NULL;
+                 }
+                 else
+                 {
+                     $percent  =  $getAmount;
+                     $amount = $static_amount*$getAmount/100;
+                     $chrg_applicable_id  = $request->chrg_applicable_id;
+                 }
+                   /// 
                     $id  = Auth::user()->user_id;
                     $mytime = Carbon::now(); 
-                    $amount = str_replace(',', '.', $request->amount);
-                    $arr  = ["user_id" =>  $request->user_id,
-                    "prgm_id" => $request->program_id,
-                    "charge_id" => $request->chrg_name,
-                    "amount" =>   $amount,
-                    "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
-                    "trans_type" => $getTransType->id,
-                    'created_by' =>  $id,
-                    'created_at' =>  $mytime ];
-                    
-                  $res =   $this->lmsRepo->saveCharge($arr);
-                  if($res)
+                    $arr  = [   "prgm_id" => $request->program_id,
+                                "chrg_master_id" =>$request->id,
+                                "percent" => $percent,
+                                "chrg_applicable_id" =>  $chrg_applicable_id,
+                                "amount" =>   $amount,
+                                'created_by' =>  $id,
+                                'created_at' =>  $mytime ];
+                  $chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);  
+                  if( $chrgTransId)
                   {
-                          Session::flash('message', 'Data has been saved');
-                           return redirect('lms/charges/manage_charge'); 
+                        $arr  = [ "user_id" =>  $request->user_id,
+                                  "charge_id" =>  $chrgTransId,
+                                 "amount" =>   $amount,
+                                 "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
+                                  "trans_type" => $getTransType->id,
+                                 'created_by' =>  $id, 
+                                 'created_at' =>  $mytime ];
+                         $res =   $this->lmsRepo->saveCharge($arr);
+                          if($res)
+                        {
+                                Session::flash('message', 'Data has been saved');
+                                 return redirect('lms/charges/manage_charge'); 
+                        }
+                        else
+                        {
+                                Session::flash('message', 'Something went wrong, Please try again');
+                                return redirect('lms/charges/manage_charge'); 
+                        }
                   }
-                  else
-                  {
-                          Session::flash('message', 'Something went wrong, Please try again');
-                          return redirect('lms/charges/manage_charge'); 
-                  }
-                   
-           }
-                else {
-                         Session::flash('message', 'Something went wrong, Please try again');
-                         return redirect('lms/charges/manage_charge'); 
-                }
+                   else
+                        {
+                                Session::flash('message', 'Something went wrong, Please try again');
+                                return redirect('lms/charges/manage_charge'); 
+                        }
+                 
+                 }
+                        else {
+                               Session::flash('message', 'Something went wrong, Please try again');
+                               return redirect('lms/charges/manage_charge'); 
+                      }
         
        }
       
