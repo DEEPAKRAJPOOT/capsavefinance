@@ -113,106 +113,106 @@
                </div>
                <div class="col-md-12 mt-4">
                      <h4><small>Pre Disbursement Conditions:</small></h4>
-                     <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                     <table id="invoice_history" class="table table-striped no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <thead>
                            <tr role="row">
-                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
+                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="50%">Condition</th>
                                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
                            </tr>
                         </thead>                   
                      </table>
                      @if(isset($preCondArr) && count($preCondArr)>0)
                         @foreach($preCondArr as $prekey =>$preval)
-                        <div class="input-group control-group">
-                           <div class="input-group-btn"> 
+                        <div class="input-group control-group row">
+                           <div class="input-group-btn col-md-6"> 
                               <input type="text" name="pre_cond[]" value="{{$preval['cond']}}" class="form-control form-control-sm">
                            </div>
-                           <div class="input-group-btn"> 
+                           <div class="input-group-btn col-md-6"> 
                               <input type="text" name="pre_timeline[]" value="{{$preval['timeline']}}" class="form-control form-control-sm">
                            </div>
-                           <div class="input-group-btn"> 
-                              <button class="btn btn-danger remove" type="button"><i class="fa fa-2x fa-times-circle remove-ptpq-block"></i></button>
+                           <div class="input-group-btn "> 
+                            <i class="fa  fa-times-circle remove-ptpq-block remove"></i>
                            </div>
                         </div>
                         @endforeach
                      @endif
 
-                     <div class="input-group control-group after-add-more">
-                        <div class="input-group-btn"> 
+                     <div class="input-group control-group after-add-more row">
+                        <div class="input-group-btn col-md-6"> 
                            <input type="text" name="pre_cond[]" value="" class="form-control form-control-sm">
                         </div>
-                        <div class="input-group-btn"> 
+                        <div class="input-group-btn col-md-6"> 
                            <input type="text" name="pre_timeline[]" value="" class="form-control form-control-sm">
                         </div>
-                        <div class="input-group-btn"> 
-                           <button class="btn btn-success add-more" type="button"><i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i></button>
+                        <div class="input-group-btn "> 
+                          <i class="fa  fa-plus-circle add-ptpq-block add-more"></i>
                         </div>
                      </div>
 
                      <!-- Copy Fields -->
                      <div class="copy hide">
-                        <div class="control-group input-group" style="margin-top:10px">
-                           <div class="input-group-btn"> 
+                        <div class="control-group input-group row">
+                           <div class="input-group-btn col-md-6"> 
                               <input type="text" name="pre_cond[]" value="" class="form-control form-control-sm">
                            </div>
-                           <div class="input-group-btn"> 
+                           <div class="input-group-btn col-md-6"> 
                               <input type="text" name="pre_timeline[]" value="" class="form-control form-control-sm">
                            </div>
-                           <div class="input-group-btn"> 
-                              <button class="btn btn-danger remove" type="button"><i class="fa fa-2x fa-times-circle remove-ptpq-block"></i></button>
+                           <div class="input-group-btn "> 
+                              <i class="fa  fa-times-circle remove-ptpq-block remove"></i>
                            </div>
                         </div>
                      </div>
                </div>
                <div class="col-md-12 mt-4">
                      <h4><small>Post Disbursement Conditions:</small></h4>
-                     <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                     <table id="invoice_history" class="table table-striped no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <thead>
                            <tr role="row">
-                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
+                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="50%">Condition</th>
                                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
                            </tr>
                         </thead>
                      </table>
                      @if(isset($postCondArr) && count($postCondArr)>0)
                         @foreach($postCondArr as $postkey =>$postval)
-                        <div class="input-group control-group">
-                           <div class="input-group-btn"> 
+                        <div class="input-group control-group row">
+                           <div class="input-group-btn col-md-6"> 
                               <input type="text" name="post_cond[]" value="{{$postval['cond']}}" class="form-control form-control-sm">
                            </div>
-                           <div class="input-group-btn"> 
+                           <div class="input-group-btn col-md-6"> 
                               <input type="text" name="post_timeline[]" value="{{$postval['timeline']}}" class="form-control form-control-sm">
                            </div>
-                           <div class="input-group-btn"> 
-                           <button class="btn btn-danger remove-post" type="button"><i class="fa fa-2x fa-times-circle remove-ptpq-block"></i></button>
+                           <div class="input-group-btn "> 
+                           <i class="fa fa-times-circle remove-ptpq-block  remove-post"></i>
                            </div>
                         </div>
                         @endforeach
                      @endif
                      
-                     <div class="input-group control-group after-add-more-post">
-                        <div class="input-group-btn"> 
+                     <div class="input-group control-group after-add-more-post row">
+                        <div class="input-group-btn col-md-6"> 
                            <input type="text" name="post_cond[]" value="" class="form-control form-control-sm">
                         </div>
-                        <div class="input-group-btn"> 
+                        <div class="input-group-btn col-md-6"> 
                            <input type="text" name="post_timeline[]" value="" class="form-control form-control-sm">
                         </div>
-                        <div class="input-group-btn"> 
-                           <button class="btn btn-success add-more-post" type="button"><i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i></button>
+                        <div class="input-group-btn "> 
+                          <i class="fa  fa-plus-circle add-ptpq-block add-more-post"></i>
                         </div>
                      </div>
 
                      <!-- Copy Fields -->
                      <div class="copy-post hide">
-                        <div class="control-group input-group" style="margin-top:10px">
-                           <div class="input-group-btn"> 
+                        <div class="control-group input-group row">
+                           <div class="input-group-btn col-md-6"> 
                               <input type="text" name="post_cond[]" value="" class="form-control form-control-sm">
                            </div>
-                           <div class="input-group-btn"> 
+                           <div class="input-group-btn col-md-6"> 
                               <input type="text" name="post_timeline[]" value="" class="form-control form-control-sm">
                            </div>
-                           <div class="input-group-btn"> 
-                              <button class="btn btn-danger remove-post" type="button"><i class="fa fa-2x fa-times-circle remove-ptpq-block"></i></button>
+                           <div class="input-group-btn "> 
+                             <i class="fa  fa-times-circle remove-ptpq-block remove-post"></i>
                            </div>
                         </div>
                      </div>
