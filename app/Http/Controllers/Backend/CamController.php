@@ -243,6 +243,8 @@ class CamController extends Controller
       $leaseOfferData = array();
       $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
       $arrStaticData = array();
+      $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
+
       $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
       $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quarter','4'=>'Months');
       $arrStaticData['securityDepositType'] = array('1'=>'%','2'=>'INR');
@@ -255,6 +257,7 @@ class CamController extends Controller
         'leaseOfferData'=> $leaseOfferData,
         'reviewerSummaryData'=> $reviewerSummaryData,
         'arrStaticData' => $arrStaticData,
+        'facilityTypeList' => $facilityTypeList,
         
       ]);
     }

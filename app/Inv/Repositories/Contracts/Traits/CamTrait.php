@@ -27,8 +27,8 @@ trait CamTrait
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
             $arrStaticData = array();
             $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
-            $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quarter','4'=>'Months');
-            $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
+            $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
+            $arrStaticData['securityDepositType'] = array('1'=>'&#8377;','2'=>'%');
             $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
             $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
 
@@ -53,7 +53,10 @@ trait CamTrait
                   $FinanceColumns = array_merge($FinanceColumns, $cols);
                 }
                // dd(getTotalFinanceData($financeData['2017']));
+                $leaseOfferData = array();
                 $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
+                $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
+
                 $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
                 $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
                 $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
@@ -104,6 +107,7 @@ trait CamTrait
                     'arrStaticData' => $arrStaticData,
                     'approveStatus' => $approveStatus,
                     'currStageCode' => $currStageCode,
+                    'facilityTypeList'=>$facilityTypeList,
                 ];
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
