@@ -213,9 +213,7 @@
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="4" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'checked': ''): '')}}> Others</label>
                 </div>
                 <div class="col-md-6" style="float: right;">
-                <textarea name="comment" class="form-control" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'inline': 'none'): 'none')}}" maxlength="200" placeholder="Security comment">
-                    {{isset($offerData->comment)? $offerData->comment: ''}}
-                </textarea>
+                <textarea name="comment" class="form-control" maxlength="200" placeholder="Security comment">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
                 </div>
             </div>
           </div>
@@ -427,9 +425,10 @@
         setError('#check_block', 'Please check atleast one security');
         flag = false;
     }*/
-    if($('#other_sec').is(':checked')){
+
+    if($('input[name*=addl_security]').is(':checked')){
         if(comment == ''){
-            setError('textarea[name=comment]', 'Please fill other security');
+            setError('textarea[name=comment]', 'Please fill security comment');
             flag = false;
         }else{
             // TAKE REST
@@ -445,7 +444,7 @@
   }
 
   $(document).ready(function(){
-    $('#other_sec').on('change', function(){
+    /*$('#other_sec').on('change', function(){
         unsetError('textarea[name=comment]');
         if($('#other_sec').is(':checked')){
             $('textarea[name=comment]').css('display', 'inline');
@@ -453,7 +452,7 @@
             $('textarea[name=comment]').css('display', 'none');
             $('textarea[name=comment]').val('');
         }
-    });
+    });*/
 
     $('input[name=security_deposit_type]').on('change', function(){
         let sdt = $('input[name=security_deposit_type]:checked').val();

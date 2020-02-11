@@ -44,7 +44,7 @@
                                             <tbody>
                                             @endif
                                                 <tr>
-                                                    <td>{{$key+1}}</td>
+                                                    <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
                                                     <td><b>Apply Loan Amount: </b> </td>
                                                     <td>{{$supplyOffer->prgm_limit_amt}}</td>
                                                     <td><b>Check Bounce Fee: </b></td>
@@ -116,7 +116,7 @@
                                             <tbody>
                                             @endif
                                                 <tr>
-                                                    <td>{{$key+1}}</td>
+                                                    <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
                                                     <td><b>Facility Type: </b></td>
                                                     <td>Lease Loan</td>
                                                     <td><b>Apply Loan Amount: </b> </td>
@@ -163,17 +163,15 @@
                                                     <td>
                                                         @php
                                                         $add_sec_arr = '';
-                                                        $addl_sec_arr = explode(',', $termOffer->addl_security);
-                                                        foreach($addl_sec_arr as $k=>$v){
-                                                            if($v == 4){
-                                                                $add_sec_arr .= ', '.config('common.addl_security')[$v];
-                                                                $add_sec_arr .= ' - <b>Comment</b>:  '.$termOffer->comment;
-                                                            }else{
-                                                                $add_sec_arr .= ', '.config('common.addl_security')[$v];
+                                                        if(isset($termOffer->addl_security)){
+                                                            $addl_sec_arr = explode(',', $termOffer->addl_security);
+                                                            foreach($addl_sec_arr as $k=>$v){
+                                                                $add_sec_arr .= config('common.addl_security')[$v].', ';
                                                             }
+                                                            $add_sec_arr .= ' <b>Comment</b>:  '.$termOffer->comment;
                                                         }
                                                         @endphp 
-                                                        {!! trim($add_sec_arr, ', ') !!}
+                                                        {!! $add_sec_arr !!}
                                                     </td>
                                                     <td></td>
                                                     <td></td>
@@ -205,7 +203,7 @@
                                             <tbody>
                                             @endif
                                                 <tr>
-                                                    <td>{{$key+1}}</td>
+                                                    <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
                                                     <td><b>Facility Type: </b></td>
                                                     <td>Lease Loan</td>
                                                     <td><b>Apply Loan Amount: </b> </td>
@@ -253,18 +251,14 @@
                                                         @php
                                                         $add_sec_arr = '';
                                                         if(isset($leaseOffer->addl_security)){
-                                                        $addl_sec_arr = explode(',', $leaseOffer->addl_security);
-                                                        foreach($addl_sec_arr as $k=>$v){
-                                                            if($v == 4){
-                                                                $add_sec_arr .= ', '.config('common.addl_security')[$v];
-                                                                $add_sec_arr .= ' - <b>Comment</b>:  '.$leaseOffer->comment;
-                                                            }else{
-                                                                $add_sec_arr .= ', '.config('common.addl_security')[$v];
+                                                            $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                                                            foreach($addl_sec_arr as $k=>$v){
+                                                                $add_sec_arr .= config('common.addl_security')[$v].', ';
                                                             }
-                                                        }
+                                                            $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
                                                         }
                                                         @endphp 
-                                                        {!! trim($add_sec_arr, ', ') !!}
+                                                        {!! $add_sec_arr !!}
                                                     </td>
                                                     <td></td>
                                                     <td></td>
