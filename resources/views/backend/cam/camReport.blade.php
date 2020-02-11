@@ -105,8 +105,11 @@
                           foreach($addl_sec_arr as $k=>$v){
                               $add_sec_arr .= config('common.addl_security')[$v].', ';
                           }
-                          $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
+                          if(isset($leaseOffer->comment)) {
+                              $add_sec_arr .=  ' <b>Comment</b>:  '.$leaseOffer->comment; 
+                           }   
                       }
+                      $add_sec_arr = trim($add_sec_arr, ', ');
                       @endphp
                       {!! $add_sec_arr !!}
                   </td>

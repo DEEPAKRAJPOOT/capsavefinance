@@ -240,8 +240,9 @@ class CamController extends Controller
       $offerPTPQ = '';
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
-      $leaseOfferData = array();
+      $leaseOfferData = $facilityTypeList = array();
       $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
+      $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
       $arrStaticData = array();
       $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
       $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');

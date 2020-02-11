@@ -86,7 +86,7 @@ trait CamTrait
                      $arrCamData->proposed_exposure =  format_number($arrCamData->proposed_exposure/1000000);
                 }
                 if( isset($arrCamData->total_exposure) &&  $arrCamData->total_exposure > 0){
-                     $arrCamData->total_exposure =  format_number( $arrCamData->total_exposure/1000000);
+                     $arrCamData->total_exposure =  format_number($arrCamData->total_exposure/1000000);
                 }
 
                 return [
