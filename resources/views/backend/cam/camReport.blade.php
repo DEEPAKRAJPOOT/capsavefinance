@@ -470,12 +470,12 @@
             <tbody>
             @if(!empty($arrOwnerData))
                @foreach($arrOwnerData as $key => $arrData)
-                  @if(!in_array($arrData->gender ,[3]))
-                   <tr>
-                     <td>{{$arrData->first_name}}</td>
-                     <td>{{$arrData->designation}}</td>
-                     </tr>
-                  @endif
+               @if ($arrData->gender != '3')
+               <tr>
+                  <td>{{$arrData->first_name}}</td>
+                  <td>{{$arrData->designation}}</td>
+               </tr>
+               @endif
                @endforeach
             @endif  
                
@@ -493,12 +493,12 @@
             <tbody>
             @if(!empty($arrOwnerData))
                   @foreach($arrOwnerData as $key => $arrData)
-                     @if ($arrData->is_promoter || in_array($arrData->gender ,[3]))
+                  @if ($arrData->gender == '3' || $arrData->is_promoter)
                         <tr>
                            <td>{{$arrData->first_name}}</td>
                            <td>{{$arrData->share_per}}</td>
                         </tr>
-                     @endif
+                  @endif
                   @endforeach
             @endif
             </tbody>
