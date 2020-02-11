@@ -99,7 +99,29 @@ class KarzaController extends Controller
      
     }
     
-
+ /**
+     * Voter ID Card Verification status verification API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getPromoterDetailsByCin(KarzaApi $KarzaApi, Request $request)
+    {
+           $requestCin   = $request->all();
+           $result =  $KarzaApi->getPromoterDetailsByCin($requestCin);
+           $get_dec = json_decode($result,1);
+           $res  = $get_dec['result']['directors'];          
+// $status =  $get_dec['status-code'];
+          
+            ////if($status==101) { 
+              
+              return response()->json(['status' => 1, 'value' => $res]);
+                       
+         /// } else { 
+         ///   return response()->json(['status' => 0, 'value' =>  json_encode($get_dec['result'])]);
+            
+              
+         /// }  */
+    }
     /**
      * Pan status verification API
      *

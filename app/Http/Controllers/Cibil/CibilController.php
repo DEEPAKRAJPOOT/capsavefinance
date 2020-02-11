@@ -116,21 +116,39 @@ class CibilController extends Controller
 
     public function getCommercialCibilRequest(CibilApi $CibilApi, Request $request)
     {   
+        $arrRequest = array();
         $biz_id = $request->get('biz_id');
-        $arrBizData = Business::getCompanyDataByBizId($biz_id);
-        $arrData = BizOwner::where('biz_id','=',$biz_id)->first();
-        $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($arrData['biz_owner_id']);
-        $arrOwnerData->pan_gst_hash = $arrBizData['0']['pan_gst_hash'];
-        $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
-        $arrOwnerData->biz_cin = $arrBizData['0']['cin'];
-        $arrOwnerAddr = BizOwner::with('address')->where('biz_owner_id', $arrData['biz_owner_id'])->first();
-        if($arrOwnerAddr->address!=null) {
-            $arrOwnerData->owner_addr = $arrOwnerAddr->address->addr_1;
-        }else {
-            $arrOwnerData->owner_addr = '';
+        //$arrBizData = Business::getCompanyDataByBizId($biz_id);
+        $arrBizData = Business::getApplicationById($biz_id);
+
+
+        if(!empty($arrBizData)){
+                $arrRequest['biz_name'] = $arrBizData->biz_entity_name;
+                $arrRequest['pan_gst_hash'] = $arrBizData->pan->pan_gst_hash;
+                $arrRequest['biz_cin'] = $arrBizData->pan->cin;
+                $arrRequest['biz_address'] = $arrBizData->address[1]->addr_1.' '.(isset($arrBizData->address[1]->city_name) ? $arrBizData->address[1]->city_name : '').' '. (isset($arrBizData->address[1]->state->name) ? $arrBizData->address[1]->state->name : '').' '. (isset($arrBizData->address[1]->pin_code) ? $arrBizData->address[1]->pin_code : '');
+        }else{
+               return response()->json(['message' =>'Something went wrong1','status' => 0]);
         }
-        $responce =  $CibilApi->getCommercialCibilAcknowledgement($arrOwnerData);
-       // dd($responce);
+
+
+       
+        // $arrData = BizOwner::where('biz_id','=',$biz_id)->first();
+        // $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($arrData['biz_owner_id']);
+
+
+        // $arrOwnerData->pan_gst_hash = $arrBizData['0']['pan_gst_hash'];
+        // $arrOwnerData->date_of_birth = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
+        // $arrOwnerData->biz_cin = $arrBizData['0']['cin'];
+        // $arrOwnerAddr = BizOwner::with('address')->where('biz_owner_id', $arrData['biz_owner_id'])->first();
+        // if($arrOwnerAddr->address!=null) {
+        //     $arrOwnerData->owner_addr = $arrOwnerAddr->address->addr_1;
+        // }else {
+        //     $arrOwnerData->owner_addr = '';
+        // }
+
+        $responce =  $CibilApi->getCommercialCibilAcknowledgement($arrRequest);
+      // dd($responce);
         $p = xml_parser_create('utf-8');
         xml_parse_into_struct($p, $responce, $resp);
         xml_parser_free($p);
@@ -140,13 +158,15 @@ class CibilController extends Controller
                 $acknowledgementResult[strtolower($value['tag'])] = $value['value'] ?? '';
             }
         }
-        if($acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
+        
+        if(isset($acknowledgementResult['response-type']) && $acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
             sleep(10);
-            $arrOwnerData['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
-            $arrOwnerData['report_id'] = $acknowledgementResult['report-id'];
-            //dd($arrOwnerData);
-            $responseData =  $CibilApi->getCommercialCibilData($arrOwnerData);
-             // dd($responseData);
+            $arrRequest['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
+            $arrRequest['report_id'] = $acknowledgementResult['report-id'];
+            $arrRequest['resFormat'] = 'XML';
+              //dd($arrOwnerData);
+            $responseData =  $CibilApi->getCommercialCibilData($arrRequest);
+             //dd($responseData);
             $q = xml_parser_create('utf-8');
             xml_parse_into_struct($q, $responseData, $cibilRes);
             xml_parser_free($q);
@@ -157,16 +177,23 @@ class CibilController extends Controller
                 }
             }
             if(isset($resultData['status'])){
+                    $arrRequest['resFormat'] = 'HTML';
+                    sleep(5);
+                    $resInHTMLFormate =  $CibilApi->getCommercialCibilData($arrRequest);
+                   // dd($resInHTMLFormate);
+                    $cibilData = base64_encode($resInHTMLFormate);
+                    //dd($cibilData);
                     if($resultData['score'] > 0){
                         $cibilScore =  $resultData['score'];
                     }else{
                         $cibilScore = '';
                     }
-                    $cibilData = json_encode($resultData);
-                    $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => $cibilData,'status' => 0,'created_by' => Auth::user()->user_id]);
+                    //$cibilData = json_encode($resultData);
+
+                    $createApiLog = BizApiLog::create(['req_file' =>json_encode($arrRequest), 'res_file' => $cibilData,'status' => 0,'created_by' => Auth::user()->user_id]);
                             if ($createApiLog) {
-                                    $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
-                                                                'biz_id' =>   $arrOwnerData['biz_id'],
+                                    $createBizApi= BizApi::create(['user_id' =>$arrBizData->user_id, 
+                                                                'biz_id' =>   $biz_id,
                                                                 'biz_owner_id' => NULL,
                                                                 'type' => 1,
                                                                 'verify_doc_no' => 1,
@@ -191,10 +218,15 @@ class CibilController extends Controller
             }               
         }
         else{
-            
+            if(!isset($acknowledgementResult['description'])){
+                $acknowledgementResult['description'] = 'Something went wrong';
+            }
             return response()->json(['message' =>$acknowledgementResult['description'],'status' => 0]);
         }
     }
+
+
+
 
 
     function downloadCommercialCibil(Request $request)
@@ -204,7 +236,7 @@ class CibilController extends Controller
         if(empty($arrData)){
                 return response()->json(['message' =>'Error','status' => 0, 'cibilScoreData' => 'Please Pull the CIBIL Score to view the report.']);
         }else{
-                $arrCibilScoreData = json_decode($arrData['res_file']);
+                $arrCibilScoreData = $arrData['res_file'];
                 return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'cibilScoreData' => $arrCibilScoreData]);
        }
     }

@@ -42,7 +42,10 @@ function _uuid_rand($strLen = 60){
 	return substr($string, 0, $strLen);
 }
 
-
+function format_number($number) {
+    $num = sprintf('%.20f', $number);
+    return (strpos($num,'.')!==false ? preg_replace("/\.?0*$/",'',$num) : $num);
+}
 
 function extra_char($string = ''){
 	 $i = 0;
@@ -100,10 +103,10 @@ function _getRandReverse($string = '', $min_year = 1950) {
 function getGrowth($curr_year, $prev_year) {
 	$curr_year_data = getTotalFinanceData($curr_year);
 	$prev_year_data = getTotalFinanceData($prev_year);
-	$netSalesGrowth = (($curr_year_data['TotalOperatingIncome'] - $prev_year_data['TotalOperatingIncome']) /$prev_year_data['TotalOperatingIncome'])*100;
-	$netIncomeGrowth = (($curr_year_data['TotalOperatingIncome'] - $prev_year_data['TotalOperatingIncome']) /$prev_year_data['TotalOperatingIncome'])*100;
-	$netProfitGrowth = (($curr_year_data['NetProfit'] - $prev_year_data['NetProfit']) /$prev_year_data['NetProfit'])*100;
-	$tangibleNetWorthGrowth = (($curr_year_data['TangibleNetWorth'] - $prev_year_data['TangibleNetWorth']) /$prev_year_data['TangibleNetWorth'])*100;
+	$netSalesGrowth = $prev_year_data['TotalOperatingIncome'] == 0 ? 0 : ((($curr_year_data['TotalOperatingIncome'] - $prev_year_data['TotalOperatingIncome']) /$prev_year_data['TotalOperatingIncome'])*100);
+	$netIncomeGrowth = $prev_year_data['TotalOperatingIncome'] == 0 ? 0 : ((($curr_year_data['TotalOperatingIncome'] - $prev_year_data['TotalOperatingIncome']) /$prev_year_data['TotalOperatingIncome'])*100);
+	$netProfitGrowth = $prev_year_data['NetProfit'] == 0 ? 0 : ((($curr_year_data['NetProfit'] - $prev_year_data['NetProfit']) /$prev_year_data['NetProfit'])*100);
+	$tangibleNetWorthGrowth = $prev_year_data['TangibleNetWorth'] == 0 ? 0 : ((($curr_year_data['TangibleNetWorth'] - $prev_year_data['TangibleNetWorth']) /$prev_year_data['TangibleNetWorth'])*100);
 	return array(
 		'netSalesGrowth' => $netSalesGrowth,
 		'netIncomeGrowth' => $netIncomeGrowth,
@@ -218,7 +221,7 @@ function CalculateProfitBeforeTaxLoss($ProfitAndLoss) {
 	return sprintf('%.2f', $ProfitBeforeTaxLoss);
 }
 function CalculateDefferedTaxes($ProfitAndLoss) {
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateProvisionForTaxesTotal($ProfitAndLoss) {
 	$ProvisionForTaxesTotal = $ProfitAndLoss['ProvisionForTaxesCurrentPeriod'] + $ProfitAndLoss['ProvisionForTaxesDefferedTaxes'];
@@ -280,107 +283,107 @@ $Liabilities['OtherReservesExcludingProvisions'] + $Liabilities['SurplusOrDefici
 	return sprintf('%.2f', $TotalLiabilities);
 }
 function CalculateArrearsOfCumulativeDividends($Liabilities){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateDisputedExciseCustomIncomeTaxSalesTaxLiabilities($Liabilities){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateGratuityLiabilityNotProvidedFor($Liabilities){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateGuaranteesIssuedRelatingToBusiness($Liabilities){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateGuaranteesIssuedRelatingToCompanies($Liabilities){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateLCs($Liabilities){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC($Liabilities){
-	return "Need To Calculate";
+	return '0';
 }
 
 #====================================================================================#
 
 function CalculateAssetsReceivables($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateAssetsInventory($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateAssetsStockInProcess($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateAssetsFinishedGoods($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
 	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
 	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
 }
 function CalculateAssetsSubTotalInventory($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateAssetsAdvancesToSuplierofRawMaterial($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateAssetsAdvanceReceivableInOrKind($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateTotalCurrentAssets($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateAssetsGrossBlock($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateAssetsNetBlock($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateTotalOtherNonCurrentAssets($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateIntangibleAssetSubtotal($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateIntangibleAssetTotal($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateTangibleAssetNetworth($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateTotalLiabilitiesMinusTotalAssets($Assets){
-	return "Need To Calculate";
+	return '0';
 }
 function CalculateMonthsConsumption0($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsConsumption1($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsConsumption2($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsConsumption3($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateStockInProcessMinusAmount($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsCostOfProduction($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateFinishedGoodsMinusAmount($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsCostOfSales($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsDomesticIncome($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 function CalculateMonthsExportIncome($Assets){
-	return 'Need To Calculate';
+	return '0';
 }
 
 
@@ -577,6 +580,7 @@ function getFinancialDetailSummaryColumns() {
 			'TotalFixedAssets' => 'TOTAL FIXED ASSETS',
 			'TotalOutsideLiabilities' => 'TOTAL OUTSIDE LIABILITIES',
 			'TangibleNetWorth' => 'TANGIBLE NETWORTH (TNW)',
+			'AdjustedTangibleNetWorth' => 'Adjusted Tangible Net Worth',
 		),
 		'growth_analysis_cols' => array(
 			'netSalesGrowth' => 'NET SALES GROWTH (%)',
@@ -693,6 +697,31 @@ function getProfitandLossColumns(){
 	return $fields;
 }
 
+function extraData($wholeArary) {
+	$AdjustedTangibleNetWorth = [];
+	$CashProfit = [];
+	$DSCR = [];
+	$DebtEBIDTA = [];
+	$TangibleNetWorth = [];
+
+	foreach ($wholeArary as $year => $data) {
+		$response = getTotalFinanceData($data);
+		$CashProfit[] = $year .':' . sprintf('%.2f', $response['CashProfit']);
+		$DSCR[] = $year .':' . sprintf('%.2f', $response['DSCR']);
+		$DebtPbdit[] = $year .':' . sprintf('%.2f', $response['DebtPbdit']);
+		$TangibleNetWorth[] = $year .':' . sprintf('%.2f', $response['TangibleNetWorth']);
+		$AdjustedTangibleNetWorth[] = $year .':' . sprintf('%.2f', $response['AdjustedTangibleNetWorth']);
+	}
+	$extraData = array(
+		'AdjustedTangibleNetWorth' => !empty($AdjustedTangibleNetWorth) ? implode('||', $AdjustedTangibleNetWorth) : 0,
+		'CashProfit' => !empty($CashProfit) ? implode('||', $CashProfit) : 0,
+		'DSCR' => !empty($DSCR) ? implode('||', $DSCR) : 0,
+		'DebtEBIDTA' => !empty($DebtPbdit) ? implode('||', $DebtPbdit) : 0,
+		'TangibleNetWorth' => !empty($TangibleNetWorth) ? implode('||', $TangibleNetWorth) : 0,
+	);
+	return $extraData;
+}
+
 
 function getTotalFinanceData($fullArray){
 	$ProfitAndLoss = $fullArray['ProfitAndLoss'];
@@ -711,25 +740,31 @@ function getTotalFinanceData($fullArray){
 	$response['TotalNonOperatingIncome'] = $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack;
 	$response['PBDITOperatingProfit'] = $TotalOperatingIncome -($AddOpeningStockInProcessRawMaterials + $OtherSpares + $PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses ) + $Depreciation;
 	$response['Depreciation'] = $Depreciation;
-	$response['DeprecationAverageNetFixedAssetsPer'] = ($Depreciation / (($Land+$Building+$Vehicles+$PlantMachinery+$FurnitureFixtures + $OtherFixedAssets + $CapitalWip-$LessAccumulatedDepreciation-$RevaluationReserve)/2))  * 100;
+
+	$a = (($Land+$Building+$Vehicles+$PlantMachinery+$FurnitureFixtures + $OtherFixedAssets + $CapitalWip-$LessAccumulatedDepreciation-$RevaluationReserve)/2);
+	$response['DeprecationAverageNetFixedAssetsPer'] = $a == 0 ? 0 : (($Depreciation / $a)  * 100);
 	$response['Interest'] = $InterestPaymentToBanksSum+$InterestPaymentToFIsSum+$BankCharges;
-	$response['InterestNetSalesPer'] = ($response['Interest']/$TotalOperatingIncome)*100; 
-	$response['PbditInterestPer'] = $response['PBDITOperatingProfit']/$response['Interest'];
+	$response['InterestNetSalesPer'] = $TotalOperatingIncome == 0 ? 0 : (($response['Interest']/$TotalOperatingIncome)*100); 
+	$response['PbditInterestPer'] = $response['Interest'] == 0 ? 0 : ($response['PBDITOperatingProfit']/$response['Interest']);
 	$response['NetProfit'] = $response['TotalOperatingIncome']-($AddOpeningStockInProcessRawMaterials+$OtherSpares+$PowerFuel+$DirectLabour+$OtherManufacturingExpenses+$Depreciation+$RepairsMaintenance+$CostOfTradingGoods+0+$AddOpeningStockInProcess-$DeductClosingStockInProcess+$AddOpeningStockOfFinishedGoods-$DeductClosingStockOfFinishedGoods+$SellingGeneralAdmExpenses)-$response['Interest']+$response['TotalNonOperatingIncome']+0-($LossOnSaleOfInvestments+$LossOnSaleOfFa+$DerivativeLossesBooked+$NetLossOnForeignCurrencyTranslationAndTransactionsLossDueToFire + $PreliExpOneTimeExpensesWrittenOff+$MiscExpWrittenOff+$ProvForDoubDebtsDimInTheValOfInv+$WealthTax)-$TaxPaid-($ProvisionForTaxesCurrentPeriod+$ProvisionForTaxesDefferedTaxes);
 	$response['CashProfit'] = ($TotalOperatingIncome -($AddOpeningStockInProcessRawMaterials+$OtherSpares+$PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses)) - ($InterestPaymentToBanksSum + $InterestPaymentToFIsSum + $BankCharges) + ( $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack) - ($LossOnSaleOfInvestments+$LossOnSaleOfFa+$DerivativeLossesBooked+$NetLossOnForeignCurrencyTranslationAndTransactionsLossDueToFire+$PreliExpOneTimeExpensesWrittenOff+$MiscExpWrittenOff +$ProvForDoubDebtsDimInTheValOfInv +$WealthTax) - $TaxPaid - ($ProvisionForTaxesCurrentPeriod + $ProvisionForTaxesDefferedTaxes) +$Depreciation - $ProvisionsExpensesWrittenBack;
 	$response['TangibleNetWorth'] = ($PartnersCapitalProprietorSCapital+ $ShareCapitalPaidUp + $ShareApplicationFinalizedForAllotment+$StatutoryAndCapitalReserves+ $GeneralReserve+ $RevaluationReserve+ $OtherReservesExcludingProvisions + $SurplusOrDeficitInPLAccount+ $SharePremiumAC + $CapitalSubsidy + $InvestmentAllowanceUtilizationReserve -$RevaluationReserve) - ($AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses + $DeferredTaxAsset);
-	$response['TolTnw'] = ($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $SundryCreditorsTrade + $ShortTermBorrowingsFromAssociatesGroupConcerns + $ShortTermBorrowingsCommercialPaper + $ShortTermBorrowingsFromOthers + $AdvancesPaymentsFromCustomersDepositsFromDealers + $ProvisionForTaxation + $ProposedDividend + $OtherStatutoryLiabilitiesDueWithinOneYear + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $OtherCurrentLiabilitiesProvisionsDueWithin1Year + $InterestAccButNotDue + $ProvisionForNpa + $ProvisionForLeaveEncashmentGratuity + $UnclaimedDividend + $OtherLiabilities + $DueToSubsidiaryCompaniesAffiliates + $TaxOnInterimDividendPayable + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)/ $response['TangibleNetWorth'];
-	$response['TolAdjTnwAtnw'] = ((($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $SundryCreditorsTrade + $ShortTermBorrowingsFromAssociatesGroupConcerns + $ShortTermBorrowingsCommercialPaper + $ShortTermBorrowingsFromOthers + $AdvancesPaymentsFromCustomersDepositsFromDealers + $ProvisionForTaxation + $ProposedDividend + $OtherStatutoryLiabilitiesDueWithinOneYear + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $OtherCurrentLiabilitiesProvisionsDueWithin1Year + $InterestAccButNotDue + $ProvisionForNpa + $ProvisionForLeaveEncashmentGratuity + $UnclaimedDividend + $OtherLiabilities + $DueToSubsidiaryCompaniesAffiliates + $TaxOnInterimDividendPayable + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)) - $BorrowingsFromSubsidiariesAffiliatesQuasiEquity) / ( $response['TangibleNetWorth'] -$InvestmentsInSubsidiaryCompaniesAffiliates + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity);
-	$response['DebtPbdit'] = ($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $ShortTermBorrowingsCommercialPaper + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)/ $response['PBDITOperatingProfit'];
-	$response['RecievableTurnover'] = (($ReceivablesOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanks+$ExportReceivablesIncludingBillPurchasedAndDiscounted+$RetentionMoneySecurityDeposit+$DebtorsMoreThan6Months)/($GrossDomesticSales+$ExportSales+$AddTradingOtherOperatingIncome))*365;
+	$response['TolTnw'] = $response['TangibleNetWorth'] == 0 ? 0 :(($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $SundryCreditorsTrade + $ShortTermBorrowingsFromAssociatesGroupConcerns + $ShortTermBorrowingsCommercialPaper + $ShortTermBorrowingsFromOthers + $AdvancesPaymentsFromCustomersDepositsFromDealers + $ProvisionForTaxation + $ProposedDividend + $OtherStatutoryLiabilitiesDueWithinOneYear + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $OtherCurrentLiabilitiesProvisionsDueWithin1Year + $InterestAccButNotDue + $ProvisionForNpa + $ProvisionForLeaveEncashmentGratuity + $UnclaimedDividend + $OtherLiabilities + $DueToSubsidiaryCompaniesAffiliates + $TaxOnInterimDividendPayable + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)/ $response['TangibleNetWorth']);
+	$AdjustedTangibleNetWorth = ($response['TangibleNetWorth'] -$InvestmentsInSubsidiaryCompaniesAffiliates + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity);
+	$response['TolAdjTnwAtnw'] = $AdjustedTangibleNetWorth == 0 ? 0 : (((($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $SundryCreditorsTrade + $ShortTermBorrowingsFromAssociatesGroupConcerns + $ShortTermBorrowingsCommercialPaper + $ShortTermBorrowingsFromOthers + $AdvancesPaymentsFromCustomersDepositsFromDealers + $ProvisionForTaxation + $ProposedDividend + $OtherStatutoryLiabilitiesDueWithinOneYear + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $OtherCurrentLiabilitiesProvisionsDueWithin1Year + $InterestAccButNotDue + $ProvisionForNpa + $ProvisionForLeaveEncashmentGratuity + $UnclaimedDividend + $OtherLiabilities + $DueToSubsidiaryCompaniesAffiliates + $TaxOnInterimDividendPayable + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)) - $BorrowingsFromSubsidiariesAffiliatesQuasiEquity) / $AdjustedTangibleNetWorth);
+	$response['DebtPbdit'] = $response['PBDITOperatingProfit'] == 0 ? 0 : (($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $ShortTermBorrowingsCommercialPaper + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)/ $response['PBDITOperatingProfit']);
+	$c =  $GrossDomesticSales + $ExportSales + $AddTradingOtherOperatingIncome;
+	$response['RecievableTurnover'] = $c == 0 ? 0 : ((($ReceivablesOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanks+$ExportReceivablesIncludingBillPurchasedAndDiscounted+$RetentionMoneySecurityDeposit+$DebtorsMoreThan6Months)/ $c)*365);
 	$response['CashAndBankBalances'] = $CashAndBankBalances;
-	$response['pbditNetsales'] = ($response['PBDITOperatingProfit'] / $response['TotalOperatingIncome']) * 100;
-	$response['netProfitNetSales'] = ($response['NetProfit'] / $response['TotalOperatingIncome']) * 100;
-	$response['cashProfitNetSales'] = ($response['CashProfit'] / $response['TotalOperatingIncome']) * 100;
+	$response['pbditNetsales'] = $response['TotalOperatingIncome'] == 0 ? 0 : (($response['PBDITOperatingProfit'] / $response['TotalOperatingIncome']) * 100);
+	$response['netProfitNetSales'] = $response['TotalOperatingIncome'] == 0 ? 0 : (($response['NetProfit'] / $response['TotalOperatingIncome']) * 100);
+	$response['cashProfitNetSales'] = $response['TotalOperatingIncome'] == 0 ? 0 : (($response['CashProfit'] / $response['TotalOperatingIncome']) * 100);
 	$response['TotalFixedAssets'] = $Land + $Building + $Vehicles + $PlantMachinery + $FurnitureFixtures + $OtherFixedAssets + $CapitalWip-$LessAccumulatedDepreciation-$RevaluationReserve;
 	$response['TotalOutsideLiabilities'] = $FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $SundryCreditorsTrade + $ShortTermBorrowingsFromAssociatesGroupConcerns + $ShortTermBorrowingsCommercialPaper + $ShortTermBorrowingsFromOthers + $AdvancesPaymentsFromCustomersDepositsFromDealers + $ProvisionForTaxation + $ProposedDividend + $OtherStatutoryLiabilitiesDueWithinOneYear + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $OtherCurrentLiabilitiesProvisionsDueWithin1Year + $InterestAccButNotDue + $ProvisionForNpa + $ProvisionForLeaveEncashmentGratuity + $UnclaimedDividend + $OtherLiabilities + $DueToSubsidiaryCompaniesAffiliates + $TaxOnInterimDividendPayable + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances + $PartnersCapitalProprietorSCapital + $ShareCapitalPaidUp + $ShareApplicationFinalizedForAllotment + $StatutoryAndCapitalReserves + $GeneralReserve + $RevaluationReserve + $OtherReservesExcludingProvisions + $SurplusOrDeficitInPLAccount + $SharePremiumAC + $CapitalSubsidy + $InvestmentAllowanceUtilizationReserve-$RevaluationReserve-($PartnersCapitalProprietorSCapital + $ShareCapitalPaidUp + $ShareApplicationFinalizedForAllotment + $StatutoryAndCapitalReserves + $GeneralReserve + $RevaluationReserve + $OtherReservesExcludingProvisions + $SurplusOrDeficitInPLAccount + $SharePremiumAC + $CapitalSubsidy + $InvestmentAllowanceUtilizationReserve-$RevaluationReserve);
-	$response['DSCR'] =  ($response['CashProfit'] + $InterestPaymentToBanks['InterestTermLoans'] + $InterestPaymentToFIs['InterestTermLoans']) / ($InterestPaymentToBanks['InterestTermLoans'] + $InterestPaymentToFIs['InterestTermLoans'] + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year);
+	$d = ($InterestPaymentToBanks['InterestTermLoans'] + $InterestPaymentToFIs['InterestTermLoans'] + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year);
+	$response['DSCR'] =  $d == 0 ? 0 : ($response['CashProfit'] + $InterestPaymentToBanks['InterestTermLoans'] + $InterestPaymentToFIs['InterestTermLoans']) / $d;
 
+	$response['AdjustedTangibleNetWorth'] =  $AdjustedTangibleNetWorth;
 	return $response;
 }
 

@@ -90,7 +90,7 @@
 							<div class="col-md-4">
 								<div class="form-group password-input">
 									<label for="txtPassword">Segment
-										<span class="mandatory">*</span>
+											<span class="mandatory">*</span>
 									</label>
 									<!-- <select class="form-control" name="segment" tabindex="8" id="segmentId">
 										<option value=""> Select Segment</option>
@@ -99,7 +99,7 @@
 										<option value="3" {{(old('segment', $business_info->biz_segment) == 3)? 'selected':''}}> Segment 3 </option>
 									</select> -->
 
-									{!! Form::select('segment', [''=>trans('backend.please_select')] + $segmentList, $business_info->biz_segment, ['id'=>'segmentId','class'=>'form-control', 'tabindex'=>'8']) !!}
+									{!! Form::select('segment', [''=>trans('backend.please_select')] + $segmentList, $business_info->biz_segment, ['id'=>'segmentId','class'=>'form-control industry_change', 'tabindex'=>'8']) !!}
 									@error('segment')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
@@ -121,9 +121,7 @@
 
 							<div class="col-md-4">
 								<div class="form-group password-input">
-									<label for="txtPassword">Sub Industry
-										<span class="mandatory">*</span>
-									</label>
+									<label for="txtPassword">Sub Industry</label>
 									{!! Form::select('entity_type_id', [''=>trans('backend.please_select')], $business_info->entity_type_id, ['id'=>'entity_type_id','class'=>'form-control sub_industry', 'tabindex'=>'5']) !!}
 									@error('entity_type_id')
 						                <span class="text-danger error">{{ $message }}</span>
@@ -607,8 +605,6 @@ $(document).ready(function () {
 			$(".product-type-"+productType).removeClass('hide');
 		}else{
 			$(".product-type-"+productType).addClass('hide');
-			$("input[name='product_id["+productType+"][loan_amount]']").val('');
-			$("input[name='product_id["+productType+"][tenor_days]']").val('');
 		}
 	});
 });

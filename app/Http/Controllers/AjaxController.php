@@ -2785,6 +2785,15 @@ if ($err) {
         $invoice_activity_data = $dataProvider->getBackendInvoiceActivityList($this->request, $invoice_activity_data);
         return $invoice_activity_data;
     }
+    
+      //////////////////// Use For Bulk Transaction /////////////////
+     public function getBackendBulkTransaction(DataProviderInterface $dataProvider) 
+    {
+       $trans_data = $this->invRepo->getAllManualTransaction();
+       $trans_data = $dataProvider->getAllManualTransaction($this->request, $trans_data);
+       return   $trans_data;
+   } 
+    
     ///////////////////////use fro rePayment///////////////////////////////
     function saveRepayment(Request $request)
     {
@@ -2859,6 +2868,113 @@ if ($err) {
            return \Response::json(['status' => 0,'amount' =>0]);
         }
     }
+    
+     
+    public function saveExcelPayment(Request $request)
+    {
+         $validatedData = $request->validate([
+                'customer' => 'required',
+                'upload' => 'required'
+          ]);
+       $extension = $request['upload']->getClientOriginalExtension();
+       if($extension!="csv" || $extension!="csv")
+       {
+          return response()->json(['status' => 0,'message' => 'Please check  file format']); 
+       }
+       
+       $i=0;
+       $date = Carbon::now();
+       $data = array();
+        $userId =  $request['customer'];
+        $id = Auth::user()->user_id;
+        if ($request['upload']) {
+            if (!Storage::exists('/public/user/' . $userId . '/excelpayment')) {
+                Storage::makeDirectory('/public/user/' . $userId . '/excelpayment', 0775, true);
+            }
+            $path = Storage::disk('public')->put('/user/' . $userId . '/excelpayment', $request['upload'], null);
+            $inputArr['file_path'] = $path;
+       }
+        $csvFilePath = storage_path("app/public/" . $inputArr['file_path']);
+         $file = fopen($csvFilePath, "r");
+     
+        while (!feof($file)) {
+          
+            $rowData[] = explode(",",fgets($file));
+          }
+        $rowcount = count($rowData) -1;
+        foreach($rowData as $key=>$row)
+        {
+           
+            if($i > 0 && $i < $rowcount)  
+            {
+               
+               if(count($row) < 5)
+              {  
+                  return response()->json(['status' => 0,'message' => 'Please check column format']); 
+              }  
+               
+                $payment_date  = $row[0]; 
+                $virtual_acc  = $row[1]; 
+                $amount  = $row[2];
+                $payment_ref_no  = $row[3];
+                $remarks  =  $row[4];
+                $payment_date_format  = $this->validateDate($payment_date, $format = 'd/m/Y');
+               
+               if(strlen($payment_date) < 10)
+               {
+                         return response()->json(['status' => 0,'message' => 'Please check the  payment date, It Should be "dd/mm/yy" format']); 
+               } 
+                if( $payment_date_format==false)
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check the payment date, It should be "dd/mm/yy" format']); 
+             
+               }
+               if($amount=='')
+               {
+                     return response()->json(['status' => 0,'message' => 'Please check amount, Amount should not be null']); 
+               } 
+                if(!is_numeric($amount))
+               {
+                    return response()->json(['status' => 0,'message' => 'Please check  amount, string value not allowed']); 
+               } 
+                $data[$i]['payment_date'] = ($payment_date) ? Carbon::createFromFormat('d/m/Y', $payment_date)->format('Y-m-d') : '';
+                $data[$i]['amount'] =  $amount;
+                $data[$i]['user_id'] = $request['customer'];
+                $data[$i]['virtual_account_no'] =  $virtual_acc;
+                $data[$i]['payment_ref_no'] =  $payment_ref_no;
+                $data[$i]['file_path'] =  $inputArr['file_path'];
+                $data[$i]['remark'] = $remarks;
+                $data[$i]['created_by'] =  $id;
+                $data[$i]['created_at'] =  $date;
+             }
+          
+           $i++;
+         
+        }
+        if(count($data)==0)
+        {
+                
+           return response()->json(['status' => 0,'message' => 'Something went wrong, Please try again']); 
+              
+        }
+       else {
+               $whr  = ['status' =>0,'user_id' =>$request['customer']];
+                $this->invRepo->deleteExcelTrans($whr);
+                $res =  $this->invRepo->insertExcelTrans($data);
+                if($res)
+                {
+                    $getTempInvoice =  $this->invRepo->getExcelTrans($whr);
+                    return response()->json(['status' => 1,'data' => $getTempInvoice]); 
+                }
+                else
+                {
+                    return response()->json(['status' => 0,'message' => 'Something went wrong, Please try again']); 
+       
+                }
+         }       
+                
+    }    
+  
     
     /* get customer id    /**
      */
@@ -2941,6 +3057,8 @@ if ($err) {
         if (is_null($id)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
+
+        
         $result = $this->application->getSubIndustryByWhere(['industry_id' => $id, 'segment_id' => $segment_id]);
         return response()->json($result);
     }
@@ -3238,7 +3356,7 @@ if ($err) {
        }
        $date = Carbon::now();
        $data = array();
-        $userId =  Auth::user()->user_id;
+        $userId =  $request['supplier_bulk_id'];
         $id = Auth::user()->user_id;
         if ($request['doc_file']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice')) {
@@ -3540,6 +3658,18 @@ if ($err) {
         $this->application->setDefaultAddress(['is_default' => 0]);
         $res = $this->application->setDefaultAddress(['is_default' => 1], ['biz_addr_id' => $acc_id]);
         return \response()->json(['success' => $res]);
+    }
+
+        /**
+     * Get all Equipment
+     *
+     * @return json customer Address data
+     */
+    public function getEquipmentLists(DataProviderInterface $dataProvider)
+    {
+        $equipment = $this->masterRepo->getEquipments();
+        $data = $dataProvider->getEquipments($this->request, $equipment);
+        return $data;
     }
 
 }

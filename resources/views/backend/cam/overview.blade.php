@@ -53,7 +53,7 @@
                         <tr>
                             <td width="25%"><b>Name of Borrower</b></td>
                             <td width="25%">{{$arrBizData->biz_entity_name}}</td>
-                            <td><b>Contact Person of Key Personal</b></td>
+                            <td><b>Key Management Person</b></td>
                             <td> 
                                 <select class="form-control" name="contact_person">
                                 <option  value="">Select</option>
@@ -281,8 +281,6 @@
 @section('jscript')
 <script src="{{url('common/js/typehead.js')}}"></script>
 
-<script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
-
 <script type="text/javascript">
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
@@ -292,36 +290,11 @@
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
-    CKEDITOR.replace('contigent_observations', {
-        fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220
-    });
-    CKEDITOR.replace('risk_comments', {
-        fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220
-    });
-    CKEDITOR.replace('anchor_risk_comments', {
-        fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220
-    });
-    CKEDITOR.replace('profile_of_company', {
-        fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220
-    });
-    CKEDITOR.replace('rating_rational', {
-        fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220
-    });
+      CKEDITOR.replace('contigent_observations');
+      CKEDITOR.replace('risk_comments');
+      CKEDITOR.replace('anchor_risk_comments');
+      CKEDITOR.replace('profile_of_company');
+      CKEDITOR.replace('rating_rational');
 
     function showSecurityComment(val){
         if($("#othersCheckbox").is(':checked')){

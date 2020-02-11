@@ -116,17 +116,18 @@ class CibilApi {
 
    
 
-   public function getCommercialCibilAcknowledgement($arrOwnerData) {
+   public function getCommercialCibilAcknowledgement($arrRequest) {
+
         try {
             $api_url = 'Inquiry/Inquiry/CPUAction.action';
             $options = [
                             'headers' => [
-                                        'inquiryXML' => $this->prepareRequestXmlForAcknowledgement($arrOwnerData),
+                                        'inquiryXML' => $this->prepareRequestXmlForAcknowledgement($arrRequest),
                                         'userId ' => 'crif1_cpu_prd@capsavefinance.com',
                                         'password' => 'D261F46CFA7E1C0DB5A80FB02269668E1A3F05B9',
                             ]
                        ];
-               //dd($options);       
+              // dd($options);       
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
             return $response;
@@ -138,7 +139,7 @@ class CibilApi {
 
 
 
-     public function prepareRequestXmlForAcknowledgement($arrOwnerData) {
+     public function prepareRequestXmlForAcknowledgement($arrRequest) {
         $requestXml = '<?xml version="1.0" encoding="UTF-8"?>
                           <REQUEST-REQUEST-FILE>
                              <HEADER-SEGMENT>
@@ -170,16 +171,16 @@ class CibilApi {
                              </HEADER-SEGMENT>
                              <INQUIRY>
                                 <COMM-APPLICANT-SEGMENT>
-                                   <BORROWER-NAME>'.$arrOwnerData->first_name.' '.$arrOwnerData->last_name.'</BORROWER-NAME>
+                                   <BORROWER-NAME>'.$arrRequest['biz_name'].'</BORROWER-NAME>
                                    <LEGAL-CONSTITUTION>20</LEGAL-CONSTITUTION>
                                    <IDS>
                                       <ID>
                                          <TYPE>ID07</TYPE>
-                                         <VALUE>'.$arrOwnerData->pan_gst_hash.'</VALUE>
+                                         <VALUE>'.$arrRequest['pan_gst_hash'].'</VALUE>
                                       </ID>
                                       <ID>
                                          <TYPE>ID08</TYPE>
-                                         <VALUE>'.$arrOwnerData->biz_cin.'</VALUE>
+                                         <VALUE>'.$arrRequest['biz_cin'].'</VALUE>
                                       </ID>
                                    </IDS>
                                    <CLASS-OF-ACTIVITY-1>OTHER COMMUNITY, SOCIAL AND PERSONAL SERVICE ACTIVITIES</CLASS-OF-ACTIVITY-1>
@@ -193,7 +194,7 @@ class CibilApi {
                                 <COMM-ADDRESS-SEGMENT>
                                    <ADDRESS>
                                       <TYPE>D01</TYPE>
-                                      <ADDRESS-LINE>'.$arrOwnerData->owner_addr.'</ADDRESS-LINE>
+                                      <ADDRESS-LINE>'.$arrRequest['biz_address'].'</ADDRESS-LINE>
                                       
                                       <CITY>Mumbai</CITY>
                                       <STATE>MH</STATE>
@@ -222,12 +223,12 @@ return $requestXml;
     }  
 
 
-    public function getCommercialCibilData($arrOwnerData) {
+    public function getCommercialCibilData($arrRequest) {
         try {
             $api_url = 'Inquiry/Inquiry/CPUAction.action';
             $options = [
                             'headers' => [
-                                        'inquiryXML' => $this->prepareRequestXmlForIssue($arrOwnerData),
+                                        'inquiryXML' => $this->prepareRequestXmlForIssue($arrRequest),
                                         'userId ' => 'crif1_cpu_prd@capsavefinance.com',
                                         'password' => 'D261F46CFA7E1C0DB5A80FB02269668E1A3F05B9',
                             ]
@@ -241,9 +242,7 @@ return $requestXml;
     }
 
 
-  public function prepareRequestXmlForIssue($arrOwnerData) {
-    
-
+  public function prepareRequestXmlForIssue($arrRequest) {
         $requestXml = '<?xml version="1.0" encoding="UTF-8"?>
                           <REQUEST-REQUEST-FILE>
                              <HEADER-SEGMENT>
@@ -260,7 +259,7 @@ return $requestXml;
                                 <AUTH-FLG>N</AUTH-FLG>
                                 <AUTH-TITLE>USER</AUTH-TITLE>
                                 <MEMBER-PRE-OVERRIDE>N</MEMBER-PRE-OVERRIDE>
-                                <RES-FRMT>XML/HTML</RES-FRMT>
+                                <RES-FRMT>'.$arrRequest['resFormat'].'</RES-FRMT>
                                 <RES-FRMT-EMBD>N</RES-FRMT-EMBD>
                                 <LOS-NAME>TEST</LOS-NAME>
                                 <LOS-VENDER>TEST</LOS-VENDER>
@@ -275,9 +274,9 @@ return $requestXml;
                                 </CONSUMER>
                              </HEADER-SEGMENT>
                              <INQUIRY>
-                                <INQUIRY-UNIQUE-REF-NO>'.$arrOwnerData->inquiry_unique_ref_no.'</INQUIRY-UNIQUE-REF-NO>
+                                <INQUIRY-UNIQUE-REF-NO>'.$arrRequest['inquiry_unique_ref_no'].'</INQUIRY-UNIQUE-REF-NO>
                                 <REQUEST-DT-TM>24-08-2017 21:10:00</REQUEST-DT-TM>
-                                <REPORT-ID>'.$arrOwnerData->report_id.'</REPORT-ID>
+                                <REPORT-ID>'.$arrRequest['report_id'].'</REPORT-ID>
                              </INQUIRY>
                           </REQUEST-REQUEST-FILE>';
 

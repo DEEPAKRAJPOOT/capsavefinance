@@ -50,17 +50,16 @@ class ReviewerSummary extends Mailable
             'reviewerSummaryData'=> $reviewerSummaryData,
             'offerPTPQ' => $offerPTPQ
         ]);
+        // $loggerData = [
+        //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+        //         'email_to' => config('common.review_summ_mails'),
+        //         'email_type' => $this->func_name,
+        //         'name' => NULL,
+        //         'subject' => 'Reviewer Summary Detail',
+        //         'body' => $email,
+        // ];
 
         $email->subject('Reviewer Summary Detail');
-
-        $mailContent = [
-                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => config('common.review_summ_mails'),
-                'email_type' => $this->func_name,
-                'name' => NULL,
-                'subject' => 'Reviewer Summary Detail',
-                'body' => $email,
-        ];
 
         if($fileArray) {
             foreach($fileArray as $key=>$val) {
@@ -70,7 +69,7 @@ class ReviewerSummary extends Mailable
                     [
                         'as' => $val['file_name']
                     ]);
-                    $loggerData['file_path'][] = 'app/public/'.$val['file_path'];
+                    //$loggerData['file_path'][] = 'app/public/'.$val['file_path'];
                 }
             }
         }
@@ -83,12 +82,12 @@ class ReviewerSummary extends Mailable
                 [
                     'as' => $camFile['file_name']
                 ]);
-                $loggerData['file_path'][] = 'app/public/'.$val['file_path'];
+                //$loggerData['file_path'][] = 'app/public/'.$camFile['file_path'];
             }
         }
-        $filepath = implode('||', $loggerData['file_path']);
-        $loggerData['file_path'] = $filepath;
-        FinanceModel::logEmail($loggerData);
+        //$filepath = implode('||', $loggerData['file_path']);
+        //$loggerData['file_path'] = $filepath;
+        //FinanceModel::logEmail($loggerData);
         return $email;
     }
 }

@@ -95,6 +95,7 @@
                <br/>
                <form method="POST" action="{{route('save_bank_detail')}}">
                   <input type="hidden" name="app_id" value="{{$appId}}">  
+                  <input type="hidden" name="biz_id" value="{{$biz_id}}">  
                   <input type="hidden" name="bank_detail_id" value="{{$debtPosition->bank_detail_id ?? ''}}">  
                   @csrf
                   <div class="mt-4">
@@ -127,6 +128,21 @@
    process_url = '{{URL::route("process_banking_statement") }}';
    _token = "{{ csrf_token() }}";
 </script>
+<script type="text/javascript">
+    $("tr").each(function(){
+      var deleteTd = true;
+      target_tr = $(this);
+      target_tr.find('td').each(function() {
+        var thishtml = $(this).html();
+        if(thishtml !== "") {
+           deleteTd = false;
+        }
+      })
+      if (deleteTd) {
+        target_tr.remove();
+      }
+    })
+ </script>
 
 <script type="text/javascript">
    $(document).on('click', '.getAnalysis', function() {
@@ -229,7 +245,6 @@
          })
       }
 </script>
-<script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
 <script>
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
@@ -239,11 +254,6 @@
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
-CKEDITOR.replace('debt_position_comments', {
-    fullPage: true,
-    extraPlugins: 'docprops',
-    allowedContent: true,
-    height: 320
-  });
+ CKEDITOR.replace('debt_position_comments');
 </script>
 @endsection
