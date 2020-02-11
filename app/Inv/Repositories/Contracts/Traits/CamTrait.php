@@ -28,7 +28,7 @@ trait CamTrait
             $arrStaticData = array();
             $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
             $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quarter','4'=>'Months');
-            $arrStaticData['securityDepositType'] = array('1'=>'%','2'=>'INR');
+            $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
             $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
             $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
 
@@ -87,7 +87,7 @@ trait CamTrait
                 }
 
                 return [
-                    'arrCamData' =>$arrCamData ,
+                    'arrCamData' =>$arrCamData,
                     'arrBizData' => $arrBizData, 
                     'reviewerSummaryData' => $reviewerSummaryData,
                     'arrHygieneData' => $arrHygieneData,
