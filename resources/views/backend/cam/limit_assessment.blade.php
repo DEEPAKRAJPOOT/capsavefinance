@@ -26,7 +26,7 @@
                                 <div class="form-group INR">
                                     <label>Available Exposure</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure" disabled>
+                                    <input type="text" class="form-control form-control-sm number_format" name="available_exposure" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure" disabled>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +229,9 @@
                                                        <td width="17%"></td>
                                                        <td width="17%"></td>
                                                        <td width="16%">{{number_format($prgmLimit->limit_amt)}}</td>
-                                                       <td width="16%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button></td>
+                                                       <td width="16%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
+                                                       <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
+                                                       </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -243,12 +245,11 @@
                                                 <li class="col-md-2">Tenor(Months) <br> <b>{{$prgmOffer->tenor}}</b></li>
                                                 <li class="col-md-2">Processing Fee(%)<br> <b>{{$prgmOffer->processing_fee}}</b></li>
                                                 <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmOffer->ruby_sheet_xirr.' - '.$prgmOffer->cash_flow_xirr}}</b></li>
-                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}">Update</button></li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Update Offer"><i class="fa fa-edit"></i></button></li>
                                             @endforeach
                                             @else
                                                 <li class="col-md-10" style="text-align: center;">No offer found</li>
                                             @endif
-                                                <li class="col-md-12" style="text-align: center;"><button class="btn btn-success btn-sm add-offer" style="margin-top: 20px;" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
                                             </ul>
                                         </div>
                                     </div>
