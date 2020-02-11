@@ -168,10 +168,12 @@
                                                             foreach($addl_sec_arr as $k=>$v){
                                                                 $add_sec_arr .= config('common.addl_security')[$v].', ';
                                                             }
-                                                            $add_sec_arr .= ' <b>Comment</b>:  '.$termOffer->comment;
+                                                            if($termOffer->comment){
+                                                                $add_sec_arr .= ' <b>Comment</b>:  '.$termOffer->comment;
+                                                            }
                                                         }
                                                         @endphp 
-                                                        {!! $add_sec_arr !!}
+                                                        {!! trim($add_sec_arr,', ') !!}
                                                     </td>
                                                     <td></td>
                                                     <td></td>
@@ -207,7 +209,7 @@
                                                     <td><b>Facility Type: </b></td>
                                                     <td>Lease Loan</td>
                                                     <td><b>Apply Loan Amount: </b> </td>
-                                                    <td>{{$leaseOffer->prgm_limit_amt}}</td>
+                                                    <td>&#8377; {{number_format($leaseOffer->prgm_limit_amt)}}</td>
                                                     <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($leaseOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($leaseOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
                                                 </tr>
                                                 
@@ -222,7 +224,7 @@
                                                 <tr>
                                                     <td></td>
                                                     <td><b>Security Deposit: </b></td>
-                                                    <td>{{$leaseOffer->security_deposit}}</td>
+                                                    <td>{{(($leaseOffer->security_deposit_type == 1)?'₹ ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}}</td>
                                                     <td><b>Rental Frequency: </b></td>
                                                     <td>{{(($leaseOffer->rental_frequency == 1)?'Yearly':(($leaseOffer->rental_frequency == 2)? 'Bi-Yearly':(($leaseOffer->rental_frequency == 3)? 'Quaterly': 'Monthly')))}}</td>
                                                     <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($leaseOffer->created_at)->format('d-m-Y')}}</td>
@@ -235,13 +237,13 @@
                                                             @foreach ($leaseOffer->offerPTPQ as $ok => $ov)
                                                                {!!isset($ov->ptpq_from) ? '<b>From Period:</b> '.$ov->ptpq_from : ''!!}
                                                                {!!isset($ov->ptpq_to) ? '<b>&nbsp;&nbsp;&nbsp;To Period:</b> '.$ov->ptpq_to : ''!!}
-                                                               {!!isset($ov->ptpq_rate) ? '<b>&nbsp;&nbsp;&nbsp;Rate:</b> '.$ov->ptpq_rate : ''!!}
+                                                               {!!isset($ov->ptpq_rate) ? '<b>&nbsp;&nbsp;&nbsp;Rate:</b> &#8377; '.$ov->ptpq_rate : ''!!}
                                                                <br/>
                                                             @endforeach 
                                                          @endif
                                                     </td>
                                                     <td><b>XIRR (%): </b></td>
-                                                    <td>Ruby Sheet : {{$leaseOffer->ruby_sheet_xirr}}<br/>Cash Flow :{{$leaseOffer->cash_flow_xirr}}</td>
+                                                    <td>Ruby Sheet : {{$leaseOffer->ruby_sheet_xirr}}%<br/>Cash Flow :{{$leaseOffer->cash_flow_xirr}}%</td>
                                                     <td></td>
                                                 </tr>
                                                 <tr>
@@ -255,10 +257,12 @@
                                                             foreach($addl_sec_arr as $k=>$v){
                                                                 $add_sec_arr .= config('common.addl_security')[$v].', ';
                                                             }
-                                                            $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
+                                                            if($leaseOffer->comment){
+                                                                $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
+                                                            }
                                                         }
                                                         @endphp 
-                                                        {!! $add_sec_arr !!}
+                                                        {!! trim($add_sec_arr,', ') !!}
                                                     </td>
                                                     <td></td>
                                                     <td></td>
