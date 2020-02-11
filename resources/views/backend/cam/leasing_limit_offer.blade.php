@@ -44,8 +44,9 @@
         </div>
 
         <div class="col-md-6">
-          <div class="form-group ">
-            <label for="txtPassword" ><b>Sub Limit</b></label> 
+          <div class="form-group INR">
+            <label for="txtPassword" ><b>Sub Limit</b></label>
+            <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a> 
             <input type="text" name="sub_limit" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Sub Limit" maxlength="15">
           </div>
         </div>
@@ -143,10 +144,11 @@
                         @endif
                         <input type="text" name="ptpq_to[]" class="form-control" value="{{(int)$ptpq->ptpq_to}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 INR">
                         @if($loop->first)
                             <label for="txtPassword"><b>Rate</b></label>
                         @endif
+                        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="6">
                     </div>
                     <div class="col-md-2 center">
@@ -168,8 +170,9 @@
                     <label for="txtPassword"><b>To Period</b></label>
                         <input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 INR">
                     <label for="txtPassword"><b>Rate</b></label>
+                        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="Rate" maxlength="5">
                     </div>
                     <div class="col-md-2 ">
@@ -477,7 +480,8 @@
             '<div class="col-md-3">'+
                 '<input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\\d]/,\'\')">'+
             '</div>'+
-            '<div class="col-md-4">'+
+            '<div class="col-md-4 INR">'+
+                '<a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                 '<input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="PTPQ Rate" maxlength="6">'+
             '</div>'+
             '<div class="col-md-2 center">'+
