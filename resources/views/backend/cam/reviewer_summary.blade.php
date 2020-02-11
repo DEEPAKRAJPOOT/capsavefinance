@@ -23,7 +23,7 @@
             <div class="row">
                <div class="col-md-12">
                      <h4><small>Cover Note</small></h4>
-                     <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{{isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : ''}}</textarea>
+                     <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{!!isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : ''!!}</textarea>
                </div>
                <div class="col-md-12 mt-4">
                      <h4><small>Deal Structure:</small></h4>
@@ -417,7 +417,7 @@
                         <tbody>
                            <tr role="row">
                                  <td class="">
-                                    <textarea  name="recommendation" class="form-control form-control-sm" cols="3" rows="3">{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}}</textarea>
+                                    <textarea id="recommendation"  name="recommendation" class="form-control form-control-sm" cols="3" rows="3">{!!isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''!!}</textarea>
                                  </td>
                            </tr>
                         </tbody>
@@ -448,7 +448,8 @@
    $(document).ready(function(){
       $("#cover_note").focus();
    });
-
+   CKEDITOR.replace('cover_note');
+   CKEDITOR.replace('recommendation');
    $(document).on('click', '.getAnalysis', function() {
       data = {appId, _token};
       $.ajax({
