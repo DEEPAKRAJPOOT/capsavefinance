@@ -22,6 +22,8 @@ trait CamTrait
 {
     protected function getCamReportData(Request $request){
         try{
+            $preCondArr = [];
+            $postCondArr = [];
             $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
             $arrRequest['app_id'] = $appId = $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
@@ -77,6 +79,16 @@ trait CamTrait
                 $currStageCode = $currStage->stage_code; 
                 /*end code for approve button */
 
+                if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+                    $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                                    ->where('is_active', 1)->get();
+                    $dataPrePostCond = $dataPrePostCond ? $dataPrePostCond->toArray() : [];
+                    if(!empty($dataPrePostCond)) {
+                      $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCond"));
+                      $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
+                    }
+                } 
+                
                 return [
                     'arrCamData' =>$arrCamData ,
                     'arrBizData' => $arrBizData, 
@@ -95,6 +107,8 @@ trait CamTrait
                     'arrStaticData' => $arrStaticData,
                     'approveStatus' => $approveStatus,
                     'currStageCode' => $currStageCode,
+                    'preCondArr' => $preCondArr,
+                    'postCondArr' => $postCondArr
                 ];
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
