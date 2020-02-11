@@ -35,15 +35,16 @@
                </tr>
             </thead>
             <tbody>
+              
+               
                <tr role="row" class="odd">
-                  <td class=""><b>Facility Type</td>
-                  <td class="">Lease</td>
+                  <td class=""><b>Equipment Type</b></td>
+                  <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
                </tr>
                <tr role="row" class="odd">
-                  <td class=""><b>Limit</b></td>
-                  <td class=""> {{isset($leaseOffer->programLimit) ? $leaseOffer->programLimit->limit_amt : ''}}
+                  <td class=""><b>Limit Of The Equipment</b></td>
+                  <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? \Helpers::formatCurreny($leaseOffer->prgm_limit_amt)  : '0' !!} 
                         </td>
-                  
                </tr>
             
                <tr role="row" class="odd">
@@ -51,26 +52,21 @@
                   <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                </tr>
                <tr role="row" class="odd">
-                  <td class=""><b>Equipment Type</b></td>
-                  <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
-               </tr>
-               <tr role="row" class="odd">
                   <td class=""><b>Security Deposit</b></td>
-                  <td class="">{{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}}</td>
+                  <td class="">{{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {{isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : ''}} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}} </td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Rental Frequency</b></td>
-                  <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}</td>
+                  <td class="">{{isset($leaseOffer->rental_frequency) ? 'Value '.$arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}   </td>
                </tr>
                <tr role="row" class="odd">
-                  <td class=""><b>PTPF</b></td>
+                  <td class=""><b>Pricing Per Thousand</b></td>
                   <td class="">
                      @php 
                         $i = 1;
                         if(!empty($leaseOffer->offerPtpq)){
                         $total = count($leaseOffer->offerPtpq);
                      @endphp   
-
                         @foreach($leaseOffer->offerPtpq as $key => $arr) 
 
                               @if ($i > 1 && $i < $total)
@@ -87,7 +83,6 @@
                         @php 
                            }
                         @endphp 
-
                   </td>
                </tr>
                <tr role="row" class="odd">
@@ -99,22 +94,24 @@
                <tr role="row" class="odd">
                   <td class=""><b>Additional Security</b></td>
                   <td class="">
-                     @if(isset($leaseOffer->addl_security))
-                     @switch($leaseOffer->addl_security)
-                        @case(1) BG
-                           @break
-                        @case(2) FD
-                           @break
-                        @case(3) MF
-                           @break
-                        @case(4) Others {{isset($leaseOffer->comment) ? $leaseOffer->comment : ''}}
-                           @break
-                     @endswitch
-                     @endif
+                     
+
+
+                     @php
+                       $add_sec_arr = '';
+                       $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                       foreach($addl_sec_arr as $k=>$v){
+                           if($v == 4){
+                               $add_sec_arr .= ', '.config('common.addl_security')[$v];
+                               $add_sec_arr .= ' - <b>Comment</b>:  '.$leaseOffer->comment;
+                           }else{
+                               $add_sec_arr .= ', '.config('common.addl_security')[$v];
+                           }
+                       }
+                       @endphp 
+                       {!! trim($add_sec_arr, ', ') !!}
                   </td>
                </tr>
-
-              
             </tbody>
          </table>
       </div>

@@ -26,8 +26,12 @@ trait CamTrait
             $arrRequest['app_id'] = $appId = $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
             $arrStaticData = array();
-            $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quaterly','4'=>'Monthly');
+            $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
             $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quarter','4'=>'Months');
+            $arrStaticData['securityDepositType'] = array('1'=>'%','2'=>'INR');
+            $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
+            $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
+
             $active_json_filename = $json_files['curr_file'];
             if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
                       $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
@@ -50,7 +54,6 @@ trait CamTrait
                 }
                // dd(getTotalFinanceData($financeData['2017']));
                 $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
-
                 $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
                 $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
                 $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
