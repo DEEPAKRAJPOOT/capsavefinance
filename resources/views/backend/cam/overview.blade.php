@@ -292,82 +292,11 @@
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
-
-
-    CKEDITOR.replace('contigent_observations', {
-        /*fullPage: true,
-        extraPlugins: 'docprops',
-        allowedContent: true,
-        height: 220,*/
-        extraPlugins: 'easyimage',
-        height: 220,
-        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
-        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
-        easyimage_toolbar: [
-            'EasyImageFull',
-            'EasyImageSide',
-            'EasyImageAlignLeft',
-            'EasyImageAlignRight',
-            'EasyImageAlignCenter',
-            'EasyImageAlt',
-        ]
-    });
-    CKEDITOR.replace('risk_comments', {
-        extraPlugins: 'easyimage',
-        height: 220,
-        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
-        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
-        easyimage_toolbar: [
-            'EasyImageFull',
-            'EasyImageSide',
-            'EasyImageAlignLeft',
-            'EasyImageAlignRight',
-            'EasyImageAlignCenter',
-            'EasyImageAlt',
-        ]
-    });
-    CKEDITOR.replace('anchor_risk_comments', {
-        extraPlugins: 'easyimage',
-        height: 220,
-        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
-        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
-        easyimage_toolbar: [
-            'EasyImageFull',
-            'EasyImageSide',
-            'EasyImageAlignLeft',
-            'EasyImageAlignRight',
-            'EasyImageAlignCenter',
-            'EasyImageAlt',
-        ]
-    });
-    CKEDITOR.replace('profile_of_company', {
-        extraPlugins: 'easyimage',
-        height: 220,
-        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
-        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
-        easyimage_toolbar: [
-            'EasyImageFull',
-            'EasyImageSide',
-            'EasyImageAlignLeft',
-            'EasyImageAlignRight',
-            'EasyImageAlignCenter',
-            'EasyImageAlt',
-        ]
-    });
-    CKEDITOR.replace('rating_rational', {
-        extraPlugins: 'easyimage',
-        height: 220,
-        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
-        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
-        easyimage_toolbar: [
-            'EasyImageFull',
-            'EasyImageSide',
-            'EasyImageAlignLeft',
-            'EasyImageAlignRight',
-            'EasyImageAlignCenter',
-            'EasyImageAlt',
-        ]
-    });
+      CKEDITOR.replace('contigent_observations');
+      CKEDITOR.replace('risk_comments');
+      CKEDITOR.replace('anchor_risk_comments');
+      CKEDITOR.replace('profile_of_company');
+      CKEDITOR.replace('rating_rational');
 
     function showSecurityComment(val){
         if($("#othersCheckbox").is(':checked')){
