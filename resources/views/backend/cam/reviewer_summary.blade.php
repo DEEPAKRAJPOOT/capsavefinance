@@ -123,7 +123,7 @@
                      </table>
                      @if(isset($preCondArr) && count($preCondArr)>0)
                         @foreach($preCondArr as $prekey =>$preval)
-                        <div class="input-group control-group after-add-more">
+                        <div class="input-group control-group">
                            <div class="input-group-btn"> 
                               <input type="text" name="pre_cond[]" value="{{$preval['cond']}}" class="form-control form-control-sm">
                            </div>
@@ -176,7 +176,7 @@
                      </table>
                      @if(isset($postCondArr) && count($postCondArr)>0)
                         @foreach($postCondArr as $postkey =>$postval)
-                        <div class="input-group control-group after-add-more-post">
+                        <div class="input-group control-group">
                            <div class="input-group-btn"> 
                               <input type="text" name="post_cond[]" value="{{$postval['cond']}}" class="form-control form-control-sm">
                            </div>
