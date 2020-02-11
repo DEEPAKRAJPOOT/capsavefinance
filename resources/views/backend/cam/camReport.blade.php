@@ -6,9 +6,9 @@
             <tr role="row">
                <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Group</th>
                <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Borrower</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit(Mn)</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure(Mn)</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure(Mn)</th>
             </tr>
          </thead>
          <tbody>
@@ -25,6 +25,7 @@
 
    <div class="data mt-4">
       <h2 class="sub-title bg">Deal Structure</h2>
+      @foreach($leaseOfferData as $key=>$leaseOffer)
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
@@ -40,43 +41,44 @@
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Limit</b></td>
-                  <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
+                  <td class=""> {{isset($leaseOffer->programLimit) ? $leaseOffer->programLimit->limit_amt : ''}}
                         </td>
                   
                </tr>
+            
                <tr role="row" class="odd">
                   <td class=""><b>Tenor (Months)</b></td>
-                  <td class="">{{isset($leaseOfferData->tenor) ? $leaseOfferData->tenor : ''}}</td>
+                  <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Equipment Type</b></td>
-                  <td class="">{{isset($leaseOfferData->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->equipment_type_id)['equipment_name']) : ''}}</td>
+                  <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Security Deposit</b></td>
-                  <td class="">{{isset($leaseOfferData->security_deposit) ? $leaseOfferData->security_deposit : ''}}</td>
+                  <td class="">{{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Rental Frequency</b></td>
-                  <td class="">{{isset($leaseOfferData->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOfferData->rental_frequency] : ''}}</td>
+                  <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>PTPF</b></td>
                   <td class="">
                      @php 
                         $i = 1;
-                        if(!empty($leaseOfferData->offerPtpq)){
-                        $total = count($leaseOfferData->offerPtpq);
+                        if(!empty($leaseOffer->offerPtpq)){
+                        $total = count($leaseOffer->offerPtpq);
                      @endphp   
 
-                        @foreach($leaseOfferData->offerPtpq as $key => $arr) 
+                        @foreach($leaseOffer->offerPtpq as $key => $arr) 
 
                               @if ($i > 1 && $i < $total)
                               ,
                               @elseif ($i > 1 && $i == $total)
                                  and
                               @endif
-                              Rs. {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOfferData->rental_frequency]}}
+                              Rs. {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
 
                               @php 
                                  $i++;
@@ -90,30 +92,34 @@
                </tr>
                <tr role="row" class="odd">
                   <td class="" valign="top"><b>XIRR</b></td>
-                  <td class="" valign="top">Ruby Sheet : {{isset($leaseOfferData->ruby_sheet_xirr) ? $leaseOfferData->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOfferData->cash_flow_xirr) ? $leaseOfferData->cash_flow_xirr : ''}}%
+                  <td class="" valign="top">Ruby Sheet : {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
                   </td>
                </tr>
                
                <tr role="row" class="odd">
                   <td class=""><b>Additional Security</b></td>
                   <td class="">
-                     @if(isset($leaseOfferData->addl_security))
-                     @switch($leaseOfferData->addl_security)
+                     @if(isset($leaseOffer->addl_security))
+                     @switch($leaseOffer->addl_security)
                         @case(1) BG
                            @break
                         @case(2) FD
                            @break
                         @case(3) MF
                            @break
-                        @case(4) Others {{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}
+                        @case(4) Others {{isset($leaseOffer->comment) ? $leaseOffer->comment : ''}}
                            @break
                      @endswitch
                      @endif
                   </td>
                </tr>
+
+              
             </tbody>
          </table>
       </div>
+   @endforeach
+
    </div>
 
    <div class="data mt-4">
@@ -223,96 +229,27 @@
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">The proposed deal is approved/declined/deferred subject to above conditions and any other conditions mentioned below.</h2>
+      <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+         <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Recommended By</th>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="3" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="75%">Investment Committee Members</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Parameter <br/> Borrower Vintage &amp; Constitution</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Deviation</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Remarks</th>
                </tr>
             </thead>
             <tbody>
-               <tr role="row" >
-                  <td align="center">
-                     <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
-                           @php 
-                              $i=0;
-                           @endphp
-                           @while(!empty($arrCM[$i])) 
-                              <tr>
-                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrCM[$i]->assignee}}</th>
-                                 @php $i++; @endphp
-                              </tr>
-                        @endwhile
-                     </table> 
-                  </td>
-                  <td align="center" colspan="3">
-                     <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
-                           @php 
-                              $i=0;
-                           @endphp
-                           @if(!empty($arrApproverData))
-                              @while(!empty($arrApproverData[$i])) 
-                                 <tr>
-                                       <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}}</th>
-                                       @php $i++; @endphp
-                                       @if (!empty($arrApproverData[$i]))
-                                          <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}}</th>
-                                          @php $i++; @endphp
-                                       @endif
-                                 </tr>
-                              @endwhile
-                           @endif
-                     </table>
-                  </td>
-               </tr>
-            </tbody>
-         </table>
-      </div>
-   </div>
-
-   <div class="data mt-4">
-      <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
-         <table width="100%" id="invoice_history" class="table  no-footer overview-table" role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
-            <thead>
                <tr>
-                  <th width="30%">Parameter</th>
-                  <th width="30%">Criteria</th>
-                  <th width="10%">Deviation</th>
-                  <th width="30%">Remarks</th>
-               </tr>
-               <tr>
-                  <th>Borrower Vintage &amp; Constitution</th>
-                  <th></th>
-                  <th></th>					  
-                  <th></th>
-               </tr>
-            </thead>
-            <tbody width="100%">
-               <tr>
-                  <td width="30%">Constitution</td>
-                  <td width="30%">
-                     <p class="m-0">
-                        - Registered Partnership Firm<br>
-                        - Private Limited Company<br>
-                        - Public Limited Company<br>
-                        - Limited Liability Partnership
-                     </p>
-                  </td>
-                  <td width="10%">No</td>
-                  <td width="30%">{{isset($arrEntityData->name) ? $arrEntityData->name : ''}}</td>
+                  <td>Constitution</td>
+                  <td>- Registered Partnership Firm<br/> - Private Limited Company<br/> - Public Limited Company<br/> - Limited Liability Partnership </td>
+                  <td>No</td>
+                  <td>{{isset($arrEntityData->name) ? trim($arrEntityData->name) : ''}}</td>
                </tr>
                <tr>
                   <td>Vintage</td>
-                  <td>
-                     <p class="m-0">
-                        - Minimum 3 years of vintage in relevant business<br>
-                        - Parent or group company with requisite vintage<br>
-                        - Key promoter with 5 years of relevant vintage
-                     </p>
-                  </td>
+                  <td> - Minimum 3 years of vintage in relevant business<br/> - Parent or group company with requisite vintage<br/> - Key promoter with 5 years of relevant vintage </td>
                   <td>No</td>
                   <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
                </tr>
@@ -323,37 +260,37 @@
                   <td>CFPL Defaulter List</td>
                   <td>No</td>
                   <td>{{isset($arrHygieneData->cfpl_default_check) && $arrHygieneData->cfpl_default_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->cfpl_default_cmnt) ? $arrHygieneData->cfpl_default_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->cfpl_default_cmnt) ? trim($arrHygieneData->cfpl_default_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>RBI Defaulter list</td>
                   <td>No</td>
                   <td>{{isset($arrHygieneData->cibil_check) && $arrHygieneData->cibil_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->rbi_willful_defaulters) ? $arrHygieneData->rbi_willful_defaulters : ''}}</td>
+                  <td>{{isset($arrHygieneData->rbi_willful_defaulters) ? trim($arrHygieneData->rbi_willful_defaulters) : ''}}</td>
                </tr>
                <tr>
                   <td>CDR/ BIFR/ OTS/ Restructuring</td>
                   <td>No</td>
                   <td>{{isset($arrHygieneData->cdr_check) && $arrHygieneData->cdr_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->cdr_cmnt) ? $arrHygieneData->cdr_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->cdr_cmnt) ? trim($arrHygieneData->cdr_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>CIBIL</td>
                   <td>No Adverse Remarks</td>
                   <td>{{isset($arrHygieneData->cibil_defaulters_chk) && $arrHygieneData->cibil_defaulters_chk == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->comment) ? $arrHygieneData->comment : ''}}</td>
+                  <td>{{isset($arrHygieneData->comment) ?trim($arrHygieneData->comment) : ''}}</td>
                </tr>
                <tr>
                   <td>Watchout Investors</td>
                   <td>No Adverse Remarks</td>
                   <td>{{isset($arrHygieneData->watchout_investors_chk) && $arrHygieneData->watchout_investors_chk == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->watchout_investors) ? $arrHygieneData->watchout_investors : ''}}</td>
+                  <td>{{isset($arrHygieneData->watchout_investors) ? trim($arrHygieneData->watchout_investors) : ''}}</td>
                </tr>
                <tr>
                   <td>Google Search (Negative searches)</td>
                   <td>No </td>
                   <td>{{isset($arrHygieneData->neg_news_report_check) && $arrHygieneData->neg_news_report_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->neg_news_report_cmnt) ? $arrHygieneData->neg_news_report_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->neg_news_report_cmnt) ? trim($arrHygieneData->neg_news_report_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td colspan="4" class="blank">&nbsp;</td>
@@ -362,19 +299,19 @@
                   <td>Satisfactory contact point verification</td>
                   <td>Yes </td>
                   <td>{{isset($arrHygieneData->contact_point_check) && $arrHygieneData->contact_point_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->contact_point_cmnt) ? $arrHygieneData->contact_point_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->contact_point_cmnt) ? trim($arrHygieneData->contact_point_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>Satisfactory banker reference</td>
                   <td>Yes </td>
                   <td>{{isset($arrHygieneData->bank_ref_check) && $arrHygieneData->bank_ref_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->bank_ref_cmnt) ? $arrHygieneData->bank_ref_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->bank_ref_cmnt) ? trim($arrHygieneData->bank_ref_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>Satisfactory trade reference</td>
                   <td>Yes </td>
                   <td>{{isset($arrHygieneData->trade_ref_check) && $arrHygieneData->trade_ref_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->trade_ref_cmnt) ? $arrHygieneData->trade_ref_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->trade_ref_cmnt) ? trim($arrHygieneData->trade_ref_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td colspan="4"  class="blank">&nbsp;</td>
@@ -383,82 +320,72 @@
                   <td>Adjusted Tangible Net Worth</td>
                   <td>Positive for last 2 financial years </td>
                   <td>{{isset($finacialDetails->adj_net_worth_check) && $finacialDetails->adj_net_worth_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($finacialDetails->adj_net_worth_cmnt) ? $finacialDetails->adj_net_worth_cmnt : ''}}</td>
+                  <td>{{isset($finacialDetails->adj_net_worth_cmnt) ? trim($finacialDetails->adj_net_worth_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>Cash Profit</td>
-                  <td>Positive for 2 out of last 3 financial years(positive in last year)</td>
+                  <td>Positive for 2 out of last 3 financial years <br>(positive in last year)</td>
                   <td>{{isset($finacialDetails->cash_profit_check) && $finacialDetails->cash_profit_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($finacialDetails->cash_profit_cmnt) ? $finacialDetails->cash_profit_cmnt : ''}}</td>
+                  <td>{{isset($finacialDetails->cash_profit_cmnt) ? trim($finacialDetails->cash_profit_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>DSCR</td>
                   <td>&gt;1.2X</td>
                   <td>{{isset($finacialDetails->dscr_check) && $finacialDetails->dscr_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($finacialDetails->dscr_cmnt) ? $finacialDetails->dscr_cmnt : ''}}</td>
+                  <td>{{isset($finacialDetails->dscr_cmnt) ? trim($finacialDetails->dscr_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>Debt/EBIDTA</td>
                   <td>&lt;5X</td>
                   <td>{{isset($finacialDetails->debt_check) && $finacialDetails->debt_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($finacialDetails->debt_cmnt) ? $finacialDetails->debt_cmnt : ''}}</td>
+                  <td>{{isset($finacialDetails->debt_cmnt) ? trim($finacialDetails->debt_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td colspan="4" class="blank">
-                     <h5 style="margin:0px;">Other</h5>
+                     <h5>Other</h5>
                   </td>
                </tr>
                <tr>
                   <td>Negative Industry Segment</td>
                   <td>No</td>
                   <td>{{isset($arrHygieneData->neg_industry_check) && $arrHygieneData->neg_industry_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->neg_industry_cmnt) ? $arrHygieneData->neg_industry_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->neg_industry_cmnt) ? trim($arrHygieneData->neg_industry_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>Exposure to sensitive sectors</td>
                   <td>No</td>
                   <td>{{isset($arrHygieneData->senstive_sector_check) && $arrHygieneData->senstive_sector_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->senstive_sector_cmnt) ? $arrHygieneData->senstive_sector_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->senstive_sector_cmnt) ? trim($arrHygieneData->senstive_sector_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>Sensitive geography/region/area</td>
                   <td>No</td>
                   <td>{{isset($arrHygieneData->senstive_region_check) && $arrHygieneData->senstive_region_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->senstive_region_cmnt) ? $arrHygieneData->senstive_region_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->senstive_region_cmnt) ? trim($arrHygieneData->senstive_region_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>Politically exposed person</td>
                   <td>No</td>
                   <td>{{isset($arrHygieneData->politically_check) && $arrHygieneData->politically_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->pol_exp_per_cmnt) ? $arrHygieneData->pol_exp_per_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->pol_exp_per_cmnt) ? trim($arrHygieneData->pol_exp_per_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>KYC risk profile</td>
-                  <td>  
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'High' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }}
-                  </td>
-                  <td>
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'Highf' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }}
-                        {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }}
-                  </td>
-                  <td>{{isset($arrHygieneData->kyc_risk_cmnt) ? $arrHygieneData->kyc_risk_cmnt : ''}}</td>
+                  <td>{{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'High' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }} </td>
+                  <td>{{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'High' ? 'Highf' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Med' ?  'Medium' : ''}} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'Low' ? 'Low' : '' }} {{ isset($arrHygieneData->kyc_risk_check) && $arrHygieneData->kyc_risk_check == 'No' ? 'No' : '' }} </td>
+                  <td>{{isset($arrHygieneData->kyc_risk_cmnt) ? trim($arrHygieneData->kyc_risk_cmnt) : ''}}</td>
                </tr>
                <tr>
                   <td>UNSC List</td>
                   <td>No</td>
                   <td>{{isset($arrHygieneData->unsc_check) && $arrHygieneData->unsc_check == 'Yes' ? 'Yes' : 'No'}}</td>
-                  <td>{{isset($arrHygieneData->unsc_cmnt) ? $arrHygieneData->unsc_cmnt : ''}}</td>
+                  <td>{{isset($arrHygieneData->unsc_cmnt) ? trim($arrHygieneData->unsc_cmnt) : ''}}</td>
                </tr>
             </tbody>
          </table>
       </div>
    </div>
-      
+
    <div class="data mt-4">
       <h2 class="sub-title bg">Approval Criteria for IC</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
@@ -549,10 +476,12 @@
             <tbody>
             @if(!empty($arrOwnerData))
                @foreach($arrOwnerData as $key => $arrData)
+               @if ($arrData->gender != '3')
                <tr>
                   <td>{{$arrData->first_name}}</td>
                   <td>{{$arrData->designation}}</td>
                </tr>
+               @endif
                @endforeach
             @endif  
                
@@ -570,12 +499,12 @@
             <tbody>
             @if(!empty($arrOwnerData))
                   @foreach($arrOwnerData as $key => $arrData)
-                     @if ($arrData->is_promoter)
+                  @if ($arrData->gender == '3' || $arrData->is_promoter)
                         <tr>
                            <td>{{$arrData->first_name}}</td>
                            <td>{{$arrData->share_per}}</td>
                         </tr>
-                     @endif
+                  @endif
                   @endforeach
             @endif
             </tbody>
@@ -732,5 +661,69 @@
          <p>{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}} </p>
       </div>
    </div>
-         
+
+   <div class="data mt-4">
+      <h2 class="sub-title bg">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</h2>
+      <div class="pl-4 pr-4 pb-4 pt-2">
+         <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+            <thead>
+               <tr>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Recommended By</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="3" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="75%">Investment Committee Members</th>
+               </tr>
+            </thead>
+            <tbody>
+               <tr role="row" >
+                  <td align="center">
+                     <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
+                           @php 
+                              $i=0;
+                           @endphp
+                           @while(!empty($arrCM[$i])) 
+                              <tr>
+                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrCM[$i]->assignee}}</th>
+                                 @php $i++; @endphp
+                              </tr>
+                        @endwhile
+                     </table> 
+                  </td>
+                  <td align="center" colspan="3">
+                     <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
+                           @php 
+                              $i=0;
+                              $j= 0;
+                              $arrApproverDataCount = count($arrApproverData);
+                           @endphp
+                           @if(!empty($arrApproverData))
+                              @while(!empty($arrApproverData[$i])) 
+                                 <tr>
+                                       <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}} @if ($arrApproverData[$i]->status == 1) <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp @endif 
+                                       <span style="font-size: 11px;">Approved at </br>{{ \Carbon\Carbon::parse($arrApproverData[$i]->updated_at)->format('h:i A, j F, Y')}}
+
+                                       </span>
+                                       </th>
+                                       @php $i++; @endphp
+                                       @if (!empty($arrApproverData[$i]))
+                                          <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}} @if ($arrApproverData[$i]->status == 1) <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp @endif
+                                             <span style="font-size: 11px;">Approved at </br>{{ \Carbon\Carbon::parse($arrApproverData[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                          </th>
+                                          @php $i++; @endphp
+                                       @endif
+                                 </tr>
+                              @endwhile
+                           @endif
+                     </table>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+   </div>
+      
+
+<script>
+if('{{$arrApproverDataCount}}' ==  '{{$j}}' && '{{$arrApproverDataCount}}' != 0){
+   document.getElementById("isApproved").textContent += "approved";
+}
+</script>         
  <!-- End PDF Section -->

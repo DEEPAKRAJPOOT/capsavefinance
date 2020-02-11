@@ -81,7 +81,7 @@ class CibilController extends Controller
 
                                if($createBizApi){
                                     BizOwner::where('biz_owner_id', $biz_owner_id)->update(['cibil_score'=>$cibilScore ? $cibilScore : NULL, 'is_cibil_pulled' =>1]);
-                                     return response()->json(['message' =>'CIBIL score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
+                                     return response()->json(['message' =>'Bureau score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
                                } 
                                else 
                                {
@@ -104,10 +104,10 @@ class CibilController extends Controller
         $biz_owner_id = $request->get('biz_owner_id');
         $arrData  = BizApi::getPromoterCibilData($biz_owner_id);
         if(empty($arrData)){
-                return response()->json(['message' =>'Error','status' => 0, 'cibilScoreData' => 'Please Pull the CIBIL Score to view the report.']);
+                return response()->json(['message' =>'Error','status' => 0, 'cibilScoreData' => 'Please Pull the Bureau Score to view the report.']);
         }else{
                 $arrCibilScoreData = $arrData['res_file'];
-                return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'cibilScoreData' => $arrCibilScoreData]);
+                return response()->json(['message' =>'Bureau score pull successfully','status' => 1, 'cibilScoreData' => $arrCibilScoreData]);
        }
     }
 
@@ -204,7 +204,7 @@ class CibilController extends Controller
 
                                                if($createBizApi){
                                                      Business::where('biz_id', $biz_id)->update(['cibil_score'=>$cibilScore ? $cibilScore : NULL, 'is_cibil_pulled' =>1]);
-                                                     return response()->json(['message' =>'CIBIL score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
+                                                     return response()->json(['message' =>'Bureau score pulled successfully.','status' => 1, 'value' => $createApiLog['biz_api_log_id'], 'cibilScore' => $cibilScore]);
                                                } 
                                                else 
                                                {
@@ -234,10 +234,10 @@ class CibilController extends Controller
         $biz_id = $request->get('biz_id');
         $arrData  = BizApi::getCommercialCibilData($biz_id);
         if(empty($arrData)){
-                return response()->json(['message' =>'Error','status' => 0, 'cibilScoreData' => 'Please Pull the CIBIL Score to view the report.']);
+                return response()->json(['message' =>'Error','status' => 0, 'cibilScoreData' => 'Please Pull the Bureau Score to view the report.']);
         }else{
                 $arrCibilScoreData = $arrData['res_file'];
-                return response()->json(['message' =>'cibil score pull successfully','status' => 1, 'cibilScoreData' => $arrCibilScoreData]);
+                return response()->json(['message' =>'Bureau score pull successfully','status' => 1, 'cibilScoreData' => $arrCibilScoreData]);
        }
     }
 

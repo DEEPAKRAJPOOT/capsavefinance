@@ -245,7 +245,6 @@
          })
       }
 </script>
-<script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
 <script>
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
@@ -255,19 +254,6 @@
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
-CKEDITOR.replace('debt_position_comments', {
-        extraPlugins: 'easyimage',
-        height: 220,
-        cloudServices_uploadUrl: 'https://33333.cke-cs.com/easyimage/upload/',
-        cloudServices_tokenUrl: 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt',
-        easyimage_toolbar: [
-            'EasyImageFull',
-            'EasyImageSide',
-            'EasyImageAlignLeft',
-            'EasyImageAlignRight',
-            'EasyImageAlignCenter',
-            'EasyImageAlt',
-        ]
-  });
+ CKEDITOR.replace('debt_position_comments');
 </script>
 @endsection

@@ -26,9 +26,8 @@ trait CamTrait
             $arrRequest['app_id'] = $appId = $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
             $arrStaticData = array();
-            $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
-
-            $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quater','4'=>'Months');
+            $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quaterly','4'=>'Monthly');
+            $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quarter','4'=>'Months');
             $active_json_filename = $json_files['curr_file'];
             if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
                       $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
@@ -51,9 +50,7 @@ trait CamTrait
                 }
                // dd(getTotalFinanceData($financeData['2017']));
                 $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
-                if(count($leaseOfferData)){
-                    $leaseOfferData = $leaseOfferData['0'];
-                }
+
                 $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
                 $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
                 $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
@@ -76,6 +73,15 @@ trait CamTrait
                 $currStage = Helpers::getCurrentWfStage($appId);                
                 $currStageCode = $currStage->stage_code; 
                 /*end code for approve button */
+                 if(isset($arrCamData->existing_exposure) && $arrCamData->existing_exposure > 0){
+                     $arrCamData->existing_exposure =  (sprintf('%.6f', $arrCamData->existing_exposure/1000000) + 0);
+                }
+                if(isset($arrCamData->proposed_exposure) && $arrCamData->proposed_exposure > 0){
+                     $arrCamData->proposed_exposure =  (sprintf('%.6f', $arrCamData->proposed_exposure/1000000) + 0);
+                }
+                if( isset($arrCamData->total_exposure) &&  $arrCamData->total_exposure > 0){
+                     $arrCamData->total_exposure =  (sprintf('%.6f', $arrCamData->total_exposure/1000000) + 0);
+                }
 
                 return [
                     'arrCamData' =>$arrCamData ,

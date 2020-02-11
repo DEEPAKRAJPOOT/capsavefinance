@@ -1053,10 +1053,7 @@
       })
    })
 </script>
-<script src="https://cdn.ckeditor.com/4.13.1/full/ckeditor.js"></script>
 <script>
-  CKEDITOR.replace('financial_risk_comments', {
-    height: 220,
-  });
+   CKEDITOR.replace('financial_risk_comments');
 </script>
 @endsection
