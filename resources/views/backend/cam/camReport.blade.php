@@ -47,7 +47,7 @@
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Limit Of The Equipment</b></td>
-                  <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' &#8377; '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} 
+                  <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} 
                         </td>
                </tr>
             
@@ -57,7 +57,7 @@
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Security Deposit</b></td>
-                  <td class=""> {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}} </td>
+                  <td class="">  {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}} </td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Rental Frequency</b></td>
@@ -78,7 +78,7 @@
                               @elseif ($i > 1 && $i == $total)
                                  and
                               @endif
-                              {!!  '&#8377;' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+                              {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
 
                               @php 
                                  $i++;

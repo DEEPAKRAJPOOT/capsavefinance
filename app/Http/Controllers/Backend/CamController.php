@@ -246,7 +246,7 @@ class CamController extends Controller
       $arrStaticData = array();
       $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
       $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
-      $arrStaticData['securityDepositType'] = array('1'=>'&#8377;','2'=>'%');
+      $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
       $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
       $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
       $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
