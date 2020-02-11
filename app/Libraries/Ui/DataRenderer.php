@@ -3096,12 +3096,15 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'value_date',
                 function ($transaction) {
-                    return date('d-M-Y',strtotime($transaction->trans_date));
+                    return date('d-M-Y',strtotime($transaction->created_at));
                 }
             )
             ->editColumn(
                 'trans_type',
                 function ($transaction) {
+                    if($transaction->trans_detail->is_charge){
+                        return $transaction->trans_detail->charge->chrg_name;
+                    }
                     return $transaction->trans_detail->trans_name;
                 }
             )
@@ -3114,13 +3117,21 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'debit',
                 function ($transaction) {
-                    return $transaction->amount;
+                    if($transaction->entry_type=='0'){
+                        return $transaction->amount;
+                    }else{
+                        return '0.00';
+                    }
                 }
             )
             ->editColumn(
                 'credit',
                 function ($transaction) {
-                    return '0.00';
+                    if($transaction->entry_type=='1'){
+                        return $transaction->amount;
+                    }else{
+                        return '0.00';
+                    }
                 }
             )
             ->editColumn(
@@ -3134,8 +3145,8 @@ class DataRenderer implements DataProviderInterface
                 if ($request->get('search_keyword') != '') {
                     $query->where(function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
-                        $query->where('chrg_desc', 'like', "%$search_keyword%")
-                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                        // $query->where('chrg_desc', 'like', "%$search_keyword%")
+                        //     ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
                     });
                 }
             })
