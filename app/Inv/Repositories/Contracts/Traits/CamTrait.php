@@ -77,13 +77,13 @@ trait CamTrait
                 $currStageCode = $currStage->stage_code; 
                 /*end code for approve button */
                  if(isset($arrCamData->existing_exposure) && $arrCamData->existing_exposure > 0){
-                     $arrCamData->existing_exposure =  (sprintf('%.6f', $arrCamData->existing_exposure/1000000) + 0);
+                     $arrCamData->existing_exposure =  format_number($arrCamData->existing_exposure/1000000);
                 }
                 if(isset($arrCamData->proposed_exposure) && $arrCamData->proposed_exposure > 0){
-                     $arrCamData->proposed_exposure =  (sprintf('%.6f', $arrCamData->proposed_exposure/1000000) + 0);
+                     $arrCamData->proposed_exposure =  format_number($arrCamData->proposed_exposure/1000000);
                 }
                 if( isset($arrCamData->total_exposure) &&  $arrCamData->total_exposure > 0){
-                     $arrCamData->total_exposure =  (sprintf('%.6f', $arrCamData->total_exposure/1000000) + 0);
+                     $arrCamData->total_exposure =  format_number( $arrCamData->total_exposure/1000000);
                 }
 
                 return [

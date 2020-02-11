@@ -281,7 +281,6 @@
 @section('jscript')
 <script src="{{url('common/js/typehead.js')}}"></script>
 
-
 <script type="text/javascript">
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',

@@ -42,7 +42,10 @@ function _uuid_rand($strLen = 60){
 	return substr($string, 0, $strLen);
 }
 
-
+function format_number($number) {
+    $num = sprintf('%.6f', $number);
+    return (strpos($num,'.')!==false ? preg_replace("/\.?0*$/",'',$num) : $num);
+}
 
 function extra_char($string = ''){
 	 $i = 0;

@@ -94,9 +94,6 @@
                <tr role="row" class="odd">
                   <td class=""><b>Additional Security</b></td>
                   <td class="">
-                     
-
-
                      @php
                        $add_sec_arr = '';
                        $addl_sec_arr = explode(',', $leaseOffer->addl_security);
