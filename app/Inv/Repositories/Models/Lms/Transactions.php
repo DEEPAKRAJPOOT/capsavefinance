@@ -13,6 +13,7 @@ class Transactions extends BaseModel {
      * @var string
      */
 
+    private static $balacnce = 0;
     protected $table = 'transactions';
 
     /**
@@ -142,7 +143,17 @@ class Transactions extends BaseModel {
     function user(){
         return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
     }
+
+    function get_balance($trans_id,$user_id){
+        $dr =  self::where('trans_id','<=',$trans_id) ->where('user_id','=',$user_id)->where('entry_type','=','0')->sum('amount');
+        $cr =  self::where('trans_id','<=',$trans_id) ->where('user_id','=',$user_id)->where('entry_type','=','1')->sum('amount');
+        return $dr - $cr;
+    }
     
+    public function getBalanceAttribute()
+    {
+        return self::get_balance($this->trans_id, $this->user_id);
+    }
 
      
 }

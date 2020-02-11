@@ -488,7 +488,7 @@
             </tbody>
          </table>
          
-         <h5 class="mt-4">Shareholding Pattern as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</h5>
+         <h5 class="mt-4"> <span style="font-family: DejaVu Sans; sans-serif;">₹</span> Shareholding Pattern as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</h5>
          <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
             <thead>
                <tr>

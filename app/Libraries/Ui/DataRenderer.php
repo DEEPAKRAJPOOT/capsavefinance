@@ -3143,7 +3143,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'balance',
                 function ($transaction) {
-                    return '0.00';
+                    return $transaction->balance;
                 }
             )
             

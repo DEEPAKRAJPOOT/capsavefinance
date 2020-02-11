@@ -7,7 +7,7 @@ try {
             serverSide: true,
             pageLength: 10,
             searching: false,
-            bSort: true,
+            bSort: false,
             ajax: {
                 "url": messages.lms_get_soa_list, // json datasource
                 "method": 'POST',
@@ -34,7 +34,7 @@ try {
                 {data: 'credit'},
                 {data: 'balance'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [4]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7,8]}]
         });
 
         //Search
