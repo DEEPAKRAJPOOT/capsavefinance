@@ -82,8 +82,9 @@
         </div>
 
         <div class="col-md-6">
-            <div class="form-group">
-                <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b></label> 
+            <div class="form-group INR">
+                <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b></label>
+                <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa-change fa {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}" aria-hidden="true"></i></a> 
                 <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Deposit {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}" maxlength="5">
             </div>
         </div>
@@ -462,10 +463,12 @@
         if(sdt == 1){
             $('#sdt').text('Amount');
             $('input[name=security_deposit]').val('');
+            $('.fa-change').removeClass('fa-percent').addClass('fa-inr');
             $('input[name=security_deposit]').attr('Placeholder', 'Deposit Amount');
         }else{
             $('#sdt').text('Percent');
             $('input[name=security_deposit]').val('');
+            $('.fa-change').removeClass('fa-inr').addClass('fa-percent');
             $('input[name=security_deposit]').attr('Placeholder', 'Deposit Percent');
         }
     });
