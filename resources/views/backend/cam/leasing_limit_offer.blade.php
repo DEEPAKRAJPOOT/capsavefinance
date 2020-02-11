@@ -44,8 +44,9 @@
         </div>
 
         <div class="col-md-6">
-          <div class="form-group ">
-            <label for="txtPassword" ><b>Sub Limit</b></label> 
+          <div class="form-group INR">
+            <label for="txtPassword" ><b>Sub Limit</b></label>
+            <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a> 
             <input type="text" name="sub_limit" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Sub Limit" maxlength="15">
           </div>
         </div>
@@ -81,8 +82,9 @@
         </div>
 
         <div class="col-md-6">
-            <div class="form-group">
-                <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b></label> 
+            <div class="form-group INR">
+                <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b></label>
+                <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa-change fa {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}" aria-hidden="true"></i></a> 
                 <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Deposit {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}" maxlength="5">
             </div>
         </div>
@@ -106,7 +108,7 @@
                 <select name="rental_frequency" class="form-control">
                     <option value="">Select Rental Frequency</option>
                     <option value="4" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 4)? 'selected': ''):''}}>Monthly</option>
-                    <option value="3" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 3)? 'selected': ''):''}}>Quaterly</option>
+                    <option value="3" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 3)? 'selected': ''):''}}>Quarterly</option>
                     <option value="2" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 2)? 'selected': ''):''}}>Bi-Yearly</option>
                     <option value="1" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 1)? 'selected': ''):''}}>Yearly</option>
                 </select>
@@ -143,10 +145,11 @@
                         @endif
                         <input type="text" name="ptpq_to[]" class="form-control" value="{{(int)$ptpq->ptpq_to}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 INR">
                         @if($loop->first)
                             <label for="txtPassword"><b>Rate</b></label>
                         @endif
+                        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="6">
                     </div>
                     <div class="col-md-2 center">
@@ -168,8 +171,9 @@
                     <label for="txtPassword"><b>To Period</b></label>
                         <input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 INR">
                     <label for="txtPassword"><b>Rate</b></label>
+                        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="Rate" maxlength="5">
                     </div>
                     <div class="col-md-2 ">
@@ -213,9 +217,7 @@
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="4" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'checked': ''): '')}}> Others</label>
                 </div>
                 <div class="col-md-6" style="float: right;">
-                <textarea name="comment" class="form-control" style="display: {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'inline': 'none'): 'none')}}" maxlength="200" placeholder="Security comment">
-                    {{isset($offerData->comment)? $offerData->comment: ''}}
-                </textarea>
+                <textarea name="comment" class="form-control" maxlength="200" placeholder="Security comment">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
                 </div>
             </div>
           </div>
@@ -427,9 +429,10 @@
         setError('#check_block', 'Please check atleast one security');
         flag = false;
     }*/
-    if($('#other_sec').is(':checked')){
+
+    if($('input[name*=addl_security]').is(':checked')){
         if(comment == ''){
-            setError('textarea[name=comment]', 'Please fill other security');
+            setError('textarea[name=comment]', 'Please fill security comment');
             flag = false;
         }else{
             // TAKE REST
@@ -445,7 +448,7 @@
   }
 
   $(document).ready(function(){
-    $('#other_sec').on('change', function(){
+    /*$('#other_sec').on('change', function(){
         unsetError('textarea[name=comment]');
         if($('#other_sec').is(':checked')){
             $('textarea[name=comment]').css('display', 'inline');
@@ -453,17 +456,19 @@
             $('textarea[name=comment]').css('display', 'none');
             $('textarea[name=comment]').val('');
         }
-    });
+    });*/
 
     $('input[name=security_deposit_type]').on('change', function(){
         let sdt = $('input[name=security_deposit_type]:checked').val();
         if(sdt == 1){
             $('#sdt').text('Amount');
             $('input[name=security_deposit]').val('');
+            $('.fa-change').removeClass('fa-percent').addClass('fa-inr');
             $('input[name=security_deposit]').attr('Placeholder', 'Deposit Amount');
         }else{
             $('#sdt').text('Percent');
             $('input[name=security_deposit]').val('');
+            $('.fa-change').removeClass('fa-inr').addClass('fa-percent');
             $('input[name=security_deposit]').attr('Placeholder', 'Deposit Percent');
         }
     });
@@ -478,7 +483,8 @@
             '<div class="col-md-3">'+
                 '<input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\\d]/,\'\')">'+
             '</div>'+
-            '<div class="col-md-4">'+
+            '<div class="col-md-4 INR">'+
+                '<a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                 '<input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="PTPQ Rate" maxlength="6">'+
             '</div>'+
             '<div class="col-md-2 center">'+
