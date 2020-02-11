@@ -3082,6 +3082,12 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
             ->addColumn(
+                'customer_name',
+                function ($transaction){
+                    return $transaction->user->f_name . ' ' .$transaction->user->m_name. ' ' . $transaction->user->l_name;
+                }
+            )
+            ->addColumn(
                 'virtual_acc_id',
                 function ($transaction) {
                     return $transaction->virtual_acc_id;

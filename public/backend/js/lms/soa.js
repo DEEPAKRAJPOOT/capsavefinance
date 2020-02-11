@@ -24,6 +24,7 @@ try {
                 }
             },
             columns: [
+                {data: 'customer_name'},
                 {data: 'virtual_acc_id'},
                 {data: 'trans_date'},
                 {data: 'value_date'},

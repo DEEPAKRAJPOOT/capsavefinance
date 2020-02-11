@@ -1343,7 +1343,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function lmsGetTransactions()
     {
-        return Transactions::all();//with('trans_detail')->where('soa_flag', 1);
+        return Transactions::orderBy('user_id', 'asc')->orderBy('trans_date', 'asc')->get();//with('trans_detail')->where('soa_flag', 1);
     }
 
     public function getTotalByPrgmLimitId($appPrgmLimitId){

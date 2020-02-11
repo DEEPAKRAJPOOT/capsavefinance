@@ -138,6 +138,10 @@ class Transactions extends BaseModel {
     {
        return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
     }   
+
+    function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }
     
 
      

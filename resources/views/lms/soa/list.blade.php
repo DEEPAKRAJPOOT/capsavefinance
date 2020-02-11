@@ -65,6 +65,7 @@
 	                              		<table id="lmsSoaList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
+                                                    <th>Customer Id</th>
                                                     <th>Virtual Account Id</th>
 													<th>Transaction Date</th>
 													<th>Value Date</th>
