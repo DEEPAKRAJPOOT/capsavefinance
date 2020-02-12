@@ -14,7 +14,7 @@ try {
                  "url": messages.get_lms_charges_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.type = $('input[name=type]').val();
+                    d.type = $('select[name=type]').val();
                     d.from_date = $('input[name=from_date]').val();
                     d.to_date = $('input[name=to_date]').val();
                     d._token = messages.token;

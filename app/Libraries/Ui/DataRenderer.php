@@ -2140,12 +2140,26 @@ class DataRenderer implements DataProviderInterface
                
                  ->filter(function ($query) use ($request) {
                     if ($request->get('type') != '') {
-                            $query->where(function ($query) use ($request) {
+                            $query->whereHas('transaction', function ($query) use ($request) {
                             $search_keyword = trim($request->get('type'));
-                            $query->where('transaction.user_id',$search_keyword);
+                            $query->where('user_id',$search_keyword);
+                        });
+                    }
+                      if ($request->get('from_date') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $from = str_replace('/', '-', $request->get('from_date'));
+                            $converedDate = date("Y-m-d H:i:s", strtotime($from));
+                            $query->whereDate('created_at','>=' , $converedDate);
+                        });
+                    }
+                    if ($request->get('to_date') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $to_date = str_replace('/', '-', $request->get('to_date'));
+                            $query->whereDate('created_at','<=' , date('Y-m-d H:i:s', strtotime($to_date)) );
                         });
                     }
                 })
+                
                 ->make(true);
     }
     

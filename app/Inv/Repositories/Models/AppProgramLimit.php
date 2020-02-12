@@ -209,12 +209,11 @@ class AppProgramLimit extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Product', 'product_id', 'id');
     }  
 
+    function supplyOffers()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id','app_prgm_limit_id')->where(['is_approve' =>1,'is_active' =>1,'status' => 1]);  
     
-     function supplyOffers()
-     {
-          return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id','app_prgm_limit_id')->where(['is_approve' =>1,'is_active' =>1,'status' => 1]);  
-     
-     }
+    }
 
     public static function getLimitWithOffer($appId, $bizId, $productId){
         return self::select('app_prgm_limit.limit_amt', 

@@ -10,6 +10,8 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Role as Role;
 use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppProgramLimit;
 
 
 
@@ -617,6 +619,18 @@ class User extends Authenticatable
         return $this->hasOne('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
     }
 
+     public static function getProgramUser($user_id)
+    {
+         $appIds = Application::where('user_id', $user_id)->pluck('app_id');
+         $proId =  AppProgramLimit::whereHas('supplyOffers')->whereIn('app_id', $appIds)->pluck('prgm_id');
+         return Program::whereIn('prgm_id', $proId)->get();
+      }
+    
+     public  function userApps()
+    {
+         return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->pluck('app_id');
+    }
+    
     /**
      * Get Backend Users
      * 

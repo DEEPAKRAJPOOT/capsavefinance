@@ -60,10 +60,11 @@ class ChargeController extends Controller
         return view('lms.charges.edit_charges');
       }
     
-     public function listLmsCharges(){
+     public function listLmsCharges(Request $request){
+          $user_id =  $request->get('user_id');
           $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1,'chrg_type' => 2]);
-          $result  =  $this->invRepo->getCustomerId();
-          $program  =  $this->lmsRepo->getProgram();
+          $result  =  $this->invRepo->getCustomerId($user_id);
+          $program  =  $this->lmsRepo->getProgramUser($user_id);
           return view('lms.charges.add_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program]);
       }
       
@@ -155,24 +156,25 @@ class ChargeController extends Controller
                           if($res)
                         {
                                 Session::flash('message', 'Data has been saved');
-                                 return redirect('lms/charges/manage_charge'); 
+                                return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
+                                 
                         }
                         else
                         {
                                 Session::flash('message', 'Something went wrong, Please try again');
-                                return redirect('lms/charges/manage_charge'); 
+                                return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                         }
                   }
                    else
                         {
                                 Session::flash('message', 'Something went wrong, Please try again');
-                                return redirect('lms/charges/manage_charge'); 
+                                return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                         }
                  
                  }
                         else {
                                Session::flash('message', 'Something went wrong, Please try again');
-                               return redirect('lms/charges/manage_charge'); 
+                              return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                       }
         
        }

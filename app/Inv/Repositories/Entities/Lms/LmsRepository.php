@@ -8,6 +8,7 @@ use App\Inv\Repositories\Contracts\LmsInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\Lms\Disbursal;
@@ -268,11 +269,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     /****
      * get trans  type
      */
-      public static function getProgram()
+      public static function getProgramUser($userId)
     {
        try
        {
-          return ProgramCharges::getProgram(); 
+          return User::getProgramUser($userId); 
        } catch (Exception $ex) {
           return $ex;
        }

@@ -44,7 +44,7 @@
                         <button type="button" class="btn btn-success btn-sm searchbtn" id="searchbtn">Search</button>
                         </div>
                         <div class="col-md-5 text-right">
-                       <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesLmsFrame" data-url ="{{route('list_lms_charges')}}" data-height="500px" data-width="100%" data-placement="top" >
+                       <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesLmsFrame" data-url ="{{route('list_lms_charges',['user_id' => request()->get('user_id')])}}" data-height="500px" data-width="100%" data-placement="top" >
                            <i class="fa fa-plus"></i>Add Manual Charge</a>
                       </div>
             </div>

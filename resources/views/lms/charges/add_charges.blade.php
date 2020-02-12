@@ -8,11 +8,8 @@
        <div class="row">
         <div class="form-group col-md-12">
           <label for="chrg_name">User Name</label>
-          <select class="form-control" id="user_id" name="user_id">
-          <option value=""> Please Select</option>
-            @foreach($customer as $row)
-            <option value="{{$row->user_id}}">{{$row->user->f_name}}/{{$row->customer_id}}</option>
-         @endforeach   
+          <select class="form-control" id="user_id" name="user_id" readonly="readonly">
+          <option value="{{$customer->user_id}}">{{$customer->f_name}} {{$customer->l_name}}</option>
         </select>
          </select>
           <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
@@ -24,9 +21,13 @@
           <label for="chrg_name">Program</label>
           <select class="form-control" id="program_id" name="program_id">
           <option value="">Please Select</option>
-          @foreach($program as $key => $value)    
-          <option value="{{$value->prgm_id}}">{{$value->program->prgm_name}}</option>
+          @if($program)
+          @foreach($program as $value)    
+          <option value="{{$value->prgm_id}}">{{$value->prgm_name}}</option>
           @endforeach
+          @else
+           <option value="">No data found</option>
+          @endif
          </select>
           <span id="msgprogram" class="error"></span>
         </div>
