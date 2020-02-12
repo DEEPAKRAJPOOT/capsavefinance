@@ -174,6 +174,12 @@ class Disbursal extends BaseModel {
     {
         return User::where(['user_id' => $uid])->first();
     }
+    
+      /////////////* get customer id   */////////////////
+    public static function  getDisburseCustomerId()
+    {
+        return self::with('user')->where(['disburse_type' => 2])->groupBy('user_id')->get();
+    }
      /////////////* get customer id   */////////////////
     public static function  getRepaymentAmount($uid)
     {

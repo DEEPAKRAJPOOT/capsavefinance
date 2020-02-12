@@ -21,19 +21,7 @@
       </div>
 
       <div class="row">
-         <div class="form-group col-md-6">
-             <label for="chrg_type">Charge Type</label><br />
-             <div class="form-check-inline ">
-               <label class="form-check-label fnt">
-               <input type="radio" class="form-check-input" checked name="chrg_type" value="1">Auto
-               </label>
-            </div>
-            <div class="form-check-inline">
-               <label class="form-check-label fnt">
-               <input type="radio" class="form-check-input" name="chrg_type" value="2">Manual
-               </label>
-            </div>
-        </div>
+        
         <div class="form-group col-md-6">
              <label for="chrg_type">Charge Calculation</label><br />
              <div class="form-check-inline ">
@@ -65,6 +53,26 @@
               </select>
          </div>
       </div>
+     <div class="row">
+         <div class="form-group col-md-6">
+             <label for="chrg_type">Charge Type</label><br />
+             <div class="form-check-inline ">
+               <label class="form-check-label fnt">
+               <input type="radio" class="form-check-input" checked name="chrg_type" value="1">Auto
+               </label>
+            </div>
+            <div class="form-check-inline">
+               <label class="form-check-label fnt">
+               <input type="radio" class="form-check-input" name="chrg_type" value="2">Manual
+               </label>
+            </div>
+              <div class="form-check-inline">
+               <label class="form-check-label fnt">
+               <input type="radio" class="form-check-input" name="chrg_type" value="3">Both
+               </label>
+            </div>
+        </div> 
+  </div>           
       <div class="row">
          <div class="form-group col-md-6">
              <label for="is_gst_applicable">GST Applicable</label><br />
@@ -81,7 +89,7 @@
         </div>
         <div class="form-group col-md-6" id="gst_div">
              <label for="chrg_type">GST Percent</label>
-             <input type="text" class="form-control" name="gst_percentage" placeholder="GST Percentage">
+             <input type="text" class="form-control" name="gst_percentage" placeholder="GST Percentage" readonly="readonly" value="{{Config::get('payment.gst')}}">
         </div>
       </div>
       <div class="row">

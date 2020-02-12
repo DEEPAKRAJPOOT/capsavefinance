@@ -45,14 +45,15 @@ class PaymentController extends Controller {
       /*     Excel  Payment list page   */
     public function  excelPaymentList()
     {
-      $result  =  $this->invRepo->getCustomerId();
+     
+      $result  =  $this->invRepo->getDisburseCustomerId();
       return view('backend.payment.excel_payment_list')->with(['customer' => $result]);
    
     }
     
       public function excelBulkPayment(Request $request)
     {
-          $result  =  $this->invRepo->getCustomerId();
+          $result  =  $this->invRepo->getDisburseCustomerId();
           return view('backend.payment.excel_bulk_payment')->with(['customer' => $result]);
     }
        ///////////* change date format ********////////////////   

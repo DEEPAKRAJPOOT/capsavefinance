@@ -49,7 +49,7 @@
                <input type="file" accept=".csv" class="custom-file-input fileUpload" id="upload" name="upload">
             <label class="custom-file-label" for="customFile">Choose file</label>
             <span id="upload_msg" class="error" style="display: none;"></span>
-              <a href="http://admin.rent.local/backend/assets/invoice/invoice-template.csv" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
+              <a href="{{url('backend/assets/payment/payment.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
            
             </div>
 

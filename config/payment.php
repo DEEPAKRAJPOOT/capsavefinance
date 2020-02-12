@@ -13,7 +13,8 @@ return [
         '2' => 'Cheque',
         '3' => 'NACH',
         '4' => 'Other'
-    ]
+    ],
+    'gst' => 18
 ];
 
 

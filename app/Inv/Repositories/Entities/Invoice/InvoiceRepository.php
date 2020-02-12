@@ -375,6 +375,17 @@ use CommonRepositoryTraits;
          
     }
     
+    public function getDisburseCustomerId()
+    {
+        try
+        {
+           return Disbursal::getDisburseCustomerId();  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    } 
+    
      public function singleRepayment($id,$repayment)
     {
         try
