@@ -149,7 +149,7 @@
                         @if($loop->first)
                             <label for="txtPassword"><b>Rate</b></label>
                         @endif
-                        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+                        <a href="javascript:void(0);" class="verify-owner-no" style="top: {{($loop->first)? '29px': 0}};"><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="6">
                     </div>
                     <div class="col-md-2 center">
@@ -173,7 +173,7 @@
                     </div>
                     <div class="col-md-4 INR">
                     <label for="txtPassword"><b>Rate</b></label>
-                        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+                        <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="Rate" maxlength="5">
                     </div>
                     <div class="col-md-2 ">
@@ -484,7 +484,7 @@
                 '<input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\\d]/,\'\')">'+
             '</div>'+
             '<div class="col-md-4 INR">'+
-                '<a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                '<a href="javascript:void(0);" class="verify-owner-no" style="top: 0;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                 '<input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="PTPQ Rate" maxlength="6">'+
             '</div>'+
             '<div class="col-md-2 center">'+
