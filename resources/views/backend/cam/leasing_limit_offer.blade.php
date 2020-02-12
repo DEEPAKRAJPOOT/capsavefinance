@@ -253,7 +253,7 @@
     unsetError('input[name=sub_limit]'); 
     unsetError('input[name=tenor]');
     unsetError('select[name=equipment_type_id]');
-    unsetError('input[name=facility_type_id]');
+    unsetError('select[name=facility_type_id]');
     unsetError('input[name=security_deposit]');
     unsetError('input[name=security_deposit_type]');
     unsetError('select[name=rental_frequency]');
