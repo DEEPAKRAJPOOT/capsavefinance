@@ -8,6 +8,9 @@
     font-size: 0.9rem;
     line-height: 1.375rem;
 }
+tr.border_bottom td {
+  border-bottom:1pt solid #a19f9f;
+}
 </style>
 @endsection
 
@@ -197,19 +200,19 @@
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
-                                                   <th width="10%">Sr. No.</th>
-                                                   <th width="70%" colspan="4">Offer Details</th>
-                                                   <th width="20%">Status</th>
+                                                   <th width="5%">Sr. No.</th>
+                                                   <th width="80%" colspan="4">Offer Details</th>
+                                                   <th width="15%">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             @endif
                                                 <tr>
                                                     <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
-                                                    <td><b>Facility Type: </b></td>
-                                                    <td>Lease Loan</td>
-                                                    <td><b>Apply Loan Amount: </b> </td>
-                                                    <td>&#8377; {{number_format($leaseOffer->prgm_limit_amt)}}</td>
+                                                    <td width="15%"><b>Facility Type: </b></td>
+                                                    <td width="25%">{{config('common.facility_type')[$leaseOffer->facility_type_id]}}</td>
+                                                    <td><b>Equipment Type: </b></td>
+                                                    <td>{{\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)->equipment_name}}</td>
                                                     <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($leaseOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($leaseOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
                                                 </tr>
                                                 
@@ -217,37 +220,51 @@
                                                     <td></td>
                                                     <td><b>Tenor (Months): </b></td>
                                                     <td>{{$leaseOffer->tenor}}</td>
-                                                    <td><b>Equipment Type: </b></td>
-                                                    <td>{{\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)->equipment_name}}</td>
+                                                    <td width="15%" ><b>Limit of the Equipment: </b> </td>
+                                                    <td width="25%">&#8377; {{number_format($leaseOffer->prgm_limit_amt)}}</td>
                                                     <td><b>Created By: &nbsp;&nbsp;&nbsp;</b>{{\Helpers::getUserName($leaseOffer->created_by)}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td></td>
                                                     <td><b>Security Deposit: </b></td>
-                                                    <td>{{(($leaseOffer->security_deposit_type == 1)?'₹ ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}}</td>
+                                                    <td>{{(($leaseOffer->security_deposit_type == 1)?'₹ ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}</td>
                                                     <td><b>Rental Frequency: </b></td>
-                                                    <td>{{(($leaseOffer->rental_frequency == 1)?'Yearly':(($leaseOffer->rental_frequency == 2)? 'Bi-Yearly':(($leaseOffer->rental_frequency == 3)? 'Quaterly': 'Monthly')))}}</td>
+                                                    <td>{{(($leaseOffer->rental_frequency == 1)?'Yearly':(($leaseOffer->rental_frequency == 2)? 'Bi-Yearly':(($leaseOffer->rental_frequency == 3)? 'Quaterly': 'Monthly')))}} in {{($leaseOffer->rental_frequency_type == 1)? 'Advance' : 'Arrears'}}</td>
                                                     <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($leaseOffer->created_at)->format('d-m-Y')}}</td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
                                                     <td><b>PTP Frequency: </b></td>
                                                     <td>
-                                                        @if(isset($leaseOffer->offerPTPQ))   
-                                                            @foreach ($leaseOffer->offerPTPQ as $ok => $ov)
-                                                               {!!isset($ov->ptpq_from) ? '<b>From Period:</b> '.$ov->ptpq_from : ''!!}
-                                                               {!!isset($ov->ptpq_to) ? '<b>&nbsp;&nbsp;&nbsp;To Period:</b> '.$ov->ptpq_to : ''!!}
-                                                               {!!isset($ov->ptpq_rate) ? '<b>&nbsp;&nbsp;&nbsp;Rate:</b> &#8377; '.$ov->ptpq_rate : ''!!}
-                                                               <br/>
-                                                            @endforeach 
-                                                         @endif
+                                                    @php 
+                                                        $i = 1;
+                                                        $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
+                                                        if(!empty($leaseOffer->offerPTPQ)){
+                                                            $total = count($leaseOffer->offerPTPQ);
+                                                    @endphp   
+                                                    @foreach($leaseOffer->offerPTPQ as $key => $arr) 
+                                                        @if($i > 1 && $i < $total)
+                                                              ,
+                                                        @elseif ($i > 1 && $i == $total)
+                                                            and
+                                                        @endif
+                                                            &#8377; {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+                                                        @php 
+                                                        $i++;
+                                                        @endphp     
+                                                    @endforeach
+                                                    @php 
+                                                        }
+                                                    @endphp  
                                                     </td>
                                                     <td><b>XIRR (%): </b></td>
-                                                    <td>Ruby Sheet : {{$leaseOffer->ruby_sheet_xirr}}%<br/>Cash Flow :{{$leaseOffer->cash_flow_xirr}}%</td>
+                                                    <td><b>Ruby Sheet</b>: {{$leaseOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$leaseOffer->cash_flow_xirr}}%</td>
                                                     <td></td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="border_bottom">
                                                 <td></td>
+                                                    <td><b>Processing Fee (%):</b></td>
+                                                    <td>{{$leaseOffer->processing_fee}} %</td>
                                                     <td><b>Additional Security: </b></td>
                                                     <td>
                                                         @php
@@ -264,8 +281,6 @@
                                                         @endphp 
                                                         {!! trim($add_sec_arr,', ') !!}
                                                     </td>
-                                                    <td></td>
-                                                    <td></td>
                                                     <td></td>
                                                 </tr>
                                                 @if($loop->last)
