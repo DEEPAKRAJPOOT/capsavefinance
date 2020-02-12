@@ -701,15 +701,21 @@
                            @if(!empty($arrApproverData))
                               @while(!empty($arrApproverData[$i])) 
                                  <tr>
-                                       <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}} @if ($arrApproverData[$i]->status == 1) <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp @endif 
-                                       <span style="font-size: 11px;">Approved at </br>{{ \Carbon\Carbon::parse($arrApproverData[$i]->updated_at)->format('h:i A, j F, Y')}}
+                                       <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;"> {{$arrApproverData[$i]->approver}}
+                                        @if ($arrApproverData[$i]->status == 1) 
+                                          <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp 
+                                          <span style="font-size: 11px;">Approved at </br>
+                                          {{ \Carbon\Carbon::parse($arrApproverData[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                       @endif 
 
-                                       </span>
                                        </th>
                                        @php $i++; @endphp
                                        @if (!empty($arrApproverData[$i]))
-                                          <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}} @if ($arrApproverData[$i]->status == 1) <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp @endif
+                                          <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}} 
+                                          @if ($arrApproverData[$i]->status == 1)
+                                           <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp 
                                              <span style="font-size: 11px;">Approved at </br>{{ \Carbon\Carbon::parse($arrApproverData[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                          @endif   
                                           </th>
                                           @php $i++; @endphp
                                        @endif
