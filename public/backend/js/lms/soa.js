@@ -24,7 +24,6 @@ try {
                 }
             },
             columns: [
-                {data: 'customer_name'},
                 {data: 'virtual_acc_id'},
                 {data: 'trans_date'},
                 {data: 'value_date'},
@@ -34,7 +33,7 @@ try {
                 {data: 'credit'},
                 {data: 'balance'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7,8]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
 
         //Search

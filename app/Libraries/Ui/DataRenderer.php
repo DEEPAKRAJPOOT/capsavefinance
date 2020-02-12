@@ -3082,12 +3082,6 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
             ->addColumn(
-                'customer_name',
-                function ($transaction){
-                    return $transaction->user->f_name . ' ' .$transaction->user->m_name. ' ' . $transaction->user->l_name;
-                }
-            )
-            ->addColumn(
                 'virtual_acc_id',
                 function ($transaction) {
                     return $transaction->virtual_acc_id;
@@ -3146,15 +3140,23 @@ class DataRenderer implements DataProviderInterface
                     return $transaction->balance;
                 }
             )
-            
             ->filter(function ($query) use ($request) {
-                if ($request->get('search_keyword') != '') {
+
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
                     $query->where(function ($query) use ($request) {
-                        $search_keyword = trim($request->get('search_keyword'));
-                        // $query->where('chrg_desc', 'like', "%$search_keyword%")
-                        //     ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
                     });
                 }
+
+                if($request->get('search_keyword')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('customer_id', 'like', "%$search_keyword%");
+                    });
+                }
+              
             })
             ->make(true);
     }

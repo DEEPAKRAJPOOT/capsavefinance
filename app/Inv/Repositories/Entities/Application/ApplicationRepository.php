@@ -1343,7 +1343,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function lmsGetTransactions()
     {
-        return Transactions::orderBy('user_id', 'asc')->orderBy('trans_date', 'asc')->orderBy('trans_id', 'asc')->get();//with('trans_detail')->where('soa_flag', 1);
+        return Transactions::select('transactions.*')
+                    ->join('users', 'transactions.user_id', '=', 'users.user_id')
+                    ->join('lms_users','users.user_id','lms_users.user_id')
+                    ->orderBy('user_id', 'asc')
+                    ->orderBy('trans_date', 'asc')
+                    ->orderBy('trans_id', 'asc');
+                            
+        //with('trans_detail')->where('soa_flag', 1);
     }
 
     public function getTotalByPrgmLimitId($appPrgmLimitId){

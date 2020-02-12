@@ -43,14 +43,15 @@
                     ])
                     !!} 
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3" id="prefetch">
                     {!!
                     Form::text('search_keyword',
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by Customer Code',
-                    'id'=>'search_keyword'
+                    'placeholder' => 'Search by Customer ID/Name',
+                    'id'=>'search_keyword',
+                    'autocomplete'=>'off'
                     ])
                     !!}
                 </div>
@@ -65,7 +66,6 @@
 	                              		<table id="lmsSoaList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
-                                                    <th>Customer Id</th>
                                                     <th>Virtual Account Id</th>
 													<th>Transaction Date</th>
 													<th>Value Date</th>
@@ -94,6 +94,10 @@
 @endsection
 
 @section('jscript')
+
+<script src="https://twitter.github.io/typeahead.js/js/handlebars.js"></script>
+<script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+
 <script>
 
     var messages = {
@@ -112,8 +116,32 @@
         //  startDate: new Date(),
         autoclose: true,
         minView: 2, });
+    
+    var path = "{{ route('get_customer') }}";
 
+    $(document).ready(function(){
+      var sample_data = new Bloodhound({
+       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+       queryTokenizer: Bloodhound.tokenizers.whitespace,
+       prefetch:path,
+       remote:{
+        url:path+'?query=%QUERY',
+        wildcard:'%QUERY'
+       }
+      });
+      
+    
+      $('#prefetch .form-control').typeahead(null, {
+       name: 'sample_data',
+       display: 'customer_id',
+       source:sample_data,
+       limit:10,
+       templates:{
+        suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{customer}} <small>( @{{customer_id}} )</small></div> </div>') }
+      });
+    });
 </script>
+
 <script src="{{ asset('backend/js/lms/soa.js') }}" type="text/javascript"></script>
 @endsection
 

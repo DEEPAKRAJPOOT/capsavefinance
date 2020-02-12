@@ -3,6 +3,8 @@
 namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
@@ -130,30 +132,40 @@ class Transactions extends BaseModel {
           return self::with('disburse')->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
     }
     
-    function disburse()
+    public function disburse()
     {
        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
     }      
     
-    function trans_detail()
+    public function trans_detail()
     {
        return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
     }   
 
-    function user(){
+    public function user(){
         return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
     }
 
-    function get_balance($trans_id,$user_id){
-        $dr =  self::where('trans_id','<=',$trans_id) ->where('user_id','=',$user_id)->where('entry_type','=','0')->sum('amount');
-        $cr =  self::where('trans_id','<=',$trans_id) ->where('user_id','=',$user_id)->where('entry_type','=','1')->sum('amount');
-        return $dr - $cr;
+    public static function get_balance($trans_code,$user_id){
+        $dr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+                    ->where('user_id','=',$user_id)
+                   ->where('entry_type','=','0')->sum('amount');
+
+        $cr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+        ->where('user_id','=',$user_id)
+                   ->where('entry_type','=','1')->sum('amount');
+        return abs($dr - $cr);
     }
     
-    public function getBalanceAttribute()
+    public  function getBalanceAttribute()
     {
-        return self::get_balance($this->trans_id, $this->user_id);
+        return self::get_balance($this->user_id.Carbon::parse($this->trans_date)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
     }
 
+    public static function getUserBalance($user_id){
+
+        $trans = self::select(DB::raw('max(concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)))as trans_code'))->where('user_id','=',$user_id)->get();
+        return self::get_balance($trans[0]->trans_code, $user_id);
+    }
      
 }
