@@ -74,7 +74,7 @@ trait CamTrait
                 /*start code for approve button */
                 $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
                 $currStage = Helpers::getCurrentWfStage($appId);                
-                $currStageCode = $currStage->stage_code; 
+                $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: ''; 
                 /*end code for approve button */
 
                 return [
