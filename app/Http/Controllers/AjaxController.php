@@ -3164,7 +3164,11 @@ if ($err) {
         return $data;
      }
     
-
+   //////* get program charge master  *?
+     public function getTransName(Request $request)
+     {
+       $res  =  $this->lmsRepo->getTransName($attr);
+     }
     
     /**
      * get charges  html

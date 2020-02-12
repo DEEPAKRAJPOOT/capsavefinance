@@ -338,6 +338,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        
                
     }    
-    
+      public static function getTransName($attr)
+    {
+       try
+       {
+          return ProgramCharges::getTransName($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
     
 }

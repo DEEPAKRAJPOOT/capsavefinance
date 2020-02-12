@@ -755,6 +755,11 @@ Route::group(
         'uses' => 'AjaxController@getGroupCompany'
     ]);   
           
-          
+   /////////// get transa name//////////
+    
+    Route::post('get_trans_name', [
+        'as' => 'get_trans_name',
+        'uses' => 'AjaxController@getTransName'
+    ]);   
 
 });

@@ -95,6 +95,7 @@
 <script type="text/javascript">
         var messages = {
             get_chrg_amount: "{{ URL::route('get_chrg_amount') }}",
+            get_trans_name: "{{ URL::route('get_trans_name') }}",
             token: "{{ csrf_token() }}",
  };
  
@@ -162,11 +163,26 @@
         }); 
     }); 
         
-        
+    $(document).on('change','#program_id_old',function(){
+       var postData =  ({'prog_id':$("#program_id").val(),'_token':messages.token});
+       jQuery.ajax({
+        url: messages.get_trans_name,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                },
+                success: function (res) {
+                      alert(res)
+                }
+        }); 
+    });      
         
         
     $(document).ready(function () {
-      
+       document.getElementById('amount').addEventListener('input', event =>
+        event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
        /////////////// validation the time of final submit/////////////// 
       $(document).on('click','#add_charge',function(e){
       
