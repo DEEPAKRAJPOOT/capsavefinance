@@ -183,8 +183,8 @@ class CibilController extends Controller
                    // dd($resInHTMLFormate);
                     $cibilData = base64_encode($resInHTMLFormate);
                     //dd($cibilData);
-                    if($resultData['score'] > 0){
-                        $cibilScore =  $resultData['score'];
+                    if($resultData['score-value'] > 0){
+                        $cibilScore =  $resultData['score-value'];
                     }else{
                         $cibilScore = '';
                     }
