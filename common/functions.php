@@ -1,9 +1,9 @@
 <?php 
 
 define('ENCRYPTION_KEY', '0702f2c9c1414b70efc1e69f2ff31af0');
-define('CGST', 6);
-define('SGST', 4);
-define('IGST', 2);
+define('CGST', 0);
+define('SGST', 0);
+define('IGST', 0);
 define('TGST', 18); #total GST, It will applicable if all gsts' are 0
 
 function _encrypt($plaintext = ''){
