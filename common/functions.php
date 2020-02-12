@@ -1,6 +1,10 @@
 <?php 
 
 define('ENCRYPTION_KEY', '0702f2c9c1414b70efc1e69f2ff31af0');
+define('CGST', 0);
+define('SGST', 0);
+define('IGST', 0);
+define('TGST', 18); #total GST, It will applicable if all gsts' are 0
 
 function _encrypt($plaintext = ''){
 	$method = "AES-256-CBC";
@@ -42,7 +46,18 @@ function _uuid_rand($strLen = 60){
 	return substr($string, 0, $strLen);
 }
 
+function format_number($number) {
+    $num = number_format($number,6, '.', '');
+    return (strpos($num,'.')!==false ? preg_replace("/\.?0*$/",'',$num) : $num);
+}
 
+function calcGst($amount = 0) {
+   $totalGst = SGST + CGST + IGST; 
+   if (false == $totalGst) {
+   	$totalGst = TGST;
+   }
+   return format_number(($amount * $totalGst)/100);
+}
 
 function extra_char($string = ''){
 	 $i = 0;
