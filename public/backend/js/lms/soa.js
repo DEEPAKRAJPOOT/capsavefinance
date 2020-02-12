@@ -7,11 +7,13 @@ try {
             serverSide: true,
             pageLength: 10,
             searching: false,
-            bSort: true,
+            bSort: false,
             ajax: {
                 "url": messages.lms_get_soa_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
+                    d.from_date = $('input[name="from_date"]').val();
+                    d.to_date = $('input[name="to_date"]').val();
                     d.search_keyword = $('input[name=search_keyword]').val();
                     d._token = messages.token;
                 },
@@ -31,7 +33,7 @@ try {
                 {data: 'credit'},
                 {data: 'balance'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [4]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
 
         //Search

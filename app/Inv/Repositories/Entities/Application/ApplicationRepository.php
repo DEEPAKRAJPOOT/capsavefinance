@@ -973,8 +973,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $prgmLimitOfferData ? $prgmLimitOfferData : [];
     }
 
-    public function addProgramOffer($data, $app_prgm_limit_id){
-        $prgmLimitOfferData = AppProgramOffer::addProgramOffer($data, $app_prgm_limit_id);
+    public function addProgramOffer($data, $app_prgm_limit_id, $prgm_offer_id=null){
+        $prgmLimitOfferData = AppProgramOffer::addProgramOffer($data, $app_prgm_limit_id, $prgm_offer_id);
         return $prgmLimitOfferData ? $prgmLimitOfferData : [];
     }
 
@@ -1317,24 +1317,24 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /** 
- * @Author: Rent Alpha 
- * @Date: 2020-01-31 10:21:30 
- * @Desc: function for save app status log 
- */
-public function saveAppStatusLog($attributes)
-{
-    $result=AppStatusLog::saveAppStatusLog($attributes);
-    return  ($result)?$result:false;
-}
-/**
- * Get Applications for Application list data tables
- */
-public function getAppData($app_id) 
-{
-    $app_id=(int)$app_id;
-    $result= Application::getAppData($app_id);
-    return ($result)?$result:false;
-}
+     * @Author: Rent Alpha 
+     * @Date: 2020-01-31 10:21:30 
+     * @Desc: function for save app status log 
+     */
+    public function saveAppStatusLog($attributes)
+    {
+        $result=AppStatusLog::saveAppStatusLog($attributes);
+        return  ($result)?$result:false;
+    }
+    /**
+     * Get Applications for Application list data tables
+     */
+    public function getAppData($app_id) 
+    {
+        $app_id=(int)$app_id;
+        $result= Application::getAppData($app_id);
+        return ($result)?$result:false;
+    }
     /**
     * bank account list 
     * 
@@ -1343,7 +1343,17 @@ public function getAppData($app_id)
 
     public function lmsGetTransactions()
     {
-        return Transactions::with('trans_detail')->where('soa_flag', 1);
+        return Transactions::select('transactions.*')
+                    ->join('users', 'transactions.user_id', '=', 'users.user_id')
+                    ->join('lms_users','users.user_id','lms_users.user_id')
+                    ->orderBy('user_id', 'asc')
+                    ->orderBy('trans_date', 'asc')
+                    ->orderBy('trans_id', 'asc');
+                            
+        //with('trans_detail')->where('soa_flag', 1);
     }
 
+    public function getTotalByPrgmLimitId($appPrgmLimitId){
+        return AppProgramOffer::getTotalByPrgmLimitId($appPrgmLimitId);
+    }
 }

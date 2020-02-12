@@ -7,6 +7,8 @@ use DB;
 use Illuminate\Notifications\Notifiable;
 //use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use Helpers;
+use Auth;
 
 class Cam extends BaseModel
 {
@@ -107,12 +109,17 @@ class Cam extends BaseModel
             't_o_f_covenants'=>$attributes['t_o_f_covenants'],
             't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
             'risk_comments'=>$attributes['risk_comments'],
-            'cm_comment'=>$attributes['cm_comment'],
             'rating_rational'=>$attributes['rating_rational'],
             'debt_on'=>$attributes['debt_on'],
             'contigent_observations'=>$attributes['contigent_observations'],
             'created_by'=>$userId
         );
+
+        $role_id=Helpers::getUserRole(Auth::user()->user_id);
+        if(!in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])){
+            $inputArr['cm_comment']=$attributes['cm_comment'];
+        }
+
         $cam = Cam::create($inputArr);
         return  $cam ? true : false;
 
@@ -121,32 +128,38 @@ class Cam extends BaseModel
     public static function updateCamData($attributes, $userId){
         $cam = Cam::where('app_id', $attributes['app_id'])->first();
         //update Cam table
-        $updateCamData = $cam->update([
-                    'contact_person'=>$attributes['contact_person'],
-                    'operational_person'=>$attributes['operational_person'],
-                    // 'program'=>$attributes['program'],
-                    'rating_no'=>$attributes['rating_no'],
-                    'rating_comment'=>$attributes['rating_comment'],
-                    'existing_exposure'=>str_replace(',', '', $attributes['existing_exposure']),
-                    'proposed_exposure'=>str_replace(',', '', $attributes['proposed_exposure']),
-                    'group_company'=>$attributes['group_company'],
-                    'total_exposure'=>str_replace(',', '', $attributes['total_exposure']),
-                    't_o_f_limit'=>$attributes['t_o_f_limit'],
-                    't_o_f_purpose'=>$attributes['t_o_f_purpose'],
-                    't_o_f_takeout'=>$attributes['t_o_f_takeout'],
-                    't_o_f_recourse'=>$attributes['t_o_f_recourse'],
-                    't_o_f_security_check'=>$attributes['t_o_f_security_check'],
-                    't_o_f_security'=>$attributes['t_o_f_security'],
-                    't_o_f_adhoc_limit'=>$attributes['t_o_f_adhoc_limit'],
-                    't_o_f_covenants'=>$attributes['t_o_f_covenants'],
-                    't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
-                    'risk_comments'=>$attributes['risk_comments'],
-                    'cm_comment'=>$attributes['cm_comment'],
-                    'rating_rational'=>$attributes['rating_rational'],
-                    'debt_on'=>$attributes['debt_on'],
-                    'contigent_observations'=>$attributes['contigent_observations'],
-                    'updated_by'=>$userId,
-        ]);
+        $inputArr = [
+            'contact_person'=>$attributes['contact_person'],
+            'operational_person'=>$attributes['operational_person'],
+            // 'program'=>$attributes['program'],
+            'rating_no'=>$attributes['rating_no'],
+            'rating_comment'=>$attributes['rating_comment'],
+            'existing_exposure'=>str_replace(',', '', $attributes['existing_exposure']),
+            'proposed_exposure'=>str_replace(',', '', $attributes['proposed_exposure']),
+            'group_company'=>$attributes['group_company'],
+            'total_exposure'=>str_replace(',', '', $attributes['total_exposure']),
+            't_o_f_limit'=>$attributes['t_o_f_limit'],
+            't_o_f_purpose'=>$attributes['t_o_f_purpose'],
+            't_o_f_takeout'=>$attributes['t_o_f_takeout'],
+            't_o_f_recourse'=>$attributes['t_o_f_recourse'],
+            't_o_f_security_check'=>$attributes['t_o_f_security_check'],
+            't_o_f_security'=>$attributes['t_o_f_security'],
+            't_o_f_adhoc_limit'=>$attributes['t_o_f_adhoc_limit'],
+            't_o_f_covenants'=>$attributes['t_o_f_covenants'],
+            't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
+            'risk_comments'=>$attributes['risk_comments'],
+            'rating_rational'=>$attributes['rating_rational'],
+            'debt_on'=>$attributes['debt_on'],
+            'contigent_observations'=>$attributes['contigent_observations'],
+            'updated_by'=>$userId,
+        ];
+
+        $role_id=Helpers::getUserRole(Auth::user()->user_id);
+        if(!in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])){
+            $inputArr['cm_comment']=$attributes['cm_comment'];
+        }
+
+        $updateCamData = $cam->update($inputArr);
         return $updateCamData ? true : false;
     }
 

@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
+use App\Inv\Repositories\Models\LmsUser;
 
 
 class AjaxController extends Controller {
@@ -3239,6 +3240,11 @@ if ($err) {
     $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
     return $users;
   }   
+  
+  public function getCustomer(Request $request){
+    $data = LmsUser::getCustomers($request->input('query'));
+    return response()->json($data);
+  }
 
   /**
    * Get all customer list
@@ -3656,6 +3662,7 @@ if ($err) {
    * @return json transaction data
    */
   public function lmsGetSoaList(DataProviderInterface $dataProvider) {
+
     $transactionList = $this->application->lmsGetTransactions();
     $users = $dataProvider->lmsGetTransactions($this->request, $transactionList);
     return $users;
