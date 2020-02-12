@@ -314,7 +314,7 @@ trait LmsTrait
      * @param array $data
      * @return mixed
      */
-    protected function createTransactionData($disburseData = [], $amount= 0, $transId = null, $transType = 16)
+    protected function createTransactionData($disburseData = [], $amount= 0, $transId = null, $transType = 0, $entryType = 0)
     {
         /**
         * disburseType = 1 for online and 2 for manually
@@ -326,14 +326,14 @@ trait LmsTrait
         $transactionData['user_id'] = $disburseData['user_id'] ?? null;
         $transactionData['virtual_acc_id'] = $disburseData['user_id'] ? $this->lmsRepo->getVirtualAccIdByUserId($disburseData['user_id']) : null;
         $transactionData['trans_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-        $transactionData['trans_type'] = 0;
+        $transactionData['trans_type'] = $transType ?? 0;
         $transactionData['pay_from'] = null;
         $transactionData['amount'] = $amount ?? 0;
         $transactionData['gst'] = 0;
         $transactionData['cgst'] = 0;            
         $transactionData['sgst'] = 0;
         $transactionData['igst'] = 0;
-        $transactionData['entry_type'] = 0;
+        $transactionData['entry_type'] =  $entryType ?? 0;
         $transactionData['tds_per'] = null;
         $transactionData['mode_of_pay'] =  1;
         $transactionData['comment'] = null;

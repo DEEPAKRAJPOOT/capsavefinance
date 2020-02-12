@@ -177,14 +177,16 @@ class DisbursalController extends Controller
 				if($disburseType == 2) {
 
 					// $tranType = 4 for processing acc. to mst_trans_type table
-					$prcsAmt = 1005;
+					// $prcsAmt = 1005;
 					
-					$prcsTrnsData = $this->createTransactionData($disburseRequestData, $prcsAmt, $transId, 4);
-					$createTransaction = $this->lmsRepo->saveTransaction($prcsTrnsData);
+					// $prcsTrnsData = $this->createTransactionData($disburseRequestData, $prcsAmt, $transId, 4);
+					// $createTransaction = $this->lmsRepo->saveTransaction($prcsTrnsData);
 
 					// interest transaction $tranType = 9 for interest acc. to mst_trans_type table
 					$intrstAmt = round($totalInterest,2);
 					$intrstTrnsData = $this->createTransactionData($disburseRequestData, $intrstAmt, $transId, 9);
+					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+					$intrstTrnsData = $this->createTransactionData($disburseRequestData, $intrstAmt, $transId, 9, 1);
 					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
 					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
