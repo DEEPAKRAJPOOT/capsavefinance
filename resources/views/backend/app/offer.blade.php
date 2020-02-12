@@ -233,14 +233,26 @@
                                                 <td></td>
                                                     <td><b>PTP Frequency: </b></td>
                                                     <td>
-                                                        @if(isset($leaseOffer->offerPTPQ))   
-                                                            @foreach ($leaseOffer->offerPTPQ as $ok => $ov)
-                                                               {!!isset($ov->ptpq_from) ? '<b>From Period:</b> '.$ov->ptpq_from : ''!!}
-                                                               {!!isset($ov->ptpq_to) ? '<b>&nbsp;&nbsp;&nbsp;To Period:</b> '.$ov->ptpq_to : ''!!}
-                                                               {!!isset($ov->ptpq_rate) ? '<b>&nbsp;&nbsp;&nbsp;Rate:</b> &#8377; '.$ov->ptpq_rate : ''!!}
-                                                               <br/>
-                                                            @endforeach 
-                                                         @endif
+                                                    @php 
+                                                        $i = 1;
+                                                        $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quater','4'=>'Months');
+                                                        if(!empty($leaseOffer->offerPTPQ)){
+                                                            $total = count($leaseOffer->offerPTPQ);
+                                                    @endphp   
+                                                    @foreach($leaseOffer->offerPTPQ as $key => $arr) 
+                                                        @if($i > 1 && $i < $total)
+                                                              ,
+                                                        @elseif ($i > 1 && $i == $total)
+                                                            and
+                                                        @endif
+                                                            Rs. {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+                                                        @php 
+                                                        $i++;
+                                                        @endphp     
+                                                    @endforeach
+                                                    @php 
+                                                        }
+                                                    @endphp  
                                                     </td>
                                                     <td><b>XIRR (%): </b></td>
                                                     <td>Ruby Sheet : {{$leaseOffer->ruby_sheet_xirr}}%<br/>Cash Flow :{{$leaseOffer->cash_flow_xirr}}%</td>
