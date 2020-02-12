@@ -314,13 +314,13 @@ trait LmsTrait
      * @param array $data
      * @return mixed
      */
-    protected function createTransactionData($disburseData = [], $disburseAmount= 0, $transId = null)
+    protected function createTransactionData($disburseData = [], $amount= 0, $transId = null, $transType = 16)
     {
         /**
         * disburseType = 1 for online and 2 for manually
         */
         $transactionData = [];
-        // dd($disburseAmount);
+        // dd($amount);
         $transactionData['gl_flag'] = 1;
         $transactionData['soa_flag'] = 1;
         $transactionData['user_id'] = $disburseData['user_id'] ?? null;
@@ -328,7 +328,7 @@ trait LmsTrait
         $transactionData['trans_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $transactionData['trans_type'] = 0;
         $transactionData['pay_from'] = null;
-        $transactionData['amount'] = $disburseAmount ?? 0;
+        $transactionData['amount'] = $amount ?? 0;
         $transactionData['gst'] = 0;
         $transactionData['cgst'] = 0;            
         $transactionData['sgst'] = 0;

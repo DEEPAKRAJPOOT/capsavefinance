@@ -110,9 +110,12 @@ class DisbursalController extends Controller
 		$allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
 		$params = array('http_header' => '', 'header' => '', 'request' => []);
+		
 		$fundedAmount = 0;
 		$interest = 0;
 		$disburseAmount = 0;
+		$totalInterest = 0;
+
 		foreach ($supplierIds as $userid) {
 			foreach ($allinvoices as $invoice) {
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
@@ -127,9 +130,11 @@ class DisbursalController extends Controller
 			        $tenor = round($datediff / (60 * 60 * 24));
 			        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
 			        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+			        $totalInterest += $interest;
     				$disburseAmount += round($fundedAmount - $interest, 2);
 
-				}			
+				}
+
 				if($disburseType == 1) {
 					$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
 					$requestData[$userid]['RefNo'] = $refId;
@@ -166,9 +171,24 @@ class DisbursalController extends Controller
 
 
 			}
+			
+			// dd($disburseAmount);		
 			if ($disburseAmount) {
 				if($disburseType == 2) {
-					$transactionData = $this->createTransactionData($disburseRequestData, $disburseAmount, $transId);
+
+					// $tranType = 4 for processing acc. to mst_trans_type table
+					$prcsAmt = 1005;
+					
+					$prcsTrnsData = $this->createTransactionData($disburseRequestData, $prcsAmt, $transId, 4);
+					$createTransaction = $this->lmsRepo->saveTransaction($prcsTrnsData);
+
+					// interest transaction $tranType = 9 for interest acc. to mst_trans_type table
+					$intrstAmt = round($totalInterest,2);
+					$intrstTrnsData = $this->createTransactionData($disburseRequestData, $intrstAmt, $transId, 9);
+					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+
+					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
+					$transactionData = $this->createTransactionData($disburseRequestData, $disburseAmount, $transId, 16);
 					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 				}
 			}
