@@ -146,10 +146,10 @@
                         @foreach($preCondArr as $prekey =>$preval)
                         <div class="input-group control-group row">
                            <div class="input-group-btn col-md-6"> 
-                              <input type="text" name="pre_cond[]" value="{{$preval['cond']}}" class="form-control form-control-sm">
+                              <textarea name="pre_cond[]" value="" class="form-control form-control-sm">{{$preval['cond']}}</textarea>
                            </div>
                            <div class="input-group-btn col-md-6"> 
-                              <input type="text" name="pre_timeline[]" value="{{$preval['timeline']}}" class="form-control form-control-sm">
+                              <textarea name="pre_timeline[]" value="" class="form-control form-control-sm">{{$preval['timeline']}}</textarea>
                            </div>
                            <div class="input-group-btn "> 
                             <i class="fa  fa-times-circle remove-ptpq-block remove"></i>
@@ -160,10 +160,10 @@
 
                      <div class="input-group control-group after-add-more row">
                         <div class="input-group-btn col-md-6"> 
-                           <input type="text" name="pre_cond[]" value="" class="form-control form-control-sm">
+                           <textarea name="pre_cond[]" value="" class="form-control form-control-sm"></textarea>
                         </div>
                         <div class="input-group-btn col-md-6"> 
-                           <input type="text" name="pre_timeline[]" value="" class="form-control form-control-sm">
+                           <textarea name="pre_timeline[]" value="" class="form-control form-control-sm"></textarea>
                         </div>
                         <div class="input-group-btn "> 
                           <i class="fa  fa-plus-circle add-ptpq-block add-more"></i>
@@ -174,10 +174,10 @@
                      <div class="copy hide">
                         <div class="control-group input-group row">
                            <div class="input-group-btn col-md-6"> 
-                              <input type="text" name="pre_cond[]" value="" class="form-control form-control-sm">
+                              <textarea name="pre_cond[]" value="" class="form-control form-control-sm"></textarea>
                            </div>
                            <div class="input-group-btn col-md-6"> 
-                              <input type="text" name="pre_timeline[]" value="" class="form-control form-control-sm">
+                              <textarea name="pre_timeline[]" value="" class="form-control form-control-sm"></textarea>
                            </div>
                            <div class="input-group-btn "> 
                               <i class="fa  fa-times-circle remove-ptpq-block remove"></i>
@@ -199,10 +199,10 @@
                         @foreach($postCondArr as $postkey =>$postval)
                         <div class="input-group control-group row">
                            <div class="input-group-btn col-md-6"> 
-                              <input type="text" name="post_cond[]" value="{{$postval['cond']}}" class="form-control form-control-sm">
+                              <textarea name="post_cond[]" value="" class="form-control form-control-sm">{{$postval['cond']}}</textarea>
                            </div>
                            <div class="input-group-btn col-md-6"> 
-                              <input type="text" name="post_timeline[]" value="{{$postval['timeline']}}" class="form-control form-control-sm">
+                              <textarea name="post_timeline[]" value="" class="form-control form-control-sm">{{$postval['timeline']}}</textarea>
                            </div>
                            <div class="input-group-btn "> 
                            <i class="fa fa-times-circle remove-ptpq-block  remove-post"></i>
@@ -213,10 +213,10 @@
                      
                      <div class="input-group control-group after-add-more-post row">
                         <div class="input-group-btn col-md-6"> 
-                           <input type="text" name="post_cond[]" value="" class="form-control form-control-sm">
+                           <textarea name="post_cond[]" value="" class="form-control form-control-sm"></textarea>
                         </div>
                         <div class="input-group-btn col-md-6"> 
-                           <input type="text" name="post_timeline[]" value="" class="form-control form-control-sm">
+                           <textarea name="post_timeline[]" value="" class="form-control form-control-sm"></textarea>
                         </div>
                         <div class="input-group-btn "> 
                           <i class="fa  fa-plus-circle add-ptpq-block add-more-post"></i>
@@ -227,10 +227,10 @@
                      <div class="copy-post hide">
                         <div class="control-group input-group row">
                            <div class="input-group-btn col-md-6"> 
-                              <input type="text" name="post_cond[]" value="" class="form-control form-control-sm">
+                              <textarea name="post_cond[]" value="" class="form-control form-control-sm"></textarea>
                            </div>
                            <div class="input-group-btn col-md-6"> 
-                              <input type="text" name="post_timeline[]" value="" class="form-control form-control-sm">
+                              <textarea name="post_timeline[]" value="" class="form-control form-control-sm"></textarea>
                            </div>
                            <div class="input-group-btn "> 
                              <i class="fa  fa-times-circle remove-ptpq-block remove-post"></i>
