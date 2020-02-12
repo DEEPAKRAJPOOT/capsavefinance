@@ -98,6 +98,17 @@ return [
         'OFFER_GENERATED'=>28,
         'DISBURSED'=>27,
     ],
+    'facility_type' => [
+        '1' => 'Rental Facility',
+        '2' => 'Sale and Lease Back',
+        '3' => 'Rental Discounting'
+    ],
+    'deposit_type' => [
+        '1' => 'Loan Amount',
+        '2' => 'Asset Value',
+        '3' => 'Asset Base Value',
+        '4' => 'Sanction'
+    ],
     /*'SEND_MAIL_ACTIVE'=>1,
     'SEND_MAIL'=>["gaurav.agarwal@prolitus.com", "varun.dudani@zuron.in", "binay.kumar@prolitus.com", "dhriti.barman@capsavefinance.com", "vinay.agarwal@capsavefinance.com", "vilesh.modi@rentalpha.com"],*/
 ];
