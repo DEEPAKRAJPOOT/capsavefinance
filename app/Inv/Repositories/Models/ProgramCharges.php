@@ -135,5 +135,11 @@ class ProgramCharges extends BaseModel {
         $res = self::where($where)->delete();
         return $res ?: false;
     }
+    
+     public static function getSingleChargeAmount($attr)
+    {
+        $res = self::where(['charge_id' => $attr['id'],'prgm_id' => $attr['prog_id']])->first();
+        return $res ?: false;
+    }
 
 }

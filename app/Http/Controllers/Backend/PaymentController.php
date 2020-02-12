@@ -38,7 +38,7 @@ class PaymentController extends Controller {
     public function  addPayment()
     {
        $bank = DB::table('mst_bank')->where(['is_active' => 1])->get();  
-       $result  =  $this->invRepo->getCustomerId();
+       $result  =  $this->invRepo->getDisburseCustomerId();
       return view('backend.payment.add_payment')->with(['bank' => $bank,'customer' => $result]);
    
     }

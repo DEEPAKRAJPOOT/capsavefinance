@@ -285,7 +285,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
        try
        {
-          return Charges::getSingleChargeAmount($attr); 
+          return ProgramCharges::getSingleChargeAmount($attr); 
        } catch (Exception $ex) {
           return $ex;
        }

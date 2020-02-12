@@ -87,7 +87,7 @@ class ChargesTransactions extends BaseModel
     
     public function transaction()
     {
-              return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','charge_id','chrg_trans_id');
+              return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','chrg_trans_id','chrg_trans_id');
    
     }
     

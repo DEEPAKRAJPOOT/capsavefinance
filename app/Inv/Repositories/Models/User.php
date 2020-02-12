@@ -626,7 +626,8 @@ class User extends Authenticatable
          return Program::whereIn('prgm_id', $proId)->get();
       }
     
-     public  function userApps()
+    
+      public  function userApps()
     {
          return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->pluck('app_id');
     }

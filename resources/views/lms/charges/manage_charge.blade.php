@@ -91,6 +91,9 @@ var messages = {
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     };
+    
+    
+    
 </script>
 
 <script src="{{ asset('backend/js/ajax-js/lms/charges_list.js') }}"></script>

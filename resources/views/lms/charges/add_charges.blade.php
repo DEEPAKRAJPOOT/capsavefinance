@@ -77,8 +77,13 @@
 
       </div>
       <div class="row">
-         <div class="form-group col-md-12 text-right">
+          <div class="form-group col-md-6 text-left">
+              
+          </div>
+         <div class="form-group col-md-6 text-right">
+             <span  id="submitMsg" class="error"></span>
               <input type="hidden"   id="id" name="id" >
+              <input type="hidden"   id="chrg_applicable_hidden_id" name="chrg_applicable_id" >
               <input type="submit" class="btn btn-success btn-sm" name="add_charge" id="add_charge" value="Submit"/>
         </div>
       </div>
@@ -115,7 +120,7 @@
              $("#chrg_calculation_type2").attr('checked',false);
              $("#amount").empty();
       }
-      var postData =  ({'id':chrg_name,'_token':messages.token});
+      var postData =  ({'id':chrg_name,'prog_id':$("#program_id").val(),'user_id':$("#user_id").val(),'_token':messages.token});
        jQuery.ajax({
         url: messages.get_chrg_amount,
                 method: 'post',
@@ -125,9 +130,9 @@
                 alert(errorThrown);
                 },
                 success: function (res) {
-                      if(res.status=1)
+                      if(res.status==1)
                       {
-                      
+                       
                         var  applicable  = res.applicable;  
                         if(res.type==1)
                          {
@@ -143,12 +148,15 @@
                              $("#chrg_calculation_type1").attr('disabled',true);
                          } 
                           $("#chrg_applicable_id").html(applicable);
+                          $("#chrg_applicable_hidden_id").val(res.chrg_applicable_id);
+                          $("#chrg_applicable_id option").attr('disabled','disabled');
                           $("#amount").val(res.amount);
                           $("#id").val(res.id);
                       }
                       else
                       {
-                          alert('Something went wrong, Please try again');
+                         $("#chrg_name").val('');
+                         alert('Something went wrong, Please try again');
                       }
                 }
         }); 

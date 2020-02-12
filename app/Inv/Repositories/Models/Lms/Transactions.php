@@ -45,7 +45,7 @@ class Transactions extends BaseModel {
         'gl_flag',
         'soa_flag',
         'user_id',
-        'charge_id',
+        'chrg_trans_id',
         'virtual_acc_id',
         'trans_date',
         'trans_type',
@@ -142,7 +142,7 @@ class Transactions extends BaseModel {
      /*** get all transaction  **/
     public static function getAllUserChargeTransaction()
     {
-          return self::with('user')->where('charge_id','!=',NULL)->groupBy('user_id')->get();
+          return self::with('user')->where('chrg_trans_id','!=',NULL)->groupBy('user_id')->get();
     }
     
     function disburse()
