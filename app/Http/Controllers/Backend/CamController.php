@@ -1327,7 +1327,7 @@ class CamController extends Controller
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
-        $currStageCode = $currStage->stage_code;                    
+        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
                 
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
