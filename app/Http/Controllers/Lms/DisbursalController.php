@@ -115,6 +115,7 @@ class DisbursalController extends Controller
 		$interest = 0;
 		$disburseAmount = 0;
 		$totalInterest = 0;
+		$totalFunded = 0;
 
 		foreach ($supplierIds as $userid) {
 			foreach ($allinvoices as $invoice) {
@@ -131,6 +132,7 @@ class DisbursalController extends Controller
 			        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
 			        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
 			        $totalInterest += $interest;
+			        $totalFunded += $fundedAmount;
     				$disburseAmount += round($fundedAmount - $interest, 2);
 
 				}
@@ -175,6 +177,9 @@ class DisbursalController extends Controller
 			// dd($disburseAmount);		
 			if ($disburseAmount) {
 				if($disburseType == 2) {
+					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
+					$transactionData = $this->createTransactionData($disburseRequestData, $totalFunded, $transId, 16);
+					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
 					// $tranType = 4 for processing acc. to mst_trans_type table
 					// $prcsAmt = 1005;
@@ -189,9 +194,6 @@ class DisbursalController extends Controller
 					$intrstTrnsData = $this->createTransactionData($disburseRequestData, $intrstAmt, $transId, 9, 1);
 					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
-					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-					$transactionData = $this->createTransactionData($disburseRequestData, $disburseAmount, $transId, 16);
-					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 				}
 			}
 		}
