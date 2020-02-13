@@ -13,6 +13,10 @@
                position: fixed;
                top:-0.5cm;
          }
+         footer {
+               position: fixed;
+               bottom:0.5cm;
+         }
         *{
             font-size:13px !important;
 			   font-family: 'source-sans-pro-regular', sans-serif !important;
@@ -67,6 +71,9 @@
             padding:15px;
             clear: both;
          }
+         .pagenum:before {
+            content: counter(page);
+         }
       </style>
    </head>
    <body>
@@ -76,7 +83,12 @@
             $date = \Carbon\Carbon::now();   
          @endphp
          <p align="right"><b>{{ $date->isoFormat('MMMM D, Y')}}</b></p>
-     </header>
+
+      </header>
+
+      <footer>
+          <span class="pagenum"></span><b> |</b> CFPL
+      </footer>
      <main>
       <div  align="center">
          <p><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>
@@ -87,3 +99,5 @@
      </main>
    </body>
 </html>
+
+

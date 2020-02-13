@@ -13,10 +13,6 @@
                    <!--  <li><b class="bold">Credit Head Status :</b> Reject</li> -->
 
                 </ul>
-                @php 
-                $role_id=Helpers::getUserRole(Auth::user()->user_id);
-                @endphp
-                
                 <!-- <a  data-toggle="modal" data-target="#changeAppDisbursStatus" data-url ="{{ route('app_status_disbursed', ['app_id' => $arrRequest['app_id'],'biz_id' => $arrRequest['biz_id']]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success pull-right  btn-sm" title="Update App Status">Disbursed</a> -->
                     @php 
                     $role_id=Helpers::getUserRole(Auth::user()->user_id);
@@ -153,7 +149,7 @@
                 </table>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Rating Rational</h2>
+                    <h2 class="sub-title bg">Rating Rationale</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
                         <textarea class="form-control" id="rating_rational" name="rating_rational" rows="3" spellcheck="false" >{{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}}</textarea>
                     </div>
@@ -181,11 +177,11 @@
                                 <tr>
                                     <td><b>Takeout</b></td>
                                     <td>
-                                        <input type="text" name="t_o_f_takeout" id="takeout" class="form-control" value="{{isset($arrCamData->t_o_f_takeout) ? $arrCamData->t_o_f_takeout : ''}}">
+                                        <input type="text" name="t_o_f_takeout" id="takeout" class="form-control" value="{{isset($arrCamData->t_o_f_takeout) ? $arrCamData->t_o_f_takeout : ''}}" @if ($checkDisburseBtn=='showDisburseBtn') readonly="readonly" @endif>
                                     </td>
                                     <td><b>Recourse</b></td>
                                     <td>
-                                        <input type="text" name="t_o_f_recourse" id="recourse" class="form-control" value="{{isset($arrCamData->t_o_f_recourse) ? $arrCamData->t_o_f_recourse : ''}}">
+                                        <input type="text" name="t_o_f_recourse" id="recourse" class="form-control" value="{{isset($arrCamData->t_o_f_recourse) ? $arrCamData->t_o_f_recourse : ''}}" @if ($checkDisburseBtn=='showDisburseBtn') readonly="readonly" @endif>
                                     </td>
                                 </tr>
                                 <tr>
@@ -247,7 +243,11 @@
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{ isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
+                        @php 
+                        $role_id=Helpers::getUserRole(Auth::user()->user_id);
+                        @endphp
+                        
+                        <textarea @if (in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])) disabled="true" @endif class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{ isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
 
                         <div class="clearfix"></div>
                     </div>
