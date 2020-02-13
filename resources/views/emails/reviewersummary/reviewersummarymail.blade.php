@@ -4,7 +4,7 @@
 <table width="700" align="center" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;margin-top:10px; font-family:Arial; ">
     <tr>
         <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
-            <h2 style="font-size:18px; margin:0px 0px 0;">Cover Note</h2></td>
+            <h2 style="font-size:16px; margin:0px 0px 0;">Cover Note</h2></td>
     </tr>
     <tr>
         <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
@@ -15,103 +15,111 @@
     </tr>
     <tr>
         <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
-            <h3 style="font-size:18px; margin:0px 0px 0;">Deal Structure:</h3></td>
+            <h3 style="font-size:16px; margin:0px 0px 0;">Deal Structure</h3></td>
     </tr>
 
     <tr>
         <td align="left">
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
+            @forelse($leaseOfferData as $key=>$leaseOffer)
                 <tr>
-        <th width="50%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
+        <th width="30%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
         border-bottom: #ccc solid 1px;">Criteria</th>
-                    <th width="50%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+                    <th width="70%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Particulars</th>
                 </tr>
                 <tr>
                     <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Facility Type</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">Lease Loan</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Limit (₹ In Mn)</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($limitOfferData->limit_amt) ? '₹ '.$limitOfferData->limit_amt : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Equipment Type</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
+                </tr>
+                <tr>
+                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Limit Of The Equipment</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} </td>
                 </tr>
 
                 <tr>
                     <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Tenor (Months)</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($limitOfferData->tenor) ? $limitOfferData->tenor : ''}}</td>
-                </tr>
-
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Equipment Type</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                    @php 
-                    @$equipType = ''     
-                    @endphp 
-                    @if(isset($limitOfferData->equipment_type_id) && $limitOfferData->equipment_type_id)
-                    @php
-                        $equipType = Helpers::getEquipmentTypeById($limitOfferData->equipment_type_id)->equipment_name  
-                    @endphp
-                    @endif
-                    {{@$equipType}}</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                 </tr>
 
                 <tr>
                     <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Security Deposit</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($limitOfferData->security_deposit) ? $limitOfferData->security_deposit : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}}
+                    </td>
                 </tr>
 
                 <tr>
                     <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Rental Frequency</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($limitOfferData->rental_frequency) ? config('common.rental_frequency.'.$limitOfferData->rental_frequency) : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}</td>
+                </tr>
+
+                <tr>
+                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Pricing Per Thousand</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">@php 
+                                             $i = 1;
+                                             if(!empty($leaseOffer->offerPtpq)){
+                                             $total = count($leaseOffer->offerPtpq);
+                                          @endphp   
+                                             @foreach($leaseOffer->offerPtpq as $key => $arr) 
+
+                                                   @if ($i > 1 && $i < $total)
+                                                   ,
+                                                   @elseif ($i > 1 && $i == $total)
+                                                      and
+                                                   @endif
+                                                   {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+
+                                                   @php 
+                                                      $i++;
+                                                   @endphp     
+                                             @endforeach
+                                             @php 
+                                                }
+                                             @endphp </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">PTPQ</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                    @if(isset($offerPTPQ) && $offerPTPQ && $offerPTPQ!='')   
-                        @foreach ($offerPTPQ as $ok => $ov)
-                            {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
-                            {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
-                            {{isset($ov->ptpq_rate) ? 'Rate '.$ov->ptpq_rate : ''}}
-                            <br/>
-                        @endforeach 
-                    @endif
-                    </td>
+                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">XIRR</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%</td>
                 </tr>
                 <tr>
-                    <td  valign="top" style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">XIRR</td>
-                    <td  valign="top" style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                        Ruby Sheet : {{isset($limitOfferData->ruby_sheet_xirr) ? $limitOfferData->ruby_sheet_xirr.'%' : ''}}
-                        <br/>Cash Flow : {{isset($limitOfferData->cash_flow_xirr) ? $limitOfferData->cash_flow_xirr.'%' : ''}}
-                    </td>
+                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Processing Fee</td>
+                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee."%" : ''}}</td>
                 </tr>
                 <tr>
                     <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Additional Security</td>
                     <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                    @php 
-                    @$addSecArr = []      
-                    @endphp                        
-                    @if(isset($limitOfferData->addl_security))
-                    @php 
-                        $addSecArr = explode(',',$limitOfferData->addl_security)
-                    @endphp                                     
-                    @endif   
-                    @if(isset($addSecArr) && count($addSecArr)>0)  
-                    @foreach ($addSecArr as $k => $v)
-                        {{ config('common.addl_security.'.$v).", " }}
-                        @if($v==4)
-                            {{isset($limitOfferData->comment) ? " Comment- ".$limitOfferData->comment : ''}}
-                        @endif
-                    @endforeach 
-                    @endif         
+                    @php
+                    $add_sec_arr = '';
+                    if(isset($leaseOffer->addl_security)){
+                        $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                        foreach($addl_sec_arr as $k=>$v){
+                            $add_sec_arr .= config('common.addl_security')[$v].', ';
+                        }
+                        if(isset($leaseOffer->comment)) {
+                            $add_sec_arr .=  ' <b>Comment</b>:  '.$leaseOffer->comment; 
+                        }   
+                    }
+                    $add_sec_arr = trim($add_sec_arr, ', ');
+                    @endphp
+                    {!! $add_sec_arr !!}   
                     </td>
                 </tr>
-
+                @empty
+                    <tr class="">
+                        <td>No Offer Found</td>
+                    </tr>
+            @endforelse
             </table>
         </td>
     </tr>
     <tr>
         <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
-            <h3 style="font-size:18px; margin:0px 0px 0;">Pre Disbursement Conditions:</h3></td>
+            <h3 style="font-size:16px; margin:0px 0px 0;">Pre Disbursement Conditions</h3></td>
     </tr>
     <tr>
         <td align="left">
@@ -156,7 +164,7 @@
     </tr>
     <tr>
         <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
-            <h3 style="font-size:18px; margin:0px 0px 0;">Post Disbursement Conditions:</h3></td>
+            <h3 style="font-size:16px; margin:0px 0px 0;">Post Disbursement Conditions</h3></td>
     </tr>
     <tr>
         <td align="left">
@@ -214,7 +222,7 @@
     </tr>
     <tr>
         <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
-            <h3 style="font-size:18px; margin:0px 0px 0;">Approval criteria for IC:</h3></td>
+            <h3 style="font-size:16px; margin:0px 0px 0;">Approval criteria for IC</h3></td>
     </tr>
     <tr>
         <td align="left">
@@ -223,9 +231,9 @@
                 <tr>
                     <th width="25%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
         border-bottom: #ccc solid 1px;">Parameter</th>
-                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
         border-bottom: #ccc solid 1px;">Criteria</th>
-                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
         border-bottom: #ccc solid 1px;">Deviation</th>
                     <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
         border-bottom: #ccc solid 1px;">Remarks</th>
@@ -323,11 +331,11 @@
     </tr>
     <tr>
         <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
-            <h2 style="font-size:18px; margin:0px 0px 10px;">Risk Comments:</h2></td>
+            <h2 style="font-size:16px; margin:0px 0px 0;">Risk Comments</h2></td>
     </tr>
     <tr>
         <td align="left" style="background:#b7b7b7; color:#fff;padding:10px;">
-            <h3 style="font-size:16px; margin:0px 0px 10px;">Deal Positives:</h3></td>
+            <h3 style="font-size:14px; margin:0px 0px 0;">Deal Positives</h3></td>
     </tr>
     <tr>
         <td align="left">
@@ -369,7 +377,7 @@
     </tr>
     <tr>
         <td align="left" style="background:#b7b7b7; color:#fff;padding:10px;">
-            <h3 style="font-size:18px; margin:0px 0px 0;">Deal Negatives:</h3></td>
+            <h3 style="font-size:14px; margin:0px 0px 0;">Deal Negatives</h3></td>
     </tr>
     <tr>
         <td>
@@ -403,10 +411,16 @@
     </tr>
     <tr>
         <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
-            <h3 style="font-size:18px; margin:0px 0px 0;">Recommendation:</h3></td>
+            <h3 style="font-size:16px; margin:0px 0px 0;">Recommendation</h3></td>
     </tr>
     <tr>
-        <td align="left">{!!isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''!!}</td>
+        <td>
+            <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
+                <tr>
+                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" align="left">{!!isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''!!}</td>
+                </tr>
+            </table>
+        </td>
     </tr>
 </table>
 @endsection
