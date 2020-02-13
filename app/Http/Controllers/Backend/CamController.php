@@ -289,7 +289,7 @@ class CamController extends Controller
 
     public function mailReviewerSummary(Request $request) {
       Mail::to(config('common.review_summ_mails'))
-        ->send(new ReviewerSummary());
+        ->send(new ReviewerSummary($this->mstRepo));
 
       if(count(Mail::failures()) > 0 ) {
         Session::flash('error',trans('Mail not sent, try again later.'));
