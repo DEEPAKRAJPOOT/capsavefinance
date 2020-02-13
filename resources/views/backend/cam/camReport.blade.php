@@ -684,9 +684,9 @@
                            @php 
                               $i=0;
                            @endphp
-                           @while(!empty($arrCM[$i])) 
+                           @while(!empty($arrReviewer[$i])) 
                               <tr>
-                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrCM[$i]->assignee}}</th>
+                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrReviewer[$i]->assignee}}</th>
                                  @php $i++; @endphp
                               </tr>
                         @endwhile
