@@ -210,7 +210,7 @@ tr.border_bottom td {
                                                 <tr>
                                                     <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
                                                     <td width="15%"><b>Facility Type: </b></td>
-                                                    <td width="25%">{{config('common.facility_type')[$leaseOffer->facility_type_id]}}</td>
+                                                    <td width="25%">{{(isset($leaseOffer->facility_type_id))? config('common.facility_type')[$leaseOffer->facility_type_id]: 'NA'}}</td>
                                                     <td><b>Equipment Type: </b></td>
                                                     <td>{{\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)->equipment_name}}</td>
                                                     <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($leaseOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($leaseOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
