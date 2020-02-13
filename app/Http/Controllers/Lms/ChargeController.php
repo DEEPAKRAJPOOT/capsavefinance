@@ -146,6 +146,7 @@ class ChargeController extends Controller
                   if( $chrgTransId)
                   {
                         $arr  = [ "user_id" =>  $request->user_id,
+                                  "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
                                   "chrg_trans_id" =>  $chrgTransId,
                                  "amount" =>   $amount,
                                  'entry_type' =>0,
