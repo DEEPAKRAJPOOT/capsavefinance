@@ -910,7 +910,7 @@ class ApplicationController extends Controller
         $offerStatus = $this->appRepo->getOfferStatus($appId);//to check the offer status
         $currentStage = Helpers::getCurrentWfStage($appId);   
         $roleData = Helpers::getUserRole();        
-        $viewGenSancLettertBtn = $currentStage->role_id == $roleData[0]->id ? 1 : 0;
+        $viewGenSancLettertBtn = ($currentStage && $currentStage->role_id == $roleData[0]->id) ? 1 : 0;
 
         /*code for getting the sales manager*/     
         $appData = $this->appRepo->getAppDataByAppId($appId);               

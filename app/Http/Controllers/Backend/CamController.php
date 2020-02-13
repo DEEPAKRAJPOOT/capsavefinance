@@ -40,6 +40,7 @@ use App\Libraries\Pdf;
 use App\Inv\Repositories\Models\UserAppDoc;
 use PDF as DPDF;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 
 
 class CamController extends Controller
@@ -51,11 +52,12 @@ class CamController extends Controller
     protected $userRepo;
     protected $docRepo;
     protected $pdf;
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
         $this->pdf = $pdf;
+        $this->mstRepo = $mstRepo;
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
     }
@@ -1325,7 +1327,7 @@ class CamController extends Controller
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
-        $currStageCode = $currStage->stage_code;                    
+        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
                 
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
@@ -1431,8 +1433,21 @@ class CamController extends Controller
       $prgmOfferedAmount; //total offered amount related to program from offer table
       $currentOfferAmount; //current offered amount corresponding to app_prgm_limit_id
 
+      $facilityTypeList= $this->mstRepo->getFacilityTypeList();
       $limitData= $this->appRepo->getLimit($aplid);
-      $offerData= $this->appRepo->getProgramOffer($aplid);
+      if ($limitData->product_id == 3) {
+          $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
+          if (!empty($prgmOfferId)) {
+            $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+          } else {
+              $offerData = null;
+          }
+      } else {
+        $offerData= $this->appRepo->getProgramOffer($aplid);
+      }
+      // get Total Sub Limit amount by app_prgm_limit_id
+      $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
+
       $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
       $totalOfferedAmount = $this->appRepo->getTotalOfferedLimit($appId);
       $totalLimit = $this->appRepo->getAppLimit($appId);
@@ -1445,8 +1460,9 @@ class CamController extends Controller
         $prgmOfferedAmount = 0;
         $prgmLimit = 0;
       }
+
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt]);
     }
 
     /*function for updating offer data*/
@@ -1454,6 +1470,7 @@ class CamController extends Controller
       try{
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
+        $prgmOfferId = $request->get('offer_id');
         $aplid = (int)$request->get('app_prgm_limit_id');
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
@@ -1462,9 +1479,12 @@ class CamController extends Controller
         $request['created_by'] = Auth::user()->user_id;
         if($request->has('addl_security')){
           $request['addl_security'] = implode(',', $request->addl_security);
-        }
+        }       
+        if ($request->has('sub_limit')) {
+            $request['prgm_limit_amt'] = str_replace(',', '', $request->sub_limit);
+        }        
+        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
-        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
         /*Start add offer PTPQ block*/
         $ptpqArr =[];
         foreach($request->ptpq_from as $key=>$val){
