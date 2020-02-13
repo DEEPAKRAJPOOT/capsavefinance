@@ -149,7 +149,7 @@ trait LmsTrait
                 $transactions['amount'] = 0;
                 $transactions['trans_type'] = 18;
                 $transactions['entry_type'] = 0;   //0 - Debit and 1 - Credit    
-                $transactions['created_at'] = 0; 
+                $transactions['created_at'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                 $transactions['created_by'] = \Auth::user() ? \Auth::user()->user_id : 1; 
                 $allTrans[$userId] = $transactions;
                 $allTrans[$userId]['amount'] = isset($allTrans[$userId]) ? $allTrans[$userId]['amount'] + $overDueInterest : $overDueInterest;
