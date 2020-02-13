@@ -122,7 +122,8 @@ class Disbursal extends BaseModel {
         $query->orderBy('disburse_date', 'ASC');
         $query->orderBy('disbursal_id', 'ASC');
         $result = $query->get();
-        return $result;
+        dd('kkkk', $result);
+        return $result ? $result : [];
     }
     
     /**

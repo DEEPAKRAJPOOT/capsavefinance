@@ -25,8 +25,9 @@ trait LmsTrait
      * @return mixed
      */
     protected function calAccrualInterest()
-    {   
-        $int_type_config = 2; //1=>Daily Interest Accrual, 2=>Monthly Interest Accrual, 3=>Rear Ended
+    {
+        $this->getOverDueInterest(34);
+        $int_type_config = 1; //1=>Daily Interest Accrual, 2=>Monthly Interest Accrual, 3=>Rear Ended
         //$currentDate = \Carbon\Carbon::now()->format('Y-m-d');
         $currentDate = date('Y-m-d');
                 
@@ -136,7 +137,7 @@ trait LmsTrait
                 $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);
             }
             $returnData[$disbursalId] = $accuredInterest;
-        }
+        }                        
         return $returnData;
     }
     
@@ -302,5 +303,28 @@ trait LmsTrait
         $disbursalData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
         
         return $disbursalData;
-    }    
+    }
+
+    /**
+     * Get Overdue Interest
+     * 
+     * @param integer $invoice_id
+     * @return float
+     */
+    protected function getOverDueInterest($invoice_id)
+    {
+        $disbData = $this->lmsRepo->getDisbursalRequests(['invoice_id' => $invoice_id]);
+        dd('uuuuuuuuuuu', $disbData);
+        if (!isset($disbData[0])) return null;
+        
+        $disbursalId = $disbData[0]->disbursal_id;
+        $invDueDate  = $disbData[0]->inv_due_date;
+        
+        $monthlyIntCond = [];
+        $monthlyIntCond['disbursal_id'] = $disbursalId;
+        $monthlyIntCond['interest_date_gte'] = $invDueDate;   //date('Y-m-d', strtotime($invDueDate));
+        $accuredInterest = $this->lmsRepo->sumAccruedInterest($monthlyIntCond);
+        dd('jjjjjjjjjjjjj', $accuredInterest);
+        return $accuredInterest;
+    }
 }
