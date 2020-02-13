@@ -301,16 +301,16 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      // Mail::to(config('common.review_summ_mails'))
-      //   ->send(new ReviewerSummary());
+      Mail::to(config('common.review_summ_mails'))
+        ->send(new ReviewerSummary());
 
-      // if(count(Mail::failures()) > 0 ) {
-      //   Session::flash('error',trans('Mail not sent, try again later.'));
-      // } else {
-      //   Session::flash('message',trans('Mail sent successfully.'));        
-      // }
-      // return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
-      return new \App\Mail\ReviewerSummary($this->mstRepo);        
+      if(count(Mail::failures()) > 0 ) {
+        Session::flash('error',trans('Mail not sent, try again later.'));
+      } else {
+        Session::flash('message',trans('Mail sent successfully.'));        
+      }
+      return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
+      //return new \App\Mail\ReviewerSummary($this->mstRepo);        
     }
 
      public function uploadFinanceXLSX(Request $request){

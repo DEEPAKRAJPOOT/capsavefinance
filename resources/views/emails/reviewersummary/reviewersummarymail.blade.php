@@ -9,7 +9,7 @@
     <tr>
         <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
             <tr>
-                <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" align="left">{!!isset($reviewerSummaryData->cover_note) ? ($reviewerSummaryData->cover_note) : ''!!}</td>
+                <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" align="left">{!!isset($reviewerSummaryData->cover_note) ? ($reviewerSummaryData->cover_note) : ''!!}</td>
             </tr>
         </table>
     </tr>
@@ -29,38 +29,38 @@
         border-bottom: #ccc solid 1px;">Particulars</th>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Facility Type</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Facility Type</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Equipment Type</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Equipment Type</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Limit Of The Equipment</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} </td>
-                </tr>
-
-                <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Tenor (Months)</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Limit Of The Equipment</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">{!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} </td>
                 </tr>
 
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Security Deposit</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Tenor (Months)</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
+                </tr>
+
+                <tr>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Security Deposit</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                     {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}}
                     </td>
                 </tr>
 
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Rental Frequency</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Rental Frequency</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}</td>
                 </tr>
 
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Pricing Per Thousand</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">@php 
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Pricing Per Thousand</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">@php 
                                              $i = 1;
                                              if(!empty($leaseOffer->offerPtpq)){
                                              $total = count($leaseOffer->offerPtpq);
@@ -83,16 +83,16 @@
                                              @endphp </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">XIRR</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">XIRR</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%</td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Processing Fee</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee."%" : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Processing Fee</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee."%" : ''}}</td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Additional Security</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Additional Security</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                     @php
                     $add_sec_arr = '';
                     if(isset($leaseOffer->addl_security)){
@@ -132,30 +132,30 @@
         border-bottom: #ccc solid 1px;">Timeline</th>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{isset($reviewerSummaryData->cond_nach) ? $reviewerSummaryData->cond_nach : ''}}</td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{isset($reviewerSummaryData->time_nach) ? $reviewerSummaryData->time_nach : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{isset($reviewerSummaryData->cond_nach) ? $reviewerSummaryData->cond_nach : ''}}</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">{{isset($reviewerSummaryData->time_nach) ? $reviewerSummaryData->time_nach : ''}}</td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cond_insp_asset) ? $reviewerSummaryData->cond_insp_asset : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->time_insp_asset) ? $reviewerSummaryData->time_insp_asset : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cond_insu_pol_cfpl) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->time_insu_pol_cfpl) ? $reviewerSummaryData->time_insu_pol_cfpl : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cond_personal_guarantee) ? $reviewerSummaryData->cond_personal_guarantee : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->time_personal_guarantee) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}}
                     </td>
                 </tr>          
@@ -177,42 +177,42 @@
         border-bottom: #ccc solid 1px;">Timeline</th>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cond_pbdit) ? $reviewerSummaryData->cond_pbdit : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->time_pbdit) ? $reviewerSummaryData->time_pbdit : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->time_dscr) ? $reviewerSummaryData->time_dscr : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cond_lender_cfpl) ? $reviewerSummaryData->cond_lender_cfpl : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->time_lender_cfpl) ? $reviewerSummaryData->time_lender_cfpl : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cond_ebidta) ? $reviewerSummaryData->cond_ebidta : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->time_ebidta) ? $reviewerSummaryData->time_ebidta : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cond_credit_rating) ? $reviewerSummaryData->cond_credit_rating : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->time_credit_rating) ? $reviewerSummaryData->time_credit_rating : ''}}
                     </td>
                 </tr>
@@ -239,90 +239,90 @@
         border-bottom: #ccc solid 1px;">Remarks</th>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Nominal RV Position
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Max 5% over the values mentionedin the matrix
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_rv_position) ? $reviewerSummaryData->criteria_rv_position : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_rv_position_remark) ? $reviewerSummaryData->criteria_rv_position_remark : ''}}
                     </td>
                 </tr> 
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Asset concentration as % of the total portfolio
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         - IT assets and telecommunications max 70%<br/>
                         - Plant and machinery max 50%<br/>
                         - Furniture and fit outs max 30%<br/>
                         - Any other asset type max 20%
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_asset_portfolio) ? $reviewerSummaryData->criteria_asset_portfolio : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_asset_portfolio_remark) ? $reviewerSummaryData->criteria_asset_portfolio_remark : ''}}
                     </td>
                 </tr> 
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Single Borrower Limit
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Max 15% of Net owned funds (Rs150 Mn)
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_sing_borr_limit) ? $reviewerSummaryData->criteria_sing_borr_limit : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_sing_borr_remark) ? $reviewerSummaryData->criteria_sing_borr_remark : ''}}
                     </td>
                 </tr> 
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Borrower Group Limit 
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Max 25% of Net owned funds (Rs250 Mn)
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_borr_grp_limit) ? $reviewerSummaryData->criteria_borr_grp_limit : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_borr_grp_remark) ? $reviewerSummaryData->criteria_borr_grp_remark : ''}}
                     </td>
                 </tr> 
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Exposure on customers below investment grade <br/>
                                     (BBB -CRISIL/CARE/ICRA/India Ratings) and unrated customers 
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Max 50% of CFPL portfolio
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_invest_grade) ? $reviewerSummaryData->criteria_invest_grade : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_invest_grade_remark) ? $reviewerSummaryData->criteria_invest_grade_remark : ''}}
                     </td>
                 </tr> 
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Exposure to a particular industry/sector as a percentage of total portfolio 
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         Max 50% of the total CFPL portfolio
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_particular_portfolio) ? $reviewerSummaryData->criteria_particular_portfolio : ''}}
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_particular_portfolio_remark) ? $reviewerSummaryData->criteria_particular_portfolio_remark : ''}}
                     </td>
                 </tr> 
@@ -341,34 +341,34 @@
         <td align="left">
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                 <tr>
-                    <td width="50%" style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td width="50%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         <strong> {{isset($reviewerSummaryData->cond_pos_track_rec) ? $reviewerSummaryData->cond_pos_track_rec : ''}}</strong>
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cmnt_pos_track_rec) ? $reviewerSummaryData->cmnt_pos_track_rec : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         <strong> {{isset($reviewerSummaryData->cond_pos_credit_rating) ? $reviewerSummaryData->cond_pos_credit_rating : ''}}</strong>
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cmnt_pos_credit_rating) ? $reviewerSummaryData->cmnt_pos_credit_rating : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         <strong>{{isset($reviewerSummaryData->cond_pos_fin_matric) ? $reviewerSummaryData->cond_pos_fin_matric : ''}}</strong>
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cmnt_pos_fin_matric) ? $reviewerSummaryData->cmnt_pos_fin_matric : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         <strong>{{isset($reviewerSummaryData->cond_pos_establish_client) ? $reviewerSummaryData->cond_pos_establish_client : ''}} </strong>
                     </td>
-                    <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cmnt_pos_establish_client) ? $reviewerSummaryData->cmnt_pos_establish_client : ''}}
                     </td>
                 </tr>
@@ -383,26 +383,26 @@
         <td>
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                 <tr>
-                    <td width="50%" align="left" style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td width="50%" align="left" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         <strong>{{isset($reviewerSummaryData->cond_neg_competition) ? $reviewerSummaryData->cond_neg_competition : ''}}</strong>
                     </td>
-                    <td align="left" style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td align="left" style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cmnt_neg_competition) ? $reviewerSummaryData->cmnt_neg_competition : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td align="left" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         <strong> {{isset($reviewerSummaryData->cond_neg_forex_risk) ? $reviewerSummaryData->cond_neg_forex_risk : ''}} </strong>
                     </td>
-                    <td align="left" style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td align="left" style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cmnt_neg_forex_risk) ? $reviewerSummaryData->cmnt_neg_forex_risk : ''}}
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                    <td align="left" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         <strong> {{isset($reviewerSummaryData->cond_neg_pbdit) ? $reviewerSummaryData->cond_neg_pbdit : ''}}</strong>
                     </td>
-                    <td align="left" style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
+                    <td align="left" style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->cmnt_neg_pbdit) ? $reviewerSummaryData->cmnt_neg_pbdit : ''}}
                     </td>
                 </tr>
@@ -417,7 +417,7 @@
         <td>
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                 <tr>
-                    <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" align="left">{!!isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''!!}</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" align="left">{!!isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''!!}</td>
                 </tr>
             </table>
         </td>
