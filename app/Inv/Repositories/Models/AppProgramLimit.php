@@ -226,7 +226,8 @@ class AppProgramLimit extends BaseModel {
                 'app_prgm_offer.ruby_sheet_xirr',
                 'app_prgm_offer.cash_flow_xirr',
                 'app_prgm_offer.addl_security',
-                'app_prgm_offer.comment'
+                'app_prgm_offer.comment',
+                'app_prgm_offer.facility_type_id'
                 )
                 ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
                 ->where('app_prgm_limit.app_id',$appId)
