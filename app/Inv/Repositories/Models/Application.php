@@ -126,7 +126,7 @@ class Application extends BaseModel
                         
                     } else {
                         $join->on('app_assign.is_owner', '=', DB::raw("1"));
-                        //$join->whereNotNull('app_assign.to_id');
+                        $join->whereNotNull('app_assign.to_id');
                     }
                 })
                 ->join('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')             
