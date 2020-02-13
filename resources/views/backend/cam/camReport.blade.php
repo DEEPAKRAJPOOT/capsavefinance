@@ -91,7 +91,7 @@
                </tr>
                <tr role="row" class="odd">
                   <td class="" valign="top"><b>XIRR</b></td>
-                  <td class="" valign="top"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
+                  <td class="" valign="top"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br/><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
                   </td>
                </tr>
                
@@ -234,7 +234,6 @@
 
  
    <div class="data mt-4">
-
       <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
@@ -330,7 +329,7 @@
                </tr>
                <tr>
                   <td>Cash Profit</td>
-                  <td>Positive for 2 out of last 3 financial years <br>(positive in last year)</td>
+                  <td>Positive for 2 out of last 3 financial years <br/>(positive in last year)</td>
                   <td>{{isset($finacialDetails->cash_profit_check) && $finacialDetails->cash_profit_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($finacialDetails->cash_profit_cmnt) ? trim($finacialDetails->cash_profit_cmnt) : ''}}</td>
                </tr>
@@ -414,8 +413,8 @@
                <tr>
                   <td>2</td>
                   <td>Asset concentration as % of the total portfolio</td>
-                  <td>- IT assets and telecommunications max 70%<br>- Plant and machinery max 50%<br>- Furniture and fit outs max 30%
-                     <br>- Any other asset type max 20%
+                  <td>- IT assets and telecommunications max 70%<br/>- Plant and machinery max 50%<br/>- Furniture and fit outs max 30%
+                     <br/>- Any other asset type max 20%
                   </td>
                   <td>{{isset($reviewerSummaryData->criteria_asset_portfolio_remark) ? $reviewerSummaryData->criteria_asset_portfolio_remark : ''}}</td>
                </tr>
@@ -482,10 +481,12 @@
             <tbody>
             @if(!empty($arrOwnerData))
                @foreach($arrOwnerData as $key => $arrData)
+               @if ($arrData->gender != '3')
                <tr>
                   <td>{{$arrData->first_name}}</td>
                   <td>{{$arrData->designation}}</td>
                </tr>
+               @endif
                @endforeach
             @endif  
                
@@ -503,12 +504,12 @@
             <tbody>
             @if(!empty($arrOwnerData))
                   @foreach($arrOwnerData as $key => $arrData)
-                     @if ($arrData->is_promoter)
+                  @if ($arrData->gender == '3' || $arrData->is_promoter)
                         <tr>
                            <td>{{$arrData->first_name}}</td>
                            <td>{{$arrData->share_per}}</td>
                         </tr>
-                     @endif
+                  @endif
                   @endforeach
             @endif
             </tbody>
@@ -666,7 +667,7 @@
       </div>
    </div>
 
-     <div class="data mt-4">
+   <div class="data mt-4">
       <h2 class="sub-title bg">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
@@ -729,8 +730,6 @@
          </table>
       </div>
    </div>
-
-         
 
 <script>
 if('{{$arrApproverDataCount}}' ==  '{{$j}}' && '{{$arrApproverDataCount}}' != 0){

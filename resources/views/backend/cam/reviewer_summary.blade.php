@@ -26,9 +26,10 @@
                      <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{!! isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : '' !!}</textarea>
                </div>
 
+
                <div class="col-md-12 data mt-4 ">
                      <h2 class="sub-title bg">Deal Structure</h2>
-                         @forelse($leaseOfferData as $key=>$leaseOffer)
+                        @forelse($leaseOfferData as $key=>$leaseOffer)
                            <div class="pl-4 pr-4 pb-4 pt-2">
                               <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                                  <thead>
