@@ -509,7 +509,15 @@ Route::group(
         'uses' => 'AjaxController@getChargeLists'
         ]
     );
-
+/*charges  route*/
+    Route::post(
+        'get-lms-charges-list',
+        [
+        'as' => 'get_lms_charges_list',
+        'uses' => 'AjaxController@getLmsChargeLists'
+        ]
+    );
+    
      /*Master Document route*/
     Route::post(
         'get-master-document-list',
@@ -750,6 +758,11 @@ Route::group(
         'uses' => 'AjaxController@getGroupCompany'
     ]);   
           
-          
+   /////////// get transa name//////////
+    
+    Route::post('get_trans_name', [
+        'as' => 'get_trans_name',
+        'uses' => 'AjaxController@getTransName'
+    ]);   
 
 });

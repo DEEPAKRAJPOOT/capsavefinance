@@ -52,6 +52,7 @@ class Transactions extends BaseModel {
         'virtual_acc_id',
         'trans_date',
         'trans_type',
+        'trans_by',
         'pay_from',
         'amount',
         'gst',
@@ -127,6 +128,13 @@ class Transactions extends BaseModel {
     }
     
     
+    /*** save repayment transaction details for invoice  **/
+    public static function saveCharge($attr)
+    {
+        return self::insert($attr);
+          
+    } 
+    
     /*** get all transaction  **/
     public static function getAllManualTransaction()
     {
@@ -168,5 +176,11 @@ class Transactions extends BaseModel {
         $trans = self::select(DB::raw('max(concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)))as trans_code'))->where('user_id','=',$user_id)->get();
         return self::get_balance($trans[0]->trans_code, $user_id);
     }
+
+     /*** get all transaction  **/
+    public static function getAllUserChargeTransaction()
+    {
+          return self::with('user')->where('chrg_trans_id','!=',NULL)->groupBy('user_id')->get();
+    }   
      
 }

@@ -973,7 +973,7 @@ class DataRenderer implements DataProviderInterface
       return DataTables::of($invoice)
                ->rawColumns(['status','anchor_id','action'])
                 ->setRowClass(function ($invoice) {
-                    $finalDueDate =  date('d/m/Y', strtotime($invoice->invoice_due_date.' + '.$invoice->program_offer->grace_period.' days'));
+                      $finalDueDate =  date('d/m/Y', strtotime($invoice->invoice_due_date.' + '.$invoice->program_offer->grace_period.' days'));
                        $date =  Carbon::now();
                        $date =  Carbon::parse($date)->format('d/m/Y');
                        $cdate =  strtotime(Carbon::createFromFormat('d/m/Y',$date));
@@ -2075,6 +2075,94 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+    
+       public function getLmsChargeLists(Request $request, $charges){
+         $this->chrg_applicable_ids = array(
+            '1' => 'Limit Amount',
+            '2' => 'Outstanding Amount',
+            '3' => 'Outstanding Principal',
+            '4' => 'Outstanding Interest',
+            '5' => 'Overdue Amount'
+        );
+        return DataTables::of($charges)
+                ->rawColumns(['chrg_type'])
+                ->addColumn(
+                    'chrg_type',
+                    function ($charges) {
+                   return $charges->ChargeMaster->chrg_name;
+                })
+                ->addColumn(
+                    'chrg_calculation_type',
+                    function ($charges) {
+                    return $charges->ChargeMaster->chrg_calculation_type == 1 ? 'Fixed' : 'Percent';
+                })
+                ->addColumn(
+                    'chrg_calculation_amt',
+                    function ($charges) {
+                    return number_format($charges->amount);
+                })  
+                ->addColumn(
+                    'is_gst_applicable',
+                    function ($charges) {
+                     return ($charges->ChargeMaster->is_gst_applicable == 1) ? 'Yes' : 'No'; 
+                })      
+                 ->addColumn(
+                    'charge_percent',
+                    function ($charges) {
+                     return ($charges->percent) ? $charges->percent : 'N/A'; 
+                })   
+                ->addColumn(
+                    'chrg_applicable_id',
+                    function ($charges) {
+                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
+                })
+                ->addColumn(
+                    'effective_date',
+                    function ($charges) {
+                   return $charges->transaction->trans_date;
+                }) 
+                ->addColumn(
+                    'applicability',
+                    function ($charges) {
+                    return ($charges->ChargeMaster->chrg_type == 1) ? 'Auto' : 'Manual';
+                })
+                 ->addColumn(
+                    'chrg_desc',
+                    function ($charges) {
+                     return $charges->ChargeMaster->chrg_desc;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($charges) {
+                    return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
+                })
+               
+                 ->filter(function ($query) use ($request) {
+                    if ($request->get('type') != '') {
+                            $query->whereHas('transaction', function ($query) use ($request) {
+                            $search_keyword = trim($request->get('type'));
+                            $query->where('user_id',$search_keyword);
+                        });
+                    }
+                      if ($request->get('from_date') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $from = str_replace('/', '-', $request->get('from_date'));
+                            $converedDate = date("Y-m-d H:i:s", strtotime($from));
+                            $query->whereDate('created_at','>=' , $converedDate);
+                        });
+                    }
+                    if ($request->get('to_date') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $to_date = str_replace('/', '-', $request->get('to_date'));
+                            $query->whereDate('created_at','<=' , date('Y-m-d H:i:s', strtotime($to_date)) );
+                        });
+                    }
+                })
+                
+                ->make(true);
+    }
+    
+      
 
      public function getDocumentsList(Request $request, $documents){
          $this->doc_type_ids = array(

@@ -364,16 +364,27 @@ use CommonRepositoryTraits;
        return Transactions::saveRepaymentTrans($attributes);  
     }
     
-     public function getCustomerId()
+     public function getCustomerId($uid)
     {
         try
         {
-           return Disbursal::getCustomerId();  
+           return Disbursal::getCustomerId($uid);  
         } catch (Exception $ex) {
            return $ex;
         }
          
     }
+    
+    public function getDisburseCustomerId()
+    {
+        try
+        {
+           return Disbursal::getDisburseCustomerId();  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    } 
     
      public function singleRepayment($id,$repayment)
     {

@@ -8,11 +8,15 @@ use App\Inv\Repositories\Contracts\LmsInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 
@@ -266,4 +270,102 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return LmsUser::where('user_id', $userId)
                 ->pluck('virtual_acc_id')->first();
     } 
+    
+    /****
+     * get trans  type
+     */
+      public static function getTrnasType($whr)
+    {
+        try{
+            return Charges::getTransData($whr);
+        } catch (Exception $ex) {
+           return $ex;
+        }
+        
+               
+    }  
+    /****
+     * get trans  type
+     */
+      public static function getProgramUser($userId)
+    {
+       try
+       {
+          return User::getProgramUser($userId); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }  
+    
+      public static function getSingleChargeAmount($attr)
+    {
+       try
+       {
+          return ProgramCharges::getSingleChargeAmount($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }   
+    
+      public static function saveCharge($attr)
+    {
+       try
+       {
+          return Transactions::saveCharge($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }   
+    
+    public static function getAllTransCharges()
+    {
+        try
+       {
+          return ChargesTransactions::getAllTransCharges(); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+        
+    }
+      public static function saveChargeTrans($attr)
+    {
+       try
+       {
+          return ChargesTransactions::saveChargeTrans($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
+     
+      public static function getAllUserChargeTransaction()
+    {
+       try
+       {
+          return Transactions::getAllUserChargeTransaction(); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
+      public static function getTransName($attr)
+    {
+       try
+       {
+          return ProgramCharges::getTransName($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
+    
 }

@@ -115,7 +115,7 @@
                                                                         <tr role="row">
                                                                             <th>Invoice No</th> 
                                                                             <th>Anchor Name</th>
-                                                                              <th>Customer Name</th>
+                                                                            <th>Customer Name</th>
                                                                             <th>Invoice Date</th>
                                                                             <th>Invoice Due Date</th>
                                                                             <th>Tenor</th>
