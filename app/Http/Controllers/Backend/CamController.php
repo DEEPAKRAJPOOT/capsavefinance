@@ -52,7 +52,7 @@ class CamController extends Controller
     protected $userRepo;
     protected $docRepo;
     protected $pdf;
-    protected $genBlankfinJSON = false;
+    protected $genBlankfinJSON = FALSE;
     public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
