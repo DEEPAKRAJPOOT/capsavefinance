@@ -135,5 +135,15 @@ class Transactions extends BaseModel {
        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
     }      
    
-     
+    /**
+     * Update Transaction
+     * 
+     * @param array $whereCondition
+     * @param array $data
+     * @return mixed
+     */
+    public static function updateTransaction($whereCondition, $data)
+    {
+        return self::where($whereCondition)->update($data);
+    }
 }

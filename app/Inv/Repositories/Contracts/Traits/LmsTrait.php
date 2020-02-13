@@ -149,6 +149,7 @@ trait LmsTrait
                 $transactions['amount'] = 0;
                 $transactions['trans_type'] = 18;
                 $transactions['entry_type'] = 0;   //0 - Debit and 1 - Credit    
+                $transactions['mode_of_pay'] = 1;  //1 - Online
                 $transactions['created_at'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                 $transactions['created_by'] = \Auth::user() ? \Auth::user()->user_id : 1; 
                 $allTrans[$userId] = $transactions;
@@ -158,7 +159,16 @@ trait LmsTrait
         //$insertTrans = [];
         foreach($allTrans as $key => $trans) {
             //$insertTrans[] = $trans;
-            $this->lmsRepo->saveTransaction($trans);
+            $transData = $this->lmsRepo->getTransactions(['user_id' => $trans['user_id'], 'trans_type' => 18]);
+            if (!isset($transData[0])) {
+                $this->lmsRepo->saveTransaction($trans);
+            } else {
+                $data = [
+                    'trans_date' => date("Y-m-d"),
+                    'amount' => $trans['amount']
+                ];
+                $this->lmsRepo->updateTransaction(['user_id' => $trans['user_id'], 'trans_type' => 18], $data);
+            }
         }
                         
         return $returnData;

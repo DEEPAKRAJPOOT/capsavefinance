@@ -247,5 +247,20 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return Disbursal::where('disbursal_id', $disbursalId)
                 ->update($data);
-    }           
+    }
+    
+    /**
+     * Update Transactions
+     *      
+     * @param array $whereCondition
+     * @param array $data
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateTransaction($whereCondition, $data)
+    {
+        return Transactions::updateTransaction($whereCondition, $data);
+    }
+    
 }
