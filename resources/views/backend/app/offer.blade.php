@@ -269,14 +269,16 @@ tr.border_bottom td {
                                                     <td>
                                                         @php
                                                         $add_sec_arr = '';
-                                                        if(isset($leaseOffer->addl_security)){
+                                                        if(isset($leaseOffer->addl_security) && $leaseOffer->addl_security !=''){
                                                             $addl_sec_arr = explode(',', $leaseOffer->addl_security);
                                                             foreach($addl_sec_arr as $k=>$v){
                                                                 $add_sec_arr .= config('common.addl_security')[$v].', ';
                                                             }
-                                                            if($leaseOffer->comment){
-                                                                $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
-                                                            }
+                                                        }
+                                                        if($leaseOffer->comment != '' && $leaseOffer->addl_security !=''){
+                                                            $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
+                                                        }else{
+                                                            $add_sec_arr .= $leaseOffer->comment;
                                                         }
                                                         @endphp 
                                                         {!! trim($add_sec_arr,', ') !!}
