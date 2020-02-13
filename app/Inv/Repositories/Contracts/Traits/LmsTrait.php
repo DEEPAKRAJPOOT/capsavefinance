@@ -35,6 +35,7 @@ trait LmsTrait
         //$disbursalWhereCond['int_accrual_start_dt']  = $currentDate;
         $disbursalData = $this->lmsRepo->getDisbursalRequests($disbursalWhereCond);
         $returnData = [];
+        $allTrans = [];
         foreach($disbursalData as $disburse) {
             $disbursalId = $disburse->disbursal_id;
             $appId  = $disburse->app_id;            
@@ -144,14 +145,22 @@ trait LmsTrait
                 $transactions['user_id'] = $userId;
                 $transactions['virtual_acc_id'] = $virAccId;
                 $transactions['trans_date'] = date("Y-m-d");
-                $transactions['virtual_acc_id'] = $virAccId;
-                $transactions['amount'] = $overDueInterest;                
+                $transactions['virtual_acc_id'] = $virAccId;     
+                $transactions['amount'] = 0;
                 $transactions['trans_type'] = 18;
-                $transactions['entry_type'] = 0;   //0 - Debit and 1 - Credit                 
-                $this->lmsRepo->saveTransaction($transactions);
+                $transactions['entry_type'] = 0;   //0 - Debit and 1 - Credit    
+                $transactions['created_at'] = 0; 
+                $transactions['created_by'] = \Auth::user() ? \Auth::user()->user_id : 1; 
+                $allTrans[$userId] = $transactions;
+                $allTrans[$userId]['amount'] = isset($allTrans[$userId]) ? $allTrans[$userId]['amount'] + $overDueInterest : $overDueInterest;
             }
         }
-        
+        //$insertTrans = [];
+        foreach($allTrans as $key => $trans) {
+            //$insertTrans[] = $trans;
+            $this->lmsRepo->saveTransaction($trans);
+        }
+                        
         return $returnData;
     }
     

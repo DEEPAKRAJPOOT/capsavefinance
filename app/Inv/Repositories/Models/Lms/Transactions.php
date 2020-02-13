@@ -86,9 +86,9 @@ class Transactions extends BaseModel {
             $transactions['created_at'] = \Auth::user()->user_id;
         }        
         
-        if (!isset($transactions[0])) {
+        if (!isset($transactions[0])) {            
             return self::create($transactions);
-        } else {
+        } else {            
             return self::insert($transactions);
         }
     }
