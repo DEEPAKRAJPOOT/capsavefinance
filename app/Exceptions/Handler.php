@@ -69,8 +69,7 @@ class Handler extends ExceptionHandler
         }
     
 
-        if (config('app.debug') && (config('app.env') == "local" || config('app.env') == "stage" || config('app.env') == "production")) {
-            dd('uuuuuuuuuuu', get_class($exception), $exception instanceof ValidationException);
+        if (config('app.debug') && (config('app.env') == "local" || config('app.env') == "stage" || config('app.env') == "production")) {            
             if ($maintenanceMode) {
                 return Response::view('errors.503', [], 503);
             } elseif ($exception instanceof TooManyRequestsHttpException) {
@@ -88,7 +87,7 @@ class Handler extends ExceptionHandler
                 (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 //return redirect('/');
                 return Response::view('errors.400', [], 400);
-            } else if ($exception) {
+            } else if ($exception && get_class($exception) != 'Illuminate\Validation\ValidationException') {
                 //dd($exception);
                 (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 return Response::view('errors.custom', [], 500);                
