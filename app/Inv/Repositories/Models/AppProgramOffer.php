@@ -115,7 +115,7 @@ class AppProgramOffer extends BaseModel {
     public static function getOfferForLimit($oid)
     {
        
-      return  self::where(['app_prgm_limit_id'=>$oid,'is_active' =>1, 'is_active'=>1,'status' =>1 ])->first();      
+      return  self::where(['app_prgm_limit_id'=>$oid, 'is_active'=>1,'status' =>1 ])->first();      
 
     }
 

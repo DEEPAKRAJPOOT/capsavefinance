@@ -188,7 +188,7 @@
                               <b>
                                  Whether Appearing in any of the below
                                  <ul>
-                                    <li>CIBIL Defaulters List</li>
+                                    <li>Bureau Defaulters List</li>
                                  </ul>
                               </b>
                            </td>
@@ -532,7 +532,7 @@
          </div>
          <div class="modal-body">
             <input type="hidden"  id="biz_owner_id">
-            <p>Are you sure you want to pull the cibil score for this promoter?</p>
+            <p>Are you sure you want to pull the bureau score for this promoter?</p>
             <p id="pullMsg"></p>
          </div>
          <div class="modal-footer">
@@ -569,7 +569,7 @@
          </div>
          <div class="modal-body">
             <input type="hidden"  id="biz_id">
-            <p>Are you sure you want to pull the cibil score for this Company?</p>
+            <p>Are you sure you want to pull the bureau score for this Company?</p>
             <p id="pullMsg"></p>
          </div>
          <div class="modal-footer">

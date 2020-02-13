@@ -82,9 +82,11 @@ return [
     'review_summ_mails' => ['gaurav.agarwal@zuron.in','varun.dudani@zuron.in','updesh.sharma@prolitus.com'],
     'review_summ_mail_docs_id' => [3,9],
     'user_role' => [
+        'SALES'=>4,
+        'CPA'=>5,
         'APPROVER'=>8,
-         'OPPS_CHECKER'=>10,
-         'ANCHOR'=>11,
+        'OPPS_CHECKER'=>10,
+        'ANCHOR'=>11,
     ],
     'mst_status_id' => [
         'NEW'=>19,
