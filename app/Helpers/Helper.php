@@ -715,7 +715,7 @@ class Helper extends PaypalHelper
         $amount = !$decimal ? (int) $amount : $amount;        
         $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
         if ($prefixCurrency) {
-            $formattedAmount = $currency.$formattedAmount;
+            $formattedAmount = "$currency $formattedAmount";
         }
         return $formattedAmount;
     }

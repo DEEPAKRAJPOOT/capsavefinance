@@ -6,9 +6,9 @@
             <tr role="row">
                <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Group</th>
                <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Borrower</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit(Mn)</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure(Mn)</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure(Mn)</th>
             </tr>
          </thead>
          <tbody>
@@ -25,6 +25,7 @@
 
    <div class="data mt-4">
       <h2 class="sub-title bg">Deal Structure</h2>
+      @forelse($leaseOfferData as $key=>$leaseOffer)
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
@@ -34,49 +35,50 @@
                </tr>
             </thead>
             <tbody>
+              
+               
                <tr role="row" class="odd">
-                  <td class=""><b>Facility Type</td>
-                  <td class="">Lease</td>
-               </tr>
-               <tr role="row" class="odd">
-                  <td class=""><b>Limit</b></td>
-                  <td class=""> {{isset($leaseOfferData->prgm_limit_amt) ? $leaseOfferData->prgm_limit_amt : ''}}
-                        </td>
-                  
-               </tr>
-               <tr role="row" class="odd">
-                  <td class=""><b>Tenor (Months)</b></td>
-                  <td class="">{{isset($leaseOfferData->tenor) ? $leaseOfferData->tenor : ''}}</td>
+                  <td class=""><b>Facility Type</b></td>
+                  <td class="">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Equipment Type</b></td>
-                  <td class="">{{isset($leaseOfferData->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOfferData->equipment_type_id)['equipment_name']) : ''}}</td>
+                  <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
+               </tr>
+               <tr role="row" class="odd">
+                  <td class=""><b>Limit Of The Equipment</b></td>
+                  <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} 
+                        </td>
+               </tr>
+            
+               <tr role="row" class="odd">
+                  <td class=""><b>Tenor (Months)</b></td>
+                  <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Security Deposit</b></td>
-                  <td class="">{{isset($leaseOfferData->security_deposit) ? $leaseOfferData->security_deposit : ''}}</td>
+                  <td class="">  {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}} </td>
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>Rental Frequency</b></td>
-                  <td class="">{{isset($leaseOfferData->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOfferData->rental_frequency] : ''}}</td>
+                  <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}   </td>
                </tr>
                <tr role="row" class="odd">
-                  <td class=""><b>PTPF</b></td>
+                  <td class=""><b>Pricing Per Thousand</b></td>
                   <td class="">
                      @php 
                         $i = 1;
-                        if(!empty($leaseOfferData->offerPtpq)){
-                        $total = count($leaseOfferData->offerPtpq);
+                        if(!empty($leaseOffer->offerPtpq)){
+                        $total = count($leaseOffer->offerPtpq);
                      @endphp   
-
-                        @foreach($leaseOfferData->offerPtpq as $key => $arr) 
+                        @foreach($leaseOffer->offerPtpq as $key => $arr) 
 
                               @if ($i > 1 && $i < $total)
                               ,
                               @elseif ($i > 1 && $i == $total)
                                  and
                               @endif
-                              Rs. {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOfferData->rental_frequency]}}
+                              {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
 
                               @php 
                                  $i++;
@@ -85,35 +87,43 @@
                         @php 
                            }
                         @endphp 
-
                   </td>
                </tr>
                <tr role="row" class="odd">
                   <td class="" valign="top"><b>XIRR</b></td>
-                  <td class="" valign="top">Ruby Sheet : {{isset($leaseOfferData->ruby_sheet_xirr) ? $leaseOfferData->ruby_sheet_xirr : ''}}%<br>Cash Flow : {{isset($leaseOfferData->cash_flow_xirr) ? $leaseOfferData->cash_flow_xirr : ''}}%
+                  <td class="" valign="top"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
                   </td>
                </tr>
                
                <tr role="row" class="odd">
                   <td class=""><b>Additional Security</b></td>
                   <td class="">
-                     @if(isset($leaseOfferData->addl_security))
-                     @switch($leaseOfferData->addl_security)
-                        @case(1) BG
-                           @break
-                        @case(2) FD
-                           @break
-                        @case(3) MF
-                           @break
-                        @case(4) Others {{isset($leaseOfferData->comment) ? $leaseOfferData->comment : ''}}
-                           @break
-                     @endswitch
-                     @endif
+                     @php
+                      $add_sec_arr = '';
+                      if(isset($leaseOffer->addl_security)){
+                          $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                          foreach($addl_sec_arr as $k=>$v){
+                              $add_sec_arr .= config('common.addl_security')[$v].', ';
+                          }
+                          if(isset($leaseOffer->comment)) {
+                              $add_sec_arr .=  ' <b>Comment</b>:  '.$leaseOffer->comment; 
+                           }   
+                      }
+                      $add_sec_arr = trim($add_sec_arr, ', ');
+                      @endphp
+                      {!! $add_sec_arr !!}
                   </td>
                </tr>
             </tbody>
          </table>
       </div>
+
+      @empty
+         <div class="pl-4 pr-4 pb-4 pt-2">
+             <p>No Offer Found</p>
+         </div>
+   @endforelse
+
    </div>
 
    <div class="data mt-4">
@@ -222,7 +232,9 @@
       </div>
    </div>
 
+ 
    <div class="data mt-4">
+
       <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
@@ -439,7 +451,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Purpose of Rental Facility</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{{isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : ''}}</p>
+         <p>{!! isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : '' !!}</p>
       </div>
    </div>
 
@@ -453,7 +465,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Brief Background of {{isset($arrCamData->contact_person) ? $arrCamData->contact_person : ''}} Managing Director </h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</p>
+         <p>{!! isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : '' !!}</p>
       </div>
    </div>
 
@@ -507,7 +519,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">External Rating</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</p>
+         <p>{!! isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : '' !!}</p>
       </div>
    </div>
 
@@ -650,12 +662,12 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Recommendation</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}} </p>
+         <p>{!! isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : '' !!} </p>
       </div>
    </div>
 
-   <div class="data mt-4">
-      <h2 class="sub-title bg">The proposed deal is approved/declined/deferred subject to above conditions and any other conditions mentioned below.</h2>
+     <div class="data mt-4">
+      <h2 class="sub-title bg">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
@@ -671,9 +683,9 @@
                            @php 
                               $i=0;
                            @endphp
-                           @while(!empty($arrCM[$i])) 
+                           @while(!empty($arrReviewer[$i])) 
                               <tr>
-                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrCM[$i]->assignee}}</th>
+                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrReviewer[$i]->assignee}}</th>
                                  @php $i++; @endphp
                               </tr>
                         @endwhile
@@ -683,14 +695,28 @@
                      <table class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0" style="border:none;">
                            @php 
                               $i=0;
+                              $j= 0;
+                              $arrApproverDataCount = count($arrApproverData);
                            @endphp
                            @if(!empty($arrApproverData))
                               @while(!empty($arrApproverData[$i])) 
                                  <tr>
-                                       <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}}</th>
+                                       <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;"> {{$arrApproverData[$i]->approver}}
+                                        @if ($arrApproverData[$i]->status == 1) 
+                                          <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp 
+                                          <span style="font-size: 11px;">Approved at </br>
+                                          {{ \Carbon\Carbon::parse($arrApproverData[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                       @endif 
+
+                                       </th>
                                        @php $i++; @endphp
                                        @if (!empty($arrApproverData[$i]))
-                                          <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}}</th>
+                                          <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}} 
+                                          @if ($arrApproverData[$i]->status == 1)
+                                           <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp 
+                                             <span style="font-size: 11px;">Approved at </br>{{ \Carbon\Carbon::parse($arrApproverData[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                          @endif   
+                                          </th>
                                           @php $i++; @endphp
                                        @endif
                                  </tr>
@@ -703,5 +729,12 @@
          </table>
       </div>
    </div>
+
          
+
+<script>
+if('{{$arrApproverDataCount}}' ==  '{{$j}}' && '{{$arrApproverDataCount}}' != 0){
+   document.getElementById("isApproved").textContent += "approved";
+}
+</script>         
  <!-- End PDF Section -->

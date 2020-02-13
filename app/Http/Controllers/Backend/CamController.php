@@ -240,17 +240,24 @@ class CamController extends Controller
       $offerPTPQ = '';
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
-      $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
+      $leaseOfferData = $facilityTypeList = array();
+      $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
+      $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
+      $arrStaticData = array();
+      $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
+      $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
+      $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
+      $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
+      $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
       $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
-      if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
-        $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
-      }
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
         'appId'=> $appId,
-        'limitOfferData'=> $limitOfferData,
+        'leaseOfferData'=> $leaseOfferData,
         'reviewerSummaryData'=> $reviewerSummaryData,
-        'offerPTPQ' => $offerPTPQ
+        'arrStaticData' => $arrStaticData,
+        'facilityTypeList' => $facilityTypeList,
+        
       ]);
     }
 
