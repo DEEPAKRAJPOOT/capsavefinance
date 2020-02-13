@@ -238,13 +238,7 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
-                        $email = $user["email"];
-                    }
+                $email = $user["email"];
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
@@ -274,13 +268,7 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
-                        $email = $user["email"];
-                    }
+                $email = $user["email"];
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
@@ -465,7 +453,7 @@ class UserEventsListener extends BaseEvent
                         $message->bcc(explode(',', env('SEND_MAIL_BCC')));
                         $message->cc(explode(',', env('SEND_MAIL_CC')));
                     }else{
-                        $email = $user["email"];
+                        $email = $data["email"];
                     }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to( $email, $data["name"])->subject($email_content->subject);
@@ -497,7 +485,7 @@ class UserEventsListener extends BaseEvent
                     $message->bcc(explode(',', env('SEND_MAIL_BCC')));
                     $message->cc(explode(',', env('SEND_MAIL_CC')));
                 }else{
-                    $email = $user["email"];
+                    $email = $data["email"];
                 }
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
             if(!empty($data['attachment'])){
