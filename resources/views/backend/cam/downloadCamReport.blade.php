@@ -83,12 +83,12 @@
             $date = \Carbon\Carbon::now();   
          @endphp
          <p align="right"><b>{{ $date->isoFormat('MMMM D, Y')}}</b></p>
-         
-     </header>
 
-     <footer>
-         <span class="pagenum"></span><b> |</b> CFPL
-     </footer>
+      </header>
+
+      <footer>
+          <span class="pagenum"></span><b> |</b> CFPL
+      </footer>
      <main>
       <div  align="center">
          <p><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>
