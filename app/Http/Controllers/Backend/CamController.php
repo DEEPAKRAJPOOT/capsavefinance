@@ -38,20 +38,26 @@ use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Libraries\Pdf;
 use App\Inv\Repositories\Models\UserAppDoc;
+use PDF as DPDF;
+use App\Inv\Repositories\Contracts\Traits\CamTrait;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 
 
 class CamController extends Controller
 {
+    use CamTrait;
+    
     protected $download_xlsx = TRUE;
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
     protected $pdf;
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
         $this->pdf = $pdf;
+        $this->mstRepo = $mstRepo;
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
     }
@@ -140,6 +146,7 @@ class CamController extends Controller
             }else{
                      $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
             }
+            $arrCamData['proposed_exposure'] = str_replace(',','', $arrCamData['proposed_exposure']);
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
@@ -186,22 +193,22 @@ class CamController extends Controller
       $active_json_filename = $json_files['curr_file'];
        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
             $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
+            $fy = $contents['FinancialStatement']['FY'] ?? array();
+            $financeData = [];
+            if (!empty($fy)) {
+              foreach ($fy as $k => $v) {
+                $vyear = $v['year'];
+                $request_year = $request->get('year');
+                $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
+              }
+            }
+            $financeData = arrayValuesToInt($financeData);
+            $json_files = $this->getLatestFileName($appId,'finance', 'json');
+            $contents['FinancialStatement']['FY'] = $financeData;            
+            $new_file_name = $json_files['new_file'];
+            \File::put($this->getToUploadPath($appId, 'finance') .'/'.$new_file_name, base64_encode(json_encode($contents)));
         }
-        $fy = $contents['FinancialStatement']['FY'] ?? array();
-        $financeData = [];
-        if (!empty($fy)) {
-          foreach ($fy as $k => $v) {
-            $vyear = $v['year'];
-            $request_year = $request->get('year');
-            $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
-          }
-        }
-        $financeData = arrayValuesToInt($financeData);
-        $json_files = $this->getLatestFileName($appId,'finance', 'json');
-        $contents['FinancialStatement']['FY'] = $financeData;
         
-        $new_file_name = $json_files['new_file'];
-        \File::put($this->getToUploadPath($appId, 'finance') .'/'.$new_file_name, base64_encode(json_encode($contents)));
 
       try {
             $userId = Auth::user()->user_id;
@@ -233,17 +240,24 @@ class CamController extends Controller
       $offerPTPQ = '';
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
-      $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
+      $leaseOfferData = $facilityTypeList = array();
+      $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
+      $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
+      $arrStaticData = array();
+      $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
+      $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
+      $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
+      $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
+      $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
       $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
-      if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
-        $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
-      }
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
         'appId'=> $appId,
-        'limitOfferData'=> $limitOfferData,
+        'leaseOfferData'=> $leaseOfferData,
         'reviewerSummaryData'=> $reviewerSummaryData,
-        'offerPTPQ' => $offerPTPQ
+        'arrStaticData' => $arrStaticData,
+        'facilityTypeList' => $facilityTypeList,
+        
       ]);
     }
 
@@ -503,6 +517,7 @@ class CamController extends Controller
 
     public function banking(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
         $xlsx_arr = $this->_getXLSXTable($appId,'banking');
         $xlsx_html = $xlsx_arr[0];
         $xlsx_pagination = $xlsx_arr[1];
@@ -536,6 +551,7 @@ class CamController extends Controller
         return view('backend.cam.bank', [
           'bankdocs' => $bankdocs,
           'appId'=> $appId,
+          'biz_id'=> $biz_id,
           'pending_rec'=> $pending_rec,
           'bank_data'=> $contents,
           'customers_info'=> $customers_info,
@@ -1318,7 +1334,7 @@ class CamController extends Controller
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
-        $currStageCode = $currStage->stage_code;                    
+        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
                 
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
@@ -1424,8 +1440,21 @@ class CamController extends Controller
       $prgmOfferedAmount; //total offered amount related to program from offer table
       $currentOfferAmount; //current offered amount corresponding to app_prgm_limit_id
 
+      $facilityTypeList= $this->mstRepo->getFacilityTypeList();
       $limitData= $this->appRepo->getLimit($aplid);
-      $offerData= $this->appRepo->getProgramOffer($aplid);
+      if ($limitData->product_id == 3) {
+          $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
+          if (!empty($prgmOfferId)) {
+            $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+          } else {
+              $offerData = null;
+          }
+      } else {
+        $offerData= $this->appRepo->getProgramOffer($aplid);
+      }
+      // get Total Sub Limit amount by app_prgm_limit_id
+      $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
+
       $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
       $totalOfferedAmount = $this->appRepo->getTotalOfferedLimit($appId);
       $totalLimit = $this->appRepo->getAppLimit($appId);
@@ -1438,8 +1467,9 @@ class CamController extends Controller
         $prgmOfferedAmount = 0;
         $prgmLimit = 0;
       }
+
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt]);
     }
 
     /*function for updating offer data*/
@@ -1447,6 +1477,7 @@ class CamController extends Controller
       try{
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
+        $prgmOfferId = $request->get('offer_id');
         $aplid = (int)$request->get('app_prgm_limit_id');
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
@@ -1455,9 +1486,12 @@ class CamController extends Controller
         $request['created_by'] = Auth::user()->user_id;
         if($request->has('addl_security')){
           $request['addl_security'] = implode(',', $request->addl_security);
-        }
+        }       
+        if ($request->has('sub_limit')) {
+            $request['prgm_limit_amt'] = str_replace(',', '', $request->sub_limit);
+        }        
+        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
-        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid);
         /*Start add offer PTPQ block*/
         $ptpqArr =[];
         foreach($request->ptpq_from as $key=>$val){
@@ -1702,10 +1736,7 @@ class CamController extends Controller
         }
     }
 
-
-
-
-     public function camHygieneSave(Request $request){
+    public function camHygieneSave(Request $request){
       try {
             $arrHygieneData = $request->all();
             $userId = Auth::user()->user_id;
@@ -1729,7 +1760,6 @@ class CamController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
-
 
     public function promoterCommentSave(Request $request){
        try{
@@ -1757,174 +1787,27 @@ class CamController extends Controller
         }
     }
 
-    public function downloadCamReport(Request $request)
-    {
+    public function viewCamReport(Request $request){
       try{
-            $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
-            $arrRequest['app_id'] = $appId = $request->get('app_id');
-            $json_files = $this->getLatestFileName($appId,'finance', 'json');
-            $arrStaticData = array();
-            $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quaterly','4'=>'Monthly');
-
-            $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quater','4'=>'Months');
-            $active_json_filename = $json_files['curr_file'];
-            if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
-                      $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
-              }
-              $fy = $contents['FinancialStatement']['FY'] ?? array();
-              $financeData = [];
-              $latest_finance_year = '2000';
-              $audited_years = [];
-              if (!empty($fy)) {
-                foreach ($fy as $k => $v) {
-                  $audited_years[] = $v['year'];
-                  $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
-                  $financeData[$v['year']] = $v;
-                }
-              }
-                $Columns = getFinancialDetailSummaryColumns();
-                $FinanceColumns = [];
-                foreach ($Columns as $key => $cols) {
-                  $FinanceColumns = array_merge($FinanceColumns, $cols);
-                }
-               // dd(getTotalFinanceData($financeData['2017']));
-                $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
-                if(count($leaseOfferData)){
-                    $leaseOfferData = $leaseOfferData['0'];
-                }
-                $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
-                $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
-                $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
-                $arrBankDetails = FinanceModel::getDebtPosition($appId);
-                $arrApproverData =  $this->appRepo->getAppApproversDetails($appId);
-                $arrCM = $this->appRepo->getBackStageUsers($appId, array('6'));
-                $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-                $finacialDetails = AppBizFinDetail::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-
-                $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();        
-         
-                $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-
-                if(isset($arrCamData['t_o_f_security_check'])){
-                    $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
-                }
-
-                /*start code for approve button */
-                $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
-                $currStage = Helpers::getCurrentWfStage($appId);                
-                $currStageCode = $currStage->stage_code; 
-                /*end code for approve button */
-
-                // dd($arrBankDetails);
-                return view('backend.cam.downloadCamReport')
-                        ->with([
-                                 'arrCamData' =>$arrCamData ,
-                                 'arrBizData' => $arrBizData, 
-                                 'reviewerSummaryData' => $reviewerSummaryData,
-                                 'arrHygieneData' => $arrHygieneData,
-                                 'finacialDetails' => $finacialDetails,
-                                 'arrOwnerData' => $arrOwnerData,
-                                 'arrEntityData' => $arrEntityData,
-                                 'financeData' => $financeData,
-                                 'FinanceColumns' => $FinanceColumns,
-                                 'audited_years' => $audited_years,
-                                 'leaseOfferData' => $leaseOfferData,
-                                 'arrBankDetails' => $arrBankDetails,
-                                 'arrApproverData' => $arrApproverData,
-                                 'arrCM' => $arrCM,
-                                 'arrStaticData' => $arrStaticData,
-                                 'approveStatus' => $approveStatus,
-                                 'currStageCode' => $currStageCode,
-                   
-                               ]);
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        } 
-
+        $viewData = $this->getCamReportData($request);
+        return view('backend.cam.viewCamReport')->with($viewData);
+      } catch (Exception $ex) {
+          return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+      } 
     }
 
-    public function generateCamReport(Request $request)
-    {
+    public function generateCamReport(Request $request){
       try{
-            $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
-            $arrRequest['app_id'] = $appId = $request->get('app_id');
-            $json_files = $this->getLatestFileName($appId,'finance', 'json');
-            $arrStaticData = array();
-            $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quaterly','4'=>'Monthly');
-
-            $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quater','4'=>'Months');
-            $active_json_filename = $json_files['curr_file'];
-            if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
-                      $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
-              }
-              $fy = $contents['FinancialStatement']['FY'] ?? array();
-              $financeData = [];
-              $latest_finance_year = '2000';
-              $audited_years = [];
-              if (!empty($fy)) {
-                foreach ($fy as $k => $v) {
-                  $audited_years[] = $v['year'];
-                  $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
-                  $financeData[$v['year']] = $v;
-                }
-              }
-                $Columns = getFinancialDetailSummaryColumns();
-                $FinanceColumns = [];
-                foreach ($Columns as $key => $cols) {
-                  $FinanceColumns = array_merge($FinanceColumns, $cols);
-                }
-               // dd(getTotalFinanceData($financeData['2017']));
-                $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
-                if(count($leaseOfferData)){
-                    $leaseOfferData = $leaseOfferData['0'];
-                }
-                $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
-                $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
-                $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
-                $arrBankDetails = FinanceModel::getDebtPosition($appId);
-                $arrApproverData =  $this->appRepo->getAppApproversDetails($appId);
-                $arrCM = $this->appRepo->getBackStageUsers($appId, array('6'));
-                $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-                $finacialDetails = AppBizFinDetail::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-
-                $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();        
-         
-                $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-
-                if(isset($arrCamData['t_o_f_security_check'])){
-                    $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
-                }             
-                                
-                $htmlContent = view('backend.cam.downloadCamReportPdf')
-                            ->with([
-                              'arrCamData' =>$arrCamData ,
-                              'arrBizData' => $arrBizData, 
-                              'reviewerSummaryData' => $reviewerSummaryData,
-                              'arrHygieneData' => $arrHygieneData,
-                              'finacialDetails' => $finacialDetails,
-                              'arrOwnerData' => $arrOwnerData,
-                              'arrEntityData' => $arrEntityData,
-                              'financeData' => $financeData,
-                              'FinanceColumns' => $FinanceColumns,
-                              'audited_years' => $audited_years,
-                              'leaseOfferData' => $leaseOfferData,
-                              'arrBankDetails' => $arrBankDetails,
-                              'arrApproverData' => $arrApproverData,
-                              'arrCM' => $arrCM,
-                              'arrStaticData' => $arrStaticData,                   
-                            ])->render();
-                $pdfContent = $this->pdf->render($htmlContent);
-                self::generateCamPdf($appId, $bizId, $pdfContent);
-                Session::flash('message',trans('Pdf generated successfully.'));        
-                return redirect()->route('cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
-  
-                //$x= storage_path("anyname.pdf");
-                //file_put_contents($x, $pdfContent);
-                //dd($pdfContent);
-                
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        } 
+        $viewData = $this->getCamReportData($request);
+        $bizId = $request->get('biz_id');
+        $appId = $request->get('app_id');
+        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
+        $pdf = DPDF::loadView('backend.cam.downloadCamReport', $viewData);
+        self::generateCamPdf($appId, $bizId, $pdf->output());
+        return $pdf->download('CamReport.pdf');          
+      } catch (Exception $ex) {
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+      } 
     }
 
     private function generateCamPdf($appId, $bizId, $pdfContent) {

@@ -57,6 +57,7 @@ var iframe_ids = [
         'modalInvoiceFailed',
         'add_bank_account',
         'modalInvoiceDisbursed',
+        'modalUploadPayment',
         'add_bank_account',
         'viewDisbursalCustomerInvoice',
         'uploadBankDocument',
@@ -78,6 +79,8 @@ var iframe_ids = [
         'addConstiFrame',
         'editConstiFrame',
         'changeAppDisbursStatus',
+        'addEquipmentFrame',
+        'editEquipmentFrame',
     ];
 
 iframe_ids.forEach(function(id) {

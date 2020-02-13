@@ -11,9 +11,9 @@ return [
     'RESEARCH_FORM_LIMIT' => '5',
     'AWARD_FORM_LIMIT' => '5',
     'FRONTEND_FROM_EMAIL' => 'scfit@capsavefinance.com',
-    'FRONTEND_FROM_EMAIL_NAME' => 'Rent Alpha',
+    'FRONTEND_FROM_EMAIL_NAME' => 'Capsave',
     'BACKEND_FROM_EMAIL' => 'scfit@capsavefinance.com',
-    'BACKEND_FROM_EMAIL_NAME' => 'Rent Alpha',
+    'BACKEND_FROM_EMAIL_NAME' => 'Capsave',
     'APISecret' => env('APISecret', ''),
     'apiKey' => env('apiKey', ''),
     'groupId' => env('groupId', ''),
@@ -82,9 +82,11 @@ return [
     'review_summ_mails' => ['gaurav.agarwal@zuron.in','varun.dudani@zuron.in','updesh.sharma@prolitus.com'],
     'review_summ_mail_docs_id' => [3,9],
     'user_role' => [
+        'SALES'=>4,
+        'CPA'=>5,
         'APPROVER'=>8,
-         'OPPS_CHECKER'=>10,
-         'ANCHOR'=>11,
+        'OPPS_CHECKER'=>10,
+        'ANCHOR'=>11,
     ],
     'mst_status_id' => [
         'NEW'=>19,
@@ -98,8 +100,18 @@ return [
         'OFFER_GENERATED'=>28,
         'DISBURSED'=>27,
     ],
-    'SEND_MAIL_ACTIVE'=>1,
-   'SEND_MAIL'=>["gaurav.agarwal@prolitus.com", "varun.dudani@zuron.in", "binay.kumar@prolitus.com"],
-   //"dhriti.barman@capsavefinance.com", "vinay.agarwal@capsavefinance.com", "vilesh.modi@rentalpha.com"
+    'facility_type' => [
+        '1' => 'Rental Facility',
+        '2' => 'Sale and Lease Back',
+        '3' => 'Rental Discounting'
+    ],
+    'deposit_type' => [
+        '1' => 'Loan Amount',
+        '2' => 'Asset Value',
+        '3' => 'Asset Base Value',
+        '4' => 'Sanction'
+    ],
+    /*'SEND_MAIL_ACTIVE'=>1,
+    'SEND_MAIL'=>["gaurav.agarwal@prolitus.com", "varun.dudani@zuron.in", "binay.kumar@prolitus.com", "dhriti.barman@capsavefinance.com", "vinay.agarwal@capsavefinance.com", "vilesh.modi@rentalpha.com"],*/
 ];
  

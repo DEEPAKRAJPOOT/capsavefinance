@@ -26,7 +26,7 @@
                                 <div class="form-group INR">
                                     <label>Available Exposure</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure" disabled>
+                                    <input type="text" class="form-control form-control-sm number_format" name="available_exposure" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure" disabled>
                                 </div>
                             </div>
                         </div>
@@ -36,8 +36,8 @@
                                     <label>Select Product Type</label>
                                     <select class="form-control" name="product_id" id="product_id">
                                         <option value="">Select Product</option>
-                                        <option value="1">Supply Chain</option>
-                                        <option value="2">Term Loan</option>
+                                        <!-- <option value="1">Supply Chain</option> -->
+                                        <!-- <option value="2">Term Loan</option> -->
                                         <option value="3">Leasing</option>
                                     </select>
                                 </div>
@@ -114,13 +114,15 @@
                                         </div>
                                         <div id="scollapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
                                             <ul class="row p-0 m-0">
-                                            @if($prgmLimit->offer)
-                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
-                                                <li class="col-md-2">Interest(%)  <br> <b>{{$prgmLimit->offer->interest_rate}}</b></li>
-                                                <li class="col-md-2">Tenor(Days) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
-                                                <li class="col-md-2">Margin(%) <br> <b>{{$prgmLimit->offer->margin}}</b></li>
-                                                <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>{{number_format($prgmLimit->offer->processing_fee)}}</b></li>
-                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
+                                            @if($prgmLimit->offer->count() != 0)
+                                                @foreach($prgmLimit->offer as $k=>$prgmOffer)
+                                                    <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmOffer->offer->prgm_limit_amt)}}</b></li>
+                                                    <li class="col-md-2">Interest(%)  <br> <b>{{$prgmOffer->offer->interest_rate}}</b></li>
+                                                    <li class="col-md-2">Tenor(Days) <br> <b>{{$prgmOffer->offer->tenor}}</b></li>
+                                                    <li class="col-md-2">Margin(%) <br> <b>{{$prgmOffer->offer->margin}}</b></li>
+                                                    <li class="col-md-2">Processing Fee  <br><i class="fa fa-inr"></i><b>{{number_format($prgmOffer->offer->processing_fee)}}</b></li>
+                                                    <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
+                                                @endforeach
                                             @else
                                                 <li class="col-md-10" style="text-align: center;">No offer found</li>
                                                 <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
@@ -173,13 +175,15 @@
                                         </div>
                                         <div id="tcollapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
                                             <ul class="row p-0 m-0">
-                                            @if($prgmLimit->offer)
-                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
-                                                <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmLimit->offer->security_deposit}}</b></li>
-                                                <li class="col-md-2">Tenor(Months) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
-                                                <li class="col-md-2">PTPQ <br> <b>{{(int)$prgmLimit->offer->ptpq_from.' - '.(int)$prgmLimit->offer->ptpq_to}}</b></li>
-                                                <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmLimit->offer->ruby_sheet_xirr.' - '.$prgmLimit->offer->cash_flow_xirr}}</b></li>
-                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
+                                            @if($prgmLimit->offer->count() != 0)
+                                                @foreach($prgmLimit->offer as $k=>$prgmOffer)
+                                                    <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmOffer->offer->prgm_limit_amt)}}</b></li>
+                                                    <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmOffer->offer->security_deposit}}</b></li>
+                                                    <li class="col-md-2">Tenor(Months) <br> <b>{{$prgmOffer->offer->tenor}}</b></li>
+                                                    <li class="col-md-2">Processing Fee(%)<br> <b>{{$prgmOffer->processing_fee}}</b></li>
+                                                    <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmOffer->offer->ruby_sheet_xirr.' - '.$prgmOffer->offer->cash_flow_xirr}}</b></li>
+                                                    <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
+                                                @endforeach
                                             @else
                                                 <li class="col-md-10" style="text-align: center;">No offer found</li>
                                                 <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
@@ -225,29 +229,32 @@
                                                        <td width="17%"></td>
                                                        <td width="17%"></td>
                                                        <td width="16%">{{number_format($prgmLimit->limit_amt)}}</td>
-                                                       <td width="16%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button></td>
+                                                       <td width="16%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
+                                                       <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
+                                                       </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                         <div id="lcollapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse">
                                             <ul class="row p-0 m-0">
-                                            @if($prgmLimit->offer)
-                                                <li class="col-md-2">Loan Offer <br> <i class="fa fa-inr"></i> <b>{{number_format($prgmLimit->offer->prgm_limit_amt)}}</b></li>
-                                                <li class="col-md-2">Security deposit(%)  <br> <b>{{$prgmLimit->offer->security_deposit}}</b></li>
-                                                <li class="col-md-2">Tenor(Months) <br> <b>{{$prgmLimit->offer->tenor}}</b></li>
-                                                <li class="col-md-2">PTPQ <br> <b>{{(int)$prgmLimit->offer->ptpq_from.' - '.(int)$prgmLimit->offer->ptpq_to}}</b></li>
-                                                <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmLimit->offer->ruby_sheet_xirr.' - '.$prgmLimit->offer->cash_flow_xirr}}</b></li>
-                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Update</button></li>
+                                            @if($prgmLimit->offer->count() != 0)
+                                            @foreach($prgmLimit->offer as $k=>$prgmOffer)
+                                                <li class="col-md-2">Sub Limit<br> <i class="fa fa-inr"></i> <b>{{number_format($prgmOffer->prgm_limit_amt)}}</b></li>
+                                                <li class="col-md-2">Security deposit({{($prgmOffer->security_deposit_type == 1)? 'Rs': '%'}})<br> <b>{{$prgmOffer->security_deposit}}</b></li>
+                                                <li class="col-md-2">Tenor(Months) <br> <b>{{$prgmOffer->tenor}}</b></li>
+                                                <li class="col-md-2">Processing Fee(%)<br> <b>{{$prgmOffer->processing_fee}}</b></li>
+                                                <li class="col-md-2">XIRR %(Ruby-Cash) <br><b>{{$prgmOffer->ruby_sheet_xirr.' - '.$prgmOffer->cash_flow_xirr}}</b></li>
+                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Update Offer"><i class="fa fa-edit"></i></button></li>
+                                            @endforeach
                                             @else
                                                 <li class="col-md-10" style="text-align: center;">No offer found</li>
-                                                <li class="col-md-2"><button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add</button></li>
                                             @endif
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
-                        @if($loop->last)
+                            @if($loop->last)
                             </div>
                         </div>
                         @endif
@@ -307,6 +314,8 @@ $(document).ready(function(){
         }else if(product_id != 1){
             $('#program_id').attr('disabled', true);
             $('#anchor_id').attr('disabled', true);
+            $('#anchor_id').html('<option value="">Select Anchor</option>');
+            $('#program_id').html('<option value="">Select Program</option>');
             return;
         }else{
             $('#program_id').attr('disabled', false);

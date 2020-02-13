@@ -9,7 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Manage Segments</h3>
-            <small>Constitution List</small>
+            <small>Segments List</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Manage Segments</li>

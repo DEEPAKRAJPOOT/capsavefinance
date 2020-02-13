@@ -13,6 +13,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\ExcelPaymentTemp;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
@@ -266,8 +267,83 @@ use CommonRepositoryTraits;
         }
 
        return Disbursal::updateRepayment($attributes);  
-    }   
+    }  
+    /********* save excel bulk format //////////////
+     */
+     public function insertExcelTrans($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return ExcelPaymentTemp::insertExcelTrans($attributes);  
+    }  
+    ////////////* get excel temp data *********/
+      public function getExcelTrans($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return ExcelPaymentTemp::getExcelTrans($attributes);  
+    }  
+    ///////////////* delete excel trans  ************/
+   
+     public function deleteExcelTrans($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return ExcelPaymentTemp::deleteExcelTrans($attributes);  
+    }  
+    /* get all bulk transaction      */
+    /* created by gajendra chauhan  */
+    function  getAllManualTransaction()
+    {
+       try
+       {
+           return Transactions::getAllManualTransaction();  
+       } catch (Exception $ex) {
+          return $ex;
+       }
+    }
     
+     /* get all save bulk transaction      */
+    /* created by gajendra chauhan  */
         public function saveRepaymentTrans($attributes = [])
     {
        

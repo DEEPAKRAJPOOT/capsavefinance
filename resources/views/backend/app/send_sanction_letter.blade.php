@@ -238,9 +238,12 @@
                                 {{-- <p style="page-break-before: always"> --}}
                                   Authorized Signatory<br>
                                   <hr>
+                                  @if($biz_entity_name)
                                   Accepted for and behalf of<br>
-                                  For Pepcart Logistics Pvt Ltd<br>
-                                  Authorized Signatory</b></p>
+                                  For {{ $biz_entity_name }}<br>
+                                  Authorized Signatory
+                                    @endif
+                                </b></p>
                             </div>
                         </div>	
                     </div>	 

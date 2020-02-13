@@ -27,6 +27,9 @@ use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\Master\Segment;
 use App\Inv\Repositories\Models\Master\Constitution;
+use App\Inv\Repositories\Models\Master\Equipment;
+use App\Inv\Repositories\Models\Master\FacilityType;
+
 /**
  * 
  */
@@ -578,5 +581,47 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         return StateModel::getAllStateList();
     }
+
+    /**
+     * master Equipments list
+     * 
+     * @param array $attributes
+     * @return mixed
+    */
+    public function findEquipmentsById($equipment_id)
+    {
+        if (empty($equipment_id) || !ctype_digit($equipment_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = Equipment::find($equipment_id);
+        return $result ?: false;
+    }
+
+    public function getEquipments()
+    {
+        $result = Equipment::getAllEquipmentList();
+        return $result;
+    }
+
+    public function saveEquipment($arrEquipmentData) 
+    {
+        return Equipment::saveEquipment($arrEquipmentData);
+    }
+
+    public function updateEquipment($arrEquipmentData, $equipment_id)
+    {
+        $status = Equipment::updateEquipment($arrEquipmentData, $equipment_id);
+        return $status ? $status : false;
+    }
+
+    /*
+     * Get Facility Type List
+     * 
+     * return array
+     */
+    public function getFacilityTypeList()
+    {
+        return FacilityType::getFacilityTypeList();
+    }    
 
 }

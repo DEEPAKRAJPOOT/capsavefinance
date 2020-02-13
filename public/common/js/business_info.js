@@ -88,7 +88,7 @@ function fillEntity(gstinId){
 			    	getCIN(res.result.lgnm);
 			    	fillRegisteredAddress(res.result.pradr.adr);
 			    }else{
-			    	alert('Something went wrong, Try again later');
+			    	alert('No Entity associated with the entered GST.');
 			    }
 			    $('.isloader').hide();
 			}
@@ -111,7 +111,7 @@ function getCIN(entityName){
 			}else if(res['status-code'] == 101){
 		    	$('input[name=biz_cin]').val(res.result[0].cin);
 		    }else{
-		    	alert('Something went wrong, Try again later');
+		    	console.error('CIN number not fetched successfully');
 		    }
 		}
 	});
@@ -378,21 +378,33 @@ $(document).ready(function(){
 	$(document).on('change', '.industry_change', function () {
 		var industryVal=$("#biz_type_id").val();
 		var segmentId =$("#segmentId").val();
-		handleIndustryChange(industryVal,null,segmentId);
+		unsetError('select[name=segment]');
+		unsetError('select[name=biz_type_id]');
+		if(segmentId == ''){
+			setError('select[name=segment]', 'Segment is required');
+			$("#segmentId").focus();
+			return false;
+		}else if(industryVal == ''){
+			setError('select[name=biz_type_id]', 'Industry is required');
+			$("#biz_type_id").focus();
+			return false;
+		}else{
+			handleIndustryChange(industryVal,null,segmentId);
+		}
 	});
   //handleIndustryChange($("#biz_type_id").val(),$(".sub_industry").val());
 });
 
 function handleIndustryChange(intdustval,subIndId, segmentId){
 	//let selector = $(this);
-	if(segmentId == ''){
-		unsetError('select[name=segment]');
-		setError('select[name=segment]', 'Segment is required');
-		$("#segmentId").focus();
-		return false;
-	}else{
-		unsetError('select[name=segment]');
-	}
+	// if(segmentId == ''){
+	// 	unsetError('select[name=segment]');
+	// 	setError('select[name=segment]', 'Segment is required');
+	// 	$("#segmentId").focus();
+	// 	return false;
+	// }else{
+	// 	unsetError('select[name=segment]');
+	// }
 	let currentValue = intdustval;
 	let subIndus = $('.sub_industry');
 

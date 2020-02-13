@@ -24,5 +24,7 @@ return [
     'consti_edit_success' => 'Constitution updated successfully',
     'segment_add_success' => 'Segment Added successfully',
     'segment_edit_success' => 'Segment updated successfully',
+    'equipment_edit_success' => 'Equipment Added successfully',
+    'equipment_add_success' => 'Equipment updated successfully',
 ];
 

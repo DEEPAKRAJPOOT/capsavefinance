@@ -5,6 +5,9 @@ use App\Http\Controllers\Controller;
 use Event;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\FinanceModel;
+use App\Libraries\Bsa_lib;
+use App\Libraries\Perfios_lib;
+use Storage;
 
 /**
  * 
@@ -181,14 +184,60 @@ class ApiController
 		
 	}
 
+  private function getToUploadPath($appId, $type = 'banking'){
+      $touploadpath = storage_path('app/public/user/docs/'.$appId);
+      if(!Storage::exists('public/user/docs/' .$appId)) {
+          Storage::makeDirectory('public/user/docs/' .$appId.'/banking', 0777, true);
+          Storage::makeDirectory('public/user/docs/' .$appId.'/finance', 0777, true);
+          $touploadpath = storage_path('public/user/docs/' .$appId);
+      }
+      return $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+  }
+
+  private function getLatestFileName($appId, $fileType='banking', $extType='json'){
+      $scanpath = $this->getToUploadPath($appId, $fileType);
+      if (is_dir($scanpath) == false) {
+        $files = [];
+      }else{
+        $files = scandir($scanpath, SCANDIR_SORT_DESCENDING);
+      }
+      $files = array_diff($files, [".", ".."]);
+      $filename = "";
+      if (!empty($files)) {
+        foreach ($files as $key => $file) {
+          $fileparts = pathinfo($file);
+          $filename = $fileparts['filename'];
+          $ext = $fileparts['extension'];
+          if ($extType == $ext) {
+             break;
+          }
+        }
+      }
+      $included_no = preg_replace('#[^0-9]+#', '', $filename);
+      $file_no = str_replace($appId, '', $included_no);
+      if (empty($file_no) && empty($filename)) {
+        $new_file = $appId.'_'.$fileType.".$extType";
+        $curr_file = '';
+      }else{
+        $file_no = (int)$file_no + 1;
+        $curr_file = $filename.".$extType";
+        $new_file = $appId.'_'.$fileType.'_'.$file_no . ".$extType";
+      }
+      $fileArr = array(
+        'curr_file' => $curr_file,
+        'new_file' => $new_file,
+      );
+      return $fileArr;
+    }
+
 
 	private function _getFinanceReport($perfiostransactionid, $prolitus_txn, $appId) {
         $biz_perfios_id = $perfiostransactionid;
-    	$perfios = new Perfios_lib();
+    	  $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_finance.xlsx';
-
+        $nameArr = $this->getLatestFileName($appId, 'finance', 'xlsx');
+        $file_name = $nameArr['new_file'];
         $req_arr = array(
               'apiVersion' => $apiVersion,
               'vendorId' => $vendorId,
@@ -204,22 +253,28 @@ class ApiController
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
               return $final_res;
           }else{
-          	 $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-          	 \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
+          	 $myfile = fopen($this->getToUploadPath($appId, 'finance').'/'.$file_name, "w");
+          	 \File::put($this->getToUploadPath($appId, 'finance').'/'.$file_name, $final_res['result']);
           }
         }
+        $file= url("storage/user/docs/$appId/finance/". $file_name);
         $req_arr['reportType'] = 'json';
         $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
        	$final_res['api_type'] = Perfios_lib::GET_STMT;
-	    $final_res['prolitusTransactionId'] = $prolitus_txn;
-	    $final_res['perfiosTransactionId'] = $perfiostransactionid;
+        $final_res['file_url'] = $file;
+	      $final_res['prolitusTransactionId'] = $prolitus_txn;
+	      $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
-	        $final_res['result'] = base64_encode($final_res['result']);
-	        $log_data = array(
-	          'status' => $final_res['status'],
-	          'updated_by' => Auth::user()->user_id,
-	        );
-	        FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
+          $final_res['result'] = base64_encode($final_res['result']);
+          $nameArr = $this->getLatestFileName($appId, 'finance', 'json');
+          $json_file_name = $nameArr['new_file'];
+          $myfile = fopen($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, "w");
+          \File::put($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, $final_res['result']);
+          $log_data = array(
+            'status' => $final_res['status'],
+            'updated_by' => NULL,
+          );
+          FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
         }
         return $final_res;
     }
@@ -230,7 +285,8 @@ class ApiController
         $perfios = new Perfios_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
-        $file_name = $appId.'_banking.xlsx';
+        $nameArr = $this->getLatestFileName($appId, 'banking', 'xlsx');
+        $file_name = $nameArr['new_file'];
         $req_arr = array(
             'perfiosTransactionId' => $perfiostransactionid,
             'types' => 'xlsx',
@@ -243,22 +299,28 @@ class ApiController
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
               return $final_res;
           }else{
-          	$myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-            \File::put(storage_path('app/public/user').'/'.$file_name, $final_res['result']);
+          	$myfile = fopen($this->getToUploadPath($appId, 'banking').'/'.$file_name, "w");
+            \File::put($this->getToUploadPath($appId, 'banking').'/'.$file_name, $final_res['result']);
           } 
         }
         $req_arr['types'] = 'json';
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['api_type'] = Bsa_lib::GET_REP;
+        $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
-        	$final_res['result'] = base64_encode($final_res['result']);
-	        $log_data = array(
-	          'status' => $final_res['status'],
-	          'updated_by' => Auth::user()->user_id,
-	        );
-	        FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
+
+          $final_res['result'] = base64_encode($final_res['result']);
+          $nameArr = $this->getLatestFileName($appId, 'banking', 'json');
+          $json_file_name = $nameArr['new_file'];
+          $myfile = fopen($this->getToUploadPath($appId, 'banking') .'/'.$json_file_name, "w");
+          \File::put($this->getToUploadPath($appId, 'banking') .'/'.$json_file_name, $final_res['result']);
+          $log_data = array(
+            'status' => $final_res['status'],
+            'updated_by' => NULL,
+          );
+          FinanceModel::updatePerfios($log_data,'biz_perfios',$biz_perfios_id,'biz_perfios_id');
         }
         return $final_res;
     }

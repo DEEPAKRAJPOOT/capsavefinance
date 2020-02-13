@@ -40,26 +40,27 @@ class Helper extends PaypalHelper
         $request                 = request();
         $data['page_url']        = $request->url();
         $data['loggedin_userid'] = (auth()->guest() ? 0 : auth()->user()->id);
+        
         $data['ip_address']      = $request->getClientIp();
         $data['method']          = $request->method();
         $data['message']         = $exception->getMessage();
         $data['class']           = get_class($exception);
 
-        if (app()->envrionment('live') === false) {
+        if (config('app.env') == "production") {
             $data['request'] = $request->except('password');
         }
-
+        
         $data['file']  = $exception->getFile();
         $data['line']  = $exception->getLine();
         $data['trace'] = $exception->getTraceAsString();
 
-        $subject = 'Inventrust ('.app()->environment().') '.($handler ?
+        $subject = 'RentAlpha ('.app()->environment().') '.($handler ?
             '' : 'EXCEPTION').' Error at '.date('Y-m-d D H:i:s T');
 
-        config(['mail.driver' => 'mail']);
+        //config(['mail.driver' => 'mail']);                
         Mail::raw(
             print_r($data, true),
-            function ($message) use ($subject) {
+            function ($message) use ($subject) {            
             $message->to(config('errorgroup.error_notification_group'))
                 ->from(
                     config('errorgroup.error_notification_email'),
@@ -716,7 +717,7 @@ class Helper extends PaypalHelper
         $amount = !$decimal ? (int) $amount : $amount;        
         $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
         if ($prefixCurrency) {
-            $formattedAmount = $currency.$formattedAmount;
+            $formattedAmount = "$currency $formattedAmount";
         }
         return $formattedAmount;
     }

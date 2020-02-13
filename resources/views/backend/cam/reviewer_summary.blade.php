@@ -23,96 +23,114 @@
             <div class="row">
                <div class="col-md-12">
                      <h4><small>Cover Note</small></h4>
-                     <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{{isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : ''}}</textarea>
+                     <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{!! isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : '' !!}</textarea>
                </div>
-               <div class="col-md-12 mt-4">
-                     <h4><small>Deal Structure:</small></h4>
-                     <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
-                        <thead>
-                           <tr role="row">
-                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
-                                 <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Particulars</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <tr role="row" class="odd">
-                                 <td class="">Facility Type</td>
-                                 <td class="">Lease Loan</td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">Limit (₹ In Mn)</td>
-                                 <td class="">{{isset($limitOfferData->limit_amt) ? '₹ '.$limitOfferData->limit_amt : ''}}</td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">Tenor (Months)</td>
-                                 <td class="">{{isset($limitOfferData->tenor) ? $limitOfferData->tenor : ''}}</td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">Equipment Type</td>
-                                 @php 
-                                 @$equipType = ''     
-                                 @endphp 
-                                 @if(isset($limitOfferData->equipment_type_id) && $limitOfferData->equipment_type_id)
-                                    @php
-                                       $equipType = Helpers::getEquipmentTypeById($limitOfferData->equipment_type_id)->equipment_name  
-                                    @endphp
-                                 @endif
-                                 <td class="">{{$equipType}}</td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">Security Deposit</td>
-                                 <td class="">{{isset($limitOfferData->security_deposit) ? $limitOfferData->security_deposit : ''}}</td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">Rental Frequency</td>
-                                 <td class="">{{isset($limitOfferData->rental_frequency) ? config('common.rental_frequency.'.$limitOfferData->rental_frequency) : ''}}</td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">PTPQ</td>
-                                 <td class="">
-                                 @if(isset($offerPTPQ) && $offerPTPQ && $offerPTPQ!='')   
-                                    @foreach ($offerPTPQ as $ok => $ov)
-                                       {{isset($ov->ptpq_from) ? 'From Period '.$ov->ptpq_from : ''}}
-                                       {{isset($ov->ptpq_to) ? 'To Period '.$ov->ptpq_to : ''}}
-                                       {{isset($ov->ptpq_rate) ? 'Rate '.$ov->ptpq_rate : ''}}
-                                       <br/>
-                                    @endforeach 
-                                 @endif                                 
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="" valign="top">XIRR</td>
-                                 <td class="" valign="top">
-                                    Ruby Sheet : {{isset($limitOfferData->ruby_sheet_xirr) ? $limitOfferData->ruby_sheet_xirr.'%' : ''}}
-                                    <br/>Cash Flow : {{isset($limitOfferData->cash_flow_xirr) ? $limitOfferData->cash_flow_xirr.'%' : ''}}
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="">Additional Security</td>
-                                 <td class="">  
-                                 @php 
-                                 @$addSecArr = []      
-                                 @endphp                        
-                                 @if(isset($limitOfferData->addl_security))
-                                    @php 
-                                       $addSecArr = explode(',',$limitOfferData->addl_security)
-                                    @endphp                                     
-                                 @endif   
-                                 @if(isset($addSecArr) && count($addSecArr)>0)   
-                                    @foreach ($addSecArr as $k => $v)
-                                       {{ config('common.addl_security.'.$v).", " }}
-                                       @if($v==4)
-                                         {{isset($limitOfferData->comment) ? " Comment- ".$limitOfferData->comment : ''}}
-                                       @endif
-                                    @endforeach 
-                                 @endif                         
-                                 </td>
-                           </tr>
-                        </tbody>
-                     </table>
+
+
+               <div class="col-md-12 data mt-4 ">
+                     <h2 class="sub-title bg">Deal Structure</h2>
+                        @forelse($leaseOfferData as $key=>$leaseOffer)
+                           <div class="pl-4 pr-4 pb-4 pt-2">
+                              <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                                 <thead>
+                                    <tr role="row">
+                                       <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
+                                       <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Particulars</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                   
+                                    
+                                    <tr role="row" class="odd">
+                                       <td class=""><b>Facility Type</b></td>
+                                       <td class="">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
+                                    </tr>
+                                    <tr role="row" class="odd">
+                                       <td class=""><b>Equipment Type</b></td>
+                                       <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
+                                    </tr>
+                                    <tr role="row" class="odd">
+                                       <td class=""><b>Limit Of The Equipment</b></td>
+                                       <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} 
+                                             </td>
+                                    </tr>
+                                 
+                                    <tr role="row" class="odd">
+                                       <td class=""><b>Tenor (Months)</b></td>
+                                       <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
+                                    </tr>
+                                    <tr role="row" class="odd">
+                                       <td class=""><b>Security Deposit</b></td>
+                                       <td class="">  {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}} </td>
+                                    </tr>
+                                    <tr role="row" class="odd">
+                                       <td class=""><b>Rental Frequency</b></td>
+                                       <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}   </td>
+                                    </tr>
+                                    <tr role="row" class="odd">
+                                       <td class=""><b>Pricing Per Thousand</b></td>
+                                       <td class="">
+                                          @php 
+                                             $i = 1;
+                                             if(!empty($leaseOffer->offerPtpq)){
+                                             $total = count($leaseOffer->offerPtpq);
+                                          @endphp   
+                                             @foreach($leaseOffer->offerPtpq as $key => $arr) 
+
+                                                   @if ($i > 1 && $i < $total)
+                                                   ,
+                                                   @elseif ($i > 1 && $i == $total)
+                                                      and
+                                                   @endif
+                                                   {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+
+                                                   @php 
+                                                      $i++;
+                                                   @endphp     
+                                             @endforeach
+                                             @php 
+                                                }
+                                             @endphp 
+                                       </td>
+                                    </tr>
+                                    <tr role="row" class="odd">
+                                       <td class="" valign="top"><b>XIRR</b></td>
+                                       <td class="" valign="top"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
+                                       </td>
+                                    </tr>
+                                    
+                                    <tr role="row" class="odd">
+                                       <td class=""><b>Additional Security</b></td>
+                                       <td class="">
+                                          @php
+                                           $add_sec_arr = '';
+                                           if(isset($leaseOffer->addl_security)){
+                                               $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                                               foreach($addl_sec_arr as $k=>$v){
+                                                   $add_sec_arr .= config('common.addl_security')[$v].', ';
+                                               }
+                                               if(isset($leaseOffer->comment)) {
+                                                   $add_sec_arr .=  ' <b>Comment</b>:  '.$leaseOffer->comment; 
+                                                }   
+                                           }
+                                           $add_sec_arr = trim($add_sec_arr, ', ');
+                                           @endphp
+                                           {!! $add_sec_arr !!}
+                                       </td>
+                                    </tr>
+                                 </tbody>
+                              </table>
+                           </div>
+
+                           @empty
+                              <div class="pl-4 pr-4 pb-4 pt-2">
+                                  <p>No Offer Found</p>
+                              </div>
+                        @endforelse
                </div>
+
                <div class="col-md-12 mt-4">
-                     <h4><small>Pre Disbursement Conditions:</small></h4>
+                     <h4><small>Pre Disbursement Conditions</small></h4>
                      <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <thead>
                            <tr role="row">
@@ -157,7 +175,7 @@
                      </table>
                </div>
                <div class="col-md-12 mt-4">
-                     <h4><small>Post Disbursement Conditions:</small></h4>
+                     <h4><small>Post Disbursement Conditions</small></h4>
                      <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <thead>
                            <tr role="row">
@@ -210,7 +228,7 @@
                      </table>
                </div>
                <div class="col-md-12 mt-4">
-                     <h4><small>Approval criteria for IC:</small></h4>
+                     <h4><small>Approval criteria for IC</small></h4>
                      <table id="invoice_history" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <thead>
                            <tr role="row">
@@ -343,8 +361,8 @@
                   </table>
                </div>                  
                <div class="col-md-12 mt-4">
-                     <h4><small>Risk Comments:</small></h4>
-                     <h5><small>Deal Positives:</small></h5>
+                     <h4><small>Risk Comments</small></h4>
+                     <h5><small>Deal Positives</small></h5>
                      <table id="" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <tbody>
                            <tr role="row" class="odd">
@@ -381,7 +399,7 @@
                            </tr>
                         </tbody>
                      </table>
-                     <h5 class="mt-3"><small>Deal Negatives:</small></h5>
+                     <h5 class="mt-3"><small>Deal Negatives</small></h5>
                      <table id="" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
                         <tbody>
                            <tr role="row" class="odd">
@@ -412,12 +430,12 @@
                      </table>
                </div>
                <div class="col-md-12 mt-4">
-                     <h4><small>Recommendation:</small></h4>
+                     <h4><small>Recommendation</small></h4>
                      <table id="" class="table table-striped dataTable no-footer overview-table " role="grid" cellpadding="0" cellspacing="0">
                         <tbody>
                            <tr role="row">
                                  <td class="">
-                                    <textarea  name="recommendation" class="form-control form-control-sm" cols="3" rows="3">{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}}</textarea>
+                                    <textarea  name="recommendation" id="recommendation" class="form-control form-control-sm" cols="3" rows="3">{!! isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : '' !!}</textarea>
                                  </td>
                            </tr>
                         </tbody>
@@ -448,6 +466,9 @@
    $(document).ready(function(){
       $("#cover_note").focus();
    });
+
+    CKEDITOR.replace('cover_note');
+    CKEDITOR.replace('recommendation');
 
    $(document).on('click', '.getAnalysis', function() {
       data = {appId, _token};
