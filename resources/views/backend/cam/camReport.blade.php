@@ -450,7 +450,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Purpose of Rental Facility</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{{isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : ''}}</p>
+         <p>{!! isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : '' !!}</p>
       </div>
    </div>
 
@@ -464,7 +464,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Brief Background of {{isset($arrCamData->contact_person) ? $arrCamData->contact_person : ''}} Managing Director </h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</p>
+         <p>{!! isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : '' !!}</p>
       </div>
    </div>
 
@@ -518,7 +518,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">External Rating</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</p>
+         <p>{!! isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : '' !!}</p>
       </div>
    </div>
 
@@ -661,7 +661,7 @@
    <div class="data mt-4">
       <h2 class="sub-title bg">Recommendation</h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{{isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : ''}} </p>
+         <p>{!! isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : '' !!} </p>
       </div>
    </div>
 
@@ -682,9 +682,9 @@
                            @php 
                               $i=0;
                            @endphp
-                           @while(!empty($arrCM[$i])) 
+                           @while(!empty($arrReviewer[$i])) 
                               <tr>
-                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrCM[$i]->assignee}}</th>
+                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrReviewer[$i]->assignee}}</th>
                                  @php $i++; @endphp
                               </tr>
                         @endwhile

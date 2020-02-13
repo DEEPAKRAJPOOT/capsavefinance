@@ -62,7 +62,8 @@ trait CamTrait
                 $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
                 $arrBankDetails = FinanceModel::getDebtPosition($appId);
                 $arrApproverData =  $this->appRepo->getAppApproversDetails($appId);
-                $arrCM = $this->appRepo->getBackStageUsers($appId, array('6'));
+                $arrReviewer = $this->appRepo->getBackStageUsers($appId, array('7'));
+               
                 $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
                 $finacialDetails = AppBizFinDetail::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
 
@@ -103,7 +104,7 @@ trait CamTrait
                     'leaseOfferData' => $leaseOfferData,
                     'arrBankDetails' => $arrBankDetails,
                     'arrApproverData' => $arrApproverData,
-                    'arrCM' => $arrCM,
+                    'arrReviewer' => $arrReviewer,
                     'arrStaticData' => $arrStaticData,
                     'approveStatus' => $approveStatus,
                     'currStageCode' => $currStageCode,

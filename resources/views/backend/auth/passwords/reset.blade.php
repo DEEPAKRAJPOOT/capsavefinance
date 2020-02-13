@@ -12,7 +12,7 @@
                 <div class="panel-heading">Reset Password</div>
 
                 <div class="panel-body">
-                    <form class="form-horizontal" method="POST" action="{{ url('password/reset') }}">
+                    <form class="form-horizontal" method="POST" action="{{ url('password/reset') }}" onsubmit="return resetValidations()">
                         {{ csrf_field() }}
 
                         <input type="hidden" name="token" value="{{ $token }}">
@@ -72,6 +72,54 @@
             </div>
         </div>
     </div>
-</div>
-    
+</div>   
+@endsection
+
+@section('jscript')
+<script>
+  function resetValidations(){
+    unsetError('input[name=email]');
+    unsetError('input[name=password]'); 
+    unsetError('input[name=password_confirmation]');
+
+    let flag = true;
+    let email = $('input[name=email]').val();
+    let password = $('input[name=password]').val().trim();
+    let password_confirmation = $('input[name=password_confirmation]').val().trim();
+
+    if(email.length == 0){
+        setError('input[name=email]', 'Please fill email address');
+        flag = false;
+    }
+
+    if(password.length == 0){
+        setError('input[name=password]', 'Please fill Password');
+        flag = false;
+    }else if(password.match(/\s/g)){
+        setError('input[name=password]', 'In Password space not allowed');
+        flag = false;
+    }else if(password.length < 8){
+        setError('input[name=password]', 'The password must be at least 8 characters.');
+        flag = false;
+    }
+
+    if(password_confirmation.length == 0){
+        setError('input[name=password_confirmation]', 'Please fill Confirm Password');
+        flag = false;
+    }else if(password_confirmation.match(/\s/g)){
+        setError('input[name=password]', 'In Password space not allowed');
+        flag = false;
+    }else if(password != password_confirmation){
+        setError('input[name=password_confirmation]', 'The password confirmation does not match.');
+        flag = false;
+    }
+
+
+    if(flag){
+        return true;
+    }else{
+        return false;
+    }
+  }
+</script>
 @endsection

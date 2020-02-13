@@ -90,9 +90,9 @@ class Transactions extends BaseModel {
             $transactions['created_at'] = \Auth::user()->user_id;
         }        
         
-        if (!isset($transactions[0])) {
+        if (!isset($transactions[0])) {            
             return self::create($transactions);
-        } else {
+        } else {            
             return self::insert($transactions);
         }
     }
@@ -183,4 +183,15 @@ class Transactions extends BaseModel {
           return self::with('user')->where('chrg_trans_id','!=',NULL)->groupBy('user_id')->get();
     }   
      
+    /**
+     * Update Transaction
+     * 
+     * @param array $whereCondition
+     * @param array $data
+     * @return mixed
+     */
+    public static function updateTransaction($whereCondition, $data)
+    {
+        return self::where($whereCondition)->update($data);
+    }
 }
