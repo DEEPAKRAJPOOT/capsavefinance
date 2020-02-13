@@ -116,7 +116,7 @@ class ChargeController extends Controller
        {  
            $getAmount =  str_replace(',', '', $request->amount);
            $getTransType  =  DB::table('mst_trans_type')->where(['is_charge' => $request->chrg_name])->first();
-          // dd($getTransType);
+        
            if($getTransType)
            {
                  $static_amount =  200000;
