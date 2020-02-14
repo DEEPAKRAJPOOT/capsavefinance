@@ -314,7 +314,7 @@ class AppProgramOffer extends BaseModel {
     public function offerPtpq(){
         return $this->hasMany('App\Inv\Repositories\Models\OfferPTPQ', 'prgm_offer_id', 'prgm_offer_id');
     }
-
+  
     public static function getTotalByPrgmLimitId($appPrgmLimitId){
         if(empty($appPrgmLimitId)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));

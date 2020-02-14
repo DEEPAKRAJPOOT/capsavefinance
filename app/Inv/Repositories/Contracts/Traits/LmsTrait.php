@@ -1,6 +1,8 @@
 <?php
 namespace App\Inv\Repositories\Contracts\Traits;
 
+use Auth;
+
 trait LmsTrait
 {
     /**
@@ -18,6 +20,21 @@ trait LmsTrait
         return $interest;        
     }   
     
+    protected function calculateTenorDays($invoice = [])
+    {
+        $now = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : ''); // or your date as well
+        $your_date = strtotime((isset($invoice['invoice_date'])) ? $invoice['invoice_date'] : '');
+        $datediff = abs($now - $your_date);
+
+        $tenor = round($datediff / (60 * 60 * 24));
+        return $tenor;        
+    } 
+
+    protected function calculateFundedAmount($invoice = [], $margin)
+    {
+        return $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
+    }   
+        
 
     /**
      * Process Interest Accrual
@@ -26,6 +43,7 @@ trait LmsTrait
      */
     protected function calAccrualInterest()
     {        
+        $int_type_config = 1; //1=>Daily Interest Accrual, 2=>Monthly Interest Accrual, 3=>Rear Ended
         //$currentDate = \Carbon\Carbon::now()->format('Y-m-d');
         $currentDate = date('Y-m-d');
                 
@@ -34,15 +52,20 @@ trait LmsTrait
         //$disbursalWhereCond['int_accrual_start_dt']  = $currentDate;
         $disbursalData = $this->lmsRepo->getDisbursalRequests($disbursalWhereCond);
         $returnData = [];
+        $allTrans = [];
         foreach($disbursalData as $disburse) {
             $disbursalId = $disburse->disbursal_id;
-            $appId  = $disburse->app_id;
+            $appId  = $disburse->app_id;            
+            $userId  = $disburse->user_id;
+            $virAccId  = $disburse->virtual_acc_id;
             $invoiceId  = $disburse->invoice_id;
             $principalAmount  = $disburse->principal_amount;
             $totalRepaidAmount  = $disburse->total_repaid_amt;
             $invoiceDueDate  = $disburse->inv_due_date;
             $intAccrualStartDt = $disburse->int_accrual_start_dt;
             $intAccrualDt = $intAccrualStartDt;
+            //$calAccruedInterest = $disburse->accured_interest ? $disburse->accured_interest : 0;
+            $calAccruedInterest = 0;
             
             $balancePrincipalAmt = $principalAmount - $totalRepaidAmount;
                         
@@ -66,13 +89,14 @@ trait LmsTrait
                 }
                 $calInterestRate  = round($interestRate / 100, 2);
                 $tenorDays        = 1;
-
-                $interest = $this->calInterest($balancePrincipalAmt, $calInterestRate, $tenorDays);
+                
+                $usedPrincipalAmt = $int_type_config == 2 ? $balancePrincipalAmt + $calAccruedInterest : $balancePrincipalAmt;
+                $interest = $this->calInterest($usedPrincipalAmt, $calInterestRate, $tenorDays);
 
                 $intAccrualData = [];
                 $intAccrualData['disbursal_id'] = $disbursalId;
                 $intAccrualData['interest_date'] = $intAccrualDt;
-                $intAccrualData['principal_amount'] = $disburse->principal_amount;
+                $intAccrualData['principal_amount'] = $usedPrincipalAmt;   //$disburse->principal_amount;
                 $intAccrualData['accrued_interest'] = round($interest, 2);
                 $intAccrualData['interest_rate'] = $disburse->interest_rate;
                 
@@ -109,16 +133,61 @@ trait LmsTrait
                     //$reIntAccrualData['interest_rate'] = $disburse->interest_rate;
                     //$this->lmsRepo->saveInterestAccrual($reIntAccrualData, $rewhereCond);
                 }
+                
+                if ($int_type_config == 2 && date("Y-m-t", strtotime($intAccrualDt)) == $intAccrualDt) {
+                    $monthlyIntCond = [];
+                    $monthlyIntCond['disbursal_id'] = $disbursalId;
+                    $monthlyIntCond['interest_date_lte'] = date("Y-m-t", strtotime($intAccrualDt));
+                    $monthlyIntCond['interest_date_gte'] = date('Y-m-01', strtotime($intAccrualDt));
+                    $accuredInterest = $this->lmsRepo->sumAccruedInterest($monthlyIntCond);
+                    $calAccruedInterest += $accuredInterest;
+                    $saveDisbursalData = [];
+                    $saveDisbursalData['accured_interest'] = $calAccruedInterest;
+                    $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);                    
+                }
                                                                    
                 $intAccrualDt = date ("Y-m-d", strtotime("+1 day", strtotime($intAccrualDt)));
             }
-                                
-            $accuredInterest = $this->lmsRepo->sumAccruedInterest($disbursalId);
-            $saveDisbursalData['accured_interest'] = $accuredInterest;
-            $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);
             
+            $accuredInterest = $this->lmsRepo->sumAccruedInterest(['disbursal_id' => $disbursalId]);
+            if ($int_type_config == 1) {
+                $saveDisbursalData = [];
+                $saveDisbursalData['accured_interest'] = $accuredInterest;
+                $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);
+            }
             $returnData[$disbursalId] = $accuredInterest;
+            $overDueInterest = $this->getOverDueInterest($invoiceId);
+            if ($overDueInterest) {
+                $transactions = [];
+                $transactions['user_id'] = $userId;
+                $transactions['virtual_acc_id'] = $virAccId;
+                $transactions['trans_date'] = date("Y-m-d");
+                $transactions['virtual_acc_id'] = $virAccId;     
+                $transactions['amount'] = 0;
+                $transactions['trans_type'] = 19;
+                $transactions['entry_type'] = 0;   //0 - Debit and 1 - Credit    
+                $transactions['mode_of_pay'] = 1;  //1 - Online
+                $transactions['created_at'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                $transactions['created_by'] = \Auth::user() ? \Auth::user()->user_id : 1; 
+                $allTrans[$userId] = $transactions;
+                $allTrans[$userId]['amount'] = isset($allTrans[$userId]) ? $allTrans[$userId]['amount'] + $overDueInterest : $overDueInterest;
+            }
         }
+        //$insertTrans = [];
+        foreach($allTrans as $key => $trans) {
+            //$insertTrans[] = $trans;
+            $transData = $this->lmsRepo->getTransactions(['user_id' => $trans['user_id'], 'trans_type' => 19]);
+            if (!isset($transData[0])) {
+                $this->lmsRepo->saveTransaction($trans);
+            } else {
+                $data = [
+                    'trans_date' => date("Y-m-d"),
+                    'amount' => $trans['amount']
+                ];
+                $this->lmsRepo->updateTransaction(['user_id' => $trans['user_id'], 'trans_type' => 19], $data);
+            }
+        }
+                        
         return $returnData;
     }
     
@@ -282,7 +351,71 @@ trait LmsTrait
         $disbursalData['interest_refund'] = null;
         $disbursalData['funded_date'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
         $disbursalData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
+        $disbursalData['processing_fee'] = $invoice['program_offer']['processing_fee'] ?? null;
+        $disbursalData['grace_period'] = $invoice['program_offer']['grace_period'] ?? null;
+        $disbursalData['overdue_interest_rate'] = $invoice['program_offer']['overdue_interest_rate'] ?? null;
+        $disbursalData['repayment_amount'] = null;
+        $disbursalData['penalty_amount'] = 0;
         
         return $disbursalData;
+    }
+
+    /**
+     * Prepare Disbursal Data
+     * 
+     * @param array $data
+     * @return mixed
+     */
+    protected function createTransactionData($disburseData = [], $amount= 0, $transId = null, $transType = 0, $entryType = 0)
+    {
+        /**
+        * disburseType = 1 for online and 2 for manually
+        */
+        $transactionData = [];
+        // dd($amount);
+        $transactionData['gl_flag'] = 1;
+        $transactionData['soa_flag'] = 1;
+        $transactionData['user_id'] = $disburseData['user_id'] ?? null;
+        $transactionData['virtual_acc_id'] = $disburseData['user_id'] ? $this->lmsRepo->getVirtualAccIdByUserId($disburseData['user_id']) : null;
+        $transactionData['trans_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $transactionData['trans_type'] = $transType ?? 0;
+        $transactionData['pay_from'] = null;
+        $transactionData['amount'] = $amount ?? 0;
+        $transactionData['gst'] = 0;
+        $transactionData['cgst'] = 0;            
+        $transactionData['sgst'] = 0;
+        $transactionData['igst'] = 0;
+        $transactionData['entry_type'] =  $entryType ?? 0;
+        $transactionData['tds_per'] = null;
+        $transactionData['mode_of_pay'] =  1;
+        $transactionData['comment'] = null;
+        $transactionData['utr_no'] =null;
+        $transactionData['cheque_no'] = null;
+        $transactionData['unr_no'] = null;
+        $transactionData['txn_id'] = $transId;
+
+        $transactionData['created_by'] = Auth::user()->user_id ?? null;
+        
+        return $transactionData;
     }    
+    /**
+     * Get Overdue Interest
+     * 
+     * @param integer $invoice_id
+     * @return float
+     */
+    protected function getOverDueInterest($invoice_id)
+    {
+        $disbData = $this->lmsRepo->getDisbursalRequests(['invoice_id' => $invoice_id]);        
+        if (!isset($disbData[0])) return null;
+        
+        $disbursalId = $disbData[0]->disbursal_id;
+        $invDueDate  = $disbData[0]->inv_due_date;
+        
+        $monthlyIntCond = [];
+        $monthlyIntCond['disbursal_id'] = $disbursalId;
+        $monthlyIntCond['interest_date_gte'] = $invDueDate;   //date('Y-m-d', strtotime($invDueDate));
+        $accuredInterest = $this->lmsRepo->sumAccruedInterest($monthlyIntCond);
+        return $accuredInterest;
+    }
 }

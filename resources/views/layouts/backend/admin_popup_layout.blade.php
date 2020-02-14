@@ -49,45 +49,72 @@
         <script src="{{url('common/js/iframePopup.js')}}"></script>
         <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
         <script src="{{url('common/js/summernote/dist/summernote.js')}}"></script>
-        <script>
-            $(document).ready(function () {
-                $('[data-toggle="tooltip"]').tooltip();
-                $(".trigger").click(function () {
-                    if ($(this).hasClass("minus")) {
-                        $(this).removeClass("minus");
-                    } else {
-                        $(this).addClass("minus");
-                    }
+        <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
+     <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
 
-                    //$(".trigger").removeClass("minus");
-                    //$(this).addClass("minus");
+            $(".trigger").click(function(){
+                if($(this).hasClass("minus")){
+                    $(this).removeClass("minus"); 
+                }
+                else{
+                    $(this).addClass("minus");   
+                }
 
-                    $(this).parents("tr").next(".dpr").slideToggle();
-                });
+            //$(".trigger").removeClass("minus");
+            //$(this).addClass("minus");
 
-                $('.number_format').on('input', function(event) {
-                   // skip for arrow keys
-                   if(event.which >= 37 && event.which <= 40) return;
-
-                   // format number
-                   $(this).val(function(index, value) {
-                       return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                   });
-                });
+            $(this).parents("tr").next(".dpr").slideToggle();
             });
+           /* use for hide future date  */
+            datepickerDisFdate();
+            /* use for hide past date  */
+            datepickerDisPdate();
+           
+            $('.number_format').on('input', function(event) {
+               // skip for arrow keys
+               if(event.which >= 37 && event.which <= 40) return;
 
-            function unsetError(ele) {
-                $(ele + ' +span').remove();
-            }
+               // format number
+               $(this).val(function(index, value) {
+                   return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+               });
+            });
+        });
 
-            function setError(ele, msg) {
-                $(ele).after('<span class="error">' + msg + '</span>');
-            }
+        function datepickerDisFdate(){
+            $(".datepicker-dis-fdate").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+                endDate: new Date()
+            });
+        }
 
-            function setLimit(ele, msg){
-                $(ele).parent('div').find('.limit').html(msg);
-            }
-        </script>
-        @yield('jscript')
+       function datepickerDisPdate(){
+            $(".datepicker-dis-pdate").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+               startDate: new Date()
+            });
+        }
+        
+        
+        
+        function unsetError(ele){
+            $(ele+' +span').remove();
+        }
+
+        function setError(ele, msg){
+            $(ele).after('<span class="error">'+msg+'</span>');
+        }
+
+        function setLimit(ele, msg){
+            $(ele).parent('div').find('.limit').html(msg);
+        }
+    </script>
+    @yield('jscript')
     </body>
 </html>

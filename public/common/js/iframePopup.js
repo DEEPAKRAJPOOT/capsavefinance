@@ -40,6 +40,8 @@ var iframe_ids = [
         'editAgencyUserFrame',
         'addChargesFrame',
         'editChargesFrame',
+        'editChargesLmsFrame',
+        'addChargesLmsFrame',
         'addDocumentsFrame',
         'editDocumentsFrame',
         'addIndustriesFrame',

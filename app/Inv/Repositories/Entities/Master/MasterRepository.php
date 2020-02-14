@@ -74,9 +74,10 @@ class MasterRepository extends BaseRepositories implements MasterInterface
 
   public function saveCharges($attributes)
   {
-    $status = Charges::create($attributes);
+    $status = Charges::create($attributes)->id;
     return $status ?: false;
   }
+ 
 
   public function updateCharges($attributes, $chargeId)
   {

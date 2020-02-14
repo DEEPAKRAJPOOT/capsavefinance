@@ -73,6 +73,34 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_disbursed_list',
                 'uses' => 'Lms\DisbursalController@disbursedList'
             ]);
+
+            Route::get('/soa/list', [
+                'as' => 'lms_get_transaction',
+                'uses' => 'Lms\SoaController@list'
+            ]);
+           Route::get('/charges/manage_charge', [
+                'as' => 'manage_charge',
+                'uses' => 'Lms\ChargeController@manageCharge'
+            ]);
+           Route::post('get_chrg_amount', [
+                'as' => 'get_chrg_amount',
+                'uses' => 'Lms\ChargeController@getChrgAmount'
+            ]);
+           
+            Route::post('save_manual_charges', [
+                'as' => 'save_manual_charges',
+                'uses' => 'Lms\ChargeController@saveManualCharges'
+            ]); 
+           
+            Route::get('/edit-lms-charges', [
+                'as' => 'edit_lms_charges',
+                'uses' => 'Lms\ChargeController@editLmsCharges'
+            ]);
+             Route::get('/list-lms-charges', [
+                'as' => 'list_lms_charges',
+                'uses' => 'Lms\ChargeController@listLmsCharges'
+            ]);
+            
         });//end of application
 
         // Business address

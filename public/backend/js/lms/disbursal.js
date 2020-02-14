@@ -13,7 +13,6 @@ try {
                 "method": 'POST',
                 data: function (d) {
                     d.search_keyword = $('input[name=search_keyword]').val();
-                    d.is_status = $('select[name=is_status]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -23,18 +22,20 @@ try {
                 }
             },
             columns: [
+                {data: 'customer_id'},
                 {data: 'customer_code'},
                 {data: 'ben_name'},
                 {data: 'ben_bank_name'},
                 {data: 'ben_ifsc'},
                 {data: 'ben_account_no'},
                 {data: 'total_invoice_amt'},
-                {data: 'total_fund_amt'},
                 {data: 'total_disburse_amt'},
+                {data: 'total_actual_funded_amt'},
                 {data: 'total_invoice'},
+                {data: 'status'},
                 {data: 'action'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 6, 7, 8]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6, 7, 8, 9, 10]}]
         });
 
         //Search
