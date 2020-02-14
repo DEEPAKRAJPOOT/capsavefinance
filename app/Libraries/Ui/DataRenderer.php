@@ -1336,7 +1336,8 @@ class DataRenderer implements DataProviderInterface
                             $link = '#';
                         //}                        
                         //$link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]);
-                        return '<a id="app-id-' . $app->app_id . ' rel="tooltip" href="' . $link . '">' . 'CAPS000'.$app->app_id . '</a>';
+                        //return '<a id="app-id-' . $app->app_id . ' rel="tooltip" href="' . $link . '">' . 'CAPS000'.$app->app_id . '</a>';
+                        return 'CAPS000'.$app->app_id ;
                     }
                 )
                 ->addColumn(
