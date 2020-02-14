@@ -223,32 +223,32 @@
     $(document).on('click','.pagination',function() {
          pageNo = $(this).attr('id');
          getExcel(pageNo);
-      })
+    })
 
     function getresult(pageNo) {
         getExcel(pageNo);
     }
 
-      function getExcel(page = 1) {
-         var fileType = 'banking';
-         data = {appId, page, _token, fileType};
-         $.ajax({
-            url  : '{{URL::route("getExcelSheet") }}',
-            type :'POST',
-            data : data,
-            dataType : 'json',
-            success:function(result) {
-               $('#gridView').html(result.response.data);
-               $('#paginate').html(result.response.paginate);
-            },
-            error:function(error) {
+    function getExcel(page = 1) {
+       var fileType = 'banking';
+       data = {appId, page, _token, fileType};
+       $.ajax({
+          url  : '{{URL::route("getExcelSheet") }}',
+          type :'POST',
+          data : data,
+          dataType : 'json',
+          success:function(result) {
+             $('#gridView').html(result.response.data);
+             $('#paginate').html(result.response.paginate);
+          },
+          error:function(error) {
 
-            },
-            complete: function() {
+          },
+          complete: function() {
 
-            },
-         })
-      }
+          },
+       })
+    }
 </script>
 <script>
    $('#debt_on').datetimepicker({
