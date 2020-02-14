@@ -38,7 +38,6 @@
                                     
                                     <tr role="row" class="odd">
                                        <td class=""><b>Facility Type</b></td>
-                                       <td class=""><b>Product Type</b></td>
                                        <td class="">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
                                     </tr>
                                     <tr role="row" class="odd">
