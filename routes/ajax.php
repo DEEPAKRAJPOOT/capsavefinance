@@ -765,4 +765,9 @@ Route::group(
         'uses' => 'AjaxController@getTransName'
     ]);   
 
+     Route::post('get_chrg_amount', [
+                'as' => 'get_chrg_amount',
+                'uses' => 'AjaxController@getChrgAmount'
+            ]);
+    
 });

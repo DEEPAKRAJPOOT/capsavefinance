@@ -82,10 +82,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'manage_charge',
                 'uses' => 'Lms\ChargeController@manageCharge'
             ]);
-           Route::post('get_chrg_amount', [
-                'as' => 'get_chrg_amount',
-                'uses' => 'Lms\ChargeController@getChrgAmount'
-            ]);
+          
            
             Route::post('save_manual_charges', [
                 'as' => 'save_manual_charges',

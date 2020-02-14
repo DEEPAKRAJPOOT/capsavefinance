@@ -68,49 +68,7 @@ class ChargeController extends Controller
           return view('lms.charges.add_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program]);
       }
       
-      public function  getChrgAmount(Request $request)
-      {
-          $res =  $request->all();
-          $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
-          if($getamount)
-          {
-               $app = "";
-               $sel ="";
-                $res =   [  1 => "Limit Amount",
-                            2 => "Outstanding Amount",
-                            3 => "Outstanding Principal",
-                            4 => "Outstanding Interest",
-                            5 => "Overdue Amount"];
-             if($getamount->chrg_applicable_id > 0)
-             {
-                
-                 foreach($res as $key=>$val)
-                 {
-                     if($getamount->chrg_applicable_id==$key)
-                     {
-                         $sel = "selected";
-                     }
-                     $app.= "<option value=".$key." $sel>".$val."</option>";
-                 }
-             }
-             
-             if($getamount->chrg_calculation_type==1)
-             {
-                $amount =  number_format($getamount->chrg_calculation_amt);
-             }
-             else
-             {
-                $amount =  $getamount->chrg_calculation_amt; 
-             }
-             
-             return response()->json(['status' => 1,'chrg_applicable_id' => $getamount->chrg_applicable_id,'amount' => number_format($amount),'id' => $getamount->id,'type' => $getamount->chrg_calculation_type,'applicable' =>$app]); 
-          }
-          else
-          {
-              return response()->json(['status' => 0]); 
-          }
-          
-      }
+  
       
        public function saveManualCharges(Request $request)
        {  
@@ -119,7 +77,7 @@ class ChargeController extends Controller
         
            if($getTransType)
            {
-                 $static_amount =  200000;
+                 $static_amount =  1000000;
                  if($request->chrg_calculation_type==1)
                  {
                      $percent = NULL;
