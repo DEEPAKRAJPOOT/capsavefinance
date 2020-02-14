@@ -93,7 +93,7 @@ class Business extends BaseModel
         ]);
 
         $bpga = BizPanGstApi::create([
-                'file_name'=>'file name goes here',
+                'file_name'=>md5(time()),
                 'status'=>1,
                 'created_by'=>$userId
             ]);
@@ -245,7 +245,7 @@ class Business extends BaseModel
         if(!empty($attributes->pan_api_res)){
             BizPanGst::where(['biz_id'=>$bizId,'biz_owner_id'=>null])->delete();
             $bpga = BizPanGstApi::create([
-                    'file_name'=>'file name goes here',
+                    'file_name'=>md5(time()),
                     'status'=>1,
                     'created_by'=>$userId
                 ]);

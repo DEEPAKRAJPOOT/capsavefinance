@@ -226,7 +226,7 @@
       })
 
       function getresult(pageNo) {
-        getExcel(pageNo);
+          getExcel(pageNo);
       }
 
       function getExcel(page = 1) {
