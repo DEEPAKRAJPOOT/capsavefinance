@@ -154,19 +154,19 @@
                         </div>
                         @endforeach
                      @endif
-
-                     <div class="input-group control-group after-add-more row">
-                        <div class="input-group-btn col-md-6"> 
-                           <textarea name="pre_cond[]" value="" class="form-control form-control-sm"></textarea>
-                        </div>
-                        <div class="input-group-btn col-md-6"> 
-                           <textarea name="pre_timeline[]" value="" class="form-control form-control-sm"></textarea>
-                        </div>
-                        <div class="input-group-btn "> 
-                          <i class="fa  fa-plus-circle add-ptpq-block add-more"></i>
+                     <div class="after-add-more">
+                        <div class="input-group control-group row">
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="pre_cond[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="pre_timeline[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn "> 
+                           <i class="fa  fa-plus-circle add-ptpq-block add-more"></i>
+                           </div>
                         </div>
                      </div>
-
                      <!-- Copy Fields -->
                      <div class="copy hide">
                         <div class="control-group input-group row">
@@ -207,19 +207,19 @@
                         </div>
                         @endforeach
                      @endif
-                     
-                     <div class="input-group control-group after-add-more-post row">
-                        <div class="input-group-btn col-md-6"> 
-                           <textarea name="post_cond[]" value="" class="form-control form-control-sm"></textarea>
-                        </div>
-                        <div class="input-group-btn col-md-6"> 
-                           <textarea name="post_timeline[]" value="" class="form-control form-control-sm"></textarea>
-                        </div>
-                        <div class="input-group-btn "> 
-                          <i class="fa  fa-plus-circle add-ptpq-block add-more-post"></i>
+                     <div class="after-add-more-post">
+                        <div class="input-group control-group  row">
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="post_cond[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="post_timeline[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn "> 
+                           <i class="fa  fa-plus-circle add-ptpq-block add-more-post"></i>
+                           </div>
                         </div>
                      </div>
-
                      <!-- Copy Fields -->
                      <div class="copy-post hide">
                         <div class="control-group input-group row">
@@ -541,7 +541,7 @@ $(document).ready(function() {
 
    $(".add-more").click(function(){ 
       var html = $(".copy").html();
-      $(".after-add-more").after(html);
+      $(".after-add-more").append(html);
    });
 
 
@@ -551,7 +551,7 @@ $(document).ready(function() {
 
    $(".add-more-post").click(function(){ 
       var html = $(".copy-post").html();
-      $(".after-add-more-post").after(html);
+      $(".after-add-more-post").append(html);
    });
 
 

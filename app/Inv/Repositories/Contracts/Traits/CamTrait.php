@@ -138,7 +138,7 @@ trait CamTrait
                         ->whereIn('cond_type', [1,2]);
         $updPrePost->update($updateData);
         $arrData =[];
-        if(isset($request->pre_cond) && $request->pre_cond[0]!=null) {
+        if(isset($request->pre_cond)) {
             foreach($request->pre_cond as $key=>$val){
                 if($request->pre_cond[$key] != null) {
                     $arrData[$key]['cam_reviewer_summary_id'] = $cam_reviewer_summary_id;
@@ -154,7 +154,7 @@ trait CamTrait
         }
 
         $arrData =[];
-        if(isset($request->post_cond) && $request->post_cond[0]!=null) {
+        if(isset($request->post_cond)) {
           foreach($request->post_cond as $key=>$val){
               if($request->post_cond[$key] != null) {
                   $arrData[$key]['cam_reviewer_summary_id'] = $cam_reviewer_summary_id;
