@@ -112,7 +112,11 @@
 {!!Helpers::makeIframePopup('viewSharedDetails','View Shared Details', 'modal-lg')!!}
 
 @endsection
-
+@section('additional_css')
+<style>
+    #appList_wrapper  #appList_info{margin: -36px 0px 0px 164px;}
+    </style>
+    @endsection
 @section('jscript')
 <script>
 

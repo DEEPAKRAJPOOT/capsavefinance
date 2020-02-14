@@ -45,11 +45,12 @@ try {
 
         }); 
         
-        oTables1.on( 'order.dt search.dt', function () {
-        oTables1.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-            cell.innerHTML = i+1;
-        } );
-    } ).draw();
+        oTables1.on( 'draw.dt', function () {
+            var PageInfo = $('#RoleList').DataTable().page.info();
+            oTables1.column(0, { page: 'current' }).nodes().each( function (cell, i) {
+                    cell.innerHTML = i + 1 + PageInfo.start;
+                } );
+            } );
     
     
      //Search

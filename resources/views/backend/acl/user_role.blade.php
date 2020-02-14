@@ -118,7 +118,7 @@
 @endsection
 @section('additional_css')
 <style>
-    #RoleList_wrapper  #RoleList_info{margin: -45px 0px 0px 164px;}
+    #RoleList_wrapper  #RoleList_info{margin: -40px 0px 0px 164px;}
     </style>
     @endsection
 @section('jscript')

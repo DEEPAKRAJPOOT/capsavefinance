@@ -14,7 +14,7 @@
                     ) 
                     !!}            
             <div class="row">                
-               <div class="col-md-12">
+               <div class="col-12">
                     
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
                    <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
@@ -75,26 +75,22 @@
                     
                     
               </div>
-                <div class="col-md-12">
+                <div class="col-12">
                     <div class="form-group">
                        <label for="txtCreditPeriod">Comment
                        <span class="mandatory">*</span>
                        </label>
                        <textarea type="text" name="sharing_comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
                     </div>
-                 </div>
-                
                     {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}
                     {!! Form::hidden('curr_role_id', $curr_role_id) !!}
                     {!! Form::hidden('assign_case', $assign_case) !!}
-                   
-                    <br>
-                    
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
                 <button type="submit" class="btn btn-success btn-sm">{{ $confirmBtn }}</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
+            </div>
             </div>
                 {!!
                 Form::close()
