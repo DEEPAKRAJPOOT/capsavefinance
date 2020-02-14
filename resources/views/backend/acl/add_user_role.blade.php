@@ -76,21 +76,7 @@
             </div>                      
         </div>	
     </div>
-    <div class="row">
-        <div class="col-6">
-            <div class="form-group">
-                <label for="txtMobile">Is Active
-                    <span class="mandatory">*</span>
-                </label>
-                {!!
-                Form::select('is_active',
-                [''=>'Please select','0'=> 'In Active','1'=>'Active'],
-                null,
-                array('id' => 'is_active',
-                'class'=>'form-control', 'tabindex'=>'7'))
-                !!}
-            </div>
-        </div>
+    <div class="row">       
         <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Role
@@ -101,12 +87,10 @@
                 [''=>'Select Role']+$rolesList,
                 null,
                 array('id' => 'role',
-                'class'=>'form-control', 'tabindex'=>'8' ))
+                'class'=>'form-control', 'tabindex'=>'7' ))
                 !!}
             </div>
-        </div>
-    </div>
-    <div class="row">
+        </div>  
         <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Reporting Manager                    
@@ -116,9 +100,10 @@
                 [''=>'Select Reporting Manager'],
                 null,
                 array('id' => 'parent_user_id',
-                'class'=>'form-control', 'tabindex'=>'9'))
+                'class'=>'form-control', 'tabindex'=>'8'))
                 !!}
             </div>
+        </div>
         </div>
         <!--
         <div class="col-md-6 is-apprv-req" style="display:none;">
@@ -136,7 +121,9 @@
                 </label>
             </div>
         </div> 
-        --> 
+        -->  
+  
+    <div class="row">
         <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod"> State
@@ -149,15 +136,11 @@
                     [
                     'class' => 'form-control',                
                     'id' => 'state_id',
-                     'tabindex'=>'10'
+                     'tabindex'=>'9'
                     ])
                 !!}                        
             </div>
-        </div>        
-    </div>
-
-
-    <div class="row">
+        </div>
         <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod"> City
@@ -170,11 +153,29 @@
                     [
                     'class' => 'form-control',                
                     'id' => 'city_id', 
-                    'tabindex'=>'11'
+                    'tabindex'=>'10'
                     ])
                 !!}                        
             </div>
-        </div>    
+        </div>            
+    </div>
+
+
+    <div class="row">
+    <div class="col-6">
+            <div class="form-group">
+                <label for="txtMobile">Is Active
+                    <span class="mandatory">*</span>
+                </label>
+                {!!
+                Form::select('is_active',
+                [''=>'Please select','0'=> 'In Active','1'=>'Active'],
+                null,
+                array('id' => 'is_active',
+                'class'=>'form-control', 'tabindex'=>'11'))
+                !!}
+            </div>
+        </div>
     </div>    
 
 

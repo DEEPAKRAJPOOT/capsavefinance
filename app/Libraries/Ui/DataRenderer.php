@@ -268,7 +268,8 @@ class DataRenderer implements DataProviderInterface
                     if($userInfo){
                         $data .= $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
                     }
-                    $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Approver List"><i class="fa fa-eye"></i></a>';
+                   // $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Approver List"><i class="fa fa-eye"></i></a>';
+                    $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Approver List">View Approver List</a>';
                     return $data;
                 })
                 ->addColumn(
@@ -280,7 +281,8 @@ class DataRenderer implements DataProviderInterface
                         } else {
                             $data .= $app->assigned_by ? $app->assigned_by : '';
                         }
-                        $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
+                       // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
+                        $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
                         return $data;
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
@@ -316,11 +318,11 @@ class DataRenderer implements DataProviderInterface
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
                                 $roleData = Helpers::getUserRole();                                
                                 if ($currentStage && $currentStage->order_no <= 15 ) {
-                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                                 }
                                 
                                 if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
-                                    $act = $act . '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                    $act = $act . '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="300px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                                 }
                             }
                             
@@ -1323,7 +1325,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppLicationPool(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action'])
+                ->rawColumns(['app_id', 'contact','action','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -1343,22 +1345,49 @@ class DataRenderer implements DataProviderInterface
                         return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
-                    'assoc_anchor',
+                    'name',
                     function ($app) {                        
-                        return $app->assoc_anchor ? $app->assoc_anchor : '';
+                        if($app->user_type && $app->user_type==1){
+                            $anchorUserType='<small class="aprveAppListBtn">(Supplier)</small>'; 
+                        }else if($app->user_type && $app->user_type==2){
+                            $anchorUserType='<small class="aprveAppListBtn">(Buyer)</small>';
+                        }else{
+                            $anchorUserType='';
+                        }
+                        return $app->name ? $app->name .' '. $anchorUserType : $anchorUserType;
                 })
                 ->addColumn(
-                    'user_type',
-                    function ($app) {                        
-                    if($app->user_type && $app->user_type==1){
-                       $anchorUserType='Supplier'; 
-                    }else if($app->user_type && $app->user_type==2){
-                        $anchorUserType='Buyer';
-                    }else{
-                        $anchorUserType='';
-                    }
-                       return $anchorUserType;
+                    'assoc_anchor',
+                    function ($app) {
+                    if($app->anchor_id){
+                       $userInfo = User::getUserByAnchorId($app->anchor_id);
+                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                    } else {
+                       $achorName='';  
+                    }                    
+                    return $achorName;
+                    
                 })
+                ->addColumn(
+                    'contact',
+                    function ($app) {                        
+                        $contact = '';
+                        $contact .= $app->email ? '<span><b>Email:&nbsp;</b>'.$app->email.'</span>' : '';
+                        $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
+                        return $contact;
+                })
+                // ->addColumn(
+                //     'user_type',
+                //     function ($app) {                        
+                //     if($app->user_type && $app->user_type==1){
+                //        $anchorUserType='Supplier'; 
+                //     }else if($app->user_type && $app->user_type==2){
+                //         $anchorUserType='Buyer';
+                //     }else{
+                //         $anchorUserType='';
+                //     }
+                //        return $anchorUserType;
+                // })
                 ->addColumn(
                     'assigned_by',
                     function ($app) {
@@ -1387,7 +1416,7 @@ class DataRenderer implements DataProviderInterface
                         $act = '';
                      if(Helpers::checkPermission('confirm_box')){
                         $act = "<div class=\"d-flex inline-action-btn\">
-                        <a title=\"Pick Lead\"  data-toggle=\"modal\" data-target=\"#pickLead\" data-url =\"" . route('confirm_box', ['user_id' => $app->user_id , 'app_id' => $app->app_id] ) . "\" data-height=\"150px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\">Pickup Case</a>
+                        <a title=\"Pick Lead\"  data-toggle=\"modal\" data-target=\"#pickLead\" data-url =\"" . route('confirm_box', ['user_id' => $app->user_id , 'app_id' => $app->app_id] ) . "\" data-height=\"150px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" href=\"javascript:void();\">Pickup Case</a>
                 <div>";
                     }
                      return $act;
@@ -1613,10 +1642,10 @@ class DataRenderer implements DataProviderInterface
                     'active',
                     function ($role) {
                     return ($role->is_active == '0')?'<div class="btn-group ">
-                                             <label class="badge badge-warning current-status">In Active</label>
+                                             <label class="badge badge-danger current-status">In Active</label>
                                              
                                           </div></b>':'<div class="btn-group ">
-                                             <label class="badge badge-warning current-status">Active</label>
+                                             <label class="badge badge-success current-status">Active</label>
                                              
                                           </div></b>';
 
@@ -1720,9 +1749,9 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'active',
                     function ($role) {
-                    $disc = ($role->is_active == 1)?'Active':'Not Active'; 
-                    return $disc;
-
+                    //$disc = ($role->is_active == 1)?'Active':'Not Active'; 
+                    return ($role->is_active == 1)?'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>  
+                                          </div></b>':'<div class="btn-group "> <label class="badge badge-danger current-status">In Active</label> </div></b>';
                 })
 //                 ->editColumn(
 //                    'active',

@@ -20,7 +20,7 @@
     <div class="card">
         <div class="card-body">
            
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-sm-12">
             <div class="head-sec">
                 <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
@@ -36,9 +36,9 @@
                 </div>
             </div>
           </div>     
-            </div>
+            </div> -->
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-3">
                     {!!
                     Form::text('by_email',
                     null,
@@ -49,7 +49,7 @@
                     ])
                     !!}
                 </div>
-                <div class="col-md-4">
+                <div class="col-3">
 
                     {!!
                     Form::select('is_assign',
@@ -60,12 +60,28 @@
                     !!}
                      
                 </div>
+                <div class="col-3">
                <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
-            
+                </div>
+               <div class="col-3">
+            <div class="head-sec">
+                <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
+                    <a  data-toggle="modal" data-target="#addmanageUserRole" data-url ="{{route('add_user_role')}}" data-height="450px" data-width="100%" data-placement="top" >
+                        <button class="btn  btn-success btn-sm" type="button">
+                            <span class="btn-label">
+                                <i class="fa fa-plus"></i>
+                            </span>
+                            Add New User
+                        </button>
+
+                    </a>
+                </div>
+            </div>
+            </div>
                 </div>        
                 <div class="row">
                 <div class="col-sm-12">
-                                     <div class="table-responsive">
+                                     <!-- <div class="table-responsive"> -->
                                     <table id="RoleList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                     <tr role="row">
@@ -85,7 +101,7 @@
                                         </tbody>
                                     </table>
                                     <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
-                                </div>
+                                <!-- </div> -->
                                     </div>
                             </div>
 
@@ -100,7 +116,11 @@
 {!!Helpers::makeIframePopup('manageUserRole','Edit User', 'modal-md')!!}
 {!!Helpers::makeIframePopup('addmanageUserRole','Add User', 'modal-md')!!}
 @endsection
-
+@section('additional_css')
+<style>
+    #RoleList_wrapper  #RoleList_info{margin: -45px 0px 0px 164px;}
+    </style>
+    @endsection
 @section('jscript')
 <script>
 
