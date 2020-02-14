@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\SubIndustry;
 use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\Lms\Transactions;
 /**
  * Application repository class
  */
@@ -1316,10 +1317,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /** 
-    * @Author: Rent Alpha 
-    * @Date: 2020-01-31 10:21:30 
-    * @Desc: function for save app status log 
-    */
+     * @Author: Rent Alpha 
+     * @Date: 2020-01-31 10:21:30 
+     * @Desc: function for save app status log 
+     */
     public function saveAppStatusLog($attributes)
     {
         $result=AppStatusLog::saveAppStatusLog($attributes);
@@ -1333,6 +1334,23 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $app_id=(int)$app_id;
         $result= Application::getAppData($app_id);
         return ($result)?$result:false;
+    }
+    /**
+    * bank account list 
+    * 
+    * @return type mixed
+    */
+
+    public function lmsGetTransactions()
+    {
+        return Transactions::select('transactions.*')
+                    ->join('users', 'transactions.user_id', '=', 'users.user_id')
+                    ->join('lms_users','users.user_id','lms_users.user_id')
+                    ->orderBy('user_id', 'asc')
+                    ->orderBy(DB::raw("DATE_FORMAT(trans_date, '%Y-%m-%d')"), 'asc')
+                    ->orderBy('trans_id', 'asc');
+                            
+        //with('trans_detail')->where('soa_flag', 1);
     }
 
     public function getTotalByPrgmLimitId($appPrgmLimitId){

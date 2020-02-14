@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
+use App\Inv\Repositories\Models\LmsUser;
 
 
 class AjaxController extends Controller {
@@ -3252,6 +3253,11 @@ if ($err) {
     $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
     return $users;
   }   
+  
+  public function getCustomer(Request $request){
+    $data = LmsUser::getCustomers($request->input('query'));
+    return response()->json($data);
+  }
 
   /**
    * Get all customer list
@@ -3260,16 +3266,6 @@ if ($err) {
    */
   public function lmsGetDisbursalCustomer(DataProviderInterface $dataProvider) {
     $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer();
-    $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
-    return $users;
-  }
-  /**
-   * Get all customer list
-   *
-   * @return json customer data
-   */
-  public function lmsGetDisbursalList(DataProviderInterface $dataProvider) {
-    $customersDisbursalList = $this->userRepo->lmsGetDisbursalList();
     $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
     return $users;
   }
@@ -3673,6 +3669,17 @@ if ($err) {
         return \response()->json(['success' => $res]);
     }
 
+    /**
+   * Get all transactions for soa
+   *
+   * @return json transaction data
+   */
+  public function lmsGetSoaList(DataProviderInterface $dataProvider) {
+
+    $transactionList = $this->application->lmsGetTransactions();
+    $users = $dataProvider->lmsGetTransactions($this->request, $transactionList);
+    return $users;
+  }
         /**
      * Get all Equipment
      *

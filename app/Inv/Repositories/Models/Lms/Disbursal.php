@@ -69,6 +69,12 @@ class Disbursal extends BaseModel {
         'interest_refund',
         'funded_date',
         'int_accrual_start_dt',
+        'processing_fee',
+        'grace_period',
+        'overdue_interest_rate',
+        'repayment_amount',
+        'total_repaid_amount',
+        'penalty_amount',
         'created_at',
         'created_by',
         'updated_at',
@@ -122,8 +128,8 @@ class Disbursal extends BaseModel {
         }
         $query->orderBy('disburse_date', 'ASC');
         $query->orderBy('disbursal_id', 'ASC');
-        $result = $query->get();
-        return $result;
+        $result = $query->get();        
+        return $result ? $result : [];
     }
     
     /**

@@ -49,6 +49,7 @@ class TransType extends BaseModel {
         'is_taxable',
         'is_tds',
         'is_payment',
+        'is_charge',
         'priority',        
         'created_at',
         'created_by',
@@ -76,4 +77,11 @@ class TransType extends BaseModel {
             return self::create($data);
         }
     }
+
+    function charge()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Master\Charges', 'id', 'is_charge');
+    }  
+
+
 }

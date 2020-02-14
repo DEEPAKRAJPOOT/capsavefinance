@@ -11,9 +11,13 @@ use App\Inv\Repositories\Models\AppAssignment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+
 
 class DataRenderer implements DataProviderInterface
 {
+    use LmsTrait;
+
     /**
      * Helper object for DataRenderer.
      *
@@ -173,7 +177,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name','status'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -295,12 +299,7 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     //$app_status = config('inv_common.app_status');                    
-                    if($app->curr_status_id==config('common.mst_status_id')['DISBURSED']){
-                        return  '<label class="badge badge-success current-status"><i class="fa fa-check-circle" aria-hidden="true"></i> Disbursed</label>';
-                    }else{
-                        return $app->status == 1 ? 'Completed' : 'Incomplete';
-                    }
-                   
+                    return $app->status == 1 ? 'Completed' : 'Incomplete';
 
                 })
                 ->addColumn(
@@ -2568,7 +2567,31 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetDisbursalCustomers(Request $request, $customer)
     {
         return DataTables::of($customer)
-                ->rawColumns(['status', 'action'])
+                ->rawColumns(['customer_id','status', 'action'])
+                ->addColumn(
+                    'customer_id',
+                    function ($customer) {
+                        $this->overDueFlag = 0;
+                        $disburseAmount = 0;
+                        $apps = $customer->app;
+                        if ($this->overDueFlag == 0) {
+	                        foreach ($apps as $app) {
+	                            foreach ($app->invoices as $inv) {
+	                                $invoice = $inv->toArray();
+	                                $dueDate = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : ''); // or your date as well
+	                                $now = strtotime(date('Y-m-d'));
+	                                $datediff = ($dueDate - $now);
+	                                $days = round($datediff / (60 * 60 * 24));
+	                                if ($this->overDueFlag ==0 && $days < 0) {
+	                        			$this->overDueFlag = 1;
+	                                }
+	                            }
+	                        }
+	                    }
+
+                        return ($this->overDueFlag == 0) ? "<input type='checkbox' class='user_id' value=".$customer->user_id.">" : '';
+                    }
+                )
                 ->addColumn(
                     'customer_code',
                     function ($customer) {
@@ -2605,51 +2628,79 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'total_invoice_amt',
                     function ($customer) {
-                        return 12;
+                        $invoiceTotal = 0;
+                        $apps = $customer->app->toArray();
+                        foreach ($apps as $app) {
+                            $invoiceTotal += array_sum(array_column($app['invoices'], 'invoice_approve_amount'));
+                        }
+                        return $invoiceTotal;
 
-                })
-                ->editColumn(
-                    'total_fund_amt',
-                    function ($customer) {
-                        return 12;
                 })
                 ->editColumn(
                     'total_disburse_amt',
                     function ($customer) {
-                        return 12;
+                        $fundedAmount = 0;
+                        $apps = $customer->app;
+                        foreach ($apps as $app) {
+                            foreach ($app->invoices as $inv) {
+                                $invoice = $inv->toArray();
+                                $margin = $invoice['program_offer']['margin'];
+                                $fundedAmount += $this->calculateFundedAmount($invoice, $margin);
+                            }
+                        }
+
+                        return $fundedAmount;
+                })
+                ->editColumn(
+                    'total_actual_funded_amt',
+                    function ($customer) {
+                        $disburseAmount = 0;
+                        $apps = $customer->app;
+                        foreach ($apps as $app) {
+                            foreach ($app->invoices as $inv) {
+                                $invoice = $inv->toArray();
+                                $margin = $invoice['program_offer']['margin'];
+                                $fundedAmount = $this->calculateFundedAmount($invoice, $margin);
+                                
+                                $tenorDays = $this->calculateTenorDays($invoice);
+                                $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
+                                
+                                $disburseAmount += round($fundedAmount - $interest, 2);
+                            }
+                        }
+
+                        return $disburseAmount;
                 })
                 ->editColumn(
                     'total_invoice',
-                    function ($customer) {                    
-                        return 12;
+                    function ($customer) {   
+                        $invCount = 0;
+                        $apps = $customer->app;
+                        foreach ($apps as $app) {
+                            foreach ($app->invoices as $inv) {
+                                $invCount++;
+                            }
+                        }                 
+                        return $invCount;
+                })                       
+                ->addColumn(
+                    'status',
+                    function ($customer) {
+                        return ($this->overDueFlag == 1) ? '<label class="badge badge-warning current-status">pending</label>' : '<label class="badge badge-success current-status">success</label>';
                 })                       
                 ->addColumn(
                     'action',
                     function ($customer) {
                         $act = '';
-                        $act = '<a  data-toggle="modal" data-target="#viewDisbursalCustomerInvoice" data-url ="' . route('lms_disbursal_invoice_view', ['user_id' => $customer->user_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
+                        $act = '<a  data-toggle="modal" data-target="#viewDisbursalCustomerInvoice" data-url ="' . route('lms_disbursal_invoice_view', ['user_id' => $customer->user_id, 'status' => $this->overDueFlag]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
                         
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('by_email') != '') {
-                        if ($request->has('by_email')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('email', 'like', "%$by_nameOrEmail%");
-                            });
-                        }
-                    }
-                    if ($request->get('is_assign') != '') {
-                        if ($request->has('is_assign')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_status = (int) trim($request->get('is_assign'));
-                                
-                                $query->where('is_assigned', 'like',
-                                        "%$by_status%");
-                            });
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('customer_id', 'like',"%$search_keyword%");
                         }
                     }
                 })
@@ -2844,9 +2895,7 @@ class DataRenderer implements DataProviderInterface
                            
                         })
                         ->make(true);
-    }
-    
-    
+    }    
     
     /**
      * get disbursal list
@@ -3110,6 +3159,95 @@ class DataRenderer implements DataProviderInterface
             ->make(true);
     }
 
+    /**
+     * get soa list
+     * 
+     * @param object $request
+     * @param object $data
+     * @return mixed
+     */
+    public function lmsGetTransactions(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->addColumn(
+                'virtual_acc_id',
+                function ($transaction) {
+                    return $transaction->virtual_acc_id;
+                }
+            )
+            ->addColumn(
+                'trans_date',
+                function ($transaction) {
+                    return date('d-M-Y',strtotime($transaction->trans_date));
+                }
+            )
+            ->editColumn(
+                'value_date',
+                function ($transaction) {
+                    return date('d-M-Y',strtotime($transaction->created_at));
+                }
+            )
+            ->editColumn(
+                'trans_type',
+                function ($transaction) {
+                    if($transaction->trans_detail->is_charge){
+                        return $transaction->trans_detail->charge->chrg_name;
+                    }
+                    return $transaction->trans_detail->trans_name;
+                }
+            )
+            ->editColumn(
+                'currency',
+                function ($transaction) {
+                    return 'INR';
+                }
+            )
+            ->editColumn(
+                'debit',
+                function ($transaction) {
+                    if($transaction->entry_type=='0'){
+                        return $transaction->amount;
+                    }else{
+                        return '0.00';
+                    }
+                }
+            )
+            ->editColumn(
+                'credit',
+                function ($transaction) {
+                    if($transaction->entry_type=='1'){
+                        return $transaction->amount;
+                    }else{
+                        return '0.00';
+                    }
+                }
+            )
+            ->editColumn(
+                'balance',
+                function ($transaction) {
+                    return $transaction->balance;
+                }
+            )
+            ->filter(function ($query) use ($request) {
+
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                    $query->where(function ($query) use ($request) {
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                    });
+                }
+
+                if($request->get('search_keyword')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('customer_id', 'like', "%$search_keyword%");
+                    });
+                }
+              
+            })
+            ->make(true);
+    }
         // Equipment
         public function getEquipments(Request $request, $data)
         {

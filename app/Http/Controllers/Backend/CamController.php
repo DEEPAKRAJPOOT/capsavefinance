@@ -240,10 +240,15 @@ class CamController extends Controller
       $offerPTPQ = '';
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
+      $leaseOfferData = $facilityTypeList = array();
       $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
+      $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
       $arrStaticData = array();
-      $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quaterly','4'=>'Monthly');
-      $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Year','3'=>'Quarter','4'=>'Months');
+      $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
+      $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
+      $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
+      $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
+      $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
       $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
@@ -251,6 +256,7 @@ class CamController extends Controller
         'leaseOfferData'=> $leaseOfferData,
         'reviewerSummaryData'=> $reviewerSummaryData,
         'arrStaticData' => $arrStaticData,
+        'facilityTypeList' => $facilityTypeList,
         
       ]);
     }
@@ -1328,7 +1334,7 @@ class CamController extends Controller
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
-        $currStageCode = $currStage->stage_code;                    
+        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
                 
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
@@ -1796,7 +1802,7 @@ class CamController extends Controller
         $bizId = $request->get('biz_id');
         $appId = $request->get('app_id');
         DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
-        $pdf = DPDF::loadView('backend.cam.downloadCamReport', $viewData);
+        $pdf = DPDF::loadView('backend.cam.downloadCamReport', $viewData,[],'UTF-8');
         self::generateCamPdf($appId, $bizId, $pdf->output());
         return $pdf->download('CamReport.pdf');          
       } catch (Exception $ex) {
