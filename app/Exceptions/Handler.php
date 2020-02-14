@@ -69,7 +69,8 @@ class Handler extends ExceptionHandler
         }
     
 
-        if (config('app.debug') && (config('app.env') == "stage" || config('app.env') == "production")) {            
+        if (config('app.debug') && (config('app.env') == "local" || config('app.env') == "stage" || config('app.env') == "production")) {     
+            dd('nnnnn', get_class($exception), $exception instanceof Illuminate\Validation\ValidationException);
             if ($maintenanceMode) {
                 return Response::view('errors.503', [], 503);
             } elseif ($exception instanceof TooManyRequestsHttpException) {
