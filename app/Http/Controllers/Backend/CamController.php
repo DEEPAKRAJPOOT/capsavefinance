@@ -363,24 +363,8 @@ class CamController extends Controller
       if ($total_pages <= 1) {
         return "";
       }
-      $middleEdges = 3;
       $curr_page = $curr_sheet + 1;
-      $k = (($curr_page+$middleEdges > $total_pages) ? $total_pages-$middleEdges : (($curr_page-$middleEdges < 1) ? ($middleEdges + 1) : $curr_page));
-      if($curr_page >= 2){ 
-        $paginate .="<span class='pagination unselect' id='1' title='".$sheets[0]."'>First</span>";
-        $paginate .="<span class='pagination unselect' id='".($curr_page-1)."' title='".$sheets[$curr_page-2]."'>Prev</span>";
-      } 
-      for ($i=-$middleEdges; $i<=$middleEdges; $i++) { 
-        if($k+$i == $curr_page)
-          $paginate .="<span class='pagination selected' id='".($k+$i)."' title='".$sheets[$k+$i-1]."'>".($k+$i)."</span>";
-        else
-          $paginate .="<span class='pagination unselect' id='".($k+$i)."' title='".$sheets[$k+$i-1]."'>".($k+$i)."</span>";  
-      };    
-      if($curr_page<$total_pages){ 
-        $paginate .="<span class='pagination unselect' id='".($curr_page+1)."' title='".$sheets[$curr_page]."'>Next</span>";
-        $paginate .="<span class='pagination unselect' id='".$total_pages."' title='".$sheets[$total_pages-1]."'>Last</span>";
-      } 
-      return $paginate;
+      return getPaginate($total_pages, $curr_page, $sheets);
     }
 
     private function _getXLSXTable($appId, $fileType = 'finance', $sheet_no = 0){
