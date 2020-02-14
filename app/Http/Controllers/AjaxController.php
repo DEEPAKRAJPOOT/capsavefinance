@@ -3169,6 +3169,7 @@ if ($err) {
      public function getTransName(Request $request)
      {
        $res  =  $this->lmsRepo->getTransName($attr);
+       dd($res);
      }
     
     /**

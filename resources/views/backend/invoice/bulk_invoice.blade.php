@@ -109,9 +109,9 @@
                                                
                                                 <th>Sr. No.</th>
                                                 <th>Invoice No</th>
-                                                   <th>Invoice Date</th>
-                                                   <th>Invoice Due Date</th>
-                                                    <th>Invoice  Amount</th>
+                                                <th>Invoice Date</th>
+                                                <th>Invoice Due Date</th>
+                                                <th>Invoice  Amount</th>
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
