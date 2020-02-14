@@ -36,6 +36,9 @@ $(document).ready(function(){
 				if(res == null){
 					$('.isloader').hide();
 				}else if(res['statusCode'] == 101){
+					$(".span_gst_text").hide();
+					$(".span_gst_select").show();
+					$('input[name=is_gst_manual]').val('0');					
 			    	$('#pan-msg').show();
 			    	$('.pan-verify').text('Verified');
 			    	$('.pan-verify').css('pointer-events','none');
@@ -43,6 +46,9 @@ $(document).ready(function(){
 			    	$('input[name=biz_pan_number] +span').remove();
 			    	fillGSTinput(res.result);
 			    }else{
+					$(".span_gst_select").hide();
+					$(".span_gst_text").show();		
+					$('input[name=is_gst_manual]').val('1');			
 			    	alert('No GST associated with the entered PAN.');
 			    }
 			    $('.isloader').hide();
@@ -120,6 +126,7 @@ function getCIN(entityName){
 function checkValidation(){
 	unsetError('input[name=biz_pan_number]');
 	unsetError('select[name=biz_gst_number]');
+	unsetError('input[name=biz_gst_number]');
 	unsetError('input[name=biz_entity_name]');
 	unsetError('select[name=biz_type_id]');
 	unsetError('input[name=incorporation_date]');
@@ -149,6 +156,9 @@ function checkValidation(){
 	let flag = true;
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
 	let biz_gst_number = $('select[name=biz_gst_number]').val();
+	if(biz_gst_number == null) {
+		biz_gst_number = $('input[name=biz_gst_number]').val();
+	}
 	let biz_entity_name = $('input[name=biz_entity_name]').val().trim();
 	let biz_type_id = $('select[name=biz_type_id]').val();
 	let incorporation_date = $('input[name=incorporation_date]').val();
@@ -189,12 +199,13 @@ function checkValidation(){
 		setError('input[name=biz_pan_number]', 'Please fill correct PAN number');
 		flag = false;
 	}else if($('.pan-verify').text() == 'Verify'){
-		setError('input[name=biz_pan_number]', 'Please verify Business PAN First');
-		flag = false;
+		//setError('input[name=biz_pan_number]', 'Please verify Business PAN First');
+		//flag = false;
 	}
 
-	if(biz_gst_number == ''){
+	if(biz_gst_number == '' || biz_gst_number == null){
 		setError('select[name=biz_gst_number]', 'Please select GST Number');
+		setError('input[name=biz_gst_number]', 'Please enter valid GST Number');
 		flag = false;
 	}
 	/*else if($('input[name=biz_cin]').val()  == ''){
