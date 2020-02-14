@@ -220,10 +220,15 @@
       })
     }
 
-    $(document).on('click','.pagination',function() {
+      $(document).on('click','.pagination',function() {
          pageNo = $(this).attr('id');
          getExcel(pageNo);
       })
+
+      function getresult(pageNo) {
+        getExcel(pageNo);
+      }
+
       function getExcel(page = 1) {
          var fileType = 'banking';
          data = {appId, page, _token, fileType};
