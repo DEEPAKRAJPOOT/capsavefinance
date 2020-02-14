@@ -502,7 +502,7 @@ table.remove-tr-bg tbody tr{
 .overview-table >thead> tr > th{background:#138864; color:#fff; border-left: 1px solid #199e75;
  
     vertical-align: top;}
-.overview-table.table td{border-left: 1px solid #e9ecef; vertical-align:middle;     }
+.overview-table.table td{border-left: 1px solid #e9ecef; vertical-align:middle;   position: relative;  }
 	.data{    border: 1px solid #e9ecef;
    }
 .sub-title{    font-size: 15px;
@@ -626,14 +626,14 @@ position: absolute;
 }
 .form-control::placeholder,input.form-control[type=date]{ color:#c5c5c5; font-size:14px;font-family: 'source-sans-pro-regular', sans-serif; letter-spacing:1px;}
 select.form-control{/*color:#c5c5c5;*/ font-size:14px; letter-spacing:1px;}
-.table td{ font-size:14px;}
+.table td{ font-size:13px;}
   /*chandan*/
  
  .full-width{width:100%;}
 .table.overview-table .btn {
-    padding: 0.1rem .5rem;
+    padding: 0.1rem .3rem;
     vertical-align: top;
-    line-height: 20px;
+    line-height: 18px;
     margin-left: .2rem;
 }
 
