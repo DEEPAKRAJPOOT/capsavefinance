@@ -177,12 +177,12 @@ trait LmsTrait
                     }
                 }
 
-                $startOfMonthDate = Carbon::createFromFormat('Y-m-d', $intAccrualDt)->startOfMonth()->format('Y-m-d');
+                $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $intAccrualDt)->endOfMonth()->format('Y-m-d');
                 
                 /* Interest Bookin in case of Monthly on Last day of month
                    Interest will be added in pricipal amount for furture interest calculation  
                 */
-                if((strtotime($intAccrualDt) == strtotime($startOfMonthDate) 
+                if((strtotime($intAccrualDt) == strtotime($endOfMonthDate) 
                 || strtotime($intAccrualDt) == strtotime($overDueInterestDate))
 
                 
@@ -194,13 +194,13 @@ trait LmsTrait
                 
                 ){
 
-                    if(strtotime($intAccrualDt) == strtotime($startOfMonthDate)){
+                    if(strtotime($intAccrualDt) == strtotime($endOfMonthDate)){
                         $lastYear = Carbon::createFromFormat('Y-m-d', $intAccrualDt)
-                                    ->subMonth()
+                                    //->subMonth()
                                     ->startOfMonth()
                                     ->format('Y');
                         $lastMonth = Carbon::createFromFormat('Y-m-d', $intAccrualDt)
-                                    ->subMonth()
+                                    //->subMonth()
                                     ->startOfMonth()
                                     ->format('m');
                     }elseif(strtotime($intAccrualDt) == strtotime($overDueInterestDate)){
