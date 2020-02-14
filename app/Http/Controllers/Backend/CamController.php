@@ -301,10 +301,10 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      if( config('proin.SEND_MAIL_ACTIVE') == 1){
-        Mail::to(explode(',', config('proin.SEND_MAIL')))
-          ->bcc(explode(',', config('proin.SEND_MAIL_BCC')))
-          ->cc(explode(',', config('proin.SEND_MAIL_CC')))
+      if( env('SEND_MAIL_ACTIVE') == 1){
+        Mail::to(explode(',', env('SEND_MAIL')))
+          ->bcc(explode(',', env('SEND_MAIL_BCC')))
+          ->cc(explode(',', env('SEND_MAIL_CC')))
           ->send(new ReviewerSummary($this->mstRepo));
 
         if(count(Mail::failures()) > 0 ) {

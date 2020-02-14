@@ -51,8 +51,4 @@ return [
     'GUPSHUP_USR' => env('GUPSHUP_USR', ''),   
     'GUPSHUP_PASS' => env('GUPSHUP_PASS', ''),   
       
-    'SEND_MAIL_ACTIVE' => env('SEND_MAIL_ACTIVE', ''),
-    'SEND_MAIL' => env('SEND_MAIL', ''),
-    'SEND_MAIL_CC' => env('SEND_MAIL_CC', ''),
-    'SEND_MAIL_BCC' => env('SEND_MAIL_BCC', '')
 ];
