@@ -36,11 +36,8 @@
      <div class="row">
         <div class="form-group col-md-12">
           <label for="chrg_name">Charge</label>
-          <select class="form-control" id="chrg_name" name="chrg_name">
-          <option value="">Please Select</option>
-          @foreach($transtype as $key)    
-          <option value="{{$key->id}}">{{$key->chrg_name}}</option>
-          @endforeach
+          <select class="form-control chrg_name" id="chrg_name" name="chrg_name">
+         
          </select>
           <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
         </div>
@@ -100,18 +97,29 @@
  };
  
     $(document).on('change','#program_id',function(){
+        $(".chrg_name").empty();
         $("#msgprogram").html('');
         var postData =  ({'prog_id':$("#program_id").val(),'_token':messages.token});
         jQuery.ajax({
-        url: messages.get_chrg_amount,
+        url: messages.get_trans_name,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
                 error: function (xhr, status, errorThrown) {
                 alert(errorThrown);
                 },
-                success: function (res) {
-                    
+                success: function (data) {
+                    if(data.status==1)
+                    {   $(".chrg_name").append('<option value="">Please select</option>'); 
+                        $(data.res).each(function(i,v){
+                            $(".chrg_name").append('<option value="'+v.charge.id+'">'+v.charge.chrg_name+'</option>'); 
+                        });
+                    }
+                    else
+                    {
+                             $(".chrg_name").append('<option value="">No charge found</option>'); 
+                       
+                    }
                 }
         });         
     });
@@ -194,6 +202,7 @@
         
         
     $(document).ready(function () {
+       $("#chrg_name").html('<option value="">No data found</option>'); 
        document.getElementById('amount').addEventListener('input', event =>
         event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
        /////////////// validation the time of final submit/////////////// 
