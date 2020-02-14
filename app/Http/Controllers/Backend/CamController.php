@@ -301,19 +301,19 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      if( env('SEND_MAIL_ACTIVE') == 1){
-        Mail::to(explode(',', env('SEND_MAIL')))
-          ->bcc(explode(',', env('SEND_MAIL_BCC')))
-          ->cc(explode(',', env('SEND_MAIL_CC')))
+      if( config('proin.SEND_MAIL_ACTIVE') == 1){
+        Mail::to(explode(',', config('proin.SEND_MAIL')))
+          ->bcc(explode(',', config('proin.SEND_MAIL_BCC')))
+          ->cc(explode(',', config('proin.SEND_MAIL_CC')))
           ->send(new ReviewerSummary($this->mstRepo));
 
         if(count(Mail::failures()) > 0 ) {
-          Session::flash('error',trans('Mail not sent, try again later.'));
+          Session::flash('error',trans('Mail not sent, Please try again later..'));
         } else {
           Session::flash('message',trans('Mail sent successfully.'));        
         }
       } else {
-        Session::flash('message',trans('Mail not sent, Please activate your mail configuration.')); 
+        Session::flash('message',trans('Mail not sent, Please try again later.')); 
       }
       return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
       //return new \App\Mail\ReviewerSummary($this->mstRepo);        
