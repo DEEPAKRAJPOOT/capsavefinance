@@ -1112,6 +1112,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'excel_bulk_payment',
                 'uses' => 'Backend\PaymentController@excelBulkPayment'
             ]);
+                Route::POST('backend_save_excel_payment', [
+                 'as' => 'backend_save_excel_payment',
+                'uses' => 'Backend\PaymentController@saveExcelPayment'
+            ]); 
 
          }); 
     });

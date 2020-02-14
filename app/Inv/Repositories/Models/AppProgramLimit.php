@@ -185,6 +185,11 @@ class AppProgramLimit extends BaseModel {
         return self::where('anchor_id',$aid)->first();  
     }
 
+   public static function getSingleApp($uid){
+        return Application::where(['user_id' => $uid,'status' =>1])->first();  
+    } 
+    
+    
     public static function getProgramBalanceLimit($program_id){
         if(empty($program_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
@@ -209,12 +214,11 @@ class AppProgramLimit extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Product', 'product_id', 'id');
     }  
 
+    function supplyOffers()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id','app_prgm_limit_id')->where(['is_approve' =>1,'is_active' =>1,'status' => 1]);  
     
-     function supplyOffers()
-     {
-          return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id','app_prgm_limit_id')->where(['is_approve' =>1,'is_active' =>1,'status' => 1]);  
-     
-     }
+    }
 
     public static function getLimitWithOffer($appId, $bizId, $productId){
         return self::select('app_prgm_limit.limit_amt', 
@@ -226,7 +230,8 @@ class AppProgramLimit extends BaseModel {
                 'app_prgm_offer.ruby_sheet_xirr',
                 'app_prgm_offer.cash_flow_xirr',
                 'app_prgm_offer.addl_security',
-                'app_prgm_offer.comment'
+                'app_prgm_offer.comment',
+                'app_prgm_offer.facility_type_id'
                 )
                 ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
                 ->where('app_prgm_limit.app_id',$appId)

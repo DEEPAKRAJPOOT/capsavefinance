@@ -187,9 +187,11 @@ class InvoiceController extends Controller {
             $biz_id  = $attributes['biz_id'];
         }
         else {
-           $res =  $this->invRepo->getSingleLimit($attributes['anchor_id']);
+          /// $res =  $this->invRepo->getSingleLimit($attributes['anchor_id']);
+           $res =  $this->invRepo->getSingleApp($attributes['supplier_id']);
            $appId = $res->app_id; 
            $biz_id  = $res->biz_id;
+         
         }
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);

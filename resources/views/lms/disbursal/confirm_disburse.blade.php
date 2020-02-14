@@ -9,7 +9,8 @@
 </div>
 <form id="manualDisburse" method="POST" action="{{ Route('send_to_bank') }}" target="_top">
 	@csrf
-	<input type="hidden" value="" name="invoiceids" id="invoiceids">  
+    <input type="hidden" value="" name="invoiceids" id="invoiceids">  
+	<input type="hidden" value="" name="user_ids" id="user_ids">  
 	<input type="hidden" name="disburse_type" value="{{ request()->get('disburse_type') }}">
 	@if(request()->get('disburse_type') == 2)
 	<div class="row">
@@ -43,7 +44,8 @@
 
 <script>
 $(document).ready(function(){
-	$('#invoiceids').val(parent.$('#invoice_ids').val());
+    $('#invoiceids').val(parent.$('#invoice_ids').val());
+	$('#user_ids').val(parent.$('#user_ids').val());
 });
 
 $(document).ready(function () {

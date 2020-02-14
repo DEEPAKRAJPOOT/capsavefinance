@@ -15,6 +15,7 @@ try {
             searching: false,
             bSort: true,
             order: [[ 1, 'asc' ]],
+            "dom": '<"top">rt<"bottom"flpi><"clear">',
             ajax: {
                "url": messages.get_role_list, // json datasource
                 "method": 'POST',

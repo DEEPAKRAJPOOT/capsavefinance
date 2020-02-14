@@ -301,16 +301,22 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      Mail::to(config('common.review_summ_mails'))
-        ->send(new ReviewerSummary());
+      if( env('SEND_MAIL_ACTIVE') == 1){
+        Mail::to(explode(',', env('SEND_MAIL')))
+          ->bcc(explode(',', env('SEND_MAIL_BCC')))
+          ->cc(explode(',', env('SEND_MAIL_CC')))
+          ->send(new ReviewerSummary($this->mstRepo));
 
-      if(count(Mail::failures()) > 0 ) {
-        Session::flash('error',trans('Mail not sent, try again later.'));
+        if(count(Mail::failures()) > 0 ) {
+          Session::flash('error',trans('Mail not sent, Please try again later..'));
+        } else {
+          Session::flash('message',trans('Mail sent successfully.'));        
+        }
       } else {
-        Session::flash('message',trans('Mail sent successfully.'));        
+        Session::flash('message',trans('Mail not sent, Please try again later.')); 
       }
       return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
-      //return new \App\Mail\ReviewerSummary();        
+      //return new \App\Mail\ReviewerSummary($this->mstRepo);        
     }
 
      public function uploadFinanceXLSX(Request $request){
@@ -1817,7 +1823,7 @@ class CamController extends Controller
         $bizId = $request->get('biz_id');
         $appId = $request->get('app_id');
         DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
-        $pdf = DPDF::loadView('backend.cam.downloadCamReport', $viewData);
+        $pdf = DPDF::loadView('backend.cam.downloadCamReport', $viewData,[],'UTF-8');
         self::generateCamPdf($appId, $bizId, $pdf->output());
         return $pdf->download('CamReport.pdf');          
       } catch (Exception $ex) {

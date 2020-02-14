@@ -24,6 +24,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
+use App\Inv\Repositories\Models\LmsUser;
 
 
 class AjaxController extends Controller {
@@ -45,9 +47,9 @@ class AjaxController extends Controller {
     protected $application;
    protected $invRepo;
    protected $docRepo;
-   
+   protected $lms_repo;
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
 
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
@@ -59,6 +61,7 @@ class AjaxController extends Controller {
         $this->masterRepo = $master;
         $this->invRepo   =    $invRepo;
         $this->docRepo          = $docRepo;
+        $this->lmsRepo = $lms_repo;
 
     }
 
@@ -3134,6 +3137,13 @@ if ($err) {
      return $charges;
     }
 
+     public function getLmsChargeLists(DataProviderInterface $dataProvider) { 
+     $chargesTransList = $this->lmsRepo->getAllTransCharges();
+     $chargesTransList = $dataProvider->getLmsChargeLists($this->request, $chargesTransList);
+     return $chargesTransList;
+    }
+    
+    
 
     public function getDocLists(DataProviderInterface $dataProvider) { 
      $documentsList = $this->masterRepo->getAllDocuments();
@@ -3155,7 +3165,12 @@ if ($err) {
         return $data;
      }
     
-
+   //////* get program charge master  *?
+     public function getTransName(Request $request)
+     {
+       $res  =  $this->lmsRepo->getTransName($attr);
+       dd($res);
+     }
     
     /**
      * get charges  html
@@ -3239,6 +3254,11 @@ if ($err) {
     $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
     return $users;
   }   
+  
+  public function getCustomer(Request $request){
+    $data = LmsUser::getCustomers($request->input('query'));
+    return response()->json($data);
+  }
 
   /**
    * Get all customer list
@@ -3247,16 +3267,6 @@ if ($err) {
    */
   public function lmsGetDisbursalCustomer(DataProviderInterface $dataProvider) {
     $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer();
-    $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
-    return $users;
-  }
-  /**
-   * Get all customer list
-   *
-   * @return json customer data
-   */
-  public function lmsGetDisbursalList(DataProviderInterface $dataProvider) {
-    $customersDisbursalList = $this->userRepo->lmsGetDisbursalList();
     $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
     return $users;
   }
@@ -3660,6 +3670,17 @@ if ($err) {
         return \response()->json(['success' => $res]);
     }
 
+    /**
+   * Get all transactions for soa
+   *
+   * @return json transaction data
+   */
+  public function lmsGetSoaList(DataProviderInterface $dataProvider) {
+
+    $transactionList = $this->application->lmsGetTransactions();
+    $users = $dataProvider->lmsGetTransactions($this->request, $transactionList);
+    return $users;
+  }
         /**
      * Get all Equipment
      *

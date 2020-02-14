@@ -22,19 +22,7 @@
       </div>
 
       <div class="row">
-         <div class="form-group col-md-6">
-             <label for="chrg_type">Charge Type</label><br />
-             <div class="form-check-inline ">
-               <label class="form-check-label fnt">
-               <input type="radio" class="form-check-input" {{$charge_data->chrg_type == 1 ? 'checked' : ($charge_data->chrg_type != 2 ? 'checked' : '' )}} name="chrg_type" value="1">Auto
-               </label>
-            </div>
-            <div class="form-check-inline">
-               <label class="form-check-label fnt">
-               <input type="radio" class="form-check-input" {{$charge_data->chrg_type == 2 ? 'checked' : ''}} name="chrg_type" value="2">Manual
-               </label>
-            </div>
-        </div>
+        
         <div class="form-group col-md-6">
              <label for="chrg_type">Charge Calculation</label><br />
              <div class="form-check-inline ">
@@ -66,6 +54,26 @@
               </select>
          </div>
       </div>
+               <div class="row">
+               <div class="form-group col-md-6">
+             <label for="chrg_type">  {{$charge_data->chrg_type}}</label><br />
+             <div class="form-check-inline ">
+               <label class="form-check-label fnt">
+               <input type="radio" class="form-check-input" {{$charge_data->chrg_type == 1 ? 'checked' : ($charge_data->chrg_type == 1 ? 'checked' : '' )}} name="chrg_type" value="1">Auto
+               </label>
+            </div>
+            <div class="form-check-inline">
+               <label class="form-check-label fnt">
+               <input type="radio" class="form-check-input" {{$charge_data->chrg_type == 2 ? 'checked' : ($charge_data->chrg_type == 2 ? 'checked' : '' )}} name="chrg_type" value="2">Manual
+               </label>
+            </div>
+              <div class="form-check-inline">
+               <label class="form-check-label fnt">
+               <input type="radio" class="form-check-input" {{$charge_data->chrg_type == 3 ? 'checked' : ($charge_data->chrg_type == 3 ? 'checked' : '' )}} name="chrg_type" value="3">Both
+               </label>
+            </div>
+        </div>
+      </div>           
       <div class="row">
          <div class="form-group col-md-6">
              <label for="is_gst_applicable">GST Applicable</label><br />
@@ -82,7 +90,7 @@
         </div>
         <div class="form-group col-md-6" id="gst_div">
              <label for="chrg_type">GST Percent</label>
-             <input type="text" class="form-control" name="gst_percentage" value="{{$charge_data->gst_percentage}}" placeholder="GST Percentage">
+             <input type="text" class="form-control" readonly="readonly" name="gst_percentage" value="{{$charge_data->gst_percentage}}" placeholder="GST Percentage">
         </div>
       </div>
       <div class="row">

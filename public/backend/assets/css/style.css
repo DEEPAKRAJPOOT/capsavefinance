@@ -6553,7 +6553,9 @@ ul {
     outline: 1px solid slategrey; }
 
 .table {
-  font-size: .9rem; }
+  /* font-size: .9rem;  */
+  font-size: 13px;
+}
   .table td {
     vertical-align: middle; }
 
@@ -9133,4 +9135,20 @@ table.dataTable.no-footer {
         color: #ddd !important;
         cursor: not-allowed;
         background-color: #fff;
+      }
+
+    .aprveAppListBtn{
+      font-size: 10px;
+      color: #0056b3 !important;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: left;
+      margin-left: 16px;
+    }
+    a.aprveAppListBtn:hover {
+      color: #0056b3;
+      cursor: pointer;
+      text-decoration: underline !important;
     }

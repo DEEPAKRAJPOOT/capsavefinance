@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
@@ -68,6 +69,12 @@ class Disbursal extends BaseModel {
         'interest_refund',
         'funded_date',
         'int_accrual_start_dt',
+        'processing_fee',
+        'grace_period',
+        'overdue_interest_rate',
+        'repayment_amount',
+        'total_repaid_amount',
+        'penalty_amount',
         'created_at',
         'created_by',
         'updated_at',
@@ -121,8 +128,8 @@ class Disbursal extends BaseModel {
         }
         $query->orderBy('disburse_date', 'ASC');
         $query->orderBy('disbursal_id', 'ASC');
-        $result = $query->get();
-        return $result;
+        $result = $query->get();        
+        return $result ? $result : [];
     }
     
     /**
@@ -169,7 +176,13 @@ class Disbursal extends BaseModel {
         return $res?: false;
     }
     /////////////* get customer id   */////////////////
-    public static function  getCustomerId()
+    public static function  getCustomerId($uid)
+    {
+        return User::where(['user_id' => $uid])->first();
+    }
+    
+      /////////////* get customer id   */////////////////
+    public static function  getDisburseCustomerId()
     {
         return self::with('user')->where(['disburse_type' => 2])->groupBy('user_id')->get();
     }

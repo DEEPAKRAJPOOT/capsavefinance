@@ -8,11 +8,15 @@ use App\Inv\Repositories\Contracts\LmsInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 
@@ -72,7 +76,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveDisbursalRequest($data, $whereCondition=[])
+    public function saveDisbursalRequest($data, $whereCondition=[])
     {
         return Disbursal::saveDisbursalRequest($data, $whereCondition);
     }
@@ -84,7 +88,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveTransaction($transactions)
+    public function saveTransaction($transactions)
     {
         return Transactions::saveTransaction($transactions);
     }
@@ -97,7 +101,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveRepayment($data, $whereCondition=[])
+    public function saveRepayment($data, $whereCondition=[])
     {
         return InvoiceRepaymentTrail::saveRepayment($data, $whereCondition);
     }
@@ -110,7 +114,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveInterestAccrual($data, $whereCondition=[])
+    public function saveInterestAccrual($data, $whereCondition=[])
     {
         return InterestAccrual::saveInterestAccrual($data, $whereCondition);
     }
@@ -122,7 +126,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getDisbursalRequests($whereCondition=[])
+    public function getDisbursalRequests($whereCondition=[])
     {
         return Disbursal::getDisbursalRequests($whereCondition);
     }
@@ -134,7 +138,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getTransactions($whereCondition=[])
+    public function getTransactions($whereCondition=[])
     {
         return Transactions::getTransactions($whereCondition);
     }
@@ -146,15 +150,20 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getRepayments($whereCondition=[])
+    public function getRepayments($whereCondition=[])
     {
         return InvoiceRepaymentTrail::getRepayments($whereCondition);
     }   
     
 
-    public static function getAllUserInvoice($userId)
+    public function getAllUserInvoice($userId)
     {
         return BizInvoice::getAllUserInvoice($userId);
+    }
+    
+    public static function getAllUserInvoiceIds($userId)
+    {
+        return BizInvoice::getAllUserInvoiceIds($userId);
     }
 
     /**
@@ -164,7 +173,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */    
-    public static function getAccruedInterestData($whereCondition=[])
+    public function getAccruedInterestData($whereCondition=[])
     {
         return InterestAccrual::getAccruedInterestData($whereCondition);
     }
@@ -175,13 +184,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @param array $whereCondition
      * @return mixed
      */
-    public static function getProgramOffer($whereCondition=[])
+    public function getProgramOffer($whereCondition=[])
     {
         return Disbursal::getProgramOffer($whereCondition);
     }
 
     
-    public static function getInvoices($invoiceIds)
+    public function getInvoices($invoiceIds)
     {
         return BizInvoice::whereIn('invoice_id', $invoiceIds)
                ->with(['program_offer','lms_user' , 'supplier', 'supplier_bank_detail.bank'])
@@ -195,7 +204,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getInvoiceSupplier($invoiceIds)
+    public function getInvoiceSupplier($invoiceIds)
     {
         return BizInvoice::groupBy('supplier_id')
                 ->whereIn('invoice_id', $invoiceIds)
@@ -209,7 +218,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function updateInvoiceStatus($invoiceId, $status)
+    public function updateInvoiceStatus($invoiceId, $status)
     {
         return BizInvoice::where('invoice_id', $invoiceId)
                 ->update(['status_id' => $status]);
@@ -218,14 +227,14 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     /**
      * Get Sum of Accrued Interest
      *      
-     * @param integer $disbursal_id
+     * @param array $whereCond
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function sumAccruedInterest($disbursal_id)
-    { 
-        return InterestAccrual::sumAccruedInterest($disbursal_id);
-    }
+    public function sumAccruedInterest($whereCond) 
+    {        
+        return InterestAccrual::sumAccruedInterest($whereCond);
+    }    
 
 
     /**
@@ -247,5 +256,130 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return Disbursal::where('disbursal_id', $disbursalId)
                 ->update($data);
-    }           
+    }          
+     
+     /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getVirtualAccIdByUserId($userId)
+    {
+        return LmsUser::where('user_id', $userId)
+                ->pluck('virtual_acc_id')->first();
+    } 
+    
+    /****
+     * get trans  type
+     */
+      public static function getTrnasType($whr)
+    {
+        try{
+            return Charges::getTransData($whr);
+        } catch (Exception $ex) {
+           return $ex;
+        }
+        
+               
+    }  
+    /****
+     * get trans  type
+     */
+      public static function getProgramUser($userId)
+    {
+       try
+       {
+          return User::getProgramUser($userId); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }  
+    
+      public static function getSingleChargeAmount($attr)
+    {
+       try
+       {
+          return ProgramCharges::getSingleChargeAmount($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }   
+    
+      public static function saveCharge($attr)
+    {
+       try
+       {
+          return Transactions::saveCharge($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }   
+    
+    public static function getAllTransCharges()
+    {
+        try
+       {
+          return ChargesTransactions::getAllTransCharges(); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+        
+    }
+      public static function saveChargeTrans($attr)
+    {
+       try
+       {
+          return ChargesTransactions::saveChargeTrans($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
+     
+      public static function getAllUserChargeTransaction()
+    {
+       try
+       {
+          return Transactions::getAllUserChargeTransaction(); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
+      public static function getTransName($attr)
+    {
+       try
+       {
+          return ProgramCharges::getTransName($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
+    
+    /**
+     * Update Transactions
+     *      
+     * @param array $whereCondition
+     * @param array $data
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateTransaction($whereCondition, $data)
+    {
+        return Transactions::updateTransaction($whereCondition, $data);
+    }
+    
 }

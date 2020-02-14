@@ -3,9 +3,7 @@
 @section('content')
 
 
-<div class="content-wrapper">
-    <div class="card">
-        <div class="card-body">
+<div class="modal-body text-left">
                    {!!
                     Form::open(
                     array(
@@ -93,17 +91,15 @@
                    
                     <br>
                     
-                <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
-                <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>              
-                
+                <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
+                <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
+                <button type="submit" class="btn btn-success btn-sm">{{ $confirmBtn }}</button> &nbsp;
+                <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
                 {!!
                 Form::close()
                 !!}                      
         </div>
-    </div>
-
-</div>
 
 
 @endsection

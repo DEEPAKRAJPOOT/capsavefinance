@@ -26,7 +26,6 @@
                      <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{!! isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : '' !!}</textarea>
                </div>
 
-
                <div class="col-md-12 data mt-4 ">
                      <h2 class="sub-title bg">Deal Structure</h2>
                         @forelse($leaseOfferData as $key=>$leaseOffer)
@@ -43,6 +42,7 @@
                                     
                                     <tr role="row" class="odd">
                                        <td class=""><b>Facility Type</b></td>
+                                       <td class=""><b>Product Type</b></td>
                                        <td class="">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
                                     </tr>
                                     <tr role="row" class="odd">
@@ -83,7 +83,6 @@
                                                       and
                                                    @endif
                                                    {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
-
                                                    @php 
                                                       $i++;
                                                    @endphp     
