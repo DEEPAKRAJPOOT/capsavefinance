@@ -663,6 +663,16 @@ use CommonRepositoryTraits;
     }
 
 
+ public function getSingleApp($uid)
+    {
+     
+        try
+        {
+          return AppProgramLimit::getSingleApp($uid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
 
     /**
      * get invoice Data

@@ -185,6 +185,11 @@ class AppProgramLimit extends BaseModel {
         return self::where('anchor_id',$aid)->first();  
     }
 
+   public static function getSingleApp($uid){
+        return Application::where(['user_id' => $uid,'status' =>1])->first();  
+    } 
+    
+    
     public static function getProgramBalanceLimit($program_id){
         if(empty($program_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));

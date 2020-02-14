@@ -145,12 +145,12 @@ class ProgramCharges extends BaseModel {
     
     public static function getTransName($attr)
     {
-        return self::where(['prgm_id',$attr->prog_id])->get();
+        return self::with('charge')->where(['prgm_id',$attr->prog_id])->get();
     }
     
-    public function()
+    public function charge()
     {
-       return $this->belongsTo('App\Inv\Repositories\Models\Program', 'prgm_id', 'prgm_id'); 
+       return $this->belongsTo('App\Inv\Repositories\Models\Lms\Charges', 'id', 'charge_id'); 
     }
 
 }

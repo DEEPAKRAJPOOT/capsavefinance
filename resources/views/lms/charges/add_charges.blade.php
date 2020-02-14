@@ -101,6 +101,19 @@
  
     $(document).on('change','#program_id',function(){
         $("#msgprogram").html('');
+        var postData =  ({'prog_id':$("#program_id").val(),'_token':messages.token});
+        jQuery.ajax({
+        url: messages.get_chrg_amount,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                },
+                success: function (res) {
+                    
+                }
+        });         
     });
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','#chrg_name',function(){
