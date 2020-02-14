@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\UserAppDoc;
 use App\Inv\Repositories\Models\FinanceModel;
+use App\Inv\Repositories\Models\AppProgramOffer;
 
 class ReviewerSummary extends Mailable
 {
@@ -23,9 +24,9 @@ class ReviewerSummary extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($mstRepo)
     {
-        //
+        $this->mstRepo = $mstRepo;
     }
 
     /**
@@ -35,6 +36,7 @@ class ReviewerSummary extends Mailable
      */
     public function build(Request $request)
     {
+        
         $this->func_name = __FUNCTION__;
         $offerPTPQ = '';
         $appId = $request->get('app_id');
@@ -45,10 +47,22 @@ class ReviewerSummary extends Mailable
             $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
         }
         $fileArray = AppDocumentFile::getReviewerSummaryPreDocs($appId, config('common.review_summ_mail_docs_id'));
+        $leaseOfferData = $facilityTypeList = array();
+        $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
+        $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
+        $arrStaticData = array();
+        $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
+        $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
+        $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
+        $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
+        $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');      
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData,
-            'offerPTPQ' => $offerPTPQ
+            'offerPTPQ' => $offerPTPQ,
+            'leaseOfferData'=> $leaseOfferData,
+            'arrStaticData' => $arrStaticData,
+            'facilityTypeList' => $facilityTypeList
         ]);
         // $loggerData = [
         //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
