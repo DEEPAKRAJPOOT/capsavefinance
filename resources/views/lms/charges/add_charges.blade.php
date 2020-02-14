@@ -141,6 +141,7 @@
              $("#chrg_calculation_type1").attr('checked',false);
              $("#chrg_calculation_type2").attr('checked',false);
              $("#amount").empty();
+              return false;
       }
       var postData =  ({'id':chrg_name,'prog_id':$("#program_id").val(),'user_id':$("#user_id").val(),'_token':messages.token});
        jQuery.ajax({

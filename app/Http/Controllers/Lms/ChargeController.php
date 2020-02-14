@@ -73,7 +73,7 @@ class ChargeController extends Controller
        public function saveManualCharges(Request $request)
        {  
            $getAmount =  str_replace(',', '', $request->amount);
-           $getTransType  =  DB::table('mst_trans_type')->where(['is_charge' => $request->chrg_name])->first();
+           $getTransType  =  DB::table('mst_trans_type')->where(['chrg_master_id' => $request->chrg_name])->first();
           $totalSumAmount = 0;
            if($getTransType)
            {
