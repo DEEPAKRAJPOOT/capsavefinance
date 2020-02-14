@@ -219,7 +219,8 @@ class ApportionmentHelper{
     }
 
     private function getUnbookedInterest(&$disbursal){
-        return $this->accuredInt-$this->interestDue;
+        $interestDue = self::getInterestDueAmount($disbursal);
+        return $this->accuredInt-$interestDue;
     }
 
     private function settleInterestDueAmount(&$disbursal){
@@ -264,7 +265,7 @@ class ApportionmentHelper{
                 'parent_trans_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
 
-            $transactionData['unbookedInterestPaid'][$disbursal->disbursal_id] = $interestPaidData;
+            $this->transaction['unbookedInterestPaid'][$disbursal->disbursal_id] = $interestPaidData;
         }
     }
 
@@ -495,14 +496,25 @@ class ApportionmentHelper{
     }
 
     private function saveTransactions(){
+        
         if(!empty($this->transaction['disbursal']))
         foreach ($this->transaction['disbursal'] as $dibursalKey => $dibursalValue) {
             $this->lmsRepo->saveDisbursalRequest($dibursalValue, ['disbursal_id' => $dibursalKey]);
         }
 
+        if(!empty($this->transaction['unbookedInterestDue']))
+        foreach($this->transaction['unbookedInterestDue'] as $unbookedIntDueValue){
+            $this->lmsRepo->saveTransaction($unbookedIntDueValue);
+        }
+
         if(!empty($this->transaction['interestPaid']))
         foreach($this->transaction['interestPaid'] as $interestPaidValue){
             $this->lmsRepo->saveTransaction($interestPaidValue);
+        }
+
+        if(!empty($this->transaction['unbookedInterestPaid']))
+        foreach($this->transaction['unbookedInterestPaid'] as $unbookedIntPaidValue){
+            $this->lmsRepo->saveTransaction($unbookedIntPaidValue);
         }
 
         if(!empty($this->transaction['knockOff']))
@@ -530,15 +542,7 @@ class ApportionmentHelper{
             $this->lmsRepo->saveTransaction($chargesValue);
         }
 
-        if(!empty($this->transaction['unbookedInterestDue']))
-        foreach($this->transaction['unbookedInterestDue'] as $unbookedIntDueValue){
-            $this->lmsRepo->saveTransaction($nbookedIntDueValue);
-        }
-
-        if(!empty($this->transaction['unbookedInterestPaid']))
-        foreach($this->transaction['unbookedInterestPaid'] as $unbookedIntPaidValue){
-            $this->lmsRepo->saveTransaction($unbookedIntPaidValue);
-        }
+       
         
 
 
