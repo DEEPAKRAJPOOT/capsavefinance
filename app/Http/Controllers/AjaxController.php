@@ -3202,6 +3202,10 @@ if ($err) {
                      {
                          $sel = "selected";
                      }
+                     else
+                     {
+                          $sel = "";
+                     }
                      $app.= "<option value=".$key." $sel>".$val."</option>";
                  }
              }
