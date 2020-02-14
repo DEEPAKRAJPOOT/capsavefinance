@@ -45,9 +45,9 @@
 
         <div class="col-md-6">
           <div class="form-group INR">
-            <label for="txtPassword" ><b>Sub Limit</b></label>
+            <label for="txtPassword" ><b>Limit of the Equipment</b></label>
             <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a> 
-            <input type="text" name="sub_limit" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Sub Limit" maxlength="15">
+            <input type="text" name="sub_limit" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Limit of the Equipment" maxlength="15">
           </div>
         </div>
 
@@ -298,13 +298,13 @@
     }
 
     if(sub_limit.length == 0 || parseInt(sub_limit.replace(/,/g, '')) == 0){
-        setError('input[name=sub_limit]', 'Please fill sub limit amount');
+        setError('input[name=sub_limit]', 'Please fill Limit of the Equipment');
         flag = false;
     }else if((parseInt(sub_limit.replace(/,/g, '')) > sub_total_balance) && sub_total_balance == 0){
         setError('input[name=sub_limit]', 'Your limit has been expired');
         flag = false;
     }else if((parseInt(sub_limit.replace(/,/g, '')) > sub_total_balance)){
-        setError('input[name=sub_limit]', 'Sub Limit can\'t exceed from ('+sub_total_balance+') balance limit amount');
+        setError('input[name=sub_limit]', 'Limit of the Equipment can\'t exceed from ('+sub_total_balance+') balance limit amount');
         flag = false;
     }
 
