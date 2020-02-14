@@ -39,7 +39,7 @@
                 <label for="txtCreditPeriod">Mobile
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="mobile_no" id="mobile_no" value="" class="form-control" tabindex="3" placeholder="Mobile no" required="">
+                <input type="text" name="mobile_no" id="mobile_no" maxlength="10" value="" class="form-control" tabindex="3" placeholder="Mobile no" required="">
             </div>
         </div>
         <div class="col-6">
