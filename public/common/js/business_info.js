@@ -126,7 +126,7 @@ function getCIN(entityName){
 function checkValidation(){
 	unsetError('input[name=biz_pan_number]');
 	unsetError('select[name=biz_gst_number]');
-	unsetError('input[name=biz_gst_number]');
+	unsetError('input[name=biz_gst_number_text]');
 	unsetError('input[name=biz_entity_name]');
 	unsetError('select[name=biz_type_id]');
 	unsetError('input[name=incorporation_date]');
@@ -157,7 +157,7 @@ function checkValidation(){
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
 	let biz_gst_number = $('select[name=biz_gst_number]').val();
 	if(biz_gst_number == '' || biz_gst_number == null) {
-		biz_gst_number = $('input[name=biz_gst_number]').val();
+		biz_gst_number = $('input[name=biz_gst_number_text]').val();
 	}
 	let biz_entity_name = $('input[name=biz_entity_name]').val().trim();
 	let biz_type_id = $('select[name=biz_type_id]').val();
@@ -199,13 +199,13 @@ function checkValidation(){
 		setError('input[name=biz_pan_number]', 'Please fill correct PAN number');
 		flag = false;
 	}else if($('.pan-verify').text() == 'Verify'){
-		setError('input[name=biz_pan_number]', 'Please verify Business PAN First');
-		flag = false;
+		//setError('input[name=biz_pan_number]', 'Please verify Business PAN First');
+		//flag = false;
 	}
 
-	if(biz_gst_number == '' || biz_gst_number == null){alert(biz_gst_number);
+	if(biz_gst_number == '' || biz_gst_number == null){
 		setError('select[name=biz_gst_number]', 'Please select GST Number');
-		setError('input[name=biz_gst_number]', 'Please enter valid GST Number');
+		setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
 	}
 	/*else if($('input[name=biz_cin]').val()  == ''){

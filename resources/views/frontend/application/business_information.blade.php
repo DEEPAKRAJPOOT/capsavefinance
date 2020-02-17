@@ -64,7 +64,7 @@
 											</span>
 											<input type="hidden" name="is_gst_manual" value="0"/>
 											<span class="span_gst_text" style="display: none">
-												<input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control pan-validate" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
+												<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control pan-validate" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
 											</span>
 										</div>
 									</div>
