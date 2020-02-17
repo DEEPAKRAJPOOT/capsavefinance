@@ -9134,9 +9134,16 @@ table.gridlines {
     background-color: #fff;
 }
 .p-relative{position: relative;}
+
 .remove-ptpq-block.remove,.remove-ptpq-block.remove-post{color: red;font-size: 20px;     position: absolute;
   top: 5px;
   right: -10px;}
+.add-ptpq-block.add-more-post,.add-ptpq-block.add-more{color:green;font-size: 20px;     position: absolute;
+top: 5px;
+right: -10px;}
+.remove-ptpq-block.remove,.remove-ptpq-block.remove-post{color: red;font-size: 20px;     position: absolute;
+top: 5px;
+right: -10px;}
 .add-ptpq-block.add-more-post,.add-ptpq-block.add-more{color:green;font-size: 20px;     position: absolute;
 top: 5px;
 right: -10px;}
