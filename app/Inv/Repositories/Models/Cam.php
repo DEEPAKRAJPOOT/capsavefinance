@@ -134,7 +134,7 @@ class Cam extends BaseModel
             // 'program'=>$attributes['program'],
             'rating_no'=>$attributes['rating_no'],
             'rating_comment'=>$attributes['rating_comment'],
-            'existing_exposure'=>str_replace(',', '', $attributes['existing_exposure']),
+            'existing_exposure'=> $attributes['existing_exposure'],
             'proposed_exposure'=>str_replace(',', '', $attributes['proposed_exposure']),
             'group_company'=>$attributes['group_company'],
             'total_exposure'=>str_replace(',', '', $attributes['total_exposure']),

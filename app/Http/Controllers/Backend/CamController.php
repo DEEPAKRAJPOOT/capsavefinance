@@ -111,7 +111,10 @@ class CamController extends Controller
             }else{
               $checkDisburseBtn='';
             }
-            //dd($product_ids,$checkDisburseBtn);
+           
+            $arrCamData['group_company'] = !empty($arrCamData['group_company']) ? json_decode($arrCamData['group_company'] , true) : array();
+            $arrCamData['existing_exposure'] = !empty($arrCamData['existing_exposure']) ? json_decode($arrCamData['existing_exposure'], true) : array();
+            
             $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
             return view('backend.cam.overview')->with([
@@ -132,6 +135,8 @@ class CamController extends Controller
     public function camInformationSave(Request $request){
        try{
             $arrCamData = $request->all();
+         
+
             $userId = Auth::user()->user_id;
             if(!isset($arrCamData['rating_no'])){
                     $arrCamData['rating_no'] = NULL;
@@ -147,6 +152,20 @@ class CamController extends Controller
                      $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
             }
             $arrCamData['proposed_exposure'] = str_replace(',','', $arrCamData['proposed_exposure']);
+
+
+            $arrExist = array();
+            if(isset($arrCamData['existing_exposure'])){
+                  foreach ($arrCamData['existing_exposure'] as $key => $existsLimit) {
+                    $arrExist[] = str_replace(',','', $existsLimit);
+                  }
+
+             }
+
+            $arrCamData['group_company'] = isset($arrCamData['group_company']) ?  json_encode($arrCamData['group_company']) : NULL;
+            $arrCamData['existing_exposure'] = !empty($arrExist) ?  json_encode($arrExist) : NULL;        
+          // dd($arrCamData);
+
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
