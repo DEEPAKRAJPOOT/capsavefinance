@@ -1,10 +1,6 @@
 <?php 
 
 define('ENCRYPTION_KEY', '0702f2c9c1414b70efc1e69f2ff31af0');
-define('CGST', 0);
-define('SGST', 0);
-define('IGST', 0);
-define('TGST', 18); #total GST, It will applicable if all gsts' are 0
 
 function _encrypt($plaintext = ''){
 	$method = "AES-256-CBC";
@@ -51,13 +47,51 @@ function format_number($number) {
     return (strpos($num,'.')!==false ? preg_replace("/\.?0*$/",'',$num) : $num);
 }
 
-function calcGst($amount = 0) {
-   $totalGst = SGST + CGST + IGST; 
-   if (false == $totalGst) {
-   	$totalGst = TGST;
-   }
-   return format_number(($amount * $totalGst)/100);
+function getPaginate($pages, $currpage = 1, $title = array()) {
+	$output = '';
+	if($pages > 1) {
+		if($currpage == 1) 
+			$output .= '<li class="paginate_button disabled"><span>First</span></li><li class="paginate_button disabled"><span>Previous</span></li>';
+		else	
+			$output .= '<li class="paginate_button" onclick="getresult(1)" title="'.($title[0] ?? '').'"><span>First</span></li><li class="paginate_button"  onclick="getresult('.($currpage-1).')"  title="'.($title[$currpage-2] ?? '').'"><span>Previous</span></li>';
+
+		if(($currpage-3)>0) {
+			if($currpage == 1)
+				$output .= '<li class="paginate_button active" title="'.($title[0] ?? '').'"><span>1</span></li>';
+			else				
+				$output .= '<li class="paginate_button" onclick="getresult(1)" title="'.($title[0] ?? '').'"><span>1</span></li>';
+		}
+		if(($currpage-3)>1) {
+				$output .= '<li class="paginate_button"><span>....</span></li>';
+		}
+		
+		for($i=($currpage-2); $i<=($currpage+2); $i++)	{
+			if($i<1) continue;
+			if($i>$pages) break;
+			if($currpage == $i)
+				$output .= '<li class="paginate_button active" id="'.$i.'" title="'.($title[$i-1] ?? '').'"><span>'.$i.'</span></li>';
+			else
+				$output .= '<li class="paginate_button" onclick="getresult('.$i.')" title="'.($title[$i-1] ?? '').'"><span>'.$i.'</span></li>';
+		}
+		
+		if(($pages-($currpage+2))>1) {
+			$output .= '<li class="paginate_button"><span>....</span></li>';
+		}
+		if(($pages-($currpage+2))>0) {
+			if($currpage == $pages)
+				$output .= '<li class="paginate_button active" id="'.$pages.'" title="'.($title[$pages-1] ?? '').'"><span>'.$pages.'</span></li>';
+			else				
+				$output .= '<li class="paginate_button" onclick="getresult('.$pages.')" title="'.($title[$pages-1] ?? '').'"><span>'.$pages.'</span></li>';
+		}
+		
+		if($currpage < $pages)
+			$output .= '<li class="paginate_button" onclick="getresult('.($currpage+1).')" title="'.($title[$currpage] ?? '').'"><span>Next</span></li><li class="paginate_button"  onclick="getresult('.$pages.')" title="'.($title[$pages-1] ?? '').'"><span>Last</span></li>';
+		else				
+			$output .= '<li class="paginate_button disabled"><span>Next</span></li><li class="paginate_button disabled"><span>Last</span></li>';
+	}
+	return !empty($output) ? '<ul class="pagination_ul">'.$output.'</ul>' : $output;
 }
+
 
 function extra_char($string = ''){
 	 $i = 0;
