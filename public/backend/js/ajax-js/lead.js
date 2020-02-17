@@ -12,7 +12,8 @@ try {
             serverSide: true,
             pageLength: 10,
             searching: false,
-            bSort: true,
+            bSort: false,
+            "dom": '<"top">rt<"bottom"flpi><"clear">',
             ajax: {
                "url": messages.get_lead, // json datasource
                 "method": 'POST',

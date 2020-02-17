@@ -3,9 +3,7 @@
 @section('content')
 
 
-<div class="content-wrapper">
-    <div class="card">
-        <div class="card-body">
+<div class="modal-body text-left">
             <div class="row">
                <div class="col-md-4">
                     {!!
@@ -31,9 +29,6 @@
               </div>
             </div>
         </div>
-    </div>
-
-</div>
 
 
 @endsection

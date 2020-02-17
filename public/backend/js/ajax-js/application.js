@@ -4,14 +4,16 @@ try {
         
         //User Listing code
         oTable = $('#appList').DataTable({
+            "dom": '<"top">rt<"bottom"flpi><"clear">',
+            autoWidth:false,
             processing: true,
             serverSide: true,
-            pageLength: 10,
+            pageLength: 25,
             searching: false,
             bSort: false,
-                "scrollY": 400,
-                "scrollX": true,
-                scrollCollapse: true,            
+                // "scrollY": 400,
+                // "scrollX": true,
+                // scrollCollapse: true,            
             ajax: {
                 "url": messages.get_applications, // json datasource
                 "method": 'POST',

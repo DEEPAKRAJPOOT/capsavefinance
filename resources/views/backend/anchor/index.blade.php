@@ -42,7 +42,7 @@
             </div>
                 <div class="row">
                 <div class="col-sm-12">
-                                     <div class="table-responsive">
+                                     <!-- <div class="table-responsive"> -->
                                     <table id="anchUserList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
@@ -60,7 +60,7 @@
                                         </tbody>
                                     </table>
                                     <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
-                                </div>
+                                <!-- </div> -->
                                     </div>
                             </div>
 
