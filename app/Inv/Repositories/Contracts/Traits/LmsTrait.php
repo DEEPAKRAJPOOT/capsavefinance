@@ -376,7 +376,7 @@ trait LmsTrait
         $transactionData['gl_flag'] = 1;
         $transactionData['soa_flag'] = 1;
         $transactionData['user_id'] = $disburseData['user_id'] ?? null;
-        $transactionData['virtual_acc_id'] = $disburseData['user_id'] ? $this->lmsRepo->getVirtualAccIdByUserId($disburseData['user_id']) : null;
+        $transactionData['virtual_acc_id'] = $disburseData['user_id'] ? $this->appRepo->getVirtualAccIdByUserId($disburseData['user_id']) : null;
         $transactionData['trans_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $transactionData['trans_type'] = $transType ?? 0;
         $transactionData['pay_from'] = null;
@@ -405,7 +405,7 @@ trait LmsTrait
      * @return float
      */
     protected function getOverDueInterest($invoice_id)
-    {
+    {   
         $disbData = $this->lmsRepo->getDisbursalRequests(['invoice_id' => $invoice_id]);        
         if (!isset($disbData[0])) return null;
         

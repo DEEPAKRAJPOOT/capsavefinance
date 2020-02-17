@@ -22,12 +22,14 @@ use Session;
 use Helpers;
 use App\Libraries\Pdf;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\AppAssignment;
 use Mail;
 class ApplicationController extends Controller
 {
     use ApplicationTrait;
+    use LmsTrait;
     
     protected $appRepo;
     protected $userRepo;
@@ -706,7 +708,7 @@ class ApplicationController extends Controller
                         
             $addl_data = [];
             $addl_data['sharing_comment'] = $sharing_comment;
-            
+
             if ($curr_role_id && $assign_case) {
                 $selData = explode('-', $sel_assign_role);
                 $selRoleId = $selData[0];
@@ -714,7 +716,7 @@ class ApplicationController extends Controller
                 $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
-            } else {                
+            } else {
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 //Validate the stage
                 if ($currStage->stage_code == 'credit_mgr') {
@@ -773,6 +775,7 @@ class ApplicationController extends Controller
                         return redirect()->back();                                            
                     }
                 } else if ($currStage->stage_code == 'opps_checker') {
+
                   	$capId = sprintf('%09d', $user_id);
                   	$customerId = 'CAP'.$capId;
                   	$lmsCustomerArray = array(
@@ -785,8 +788,21 @@ class ApplicationController extends Controller
 	                  	$capId = sprintf('%07d', $createCustomer->lms_user_id);
 	                  	$virtualId = 'CAPVA'.$capId;
               			$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
+
+              			$prcsAmt = $this->appRepo->getPrcsAmt($app_id);
+						foreach ($prcsAmt->offer as $key => $offer) {
+              				// $tranType = 4 for processing acc. to mst_trans_type table
+							$amt = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
+							$prcsTrnsData = $this->createTransactionData(['user_id' => $user_id], $amt, null, 4);
+							$createTransaction = $this->appRepo->saveTransaction($prcsTrnsData);
+
+							// $tranType = 20 for document fee acc. to mst_trans_type table
+							$documentFee = $offer->document_fee;
+							$data = $this->createTransactionData(['user_id' => $user_id], $documentFee, null, 20);
+							$createTransaction = $this->appRepo->saveTransaction($data);
+						}
                   	}
-                } 
+                }
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];

@@ -1356,4 +1356,39 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getTotalByPrgmLimitId($appPrgmLimitId){
         return AppProgramOffer::getTotalByPrgmLimitId($appPrgmLimitId);
     }
+
+    public function getPrcsAmt($appId){
+        return AppProgramLimit::where([
+                'app_id' => $appId, 
+                'product_id' => 1
+                ])
+            ->with('offer')
+            ->first();
+    }
+
+    /**
+     * Save Transactions
+     * 
+     * @param array $transactions
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveTransaction($transactions)
+    {
+        return Transactions::saveTransaction($transactions);
+    }
+    
+    /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getVirtualAccIdByUserId($userId)
+    {
+        return LmsUser::where('user_id', $userId)
+                ->pluck('virtual_acc_id')->first();
+    } 
+    
 }
