@@ -15,7 +15,7 @@
                  <select name="co_lender_id" id="co_lender_id" class="form-control">
                     <option>Select Co-lender</option>
                     @foreach($coLenders as $key=>$coLender)
-                      <option value="{{$coLender->co_lender_id}}">{{$coLender->f_name.'('.$coLender->comp_name.')'}}</option>
+                      <option value="{{$coLender->co_lender_id}}" {{(old('capsave_percent') == $coLender->co_lender_id)? 'selected': ''}}>{{$coLender->f_name.'('.$coLender->comp_name.')'}}</option>
                     @endforeach
                  </select>
                  @error('co_lender_id')
@@ -73,8 +73,7 @@
         $('#shareColenderForm').validate({ // initialize the plugin
             rules: {
                 'co_lender_id' : {
-                    required : true,
-                    number: true,
+                    required : true
                 },
                 'capsave_percent': {
                     required: true,
@@ -96,6 +95,13 @@
                     required: "Please enter Co-lender percent",
                 }
             }
+        });
+
+        $("#shareColenderForm button[type=submit]").click(function(){
+            if($('#shareColenderForm').valid()){
+                $('#shareColenderForm').submit();
+                $("#shareColenderForm button[type=submit]").attr("disabled","disabled");
+            }  
         });
     });
 </script>

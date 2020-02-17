@@ -1343,4 +1343,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function saveShareToColender($data, $co_lenders_share_id=null){
         return ColenderShare::saveShareToColender($data, $co_lenders_share_id);
     }
+
+    public function getSharedColender($where){
+        return ColenderShare::getSharedColender($where);
+    }
 }

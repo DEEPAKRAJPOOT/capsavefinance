@@ -146,18 +146,30 @@ class CoLenderControllers extends Controller {
     public function saveShareToColender(Request $request){
         try {
             $arrShareColenderData = $request->all();
+            $appId = $arrShareColenderData['app_id'];
+            $bizId = $arrShareColenderData['biz_id'];
             $arrShareColenderData['created_at'] = \carbon\Carbon::now();
             $arrShareColenderData['created_by'] = Auth::user()->user_id;
-            $status = $this->appRepo->saveShareToColender($arrShareColenderData);
-            dd($status);
-            if($status){
-                Session::flash('message', 'Offer shared successfully');
-                Session::flash('operation_status', 1); 
-                return redirect()->route('limit_assessment');
+            $data = $this->appRepo->getSharedColender([
+                    'app_id'=>$arrShareColenderData['app_id'],
+                    'app_prgm_limit_id' =>  $arrShareColenderData['app_prgm_limit_id'],
+                    'co_lender_id'      =>  $arrShareColenderData['co_lender_id'],
+                    'is_active'         =>  1
+                ]);
+            if($data->count()){
+                Session::flash('message', 'This colender is already associated with this offer.');
+                return redirect()->back()->withInput($request->input());
             }else{
-                Session::flash('message', trans('backend_messages.something_went_wrong'));
-                Session::flash('operation_status', 1); 
-                return redirect()->route('limit_assessment');
+                $status = $this->appRepo->saveShareToColender($arrShareColenderData);
+                if($status){
+                    Session::flash('message', 'Offer shared successfully');
+                    Session::flash('operation_status', 1); 
+                    return redirect()->route('limit_assessment', ['app_id'=>(int)$appId, 'biz_id'=>(int)$bizId, 'view_only'=>$arrShareColenderData['view_only']]);
+                }else{
+                    Session::flash('message', trans('backend_messages.something_went_wrong'));
+                    Session::flash('operation_status', 1); 
+                    return redirect()->route('limit_assessment', ['app_id'=>(int)$appId, 'biz_id'=>(int)$bizId, 'view_only'=>$arrShareColenderData['view_only']]);
+                }
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

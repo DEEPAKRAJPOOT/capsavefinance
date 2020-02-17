@@ -68,5 +68,13 @@ class ColenderShare extends BaseModel {
         } else {
             return self::create($data);
         }
+    }
+
+    public static function getSharedColender($where){
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else{
+            return self::where($where)->get();
+        }        
     }    
 }

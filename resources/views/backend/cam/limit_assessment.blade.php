@@ -231,7 +231,7 @@
                                                        <td width="10%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
-                                                       <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="450px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;">Share with Co-Lender</a>
+                                                       <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;">Share with Co-Lender</a>
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -537,6 +537,22 @@ function fillPrograms(programs){
     });
     $('#program_id').html(html);
 }
-
 </script>
+
+@php 
+$operation_status = session()->get('operation_status', false);
+@endphp
+@if( $operation_status == config('common.YES'))  
+  <script>
+      try {
+          var p = window.parent;       
+          p.jQuery('#shareColenderForm').modal('hide');
+          window.parent.location.reload();
+      } catch (e) {
+          if (typeof console !== 'undefined') {
+              console.log(e);
+          }
+      }
+  </script>
+@endif
 @endsection

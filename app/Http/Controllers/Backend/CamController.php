@@ -1329,7 +1329,7 @@ class CamController extends Controller
      */
     public function showLimitAssessment(Request $request)
     {
-        $appId = $request->get('app_id');
+        $appId = (int)$request->get('app_id');
         $bizId = $request->get('biz_id');
 
         $supplyPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 1);
@@ -1363,7 +1363,7 @@ class CamController extends Controller
     public function saveLimitAssessment(Request $request)            
     {
         try {
-            $appId = $request->get('app_id');
+            $appId = (int)$request->get('app_id');
             $bizId = $request->get('biz_id');
 
             $checkProgram = $this->appRepo->checkduplicateProgram([
@@ -1436,7 +1436,7 @@ class CamController extends Controller
 
     /*function for showing offer data*/
     public function showLimitOffer(Request $request){
-      $appId = $request->get('app_id');
+      $appId = (int)$request->get('app_id');
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
 
@@ -1524,7 +1524,7 @@ class CamController extends Controller
     }
 
     public function showLimit(Request $request){
-      $appId = $request->get('app_id');
+      $appId = (int)$request->get('app_id');
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
 
