@@ -547,6 +547,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'save_bank_detail',
                     'uses' => 'Backend\CamController@saveBankDetail'
                 ]);
+
+                Route::get('share-to-colender', [
+                    'as' => 'share_to_colender',
+                    'uses' => 'Backend\CamController@shareToColender'
+                ]);
+
+                Route::post('share-to-colender', [
+                    'as' => 'save_share_to_colender',
+                    'uses' => 'Backend\CamController@saveShareToColender'
+                ]);
             }); //end of cam   
         });//end of application
 

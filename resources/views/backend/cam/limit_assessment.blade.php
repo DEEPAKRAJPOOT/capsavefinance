@@ -228,27 +228,32 @@
                                                        <td width="20%">{{$prgmLimit->product->product_name}}</td>
                                                        <td width="20%">-- NA --</td>
                                                        <td width="20%">-- NA --</td>
-                                                       <td width="10%">{{number_format($prgmLimit->limit_amt)}}</td>
+                                                       <td width="10%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
-                                                       <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Share with Co-lender</button>
+                                                       <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="600px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;">Share with Co-Lender</a>
+
+
+
+
+                                                       <!-- <button class="btn btn-success btn-sm add-offer" data-url="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Share with Co-Lender</button> -->
                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div id="lcollapse{{$key+1}}" class="card-body bdr pt-2 pb-2 collapse" style="padding: 1rem; border: 1px solid #e9ecef;">
+                                        <div id="lcollapse{{$key+1}}" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
                                             <tr>
-                                                <th width="10%">Facility Type</th>
-                                                <th width="20%">Equipment Type</th>
-                                                <th width="10%">Limit of the Equipment</th>
-                                                <th width="10%">Tenor (Months)</th>
-                                                <th width="20%">PTP Frequency</th>
-                                                <th width="10%">XIRR (%)</th>
-                                                <th width="10%">Processing Fee (%)</th>
-                                                <th width="5%">Action</th>
+                                                <td width="10%" style="background: #e9ecef;"><b>Facility Type</b></td>
+                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Equipment Type</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
+                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>XIRR (%)</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
+                                                <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -320,6 +325,7 @@
     </div>    
 </div>
 
+{!!Helpers::makeIframePopup('shareColenderFrame','Share woth Co-Lender', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('limitOfferFrame','Add Offer', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('editLimitFrame','Edit Limit', 'modal-md')!!}
 
