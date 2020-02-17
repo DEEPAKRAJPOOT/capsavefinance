@@ -148,12 +148,96 @@
                     </tbody>
                 </table>
 
+
+
+
+                <div class="data mt-4">
+                    <h2 class="sub-title bg">Group Company Exposure</h2>
+                    <div class="col-md-12" id="ptpq-block">
+                        @if(isset($offerData->offerPtpq))
+                            @foreach($offerData->offerPtpq as $key=>$ptpq)
+                            <div class="row {{($loop->first)? '': 'mt10'}}">
+                                <div class="col-md-3">
+                                    @if($loop->first)
+                                        <label for="txtPassword"><b>Group Company</b></label>
+                                    @endif
+                                    <input type="text" name="ptpq_from[]" class="form-control" value="{{(int)$ptpq->ptpq_from}}" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                                </div>
+                                <div class="col-md-3">
+                                    @if($loop->first)
+                                        <label for="txtPassword"><b>Existing Group Exposure </b></label>
+                                    @endif
+                                    <input type="text" name="ptpq_to[]" class="form-control number_format calTotalExposure" value="{{(int)$ptpq->ptpq_to}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                                </div>
+                                
+                                <div class="col-md-2 center">
+                                 @if($loop->first)
+                                    <i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i>
+                                 @else
+                                    <i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>
+                                 @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        @else
+                            <div class="row">
+                                <div class="col-md-3">
+                                <label for="txtPassword"><b>Group Company</b></label>
+                                    <input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                                </div>
+                                <div class="col-md-3">
+                                <label for="txtPassword"><b>Existing Group Exposure </b></label>
+                                    <input type="text" name="ptpq_to[]" class="form-control number_format calTotalExposure" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+                                </div>
+                                <div class="col-md-2 ">
+                                    <i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                        <label for="txtPassword"><b>Proposed Group Exposure </b></label>
+                           <input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? number_format($arrCamData->proposed_exposure) : (isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '')}}" />
+                        </div>
+                        <div class="col-md-3">
+                        <label for="txtPassword"><b>Total Exposure   </b></label>
+                          <input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? number_format($arrCamData->total_exposure) : ''}}" />
+                        </div>
+                        
+
+                    </div>
+
+
+                </div>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Rating Rationale</h2>
                     <div class="pl-4 pr-4 pb-4 pt-2">
                         <textarea class="form-control" id="rating_rational" name="rating_rational" rows="3" spellcheck="false" >{{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}}</textarea>
                     </div>
                 </div>
+
+
+
 
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Terms Of Facility</h2>
@@ -323,5 +407,23 @@
         $("input[name='total_exposure']").val(proposed+existing);
     })
     
+     $(document).on('click', '.add-ptpq-block', function(){
+    let ptpq_block = '<div class="row mt10">'+
+            '<div class="col-md-3">'+
+                '<input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="Group Company">'+
+            '</div>'+
+            '<div class="col-md-3">'+
+                '<input type="text" name="ptpq_to[]" class="form-control number_format calTotalExposure" value="" placeholder="Existing Group Exposure">'+
+            '</div>'+
+            '<div class="col-md-2 center">'+
+                '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+
+            '</div>'+
+        '</div>';
+    $('#ptpq-block').append(ptpq_block);
+  });
+
+  $(document).on('click', '.remove-ptpq-block', function(){
+    $(this).parent('div').parent('div').remove();
+  });
 </script>
 @endsection
