@@ -8,17 +8,19 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 
 class CoLenderControllers extends Controller {
 
     protected $userRepo;
 
-    public function __construct(InvMasterRepoInterface $master, InvUserRepoInterface $user)
+    public function __construct(InvMasterRepoInterface $master, InvUserRepoInterface $user, InvAppRepoInterface $app_repo)
     {
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
         $this->masterRepo = $master;
+        $this->appRepo = $app_repo;
         $this->userRepo = $user;
     }
 
@@ -130,6 +132,32 @@ class CoLenderControllers extends Controller {
             } else {
                 Session::flash('error', trans('error_messages.email_already_exists'));
                 return redirect()->back();
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function shareToColender(){
+        $coLenders = $this->userRepo->getCoLenderData(['co_lenders_user.is_active'=>1, 'u.is_active'=>1]);
+        return view('backend.coLenders.share_colender')->with('coLenders', $coLenders);
+    }
+
+    public function saveShareToColender(Request $request){
+        try {
+            $arrShareColenderData = $request->all();
+            $arrShareColenderData['created_at'] = \carbon\Carbon::now();
+            $arrShareColenderData['created_by'] = Auth::user()->user_id;
+            $status = $this->appRepo->saveShareToColender($arrShareColenderData);
+            dd($status);
+            if($status){
+                Session::flash('message', 'Offer shared successfully');
+                Session::flash('operation_status', 1); 
+                return redirect()->route('limit_assessment');
+            }else{
+                Session::flash('message', trans('backend_messages.something_went_wrong'));
+                Session::flash('operation_status', 1); 
+                return redirect()->route('limit_assessment');
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

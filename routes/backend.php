@@ -547,16 +547,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'save_bank_detail',
                     'uses' => 'Backend\CamController@saveBankDetail'
                 ]);
-
-                Route::get('share-to-colender', [
-                    'as' => 'share_to_colender',
-                    'uses' => 'Backend\CamController@shareToColender'
-                ]);
-
-                Route::post('share-to-colender', [
-                    'as' => 'save_share_to_colender',
-                    'uses' => 'Backend\CamController@saveShareToColender'
-                ]);
             }); //end of cam   
         });//end of application
 
@@ -822,6 +812,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save-co-lender', [
                 'as' => 'save_co_lenders',
                 'uses' => 'Master\CoLenderControllers@saveCoLender'
+            ]);
+            Route::get('/share-to-colender', [
+                'as' => 'share_to_colender',
+                'uses' => 'Master\CoLenderControllers@shareToColender'
+            ]);  
+            Route::post('/share-to-colender', [
+                'as' => 'save_share_to_colender',
+                'uses' => 'Master\CoLenderControllers@saveShareToColender'
             ]);  
             
             

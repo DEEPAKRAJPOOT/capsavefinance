@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\SubIndustry;
 use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\ColenderShare;
 /**
  * Application repository class
  */
@@ -1337,5 +1338,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function getTotalByPrgmLimitId($appPrgmLimitId){
         return AppProgramOffer::getTotalByPrgmLimitId($appPrgmLimitId);
+    }
+
+    public function saveShareToColender($data, $co_lenders_share_id=null){
+        return ColenderShare::saveShareToColender($data, $co_lenders_share_id);
     }
 }
