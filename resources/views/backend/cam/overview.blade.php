@@ -361,9 +361,8 @@
         minLength: '3'
     });
 
-
-    $(document).on('input', 'input.calTotalExposure', function(){
-            var existing = 0;
+    function calTotalExposure(){
+       var existing = 0;
             $('input[name*=existing_exposure]').each(function(){
                 if($.isNumeric($(this).val().replace(/,/g, ''))){
                     existing  = parseInt(existing) + parseInt($(this).val().replace(/,/g, ''));
@@ -373,7 +372,11 @@
         var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, ''));
         existing = (!isNaN(existing))?existing:0;
         proposed = (!isNaN(proposed))?proposed:0;
-        $("input[name='total_exposure']").val(proposed+existing);
+        $("input[name='total_exposure']").val(proposed+existing);   
+    }
+
+    $(document).on('input', 'input.calTotalExposure', function(){
+           calTotalExposure();
     })
     
     $(document).on('click', '.add-ptpq-block', function(){
@@ -393,6 +396,7 @@
 
   $(document).on('click', '.remove-ptpq-block', function(){
     $(this).parent('div').parent('div').remove();
+        calTotalExposure();
   });
 </script>
 @endsection
