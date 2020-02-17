@@ -24,7 +24,7 @@ class BusinessInformationRequest extends Request
     public function rules()
     {
         if(request()->is_gst_manual == 1){
-            $rules['biz_gst_number_text'] = 'required|string|min:10|max:10';
+            $rules['biz_gst_number_text'] = 'min:15|max:15';
             request()->merge(['biz_gst_number' => request()->get('biz_gst_number_text')]);
         } else {
             $rules['biz_gst_number'] = 'required|string|min:10|max:10';
