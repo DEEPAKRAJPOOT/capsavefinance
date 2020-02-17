@@ -9145,7 +9145,8 @@ table.gridlines {
   left: 0;
   width: 100%;
   text-align: left;
-  margin-left: 16px;
+  margin-left: 8px;
+  bottom: -2px;  
 }
 a.aprveAppListBtn:hover {
   color: #0056b3;
