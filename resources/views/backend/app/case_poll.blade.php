@@ -68,7 +68,14 @@
 {!!Helpers::makeIframePopup('pickLead','Pick Lead','modal-md')!!}
 
 @endsection
-
+@section('additional_css')
+<style>
+    .pl-3, .px-3, .table th, .table td{
+        padding-left:8px!important;
+        padding-right:4px!important;
+        }
+    </style>
+    @endsection
 @section('jscript')
 <script>
 
