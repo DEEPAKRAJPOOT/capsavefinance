@@ -217,7 +217,7 @@ function checkValidation(){
 	}else if(!(/[a-zA-z]{5}\d{4}[a-zA-Z]{1}/.test(biz_pan_number))){
 		setError('input[name=biz_pan_number]', 'Please fill correct PAN number');
 		flag = false;
-	}else if($('.pan-verify').text() == 'Verify'){
+	}else if($('.pan-verify').text() == 'Verify' && is_gst_manual!=1){
 		setError('input[name=biz_pan_number]', 'Please verify Business PAN First');
 		flag = false;
 	}
