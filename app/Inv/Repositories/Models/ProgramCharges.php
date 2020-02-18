@@ -154,4 +154,5 @@ class ProgramCharges extends BaseModel {
        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Charges', 'charge_id', 'id'); 
     }
 
+   
 }

@@ -102,7 +102,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'list_lms_charges',
                 'uses' => 'Lms\ChargeController@listLmsCharges'
             ]);
-            
+            Route::get('get-lms-charges-edit', [
+                'as' => 'get_lms_charges_edit',
+                'uses' => 'Lms\ChargeController@editLmsCharges'
+            ]);  
+        
         });//end of application
 
         // Business address
