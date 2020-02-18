@@ -147,10 +147,10 @@
                                         <thead>
                                             <tr role="row">
                                             <th width="5%">Sr. No.</th>
-                                            <th width="20%">Product Type</th>
-                                            <th width="20%">Balance Limit</th>
-                                            <th width="20%">Cosumed Limit</th>
-                                            <th width="10%">Limit</th>
+                                            <th width="16%">Product Type</th>
+                                            <th width="18%">Limit</th>
+                                            <th width="18%">Cosumed Limit</th>
+                                            <th width="18%">Balance Limit</th>
                                             <th width="25%">Action</th>
                                             </tr>
                                         </thead>
@@ -164,10 +164,10 @@
                                                 <tbody>
                                                     <tr role="row" class="odd">
                                                        <td width="5%">{{($key+1)}}</td>
-                                                       <td width="20%">{{$prgmLimit->product->product_name}}</td>
-                                                       <td width="20%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="20%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="10%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
+                                                       <td width="16%">{{$prgmLimit->product->product_name}}</td>
+                                                       <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
+                                                       <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
+                                                       <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
                                                        <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;">Share with Co-Lender</a>
@@ -252,10 +252,10 @@
                                         <thead>
                                             <tr role="row">
                                             <th width="5%">Sr. No.</th>
-                                            <th width="20%">Product Type</th>
-                                            <th width="20%">Balance Limit</th>
-                                            <th width="20%">Cosumed Limit</th>
-                                            <th width="10%">Limit</th>
+                                            <th width="16%">Product Type</th>
+                                            <th width="18%">Limit</th>
+                                            <th width="18%">Cosumed Limit</th>
+                                            <th width="18%">Balance Limit</th>
                                             <th width="25%">Action</th>
                                             </tr>
                                         </thead>
@@ -269,10 +269,10 @@
                                                 <tbody>
                                                     <tr role="row" class="odd">
                                                        <td width="5%">{{($key+1)}}</td>
-                                                       <td width="20%">{{$prgmLimit->product->product_name}}</td>
-                                                       <td width="20%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="20%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="10%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
+                                                       <td width="16%">{{$prgmLimit->product->product_name}}</td>
+                                                       <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
+                                                       <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
+                                                       <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
                                                        <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;">Share with Co-Lender</a>
