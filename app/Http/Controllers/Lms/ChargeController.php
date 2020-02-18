@@ -57,8 +57,18 @@ class ChargeController extends Controller
         }
 
     
-     public function editLmsCharges(){
-        return view('lms.charges.edit_charges');
+     public function editLmsCharges(Request $request){
+          $user_id =  $request->get('user_id');
+          if($user_id)
+          {
+              $app =  $this->lmsRepo->getUserDetails($user_id);
+            
+          }
+          $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1,'chrg_type' => 2]);
+          $result  =  $this->invRepo->getCustomerId($user_id);
+          $program  =  $this->lmsRepo->getProgramUser($user_id);
+          return view('lms.charges.edit_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program,'user' => $app]);
+   
       }
     
      public function listLmsCharges(Request $request){

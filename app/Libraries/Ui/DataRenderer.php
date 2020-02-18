@@ -2115,7 +2115,7 @@ class DataRenderer implements DataProviderInterface
             '5' => 'Overdue Amount'
         );
         return DataTables::of($charges)
-                ->rawColumns(['chrg_type'])
+                ->rawColumns(['chrg_type','edit'])
                 ->addColumn(
                     'chrg_type',
                     function ($charges) {
@@ -2188,7 +2188,11 @@ class DataRenderer implements DataProviderInterface
                         });
                     }
                 })
-                
+                ->addColumn(
+                    'edit',
+                    function ($charges) {  
+                    return  '<a data-toggle="modal" class="btn-sm" data-target="#editChargesLmsFrame" data-url ="'.route('get_lms_charges_edit', ['chrg_trans_id' => $charges->chrg_trans_id,'user_id' => $charges->transaction->user_id]).'" data-height="500px" data-width="100%" data-placement="top" ><i class="fa fa-edit"></i></a>';
+                }) 
                 ->make(true);
     }
     
