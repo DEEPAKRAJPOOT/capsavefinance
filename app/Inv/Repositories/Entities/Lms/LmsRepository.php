@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\ProgramCharges;
+use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
@@ -299,6 +300,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
                
     }  
     
+    public static function getUserDetails($uid)
+    {
+       try
+       {
+          return User::getUserDetails($uid); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
       public static function getSingleChargeAmount($attr)
     {
        try
@@ -367,6 +379,26 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        
                
     }    
+    /**
+     * Get program offer limit amount  //
+     *      
+     * @param array $whereCondition
+     * @param array $data
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+      public static function getLimitAmount($attr)
+    {
+       try
+       {
+          return AppProgramOffer::getLimitAmount($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }     
     
     /**
      * Update Transactions

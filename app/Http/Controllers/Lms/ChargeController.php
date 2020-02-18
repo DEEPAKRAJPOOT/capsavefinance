@@ -27,6 +27,7 @@ class ChargeController extends Controller
 	protected $docRepo;
 	protected $lmsRepo;
 	protected $masterRepo;
+                  
 
 	/**
 	 * The pdf instance.
@@ -62,10 +63,15 @@ class ChargeController extends Controller
     
      public function listLmsCharges(Request $request){
           $user_id =  $request->get('user_id');
+          if($user_id)
+          {
+              $app =  $this->lmsRepo->getUserDetails($user_id);
+            
+          }
           $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1,'chrg_type' => 2]);
           $result  =  $this->invRepo->getCustomerId($user_id);
           $program  =  $this->lmsRepo->getProgramUser($user_id);
-          return view('lms.charges.add_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program]);
+          return view('lms.charges.add_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program,'user' => $app]);
       }
       
   
@@ -77,7 +83,7 @@ class ChargeController extends Controller
           $totalSumAmount = 0;
            if($getTransType)
            {
-                 $static_amount =  1000000;
+                 $static_amount = $request->programamount;
                  if($request->chrg_calculation_type==1)
                  {
                      $percent = NULL;
@@ -108,12 +114,13 @@ class ChargeController extends Controller
                         $arr  = [ "user_id" =>  $request->user_id,
                                   "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
                                   "chrg_trans_id" =>  $chrgTransId,
-                                 "amount" =>   $totalSumAmount,
-                                 'entry_type' =>0,
-                                 "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
+                                  "amount" =>   $totalSumAmount,
+                                  'entry_type' =>0,
+                                  "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                                   "trans_type" => $getTransType->id,
-                                 'created_by' =>  $id, 
-                                 'created_at' =>  $mytime ];
+                                  "pay_from" => $request['pay_from'],
+                                  'created_by' =>  $id, 
+                                  'created_at' =>  $mytime ];
                         
                          $res =   $this->lmsRepo->saveCharge($arr);
                           if($res)

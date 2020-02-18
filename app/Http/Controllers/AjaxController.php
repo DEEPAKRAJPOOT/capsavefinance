@@ -3171,7 +3171,15 @@ if ($err) {
        $res  =  $this->lmsRepo->getTransName($request);
        if(count($res) > 0)
        {
-               return response()->json(['status' => 1,'res' => $res]);
+               $amountSum  =  $this->lmsRepo->getLimitAmount($request);
+               if($amountSum)
+               {
+                  return response()->json(['status' => 1,'res' => $res,'amount' =>$amountSum]);
+               }
+               else
+               {
+                 return response()->json(['status' => 0]);  
+               }
     
        }
        else
