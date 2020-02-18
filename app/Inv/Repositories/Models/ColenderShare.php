@@ -76,5 +76,9 @@ class ColenderShare extends BaseModel {
         }else{
             return self::where($where)->get();
         }        
-    }    
+    }
+
+    public function colender(){
+        return $this->belongsTo('App\Inv\Repositories\Models\CoLenderUsers', 'co_lender_id', 'co_lender_id');
+    }   
 }

@@ -820,6 +820,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/share-to-colender', [
                 'as' => 'save_share_to_colender',
                 'uses' => 'Master\CoLenderControllers@saveShareToColender'
+            ]);
+            Route::get('/view-shared-colender', [
+                'as' => 'view_shared_colender',
+                'uses' => 'Master\CoLenderControllers@viewSharedColender'
             ]);  
             
             

@@ -82,6 +82,7 @@ var iframe_ids = [
         'addEquipmentFrame',
         'editEquipmentFrame',
         'shareColenderFrame',
+        'viewSharedColenderFrame',
     ];
 
 iframe_ids.forEach(function(id) {

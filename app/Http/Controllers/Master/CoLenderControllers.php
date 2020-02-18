@@ -176,4 +176,9 @@ class CoLenderControllers extends Controller {
         }
     }
 
+    public function viewSharedColender(Request $request){
+        $shared_colenders = $this->appRepo->getSharedColender(['app_id'=>$request->app_id, 'app_prgm_limit_id'=>$request->app_prgm_limit_id, 'is_active'=>1]);
+        return view('backend.coLenders.view_shared_colender')->with('sharedCoLenders', $shared_colenders);
+    }
+
 }

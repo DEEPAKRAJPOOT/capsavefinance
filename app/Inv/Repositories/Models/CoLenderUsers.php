@@ -104,7 +104,6 @@ class CoLenderUsers extends BaseModel {
      */
     public static function getColenderList()
     {
-
         $res = self::select('co_lenders_user.*', 'u.f_name', 'u.biz_name', 'u.email')
                 ->join('users as u', 'co_lenders_user.co_lender_id', '=', 'u.co_lender_id');
         return $res ?: false;
@@ -131,8 +130,12 @@ class CoLenderUsers extends BaseModel {
         }
 
         return self::where($where)->select('co_lenders_user.*' ,'u.f_name', 'u.biz_name', 'u.email')
-                        ->join('users as u', 'co_lenders_user.co_lender_id', '=', 'u.co_lender_id')
-                        ->get();
+                ->join('users as u', 'co_lenders_user.co_lender_id', '=', 'u.co_lender_id')
+                ->get();
+    }
+
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User', 'co_lender_id', 'co_lender_id');
     }
 
 }

@@ -15,7 +15,7 @@
                  <select name="co_lender_id" id="co_lender_id" class="form-control">
                     <option value="">Select Co-lender</option>
                     @foreach($coLenders as $key=>$coLender)
-                      <option value="{{$coLender->co_lender_id}}" {{(old('capsave_percent') == $coLender->co_lender_id)? 'selected': ''}}>{{$coLender->f_name.'('.$coLender->comp_name.')'}}</option>
+                      <option value="{{$coLender->co_lender_id}}" {{(old('capsave_percent') == $coLender->co_lender_id)? 'selected': ''}}>{{$coLender->f_name.' ('.$coLender->comp_name.')'}}</option>
                     @endforeach
                  </select>
                  @error('co_lender_id')
