@@ -236,4 +236,8 @@ class AppProgramLimit extends BaseModel {
                 ->where('app_prgm_offer.is_active', config('common.active.yes'))
                 ->first();  
     }
+
+    public function getTotalByPrgmLimitId(){
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id', 'app_prgm_limit_id')->where(['is_active'=>1])->sum('prgm_limit_amt');
+    }
 }
