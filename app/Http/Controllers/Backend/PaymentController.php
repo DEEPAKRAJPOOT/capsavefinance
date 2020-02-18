@@ -9,6 +9,7 @@ use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
@@ -20,9 +21,10 @@ class PaymentController extends Controller {
 
     protected $invRepo;
     protected $docRepo;
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo) {
+    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
+        $this->lmsRepo = $lms_repo;
         $this->middleware('auth');
     }
 
@@ -39,7 +41,9 @@ class PaymentController extends Controller {
     {
        $bank = DB::table('mst_bank')->where(['is_active' => 1])->get();  
        $result  =  $this->invRepo->getCustomerId();
-      return view('backend.payment.add_payment')->with(['bank' => $bank,'customer' => $result]);
+       $tranType=$this->lmsRepo->getManualTranType();
+       $getGstDropVal=$this->lmsRepo->getActiveGST();
+      return view('backend.payment.add_payment')->with(['bank' => $bank,'customer' => $result, 'tranType'=>$tranType, 'getGstDropVal'=>$getGstDropVal]);
    
     }
       /*     Excel  Payment list page   */

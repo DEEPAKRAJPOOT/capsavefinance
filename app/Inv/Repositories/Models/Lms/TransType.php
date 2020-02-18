@@ -76,4 +76,16 @@ class TransType extends BaseModel {
             return self::create($data);
         }
     }
+/** 
+ * @Author: Rent Alpha
+ * @Date: 2020-02-17 14:41:47 
+ * @Desc:  
+ */
+    public static function getManualTranType(){
+       $result=self::select('*')
+        ->where("is_visible","=", 1)
+        ->where("is_active","=", 1)
+        ->get();
+        return $result?$result:'';
+    }
 }

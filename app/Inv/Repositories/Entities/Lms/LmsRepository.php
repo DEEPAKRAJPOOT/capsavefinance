@@ -14,6 +14,7 @@ use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 
 /**
@@ -247,5 +248,23 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return Disbursal::where('disbursal_id', $disbursalId)
                 ->update($data);
-    }           
+    }
+    /** 
+     * @Author: Rent Aplha
+     * @Date: 2020-02-17 14:53:10 
+     * @Desc:  
+     */    
+    public static function getManualTranType(){        
+     $result=TransType::getManualTranType();
+     return  $result? $result:false;
+    }
+      /** 
+     * @Author: Rent Aplha
+     * @Date: 2020-02-17 14:53:10 
+     * @Desc:  
+     */    
+    public static function getActiveGST(){        
+        $result=GstTax::getActiveGST();
+        return  $result? $result:false;
+       }            
 }
