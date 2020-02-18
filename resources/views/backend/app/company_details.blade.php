@@ -313,7 +313,7 @@
 									<div class="col-md-4">
 										<div class="form-group">
 											<label for="txtCreditPeriod">Address
-												<span class="mandatory">*</span>
+												<span class="mandatory gst_address">*</span>
 											</label>
 											<input type="text" name="biz_address" value="{{old('biz_address', $business_info->address[0]->addr_1)}}" class="form-control" tabindex="12" placeholder="Enter Your Address" maxlength="100" >
 											@error('biz_address')
@@ -324,7 +324,7 @@
 									<div class="col-md-3">
 										<div class="form-group password-input">
 											<label for="txtPassword">State
-												<span class="mandatory">*</span>
+												<span class="mandatory gst_address">*</span>
 											</label>
 											<select class="form-control" name="biz_state" tabindex="13" >
                                                 <option value=""> Select State</option>
@@ -340,7 +340,7 @@
 									<div class="col-md-3">
 										<div class="form-group">
 											<label for="txtEmail">City
-												<span class="mandatory">*</span>
+												<span class="mandatory gst_address">*</span>
 											</label>
 											<input type="text" name="biz_city" value="{{old('biz_city', $business_info->address[0]->city_name)}}" class="form-control" tabindex="14" placeholder="Enter City Name" maxlength="50" >
 											@error('biz_city')
@@ -352,7 +352,7 @@
 
 										<div class="form-group password-input">
 											<label for="txtPassword">Pin Code
-												<span class="mandatory">*</span>
+												<span class="mandatory gst_address">*</span>
 											</label>
 											<input type="text" name="biz_pin" value="{{old('biz_pin', $business_info->address[0]->pin_code)}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6" >
 											@error('biz_pin')

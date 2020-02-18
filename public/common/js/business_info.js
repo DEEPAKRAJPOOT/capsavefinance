@@ -38,6 +38,7 @@ $(document).ready(function(){
 				}else if(res['statusCode'] == 101){
 					$(".span_gst_text").hide();
 					$(".span_gst_select").show();
+					setUnsetError(0);
 					$('input[name=is_gst_manual]').val('0');					
 			    	$('#pan-msg').show();
 			    	$('.pan-verify').text('Verified');
@@ -48,6 +49,7 @@ $(document).ready(function(){
 			    }else{
 					$(".span_gst_select").hide();
 					$(".span_gst_text").show();		
+					setUnsetError(1);
 					$('input[name=is_gst_manual]').val('1');			
 			    	alert('No GST associated with the entered PAN.');
 			    }
@@ -56,6 +58,22 @@ $(document).ready(function(){
 		});
 	})
 })
+
+function setUnsetError(is_gst_manual){
+	if(is_gst_manual == 1) {
+		$(".gst_address").html('');
+		unsetError('input[name=biz_address]');
+		unsetError('select[name=biz_state]');
+		unsetError('input[name=biz_city]');
+		unsetError('input[name=biz_pin]');
+	} else {
+		$(".gst_address").html('*');
+		//setError('input[name=biz_address]', 'Registered address is required');
+		//setError('select[name=biz_state]', 'Registered State is required');
+		//setError('input[name=biz_city]', 'Registered City is required');
+		//setError('input[name=biz_pin]', 'Registered Pin is required');
+	}
+}
 
 function fillGSTinput(datas){
 	let res ='';
@@ -295,25 +313,25 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if(biz_address.length == ''){
+	if(biz_address.length == '' && is_gst_manual!=1){
 		setError('input[name=biz_address]', 'Registered address is required');
 		flag = false;
 	}
 
-	if(biz_state == ''){
+	if(biz_state == '' && is_gst_manual!=1){
 		setError('select[name=biz_state]', 'Registered State is required');
 		flag = false;
 	}
 
-	if(biz_city.length == '' || !isNaN(biz_city)){
+	if((biz_city.length == '' || !isNaN(biz_city)) && is_gst_manual!=1){
 		setError('input[name=biz_city]', 'Registered City is required');
 		flag = false;
 	}
 
-	if(biz_pin.length != 6){
+	if(biz_pin.length != 6 && is_gst_manual!=1){
 		setError('input[name=biz_pin]', 'Registered Pin is required');
 		flag = false;
-	}else if(!(/^\d{6}$/.test(biz_pin)) || parseInt(biz_pin) < 100000){
+	}else if((!(/^\d{6}$/.test(biz_pin)) || parseInt(biz_pin) < 100000) && is_gst_manual!=1){
 		setError('input[name=biz_pin]', 'Registered Pin should be numeric only');
 		flag = false;
 	}
