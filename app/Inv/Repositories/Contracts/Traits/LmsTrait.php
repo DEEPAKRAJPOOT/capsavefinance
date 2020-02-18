@@ -210,25 +210,45 @@ trait LmsTrait
             ->orderBy('trans_date','asc')
             ->get();
 
-         /*    foreach ($userTransDetails as $key => $UTDetail) {
-                $trans_amt = $UTDetail->amount;
-                foreach ($invoice as $key => $inv) {
-                    $invoice[$key]['trans_date']=$UTDetail->trans_date;
-                }
-            } */
-
-            // $invoiceRepaymentTrail['user_id']=$UIDetail->user_id; 
-            // $invoiceRepaymentTrail['invoice_id']=$UIDetail->invoice_id; 
-            // $invoiceRepaymentTrail['repaid_amount']=$UTDetail->amount; 
-            // $invoiceRepaymentTrail['repaid_date']=$UTDetail->trans_date; 
-            // $invoiceRepaymentTrail['trans_type']=$trans_type; 
-            // InvoiceRepaymentTrail::create($invoiceRepaymentTrail);
-
+            $settledInvoice = [];
+            dd($userTransDetails);
             foreach ($userTransDetails as $UTDkey => $UTDetail) {
-                foreach ($userInvoiceDetails as $UIDkey => $UIDetail) {
-                    dump($UIDetail, $UIDetail->interests->sum('accrued_interest'));
-                }
+                foreach ($UTDetail->disburse as $UIDkey => $UIDetail) {
+                   $invoiceRepaymentTrail = [];
+                   $invoiceRepaymentTrail['user_id']=$UIDetail->user_id; 
+                   $invoiceRepaymentTrail['invoice_id']=$UIDetail->invoice_id; 
+                   $invoiceRepaymentTrail['repaid_amount']=$UTDetail->amount; 
+                   $invoiceRepaymentTrail['repaid_date']=$UTDetail->trans_date; 
+                   $invoiceRepaymentTrail['trans_type']=$UTDetail->trans_type; 
+                
+                   $UIDetail->principal_amount;
+                   $UIDetail->total_repaid_amt;
+
+                   $UIDetail->interests->sum('accrued_interest');
+                   $UIDetail->total_interest;
+
+                   $UIDetail->inv_due_date;
+                   $UTDetail->trans_date;
+
+                   $totalDueAmt = $UIDetail->principal_amount+$UIDetail->interests->sum('accrued_interest');
+                   $totalRepaidAmt = $UTDetail->amount+$UIDetail->total_repaid_amt;
+                   dump($totalRepaidAmt, $totalDueAmt);
+                   if($totalRepaidAmt-$totalDueAmt>=0){
+                        $UIDetail->update(['status_id'=>15,'total_repaid_amt'=>$totalRepaidAmt]);
+                        InvoiceRepaymentTrail::create($invoiceRepaymentTrail);
+                        unset($userInvoiceDetails[$UIDkey]);                       
+                   }
+
+                //    $balRepaymentAmt = $UTDetail->amount - ($UIDetail->principal_amount+$UIDetail->interests->sum('accrued_interest'));
+                //     dump($balRepaymentAmt, $UTDetail->amount, $UIDetail->principal_amount, $UIDetail->interests->sum('accrued_interest'));
+                //    if($balRepaymentAmt<=0){
+                //     $UIDetail->update(['status_id'=>15]);
+                //     InvoiceRepaymentTrail::create($settledInvoice[0]);
+                //     unset($userInvoiceDetails[$UIDkey]);
+                //    }
+                } 
             }
+           
         }
     }
     
