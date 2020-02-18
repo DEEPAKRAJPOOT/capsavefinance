@@ -112,23 +112,37 @@
 
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Group Company Exposure</h2>
+                     <div class="row">
+                        <div class="col-md-3">
+                        <label for="txtPassword"><b>Group Name</b></label>
+                            <input type="text" name="group_company" class="form-control" value="" placeholder="Group Name"/>
+                        </div>
+                        
+                    </div>
+
+
                     <div class="col-md-12" id="ptpq-block">
                         @if(!empty($arrCamData->existing_exposure))
                             @foreach($arrCamData->existing_exposure as $key=>$existing_exposur_limit)
-                            <div class="row {{($loop->first)? '': 'mt10'}}">
+                            <div class="row mt-4  {{($loop->first)? '': 'mt10'}}">
                                 <div class="col-md-3">
                                     @if($loop->first)
                                         <label for="txtPassword"><b>Group Company</b></label>
                                     @endif
-                                    <input type="text" name="group_company[]" class="form-control group-company" value="{{$arrCamData->group_company[$key]}}" placeholder="Group Company" />
+                                    <input type="text" name="group_company_name[]" class="form-control group-company" value="{{$arrCamData->group_company[$key]}}" placeholder="Group Company" />
                                 </div>
                                 <div class="col-md-3">
                                     @if($loop->first)
-                                        <label for="txtPassword"><b>Existing Group Exposure </b></label>
+                                        <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
                                     @endif
-                                     <input type="text" name="existing_exposure[]" class="form-control number_format calTotalExposure" value="{{($existing_exposur_limit > 0) ? number_format($existing_exposur_limit):'' }}" placeholder="Existing Group Exposure" autocomplete="off"/>
+                                     <input type="text" name="sanction_limit[]" class="form-control number_format calTotalExposure" value="{{($existing_exposur_limit > 0) ? number_format($existing_exposur_limit):'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                                 </div>
-                                
+                                <div class="col-md-3">
+                                    @if($loop->first)
+                                        <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
+                                    @endif
+                                     <input type="text" name="outstanding_exposure[]" class="form-control number_format calTotalExposure" value="{{($existing_exposur_limit > 0) ? number_format($existing_exposur_limit):'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                </div>
                                 <div class="col-md-2 center">
                                  @if($loop->first)
                                     <i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i>
@@ -139,14 +153,18 @@
                             </div>
                             @endforeach
                         @else
-                            <div class="row">
+                            <div class="row mt-4 ">
                                 <div class="col-md-3">
                                 <label for="txtPassword"><b>Group Company</b></label>
-                                    <input type="text" name="group_company[]" class="form-control" value="" placeholder="Group Company"/>
+                                    <input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company"/>
                                 </div>
                                 <div class="col-md-3">
-                                <label for="txtPassword"><b>Existing Group Exposure </b></label>
-                                     <span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:41px -135px; "></span> <input type="text" name="existing_exposure[]" class="form-control number_format calTotalExposure" value="" placeholder="Existing Group Exposure" autocomplete="off"/>
+                                <label for="txtPassword"><b>Sanction Limit (In Mn) </b></label>
+                                     <span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:41px -135px; "></span> <input type="text" name="sanction_limit[]" class="form-control number_format calTotalExposure" value="" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                </div>
+                                <div class="col-md-3">
+                                <label for="txtPassword"><b>Outstanding Exposure (In Mn) </b></label>
+                                     <span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:41px -135px; "></span> <input type="text" name="outstanding_exposure[]" class="form-control number_format calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-2 ">
                                     <i class="fa fa-2x fa-plus-circle add-ptpq-block mt-4"></i>
@@ -157,16 +175,34 @@
 
                     <div class="col-md-12 mt-4 mb-3">    
                         <div class="row">
-                            <div class="col-md-3">
-                            <label for="txtPassword"><b>Proposed Group Exposure </b></label>
-                               <span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:41px -149px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? number_format($arrCamData->proposed_exposure) : (isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '')}}" />
+                            <div class="col-md-3 mt-4">
+                                <p><b>{{$arrBizData->biz_entity_name}}</b></p>
+                            </div>
+                            <div class="col-md-3 mt-4">
+                                     <input type="text" name="sanction_limit_cam" class="form-control number_format calTotalExposure" value="" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                            </div>
+                            <div class="col-md-3 mt-4">
+                                 <input type="text" name="outstanding_exposure_cam" class="form-control number_format calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-3">
-                            <label for="txtPassword"><b>Total Exposure </b></label>
-                                <span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:41px -81px; "></span>   <input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? number_format($arrCamData->total_exposure) : ''}}" />
+                             <label for="txtPassword"><b>Proposed Group Exposure (In Mn)</b></label>
+                              <input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? number_format($arrCamData->proposed_exposure) : ''}}" />
+                            </div>
+                            
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3 ">
+
+                                <label for="txtPassword"><b>Total Exposure </b></label>
+                                    <span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:41px -81px; "></span>   <input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? number_format($arrCamData->total_exposure) : ''}}" />
                             </div>
                         </div>
                     </div>
+
+
+
+
                 </div>  
 
                 <div class="data mt-4">
@@ -338,17 +374,19 @@
     });
 
     function calTotalExposure(){
-       var existing = 0;
-            $('input[name*=existing_exposure]').each(function(){
+       var outstandingExposure = 0;
+            $('input[name*=outstanding_exposure]').each(function(){
                 if($.isNumeric($(this).val().replace(/,/g, ''))){
-                    existing  = parseInt(existing) + parseInt($(this).val().replace(/,/g, ''));
+                    outstandingExposure  = parseInt(outstandingExposure) + parseInt($(this).val().replace(/,/g, ''));
     
                 }      
             });
         var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, ''));
-        existing = (!isNaN(existing))?existing:0;
+        var outstandingExposureCam =  parseInt($("input[name='outstanding_exposure_cam']").val().replace(/,/g, ''));
+        var outstandingExposure = (!isNaN(outstandingExposure))?outstandingExposure:0;
+        outstandingExposureCam = (!isNaN(outstandingExposureCam))?outstandingExposureCam:0;
         proposed = (!isNaN(proposed))?proposed:0;
-        $("input[name='total_exposure']").val(proposed+existing);
+        $("input[name='total_exposure']").val(proposed+outstandingExposure);
 
     }
 
@@ -359,10 +397,13 @@
     $(document).on('click', '.add-ptpq-block', function(){
     let ptpq_block = '<div class="row mt10">'+
             '<div class="col-md-3">'+
-                '<input type="text" name="group_company[]" class="form-control" value="" placeholder="Group Company" required>'+
+                '<input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company" required>'+
             '</div>'+
             '<div class="col-md-3">'+
-                '<input type="text" name="existing_exposure[]" class="form-control number_format calTotalExposure" value="" placeholder="Existing Group Exposure" required autocomplete="off">'+
+                '<input type="text" name="sanction_limit[]" class="form-control number_format" value="" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
+            '</div>'+
+            '<div class="col-md-3">'+
+                '<input type="text" name="outstanding_exposure[]" class="form-control number_format calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+
