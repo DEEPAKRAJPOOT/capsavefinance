@@ -3672,4 +3672,19 @@ if ($err) {
         return $data;
     }
 
+    /** 
+     * @Author: Rent Alpha
+     * @Date: 2020-02-18 10:49:29 
+     * @Desc:  
+     */    
+    public function getTableValByField(Request $request)
+    {
+        $tableName = $request->get('tableName');
+        $whereId = $request->get('whereId');
+        $fieldVal = $request->get('fieldVal');
+        $column = $request->get('column');
+        $getFieldVal= Helpers::getTableVal($tableName, $whereId, $fieldVal); 
+        $columnVal= ($getFieldVal) ? $getFieldVal->$column : false;
+        echo $columnVal;
+    }
 }

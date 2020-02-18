@@ -61,6 +61,13 @@ class LmsUser extends Authenticatable
         'created_by'
     ];
 
+      /////////////* get customer id   */////////////////
+      public static function  getLmsUser()
+      {
+           $result= self::with('user')->groupBy('user_id')->get();
+           return $result?$result:false;
+      }
+
     public function user()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\User', 'user_id');

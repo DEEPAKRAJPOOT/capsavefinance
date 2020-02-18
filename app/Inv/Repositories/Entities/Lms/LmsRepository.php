@@ -266,5 +266,15 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public static function getActiveGST(){        
         $result=GstTax::getActiveGST();
         return  $result? $result:false;
+       }
+
+       /** 
+        * @Author: Rent Alpha
+        * @Date: 2020-02-18 13:04:19 
+        * @Desc:  
+        */       
+       public function getAllLmsUser(){
+        $result=LmsUser::getLmsUser();
+        return  $result? $result:false;
        }            
 }
