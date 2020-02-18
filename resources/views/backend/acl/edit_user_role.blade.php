@@ -47,7 +47,9 @@
                 <label for="txtAnchorName">E-mail
                     <span class="mandatory">*</span>
                 </label>
-                <input type="email" name="email" id="email" value="{{$userData->email}}" class="form-control" tabindex="4" placeholder="Enter E-mail" required="">
+                <!-- <input type="email" name="email" id="email" value="{{$userData->email}}" class="form-control" tabindex="4" placeholder="Enter E-mail" required=""> -->
+                <span class="form-control" readonly>{{$userData->email}}</span>
+               <input type="hidden" name="email"  value="{{$userData->email}}">
             </div>
         </div>
     </div>
@@ -76,21 +78,7 @@
             </div>                      
         </div>	-->
     </div>
-    <div class="row">
-        <div class="col-6">
-            <div class="form-group">
-                <label for="txtMobile">Is Active
-                    <span class="mandatory">*</span>
-                </label>
-                {!!
-                Form::select('is_active',
-                [''=>'Please select','0'=> 'In Active','1'=>'Active'],
-                $userData->is_active,
-                array('id' => 'is_active',
-                'class'=>'form-control', 'tabindex'=>'5'))
-                !!}
-            </div>
-        </div>
+    <div class="row">      
         <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Role
@@ -101,12 +89,10 @@
                 [''=>'Select Role']+$rolesList,
                 $roleData->role_id,
                 array('id' => 'role',
-                'class'=>'form-control', 'tabindex'=>'6'))
+                'class'=>'form-control', 'tabindex'=>'5'))
                 !!}
             </div>
         </div>
-    </div>
-    <div class="row">
         <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Reporting Manager                    
@@ -116,11 +102,12 @@
                 [''=>'Select Reporting Manager']+$parentUserData,
                 $userData->parent_id,
                 array('id' => 'parent_user_id',
-                'class'=>'form-control', 'tabindex'=>'7'))
+                'class'=>'form-control', 'tabindex'=>'6'))
                 !!}
             </div>
         </div>
-
+    </div>
+    <div class="row">
             @php 
             if($roleData->role_id == 8) {
                 $disp = 'block;'; 
@@ -159,14 +146,11 @@
                     [
                     'class' => 'form-control',                
                     'id' => 'state_id',
-                     'tabindex'=>'8'
+                     'tabindex'=>'7'
                     ])
                 !!}                        
             </div>
-        </div>         
-    </div>
-    
-    <div class="row">
+        </div>
         <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod"> City
@@ -179,11 +163,28 @@
                     [
                     'class' => 'form-control',                
                     'id' => 'city_id', 
-                    'tabindex'=>'9'
+                    'tabindex'=>'8'
                     ])
                 !!}                        
             </div>
-        </div>    
+        </div>             
+    </div>
+    
+    <div class="row">
+    <div class="col-6">
+            <div class="form-group">
+                <label for="txtMobile">Is Active
+                    <span class="mandatory">*</span>
+                </label>
+                {!!
+                Form::select('is_active',
+                [''=>'Please select','0'=> 'In Active','1'=>'Active'],
+                $userData->is_active,
+                array('id' => 'is_active',
+                'class'=>'form-control', 'tabindex'=>'9'))
+                !!}
+            </div>
+        </div>
     </div>     
 
     <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>  
