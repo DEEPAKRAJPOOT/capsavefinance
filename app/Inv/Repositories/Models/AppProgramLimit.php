@@ -7,6 +7,7 @@ use Auth;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use Illuminate\Database\Eloquent\Builder;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
@@ -148,7 +149,7 @@ class AppProgramLimit extends BaseModel {
       public static function getLimitProgram($aid)
      {
      
-         return AppProgramLimit::whereHas('supplyOffers')->with('program')->where(['product_id' =>1,'anchor_id' =>$aid])->groupBy('prgm_id')->get();
+         return AppProgramLimit::whereHas('supplyOffers')->with(['program' => function($query) { $query->where('status', 1 ); }])->where(['product_id' =>1,'anchor_id' =>$aid])->groupBy('prgm_id')->get();
      }
      
     public static function getLimitAnchor($aid){
