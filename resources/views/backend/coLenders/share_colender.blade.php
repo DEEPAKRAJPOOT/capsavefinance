@@ -13,7 +13,7 @@
                  <span class="mandatory">*</span>
                  </label>
                  <select name="co_lender_id" id="co_lender_id" class="form-control">
-                    <option>Select Co-lender</option>
+                    <option value="">Select Co-lender</option>
                     @foreach($coLenders as $key=>$coLender)
                       <option value="{{$coLender->co_lender_id}}" {{(old('capsave_percent') == $coLender->co_lender_id)? 'selected': ''}}>{{$coLender->f_name.'('.$coLender->comp_name.')'}}</option>
                     @endforeach
@@ -30,7 +30,7 @@
                <label for="txtEmail">Capsave Share (%)
                <span class="mandatory">*</span>
                </label>
-               <input type="test" name="capsave_percent" id="capsave_percent" value="{{old('capsave_percent')}}" class="form-control" placeholder="Capsave Share (%)" maxlength="5">
+               <input type="test" name="capsave_percent" id="capsave_percent" value="{{old('capsave_percent')}}" class="form-control share_percent" placeholder="Capsave Share (%)" maxlength="5">
                @error('capsave_percent')
                   <span class="error">{{ $message }}</span>
                @enderror
@@ -43,7 +43,7 @@
                <label for="txtEmail">Co-lender Share (%)
                <span class="mandatory">*</span>
                </label>
-               <input type="test" name="co_lender_percent" id="co_lender_percent" value="{{old('co_lender_percent')}}" class="form-control" placeholder="Co-lender Share (%)" maxlength="5">
+               <input type="test" name="co_lender_percent" id="co_lender_percent" value="{{old('co_lender_percent')}}" class="form-control share_percent" placeholder="Co-lender Share (%)" maxlength="5">
                @error('co_lender_percent')
                   <span class="error">{{ $message }}</span>
                @enderror
@@ -99,8 +99,21 @@
 
         $("#shareColenderForm button[type=submit]").click(function(){
             if($('#shareColenderForm').valid()){
+              unsetError('input[name=co_lender_percent]');
+              let total = 0;
+              $('.share_percent').each(function (k, v){
+                if($(this).val() != ''){
+                  total += parseFloat($(this).val());
+                }
+              });
+           
+              if(total > 100){
+                setError('input[name=co_lender_percent]', 'Total shared(%) should  not exceed more than 100%');
+                return false;
+              }else{
                 $('#shareColenderForm').submit();
                 $("#shareColenderForm button[type=submit]").attr("disabled","disabled");
+              }
             }  
         });
     });
