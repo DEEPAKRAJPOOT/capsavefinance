@@ -40,13 +40,15 @@ use App\Libraries\Pdf;
 use App\Inv\Repositories\Models\UserAppDoc;
 use PDF as DPDF;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
+use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
-
 
 class CamController extends Controller
 {
     use CamTrait;
-    
+    use CommonTrait;
+
     protected $download_xlsx = TRUE;
     protected $appRepo;
     protected $userRepo;
@@ -257,6 +259,8 @@ class CamController extends Controller
 
     public function reviewerSummary(Request $request){
       $offerPTPQ = '';
+      $preCondArr = [];
+      $postCondArr = [];
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
       $leaseOfferData = $facilityTypeList = array();
@@ -269,14 +273,30 @@ class CamController extends Controller
       $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
       $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
       $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
+      if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
+        $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
+      }
+      if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+        $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                        ->where('is_active', 1)->get();
+        $dataPrePostCond = $dataPrePostCond ? $dataPrePostCond->toArray() : [];
+        if(!empty($dataPrePostCond)) {
+          $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCond"));
+          $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
+        }
+      } 
+
+
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
         'appId'=> $appId,
         'leaseOfferData'=> $leaseOfferData,
         'reviewerSummaryData'=> $reviewerSummaryData,
+        'offerPTPQ' => $offerPTPQ,
+        'preCondArr' => $preCondArr,
+        'postCondArr' => $postCondArr,
         'arrStaticData' => $arrStaticData,
-        'facilityTypeList' => $facilityTypeList,
-        
+        'facilityTypeList' => $facilityTypeList
       ]);
     }
 
@@ -288,6 +308,7 @@ class CamController extends Controller
         if(isset($arrData['cam_reviewer_summary_id']) && $arrData['cam_reviewer_summary_id']){
               $result = CamReviewerSummary::updateData($arrData, $userId);
               if($result){
+                    $this->savePrePostConditions($request, $arrData['cam_reviewer_summary_id']);
                     Session::flash('message',trans('Reviewer Summary updated successfully'));
               }else{
                     Session::flash('message',trans('Reviewer Summary not updated'));
@@ -295,6 +316,7 @@ class CamController extends Controller
         }else{
             $result = CamReviewerSummary::createData($arrData, $userId);
             if($result){
+                    $this->savePrePostConditions($request, $result->cam_reviewer_summary_id);
                     Session::flash('message',trans('Reviewer Summary saved successfully'));
               }else{
                     Session::flash('message',trans('Reviewer Summary not saved'));

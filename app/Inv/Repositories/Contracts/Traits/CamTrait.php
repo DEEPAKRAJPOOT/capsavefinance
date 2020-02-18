@@ -16,12 +16,14 @@ use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\CamReviewerSummary;
-
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
 
 trait CamTrait
 {
     protected function getCamReportData(Request $request){
         try{
+            $preCondArr = [];
+            $postCondArr = [];
             $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
             $arrRequest['app_id'] = $appId = $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
@@ -90,6 +92,16 @@ trait CamTrait
                      $arrCamData->total_exposure =  format_number($arrCamData->total_exposure/1000000);
                 }
 
+                if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+                    $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                                    ->where('is_active', 1)->get();
+                    $dataPrePostCond = $dataPrePostCond ? $dataPrePostCond->toArray() : [];
+                    if(!empty($dataPrePostCond)) {
+                      $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCond"));
+                      $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
+                    }
+                } 
+                
                 return [
                     'arrCamData' =>$arrCamData,
                     'arrBizData' => $arrBizData, 
@@ -108,10 +120,58 @@ trait CamTrait
                     'arrStaticData' => $arrStaticData,
                     'approveStatus' => $approveStatus,
                     'currStageCode' => $currStageCode,
-                    'facilityTypeList'=>$facilityTypeList,
+                    'preCondArr' => $preCondArr,
+                    'postCondArr' => $postCondArr,
+                    'facilityTypeList'=>$facilityTypeList
                 ];
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
+    }
+
+    protected function savePrePostConditions($request, $cam_reviewer_summary_id)
+    {
+        $updateData = [];
+        $updateData['is_active'] = 0;
+        $updateData['updated_by'] = Auth::user()->user_id;
+        $updPrePost = CamReviewSummPrePost::where('cam_reviewer_summary_id', $cam_reviewer_summary_id)
+                        ->whereIn('cond_type', [1,2]);
+        $updPrePost->update($updateData);
+        $arrData =[];
+        if(isset($request->pre_cond)) {
+            foreach($request->pre_cond as $key=>$val){
+                if($request->pre_cond[$key] != null) {
+                    $arrData[$key]['cam_reviewer_summary_id'] = $cam_reviewer_summary_id;
+                    $arrData[$key]['cond'] = $request->pre_cond[$key];
+                    $arrData[$key]['timeline'] = $request->pre_timeline[$key];
+                    $arrData[$key]['cond_type'] = 1;
+                    $arrData[$key]['is_active'] = 1;
+                    $arrData[$key]['created_at'] = \Carbon\Carbon::now();
+                    $arrData[$key]['created_by'] = Auth::user()->user_id;
+                }
+            }  
+            CamReviewSummPrePost::insert($arrData);          
+        }
+
+        $arrData =[];
+        if(isset($request->post_cond)) {
+          foreach($request->post_cond as $key=>$val){
+              if($request->post_cond[$key] != null) {
+                  $arrData[$key]['cam_reviewer_summary_id'] = $cam_reviewer_summary_id;
+                  $arrData[$key]['cond'] = $request->post_cond[$key];
+                  $arrData[$key]['timeline'] = $request->post_timeline[$key];
+                  $arrData[$key]['cond_type'] = 2;
+                  $arrData[$key]['is_active'] = 1;
+                  $arrData[$key]['created_at'] = \Carbon\Carbon::now();
+                  $arrData[$key]['created_by'] = Auth::user()->user_id;
+              }
+          }    
+          CamReviewSummPrePost::insert($arrData);        
+        }
+
+        // if(isset($arrData) && !empty($arrData)) {
+        //   CamReviewSummPrePost::insert($arrData);
+        // }
+        
     }
 }

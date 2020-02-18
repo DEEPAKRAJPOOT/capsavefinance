@@ -15,7 +15,7 @@
       @endcan
 
         <li>
-            <a href="{{route('cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'cam_report' ? 'active' : ''}}">CAM REPORT</a>
+            <a href="{{route('cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'cam_report' ? 'active' : ''}}">CAM Report</a>
         </li>
 
 

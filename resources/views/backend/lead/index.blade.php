@@ -98,7 +98,11 @@
 {!!Helpers::makeIframePopup('editLead','Edit Lead Detail', 'modal-md')!!}
 {!!Helpers::makeIframePopup('createLeadForm','Create Lead', 'modal-lg')!!}
 @endsection
-
+@section('additional_css')
+<style>
+#leadMaster_wrapper  #leadMaster_info{margin: -40px 0px 0px 164px;}
+</style>
+@endsection
 @section('jscript')
 <script>
 
