@@ -157,7 +157,7 @@
                         @endif
                     </div>
 
-                    <div class="col-md-12">    
+                    <div class="col-md-12 mt-4 mb-3">    
                         <div class="row">
                             <div class="col-md-3">
                             <label for="txtPassword"><b>Proposed Group Exposure </b></label>
