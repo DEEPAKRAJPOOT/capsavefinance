@@ -2602,27 +2602,44 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'ben_name',
                     function ($customer) {
-                        return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+                        if ($customer->user->is_buyer == 1) {
+                            return (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
+                        } else {
+                            return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+                        }
                     }
                 )     
                 ->editColumn(
                     'ben_bank_name',
                         function ($customer) {
-                        return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
+                        if ($customer->user->is_buyer == 1) {
+                            return (isset($customer->user->anchor_bank_details->bank->bank_name)) ? $customer->user->anchor_bank_details->bank->bank_name : '';
+                        } else {
+                            return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
+                        }
+                        
                     }
                 )
                 ->editColumn(
                     'ben_ifsc',
                         function ($customer) {
-                        $email = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
-                        return $email;
+                        if ($customer->user->is_buyer == 1) {
+                            $ifsc_code = (isset($customer->user->anchor_bank_details->ifsc_code)) ? $customer->user->anchor_bank_details->ifsc_code : '';
+                        } else {
+                            $ifsc_code = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
+                        }
+                        return $ifsc_code;
                     
                 })
                 ->editColumn(
                     'ben_account_no',
                         function ($customer) {
-                        $mobile_no = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
-                        return $mobile_no;
+                        if ($customer->user->is_buyer == 1) {
+                            $benAcc = (isset($customer->user->anchor_bank_details->acc_no)) ? $customer->user->anchor_bank_details->acc_no : '';
+                        } else {
+                            $benAcc = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
+                        }
+                        return $benAcc;
                     
                 })
                 ->editColumn(

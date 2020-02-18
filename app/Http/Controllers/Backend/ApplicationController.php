@@ -789,17 +789,27 @@ class ApplicationController extends Controller
 	                  	$virtualId = 'CAPVA'.$capId;
               			$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
 
-              			$prcsAmt = $this->appRepo->getPrcsAmt($app_id);
+              			$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
 						foreach ($prcsAmt->offer as $key => $offer) {
               				// $tranType = 4 for processing acc. to mst_trans_type table
-							$amt = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
-							$prcsTrnsData = $this->createTransactionData(['user_id' => $user_id], $amt, null, 4);
-							$createTransaction = $this->appRepo->saveTransaction($prcsTrnsData);
+							$pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
+							$pfWGst = round((($pf*18)/100),2);
+
+							$pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
+							$pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
+
+							$pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
+							$pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
 
 							// $tranType = 20 for document fee acc. to mst_trans_type table
-							$documentFee = $offer->document_fee;
-							$data = $this->createTransactionData(['user_id' => $user_id], $documentFee, null, 20);
-							$createTransaction = $this->appRepo->saveTransaction($data);
+							$df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
+							$dfWGst = round((($df*18)/100),2);
+
+							$dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
+							$createTransaction = $this->appRepo->saveTransaction($dfDebitData);
+
+							$dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
+							$createTransaction = $this->appRepo->saveTransaction($dfCreditData);
 						}
                   	}
                 }

@@ -1120,6 +1120,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 				->with('program')
 				->whereHas('appLimit.app.acceptedOffer')
 				->whereHas('offer')
+                ->where('product_id', 1)
 				->get();
 	}   
 
@@ -1357,7 +1358,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppProgramOffer::getTotalByPrgmLimitId($appPrgmLimitId);
     }
 
-    public function getPrcsAmt($appId){
+    public function getPrgmLimitByAppId($appId){
         return AppProgramLimit::where([
                 'app_id' => $appId, 
                 'product_id' => 1
@@ -1389,6 +1390,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return LmsUser::where('user_id', $userId)
                 ->pluck('virtual_acc_id')->first();
+    }
+
+    /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getUserTypeByUserId($userId)
+    {
+        return User::where('user_id', $userId)
+                ->pluck('is_buyer')->first();
     } 
     
 }

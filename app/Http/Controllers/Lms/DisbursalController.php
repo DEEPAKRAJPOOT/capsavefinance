@@ -178,20 +178,16 @@ class DisbursalController extends Controller
 			if ($disburseAmount) {
 				if($disburseType == 2) {
 					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-					$transactionData = $this->createTransactionData($disburseRequestData, $totalFunded, $transId, 16);
+					$transactionData = $this->createTransactionData($disburseRequestData->user_id, ['amount' => $totalFunded], $transId, 16);
 					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
-					// $tranType = 4 for processing acc. to mst_trans_type table
-					// $prcsAmt = 1005;
 					
-					// $prcsTrnsData = $this->createTransactionData($disburseRequestData, $prcsAmt, $transId, 4);
-					// $createTransaction = $this->lmsRepo->saveTransaction($prcsTrnsData);
-
 					// interest transaction $tranType = 9 for interest acc. to mst_trans_type table
 					$intrstAmt = round($totalInterest,2);
-					$intrstTrnsData = $this->createTransactionData($disburseRequestData, $intrstAmt, $transId, 9);
+					$intrstTrnsData = $this->createTransactionData($disburseRequestData->user_id, ['amount' => $intrstAmt], $transId, 9);
 					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
-					$intrstTrnsData = $this->createTransactionData($disburseRequestData, $intrstAmt, $transId, 9, 1);
+					
+					$intrstTrnsData = $this->createTransactionData($disburseRequestData->user_id, ['amount' => $intrstAmt], $transId, 9, 1);
 					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
 				}
