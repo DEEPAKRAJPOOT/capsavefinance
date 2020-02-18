@@ -132,7 +132,7 @@ class Transactions extends BaseModel {
     
     function disburse()
     {
-       return $this->belongsTo('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
+       return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
     }      
    
      

@@ -36,7 +36,7 @@ trait LmsTrait
         $currentDate = date('Y-m-d');
                 
         $disbursalWhereCond = [];
-        $disbursalWhereCond['status_id']  = [12];
+        $disbursalWhereCond['status_id']  = [12,13];
         //$disbursalWhereCond['int_accrual_start_dt']  = $currentDate;
         $disbursalData = $this->lmsRepo->getDisbursalRequests($disbursalWhereCond);
         $returnData = [];
@@ -78,7 +78,7 @@ trait LmsTrait
                 $intAccrualData = [];
                 $intAccrualData['disbursal_id'] = $disbursalId;
                 $intAccrualData['interest_date'] = $intAccrualDt;
-                $intAccrualData['principal_amount'] = $disburse->principal_amount;
+                $intAccrualData['principal_amount'] = $balancePrincipalAmt;
                 $intAccrualData['accrued_interest'] = round($interest, 2);
                 $intAccrualData['interest_rate'] = $disburse->interest_rate;
                 
@@ -211,7 +211,6 @@ trait LmsTrait
             ->get();
 
             $settledInvoice = [];
-            dd($userTransDetails);
             foreach ($userTransDetails as $UTDkey => $UTDetail) {
                 foreach ($UTDetail->disburse as $UIDkey => $UIDetail) {
                    $invoiceRepaymentTrail = [];
@@ -230,14 +229,17 @@ trait LmsTrait
                    $UIDetail->inv_due_date;
                    $UTDetail->trans_date;
 
-                   $totalDueAmt = $UIDetail->principal_amount+$UIDetail->interests->sum('accrued_interest');
-                   $totalRepaidAmt = $UTDetail->amount+$UIDetail->total_repaid_amt;
-                   dump($totalRepaidAmt, $totalDueAmt);
-                   if($totalRepaidAmt-$totalDueAmt>=0){
-                        $UIDetail->update(['status_id'=>15,'total_repaid_amt'=>$totalRepaidAmt]);
-                        InvoiceRepaymentTrail::create($invoiceRepaymentTrail);
-                        unset($userInvoiceDetails[$UIDkey]);                       
-                   }
+                   $totalDueAmtWithInt = $UIDetail->principal_amount+$UIDetail->interests->sum('accrued_interest');
+                   $totalPaidAmt = $UTDetail->amount+$UIDetail->total_repaid_amt;
+                   
+                   $totalBalance = $totalPaidAmt - $totalDueAmtWithInt; 
+                    
+                   $status = ($totalBalance >= 0) ? 15 : 13;
+
+                    
+                   $UIDetail->update(['status_id'=> $status ,'total_repaid_amt'=>$UTDetail->amount]);
+                   InvoiceRepaymentTrail::create($invoiceRepaymentTrail);                      
+                
 
                 //    $balRepaymentAmt = $UTDetail->amount - ($UIDetail->principal_amount+$UIDetail->interests->sum('accrued_interest'));
                 //     dump($balRepaymentAmt, $UTDetail->amount, $UIDetail->principal_amount, $UIDetail->interests->sum('accrued_interest'));
