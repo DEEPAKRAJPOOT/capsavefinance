@@ -110,8 +110,6 @@
                     </tbody>
                 </table>
 
-
-
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Group Company Exposure</h2>
                     <div class="col-md-12" id="ptpq-block">
@@ -164,31 +162,12 @@
                                <span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:41px -149px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? number_format($arrCamData->proposed_exposure) : (isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '')}}" />
                             </div>
                             <div class="col-md-3">
-                            <label for="txtPassword"><b>Total Exposure   </b></label>
-                            <span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:41px -81px; "></span>   <input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? number_format($arrCamData->total_exposure) : ''}}" />
+                            <label for="txtPassword"><b>Total Exposure </b></label>
+                                <span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:41px -81px; "></span>   <input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? number_format($arrCamData->total_exposure) : ''}}" />
                             </div>
                         </div>
                     </div>
-
-
                 </div>  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Rating Rationale</h2>
@@ -196,9 +175,6 @@
                         <textarea class="form-control" id="rating_rational" name="rating_rational" rows="3" spellcheck="false" >{{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}}</textarea>
                     </div>
                 </div>
-
-
-
 
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Terms Of Facility</h2>
@@ -372,7 +348,8 @@
         var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, ''));
         existing = (!isNaN(existing))?existing:0;
         proposed = (!isNaN(proposed))?proposed:0;
-        $("input[name='total_exposure']").val(proposed+existing);   
+        $("input[name='total_exposure']").val(proposed+existing);
+
     }
 
     $(document).on('input', 'input.calTotalExposure', function(){
