@@ -186,7 +186,7 @@ class DisbursalController extends Controller
 					$intrstAmt = round($totalInterest,2);
 					$intrstTrnsData = $this->createTransactionData($disburseRequestData->user_id, ['amount' => $intrstAmt], $transId, 9);
 					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
-					
+
 					$intrstTrnsData = $this->createTransactionData($disburseRequestData->user_id, ['amount' => $intrstAmt], $transId, 9, 1);
 					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
@@ -273,4 +273,36 @@ class DisbursalController extends Controller
 
 		return $requestData;
     }
+
+	public function uploadPfDf($user_id, $appId) {
+	    $prcsAmt = $this->appRepo->getPrgmLimitByAppId($appId);
+	    // dd($prcsAmt);
+	    if(isset($prcsAmt->offer)){
+
+			foreach ($prcsAmt->offer as $key => $offer) {
+					// $tranType = 4 for processing acc. to mst_trans_type table
+				$pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
+				$pfWGst = round((($pf*18)/100),2);
+
+				$pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
+				$pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
+
+				$pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
+				$pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
+
+				// $tranType = 20 for document fee acc. to mst_trans_type table
+				$df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
+				$dfWGst = round((($df*18)/100),2);
+
+				$dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
+				$createTransaction = $this->appRepo->saveTransaction($dfDebitData);
+
+				$dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
+				$createTransaction = $this->appRepo->saveTransaction($dfCreditData);
+			}
+	    } else {
+	    	die("No offer");
+	    }
+		die("Done !!!");
+	}
 }
