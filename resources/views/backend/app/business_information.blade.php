@@ -50,17 +50,23 @@
 								</div>
 								<div class="col-md-4">
 									<div class="form-group password-input">
-										<label for="txtPassword">GST Number
-											<span class="mandatory">*</span>
-										</label>
-										<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
-										<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
-											</select>
-											<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
-											@error('biz_gst_number')
-								                <span class="text-danger error">{{ $message }}</span>
-								            @enderror
-										</select>
+										<span class="span_gst_select">
+											<label for="txtPassword">GST Number
+												<span class="mandatory">*</span>
+											</label>
+											<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
+											<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
+												</select>
+												<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
+												@error('biz_gst_number')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+										</span>
+										<input type="hidden" name="is_gst_manual" value="0"/>
+										<span class="span_gst_text" style="display: none">
+											<label for="txtPassword">GST Number</label>
+											<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
+										</span>
 									</div>
 								</div>
 								<div class="col-md-4">

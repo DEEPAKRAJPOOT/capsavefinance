@@ -57,20 +57,29 @@
 							</div>
 							<div class="col-md-4">
 								<div class="form-group password-input">
-									<label for="txtPassword">GST Number
-										<span class="mandatory">*</span>
-									</label>
-									<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
-									<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
-										<option value="">Select GST Number</option>
-										@forelse($business_info->gsts as $gst_key => $gst_value)
-											<option value="{{$gst_value->pan_gst_hash}}" {{(old('biz_gst_number', Helpers::customIsset($business_info->gst, 'pan_gst_hash')) == $gst_value->pan_gst_hash)? 'selected':''}}>{{$gst_value->pan_gst_hash}}</option>
-										@empty
-										@endforelse
-									</select>
-									@error('biz_gst_number')
-						                <span class="text-danger error">{{ $message }}</span>
-						            @enderror
+
+									<span class="span_gst_select" style="display: {{$business_info->is_gst_manual!=1 ? 'block' : 'none' }}">
+										<label for="txtPassword">GST Number
+											<span class="mandatory">*</span>
+										</label>
+										<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
+										<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
+											<option value="">Select GST Number</option>
+											@forelse($business_info->gsts as $gst_key => $gst_value)
+												<option value="{{$gst_value->pan_gst_hash}}" {{(old('biz_gst_number', Helpers::customIsset($business_info->gst, 'pan_gst_hash')) == $gst_value->pan_gst_hash)? 'selected':''}}>{{$gst_value->pan_gst_hash}}</option>
+											@empty
+											@endforelse
+										</select>
+										@error('biz_gst_number')
+											<span class="text-danger error">{{ $message }}</span>
+										@enderror
+									</span>
+									<input type="hidden" name="is_gst_manual" value="{{old('is_gst_manual', $business_info->is_gst_manual)}}"/>
+									<span class="span_gst_text" style="display: {{$business_info->is_gst_manual==1 ? 'block' : 'none' }}">
+										<label for="txtPassword">GST Number</label>
+										<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text', $business_info->gst['pan_gst_hash'])}}" class="form-control pan-validate" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
+									</span>
+									
 								</div>
 							</div>
 							<div class="col-md-4">

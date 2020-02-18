@@ -245,6 +245,13 @@ class Business extends BaseModel
         'updated_by'=>$userId,
         ]);
 
+        if(isset($attributes['is_gst_manual']) && $attributes['is_gst_manual']=='1'){
+            if(isset($attributes['biz_gst_number']) && !empty($attributes['biz_gst_number'])){
+                $bizpangst = BizPanGst::where(['biz_id'=>$bizId,'type'=>'2', 'parent_pan_gst_id'=>'0']);
+                $bizpangst ->update(['pan_gst_hash'=>$attributes['biz_gst_number']]);                
+            }            
+        }
+
         if(!empty($attributes->pan_api_res)){
             BizPanGst::where(['biz_id'=>$bizId,'biz_owner_id'=>null])->delete();
             $bpga = BizPanGstApi::create([
