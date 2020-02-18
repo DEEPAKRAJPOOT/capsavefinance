@@ -12,6 +12,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
         Route::group(['prefix' => 'lms'], function () {
         	
+            Route::get('/upload-pf-df/{userId}/{appId}', [
+                'as' => 'lms_get_customer_list',
+                'uses' => 'Lms\DisbursalController@uploadPfDf'
+            ]);
+
             Route::get('/', [
                 'as' => 'lms_get_customer_list',
                 'uses' => 'Lms\CustomerController@list'

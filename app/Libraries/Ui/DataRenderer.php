@@ -316,8 +316,8 @@ class DataRenderer implements DataProviderInterface
                             if(Helpers::checkPermission('send_case_confirmBox')){
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
                                 $roleData = Helpers::getUserRole();                                
-                                if ($currentStage && $currentStage->order_no <= 15 ) {
-                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                if ($currentStage && $currentStage->order_no <= 16 ) {
+                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                                 }
                                 
                                 if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
@@ -2632,27 +2632,44 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'ben_name',
                     function ($customer) {
-                        return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+                        if ($customer->user->is_buyer == 1) {
+                            return (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
+                        } else {
+                            return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+                        }
                     }
                 )     
                 ->editColumn(
                     'ben_bank_name',
                         function ($customer) {
-                        return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
+                        if ($customer->user->is_buyer == 1) {
+                            return (isset($customer->user->anchor_bank_details->bank->bank_name)) ? $customer->user->anchor_bank_details->bank->bank_name : '';
+                        } else {
+                            return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
+                        }
+                        
                     }
                 )
                 ->editColumn(
                     'ben_ifsc',
                         function ($customer) {
-                        $email = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
-                        return $email;
+                        if ($customer->user->is_buyer == 1) {
+                            $ifsc_code = (isset($customer->user->anchor_bank_details->ifsc_code)) ? $customer->user->anchor_bank_details->ifsc_code : '';
+                        } else {
+                            $ifsc_code = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
+                        }
+                        return $ifsc_code;
                     
                 })
                 ->editColumn(
                     'ben_account_no',
                         function ($customer) {
-                        $mobile_no = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
-                        return $mobile_no;
+                        if ($customer->user->is_buyer == 1) {
+                            $benAcc = (isset($customer->user->anchor_bank_details->acc_no)) ? $customer->user->anchor_bank_details->acc_no : '';
+                        } else {
+                            $benAcc = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
+                        }
+                        return $benAcc;
                     
                 })
                 ->editColumn(

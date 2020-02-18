@@ -366,22 +366,22 @@ trait LmsTrait
      * @param array $data
      * @return mixed
      */
-    protected function createTransactionData($disburseData = [], $amount= 0, $transId = null, $transType = 0, $entryType = 0)
+    protected function createTransactionData($userId = null, $data = 0, $transId = null, $transType = 0, $entryType = 0)
     {
         /**
         * disburseType = 1 for online and 2 for manually
         */
         $transactionData = [];
-        // dd($amount);
+        // dd($data);
         $transactionData['gl_flag'] = 1;
         $transactionData['soa_flag'] = 1;
-        $transactionData['user_id'] = $disburseData['user_id'] ?? null;
-        $transactionData['virtual_acc_id'] = $disburseData['user_id'] ? $this->lmsRepo->getVirtualAccIdByUserId($disburseData['user_id']) : null;
+        $transactionData['user_id'] = $userId ?? null;
+        $transactionData['virtual_acc_id'] = $userId ? $this->appRepo->getVirtualAccIdByUserId($userId) : null;
         $transactionData['trans_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $transactionData['trans_type'] = $transType ?? 0;
-        $transactionData['pay_from'] = null;
-        $transactionData['amount'] = $amount ?? 0;
-        $transactionData['gst'] = 0;
+        $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
+        $transactionData['amount'] = $data['amount'] ?? 0;
+        $transactionData['gst'] = $data['gst'] ?? 0;
         $transactionData['cgst'] = 0;            
         $transactionData['sgst'] = 0;
         $transactionData['igst'] = 0;
@@ -405,7 +405,7 @@ trait LmsTrait
      * @return float
      */
     protected function getOverDueInterest($invoice_id)
-    {
+    {   
         $disbData = $this->lmsRepo->getDisbursalRequests(['invoice_id' => $invoice_id]);        
         if (!isset($disbData[0])) return null;
         

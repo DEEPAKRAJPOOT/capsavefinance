@@ -688,4 +688,13 @@ class User extends Authenticatable
         return self::where(['user_id' => $uid])->first();
     }
     
+    public function bank_details()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_active' => 1, 'is_default' => 1]);
+    }
+
+    public function anchor_bank_details()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'anchor_id', 'anchor_id')->where(['is_active' => 1]);
+    }
 }
