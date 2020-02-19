@@ -108,7 +108,7 @@ class PaymentController extends Controller {
           
        }
       
-            $utr  ="";
+            $utr ="";
             $check  ="";
             $unr  ="";
             if($request['payment_type']==1)
