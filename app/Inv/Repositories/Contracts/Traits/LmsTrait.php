@@ -414,7 +414,7 @@ trait LmsTrait
                 $this->lmsRepo->saveDisbursalRequest(['surplus_amount'=>($totalRepaidAmount>0)?$totalRepaidAmount:NULL], ['disbursal_id' => $invoice[$key]['disbursal_id']]);
             }
 
-            dd($invoice, 'Surplus='.$totalRepaidAmount);
+            //dd($invoice, 'Surplus='.$totalRepaidAmount);
            
         }
     }
