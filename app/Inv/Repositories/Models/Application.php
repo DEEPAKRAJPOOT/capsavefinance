@@ -91,7 +91,7 @@ class Application extends BaseModel
 
     public function acceptedOffer()
     {
-        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1]);
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1])->whereHas('invPL');
     }
 
     public function invoices()
