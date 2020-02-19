@@ -159,6 +159,7 @@ class PaymentController extends Controller {
         $res = $this->invRepo->saveRepaymentTrans($tran);
         if( $res)
         {
+          $this->lmsRepo->paySettlement( $request['customer_id']);
           Session::flash('message',trans('backend_messages.add_payment_manual'));
           return redirect()->route('payment_list');
              //Session::flash('message', 'Bulk amount has been saved');
