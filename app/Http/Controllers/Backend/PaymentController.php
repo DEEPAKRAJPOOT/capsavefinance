@@ -12,6 +12,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
+use  App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use Session;
 use Helpers;
 use DB;
@@ -22,6 +23,7 @@ class PaymentController extends Controller {
 
     protected $invRepo;
     protected $docRepo;
+    use LmsTrait;
     public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
@@ -163,7 +165,9 @@ class PaymentController extends Controller {
         $res = $this->invRepo->saveRepaymentTrans($tran);
         if( $res)
         {
-          $this->lmsRepo->paySettlement( $request['customer_id']);
+          if($request['trans_type']==17){
+            $this->paySettlement( $request['customer_id']);
+            }
           Session::flash('message',trans('backend_messages.add_payment_manual'));
           return redirect()->route('payment_list');
              //Session::flash('message', 'Bulk amount has been saved');
