@@ -58,6 +58,7 @@ class Disbursal extends BaseModel {
         'inv_due_date',
         'tenor_days',
         'interest_rate',
+        'total_repaid_amt',
         'total_interest',
         'margin',
         'disburse_amount',
@@ -80,6 +81,24 @@ class Disbursal extends BaseModel {
         'updated_at',
         'updated_by',
     ];
+
+    /**
+     * Get Interest Accrual 
+     * 
+     * @return type
+     */
+    public function interests() { 
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual', 'disbursal_id', 'disbursal_id'); 
+    }
+
+    /**
+     * Get App Program Offer 
+     * 
+     * @return type
+     */
+    public function offer() { 
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id', 'prgm_offer_id'); 
+    }
 
     /**
      * Save or Update Disbursal Request

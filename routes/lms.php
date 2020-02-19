@@ -107,6 +107,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\ChargeController@editLmsCharges'
             ]);  
         
+            Route::get('payment-settlement',[
+                'as' => 'lms-payment-settlement',
+                'uses' => 'Lms\DisbursalController@processInvoiceSettlement' 
+            ]);
         });//end of application
 
         // Business address
