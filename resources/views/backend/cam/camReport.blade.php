@@ -137,39 +137,19 @@
                </tr>
             </thead>
             <tbody>
-               <tr role="row" class="odd">
-                  <td class="">
-                     <p>{{isset($reviewerSummaryData->cond_nach) ? $reviewerSummaryData->cond_nach : ''}}</p> 
-                     
-                  </td>
-                  <td class="">
-                     <p>{{isset($reviewerSummaryData->time_nach) ? $reviewerSummaryData->time_nach : ''}}</p>
-                  </td>
-               </tr>
-               <tr role="row" class="odd">
-                  <td class="">
-                     <p>{{isset($reviewerSummaryData->cond_insp_asset) ? $reviewerSummaryData->cond_insp_asset : ''}} </p>
-                  </td>
-                  <td class="">
-                     <p> {{isset($reviewerSummaryData->time_insp_asset) ? $reviewerSummaryData->time_insp_asset : ''}} </p>
-                  </td>
-               </tr>
-               <tr role="row" class="odd">
-                  <td class="">
-                     <p>{{isset($reviewerSummaryData->cond_insu_pol_cfpl) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}} </p>
-                  </td>
-                  <td class="">
-                     <p>{{isset($reviewerSummaryData->time_insu_pol_cfpl) ? $reviewerSummaryData->time_insu_pol_cfpl : ''}} </p>
-                  </td>
-               </tr>
-               <tr role="row" class="odd">
-                  <td class="">
-                     <p>{{isset($reviewerSummaryData->cond_personal_guarantee) ? $reviewerSummaryData->cond_personal_guarantee : ''}} </p>
-                  </td>
-                  <td class="">
-                     <p>{{isset($reviewerSummaryData->time_personal_guarantee) ? $reviewerSummaryData->cond_insu_pol_cfpl : ''}} </p>
-                  </td>
-               </tr>
+               @if(isset($preCondArr) && count($preCondArr)>0)
+                  @foreach($preCondArr as $prekey =>$preval)
+                  <tr role="row" class="odd">
+                     <td class="">
+                        <p>{{$preval['cond']}}</p> 
+                        
+                     </td>
+                     <td class="">
+                        <p>{{$preval['timeline']}}</p>
+                     </td>
+                  </tr>
+                  @endforeach
+               @endif
             </tbody>
          </table>
       </div>
@@ -186,47 +166,18 @@
                </tr>
             </thead>
             <tbody>
-               <tr role="row" class="odd">
-                     <td class="">
-                        <p> {{isset($reviewerSummaryData->cond_pbdit) ? $reviewerSummaryData->cond_pbdit : ''}} </p>
-                     </td>
-                     <td class="">
-                        <p> {{isset($reviewerSummaryData->time_pbdit) ? $reviewerSummaryData->time_pbdit : ''}} </p>
-                     </td>
-               </tr>
-               <tr role="row" class="odd">
-                  <td class="">
-                     <p> {{isset($reviewerSummaryData->cond_dscr) ? $reviewerSummaryData->cond_dscr : ''}} </p>
-                  </td>
-                  <td class="">
-                     <p> {{isset($reviewerSummaryData->time_dscr) ? $reviewerSummaryData->time_dscr : ''}} </p>
-                  </td>
-               </tr>
-               <tr role="row" class="odd">
-                  <td class="">
-                     <p> {{isset($reviewerSummaryData->cond_lender_cfpl) ? $reviewerSummaryData->cond_lender_cfpl : ''}} </p>
-                  </td>
-                  <td class="">
-                     <p> {{isset($reviewerSummaryData->time_lender_cfpl) ? $reviewerSummaryData->time_lender_cfpl : ''}} </p>
-                  </td>
-               </tr>
-               <tr role="row" class="odd">
-                  <td class="" valign="top">
-                     <p> {{isset($reviewerSummaryData->cond_ebidta) ? $reviewerSummaryData->cond_ebidta : ''}} </p>
-                  </td>
-                  <td class="">
-                     <p> {{isset($reviewerSummaryData->time_ebidta) ? $reviewerSummaryData->time_ebidta : ''}} </p>
-                  </td>
-               </tr>
-               <tr role="row" class="odd">
-                  <td class="">
-                     <p> {{isset($reviewerSummaryData->cond_credit_rating) ? $reviewerSummaryData->cond_credit_rating : ''}} </p>
-                  </td>
-                  <td class="">
-                     <p> {{isset($reviewerSummaryData->time_credit_rating) ? $reviewerSummaryData->time_credit_rating : ''}} </p>
-                  </td>
-                  
-               </tr>
+               @if(isset($postCondArr) && count($postCondArr)>0)
+                  @foreach($postCondArr as $postkey =>$postval)
+                     <tr role="row" class="odd">
+                           <td class="">
+                              <p> {{$postval['cond']}} </p>
+                           </td>
+                           <td class="">
+                              <p> {{$postval['timeline']}} </p>
+                           </td>
+                     </tr>
+                  @endforeach
+               @endif
             </tbody>
          </table>
       </div>
